@@ -1,0 +1,85 @@
+import Document, {Html, Head, Main, NextScript } from 'next/document';
+// Import styled components ServerStyleSheet
+import { ServerStyleSheet } from 'styled-components';
+import Layout from '../components/Layout';
+import { GOOGLE_ANALTICS_ID } from '../services/constants';
+// import Script from 'next/script';
+export default class MyDocument extends Document {
+  
+  static getInitialProps({ renderPage }) {
+    // Step 1: Create an instance of ServerStyleSheet
+    const sheet = new ServerStyleSheet();
+
+    // Step 2: Retrieve styles from components in the page
+    const page = renderPage((App) => (props) =>
+      sheet.collectStyles(<App {...props} />),
+    );
+
+    // Step 3: Extract the styles as <style> tags
+    const styleTags = sheet.getStyleElement();
+
+    // Step 4: Pass styleTags as a prop
+    return { ...page, styleTags };
+  }
+
+  render() {
+    return (
+      <Html id="html">
+        <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"></meta>
+ <script async src="https://www.googletagmanager.com/gtag/js?id=AW-738037519"></script>
+<script
+dangerouslySetInnerHTML={{
+  __html: `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-738037519');
+  `}}
+  />
+    <script
+          async
+          src={"https://www.googletagmanager.com/gtag/js?id="+GOOGLE_ANALTICS_ID}
+        />
+        <script type='text/javascript' dangerouslySetInnerHTML={{__html: `
+          window.smartlook||(function(d) {
+            var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+            var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+            c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
+            })(document);
+            smartlook('init', '6184459f57c13a90ad62399d44278d45dcf8c6bb', { region: 'eu' });
+        `}}/>
+
+ 
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GOOGLE_ANALTICS_ID}', {
+              page_path: window.location.pathname,
+            });
+          `}}
+          />
+          <link rel="icon" href="/logoblack.svg" />
+          <link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
+       <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet"></link>
+      <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"></link>
+           {/* Step 5: Output the styles in the head  */}
+          {this.props.styleTags}
+        
+ 
+        
+         </Head>
+         <body>
+    
+          <Main />
+          <NextScript />
+        </body>
+       </Html>
+    );
+  }
+}
+

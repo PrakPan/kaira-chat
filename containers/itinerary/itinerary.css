@@ -1,0 +1,64 @@
+.nav-tabs-itinerary-main{
+    background-color: black;
+    z-index: 1;
+    position: sticky;
+    top: 0;
+    height: 80px !important;
+}
+#itinerary-modal {
+    border: none;
+    margin: 0;
+}
+.MuiTabs-flexContainer{
+    z-index: 2 !important;
+}
+#itinerary-modal .modal-body{
+    min-height: 100vh;
+
+}
+.nav-tabs-itinerary-booking{
+    border: none; 
+    z-index: 1;
+    background-color: white;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #e4e4e4;
+ }
+.nav-tabs-itinerary-booking .nav-link{
+   border: none; 
+   
+}
+.nav-tabs-itinerary-booking .nav-link.active{
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #F7e700; 
+ }
+.nav-tabs-itinerary-booking .nav-item{
+    margin: 0.5rem 0;
+ }
+
+.nav-tabs-itinerary-main .nav-link {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px !important;
+    min-width: 30vw;
+    color: white;
+    border-style: solid solid none solid;
+    border-color: white;
+    border-radius: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    font-family: 'Open Sans', sans-serif !important;
+
+  }
+.MuiTab-wrapper{
+    font-size: 1.25rem;
+    text-transform: none;
+}
+@media only screen and (min-width: 768px){
+    .nav-tabs-itinerary-main .nav-link {
+        min-width: 10vw;
+    }
+}

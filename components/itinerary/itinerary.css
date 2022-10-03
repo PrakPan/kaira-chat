@@ -1,0 +1,102 @@
+.nav-tabs-itinerary-days{
+    background-color: white;
+    border: none;
+
+}
+
+#day-tabs .MuiTabs-flexContainer{
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 80%;
+    grid-gap: 1rem;
+    box-sizing: border-box;
+}
+#day-tabs .MuiTabs-flexContainer .MuiButtonBase-root{
+    width: 100% !important;
+    box-sizing: border-box;
+    margin: 0;
+
+}
+.nav-tabs-itinerary-days .nav-link{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    border-radius: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    padding: 0.25rem 1rem;
+    margin-right: 1rem;
+ }
+.nav-item-itinerary-experience-location{
+    width: 100%;
+    text-align: center;
+}
+.nav-item-itinerary-experience-location .nav-link.active{
+    background-color: #F7e700;
+}
+ .nav-tabs-itinerary-days .nav-link.active{
+    background-color: black;
+    color: white;
+    border-color: black;
+
+ }
+ .edit-modal .modal-dialog{
+     width: 100% !important;
+     max-width: none !important;
+     padding: 0 !important;
+     margin: 0 !important;
+ }
+.itinerary-day-tab:nth-child(n){
+    font-size: 1rem;
+    border-style: solid;
+    border-color: black !important;
+    border-radius: 2rem;
+    border-width: 1px;
+    padding: 0;
+    margin: 0 0.5rem;
+    height: max-content;
+    width: max-content;
+    min-height: 0 !important;
+    min-width: 0 !important;
+}
+.itinerary-day-tab span{
+    font-size: 1rem;
+    font-family: 'Open Sans', sans-serif !important; 
+    color: white !important;
+
+}
+
+.itinerary-day-tab.Mui-selected{
+    background-color: black;
+    color: white !important;
+}
+.MuiTab-wrapper{
+    font-size: 1rem;
+}
+.city-active{
+    color: white;
+    font-weight: 700;
+    font-size: 1.25rem;
+    background-color: black;
+}
+
+.city-inactive{
+    color: black !important;
+    font-weight: 400;
+    font-size: 1rem;
+    background-color: white;
+   
+}
+.city-active:hover{
+    cursor: pointer;
+}
+.city-inactive:hover{
+    cursor: pointer;    
+}
+@media screen and (min-width: 768px){
+    #day-tabs .MuiTabs-flexContainer{
+        grid-template-columns: repeat(6,1fr);
+    }
+    #day-tabs{
+        z-index: 800;
+        background-color: white;
+    }
+}

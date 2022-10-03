@@ -1,0 +1,47 @@
+
+/* experience modal css only */
+
+.experience-modal.right .modal-header .close {
+  font-size: 40px;
+}
+.experience-modal.right .modal-header .close:focus {
+  outline: none;
+}
+
+.experience-modal.right .modal-header {
+  border-bottom: 0 none;
+  margin: 0rem;
+}
+
+.experience-modal.right .modal-footer {
+  border-top: 0 none;
+  margin: 0rem;
+}
+
+.experience-modal.right .modal-content {
+  border-style: solid;
+  border-width: 10px;
+  border-color: #F7E700;
+  background-color: rgba(255,255,255);   
+}  
+
+@media screen and (min-width: 768px){
+  .experience-modal.right .modal-header {    
+    margin: 0rem 0rem -2rem 0rem;
+  }
+
+.experience-modal.right .modal-dialog {
+
+    transform: translate3d(0%, 0, 0);
+}
+
+.experience-modal.right .modal-content {  
+  overflow-y: auto;
+}
+
+.experience-modal.right.fade  .modal-dialog {
+  right: 0px;
+  transition: opacity 0.3s linear;
+}
+}
+

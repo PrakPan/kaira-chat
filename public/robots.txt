@@ -1,0 +1,21 @@
+
+User-agent: *
+Disallow: /dashboard/
+Disallow: /about-us/
+Disallow: /contact/
+Disallow: /testimonials/
+Disallow: /itinerary/
+Disallow: /preview-travel-experiene/
+Disallow: /test/
+Disallow: /500/
+Disallow: /404/
+ 
+
+
+
+
+
+
+
+
+

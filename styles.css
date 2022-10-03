@@ -1,0 +1,1045 @@
+   /* scrollbar */
+   ::-webkit-scrollbar {
+    width: 0.6rem;
+    height: 0.6rem;
+    
+  }
+
+  .full-width{
+    width: '100% important'
+  }
+  
+  ::-webkit-scrollbar-track {
+    /* background: #F7E700; */
+    background: gray;
+    border-radius: 50vw;
+    /* margin-block: 0.5rem; */
+  }
+   
+  ::-webkit-scrollbar-thumb {
+  background-color: black;
+  /* border: 0.025em solid #F7E700; */
+    border-radius: 100vw;
+    height: 6rem;
+    width: 6rem;
+    background-image: linear-gradient(rgba(247, 231, 0, 1));
+    /* background-image: (linear,
+    left bottom,
+    left top,
+    color-stop(0.44, rgb(122,153,217)),
+    color-stop(0.72, rgb(73,125,189)),
+    color-stop(0.86, rgb(28,58,148))); */
+    /* -webkit-width:5em; */
+   
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background:#e7f700;
+  }
+  /* end */
+
+
+
+
+
+.hidden{
+  display: none !important;
+}
+.black-mui-navbar{
+  background-color: black !important;
+  color: white !important;
+  height: 10vh !important;
+  justify-content: center !important;
+  border-style: none !important;
+  border-color: #e4e4e4 !important;
+  border-width: 1px !important;
+  top: 0 !important;
+}
+.hover-pointer:hover{
+  cursor: pointer;
+}
+.citymenu-active{
+  text-decoration: none !important;
+}
+.rdrDefinedRangesWrapper{
+  display: none;
+}
+.rdrDateDisplayWrapper{
+  display: none;
+}
+.rdrDayNumber span{
+  color: black !important;
+}
+.MuiPickersDay-hiddenDaySpacingFiller{
+  background-color: transparent !important;
+}
+.MuiDateRangePickerDay-rangeIntervalDayPreview{
+  background-color: rgba(247,231,0,0.4) !important;
+}
+.MuiPickersDay-root{
+  margin: 0   !important;
+}
+.modal-backdrop {
+  /* background-color: transparent !important; */
+  /* backdrop-filter: blur(2px) !important; */
+}
+.modal-backdrop.in{
+  opacity: 0.9 !important;
+
+}
+.css-1tape97{
+  padding: 0rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+.css-170k9md{
+ }
+.css-1tape97:nth-of-type(1){
+  margin-right: 2rem;
+}
+.overflow-hidden{
+  overflow:hidden;
+}
+#day-tab{
+  position: sticky !important;
+  top: 66px !important;
+  background-color: white !important;
+  z-index: 100;
+  padding: 0.5rem 0;
+}
+#day-tab .MuiTabs-scrollButtons{
+  border-style: none !important;
+}
+.itinerary-mobile-day-tab{
+  text-transform: none !important;
+  color: black !important;
+  border: 1px solid black !important; 
+  border-radius: 2rem !important;
+  margin: 0 0.25rem !important;
+  padding: 0.25rem 1rem !important; 
+  line-height: 1 !important;
+  height:  max-content !important;
+}
+.itinerary-mobile-tabs{
+  min-height: auto !important;
+  height: max-content !important;
+}
+.itinerary-mobile-day-tab span{
+  padding: 0 !important; 
+  height: max-content !important;
+}
+.citymenu-active p{
+  color: black;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+}
+
+.nav-tabs-itinerary-main{
+  background-color: black;
+  z-index: 1;
+  position: sticky;
+  top: 0;
+  height: 80px !important;
+}
+#poi-modal .modal-content{
+  background-color: transparent !important;
+  border: none !important;
+}
+
+#bookingedit-modal .modal-content{
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.experience-enquiry-input .MuiInputBase-root textarea{
+  min-height: 8rem;
+}
+#itinerary-modal {
+  border: none;
+  margin: 0;
+}
+.MuiBox-root{
+  padding: 0 !important;
+}
+.MuiTabs-flexContainer{
+  z-index: 2 !important;
+}
+#itinerary-modal .modal-body{
+  min-height: 100vh;
+
+}
+
+.nav-tabs-itinerary-booking{
+  border: none; 
+  z-index: 1;
+  background-color: white;
+  border-style: none none solid none;
+  border-width: 1px;
+  border-color: #e4e4e4;
+}
+.nav-tabs-itinerary-booking .nav-link{
+ border: none; 
+ 
+}
+.nav-tabs-itinerary-booking .nav-link.active{
+  border-style: none none solid none;
+  border-width: 1px;
+  border-color: #F7e700; 
+}
+.nav-tabs-itinerary-booking .nav-item{
+  margin: 0.5rem 0;
+}
+
+
+.nav-tabs-itinerary-main .nav-link {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px !important;
+  min-width: 30vw;
+  color: white;
+  border-style: solid solid none solid;
+  border-color: white;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1.25rem;
+
+  font-family: 'Open Sans', sans-serif !important;
+
+}
+.experience-headings{
+  z-index: 2;
+}
+.MuiTab-wrapper{
+  font-size: 1.25rem;
+  text-transform: none;
+}
+.backtotop-active{
+  color: black;
+  text-decoration: none;
+}
+.google-login-button{
+  width: 100% !important;
+
+}
+.google-login-button div{
+  width: max-content !important;
+  margin: 0 auto !important;
+
+}
+.google-login-button span{
+  display: none !important;
+}
+body.modal-open {
+
+
+}
+
+.carousel{
+
+}
+.flickity-viewport {
+
+}
+.flickity-enabled:focus {    
+    outline: none;
+  }
+.rsc-os-option-element{
+  background-color: rgba(247, 231, 0,0.6) !important;
+}
+b{
+  font-weight: 600;
+}
+/*Experinece, poi and itinerary menu CSS, do not remove*/
+.experience-tab{
+  opacity: 0.7 !important;
+  font-size: 16px !important;
+  text-transform: none !important;
+  margin: 0 0.5rem !important;
+  color: white !important;
+}
+.experience-tab.Mui-selected{
+  opacity: 1 !important;
+}
+.poi-tab{
+  text-transform: none !important;
+  color: black !important;
+  border-style: none solid solid none !important;
+  border-width: 1px !important;
+  border-color: #e4e4e4 !important;
+  font-size: 0.75rem !important;
+  min-width: 33vw !important;
+}
+.poi-tab.Mui-selected{
+  color: black !important;
+  background-color: #f7e700 !important;
+}
+.accommodationdetail-tab{
+  text-transform: none !important;
+  color: black !important;
+  border-style: none solid solid none !important;
+  border-width: 1px !important;
+  border-color: #e4e4e4 !important;
+  font-size: 0.75rem !important;
+  min-width: 33vw !important;
+  background-color: #f7e700;
+}
+.accommodationdetail-tab.Mui-selected{
+  color: black !important;
+  background-color: #f7e700 !important;
+  font-weight: 800 !important;
+}
+.bookingdetail-tab{
+  text-transform: none !important;
+  color: black !important;
+  border-style: solid solid solid solid !important;
+  border-color: #e4e4e4 !important;
+  border-width: 1px !important;
+ 
+  font-size: 1rem !important;
+  width: 33vw !important;
+   background-color: hsl(0,0%,97%) !important;
+}
+
+.bookingdetail-tab.Mui-selected{
+  color: black !important;
+  background-color:hsl(0,0%,97%) !important;
+  border-style: solid solid solid solid !important;
+  border-color: #e4e4e4 #e4e4e4 #f7e700 #e4e4e4 !important ;
+  border-width: 1px 1px 3px 1px !important;
+  font-weight: 800 !important;
+}
+.MuiTabs-scrollButtons{
+  border-style: none none solid none !important;
+  border-width: 1px !important;
+  border-color: #e4e4e4 !important;
+}
+.MuiTabs-scrollButtons:nth-of-type(1){
+  display: none !important;
+}
+/* -- */ 
+.MuiAppBar-root{
+  z-index: 1000 !important;
+}
+
+.progress-bar{
+  background-color: #F7e700;
+}
+.progress{
+  transition: all 0.3s ease !important;
+}
+.personalise-modal{
+
+}
+.MuiFormLabel-root {
+  background-color: white !important ;
+}
+.border-thin{
+    border-style: solid;
+    border-width: 1px;
+    border-color: #e4e4e4;
+}
+.full-height{
+    height: 100% !important;
+}
+.display-inline{ 
+    display: inline;
+}
+.color-white{
+    color: white;
+}
+.color-black{
+    color: black;
+}
+.full-width{
+    width: 100%;
+}
+.width-80{
+    width: 80%; 
+}
+.text-center{
+    text-align: center;
+}
+.margin-auto{
+    margin: auto; 
+}
+.no-border{
+    border: none !important;
+}
+.display-inline{
+    display: inline !important;
+}
+.center-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.vertical-center-div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.font-quote{
+  font-family: 'Spirax', cursive;
+}
+.kep-login-facebook{
+  margin: 1rem 0;
+  background-color: white !important;
+  color: black !important;
+  border-radius: 2rem;
+  padding: 6px 16px !important;
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%) !important;
+  width: 100% !important;
+  border-radius: 2rem !important;
+  border-color: transparent !important;
+
+}
+.border{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+  .full-width{
+    width: 100%;
+  }
+  .locationimg-container{
+    position: relative;
+  }
+  .font-nunito{
+    font-family: 'Nunito Sans', sans-serif !important;
+    letter-spacing: 1px;
+  }
+  .font-opensans{
+    font-family: 'Open Sans', sans-serif !important;
+  }
+  .font-montserrat{
+    font-family: 'Montserrat', sans-serif;
+  }
+  .font-marker{
+font-family: 'Lexend Deca', sans-serif;
+}  .text-center{
+    text-align: center !important;
+  }
+
+  #payment-form-container{
+    background-color: white;
+    width: 100%;
+    margin: auto;
+    max-width: 90% !important;
+  
+  } 
+ .bg-grey{
+   background-color: hsl(0,0%, 95%);
+ }
+
+  .fa-angle-left:hover, .fa-angle-right:hover {
+    cursor: pointer;
+  }
+  .country-code-field .MuiInputBase-root{
+    text-align: center;
+    height: max-content !important;
+  }
+  
+  .country-code-field img{
+    height: 100%;
+    width: auto;
+  } 
+
+ 
+ 
+  #experience-modal-body{
+    border-style: solid solid solid solid;
+    border-color: #F7e700;
+    border-width: 0.5rem;
+    padding: 0;
+  }
+
+  a{
+    color: black;
+  }
+  img {
+    image-orientation: from-image;
+}
+
+
+.bg-whitee{
+  background-color: white;
+  animation: fadeIn ease 0.5s;
+}
+.bg-yellow{
+  background-color: #F7e700;
+  animation: fadeIn ease 0.5s;
+}
+.no-outline{
+  outline: none !important;
+
+}
+.bg-black{
+  background-color: rgba(0,0,0,0.6);
+  animation: fadeIn ease 0.5s;
+}
+.bg-transparentt{
+  background-color: transparent;
+  animation: fadeIn ease 0.5s;
+
+}
+.opacity-one{
+  opacity: 1;
+}
+.opacity-zero{
+  opacity: 0;
+}
+.hide-scroll{
+  -ms-overflow-style: none;
+}
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}.nav-tabs-itinerary-days{
+  background-color: white;
+  border: none;
+
+}.nav-tabs-profile-main{
+  padding: 0.5rem;
+}
+.nav-tabs-profile-main .nav-link{
+  border: none !important;
+  width: 20%;
+  text-align: center;
+  padding: 0.5rem;
+  border: none;
+  display: inline-block;
+  width: max-content;
+
+}
+.nav-tabs-profile-main .nav-link.active{
+  border-style: none none solid none !important;
+  border-color: #F7e700 !important;
+  border-width: 2px !important;
+
+}
+.PrivateValueLabel-label-11{
+  color: black !important;
+
+  font-size: 16px !important;
+}
+.nav-link.active:focus{
+outline: none !important;  
+}
+#day-tabs{
+  max-width: 100% !important;
+  top: 10vh !important;
+  position: sticky !important;
+}
+#day-tabs .MuiTabs-flexContainer{
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 100%;
+  grid-gap: 1rem;
+  box-sizing: border-box;
+}
+#day-tabs .MuiTabs-flexContainer .MuiButtonBase-root{
+  
+  box-sizing: border-box;
+  margin: 0;
+
+}
+.nav-tabs-itinerary-days .nav-link{
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  border-radius: 2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  padding: 0.25rem 1rem;
+  margin-right: 1rem;
+}
+.nav-item-itinerary-experience-location{
+  width: 100%;
+  text-align: center;
+}
+.nav-item-itinerary-experience-location .nav-link.active{
+  background-color: #F7e700;
+}
+.nav-tabs-itinerary-days .nav-link.active{
+  background-color: black;
+  border-color: black;
+
+}
+.edit-modal .modal-dialog{
+
+}
+.bookings-edit-filters {
+  margin: 0 0 0.25rem 0 !important;
+}
+.bookings-edit-filters .MuiCheckbox-root{
+  padding: 0 !important;
+}
+#day-tab{
+  min-height: max-content !important;
+  z-index: 1000 !important;
+}
+#day-tab .MuiTabs-scroller{
+  
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+
+}
+#city-tab .MuiTabs-scroller{
+  height: 60px;
+}
+.itinerary-day-tab:nth-child(n){
+  font-size: 1rem;
+  border-style: solid;
+  border-color: black !important;
+  border-radius: 2rem;
+  border-width: 1px;
+  height: 32px;
+  margin: 0 0.25rem;
+  text-transform: none !important;
+  width: max-content;
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+.itinerary-day-tab span{
+  font-size: 1rem;
+  font-family: 'Open Sans', sans-serif !important; 
+}
+
+.itinerary-day-tab.Mui-selected{
+  background-color: black;
+  color: white !important;
+}
+.booking-filter-tab:nth-child(n){
+  font-size: 0.75remrem;
+  border-style: solid;
+  border-radius: 2rem;
+  border-width: 1px;
+  border-color: #e4e4e4;
+  margin: 0 0.25rem 0 0;
+  color: black;
+  height: max-content;
+  padding: 0.25rem 1rem;
+  text-transform: none !important;
+  width: max-content;
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+#filter-tab .MuiTabs-scroller{
+  align-items: center !important;
+  display: flex !important;
+  width: 100% !important;
+  margin: 0 !important;
+
+}
+.itinerary-city-tab:nth-child(n){
+  font-size: 1rem;
+  border-style: solid solid none none;
+  border-radius: 0;
+  border-width: 1px;
+  border-color: #e4e4e4;
+  margin: 0;
+  color: black;
+  height: 60px;
+  text-transform: none !important;
+  width: max-content;
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+.itinerary-city-tab.Mui-selected{
+  background-color: #f7e700 !important;
+  color: black !important;
+}
+#location-tab{
+  position: fixed !important;
+  bottom: 0 !important;
+  background-color: white !important;
+  z-index: 1000 !important;
+  width: 100vw !important;
+}
+.MuiTab-wrapper{
+  font-size: 1rem;
+}
+.city-active{
+  color: white;
+  font-weight: 700;
+  font-size: 1.25rem;
+  background-color: black;
+}
+
+.city-inactive{
+  color: black !important;
+  font-weight: 400;
+  font-size: 1rem;
+  background-color: white;
+ 
+}
+.city-active:hover{
+  cursor: pointer;
+}
+.city-inactive:hover{
+  cursor: pointer;    
+}
+.rsc-float-button{
+  width: 4rem;
+  height: 4rem;
+  border-style: solid;
+  border-width: 1px;
+  bottom: 13.5vh !important;
+  right: 1rem !important;
+  transform: none !important;
+}
+.blurry-text{
+  color: transparent !important;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5) !important;
+}
+@media only screen and (max-width: 768px){
+  .hidden-mobile{
+    display: none !important;
+  }
+  .hidden-desktop{
+    display: initial  ;
+  }
+}
+
+@media only screen and (min-width: 768px){
+  .hidden-desktop{
+    display: none !important;
+  }
+  .hidden-mobile{
+    display: initial  ;
+  }
+  .poi-tab{
+    min-width: max-content !important;
+  }
+  .accommodationdetail-tab{
+    min-width: max-content !important;
+  }
+  .bookingdetail-tab{
+    min-width: max-content !important;
+    width: max-content !important;
+  }
+  
+  .nav-tabs-profile-main .nav-link{
+    display: initial;
+    width: 20%
+}
+  /*Experinece and itinerary menu CSS, do not remove*/
+.experience-tab{
+  margin: 0 1.5rem !important;
+}
+
+
+/* -- */ 
+  .rsc-float-button{
+    width: 4rem !important;
+    height: 4rem !important;
+    border-style: solid !important;
+    border-width: 1px !important;
+    bottom:  1rem !important;
+    right: 1rem !important;
+  }
+  .nav-tabs-itinerary-main .nav-link {
+    min-width: 10vw;
+  }
+  #day-tabs .MuiTabs-flexContainer{
+    grid-template-columns: repeat(6,1fr);
+  }
+  #day-tabs{
+    z-index: 800;
+    background-color: white;
+  }
+}
+.netflix-item {
+    transition: transform 200ms;
+  }
+.netflix-container:focus-within .netflix-item,
+.netflix-container:hover .netflix-item {
+  transform: translateX(-5%);
+}
+.netflix-item:focus ~ .netflix-item,
+.netflix-item:hover ~ .netflix-item {
+  transform: translateX(5%);
+}
+.netflix-container .netflix-item:focus,
+.netflix-container .netflix-item:hover {
+  transform: scale(1.1);
+  z-index: 1;
+}
+.MuiMenu-list{
+    padding: 0 !important;
+}
+/* locks background scroll for modal*/
+body.modal-open {
+
+  }
+  .carousel{
+  
+  }
+  .flickity-viewport{
+  
+  }
+
+  .flickity-enabled {
+  
+    overflow: hidden;
+    
+    width: 100%;
+  }
+    
+    .flickity-enabled:focus {    
+      outline: none;
+    }
+    
+    .flickity-viewport {
+      padding: none;
+      margin: 0rem;
+  
+      position: relative;   
+    }
+   
+    .flickity-page-dots {
+      display:none;
+      }
+    
+    /* button */
+  .flickity-button {
+  display: none;
+    }
+  .rsc-os-option-element{
+    background-color: rgba(247, 231, 0,0.6) !important;
+  }
+  b{
+    font-weight: 600;
+  }
+  .MuiAppBar-root{
+    z-index: 1000 !important;
+  }
+  
+  .progress-bar{
+    background-color: #F7e700;
+  }
+  .progress{
+    transition: all 0.3s ease !important;
+  }
+  .personalise-modal{
+  
+  }
+  .border-thin{
+      border-style: solid;
+      border-width: 1px;
+      border-color: #e4e4e4;
+  }
+  .full-height{
+      height: 100% !important;
+  }
+  .display-inline{ 
+      display: inline;
+  }
+  .color-white{
+      color: white;
+  }
+  .color-black{
+      color: black;
+  }
+  .full-width{
+      width: 100%;
+  }
+  .width-80{
+      width: 80%; 
+  }
+  .text-center{
+      text-align: center;
+  }
+  .margin-auto{
+      margin: auto; 
+  }
+  .no-border{
+      border: none !important;
+  }
+  .display-inline{
+      display: inline !important;
+  }
+  .center-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .vertical-center-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  
+  .border{
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      box-sizing: border-box;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  }
+    .full-width{
+      width: 100%;
+    }
+    .locationimg-container{
+      position: relative;
+    }
+    .font-nunito{
+      font-family: 'Nunito Sans', sans-serif !important;
+      letter-spacing: 1px;
+    }
+    .font-opensans{
+      font-family: 'Open Sans', sans-serif !important;
+    }
+    .font-montserrat{
+      font-family: 'Montserrat', sans-serif;
+    }
+    .font-marker{
+  font-family: 'Lexend Deca', sans-serif;
+  }  .text-center{
+      text-align: center !important;
+    }
+  
+    #payment-form-container{
+      background-color: white;
+      width: 100%;
+      margin: auto;
+      max-width: 90% !important;
+    
+    } 
+   .bg-grey{
+     background-color: hsl(0,0%, 95%);
+   }
+  
+    .fa-angle-left:hover, .fa-angle-right:hover {
+      cursor: pointer;
+    }
+    .country-code-field{
+      text-align: center;
+      height: 1.5rem !important;
+    }
+    
+    .country-code-field img{
+      height: 100%;
+      width: auto;
+    }
+    .MuiSelect-root {
+    }
+    .MuiInputBase-input{
+      height: 1.5rem !important;
+    }
+   
+    @media only screen and (min-width: 768px){
+        .flickity-button {
+            display: initial;
+            position: absolute;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+          }
+          
+          .flickity-button:hover {
+            cursor: pointer;
+          }
+          
+          .flickity-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 5px #19f;
+          }
+          
+          .flickity-button:disabled {
+            cursor: auto;    
+            pointer-events: none;
+          }
+          
+          .flickity-button-icon {
+            fill: white;
+          }
+        
+          .flickity-prev-next-button {
+            top: 50%;
+            width: 2rem;
+            height: 4rem;
+
+            transform: translateY(-50%);
+          }
+        
+          .flickity-prev-next-button.previous {
+            left: 0;
+            z-index: 1000;
+          }
+          .flickity-prev-next-button.next {
+            right: 0;
+          }
+          
+          .flickity-prev-next-button .flickity-button-icon {
+            position: absolute;
+            left: 20%;
+            top: 20%;
+            width: 60%;
+            height: 60%;
+          }
+    }
+    #experience-modal-body{
+      border-style: solid solid solid solid;
+      border-color: #F7e700;
+      border-width: 0.5rem;
+      padding: 0;
+    }
+  
+    a{
+      color: black;
+    }
+  
+   
+   .rsc-float-button{
+     border-style: solid;
+     border-width: 1px;
+   }
+  .bg-whitee{
+    background-color: white;
+    animation: fadeIn ease 0.5s;
+  }
+  .bg-yellow{
+    background-color: #F7e700;
+    animation: fadeIn ease 0.5s;
+  }
+  .no-outline{
+    outline: none !important;
+  
+  }
+  .bg-black{
+    background-color: rgba(0,0,0,0.6);
+    animation: fadeIn ease 0.5s;
+  }
+  .bg-transparentt{
+    background-color: transparent;
+    animation: fadeIn ease 0.5s;
+  
+  }
+  .opacity-one{
+    opacity: 1;
+  }
+  .opacity-zero{
+    opacity: 0;
+  }
+  .hide-scroll{
+    -ms-overflow-style: none;
+  }
+  .hide-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  
+  @media screen and (min-width: 768px) and (min-height: 1024px) {
+    .modal-diaglog{
+      width: 90vw !important;
+    }
+  }
+  
+  

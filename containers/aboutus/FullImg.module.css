@@ -1,0 +1,21 @@
+.Container{
+    height: 100vh;
+}
+.BackgroundImg{
+    filter: brightness(80%);
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.80),rgba(0,0,0,0.55),rgba(0,0,0,0.02)),url("https://d31aoa0ehgvjdi.cloudfront.net/media/website/aboutus.webp");
+    height: 100vh;
+    background-position: center;
+    background-attachment: scroll;
+    background-size: cover;
+
+}
+
+@media screen and (min-width: 768px){ 
+    .BackgroundImg{
+        filter: brightness(60%); 
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.80),rgba(0,0,0,0.50),rgba(0,0,0,0.02)),url("https://d31aoa0ehgvjdi.cloudfront.net/media/website/aboutus.webp");
+      background-attachment: fixed;
+    
+    }
+}

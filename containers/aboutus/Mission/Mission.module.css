@@ -1,0 +1,32 @@
+.Container{
+   
+}
+.ListContainer{
+    display: grid;
+    grid-template-columns: max-content auto;
+    width: 90%;
+    margin: auto;
+    padding: 1rem 0;
+    grid-row-gap: 1.5rem;
+}
+.Icon{
+    width: 1.5rem;
+    margin: 0 1.5rem;
+}
+.ListText{
+    margin: 0;
+    font-weight: 300;
+    font-family: 'Nunito Sans', sans-serif !important;
+    letter-spacing: 1px;
+
+}
+@media screen and (min-width: 768px){ 
+    .Container{
+    }
+    .ListText{
+        margin: 0.5rem 0;
+    }
+    .ListContainer{
+        width: 60%;
+    }
+}

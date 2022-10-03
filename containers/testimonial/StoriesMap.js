@@ -1,0 +1,417 @@
+import React, { useState, useEffect } from 'react';
+import styled,{keyframes} from 'styled-components';
+// import Map from '../../public/assets/worldMap.svg';
+import MapPin from '../../public/assets/icons/map-pin-yellow.svg';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import media from '../../components/media';
+import ImageLoader from '../../components/ImageLoader';
+import dieter from '../../public/assets/testimonials/Dieter.webp';
+import arnab from '../../public/assets/testimonials/Arnab.webp';
+import damla from '../../public/assets/testimonials/Damla.webp';
+import mohamed from '../../public/assets/testimonials/Mohamed.webp';
+import maria from '../../public/assets/testimonials/Maria Carolina.webp';
+import raghav from '../../public/assets/testimonials/Raghav.webp';
+import shivam from '../../public/assets/testimonials/Shivam.jpg';
+const MapSlide = keyframes`
+0% {
+    margin-left: -30rem;
+    }
+    100% {
+    margin-left: 0rem;  
+    }
+
+`;
+
+const StoriesHeading = styled.span`
+text-align: center;
+position: absolute;
+width: 100%;
+&:nth-of-type(1){  
+    top: 15%;      
+    font-weight: 800;
+    font-size: ${props => props.theme.fontsizes.mobile.headings.one};
+  @media screen and (min-width: 768px){       
+    top: 10%; 
+    font-size: ${props => props.theme.fontsizes.desktop.headings.two};
+  }
+}
+`;
+
+const Bounce = keyframes`
+0%{
+opacity: 0;
+margin-top: -2000px;
+}
+60%{
+opacity: 1;
+margin-top: 30px;
+}
+80%{
+    margin-top: 10px;
+}
+100%{
+    margin-top: 0px;
+}
+`;
+
+const PinIcon = styled.img`
+
+animation: ${MapSlide} 8s;
+animation-fill-mode: both;
+height: 4rem;
+position: absolute;
+transform: none;
+transform: translate(-50%, -50%);
+
+
+@media screen and (min-width: 768px){  
+    
+    
+    height: 4.5rem;     
+    animation: none;
+    &:nth-of-type(5){    
+        animation-name: ${Bounce};
+        animation-fill-mode: both;
+        animation-duration: 1s;
+        }
+        &:nth-of-type(3){    
+       animation-name: ${Bounce};
+       animation-fill-mode: both;
+       animation-duration: 2s;
+        }
+}
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px){ 
+    &:nth-of-type(5){
+        display:none;
+    }
+    &:nth-of-type(1){
+        display:none;
+    }
+    &:nth-of-type(11){
+        display:none;
+    }
+}
+`;
+
+const UserIcon = styled.img`
+animation: ${MapSlide} 8s;
+animation-fill-mode: both;
+cursor: pointer;
+background-color: #727272;
+height: 2rem;
+width: 2rem;
+border-radius: 50%;
+position: absolute;
+transform: translate(-50%, -50%);
+transition: all 0.2s linear;
+&:hover{
+    border-color:  #4c4c4c;
+    background-color: #4c4c4c;
+}
+@media screen and (min-width: 768px){   
+    animation: none;        
+    height: 2.5rem;
+    width: 2.5rem; 
+    &:nth-of-type(4){       
+        animation-name: ${Bounce};
+        animation-fill-mode: both;
+        animation-duration: 2s;
+            }
+         &:nth-of-type(6){   
+            animation-name: ${Bounce};
+            animation-fill-mode: both;
+            animation-duration: 1s;
+            }
+}
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px){ 
+    &:nth-of-type(6){
+        display:none;
+    }
+    &:nth-of-type(2){
+        display:none;
+    }
+    &:nth-of-type(12){
+        display:none;
+    }
+     &:nth-of-type(4){       
+        animation-name: ${Bounce};
+        animation-fill-mode: both;
+        animation-duration: 2s;
+            }
+         &:nth-of-type(6){   
+            animation-name: ${Bounce};
+            animation-fill-mode: both;
+            animation-duration: 1s;
+            }
+}
+`;
+
+const MapBg = styled.img`
+z-index: -1;
+height: 100vh;
+width: 60rem;
+transform: scale(1.4);
+object-fit: contain;
+position: relative;
+animation: ${MapSlide} 8s;
+@media screen and (min-width: 768px){   
+    transform: none;
+    overflow: hidden;    
+    animation: none;
+    width: 100%;
+}
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px){ 
+    transform: scale(1.4);
+    overflow: hidden;  
+    height: 60vh;  
+    padding-top: 10vh;
+}
+`;
+
+
+const Container = styled.div`
+position: relative;
+overflow-x: scroll;
+overflow-y: hidden;
+width: 100vw;
+@media screen and (min-width: 768px){  
+overflow: hidden;
+}
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px){ 
+    overflow: hidden;     
+
+}
+`;
+
+const MapContainer=styled.div`
+height: 80vh;
+and (max-device-width : 1024px){ 
+
+}
+`;
+const reveiws = [
+    {
+        name: "Dieter Arnold",
+        image: "media/website/Dieter.png",
+        review: "Soulful experience! I had my yoga trip in India and these guys saved me tons of money. Will be back soon haha!"
+    },
+    {
+        name: "Damla Gürsoy",
+        review: "Spent the best time volunteering in India with these guys! The Customer Support team is the very helpful. Wish you luck!",
+        image: "media/website/Damla.png",
+    },
+    {
+        name: "Arnab Roy",
+        review: "The travel itineraries are beyond imagination with the most local and cultural places covered. Good going guys!",
+        image: "media/website/Arnab.png"
+    },{
+        name: "Maria Carolina",
+        review: "The only travel company in India I can trust! Will visit again for one of their mindblowing experiences. Lots of love!",
+        image:"media/website/Maria Carolina.png"
+    },
+    {
+        name: "Raghav Bansal",
+        review: "The staff was very supportive. We got exactly what we needed, and it was so flexible!! 100% recommended!",
+        image: "media/website/Raghav-min.png"
+    },
+    {
+        name: "Mohamed Zaghloul",
+        review: "My best friends in India!!! I spent 6 months with them, and before you go anywhere in India, just call them once. :D",
+        image: "media/website/Mohamed.png"
+    },
+    {
+        name: "Shivam Sachdev",
+        review: "It was a great experience from the planning to booking. The team is really polite and helpful with all your requests",
+        image: "media/website/Shivam.jpeg",
+    }
+]
+
+const TooltipContainer = styled.div`
+    width: 60vw;
+    background-color: rgba(0,0,0,0.9);
+    color: white;
+    border-radius: 5px;
+    padding: 0.5rem 1rem 1rem 1rem;
+    @media screen and (min-width: 768px){  
+        width: 30vw;
+    }
+`;
+
+const StoriesMap = () => {
+    if(typeof window === undefined) return null
+    else{
+    let isPageWide = media('(min-width: 768px)')
+
+
+
+    var Tooltip1;
+    var Tooltip3;
+    var Tooltip4;
+    var Tooltip5;
+    var Tooltip2;
+    var Tooltip6;
+    var Tooltip7;
+
+    Tooltip1 = props => (
+        <Tooltip  {...props} ><TooltipContainer><h3><b>{reveiws[0].name}</b></h3>{reveiws[0].review}</TooltipContainer></Tooltip>
+    );
+
+    Tooltip2 = props => (
+        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[1].name}</b></h3>{reveiws[1].review}</TooltipContainer></Tooltip>
+    );
+    Tooltip3 = props => (
+        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[2].name}</b></h3>{reveiws[2].review}</TooltipContainer></Tooltip>
+    );
+    Tooltip4 = props => (
+        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[3].name}</b></h3>{reveiws[3].review}</TooltipContainer></Tooltip>
+    );
+
+    Tooltip5 = props => (
+        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[4].name}</b></h3>{reveiws[4].review}</TooltipContainer></Tooltip>
+    );
+    Tooltip6 = props => (
+        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[5].name}</b></h3>{reveiws[5].review}</TooltipContainer></Tooltip>
+    );
+    Tooltip7 = props => (
+        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[6].name}</b></h3>{reveiws[6].review}</TooltipContainer></Tooltip>
+    );
+    const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
+     const src1 = JSON.stringify({
+            bucket: 'thetarzanway-web',
+            key: reveiws[0].image,
+            edits: {
+                resize: {
+                    fit: 'cover',
+                    width: 100,
+                    height: 100,
+                },
+            },
+        });
+    // img.src=`${imgUrlEndPoint}/${btoa(imageRequest)}`;
+  let imageRequest = JSON.stringify({
+            bucket: 'thetarzanway-web',
+            edits: {
+                resize: {
+                    fit: 'cover',
+                    width: 100,
+                    height: 100,
+                },
+            },
+        });
+       
+    if (isPageWide) {
+        return(
+            <div>
+           
+            <StoriesHeading className="font-opensans">
+                Our Stories
+            </StoriesHeading>
+ 
+         
+            <Container >
+            <PinIcon style={{ left: "86%", top: "78.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip1}>
+                <UserIcon style={{ left: "86%", top: "77.5%" }} src={dieter} />
+            </OverlayTrigger>
+            <PinIcon style={{ left: "59%", top: "35.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip2}>
+                <UserIcon style={{ left: "59%", top: "34.5%" }} src={damla} />
+            </OverlayTrigger>
+            <PinIcon style={{ left: "72.5%", top: "46.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip3}>
+                <UserIcon style={{ left: "72.5%", top: "45.5%" }} src={arnab} />
+            </OverlayTrigger>
+            <PinIcon style={{ left: "46%", top: "40.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip4}>
+                <UserIcon style={{ left: "46%", top: "39.5%" }} src={maria} />
+            </OverlayTrigger>
+            <PinIcon style={{ left: "70%", top: "45.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip5}>
+                <UserIcon style={{ left: "70%", top: "44.5%" }} src={raghav} />
+            </OverlayTrigger>
+            <PinIcon style={{ left: "50%", top: "39.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip6}>
+                <UserIcon style={{ left: "50%", top: "38.5%" }} src={mohamed} />
+            </OverlayTrigger>
+            <PinIcon style={{ left: "25%", top: "39.9%" }} src={MapPin} />
+            <OverlayTrigger placement="top" overlay={Tooltip7}>
+                <UserIcon style={{ left: "25%", top: "38.5%" }} src={shivam} />
+            </OverlayTrigger>
+   <MapContainer>
+            <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp"  />
+            </MapContainer>
+        </Container>
+        </div>
+        );
+   
+    }
+    else {
+      return(
+
+        <div>
+           
+        <StoriesHeading className="font-opensans">
+            Our Stories
+        </StoriesHeading>
+   
+     
+        <Container >
+
+        <PinIcon style={{ left: "47.3rem", top: "40.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip1}>
+            <UserIcon style={{ left: "47.3rem", top: "39.5%" }} src={dieter} />
+        </OverlayTrigger>
+
+        <PinIcon style={{ left: "30rem", top: "42.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip2}>
+            <UserIcon style={{ left: "30rem", top: "41.5%" }} src={damla} />
+        </OverlayTrigger>
+
+        <PinIcon style={{ left: "35.3rem", top: "59.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip3}>
+            <UserIcon style={{ left: "35.3rem", top: "58.5%" }} src={arnab}  />
+        </OverlayTrigger>
+
+        <PinIcon style={{ left: "5rem", top: "35.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip4}>
+            <UserIcon style={{ left: "5rem", top: "34.5%" }} src={maria} />
+        </OverlayTrigger>
+
+        <PinIcon style={{ left: "13.7rem", top: "57.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip5}>
+            <UserIcon style={{ left: "13.7rem", top: "56.5%" }} src={raghav}/>
+        </OverlayTrigger>
+
+        <PinIcon style={{ left: "16.8rem", top: "65.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip6}>
+            <UserIcon style={{ left: "16.8rem", top: "64.5%" }} src={mohamed} />
+        </OverlayTrigger>
+       
+        {/* <PinIcon style={{ left: "2rem", top: "65.9%" }} src={MapPin} />
+        <OverlayTrigger placement="top" overlay={Tooltip7}>
+            <UserIcon style={{ left: "16.8rem", top: "64.5%" }} src={shivam} />
+        </OverlayTrigger> */}
+       
+      
+    
+        <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp" />
+       
+    </Container>
+    </div>
+      );
+    }
+        }
+
+}
+
+export default StoriesMap;

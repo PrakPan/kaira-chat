@@ -1,0 +1,59 @@
+.Container{
+
+}
+.CardHeading{
+    font-size: 2rem;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif !important;
+
+}
+.ImageHeadingContainer{
+    width: 60%;
+    margin: auto;
+}
+.Img{
+    padding: 1rem 0rem;
+width: 100%;
+}
+.Text{
+    font-weight: 300;
+    width: 80%;
+    margin: auto;
+    font-size: 17.5px;
+    line-height: 1.5;
+    font-family: 'Nunito Sans', sans-serif !important;
+    letter-spacing: 1px;
+}
+.CardHeadingContainerLeft{
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-image: url("../../../public/assets/arts/Brush.png");
+    font-weight: 600;
+    width: max-content;
+    margin: auto;
+    
+    padding: 1.5rem; 
+}
+.CardHeadingContainerRight{
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-image: url("../../../public/assets/arts/Brush.png");
+    font-weight: 600;
+    width: max-content;
+    margin: auto;
+    padding: 1.5rem;
+}
+@media screen and (min-width: 768px){
+    .Container{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        width: 90%;
+        margin: auto;
+    }
+    .CardHeadingContainerLeft{
+        position: static;
+    }
+    .CardHeadingContainerRight{
+        position: static;
+    }
+}

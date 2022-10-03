@@ -1,0 +1,15 @@
+.MuiTab-itinerary span{
+font-size: 15px; 
+}
+.MuiButtonBase-root:focus{
+    outline: none;
+    font-weight: 300;
+
+}
+
+@media screen and (min-width: 768px){
+.MuiTab-itinerary span{
+    font-size: 18px; 
+}
+
+}
