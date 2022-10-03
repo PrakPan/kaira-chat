@@ -50,7 +50,10 @@ dangerouslySetInnerHTML={{
             smartlook('init', '6184459f57c13a90ad62399d44278d45dcf8c6bb', { region: 'eu' });
         `}}/>
 
- 
+<script
+src='//in.fw-cdn.com/30401267/225580.js'
+chat='false'>
+</script>
           <script
             dangerouslySetInnerHTML={{
               __html: `

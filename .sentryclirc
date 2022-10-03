@@ -1,0 +1,12 @@
+[defaults]
+url = https://sentry.io/
+org = the-tarzan-way
+project = front-end
+[auth]
+token=fe151f20558a4e3fa8e0320567f1c57a58bbcfe2bf774049bcba434993e885c6
+[auth]
+token=fe151f20558a4e3fa8e0320567f1c57a58bbcfe2bf774049bcba434993e885c6
+[auth]
+token=fe151f20558a4e3fa8e0320567f1c57a58bbcfe2bf774049bcba434993e885c6
+[auth]
+token=31187740c956490583a65028628f800645558c3ebce74029977853d377f4f5a4
