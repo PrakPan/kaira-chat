@@ -47,7 +47,7 @@ dangerouslySetInnerHTML={{
             var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
             c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
             })(document);
-            smartlook('init', '6184459f57c13a90ad62399d44278d45dcf8c6bb', { region: 'eu' });
+            smartlook('init', '0d6942a3ff38939d4f08f7fd6d4fbdf2204fc081', { region: 'eu' });
         `}}/>
 
  
