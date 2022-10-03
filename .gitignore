@@ -89,4 +89,5 @@ Dockerfile
 
 # Sentry
 
-.sentryclirc 
+.sentryclirc
+*.swp
