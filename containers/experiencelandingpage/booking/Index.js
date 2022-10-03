@@ -5,11 +5,10 @@ import BookingCard from '../../../components/cards/editablebookings/Index';
 // import Heading from '../../../components/heading/Heading';
 import Heading from '../../../components/newheading/heading/Index';
 import Button from '../../../components/Button';
-import SummaryContainer from './Details'
 import Flickity from '../../../components/FlickityCarousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-import Enquiry from './enquiry/Index';
+import Enquiry from './newenquiry/Index';
 import media from '../../../components/media'
 import  { useRouter } from 'next/router';
 import urls from '../../../services/urls';
@@ -21,7 +20,7 @@ margin: auto;
     width: 80%;
     display: grid;
     grid-template-columns: 2fr 1.25fr;
-    grid-gap: 2rem;
+    grid-gap: 1rem;
     margin-top: 0;
     min-height: 100vh;
     height: max-content;
@@ -97,12 +96,7 @@ const Booking = (props) => {
         window.scrollTo(0,0);
         _handleGalleryOpen(images);
     }
-    let SummContainerJSX = null;
-    if(props.payment){
-        if(isPageWide)
-        SummContainerJSX = <SummaryContainer experience={props.experience} setShowEnquiry={() => setShowEnquiry(true)} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> 
-        else if(showpayment) SummContainerJSX =  <SummaryContainer setShowEnquiry={() => setShowEnquiry(true)} experience={props.experience}  hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer>;
-    }
+
     if(props.bookings){
 
     for(var i=0 ; i < props.bookings.length ; i++){
@@ -144,7 +138,7 @@ const Booking = (props) => {
             {/* {window.innerWidth < 768 ? bookings[0] : null} */}
             </BookingsContainer>
             {/* { props.payment.payment_info ? <SummaryContainer payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-          {showEnquiry.desktop ? <Enquiry experience={props.experience} bookings></Enquiry> : SummContainerJSX}
+         <Enquiry experience={props.experience} bookings></Enquiry>
         </Container>
   ); 
   else return(
@@ -159,7 +153,7 @@ const Booking = (props) => {
             </BookingsContainer> : null}
             {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-          {showEnquiry.mobile ?  <Enquiry  bookings experience={props.experience} _showBookingMobileHandler={_showBookingMobileHandler}></Enquiry>  : SummContainerJSX}
+          {showEnquiry.mobile ?  <Enquiry  bookings experience={props.experience} _showBookingMobileHandler={_showBookingMobileHandler}></Enquiry>  : null}
         </Container>
   );
     }
