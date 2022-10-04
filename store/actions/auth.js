@@ -133,7 +133,7 @@ export const checkAuthState = () => {
             dispatch(authLogout()); //Clear auth status in redux if any
         }
         else{
- s            //Token expired
+            //Token expired
             const expirationDate = new Date(localStorage.getItem('expirationDate'));
             if(expirationDate <= new Date()){
                  dispatch(authLogout());
