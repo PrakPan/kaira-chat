@@ -78,8 +78,7 @@ const Enquiry = (props) => {
                 "service": "wiejdn"
             }
         ).then(res => {
-            // console.log('err');
-            setLoading(false);
+             setLoading(false);
 
             setSubmitted(true);
         }).catch(err => {

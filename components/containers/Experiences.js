@@ -58,8 +58,7 @@ const Experiences= (props) => {
 
   const TextRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null) ];
   useEffect(() => {
-    // console.log(Text1.current.clientHeight);
-  }, [TextRefs])
+   }, [TextRefs])
   const text = [
     "With this immersive experiential travel program, the focus is providing insight, to the travelers, into the lifestyle, culture and local traditions of a Pahadi Village. Travelers are encouraged to interact with the local community, and, celebrate wearing the fabric of diversity and pluralism.",
     "In this week-long experiential travel program, take a break from the rapacious world and uplift your spirits by living in the remotest corner of Ladakh with the <em>Changpa</em> Tribe.",

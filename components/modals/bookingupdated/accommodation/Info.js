@@ -91,8 +91,7 @@ const RatingContainer = styled.div`
 const Accommodation = (props) => {
     const [costJSX, setCostJSX] = useState()
   let isPageWide = media('(min-width: 768px)')
-// console.log(props.bookings)
-  return(
+   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center', marginBottom: '1rem'}}>
             <Name className='font-opensans'>

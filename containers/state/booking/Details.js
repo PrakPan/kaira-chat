@@ -75,8 +75,7 @@ const Details = (props) => {
           const baseprice = _getBasePrice(props.payment.payment_info, starting_point)
            // calculate final amount using base price, pax, service fee %
            const totalprice = (baseprice*pax) + (props.payment["service_fee_value"]/100 * baseprice * pax);
-           console.log(totalprice);
-           setAmount(totalprice);
+            setAmount(totalprice);
         }
     }
   }

@@ -6,8 +6,8 @@ import {Modal} from 'react-bootstrap';
 import TextField from '@mui/material/TextField';
 import Grid from '@material-ui/core/Grid';
 import Button from '../../../../components/ui/button/Index';
-import DateTime from './DateTime';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import DateTime from './DateTime';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TypeAdult from './TypeAdult';
@@ -118,7 +118,7 @@ const Enquiry = (props) => {
              "itinerary_id": props.itinerary_id,
              "experience_id": props.experience_id,
              "experience_name": props.experience,
-             "start_date": value,
+             "start_date": value.toISOString().slice(0, 10),
              "number_of_adults": 2,
              "number_of_children": 0,
              "number_of_infants": 0,
@@ -130,8 +130,7 @@ const Enquiry = (props) => {
              "source": "Experience Page"
          }
         ).then(res => {
-            // console.log('err');
-            setLoading(false);
+             setLoading(false);
 
             setSubmitted(true);
         }).catch(err => {
@@ -222,7 +221,7 @@ return(
         }}
       />
     </LocalizationProvider> */}
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
   <DatePicker
     label="Start Date"
     value={value}

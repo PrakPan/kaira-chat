@@ -41,8 +41,7 @@ const Booking = (props) =>{
  
  
 
-  console.log('1')
- 
+  
     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>

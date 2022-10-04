@@ -198,8 +198,7 @@ const EnquireButton = styled.div`
      setValue(1);
    }
 
-   console.log(props.data)
-  // if(props.experienceLoaded)
+   // if(props.experienceLoaded)
   return (
     <div className={classes.root}>
        {/* {window.innerWidth > 768 ? 

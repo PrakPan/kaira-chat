@@ -23,8 +23,7 @@ border-width: 1px;
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-    // console.log(props.data)
-   if(props.data)
+    if(props.data)
     return(
       <Container className='font-opensans'>  
           <div style={{display: 'flex', gap:  '0.5rem', marginRight: '1rem'}}>

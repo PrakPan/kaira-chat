@@ -128,24 +128,20 @@ export const checkAuthState = () => {
         
         //No token present, Auth check completed (for checkAuth HOC)
         if(!access_token){
-            // console.log('na',)
-
+ 
             dispatch(authCheckCompleted());
             dispatch(authLogout()); //Clear auth status in redux if any
         }
         else{
-            // console.log('a', access_token)
-            //Token expired
+ s            //Token expired
             const expirationDate = new Date(localStorage.getItem('expirationDate'));
             if(expirationDate <= new Date()){
-                // console.log('na', access_token)
-                dispatch(authLogout());
+                 dispatch(authLogout());
                 //refresh token
             }
             //Token valid
             else{
-                            // console.log('a', access_token)
-
+ 
                 const userdata = {
                     name: localStorage.getItem('name'),
                     phone: localStorage.getItem('phone'),

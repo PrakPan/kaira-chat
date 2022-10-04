@@ -125,8 +125,7 @@ const Booking = (props) => {
          }
     }
     let message ="Hey TTW! I was going through your travel experience %27"+props.experience+"%27 and would like to ask a few questions regarding the same, could you help?";
-console.log(props.booking_cost)
-    if(isPageWide)
+     if(isPageWide)
     return(
         <Container>
             <BookingsContainer>
