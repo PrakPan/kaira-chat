@@ -8,7 +8,7 @@ import Button from '../../../components/Button';
 import Flickity from '../../../components/FlickityCarousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-import Enquiry from './newenquiry/Index';
+import Enquiry from './enquiry/Index';
 import media from '../../../components/media'
 import  { useRouter } from 'next/router';
 import urls from '../../../services/urls';
@@ -17,7 +17,7 @@ width: 90%;
 margin: auto;
 
 @media screen and (min-width: 768px){
-    width: 80%;
+    width: 85%;
     display: grid;
     grid-template-columns: 2fr 1.25fr;
     grid-gap: 1rem;
@@ -54,7 +54,7 @@ const BookingsContainer = styled.div`
 border-radius: 10px;
 
 @media screen and (min-width: 768px){
-padding: 1rem;
+padding: 1rem 0;
 
 }
 `;
