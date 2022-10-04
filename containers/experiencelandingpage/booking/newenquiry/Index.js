@@ -9,7 +9,7 @@ import Button from '../../../../components/ui/button/Index';
 import DateTime from './DateTime';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+// import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TypeAdult from './TypeAdult';
 import TypeChild from './TypeChildren';
 import TypeInfant from './TypeInfant';
@@ -18,6 +18,7 @@ import axiosbdinstance from '../../../../services/leads/bd';
 import Spinner from '../../../../components/Spinner'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getIndianPrice } from "../../../../services/getIndianPrice";
+import axiosexperienceinstance from '../../../../services/leads/experience';
 const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
@@ -25,14 +26,21 @@ margin-top: 1rem;
 position: sticky;
 top: 11vh;
 border-radius: 10px !important;
+min-height: 60vh;
 
 `
  const Heading = styled.p`
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin: 0rem 0 1rem 0;
     text-align: center;
     font-weight: 800;
 
+`;
+const Subheading=styled.p`
+font-size: 1.5rem;
+    margin: 0rem 0 1rem 0;
+    text-align: center;
+    font-weight: 100;
 `;
 
 const Question = styled.p`
@@ -59,6 +67,9 @@ const Enquiry = (props) => {
     const [calendarOpen, setCalendarOpen] = useState(false);
 
     const [name, setName] = useState(null);
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null)
+
     const [companyName, setCompanyName] = useState(null);
     const [phone, setPhone]= useState(null);
     const[email, setEmail]= useState(null);
@@ -73,18 +84,24 @@ const Enquiry = (props) => {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
-    const [personError, setPersonError] = useState(false);
+    const [firstNameError, setFirstNameError] = useState(false);
+    const [lastNameError, setLastNameError] = useState(false);
+
     const [phoneError, setPhoneError] = useState(false);
-    const [companyError, setCompanyError] = useState(false);
+    // const [companyError, setCompanyError] = useState(false);
     const [emailError, setEmailError] = useState(false);
 
     const resetForm = () => {
         setLoading(false);
         setSubmitted(false);
-        setPersonError(false);
+        setFirstNameError(false);
+        setLastNameError(false);
+
         setPhoneError(false);
         setEmailError(false);
-        setName(null);
+        setFirstName(null);
+        setLastName(null);
+
         setCompanyName(null);
         setPhone(null);
         setEmail(null);
@@ -96,14 +113,22 @@ const Enquiry = (props) => {
     }
      const _submitDataHandler = () => {
         setLoading(true);
-         axiosbdinstance.post('/',
-            {
-                "organization_name": companyName,
-                "phone": phone,
-                "person_name": name,
-                "email": email,
-                "service": "wiejdn"
-            }
+         axiosexperienceinstance.post('/',
+         {
+             "itinerary_id": props.itinerary_id,
+             "experience_id": props.experience_id,
+             "experience_name": props.experience,
+             "start_date": value,
+             "number_of_adults": 2,
+             "number_of_children": 0,
+             "number_of_infants": 0,
+             "group_type": null,
+             "user_first_name": firstName,
+             "user_last_name": lastName,
+             "user_phone": phone,
+             "user_email": email,
+             "source": "Experience Page"
+         }
         ).then(res => {
             // console.log('err');
             setLoading(false);
@@ -123,8 +148,11 @@ const Enquiry = (props) => {
                 // setTypeError( err.response.data.service[0])
 
             }
-            if(err.response.data.person_name){
-                setPersonError(err.response.data.person_name[0])
+            if(err.response.data.user_first_name){
+                setFirstNameError(err.response.data.person_name[0])
+            }
+            if(err.response.data.user_last_name){
+                setLastNameError(err.response.data.person_name[0])
             }
             if(err.response.data.organization_name){
                 // setError()
@@ -140,7 +168,7 @@ const Enquiry = (props) => {
         })
     }
 return(
-    <Container className="border">
+    <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
             {/* <Heading>{submitted ? "Thank you for reaching out" : "Book Now" }</Heading> */}
@@ -149,10 +177,10 @@ return(
             {!submitted ? 
             <Grid container spacing={2}>
                 <Grid item xs={6}>
-                    <TextField onFocus={() => setPersonError(false)} error={personError ? true : false } helperText={personError ? personError : null} label="First Name" placeholder="Enter First name" key="fname"  variant="outlined" required fullWidth name="fname" type="name" id="fname"   onChange={(event) => setName(event.target.value) } onBlur={null}/>
+                    <TextField onFocus={() => setFirstNameError(false)} error={firstNameError ? true : false } helperText={firstNameError ? firstNameError : null} label="First Name" placeholder="Enter First name" key="fname"  variant="outlined" required fullWidth name="fname" type="name" id="fname"   onChange={(event) => setFirstName(event.target.value) } onBlur={null}/>
                 </Grid>
                 <Grid item xs={6}>
-                    <TextField onFocus={() => setCompanyError(false)} error={companyError ? true : false } helperText={companyError? companyError : null}  placeholder="Enter Last name" key="last_name"  variant="outlined" required fullWidth name="last_name" label="Last Name" type="name" id="company_name" onChange={(event) => setCompanyName(event.target.value)} onBlur={null}/>
+                    <TextField onFocus={() => setLastNameError(false)} error={lastNameError ? true : false } helperText={lastNameError? lastNameError : null}  placeholder="Enter Last name" key="last_name"  variant="outlined" required fullWidth name="last_name" label="Last Name" type="name" id="last_name" onChange={(event) => setLastName(event.target.value)} onBlur={null}/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField onFocus={() => setPhoneError(false)} error={phoneError ? true : false } helperText={phoneError ? phoneError : null} type="text" placeholder="99999 99999" key="phone"  variant="outlined" required fullWidth name="phone" label="Phone Number" id="phone" onChange={(event) => setPhone(event.target.value)} />
@@ -160,24 +188,21 @@ return(
                 <Grid item xs={12}>
                     <TextField onFocus={() => setEmailError(false)} error={emailError ? true : false } helperText={emailError ? emailError : null} type="text" placeholder="info@thetarzanway.com" key="email"  variant="outlined" required fullWidth name="email" label="Email" id="email" onChange={(event) => setEmail(event.target.value)} />
                 </Grid>  
-                <Grid item xs={4}>
-                    {/* <Question>Anual Budget</Question> */}
-                    <TypeAdult >
+                {/* <Grid item xs={4}>
+                     <TypeAdult >
 
                     </TypeAdult>
-                </Grid>
-                <Grid item xs={4}>
-                    {/* <Question>Anual Budget</Question> */}
-                    <TypeChild>
+                </Grid> */}
+                {/* <Grid item xs={4}>
+                     <TypeChild>
 
                     </TypeChild>
-                </Grid>
-                <Grid item xs={4}>
-                    {/* <Question>Anual Budget</Question> */}
-                    <TypeInfant>
+                </Grid> */}
+                {/* <Grid item xs={4}>
+                     <TypeInfant>
 
                     </TypeInfant>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                     {/* <Question>When should we call you?</Question> */}
                 
@@ -210,7 +235,7 @@ return(
                  </Grid>
                  <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
                     <div style={{alignItems: 'center', display: 'flex', paddingLeft: '8px', fontWeight: '600'}} className="font-opensans">Experience Cost</div>
-                 <Cost className="font-opensans">{"₹ "+getIndianPrice(5500)+" /-"}</Cost>
+                 <Cost className="font-opensans">{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+" /-"}</Cost>
                  </div>
                 <Grid item xs={12}>
                     {!loading ? 
@@ -225,6 +250,12 @@ return(
             </Grid> : 
             <div>
                 {/* <Cost>Rs 1000/-</Cost> */}
+                <Heading className="font-opensans">
+                    Thank you for your enquiry
+                </Heading>
+                <Subheading className="font-opensans">
+                    We'll get back to you within 12 hours
+                </Subheading>
                 {/* <BsFillCheckCircleFill></BsFillCheckCircleFill> */}
             </div>
             }

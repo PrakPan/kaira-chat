@@ -6,9 +6,9 @@ import BookingCard from '../../../components/cards/editablebookings/Index';
 import Heading from '../../../components/newheading/heading/Index';
 import Button from '../../../components/Button';
 import Flickity from '../../../components/FlickityCarousel';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-import Enquiry from './enquiry/Index';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
+import Enquiry from './newenquiry/Index';
 import media from '../../../components/media'
 import  { useRouter } from 'next/router';
 import urls from '../../../services/urls';
@@ -125,7 +125,7 @@ const Booking = (props) => {
          }
     }
     let message ="Hey TTW! I was going through your travel experience %27"+props.experience+"%27 and would like to ask a few questions regarding the same, could you help?";
-
+console.log(props.booking_cost)
     if(isPageWide)
     return(
         <Container>
@@ -138,7 +138,7 @@ const Booking = (props) => {
             {/* {window.innerWidth < 768 ? bookings[0] : null} */}
             </BookingsContainer>
             {/* { props.payment.payment_info ? <SummaryContainer payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-         <Enquiry experience={props.experience} bookings></Enquiry>
+         <Enquiry starting_price={props.starting_price} experience={props.experience} itinerary_id={props.itinerary_id} experience_id={props.experienceId} bookings></Enquiry>
         </Container>
   ); 
   else return(
@@ -153,7 +153,7 @@ const Booking = (props) => {
             </BookingsContainer> : null}
             {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-          {showEnquiry.mobile ?  <Enquiry  bookings experience={props.experience} _showBookingMobileHandler={_showBookingMobileHandler}></Enquiry>  : null}
+          {showEnquiry.mobile ?  <Enquiry  starting_price={props.starting_price}  bookings experience={props.experience} _showBookingMobileHandler={_showBookingMobileHandler}></Enquiry>  : null}
         </Container>
   );
     }
