@@ -137,10 +137,10 @@ const Enquiry = (props) => {
             setLoading(false);
 
              if(err.response.data.email){
-                setEmailError(err.response.data.email[0])
+                setEmailError(err.response.data.email)
             }
             if(err.response.data.phone){
-                setPhoneError(err.response.data.phone[0])
+                setPhoneError(err.response.data.phone)
 
             }
             if(err.response.data.service){
@@ -148,10 +148,10 @@ const Enquiry = (props) => {
 
             }
             if(err.response.data.user_first_name){
-                setFirstNameError(err.response.data.person_name[0])
+                setFirstNameError(err.response.data.user_first_name)
             }
             if(err.response.data.user_last_name){
-                setLastNameError(err.response.data.person_name[0])
+                setLastNameError(err.response.data.user_last_name)
             }
             if(err.response.data.organization_name){
                 // setError()
