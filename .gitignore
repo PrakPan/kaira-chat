@@ -88,6 +88,8 @@ Dockerfile
 /services/constants.js
 
 # Sentry
-
-.sentryclirc
+ 
 *.swp
+ 
+.sentryclirc
+ 

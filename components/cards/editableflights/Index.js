@@ -29,18 +29,8 @@ const Container = styled.div`
 
 
 
-
-const Heading = styled.p`
-    font-weight: 400;
-
-    margin: 0 0 0.5rem 0;
-    `;
-
-const Detail = styled.p`
-    font-size: 0.75rem;
-    margin: 0 0 0.25rem 0;
-    font-weight: 300;
-`;
+ 
+ 
 const ButtonContainer = styled.div`
     position: absolute;
     display: flex;

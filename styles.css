@@ -152,6 +152,10 @@
   border: none !important;
 }
 
+#bookingedit-modal .modal-body{
+ height: 100vh !important;
+}
+
 .experience-enquiry-input .MuiInputBase-root textarea{
   min-height: 8rem;
 }
@@ -936,6 +940,12 @@ body.modal-open {
     }
    
     @media only screen and (min-width: 768px){
+
+
+#bookingedit-modal .modal-body{
+  height: max-content !important;
+ }
+
         .flickity-button {
             display: initial;
             position: absolute;
