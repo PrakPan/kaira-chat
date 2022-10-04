@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import BookingCard from '../../../components/cards/editablebookings/Index';
-import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
-import FlightCard from '../../../components/cards/bookings/flightbooking/Index';
-import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
+import Heading from '../../../components/heading/Heading';
 import Button from '../../../components/Button';
 import SummaryContainer from './TailoredDetails';
 import Flickity from '../../../components/FlickityCarousel';
@@ -22,7 +20,7 @@ import media from '../../../components/media';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 // import Accommodation from '../../../components/modals/accommodation/Index';
-// import FlightCard from '../../../components/cards/editableflights/Index';
+import FlightCard from '../../../components/cards/editableflights/Index';
 import DesktopCardContainer from './DesktopCardCotainer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -49,7 +47,26 @@ margin: auto;
   width: 100%;
 }
 `;
+const CardsContainer = styled.div`
 
+margin: auto;
+padding: 0;
+grid-template-columns: 1fr;
+grid-template-rows: auto auto;
+@media screen and (min-width: 768px){
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    grid-gap: 1rem;
+    background-color: hsl(0,0%, 97%);
+    padding: 0.5rem;
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+
+}
+
+`
+;
 const BookingsContainer = styled.div`
 
 border-radius: 10px;
@@ -268,7 +285,7 @@ const Booking = (props) => {
             }
             else if(props.stayBookings[i].user_selected)
             bookings_accommodations.push(
-            <StayBookingCard data={props.stayBookings[i]} is_stock={props.is_stock} is_selected={true} star_category={props.stayBookings[i].star_category} duration={props.stayBookings[i].duration} city={props.stayBookings[i].city}  is_auth={props.is_auth} tag={props.stayBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.stayBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.stayBookings[i].city} type={props.stayBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.stayBookings[i]["name"]} rating={props.stayBookings[i]["user_rating"]} details={ props.stayBookings[i]["points"]}   rating={props.stayBookings[i]["user_rating"]} images={ props.stayBookings[i]["images"]} price={props.stayBookings[i]["booking_cost"]}  price_type={props.stayBookings[i].costings_breakdown.length ? props.stayBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.stayBookings[i]["number_of_rooms"]} check_in={props.stayBookings[i]["check_in"]} check_out={props.stayBookings[i]["check_out"]} room_type={props.stayBookings[i]["room_type"]} ></StayBookingCard>
+            <BookingCard is_stock={props.is_stock} is_selected={true} star_category={props.stayBookings[i].star_category} duration={props.stayBookings[i].duration} city={props.stayBookings[i].city}  is_auth={props.is_auth} tag={props.stayBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.stayBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.stayBookings[i].city} type={props.stayBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.stayBookings[i]["name"]} rating={props.stayBookings[i]["user_rating"]} details={ props.stayBookings[i]["points"]}   rating={props.stayBookings[i]["user_rating"]} images={ props.stayBookings[i]["images"]} price={props.stayBookings[i]["booking_cost"]}  price_type={props.stayBookings[i].costings_breakdown.length ? props.stayBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.stayBookings[i]["number_of_rooms"]} check_in={props.stayBookings[i]["check_in"]} check_out={props.stayBookings[i]["check_out"]} room_type={props.stayBookings[i]["room_type"]} ></BookingCard>
          )}
      
       }
@@ -326,11 +343,11 @@ const Booking = (props) => {
      
           if(props.transferBookings[i].booking_type==='Flight'){
           bookings_flights.push(
-            <FlightCard data={props.transferBookings[i]} is_stock={props.is_stock} bookings={props.transferBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_selected={props.transferBookings[i].user_selected} data={props.transferBookings[i]} city={props.transferBookings[i].city}  is_auth={props.is_auth} tag={props.transferBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.transferBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.transferBookings[i].city} type={props.transferBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.transferBookings[i]["name"]} rating={props.transferBookings[i]["user_rating"]} details={ props.transferBookings[i]["points"]} price={props.transferBookings[i]["booking_cost"]}  price_type={props.transferBookings[i].costings_breakdown.length ? props.transferBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.transferBookings[i]["number_of_rooms"]} check_in={props.transferBookings[i]["check_in"]} check_out={props.transferBookings[i]["check_out"]} room_type={props.transferBookings[i]["room_type"]} images={props.transferBookings[i]["images"]} ></FlightCard>
+            <FlightCard is_stock={props.is_stock} bookings={props.transferBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_selected={props.transferBookings[i].user_selected} data={props.transferBookings[i]} city={props.transferBookings[i].city}  is_auth={props.is_auth} tag={props.transferBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.transferBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.transferBookings[i].city} type={props.transferBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.transferBookings[i]["name"]} rating={props.transferBookings[i]["user_rating"]} details={ props.transferBookings[i]["points"]} price={props.transferBookings[i]["booking_cost"]}  price_type={props.transferBookings[i].costings_breakdown.length ? props.transferBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.transferBookings[i]["number_of_rooms"]} check_in={props.transferBookings[i]["check_in"]} check_out={props.transferBookings[i]["check_out"]} room_type={props.transferBookings[i]["room_type"]} images={props.transferBookings[i]["images"]} ></FlightCard>
          )
         }
         else bookings_transfers.push(
-            <TaxiBookingCard data={props.transferBookings[i]}  check_in={check_in} taxi_type={taxi_type} transfer_type={transfer_type} city_id={city_id} destination_city_id={destination_city_id} duration={duration} cardUpdateLoading={props.cardUpdateLoading}  is_selected={props.transferBookings[i].user_selected} is_stock={props.is_stock} tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.transferBookings[i].user_selected} price={props.transferBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.transferBookings[i]["name"]} details={ props.transferBookings[i]["points"]}  rating={props.transferBookings[i]["user_rating"]} images={ props.transferBookings[i]["images"]}></TaxiBookingCard>
+            <BookingCard  check_in={check_in} taxi_type={taxi_type} transfer_type={transfer_type} city_id={city_id} destination_city_id={destination_city_id} duration={duration} cardUpdateLoading={props.cardUpdateLoading}  is_selected={props.transferBookings[i].user_selected} is_stock={props.is_stock} tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.transferBookings[i].user_selected} price={props.transferBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.transferBookings[i]["name"]} details={ props.transferBookings[i]["points"]}  rating={props.transferBookings[i]["user_rating"]} images={ props.transferBookings[i]["images"]}></BookingCard>
         )
       }
     }
@@ -390,7 +407,7 @@ const Booking = (props) => {
  
       
         bookings_activities.push(
-            <BookingCard data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
+            <BookingCard check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
         )
       }
     }
@@ -417,28 +434,7 @@ const Booking = (props) => {
       // window.scrollTo(0,0);
       setImages(images);
     }
-    let name, costings_breakdown, cost, itinerary_id, itinerary_name, booking_type, accommodation, tailored_id, id, check_in, check_out, pax, city, room_type;
- if(props.stayBookings){
-    name = props.stayBookings[0]["name"];
-    costings_breakdown=props.stayBookings[0]["costings_breakdown"];
-    cost=props.stayBookings[0]["booking_cost"];
-    itinerary_id = props.stayBookings[0]["itinerary_id"];
-    itinerary_name=props.stayBookings[0]["itinerary_name"];
-    booking_type=props.stayBookings[0]["booking_type"];
-
-     accommodation = props.stayBookings[0]["accommodation"];
-    tailored_id = props.stayBookings[0]["tailored_itinerary"]
-    id=props.stayBookings[0]["id"];
-    check_in=props.stayBookings[0]["check_in"];
-    check_out=props.stayBookings[0]["check_out"];
-    pax = {
-    number_of_adults: props.stayBookings[0]["number_of_adults"],
-    number_of_children: props.stayBookings[0]["number_of_children"],
-    number_of_infants: props.stayBookings[0]["number_of_infants"],
-  }
-    city=props.stayBookings[0]["city"];
-    room_type = props.stayBookings[0]["room_type"];
- }
+ 
     if(true){
     if(!images){
     if(isPageWide){
@@ -447,9 +443,9 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-              {/* <MessageContainer className='border-thin font-opensans'>
+              <MessageContainer className='border-thin font-opensans'>
               Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
-              </MessageContainer> */}
+              </MessageContainer>
               <Tabs
         value={value}
         onChange={handleChange}
@@ -491,11 +487,9 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            <MobileWidthContainer>
-              {/* <MessageContainer className='border-thin font-opensans'>
+            <MobileWidthContainer><MessageContainer className='border-thin font-opensans'>
               Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
-              </MessageContainer> */}
-              </MobileWidthContainer>
+              </MessageContainer></MobileWidthContainer>
              {/* {bookingMobileJSX} */}
              <Tabs
         value={value}
@@ -511,9 +505,7 @@ const Booking = (props) => {
        <Tab label="Activities"  className="bookingdetail-tab font-opensans"></Tab>
       </Tabs>
       <TabPanel value={value} index={0} >
-            {/* {bookingsAccommodationsMobileJSX} */}
-            {props.stayBookings ? <div style={{width: '85%', margin: 'auto'}}><StayBookingCard  data={props.stayBookings[0]} is_stock={props.is_stock} is_selected={true} star_category={props.stayBookings[0].star_category} duration={props.stayBookings[0].duration} city={props.stayBookings[0].city}  is_auth={props.is_auth} tag={props.stayBookings[0].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.stayBookings[0].costings_breakdown} payment={props.payment}  type={props.stayBookings[0].booking_type} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.stayBookings[0]["name"]} rating={props.stayBookings[0]["user_rating"]} details={ props.stayBookings[0]["points"]}   images={ props.stayBookings[0]["images"]} price={props.stayBookings[0]["booking_cost"]}  price_type={props.stayBookings[0].costings_breakdown.length ? props.stayBookings[0].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.stayBookings[0]["number_of_rooms"]} check_in={props.stayBookings[0]["check_in"]} check_out={props.stayBookings[0]["check_out"]} room_type={props.stayBookings[0]["room_type"]} ></StayBookingCard> </div>: null}
-
+            {bookingsAccommodationsMobileJSX}
        </TabPanel>
        <TabPanel value={value} index={1} >
             {bookingsFlightsMobileJSX}

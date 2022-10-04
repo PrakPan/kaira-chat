@@ -81,7 +81,7 @@ const Element = (props) =>{
                 {props.is_food ? <Food text={props.text}></Food> : null}
                 {props.meta  ? <Notes blur={props.blur} meta={props.meta}></Notes> : null}
                 {props.is_poi_rec ? <Poi text={props.text}></Poi> : null}
-                {props.activity_data ? props.activity_data.poi ? props.activity_data.poi.tips ? 
+                {props.activity_data ? props.activity_data.poi ? props.activity_data.poi.tips ?  props.activity_data.poi.tips.length ? 
                  <div className='font-opensans' style={{fontSize: '0.75rem', margin: '0.5rem 0'}}>
                     <div style={{fontWeight: '600'}}>Tips & Tricks</div>
                     <ul>
@@ -90,7 +90,7 @@ const Element = (props) =>{
 
                         </ul>
                 </div>
-                   : null: null : null}
+                   : null: null : null : null}
             </div>
         </Container>
         </div>
