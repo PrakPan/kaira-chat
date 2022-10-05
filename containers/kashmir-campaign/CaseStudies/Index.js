@@ -21,16 +21,16 @@ const FullImgContent = (props) => {
 
     const data = [
         {
-            heading: "Pranshu Aggarwal",
-            text: "We've planned a couple vacations now through The Tarzan Way and our honeymoon experience in Andaman was the best. The on-ground team was really helpful and made our honeymoon to Andaman extra special."
+            heading: "Simran",
+            text: "Our couple trip to Kashmir was amazingly planned by The Tarzan Way. The best part was their support team that was always in touch with us regarding any problem."
         },
         {
-            heading: "Payal Saluja",
-            text: "We had the challenge to travel to Andaman with my old-aged parents but Tarzan Way made sure that the trip go smoothly and their itinerary and support were just marvelous. Would definitely recommend them."
+            heading: "Meena",
+            text: "We planned a family trip with Tarzan Way and did face a few problems during the experience with the taxi guy but the team was prompt in resolving the issue"
         },
         {
-            heading: 'Simran Agrawal',
-            text: 'I used to work at The Tarzan Way and knew that they made amazing itineraries for their plan but experiencing it was a different thing. They managed everything very well and their software and support was really unique.'
+            heading: 'Lokesh',
+            text: 'Our short family plan was planned and booked by Tarzan Way and it was amazing. We actually didn’t have a lot of time to travel but they help in covering most locations.'
         },
        
     ]
