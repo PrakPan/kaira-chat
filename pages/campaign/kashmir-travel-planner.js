@@ -22,13 +22,13 @@ const Campaign = (props) => {
   
     return <Layout hidehomecta ctaonclick={_handleTailoredClick}>
          <Head>
-         <title>Personalize Your Andaman Trip | Best Tour Packages for Andaman & Nicobar Islands</title>
+         <title>Kashmir Travel Package: Personalize Your Kashmir Tour - Lowest Prices Guaranteed</title>
          <meta
       name="description"
-      content="Personalize your Andaman and Nicobar Island Trip with Us. Discover the beauty of this pristine destination, with personalized Andaman Tour Packages."
+      content="Book your personalized Kashmir trip with us. Explore the true beauty of Kashmir and the valley's iconic sights. Lowest price with best value!"
     />
-    <meta property="og:title" content="Personalize Your Andaman Trip | Best Tour Packages for Andaman & Nicobar Islands" /><meta property="og:description" content="Personalize your Andaman and Nicobar Island Trip with Us. Discover the beauty of this pristine destination, with personalized Andaman Tour Packages." /><meta property="og:image" content="/logoblack.svg" />
-      <meta property='keywords' content='andaman & nicobar travel packages, andaman tour package, andaman and nicobar honeymoon packages, andaman tour package from delhi, andaman tour package from bangalore, andaman tour package from kolkata, andaman tour packages from mumbai, andaman tour package cost, andaman tour package from chennai, andaman family tour packages, andaman nicobar tour package from ahmedabad, andaman tour package from coimbatore, andaman tour packages from hyderabad, andaman nicobar islands tour packages, andaman tour package from nagpur, andaman nicobar tour package from jaipur, andaman nicobar tour package from delhi, andaman tour package from bangalore including flight, andaman family tour package from chennai including flight,
+    <meta property="og:title" content="Kashmir Travel Package: Personalize Your Kashmir Tour - Lowest Prices Guaranteed" /><meta property="og:description" content="Book your personalized Kashmir trip with us. Explore the true beauty of Kashmir and the valley's iconic sights. Lowest price with best value!" /><meta property="og:image" content="/logoblack.svg" />
+      <meta property='keywords' content='kashmir tour packages,kashmir travel package, kashmir trip cost,kashmir trip itinerary, kashmir holiday packages,jammu kashmir tour package, kashmir honeymoon packages,kashmir trip, kashmir trip package,srinagar tour packages, j&k tour packages,kashmir family tour package,kashmir group tour packages,kashmir luxury tour packages, j&k tourism packages,jammu kashmir trip package,jammu and kashmir tour packages,srinagar tour and travel, delhi to srinagar tour package,gulmarg kashmir tour,honeymoon kashmir tour package,tour package for gulmarg,
 '></meta>            
       </Head><CampaignContainer guideData={props.data}></CampaignContainer></Layout>
       // return null;
