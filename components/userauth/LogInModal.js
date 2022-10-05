@@ -11,7 +11,7 @@ import * as otpaction from '../../store/actions/getOtp';
 import axios from 'axios';
 import Spinner from '../Spinner';
 import styled from 'styled-components';
-import extensions from './extensionsdata';
+import extensions from '../../public/content/extensionsdata';
 import icon1 from '../../public/assets/icons/login/booking.png';
 import icon2 from '../../public/assets/icons/login/community.png';
 import icon3 from '../../public/assets/icons/login/offer.png';

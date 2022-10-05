@@ -22,6 +22,7 @@ import FullImgContent from './FullImgContent';
 import andamancontent from '../../public/content/campaigns/Andaman';
 import Reviews from './CaseStudies/Index';
 import BannerMobile from './MobileBanner';
+import Enquiry from './newenquiry/Index';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -106,6 +107,7 @@ const _handleTailoredClick = () => {
       <FullImage url="media/website/Andaman.jpeg" center={isPageWide ? false : true} >
           <FullImgContent tagline="Explore different realities" text="Find an immersive experience or craft one for yourself"/>
       </FullImage>
+      <div className='hidden-desktop'><Enquiry></Enquiry></div>
 <BannerOne></BannerOne>
 <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        

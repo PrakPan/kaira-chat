@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import {Modal} from 'react-bootstrap';
 import TextField from '@mui/material/TextField';
 import Grid from '@material-ui/core/Grid';
-import Button from '../../../../components/ui/button/Index';
+import Button from '../../../components/ui/button/Index';
 // import DateTime from './DateTime';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -14,27 +14,31 @@ import TypeAdult from './TypeAdult';
 import TypeChild from './TypeChildren';
 import TypeInfant from './TypeInfant';
 
-import axiosbdinstance from '../../../../services/leads/bd';
-import Spinner from '../../../../components/Spinner'
+ import Spinner from '../../../components/Spinner'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { getIndianPrice } from "../../../../services/getIndianPrice";
-import axiosexperienceinstance from '../../../../services/leads/experience';
-import extensions from '../../../../public/content/extensionsdata';
+import { getIndianPrice } from "../../../services/getIndianPrice";
+import axiostailoredinstance from '../../../services/leads/tailored';
+// import Pax from '../../personaliseform/grouptype/Index';
+import extensions from '../../../public/content/extensionsdata';
 const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
-margin-top: 1rem;
-position: sticky;
-top: 11vh;
+ background-color: white;
+ margin: 0.5rem;
 border-radius: 10px !important;
 min-height: 60vh;
+@media screen and (min-width: 768px){
+    margin: 0;
+}
 
 `
  const Heading = styled.p`
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin: 0rem 0 1rem 0;
     text-align: center;
     font-weight: 800;
+    color: black;
+    line-height: 1;
 
 `;
 const Subheading=styled.p`
@@ -79,16 +83,24 @@ const CountryCodeOption = styled.div`
 const Enquiry = (props) => {
     const [calendarOpen, setCalendarOpen] = useState(false);
 
-    const [name, setName] = useState(null);
+
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null)
+    const [adults, setAdults] = useState(2);
+    const [children, setChildren] = useState(0);
+    const [infants, setInfants] = useState(0);
 
-    const [companyName, setCompanyName] = useState(null);
     const [phone, setPhone]= useState(null);
     const[email, setEmail]= useState(null);
     const [type, setType] = useState(null);
+    const [extension, setExtension] = useState('India');  //store extension
+    const handleExtensionChangeOption = (country) => {
+        setExtension(country); 
+      };
     // const [] = useState(null);
-    const [value, setValue] =useState((dayjs()));
+    const [valueStart, setValueStart] =useState((dayjs()));
+    const [valueEnd, setValueEnd] =useState((dayjs()));
+
 
     const _handleMobileChange=(event)=> {
         if(event.target.value === '1') null;
@@ -103,10 +115,6 @@ const Enquiry = (props) => {
     const [phoneError, setPhoneError] = useState(false);
     // const [companyError, setCompanyError] = useState(false);
     const [emailError, setEmailError] = useState(false);
-    const [extension, setExtension] = useState('India');
-    const handleExtensionChangeOption = (country) => {
-        setExtension(country); 
-      };
     let ExtensionOptions = [];
     for(const country in extensions){
         ExtensionOptions.push(
@@ -119,7 +127,6 @@ const Enquiry = (props) => {
     const handleExtensionChange = (event) => {
         setExtension(event.target.value); 
    };
-
     const resetForm = () => {
         setLoading(false);
         setSubmitted(false);
@@ -131,7 +138,6 @@ const Enquiry = (props) => {
         setFirstName(null);
         setLastName(null);
 
-        setCompanyName(null);
         setPhone(null);
         setEmail(null);
         setType(null);
@@ -142,22 +148,31 @@ const Enquiry = (props) => {
     }
      const _submitDataHandler = () => {
         setLoading(true);
-         axiosexperienceinstance.post('/',
-         {
-             "itinerary_id": props.itinerary_id,
-             "experience_id": props.experience_id,
-             "experience_name": props.experience,
-             "start_date": value.toISOString().slice(0, 10),
-             "number_of_adults": 2,
-             "number_of_children": 0,
-             "number_of_infants": 0,
-             "group_type": null,
-             "user_first_name": firstName,
-             "user_last_name": lastName,
-             "user_phone": extensions[extension].label+phone,
-             "user_email": email,
-             "source": "Experience Page"
-         }
+        let data = {
+            // "locations": citynames,
+            // "experience_filters_selected": filters,
+            // "budget": budget_to_send,
+            // "extra_data": extra_data,
+            "city_id": [127],
+            // "group_type": grouptype,
+            "number_of_adults": adults,
+            "number_of_children": children,
+            "number_of_infants": infants,
+            "start_date": valueStart.toISOString().slice(0, 10),
+            "end_date": valueEnd.toISOString().slice(0, 10),
+            "user_email": email,
+            "user_phone": extensions[extension].label+phone,
+            "user_first_name": firstName,
+            "user_last_name": lastName
+            // "user_location": {
+            //   "lat": lat,
+            //   "long": long,
+            // },
+            
+          };
+  
+         axiostailoredinstance.post('',
+       data
         ).then(res => {
              setLoading(false);
 
@@ -199,7 +214,7 @@ return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-            {/* <Heading>{submitted ? "Thank you for reaching out" : "Book Now" }</Heading> */}
+            <Heading>{submitted ? "Thank you for reaching out" : "Get your free travel plan!" }</Heading>
             <div>
             </div>
             {!submitted ? 
@@ -231,58 +246,51 @@ return(
                 <Grid item xs={12}>
                     <TextField onFocus={() => setEmailError(false)} error={emailError ? true : false } helperText={emailError ? emailError : null} type="text" placeholder="info@thetarzanway.com" key="email"  variant="outlined" required fullWidth name="email" label="Email" id="email" onChange={(event) => setEmail(event.target.value)} />
                 </Grid>  
-                {/* <Grid item xs={4}>
-                     <TypeAdult >
+                
+                <Grid item xs={4}>
+                     <TypeAdult setAdults={setAdults} >
 
                     </TypeAdult>
-                </Grid> */}
-                {/* <Grid item xs={4}>
-                     <TypeChild>
+                </Grid>
+                <Grid item xs={4} >
+                     <TypeChild setChildren={setChildren}>
 
                     </TypeChild>
-                </Grid> */}
-                {/* <Grid item xs={4}>
-                     <TypeInfant>
+                </Grid>
+                <Grid item xs={4}>
+                     <TypeInfant setInfants={setInfants}>
 
                     </TypeInfant>
-                </Grid> */}
-                <Grid item xs={12}>
-                    {/* <Question>When should we call you?</Question> */}
-                
-                    {/* <DateTime></DateTime> */}
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateTimePicker
-        renderInput={(props) => <TextField   fullWidth {...props} onClick={() => setCalendarOpen(true)} />}
-        label="When do you wish to start?"
-        value={value} 
-        open={calendarOpen}
-        // calendarPosition="top-right"
-  onOpen={() => setCalendarOpen(true)}
-  onClose={() => setCalendarOpen(false)}
-        fullWidth
-         onChange={(newValue) => {
-          setValue(newValue);
-        }}
-      />
-    </LocalizationProvider> */}
+                </Grid>
+                <Grid item xs={6}>
+               
     <LocalizationProvider dateAdapter={AdapterDateFns}>
   <DatePicker
     label="Start Date"
-    value={value}
+    value={valueStart}
     onChange={(newValue) => {
-      setValue(newValue);
+      setValueStart(newValue);
     }}
     renderInput={(params) => <TextField {...params} fullWidth />}
   />
 </LocalizationProvider>
                  </Grid>
-                 <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
-                    <div style={{alignItems: 'center', display: 'flex', paddingLeft: '8px', fontWeight: '600'}} className="font-opensans">Experience Cost</div>
-                 <Cost className="font-opensans">{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+" /-"}</Cost>
-                 </div>
+                 <Grid item xs={6}>
+               
+               <LocalizationProvider dateAdapter={AdapterDateFns}>
+             <DatePicker
+               label="End Date"
+               value={valueEnd}
+               onChange={(newValue) => {
+                 setValueEnd(newValue);
+               }}
+               renderInput={(params) => <TextField {...params} fullWidth />}
+             />
+           </LocalizationProvider>
+                            </Grid>
                 <Grid item xs={12}>
                     {!loading ? 
-                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Enquire Now</Button>
+                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">View Plan</Button>
                         : 
                         <Button onclickparam={null} onclick={() => null} margin="1rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
                             <Spinner display="inline-block" size={16} margin="0"></Spinner>
