@@ -77,6 +77,7 @@ const CountryCodeOption = styled.div`
   text-align: center;
   height: 2rem !important;
   margin: 0.5rem;
+
   `;
 
   const CountryImg = styled.img`

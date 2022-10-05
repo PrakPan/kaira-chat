@@ -30,7 +30,7 @@ const Details = (props) => {
   let isPageWide = media('(min-width: 768px)')
 
   return (
-    <div >
+    <div style={{color: 'black'}} >
     
       <DetailsContainer>
         <div   >

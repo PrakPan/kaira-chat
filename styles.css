@@ -4,7 +4,7 @@
     height: 0.6rem;
     
   }
-
+ 
   .full-width{
     width: '100% important'
   }
@@ -21,7 +21,7 @@
   /* border: 0.025em solid #F7E700; */
     border-radius: 100vw;
     height: 6rem;
-    width: 6rem;
+    width: 1rem;
     background-image: linear-gradient(rgba(247, 231, 0, 1));
     /* background-image: (linear,
     left bottom,
