@@ -38,7 +38,7 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 100000,
+                  "cost": 2024851,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
@@ -210,7 +210,7 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 100000,
+                  "cost": 6954551,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
