@@ -41,13 +41,13 @@ const Booking = (props) =>{
    
 
   
-    const detailsarr=[]
-    for(var i=0; i<props.details.length; i++){
-        if(props.details[i].length)
-        detailsarr.push(
-            <li className={props.blur ? 'blurry-text' : ''} style={{fontSize: "0.75rem",  margin: "0.5rem 0 0.5rem 0rem", fontWeight: "300"}} >{props.details[i]}</li>
-        );
-    }
+    // const detailsarr=[]
+    // for(var i=0; i<props.details.length; i++){
+    //     if(props.details[i].length)
+    //     detailsarr.push(
+    //         <li className={props.blur ? 'blurry-text' : ''} style={{fontSize: "0.75rem",  margin: "0.5rem 0 0.5rem 0rem", fontWeight: "300"}} >{props.details[i]}</li>
+    //     );
+    // }
      
     let imagesarr = []
     if(props.images)

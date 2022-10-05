@@ -27,6 +27,8 @@ import Tab from '@material-ui/core/Tab';
 import Spinner from '../../../components/Spinner';
 import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
+
+import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -285,7 +287,7 @@ const Booking = (props) => {
             }
             else if(props.stayBookings[i].user_selected)
             bookings_accommodations.push(
-            <BookingCard is_stock={props.is_stock} is_selected={true} star_category={props.stayBookings[i].star_category} duration={props.stayBookings[i].duration} city={props.stayBookings[i].city}  is_auth={props.is_auth} tag={props.stayBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.stayBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.stayBookings[i].city} type={props.stayBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.stayBookings[i]["name"]} rating={props.stayBookings[i]["user_rating"]} details={ props.stayBookings[i]["points"]}   rating={props.stayBookings[i]["user_rating"]} images={ props.stayBookings[i]["images"]} price={props.stayBookings[i]["booking_cost"]}  price_type={props.stayBookings[i].costings_breakdown.length ? props.stayBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.stayBookings[i]["number_of_rooms"]} check_in={props.stayBookings[i]["check_in"]} check_out={props.stayBookings[i]["check_out"]} room_type={props.stayBookings[i]["room_type"]} ></BookingCard>
+            <StayBookingCard images={props.stayBookings[i]["images"]} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
          )}
      
       }
