@@ -9,9 +9,9 @@ display: ${props => props.display ? props.display: "block"}
 `;
 
 const Spinner = styled(CircularProgress)`
-        color: black !important;
+        color:  ${props => props.color ? props.color+" !important" : "black !important"};
         margin: ${props => props.margin ? props.margin : "1rem"};
-
+        
     `;
 
 const spinner = (props) =>{
@@ -21,7 +21,7 @@ const spinner = (props) =>{
     if(props.size)  size=props.size;
     return(
         <Container display={props.display}>
-            <Spinner margin={props.margin} size={size}></Spinner>
+            <Spinner color={props.color} hoverColor={props.hoverColor} margin={props.margin} size={size}></Spinner>
         </Container>
     );
 }

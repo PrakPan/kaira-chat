@@ -16,6 +16,7 @@ import Experiences from '../../components/containers/Experiences';
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
+ import BannerTwo from './BannerTwo';
  import WhyUs from '../testimonial/whyttw/Index';
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
@@ -124,7 +125,7 @@ const _handleTailoredClick = () => {
        <Reviews></Reviews>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences>
-        <div className='hidden-desktop'><BannerMobile></BannerMobile></div> 
+        {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
         </SetWidthContainer>
     <WhyUs></WhyUs>
 {/*Add Banner*/}
@@ -137,6 +138,8 @@ const _handleTailoredClick = () => {
       <SetWidthContainer>
       
         <AsSeenIn disablelinks></AsSeenIn>
+        <div className='hidden-mobile'><BannerTwo></BannerTwo></div>
+
         <ChatWithUs></ChatWithUs>
       </SetWidthContainer>
 

@@ -13,13 +13,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import TypeAdult from './TypeAdult';
 import TypeChild from './TypeChildren';
 import TypeInfant from './TypeInfant';
+import * as ga from '../../../services/ga/Index';
 
- import Spinner from '../../../components/Spinner'
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import axiostailoredinstance from '../../../services/leads/tailored';
+import Spinner from '../../../components/Spinner';
 // import Pax from '../../personaliseform/grouptype/Index';
 import extensions from '../../../public/content/extensionsdata';
+import { useRouter } from "next/router";
 const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
@@ -86,9 +88,9 @@ const Enquiry = (props) => {
 
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null)
-    const [adults, setAdults] = useState(2);
-    const [children, setChildren] = useState(0);
-    const [infants, setInfants] = useState(0);
+    const [adults, setAdults] = useState("2");
+    const [children, setChildren] = useState("0");
+    const [infants, setInfants] = useState("0");
 
     const [phone, setPhone]= useState(null);
     const[email, setEmail]= useState(null);
@@ -105,6 +107,7 @@ const Enquiry = (props) => {
     const _handleMobileChange=(event)=> {
         if(event.target.value === '1') null;
     }
+    const router = useRouter();
     
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
@@ -147,17 +150,19 @@ const Enquiry = (props) => {
         props.onhide();
     }
      const _submitDataHandler = () => {
+        ga.event({action: 'C-Andaman-Form-initiate', params: {key : ''}})
+
         setLoading(true);
         let data = {
-            // "locations": citynames,
+            "locations": ["Andaman"],
             // "experience_filters_selected": filters,
-            // "budget": budget_to_send,
+            "budget": "Affordable",
             // "extra_data": extra_data,
-            "city_id": [127],
+            "city_id": [278],
             // "group_type": grouptype,
-            "number_of_adults": adults,
-            "number_of_children": children,
-            "number_of_infants": infants,
+            "number_of_adults": parseInt(adults),
+            "number_of_children": parseInt(children),
+            "number_of_infants": parseInt(infants),
             "start_date": valueStart.toISOString().slice(0, 10),
             "end_date": valueEnd.toISOString().slice(0, 10),
             "user_email": email,
@@ -173,10 +178,21 @@ const Enquiry = (props) => {
   
          axiostailoredinstance.post('',
        data
-        ).then(res => {
-             setLoading(false);
+        ).then(response => {
 
             setSubmitted(true);
+            if(!response.data.auto_itinerary_created) {
+                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+              
+                 }
+             else{
+                ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
+  
+                setTimeout(function(){ 
+                   
+                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 3000);
+  
+              }
         }).catch(err => {
             setLoading(false);
 
@@ -214,10 +230,10 @@ return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-            <Heading>{submitted ? "Thank you for reaching out" : "Get your free travel plan!" }</Heading>
+            {!submitted? <Heading>{"Get your free travel plan!" }</Heading> : null}
             <div>
             </div>
-            {!submitted ? 
+            
             <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <TextField onFocus={() => setFirstNameError(false)} error={firstNameError ? true : false } helperText={firstNameError ? firstNameError : null} label="First Name" placeholder="Enter First name" key="fname"  variant="outlined" required fullWidth name="fname" type="name" id="fname"   onChange={(event) => setFirstName(event.target.value) } onBlur={null}/>
@@ -292,24 +308,15 @@ return(
                     {!loading ? 
                     <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">View Plan</Button>
                         : 
-                        <Button onclickparam={null} onclick={() => null} margin="1rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
-                            <Spinner display="inline-block" size={16} margin="0"></Spinner>
+                        <Button onclickparam={null} onclick={() => null} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
+                            Preparing Plan
+                            <Spinner display="inline-block" size={16} margin="0 0 0 0.5rem" color={loading ? 'white' : 'black'}></Spinner>
                         </Button>
 
                     }
                     </Grid>
-            </Grid> : 
-            <div>
-                {/* <Cost>Rs 1000/-</Cost> */}
-                <Heading className="font-opensans">
-                    Thank you for your enquiry
-                </Heading>
-                <Subheading className="font-opensans">
-                    We'll get back to you within 12 hours
-                </Subheading>
-                {/* <BsFillCheckCircleFill></BsFillCheckCircleFill> */}
-            </div>
-            }
+            </Grid> 
+           
             {/* </Modal.Body> */}
       {/* </Modal> */}
       </Container>
