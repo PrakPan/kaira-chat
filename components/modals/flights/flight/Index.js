@@ -24,7 +24,7 @@ const GridContainer = styled.div`
     display: grid; 
     grid-gap: 1rem;
     grid-template-columns: 1fr 5fr;
-    grid-gap: 1rem;
+    grid-gap: 0.25rem;
     @media screen and (min-width: 768px) {
 
     }
@@ -49,18 +49,20 @@ const Accommodation = (props) => {
     useEffect(() => {
       if(props.data)
       if(props.data.FareRules)
-          axiosflightlogoinstance.get('/?airline_code='+props.data.AirlineCode).then( res => {
-               setUrl(res.data["image"])
+          // axiosflightlogoinstance.get('/?airline_code='+props.data.AirlineCode).then( res => {
+          //      setUrl(res.data["image"])
 
-          }
-          )
+          // }
+          // )
+          setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.AirlineCode+".png");
     }, [props.data]);
  //   if(!showPhotos)
   return(
       <Container className='border-thn'>
            <GridContainer>
-              <ImageContainer className='center-div'>
-                <ImageLoader width="50%" margin="auto" url={url} dimensions={{width: 300, height: 300}} ></ImageLoader>
+              <ImageContainer className='cente-div'>
+                {/* <ImageLoader width="50%" margin="auto" url={url} dimensions={{width: 300, height: 300}} ></ImageLoader> */}
+                <img src={url} onError={() => setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/flight.webp")}   style={{width: '2.5rem', height:  '2.5rem', display: 'block', margin: 'auto'}}></img>
                 {/* <Gallery images={props.accommodation.images} review_score={props.review_score} review_count={props.review_count}></Gallery> */}
                 {props.data ? props.data.Segments?      <div className='font-opensans text-center' style={{fontWeight: '300', fontSize: '0.75rem', margin: '0rem'}}>{props.data.Segments[0][0].Airline.AirlineName}</div>  : null  : null}
 

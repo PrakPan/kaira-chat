@@ -126,6 +126,7 @@ const Booking = (props) => {
         star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
     }
     useEffect(() => {
+        console.log('sb', props.selectedBooking)
         // let options = [];
         // if(props.alternates)
         // for(var i=0; i<props.alternates.length; i++){
@@ -144,8 +145,8 @@ const Booking = (props) => {
             number_of_children: props.selectedBooking.pax.number_of_children,
             number_of_infants: props.selectedBooking.pax.number_of_infants,
             check_in: props.selectedBooking.check_in,
-            city: props.selectedBooking.costings_breakdown.Segments[0][0].Origin.Airport.CityName,
-            destination_city: props.selectedBooking.costings_breakdown.Segments[0][props.selectedBooking.costings_breakdown.Segments[0].length-1].Destination.Airport.CityName,
+            city_code: props.selectedBooking.origin_iata,
+            destination_city_code: props.selectedBooking.destination_iata,
             flight_cabin_class: '1'
         }
     }).then( res => {
