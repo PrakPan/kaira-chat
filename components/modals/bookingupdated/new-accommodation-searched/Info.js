@@ -9,49 +9,30 @@ import { getIndianPrice } from '../../../../services/getIndianPrice';
 import {FaArrowUp, FaArrowDown} from 'react-icons/fa';
 import { BiRupee } from 'react-icons/bi';
 import { BsInfoCircle } from 'react-icons/bs';
-
+import ImageLoader from '../../../ImageLoader';
+import {IoStarSharp} from 'react-icons/io5';
+import {BsArrowDown} from 'react-icons/bs';
 const Container = styled.div`
     position: relative;
     padding: 0 0.5rem;
     margin: 0.5rem 0;
 `;
 const Name = styled.div`
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 700;
     display: inline;
     line-height: 1;
-    margin-bottom: 0.5rem
+    margin-bottom: 0.75rem
 
 `;
  
-const RightBottomContainer = styled.div`
-    position: absolute;
-    right: 0;
-    bottom: 0.5rem;
-    display: flex;
-    
-`;
-const Cost = styled.div`
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0 0.5rem 0 0;
-    line-height: 1;
-  
-    &:after{
-        content: "per room";
-        display: block;
-        font-weight: 300;
-        font-size: 0.75rem;
-        text-align: right;
-    }
-
-`;
+ 
  
  
  
 const TagsContainer = styled.div`
     display: flex;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.75rem 0;
 `;
 const Tag = styled.div`
     padding: 0.08rem 0.7rem;
@@ -60,9 +41,39 @@ const Tag = styled.div`
     font-size: 0.75rem;
 `;
  
- 
+const RatingContainer = styled.div`
+   
+    width: max-content;
+    padding: 0.25rem;
+    margin-top: 0.25rem;
+    background-color: green;
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 2px;
+`;
+ const Cost = styled.p`
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1;
+    margin: 0;
+ `;
+
 const Accommodation = (props) => {
    let isPageWide = media('(min-width: 768px)')
+    const MEAL_TEXT = {
+        "CP" : "Breakfast Included",
+        "EP": "Room Only",
+        "MAP": "Breakfast and Lunch / Dinner Included",
+        "AP": "Breakfast, Lunch and Dinner Included"
+    };
+    const RANDOM_RATING = [8.8, 8.9, 9.0, 9.1,9.2,9.3,9.4,9.5,9.6,9.7,9.8];
+    let color="rgba(18, 105, 4, 1)";
+    if(props.rating){
+        console.log(props.rating)
+
+    if(props.rating < 4 && props.rating > 3) color="orange";
+    else if(props.rating < 3) color="red";
+    }
 
   return(
       <Container className=''>
@@ -87,18 +98,26 @@ const Accommodation = (props) => {
                 </Tag> */}
         </TagsContainer>
         <div style={{marginBottom: '0rem'}}>
-            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-opensans'>AMMENITEIS</p> */}
-            <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.25rem 0'}} className='font-opensans'>
+            <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
+                <ImageLoader leftalign url="media/icons/bookings/bed.png" width="2rem" widthmobile="2rem"></ImageLoader>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>
                 <span>{props.number_of_rooms ? props.number_of_rooms +" x " : "1 x "}</span>
                 {props.accommodation.rooms_available.length ? ''+ props.accommodation.rooms_available[0].room_type : ' Standard Room'}</p>
-            {props.pricing_type === 'CP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast Included</p> : null}
-            {props.pricing_type === 'EP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Room Only</p> : null}
-            {props.pricing_type === 'MAP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast and Lunch / Dinner Included</p> : null}
-            {props.pricing_type === 'AP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast , Lunch and Dinner Included</p> : null}
-            {props.pricing_type !== 'AP' && props.pricing_type !== 'MAP' && props.pricing_type !== 'EP' && props.pricing_type !== 'CP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Room Only</p> : null}
-
-            <FontAwesomeIcon icon={faWifi} style={{width: '1rem', display: 'block'}}></FontAwesomeIcon>
-        
+      
+                </div>
+               
+            </div>
+            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-opensans'>AMMENITEIS</p> */}
+           
+        </div>
+        {props.rating &&  color!=='red'? <RatingContainer className="font-opensans" style={{backgroundColor: color, lineHeight: '1'}}>
+                        <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
+                        {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
+                    </RatingContainer> : null}
+        <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0.5rem 0 0 0'}}>
+                <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown>
+                <Cost  className='font-opensans'>INR 5,000</Cost>
         </div>
         {/* <RightBottomContainer>
         <Cost className='font-opensans'>
