@@ -186,13 +186,13 @@ setStayLoading(false);
              setItineraryLoading(false);
              }
             else {
-              // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+              window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
             }
 
           }).catch(error => {
 
              setItineraryLoading(false);
-            // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
           });
          getBreifHandler();
