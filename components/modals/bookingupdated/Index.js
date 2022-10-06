@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import media from '../../media';
 import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
-import AccommodationSearched from './accommodation-searched/Index';
+import AccommodationSearched from './new-accommodation-searched/Index';
 
  import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
  import Spinner from '../../Spinner';
