@@ -107,12 +107,14 @@ const Booking = (props) =>{
     useEffect(() => {
         if(props.data.costings_breakdown)
         if(props.data.costings_breakdown.Segments)
-            axiosflightlogoinstance.get('/?airline_code='+props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode).then( res => {
-                 setUrl(res.data["image"])
+            // axiosflightlogoinstance.get('/?airline_code='+props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode).then( res => {
+            //      setUrl(res.data["image"])
 
-            }
-            )
+            // }
+            setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode+".png")
+            
       }, [props.data]);
+   
   
     if(true)
     return(
@@ -128,14 +130,17 @@ const Booking = (props) =>{
                     {/* <Heading className="font-opensans">Details</Heading> */}
                     <GridContainer>
                         <LogoContainer>
-                                <ImageLoader
+                                {/* <ImageLoader
                                 url={url}
                                 dimensions={{width: 200, heght: 200}}
                                 width="70%"
                                 >
                                 
-                                </ImageLoader>
-                            {props.data.costings_breakdown? props.data.costings_breakdown.Segments?     <div className='font-opensans text-center' style={{fontWeight: '300', fontSize: '0.75rem', margin: '0rem'}}>{props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode + " " + props.data.costings_breakdown.Segments[0][0].Airline.FlightNumber}</div> : null : null}
+                                </ImageLoader> */}
+                                 {props.data.costings_breakdown? props.data.costings_breakdown.Segments?  
+                                <img onError={() => setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/flight.webp")} width={"40px"}  alt="airline logo" height={"40px"} src={url}></img>
+                                    :null : null }
+                                {props.data.costings_breakdown? props.data.costings_breakdown.Segments?     <div className='font-opensans text-center' style={{fontWeight: '300', fontSize: '0.75rem', margin: '0rem'}}>{props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode + " " + props.data.costings_breakdown.Segments[0][0].Airline.FlightNumber}</div> : null : null}
                         </LogoContainer>
                         <DetailsGridContainer>
                             <div style={{display: 'flex', gap: '0.25rem'}}>

@@ -177,9 +177,8 @@ const Booking = (props) => {
       })
       props.setShowBookingModal();
     }
-    const _changeFlightHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown) => {
+    const _changeFlightHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata) => {
       ga.event({action: 'Itinerary-bookings-flight_change', params: {name : name}})
-
       setSelectedBooking({
         ...selectedBooking,
         name: name,
@@ -192,7 +191,9 @@ const Booking = (props) => {
         city: city,
         itinerary_name: itinerary_name,
         cost: Math.round(cost/100),
-        costings_breakdown: costings_breakdown
+        costings_breakdown: costings_breakdown,
+        origin_iata: origin_iata,
+        destination_iata: destination_iata
       })
       props.setShowFlightModal();
     }
@@ -331,7 +332,8 @@ const Booking = (props) => {
         let city_id=props.transferBookings[i]["city_id"]; 
         let destination_city_id=props.transferBookings[i]["destination_city_id"];  
         let duration=props.transferBookings[i]["duration"];  
-
+        let origin_iata=props.transferBookings[i]["origin_city_iata_code"]; 
+        let destination_iata=props.transferBookings[i]["destination_city_iata_code"]; 
         if(oldbooking){
           
 
@@ -345,7 +347,7 @@ const Booking = (props) => {
      
           if(props.transferBookings[i].booking_type==='Flight'){
           bookings_flights.push(
-            <FlightCard is_stock={props.is_stock} bookings={props.transferBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_selected={props.transferBookings[i].user_selected} data={props.transferBookings[i]} city={props.transferBookings[i].city}  is_auth={props.is_auth} tag={props.transferBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.transferBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.transferBookings[i].city} type={props.transferBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.transferBookings[i]["name"]} rating={props.transferBookings[i]["user_rating"]} details={ props.transferBookings[i]["points"]} price={props.transferBookings[i]["booking_cost"]}  price_type={props.transferBookings[i].costings_breakdown.length ? props.transferBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.transferBookings[i]["number_of_rooms"]} check_in={props.transferBookings[i]["check_in"]} check_out={props.transferBookings[i]["check_out"]} room_type={props.transferBookings[i]["room_type"]} images={props.transferBookings[i]["images"]} ></FlightCard>
+            <FlightCard is_stock={props.is_stock} bookings={props.transferBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_selected={props.transferBookings[i].user_selected} data={props.transferBookings[i]} city={props.transferBookings[i].city}  is_auth={props.is_auth} tag={props.transferBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.transferBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.transferBookings[i].city} type={props.transferBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.transferBookings[i]["name"]} rating={props.transferBookings[i]["user_rating"]} details={ props.transferBookings[i]["points"]} price={props.transferBookings[i]["booking_cost"]}  price_type={props.transferBookings[i].costings_breakdown.length ? props.transferBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.transferBookings[i]["number_of_rooms"]} check_in={props.transferBookings[i]["check_in"]} check_out={props.transferBookings[i]["check_out"]} room_type={props.transferBookings[i]["room_type"]} images={props.transferBookings[i]["images"]} ></FlightCard>
          )
         }
         else bookings_transfers.push(
