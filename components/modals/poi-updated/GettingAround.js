@@ -28,6 +28,7 @@ letter-spacing: 1px;
 }
 `;
 useEffect(() => {
+    if(props.getting_around)
     if(props.getting_around.length > 250) setShowMore(true)
    }, [props.getting_around]);
  

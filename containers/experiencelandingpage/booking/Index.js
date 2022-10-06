@@ -15,7 +15,6 @@ import urls from '../../../services/urls';
 const Container = styled.div`
 width: 90%;
 margin: auto;
-
 @media screen and (min-width: 768px){
     width: 85%;
     display: grid;
