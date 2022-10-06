@@ -44,7 +44,7 @@ const QueryType = (props) => {
     const [queryType, setQueryType] = useState('');
     const _handleQueryTypeChange = (event) => {
         setQueryType(event.target.value);
-        props._changeDetailsHandler(event, "type");
+        props.setChildren(event.target.value);
       };
     return(
         <FormControl className={classes.fullWidth}  variant="outlined" >
@@ -52,12 +52,11 @@ const QueryType = (props) => {
         <Select native={ true ?  true : false } label="Topic of interest" value={queryType} id="contact-query-select"
                 onChange={_handleQueryTypeChange} className={classes.relative}>
                     <Option aria-label="None" value=""  style={{display: 'none'}}/>
-                    <Option value={queries[0]} className="font-nunito">{queries[0]}</Option>
-                    <Option value={queries[1]}  className="font-nunito">{queries[1]}</Option>
-                    <Option  value={queries[2]} className="font-nunito">{queries[2]}</Option>
-                    <Option  value={queries[3]} className="font-nunito">{queries[3]}</Option>
-                    <Option value={queries[4]} className="font-nunito">{queries[4]}</Option>
-           
+                    <Option value={1} className="font-nunito">1</Option>
+                    <Option value={2}  className="font-nunito">2</Option>
+                    <Option  value={3} className="font-nunito">3</Option>
+                    <Option  value={4} className="font-nunito">4</Option>
+                    <Option value={5} className="font-nunito">5</Option>
         </Select>
         </FormControl>
     );

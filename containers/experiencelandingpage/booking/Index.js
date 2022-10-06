@@ -151,7 +151,7 @@ const Booking = (props) => {
             </BookingsContainer> : null}
             {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-          {showEnquiry.mobile ?  <Enquiry  starting_price={props.starting_price}  bookings experience={props.experience} _showBookingMobileHandler={_showBookingMobileHandler}></Enquiry>  : null}
+          {showEnquiry.mobile ?           <Enquiry starting_price={props.starting_price} experience={props.experience} itinerary_id={props.itinerary_id} experience_id={props.experienceId} bookings></Enquiry> : null}
         </Container>
   );
     }

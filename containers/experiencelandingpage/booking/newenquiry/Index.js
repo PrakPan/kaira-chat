@@ -20,6 +20,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import axiosexperienceinstance from '../../../../services/leads/experience';
 import extensions from '../../../../public/content/extensionsdata';
+import ImageLoader from "../../../../components/ImageLoader";
 const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
@@ -28,17 +29,21 @@ position: sticky;
 top: 11vh;
 border-radius: 10px !important;
 min-height: 60vh;
+@media screen and (min-width: 768px){
+    min-height: 60vh;
+
+}
 
 `
  const Heading = styled.p`
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin: 0rem 0 1rem 0;
     text-align: center;
     font-weight: 800;
 
 `;
 const Subheading=styled.p`
-font-size: 1.5rem;
+font-size: 1rem;
     margin: 0rem 0 1rem 0;
     text-align: center;
     font-weight: 100;
@@ -82,7 +87,9 @@ const Enquiry = (props) => {
     const [name, setName] = useState(null);
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null)
-
+    const [adults, setAdults] = useState("2");
+    const [children, setChildren] = useState("0");
+    const [infants, setInfants] = useState("0");
     const [companyName, setCompanyName] = useState(null);
     const [phone, setPhone]= useState(null);
     const[email, setEmail]= useState(null);
@@ -148,9 +155,9 @@ const Enquiry = (props) => {
              "experience_id": props.experience_id,
              "experience_name": props.experience,
              "start_date": value.toISOString().slice(0, 10),
-             "number_of_adults": 2,
-             "number_of_children": 0,
-             "number_of_infants": 0,
+             "number_of_adults": parseInt(adults),
+             "number_of_children": parseInt(children),
+             "number_of_infants": parseInt(infants),
              "group_type": null,
              "user_first_name": firstName,
              "user_last_name": lastName,
@@ -231,21 +238,21 @@ return(
                 <Grid item xs={12}>
                     <TextField onFocus={() => setEmailError(false)} error={emailError ? true : false } helperText={emailError ? emailError : null} type="text" placeholder="info@thetarzanway.com" key="email"  variant="outlined" required fullWidth name="email" label="Email" id="email" onChange={(event) => setEmail(event.target.value)} />
                 </Grid>  
-                {/* <Grid item xs={4}>
-                     <TypeAdult >
+                <Grid item xs={4}>
+                     <TypeAdult setAdults={setAdults}>
 
                     </TypeAdult>
-                </Grid> */}
-                {/* <Grid item xs={4}>
-                     <TypeChild>
+                </Grid>
+                <Grid item xs={4}>
+                     <TypeChild setChildren={setChildren}>
 
                     </TypeChild>
-                </Grid> */}
-                {/* <Grid item xs={4}>
-                     <TypeInfant>
+                </Grid>
+                <Grid item xs={4}>
+                     <TypeInfant setInfants={setInfants}>
 
                     </TypeInfant>
-                </Grid> */}
+                </Grid>
                 <Grid item xs={12}>
                     {/* <Question>When should we call you?</Question> */}
                 
@@ -293,12 +300,12 @@ return(
             </Grid> : 
             <div>
                 {/* <Cost>Rs 1000/-</Cost> */}
+                <ImageLoader url="media/illustrations/undraw_happy_news_re_tsbd.svg" width="50%" widthmobile="50%"></ImageLoader>
                 <Heading className="font-opensans">
-                    Thank you for your enquiry
+                    We've received your request to book this experience
                 </Heading>
                 <Subheading className="font-opensans">
-                    We'll get back to you within 12 hours
-                </Subheading>
+                Our travel experts will get in touch with you in the next 2 hours to complete your plan                </Subheading>
                 {/* <BsFillCheckCircleFill></BsFillCheckCircleFill> */}
             </div>
             }
