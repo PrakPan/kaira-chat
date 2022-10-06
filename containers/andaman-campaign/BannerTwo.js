@@ -38,7 +38,9 @@ const  Banner = (props) =>{
   return (
    <Container>
         <GridContainer>
-          <div></div>       
+          <div className='center-div'>
+            <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader>
+            </div>       
             <Enquiry></Enquiry>
         </GridContainer>
        
