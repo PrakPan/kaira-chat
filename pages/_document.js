@@ -49,14 +49,7 @@ dangerouslySetInnerHTML={{
           async
           src={"https://www.googletagmanager.com/gtag/js?id="+GOOGLE_ANALTICS_ID}
         />
-        <script type='text/javascript' dangerouslySetInnerHTML={{__html: `
-          window.smartlook||(function(d) {
-            var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-            var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-            c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
-            })(document);
-            smartlook('init', '0d6942a3ff38939d4f08f7fd6d4fbdf2204fc081', { region: 'eu' });
-        `}}/>
+       
 
 <script
 src='//in.fw-cdn.com/30401267/225580.js'
