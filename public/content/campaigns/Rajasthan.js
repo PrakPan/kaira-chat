@@ -147,7 +147,7 @@ const experiences = {
       
       
     ],
-    "Unique Andaman": [
+    "Unique Rajasthan": [
         {  
             "id":"0O0saoIB3VsEI0tKb6Ch",
             "slug": "experience-the-heritage-culture-of-andaman",

@@ -155,11 +155,11 @@ const Enquiry = (props) => {
 
         setLoading(true);
         let data = {
-            "locations": ["Andaman"],
+            "locations": ["Rajasthan"],
             // "experience_filters_selected": filters,
             "budget": "Affordable",
             // "extra_data": extra_data,
-            "city_id": [278],
+            "city_id": [164, 298, ],
             // "group_type": grouptype,
             "number_of_adults": parseInt(adults),
             "number_of_children": parseInt(children),
