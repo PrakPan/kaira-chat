@@ -283,10 +283,10 @@ return(
   />
 </LocalizationProvider>
                  </Grid>
-                 <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
+                 {props.starting_price ? <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
                     <div style={{alignItems: 'center', display: 'flex', paddingLeft: '8px', fontWeight: '600'}} className="font-opensans">Experience Cost</div>
                  <Cost className="font-opensans">{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+" /-"}</Cost>
-                 </div>
+                 </div> : null}
                 <Grid item xs={12}>
                     {!loading ? 
                     <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Enquire Now</Button>

@@ -57,6 +57,14 @@ padding: 1rem 0;
 
 }
 `;
+const NoBookingContainer = styled.div`
+margin: 0 0.5rem;
+
+@media screen and (min-width: 768px){
+    width: 30vw;
+    margin: auto;
+}
+`;
 const Booking = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
@@ -156,7 +164,7 @@ const Booking = (props) => {
   );
     }
     else return(
-        <div style={{minHeight: '100vh'}}><Enquiry experience={props.experience}></Enquiry></div> 
+        <NoBookingContainer style={{}}><Enquiry experience={props.experience}></Enquiry></NoBookingContainer> 
     )
 }
 
