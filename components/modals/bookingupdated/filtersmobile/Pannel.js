@@ -14,7 +14,7 @@ const Heading = styled.p`
     font-size: 1.25rem;
     font-weight: 600;
     text-align: center;
-    margin: 2rem 0;
+    margin:  0;
 `;
 const Label = styled.p`
     font-size: 0.75rem;
@@ -35,9 +35,9 @@ const Pannel = (props) =>{
     //   if(props.heading!=='Star Category')
     return(
         <Container >
-            <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '1rem'}} ></FontAwesomeIcon>
+            <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon>
             <Heading className='font-opensans'>{props.heading}</Heading>
-            {props.heading!=='Star Category' ?<div style={{width: 'max-content', margin: '2rem auto'}}>
+            {props.heading!=='Star Category' ?<div style={{width: 'max-content', margin: '0 auto'}}>
            
             <FormGroup>
           { 

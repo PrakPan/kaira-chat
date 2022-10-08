@@ -32,8 +32,9 @@ export default function TemporaryDrawer(props) {
     const [filterHeading, setFilterHeading] = useState('Budget');
 
   const _selectFilter = (filter) => {
-        if(filter === 'filter-budget') setFilterHeading('Budget')
-        else if(filter === 'filter-type') setFilterHeading('Type');
+    console.log(filter)
+        if(filter === 'Budget') setFilterHeading('Budget')
+        else if(filter === 'Type') setFilterHeading('Type');
         else setFilterHeading('Star Category');
        setFilterSelected(filter);
         setState(true);
@@ -62,7 +63,7 @@ export default function TemporaryDrawer(props) {
             </FiltersContainer> */}
              <Tabs
     value={filterSelected}
-    onChange={(event) => _selectFilter(event.target.id)}
+    onChange={(event) => _selectFilter(event.target.innerHTML)}
     variant={'scrollable'}
     scrollButtons={ true }
     allowScrollButtonsMobile

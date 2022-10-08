@@ -619,19 +619,23 @@ outline: none !important;
   color: white !important;
 }
 .booking-filter-tab:nth-child(n){
-  font-size: 0.75remrem;
+  font-size: 0.75rem !important;
   border-style: solid;
-  border-radius: 2rem;
+  border-radius: 10px;
   border-width: 1px;
   border-color: #e4e4e4;
   margin: 0 0.25rem 0 0;
   color: black;
   height: max-content;
-  padding: 0.25rem 1rem;
+  padding: 0.2rem 0.75rem;
   text-transform: none !important;
   width: max-content;
   min-height: 0 !important;
   min-width: 0 !important;
+}
+.booking-filter-tab:nth-child(n) span{
+  font-size: 0.75rem !important;
+
 }
 #filter-tab .MuiTabs-scroller{
   align-items: center !important;

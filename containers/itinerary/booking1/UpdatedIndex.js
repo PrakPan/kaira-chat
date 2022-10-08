@@ -155,7 +155,7 @@ const Booking = (props) => {
       name: null
     })
 
-    const _changeBookingHandler = (name, itinerary_id, tailored_id,  accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown) => {
+    const _changeBookingHandler = (name, itinerary_id, tailored_id,  accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images) => {
       ga.event({action: 'Itinerary-bookings-acc_change', params: {name : name}})
 
       setSelectedBooking({
@@ -173,7 +173,9 @@ const Booking = (props) => {
         number_of_rooms: number_of_rooms, 
         itinerary_name: itinerary_name,
         cost: Math.round(cost/100),
-        costings_breakdown: costings_breakdown
+        costings_breakdown: costings_breakdown,
+        images: images
+         
       })
       props.setShowBookingModal();
     }
@@ -251,7 +253,7 @@ const Booking = (props) => {
         let itinerary_id = props.stayBookings[i]["itinerary_id"];
         let itinerary_name=props.stayBookings[i]["itinerary_name"];
         let booking_type=props.stayBookings[i]["booking_type"];
-
+        let images=props.stayBookings[i]["images"];
         let accommodation = props.stayBookings[i]["accommodation"];
         let tailored_id = props.stayBookings[i]["tailored_itinerary"]
         let id=props.stayBookings[i]["id"];
@@ -288,7 +290,7 @@ const Booking = (props) => {
             }
             else if(props.stayBookings[i].user_selected)
             bookings_accommodations.push(
-            <StayBookingCard images={props.stayBookings[i]["images"]} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+            <StayBookingCard  is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
          )}
      
       }

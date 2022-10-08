@@ -8,14 +8,16 @@ import AccommodationSearched from './new-accommodation-searched/Index';
 
  import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
  import Spinner from '../../Spinner';
- import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+
  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import {connect} from 'react-redux';
  // import Button from '../../Button';
 import Button from '../../ui/button/Index';
 import LogInModal from '../Login';
+import AccommodationSelected from './new-accommodation-selected/Index';
+import SectionOne from './SectionOne';
+import SectionTwo from './SectionTwo'
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -32,7 +34,7 @@ const OptionsContainer = styled.div`
     overflow-x: hidden;
     width: 100%;
     position: relative;
-    max-height: 65vh;
+    max-height: 90vh;
 
     @media screen and (min-width: 768px) {
         max-height: 80vh;
@@ -575,8 +577,9 @@ setViewMoreStatus(false);
         <Modal   id="bookingedit-modal" show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{padding: "0"}}>
            {/* <Modal.Header>2</Modal.Header> */}
             <Modal.Body style={{padding: "0.5rem",  borderStyle: "solid", borderColor: "#F7e700", borderWidth: "0.5rem", borderRadius: '16px', backgroundColor: 'white', }} >
-            <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon>
-               <GridContainer style={{clear: 'right'}}>
+              <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
+              <SectionTwo></SectionTwo>
+                 <GridContainer style={{clear: 'right'}}>
                 <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar>
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                <ContentContainer style={{position: 'relative'}}>
@@ -584,6 +587,7 @@ setViewMoreStatus(false);
                 {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-opensans'><Spinner></Spinner>Please wait while we update your bookings</div> : null }
                { !noResults  && !updateBookingState ? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
+                    <AccommodationSelected selectedBooking={props.selectedBooking}></AccommodationSelected>
                    {optionsJSX.length ? optionsJSX :moreOptionsJSX.length? moreOptionsJSX : null}
                     {/* {moreOptionsJSX} */}
                    {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null}
@@ -605,7 +609,7 @@ setViewMoreStatus(false);
                
                </ContentContainer>
                </GridContainer>
-               {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null}
+               {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
 
             </Modal.Body>
            
