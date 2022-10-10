@@ -14,7 +14,7 @@ const Heading = styled.p`
     font-size: 1.25rem;
     font-weight: 600;
     text-align: center;
-    margin:  0;
+    margin:  0 0 1.5rem 0;
 `;
 const Label = styled.p`
     font-size: 0.75rem;
@@ -37,11 +37,11 @@ const Pannel = (props) =>{
         <Container >
             <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon>
             <Heading className='font-opensans'>{props.heading}</Heading>
-            {props.heading!=='Star Category' ?<div style={{width: 'max-content', margin: '0 auto'}}>
+            {props.heading!=='Star Category' ?<div style={{margin: '0 auto'}}>
            
-            <FormGroup>
+            <FormGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: '0.5rem', margin: '0 0.5rem 1.5rem 0.5rem' }}>
           { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
+          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
           }
       </FormGroup>   
       

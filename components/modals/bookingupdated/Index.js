@@ -34,11 +34,9 @@ const OptionsContainer = styled.div`
     overflow-x: hidden;
     width: 100%;
     position: relative;
-    max-height: 90vh;
-
+ 
     @media screen and (min-width: 768px) {
-        max-height: 80vh;
-        min-height: 80vh;
+         min-height: 80vh;
 
     }
 `;
@@ -573,12 +571,15 @@ setViewMoreStatus(false);
       }
      if(props.token)
   return(
-      <div>
-        <Modal   id="bookingedit-modal" show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{padding: "0"}}>
-           {/* <Modal.Header>2</Modal.Header> */}
-            <Modal.Body style={{padding: "0.5rem",  borderStyle: "solid", borderColor: "#F7e700", borderWidth: "0.5rem", borderRadius: '16px', backgroundColor: 'white', }} >
-              <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
+      <div >
+        <Modal   id="bookingedit-modal" show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{padding: "0", backgroundColor: 'white', borderRadius: '1.5rem' , border: '5px solid #f7e700', marginTop: '5px'}}>
+           <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
+           <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
               <SectionTwo></SectionTwo>
+
+           </Modal.Header>
+            <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
+            
                  <GridContainer style={{clear: 'right'}}>
                 <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar>
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
@@ -587,7 +588,8 @@ setViewMoreStatus(false);
                 {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-opensans'><Spinner></Spinner>Please wait while we update your bookings</div> : null }
                { !noResults  && !updateBookingState ? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
-                    <AccommodationSelected selectedBooking={props.selectedBooking}></AccommodationSelected>
+                   <AccommodationSelected selectedBooking={props.selectedBooking}></AccommodationSelected>
+
                    {optionsJSX.length ? optionsJSX :moreOptionsJSX.length? moreOptionsJSX : null}
                     {/* {moreOptionsJSX} */}
                    {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null}

@@ -6,7 +6,7 @@ import Gallery from './gallery/Index';
 import Buttons from './Buttons';
 const Container = styled.div`
     margin: 0 0 1rem 0; 
-    border-radius: 10px !important;
+     border-radius: 10px !important;
       @media screen and (min-width: 768px) {
         padding: 0.5rem;
 
