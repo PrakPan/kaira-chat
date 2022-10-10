@@ -2,15 +2,15 @@ const experiences = {
     "Top Selling Experiences": [
         {  
             "id":"ifgPvZyQcBXXPYdJ",
-            "slug": "rajasthani-family-trip",
-            "experience_filters": ["Culture"],
-            "name": "Rajasthani Family Trip!",
-            "experience_region": "Rajasthan",
-            "rating": 4.5,
-            "duration": "7 days",
-            "short_text": "Take your loved ones and explore the beautiful state of Rajasthan and all the wonders it has to offer!",
+            "slug": "8-days-kerala-generic-itinerary",
+            "experience_filters": ["Nature"],
+            "name": "Exotic Highlights of Kerala",
+            "experience_region": "Kerala",
+            "rating": 4.7,
+            "duration": "8 days",
+            "short_text": "Trod the stunning landscapes of Kerala and treat yourself to nature's delightful gift.",
              "images": {
-                "main_image": "media/experiences/166476628720720839500427246094.jpg",
+                "main_image": "media/experiences/166331126839925050735473632812.jpg",
                 "main_image_alt_text": null,
               },
               "payment_info": [
@@ -19,7 +19,7 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "7 days"
+                  "duration": "8 days"
                 }
               ],
         },

@@ -17,7 +17,7 @@ import media from '../../components/media';
  import WhyUs from '../testimonial/whyttw/Index';
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
-import rajasthancontent from '../../public/content/campaigns/Rajasthan';
+import keralacontent from '../../public/content/campaigns/Kerala';
 import Reviews from './CaseStudies/Index';
 import BannerMobile from './MobileBanner';
 import Enquiry from './newenquiry/Index';
@@ -102,16 +102,16 @@ const _handleTailoredClick = () => {
 
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage url="media/website/pexels-mayur-sable-11750442 (1).jpg" center={isPageWide ? false : true} >
+      <FullImage url="media/website/abhishek-prasad-N3VzleBhOvk-unsplash.jpg" center={isPageWide ? false : true} >
           <FullImgContent/>
       </FullImage>
       <div className='hidden-desktop'><Enquiry></Enquiry></div>
 <BannerOne></BannerOne>
 <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
-        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Top Selling Experiences"]} ></Experiences>
+        <Experiences  three margin="2.5rem 0" experiences={keralacontent["Top Selling Experiences"]} ></Experiences>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Customer Tales</Heading>        
-        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Customer Tales"]} pastitinerary></Experiences>
+        <Experiences  three margin="2.5rem 0" experiences={keralacontent["Customer Tales"]} pastitinerary></Experiences>
 
 </SetWidthContainer>
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
@@ -121,7 +121,7 @@ const _handleTailoredClick = () => {
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Rajasthan</Heading>        
-        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Unique Rajasthan"]} ></Experiences>
+        <Experiences  three margin="2.5rem 0" experiences={keralacontent["Unique Kerala"]} ></Experiences>
         {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
         </SetWidthContainer>
     <WhyUs></WhyUs>
