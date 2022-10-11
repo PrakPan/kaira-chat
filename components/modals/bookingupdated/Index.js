@@ -9,7 +9,7 @@ import AccommodationSearched from './new-accommodation-searched/Index';
  import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
  import Spinner from '../../Spinner';
 
- import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
+//  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import {connect} from 'react-redux';
  // import Button from '../../Button';
@@ -22,8 +22,8 @@ const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
     display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-gap: 1rem;
+    grid-template-columns: 1fr;
+ 
     @media screen and (min-width: 768px) {
     
     }
@@ -581,7 +581,7 @@ setViewMoreStatus(false);
             <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
             
                  <GridContainer style={{clear: 'right'}}>
-                <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar>
+                {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                <ContentContainer style={{position: 'relative'}}>
                 {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}

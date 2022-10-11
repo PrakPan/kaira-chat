@@ -16,6 +16,8 @@ const Container = styled.div`
     position: relative;
     padding: 0 0.5rem;
     margin: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
 `;
 const Name = styled.div`
     font-size: 1rem;
@@ -46,26 +48,39 @@ const RatingContainer = styled.div`
     width: max-content;
     padding: 0.25rem;
     margin-top: 0.25rem;
-    background-color: green;
+     background-color: green;
     color: white;
     font-size: 0.75rem;
     border-radius: 2px;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
 `;
  const Cost = styled.p`
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 800;
+    font-size: 1rem;
     line-height: 1;
-    margin: 0;
- `;
+    margin: 0 0 2px 0;
+    &:after{
+        content: 'Per Room';
+        display: block;
+        font-size: 0.8rem;
+        font-family: 'Open Sans', sans-serif !important;
+        font-weight: 300;
+        text-align: right;
 
+    }
+ `;
+const DesktopGridContainer = styled.div`
+    display: grid;
+    @media screen and (min-width: 768px) {
+
+    grid-template-columns: auto max-content;
+    }
+`;
 const Accommodation = (props) => {
    let isPageWide = media('(min-width: 768px)')
-    const MEAL_TEXT = {
-        "CP" : "Breakfast Included",
-        "EP": "Room Only",
-        "MAP": "Breakfast and Lunch / Dinner Included",
-        "AP": "Breakfast, Lunch and Dinner Included"
-    };
+   
     const RANDOM_RATING = [8.8, 8.9, 9.0, 9.1,9.2,9.3,9.4,9.5,9.6,9.7,9.8];
     let color="rgba(18, 105, 4, 1)";
     if(props.rating){
@@ -89,15 +104,11 @@ const Accommodation = (props) => {
         </div>
         <TagsContainer>
                 {props.star ? <Tag className='border'>
-                    {/* <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon> */}
-                    {props.star+" star"}
+                     {props.star+" star"}
                 </Tag> : null}
-                {/* <Tag className='border'>
-                    <FontAwesomeIcon icon={faHome} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                    {props.type}
-                </Tag> */}
+                 
         </TagsContainer>
-        <div style={{marginBottom: '0rem'}}>
+        <DesktopGridContainer style={{marginBottom: '0rem'}}>
             <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                 <ImageLoader leftalign url="media/icons/bookings/bed.png" width="2rem" widthmobile="2rem"></ImageLoader>
                 <div style={{display: 'flex', alignItems: 'center'}}>
@@ -108,33 +119,23 @@ const Accommodation = (props) => {
                 </div>
                
             </div>
-            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-opensans'>AMMENITEIS</p> */}
-           
-        </div>
-        {props.rating &&  color!=='red'? <RatingContainer className="font-opensans" style={{backgroundColor: color, lineHeight: '1'}}>
+          {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-mobile" style={{backgroundColor: color, lineHeight: '1'}}>
+                        <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
+                        {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
+                    </RatingContainer> : null} 
+            
+        </DesktopGridContainer>
+        {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null}
-        <div style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0.5rem 0 0 0'}}>
-                <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown>
-                <Cost  className='font-opensans'>INR 5,000</Cost>
+        <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row', margin: '0 0 0 0'}}>
+                {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
+                <Cost  className='font-opensans'>₹ 5,000</Cost>
         </div>
-        {/* <RightBottomContainer>
-        <Cost className='font-opensans'>
-            <BiRupee style={{fontWeight: '300'}}></BiRupee>
-            { " "+getIndianPrice(props.accommodation.price_lower_range_ext/100)+" /-"   }</Cost>
-
-         <Button
-            boxShadow
-             onclick={props._updateSearchedAccommodation}
-            onclickparam={
-                {bookings: props.bookings,
-                new_booking: props.accommodation,
-                itinerary_id: props.itinerary_id,
-                tailored_id: props.tailored_id,
-                }
-            } borderRadius="2rem" padding="0.25rem 1rem" borderWidth="0" bgColor="#f7e700" hoverColor="white" hoverBgColor="black">Select</Button>
-        </RightBottomContainer> */}
+        <div className='hidden-mobile'><Button onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
+</div>
+        
       </Container>
   );
   
