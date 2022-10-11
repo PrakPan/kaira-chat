@@ -18,34 +18,37 @@ const Container = styled.div`
  
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
-
     const data = [
         {
+            id: '-QIHUn0Bvi6XoFjhDVrO',
             heading: "Divya Rajput",
             text: "We planned a new years family trip to Jodhpur, Jaisalmer, and Bikaner and The Tarzan Way planned a perfect package."
         },
         {
+            id: 'budve3wBWOGtAGF-0nXM',
             heading: "Harshitha Gangappa",
             text: "With timely suggestions, I was able to cover all the places luxurious stay at the Lalit Jaipur"
         },
         {
+            id: '9OjdZ3gBeVVjRPY01cew',
             heading: 'Rotaract',
             text: 'Great support and on-ground coordination for our group of 60 travelers by The Tarzan Way.'
         },
        
     ]
+    
     if(!isPageWide)
     return (
 
         <Container className='font-opensans'>
-            <Flickity cards={[<Card heading={data[0].heading} text={data[0].text}></Card>, <Card heading={data[0].heading} text={data[0].text}></Card>, <Card heading={data[0].heading} text={data[0].text}></Card>]}></Flickity>
+            <Flickity cards={[<Card heading={data[0].heading} id={data[0].id} text={data[0].text}></Card>, <Card id={data[1].id}  heading={data[1].heading} text={data[1].text}></Card>, <Card  id={data[2].id}  heading={data[2].heading} text={data[2].text}></Card>]}></Flickity>
         </Container>
     );
     else return(
         <Container>
-            <Card   heading={data[0].heading} text={data[0].text}> </Card>
-            <Card   heading={data[1].heading} text={data[1].text}> </Card>
-            <Card   heading={data[2].heading} text={data[2].text}> </Card>
+            <Card  id={data[0].id}  heading={data[0].heading} text={data[0].text}> </Card>
+            <Card  id={data[1].id}  heading={data[1].heading} text={data[1].text}> </Card>
+            <Card id={data[2].id}   heading={data[2].heading} text={data[2].text}> </Card>
  
         </Container>
     );
