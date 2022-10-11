@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {  faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import Tabs from './tabs/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodation';
+import {connect} from 'react-redux';
 
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover{
@@ -34,11 +35,11 @@ const POI = (props) => {
 
   return(
       <div>
-        <Modal show={props.show}  id="poi-modal" size="lg"  onHide={props.onHide} style={{backgroundColor: 'transparent'}}>
-            <Modal.Header style={{borderStyle: "solid solid none solid", borderColor: "#F7e700", borderWidth: "0.5rem", borderRadius: '16px 16px 0 0', height: '7.5vh', backgroundColor: 'white'}}>
+        <Modal show={props.show}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} style={{}}>
+            <Modal.Header style={{ height: '7.5vh', backgroundColor: 'white'}}>
               <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon>
             </Modal.Header>
-            <Modal.Body style={{ height: '92.5vh', overflowY: 'auto', borderStyle: "none solid solid solid", borderColor: "#F7e700", borderWidth: "0.5rem", borderRadius: '0  0 16px 16px', backgroundColor: 'white', padding: '0'}}>
+            <Modal.Body style={{ height: '92.5vh', overflowY: 'auto', padding:'0' }}>
                 <Overview data={data} images={data.images ? data.images : []} experience_filters={props.poi ? props.poi.experience_filters : null} name={props.poi ? props.poi.name : null} duration={props.poi ? props.poi.ideal_duration_hours : null}></Overview>
                 <Tabs  
                 data={data}
@@ -59,4 +60,18 @@ const POI = (props) => {
 
 }
 
-export default POI;
+const mapStateToPros = (state) => {
+  return{
+  
+      token: state.auth.token,
+    
+  }
+}
+const mapDispatchToProps = dispatch => {
+    return{
+    
+    }
+  }
+
+
+export default connect(mapStateToPros,mapDispatchToProps)(POI);

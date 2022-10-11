@@ -4,6 +4,8 @@ import media from '../../../media';
 import Info from './Info';
 import Gallery from './gallery/Index';
 import Buttons from './Buttons';
+import AccommodationModal from '../../accommodation/Index';
+
 const Container = styled.div`
     margin: 0 0 1rem 0; 
     border-radius: 10px !important;
@@ -35,7 +37,7 @@ const ImageContainer = styled.div`
 
 const Accommodation = (props) => {
    let isPageWide = media('(min-width: 768px)')
-    
+    const [showDetails, setShowDetails] = useState(false);
  //   if(!showPhotos)
   return(
       <Container className='border'>
@@ -44,9 +46,11 @@ const Accommodation = (props) => {
                  
                 <Gallery images={props.accommodation.images} ></Gallery>
               </ImageContainer>
-                <Info rating={4.2} bookings={props.bookings} _updateSearchedAccommodation={props._updateSearchedAccommodation} bookings={props.bookings} accommodation={props.accommodation} new_booking_id={props.accommodation.id}  pricing_type={'TBO'} selectedBooking={props.selectedBooking} room_type={props.accommodation.rooms_available.length ? props.accommodation.rooms_available[0].room_type_name : 'Standard Room'} updateLoadingState={props.updateLoadingState} tailored_id={props.tailored_id} booking_id={props.booking_id} itinerary_id={props.itinerary_id} accommodation_id={props.accommodation.id} _updateBookingHandler={props._updateBookingHandler}  name={props.accommodation.name} star={props.accommodation.star_category}  />
+                <Info token={props.token} rating={4.2} bookings={props.bookings} _updateSearchedAccommodation={props._updateSearchedAccommodation} bookings={props.bookings} accommodation={props.accommodation} new_booking_id={props.accommodation.id}  pricing_type={'TBO'} selectedBooking={props.selectedBooking} room_type={props.accommodation.rooms_available.length ? props.accommodation.rooms_available[0].room_type_name : 'Standard Room'} updateLoadingState={props.updateLoadingState} tailored_id={props.tailored_id} booking_id={props.booking_id} itinerary_id={props.itinerary_id} accommodation_id={props.accommodation.id} _updateBookingHandler={props._updateBookingHandler}  name={props.accommodation.name} star={props.accommodation.star_category}  />
           </GridContainer>
-          <Buttons></Buttons>
+          <Buttons setShowDetails={setShowDetails}></Buttons>
+          <AccommodationModal id={props.accommodation.id} show={showDetails}></AccommodationModal>
+
       </Container>
   );
 //   else return(
@@ -55,5 +59,6 @@ const Accommodation = (props) => {
   
 
 }
- 
-export default Accommodation;
+
+
+export default (Accommodation);

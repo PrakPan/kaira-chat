@@ -5,7 +5,7 @@ import media from '../../media';
 import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
 import AccommodationSearched from './new-accommodation-searched/Index';
-
+// import AccommodationModal from '../accommodation/Index';
  import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
  import Spinner from '../../Spinner';
 
@@ -536,7 +536,7 @@ setViewMoreStatus(false);
         let options = moreOptionsJSX.slice();
              for(var i = 0; i < res.data.results.length; i++){
                  if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
-                options.push(<AccommodationSearched _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                options.push(<AccommodationSearched token={props.token} _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
 
                 
                  
@@ -572,7 +572,7 @@ setViewMoreStatus(false);
      if(props.token)
   return(
       <div >
-        <Modal   id="bookingedit-modal" show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{padding: "0", backgroundColor: 'white', borderRadius: '1.5rem' , border: '5px solid #f7e700', marginTop: '5px'}}>
+        <Modal className='booking-modal'  show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{}}>
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
            <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
               <SectionTwo></SectionTwo>
