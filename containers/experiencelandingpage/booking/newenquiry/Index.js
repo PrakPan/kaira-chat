@@ -21,6 +21,7 @@ import { getIndianPrice } from "../../../../services/getIndianPrice";
 import axiosexperienceinstance from '../../../../services/leads/experience';
 import extensions from '../../../../public/content/extensionsdata';
 import ImageLoader from "../../../../components/ImageLoader";
+import * as ga from '../../../../services/ga/Index';
 const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
@@ -149,6 +150,12 @@ const Enquiry = (props) => {
     }
      const _submitDataHandler = () => {
         setLoading(true);
+        ga.event({
+            action: "EXPEnq-initiate",
+            params : {
+              'search_text': null,
+            }
+          });
          axiosexperienceinstance.post('/',
          {
              "itinerary_id": props.itinerary_id,
@@ -167,11 +174,21 @@ const Enquiry = (props) => {
          }
         ).then(res => {
              setLoading(false);
-
+             ga.event({
+                action: "EXPEnq-success",
+                params : {
+                  'search_text': null,
+                }
+              });
             setSubmitted(true);
         }).catch(err => {
             setLoading(false);
-
+            ga.event({
+                action: "EXPEnq-failure",
+                params : {
+                  'search_text': null,
+                }
+              });
              if(err.response.data.email){
                 setEmailError(err.response.data.email)
             }
@@ -194,11 +211,7 @@ const Enquiry = (props) => {
                 setCompanyError(err.response.data.organization_name[0])
 
             }
-            // err.json().then(json => {
-            //     getPaymentHandler();
-            //     setTransferBookings(json.bookings)
-            //     // setFlightBookings(json.bookings);
-            //   })
+           
            
         })
     }
