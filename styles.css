@@ -304,8 +304,7 @@ b{
 }
 .accommodationdetail-tab.Mui-selected{
   color: black !important;
-  background-color: #f7e700 !important;
-  font-weight: 800 !important;
+   font-weight: 800 !important;
 }
 .bookingdetail-tab{
   text-transform: none !important;

@@ -120,7 +120,7 @@ const Overview = (props) => {
 
         </ImageContainer> */}
           <ImageContainer>
-                <div style={{minHeight: '20vh'}}><ImageLoader dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="auto" width="100%"></ImageLoader></div>
+                 <ImageLoader dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 400}} url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="25vh" width="100%"></ImageLoader> 
                 {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)}  className="font-opensans">
                      {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
                     All Photos
