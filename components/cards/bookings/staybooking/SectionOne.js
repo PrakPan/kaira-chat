@@ -30,21 +30,27 @@ const Subtext = styled.p`
 const RatingContainer = styled.div`
    
     width: max-content;
-    padding: 0.5rem;
+    padding: 0.25rem;
     background-color: green;
     color: white;
     font-size: 0.75rem;
     border-radius: 2px;
+    display: flex; 
+    align-items: center;
 `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
     const RANDOM_RATING = [8.8, 8.9, 9.0, 9.1,9.2,9.3,9.4,9.5,9.6,9.7,9.8];
     let color="rgba(18, 105, 4, 1)";
-    if(props.rating){
-        console.log(props.rating)
+    console.log(props.data)
+    try{
+    if(props.data.user_rating){
+        // console.log(props.rating)
 
-    if(props.rating < 4 && props.rating > 3) color="orange";
-    else if(props.rating < 3) color="red";
+    if(props.data.user_rating < 3.8 && props.data.user_rating > 3) color="orange";
+    else if(props.data.user_rating < 3) color="red";
+    }}catch{
+
     }
 
    if(props.data)
@@ -55,15 +61,17 @@ const Section= (props) => {
                 <div style={{display: 'flex'}}>
                     <ImageLoader url="media/icons/bookings/pin.png" leftalign dimensions={{width: 200, height: 250}} width="1.75rem" widthmobile="1.75rem" ></ImageLoader>
                     <div style={{display: 'flex' , alignItems: 'center'}}>
-                        <Subtext className='font-opensans' style={{fontWeight: '600'}}>2 Nights in Goa</Subtext>
+                        <Subtext className='font-opensans' style={{fontWeight: '600'}}>{props.data.duration > 1 ? props.data.duration+" Nights " : props.data.duration === 1 ? "1 Night " : null}</Subtext>
+                        <Subtext className='font-opensans' style={{fontWeight: '600', marginLeft: '0.25rem'}}>{props.data.city  ? "in "+props.data.city : null}</Subtext>
+
                         {/* <Subtext className='font-opensans'>Vagator Beach</Subtext> */}
                     </div>
                 </div>
                 <div className='center-div'>
-                {props.rating &&  color!=='red'? <RatingContainer className="font-opensans" style={{backgroundColor: color, lineHeight: '1'}}>
-                        <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
-                        {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
-                    </RatingContainer> : null}
+                {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>
+                        <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white', lineHeight: '1'}}/>
+                         { props.data.user_rating  +" /5"} 
+                    </RatingContainer> : null : null }
                 </div>
             </div>
       </Container>

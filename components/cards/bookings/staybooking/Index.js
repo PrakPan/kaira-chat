@@ -94,14 +94,14 @@ const getDate = (date) => {
     //  if(isPageWide)
     return(
         <Container className='border' style={{borderRadius: "10px"}}>
-            <ImageContainer star_category={props.star_category} duration={props.duration} tag={props.tag} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler} check_in={props.check_in} check_out={props.check_out} city={props.city} price={props.price} type={props.type} setShowBookingModal={props.setShowBookingModal} heading={props.heading} details={props.details} blur={props.blur} images={props.images} setImagesHandler={props.setImagesHandler}></ImageContainer>
+            <ImageContainer images={props.data.images} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler}  setShowBookingModal={props.setShowBookingModal} setImagesHandler={props.setImagesHandler}></ImageContainer>
             <div  style={{padding: "",   flex: '1 1 auto', display:  'flex', flexFlow: 'column'}}>
                 <div   style={{padding: "",   flex: '1 1 auto', display:  'flex', flexFlow: 'column', height: '100%'}} >
                     {/* {props.type === "Accommodation" && props.rating &&  color!=='red'? <RatingContainer style={{backgroundColor: color, lineHeight: '1'}}>
                         <FontAwesomeIcon icon={faStar} style={{fontSize: '0.75rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
-                    <SectionOne data={props.data} rating={4.6}></SectionOne>
+                    <SectionOne data={props.data}  ></SectionOne>
                     <SectionTwo data={props.data}></SectionTwo>
                     <SectionThree data={props.data}></SectionThree>
                     <SectionFour setShowBookingModal={props.setShowBookingModal}></SectionFour>
