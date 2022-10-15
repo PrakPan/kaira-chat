@@ -186,68 +186,8 @@ const Booking = (props) =>{
             </div>
         </Container>
     );
-    else return(
-<Container className="border-thin">
-            <ImageContainer data={props.data} tag={props.tag} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler} check_in={props.check_in} check_out={props.check_out} city={props.city} price={props.price} type={props.type} setShowBookingModal={props.setShowBookingModal} heading={props.heading} details={props.details} blur={props.blur} images={props.images} setImagesHandler={props.setImagesHandler}></ImageContainer>
-            
-            <div style={{padding: "0.5rem 0.5rem 3rem 0.5rem", position: 'relative'}}>
-                    {/* <Heading className="font-opensans">Details</Heading> */}
-                    <GridContainer>
-                        <LogoContainer>
-                                <ImageLoader
-                                url="media/website/IndiGo-Logo-Tagline.webp"
-                                dimensions={{width: 200, heght: 200}}
-                                width="60%"
-                                >
-
-                                </ImageLoader>
-                                <div className='font-opensans text-center' style={{fontWeight: '300', fontSize: '0.5rem', margin: '0.5rem'}}>{props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode + " " + props.data.costings_breakdown.Segments[0][0].Airline.FlightNumber}</div>
-                        </LogoContainer>
-                        <DetailsGridContainer>
-                            <div style={{display: 'flex', gap: '0.25rem'}}>
-                                {props.data.check_in ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.85rem'}} className='font-opensans'>{getTime(props.data.check_in)}</div>: <div></div>}
-                                <div style={{ margin: '0', fontWeight: '300', fontSize: '0.85rem'}} className='font-opensans'>{"("+props.data.costings_breakdown.Segments[0][0].Origin.Airport.CityCode+")"}</div>
-                            </div>
-                            <div style={{margin: '0 0.5rem'}}>
-                                <img  height='1rem' src={right} style={{height: '1.25rem', width: '100%', margin: 'auto', display: 'block'}}></img>
-                            </div>
-                            <div style={{display: 'flex', gap: '0.25rem'}}>
-                                {props.data.check_out ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.85rem'}} className='font-opensans'>{getTime(props.data.check_out)}</div> : <div></div>}
-                                <div style={{ margin: '0', fontWeight: '300', fontSize: '0.85rem'}} className='font-opensans'>{"("+props.data.costings_breakdown.Segments[0][0].Destination.Airport.CityCode+")"}</div>
-                            </div>
-                            <div>
-                                {props.data.check_in ? <div className='font-opensans' style={{fontSize: '0.55rem', fontWeight: '300'}}>{getDate(props.data.check_in)}</div> : <div></div>}
-                                <div className='font-opensans' style={{fontSize: '0.55rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal}</div>
-                            </div>
-                            <div >
-                            <div className='font-opensans text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>via Hyderabad</div>
-                            <div className='font-opensans text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>4h Layover</div>
-
-
-                            </div>
-                            <div>
-                                {props.data.check_out ? <div className='font-opensans' style={{fontSize: '0.55rem', fontWeight: '300'}}>{getDate(props.data.check_out)}</div> : <div></div>}
-                                <div className='font-opensans' style={{fontSize: '0.55rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][0].Destination.Airport.Terminal}</div>
-                            </div>
-                        </DetailsGridContainer>
-                    </GridContainer>
-
-                    
-             
-              
-                <ButtonContainer>
-                {/* {!props.is_stock && props.type=="Accommodation" ? <Button boxShadow onclick={props.setShowBookingModal} onclickparams={null} hoverColor='black' fontSizeMobile="0.75rem" borderRadius="2rem" borderWidth='1px' padding="0.25rem 1rem">Change</Button> : null} */}
-            </ButtonContainer>
-            </div>
-            
-            {/* {props.showBookingModal ? <BookingModal replacing={props.heading} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null} */}
-        </Container>
-
-    );
-    // }
-    // else {
-    //     return <FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={images} ></FullScreenGallery>
-    // }
+    
+   
 }
 
 export default React.memo(Booking);

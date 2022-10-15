@@ -26,13 +26,14 @@ const Section= (props) => {
    if(props.data)
     return(
       <Container className='font-opensans'>  
-                <div style={{display: 'flex', alignItems: 'center', }} >
+                {/* <div style={{display: 'flex', alignItems: 'center', }} >
                     <div style={{lineHeight: '1', fontSize: '13px', fontWeight: '700', padding: '0.25rem', backgroundColor: '#f7e700', borderRadius: '5px'}} className="font-opensans">
                        <IoCheckboxOutline style={{lineHeight: '1', fontSize: '15px', marginRight: '0.25rem', fontWeight: '700', marginTop: '-2px'}}></IoCheckboxOutline>
                         Selected
                     </div>
             
-                </div >
+                </div > */}
+                <div></div>
                 <div >
                 <Cost className='font-opensans'>
                 {"₹ "+ getIndianPrice(Math.round(props.data.booking_cost/100))+" /-"}

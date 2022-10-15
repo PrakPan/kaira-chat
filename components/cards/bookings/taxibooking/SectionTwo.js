@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import ImageLoader from '../../../ImageLoader';
+import { getHumanDate } from '../../../../services/getHumanDate';
 const Container = styled.div`
 flex-grow: 1;
 margin: 0.75rem 0.5rem 0 0.5rem;
@@ -29,7 +30,15 @@ margin: 0.75rem 0.5rem 0 0.5rem;
  `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-  
+    const getDate = (date) => {
+        if(date){
+        let year = date.substring(0,4)
+        let month = date.substring(5,7);
+        let day = date.substring(8,10);
+        return(getHumanDate(day+"/"+month+"/"+year) );
+        }
+    
+    }
    if(props.data)
     return(
       <Container className='font-opensans'>  
@@ -38,20 +47,20 @@ const Section= (props) => {
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div>
                             <Heading className='font-opensans'>Trip Start</Heading>
-                            <Text className='font-nunito'>15th July</Text>
-                            <Text className='font-nunito'>10:00AM</Text>
+                            <Text className='font-nunito'>{getDate(props.data.check_in)}</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div>
                         <div>
                             <Heading className='font-opensans'>Trip End</Heading>
-                            <Text className='font-nunito'>17th July</Text>
-                            <Text className='font-nunito'>10:00AM</Text>
+                            <Text className='font-nunito'>{getDate(props.data.check_out)}</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div>
                     </div>
                     <div style={{display: 'flex', flexGrow: '1', flexDirection: 'column', alignItems: 'flex-end'}}>
                             <Heading className='font-opensans'>Included</Heading>
-                            <Text className='font-nunito'>5 days</Text>
+                            <Text style={{textAlign: 'right'}} className='font-nunito'>{props.data.costings_breakdown ? props.data.costings_breakdown.duration ? props.data.costings_breakdown.duration.text :null  : null}</Text>
                         </div>
                 </div>
                 <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}>
@@ -59,7 +68,7 @@ const Section= (props) => {
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>
                             <Heading className='font-opensans'>Included</Heading>
-                            <Text className='font-nunito'>512km</Text>
+                            <Text   className='font-nunito'>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Text>
                         </div>
                      
                     </div>

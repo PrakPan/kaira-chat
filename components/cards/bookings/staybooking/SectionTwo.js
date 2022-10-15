@@ -72,8 +72,8 @@ const Section= (props) => {
                         </div> */}
                       { rooms.length ? 
                         rooms.map(room => 
-                            <div className='' style={{display: 'flex'}}>
-                                <Text className='font-opensans'>{room.number_of_rooms + " x "}</Text>
+                            <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+                                <Text className='font-opensans' style={{}}>{room.number_of_rooms + " x "}</Text>
                                 <Text className='font-opensans' style={{marginLeft: '0.25rem'}}>{room.room_type_name}</Text>
                             </div>
                         )

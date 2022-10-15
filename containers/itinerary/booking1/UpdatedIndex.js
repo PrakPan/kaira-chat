@@ -29,6 +29,8 @@ import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
 
 import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
+import FlightBookingCard  from '../../../components/cards/bookings/flightbooking/Index';
+import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -126,7 +128,8 @@ const Booking = (props) => {
       const tabs = ['S', 'T', 'A'];
       ga.event({action: 'Itinerary-bookings-tabs-'+tabs[newValue], params: {key : ''}});
 
-      if(newValue === 1) props._reloadTransferBookings();
+      if(newValue === 1) props._reloadFlightBookings();
+      else if(newValue === 2) props._reloadTransferBookings();
       setValue(newValue);
     };
 
@@ -306,7 +309,7 @@ const Booking = (props) => {
 
     if(props.transferBookings)
     for(var i=0 ; i < props.transferBookings.length ; i++){
-       
+       if(props.transferBookings[i].user_selected){
         let oldbooking = false;
         if(props.transferBookings[i].version === 'v1') oldbooking= true;
         if(props.traveleritinerary) oldbooking=true;
@@ -347,22 +350,69 @@ const Booking = (props) => {
          else{
  
      
-          if(props.transferBookings[i].booking_type==='Flight'){
-          bookings_flights.push(
-            <FlightCard is_stock={props.is_stock} bookings={props.transferBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_selected={props.transferBookings[i].user_selected} data={props.transferBookings[i]} city={props.transferBookings[i].city}  is_auth={props.is_auth} tag={props.transferBookings[i].tag} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} rooms={props.transferBookings[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.transferBookings[i].city} type={props.transferBookings[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {_setImagesHandler} accommodation heading={props.transferBookings[i]["name"]} rating={props.transferBookings[i]["user_rating"]} details={ props.transferBookings[i]["points"]} price={props.transferBookings[i]["booking_cost"]}  price_type={props.transferBookings[i].costings_breakdown.length ? props.transferBookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.transferBookings[i]["number_of_rooms"]} check_in={props.transferBookings[i]["check_in"]} check_out={props.transferBookings[i]["check_out"]} room_type={props.transferBookings[i]["room_type"]} images={props.transferBookings[i]["images"]} ></FlightCard>
-         )
-        }
-        else bookings_transfers.push(
-            <BookingCard  check_in={check_in} taxi_type={taxi_type} transfer_type={transfer_type} city_id={city_id} destination_city_id={destination_city_id} duration={duration} cardUpdateLoading={props.cardUpdateLoading}  is_selected={props.transferBookings[i].user_selected} is_stock={props.is_stock} tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.transferBookings[i].user_selected} price={props.transferBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.transferBookings[i]["name"]} details={ props.transferBookings[i]["points"]}  rating={props.transferBookings[i]["user_rating"]} images={ props.transferBookings[i]["images"]}></BookingCard>
+           bookings_transfers.push(
+            <TaxiBookingCard data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
         )
       }
     }
+  
     // setAlternates(alternatesarr);
-    setBookingTransfersDesktopJSX([...bookings_flights, ...bookings_transfers]);
-    setBookingTransfersMobileJSX(<Flickity cards={[...bookings_flights, ...bookings_transfers]}></Flickity>);
+    setBookingTransfersDesktopJSX([ ...bookings_transfers]);
+    setBookingTransfersMobileJSX(<Flickity cards={[ ...bookings_transfers]}></Flickity>);
 
-
+  }
    }, [props.transferBookings, props.cardUpdateLoading]);
+   
+   useEffect(() => {
+
+    if(props.flightBookings)
+    for(var i=0 ; i < props.flightBookings.length ; i++){
+       
+        let oldbooking = false;
+        if(props.flightBookings[i].version === 'v1') oldbooking= true;
+        if(props.traveleritinerary) oldbooking=true;
+        let name = props.flightBookings[i]["name"];
+        let costings_breakdown=props.flightBookings[i]["costings_breakdown"];
+        let cost=props.flightBookings[i]["booking_cost"];
+        let itinerary_id = props.flightBookings[i]["itinerary_id"];
+        let itinerary_name=props.flightBookings[i]["itinerary_name"];
+        let booking_type=props.flightBookings[i]["booking_type"];
+
+        // let accommodation = props.transferBookings[i]["accommodation"];
+        let tailored_id = props.flightBookings[i]["tailored_itinerary"]
+        let id=props.flightBookings[i]["id"];
+        let check_in=props.flightBookings[i]["check_in"];
+        let check_out=props.flightBookings[i]["check_out"];
+        let pax = {
+          number_of_adults: props.flightBookings[i]["number_of_adults"],
+          number_of_children: props.flightBookings[i]["number_of_children"],
+          number_of_infants: props.flightBookings[i]["number_of_infants"],
+        }
+        let city=props.flightBookings[i]["city"];
+        let room_type = props.flightBookings[i]["room_type"];
+         let origin_iata=props.flightBookings[i]["origin_city_iata_code"]; 
+        let destination_iata=props.flightBookings[i]["destination_city_iata_code"]; 
+        if(oldbooking){
+          
+          bookings_flights.push(
+              <OldBookingCard payment={props.payment} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.flightBookings[i]["name"]} details={ props.flightBookings[i]["points"]}  rating={props.flightBookings[i]["user_rating"]}  images={ props.flightBookings[i]["images"]}></OldBookingCard>
+          ) 
+        }
+         else{
+ 
+     
+          bookings_flights.push(
+            <FlightBookingCard  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
+         );
+        
+      }
+    }
+    // setAlternates(alternatesarr);
+    setBookingFlightsDesktopJSX([...bookings_flights]);
+    setBookingFlightsMobileJSX(<Flickity cards={[...bookings_flights]}></Flickity>);
+
+
+   }, [props.flightBookings, props.cardUpdateLoading]);
    
 
       useEffect(() => {
@@ -461,9 +511,11 @@ const Booking = (props) => {
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
-       <Tab  label="Stays" className="bookingdetail-tab font-opensans"></Tab>
-       <Tab label="Transfers"  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
-       <Tab label="Activities"  className="bookingdetail-tab font-opensans"></Tab>
+            <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
+       <Tab label={props.flightBookings ? "Flights" + " ("+props.flightBookings.length+")": "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
+       <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
+
+       {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>
       <TabPanel value={value} index={0} >
             {bookingsAccommodationsDesktopJSX }
@@ -471,11 +523,18 @@ const Booking = (props) => {
        <TabPanel value={value} index={1} >
           {!props.transferLoading ? <DesktopCardContainer>
             {bookingsFlightsDesktopJSX}
-            {bookingsTransfersDesktopJSX}
+            {/* {bookingsTransfersDesktopJSX} */}
 
             </DesktopCardContainer>    :  <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
        </TabPanel>
        <TabPanel value={value} index={2} >
+          {!props.transferLoading ? <DesktopCardContainer>
+            {/* {bookingsFlightsDesktopJSX} */}
+            {bookingsTransfersDesktopJSX}
+
+            </DesktopCardContainer>    :  <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
+       </TabPanel>
+       <TabPanel value={value} index={3} >
            {bookingsAcivityDesktopJSX}
        </TabPanel>
             </BookingsContainer>
@@ -493,9 +552,9 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            <MobileWidthContainer><MessageContainer className='border-thin font-opensans'>
+            {/* <MobileWidthContainer><MessageContainer className='border-thin font-opensans'>
               Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
-              </MessageContainer></MobileWidthContainer>
+              </MessageContainer></MobileWidthContainer> */}
              {/* {bookingMobileJSX} */}
              <Tabs
         value={value}
@@ -506,18 +565,24 @@ const Booking = (props) => {
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
-       <Tab  label="Stays" className="bookingdetail-tab font-opensans"></Tab>
-       <Tab label="Transfers"  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
-       <Tab label="Activities"  className="bookingdetail-tab font-opensans"></Tab>
+       <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
+       <Tab label={props.flightBookings ? "Flights" + " ("+props.flightBookings.length+")": "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
+       <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
+
+       {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>
       <TabPanel value={value} index={0} >
             {bookingsAccommodationsMobileJSX}
        </TabPanel>
        <TabPanel value={value} index={1} >
             {bookingsFlightsMobileJSX}
-            {bookingsTransfersMobileJSX}
+            {/* {bookingsTransfersMobileJSX} */}
        </TabPanel>
        <TabPanel value={value} index={2} >
+            {/* {bookingsFlightsMobileJSX} */}
+            {bookingsTransfersMobileJSX}
+       </TabPanel>
+       <TabPanel value={value} index={3} >
             {bookingsActivityMobileJSX}
        </TabPanel>
              <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>

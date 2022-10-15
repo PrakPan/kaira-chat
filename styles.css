@@ -309,21 +309,21 @@ b{
 .bookingdetail-tab{
   text-transform: none !important;
   color: black !important;
-  border-style: solid solid solid solid !important;
+  border-style: none !important;
   border-color: #e4e4e4 !important;
   border-width: 1px !important;
- 
-  font-size: 1rem !important;
-  width: 33vw !important;
-   background-color: hsl(0,0%,97%) !important;
+  flex-grow:  1;
+  font-size: 0.85rem !important;
+  width: max-content !important;
+ }
+.bookingdetail-tab .MuiTab-wrapper{
+font-size: 0.85rem !important;
 }
-
 .bookingdetail-tab.Mui-selected{
   color: black !important;
-  background-color:hsl(0,0%,97%) !important;
-  border-style: solid solid solid solid !important;
+   border-style: solid solid solid solid !important;
   border-color: #e4e4e4 #e4e4e4 #f7e700 #e4e4e4 !important ;
-  border-width: 1px 1px 3px 1px !important;
+  border-width: 0px 0px 3px 0px !important;
   font-weight: 800 !important;
 }
 .MuiTabs-scrollButtons{
