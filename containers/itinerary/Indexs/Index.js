@@ -59,6 +59,8 @@ const [plan, setPlan] = useState(null);
     const [activityBookings, setActivityBookings] = useState(null);
     const [flightBookings, setFlightBookings] = useState(null);
 
+    const [selectingBooking, setSelectingBooking] = useState(null);
+
     const [payment, setPayment] = useState(null);
     const [noBookings, setNoBookings] = useState(false);
     
@@ -365,6 +367,55 @@ const _reloadFlightBookings  = () => {
       window.alert("There seems to be a problem, please try again!")
   })
   }
+
+  const _deselectBookingHandler = ( booking) => {
+    setSelectingBooking(booking.id)
+    let data =[];
+    //  setCardUpdateLoading(booking_id); booking.id
+    // for(var i = 0 ; i<bookings.length; i++){
+      // if(bookings[i].id === booking_id)
+        data.push( {
+          "id": booking.id,
+          "booking_type": booking.booking_type,
+          "itinerary_type": "Tailored",
+          "user_selected": false,			
+          "itinerary_id": booking.itinerary_id,
+          "tailored_itinerary": booking.tailored_itinerary,
+          "itinerary_name": booking.itinerary_name,
+          "itinerary_db_id": null,
+          "check_in": booking.check_in,
+          "check_out": booking.check_out,
+          "city": booking.city,
+          "costings_breadown": booking.costings_breakdown,
+          "accommodation": booking.accommodation,
+          "is_estimated_price": booking.is_estimated_price
+      });
+      // else data.push(bookings[i]);
+    // }
+  
+    // const token = localStorage.getItem('access_token')
+    axiosbookingupdateinstance.post("/?booking_type=Accommodation", data, {headers: {
+      'Authorization': `Bearer ${props.token}`
+      }}).then(res => {
+        setCardUpdateLoading(null)
+           _updateStayBookingHandler(res.data.bookings);
+           setSelectingBooking(null);
+           setTimeout(function(){ 
+                
+            getPaymentHandler(); }, 1000);
+            return 1;
+ 
+  
+  }).catch(err => {
+    setSelectingBooking(null);
+
+      setCardUpdateLoading(null)
+      return 0;
+
+      window.alert("There seems to be a problem, please try again!")
+  })
+  }
+
    const _updatePaymentHandler = (json) => {
      setPayment(json);
 }
@@ -384,7 +435,7 @@ const _reloadFlightBookings  = () => {
                  <FullImgContainer heading={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null} plan={plan}></FullImgContainer>
            </FullImg> 
             <div id="itinerary-anchor">
-              <Menu getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightHandler={_updateFlightHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
+              <Menu selectingBooking={selectingBooking} _deselectBookingHandler={_deselectBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightHandler={_updateFlightHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
               {/* <ItineraryMobile></ItineraryMobile> */}
               {/* <Cities></Cities> */}
             </div>

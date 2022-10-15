@@ -36,18 +36,13 @@ const Booking = (props) =>{
     //     detailsarr.push(
     //         <li className={props.blur ? 'blurry-text' : ''} style={{fontSize: "0.75rem",  margin: "0.5rem 0 0.5rem 0rem", fontWeight: "300"}} >{props.details[i]}</li>
     //     );
-    // }
-  
- 
- 
-
-  
+    // } 
     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo data={props.data}></SectionTwo>
-         <SectionThree data={props.data}></SectionThree>
+         <SectionThree  _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
          <SectionFour></SectionFour>
         </Container>
     );

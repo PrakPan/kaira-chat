@@ -103,7 +103,7 @@ const getDate = (date) => {
                     </RatingContainer> : null} */}
                     <SectionOne data={props.data}  ></SectionOne>
                     <SectionTwo data={props.data}></SectionTwo>
-                    <SectionThree data={props.data}></SectionThree>
+                    <SectionThree data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
                     <SectionFour setShowBookingModal={props.setShowBookingModal}></SectionFour>
                     {/* {props.type === "Accommodation" ? 
                     <div>
