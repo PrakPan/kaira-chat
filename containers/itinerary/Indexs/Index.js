@@ -386,7 +386,7 @@ const _reloadFlightBookings  = () => {
           "check_in": booking.check_in,
           "check_out": booking.check_out,
           "city": booking.city,
-          "costings_breadown": booking.costings_breakdown,
+          "costings_breakdown": booking.costings_breakdown,
           "accommodation": booking.accommodation,
           "is_estimated_price": booking.is_estimated_price
       });
@@ -400,18 +400,16 @@ const _reloadFlightBookings  = () => {
         setCardUpdateLoading(null)
            _updateStayBookingHandler(res.data.bookings);
            setSelectingBooking(null);
-           setTimeout(function(){ 
+          //  setTimeout(function(){ 
                 
-            getPaymentHandler(); }, 1000);
-            return 1;
- 
+          //   getPaymentHandler(); }, 1000);
+  
   
   }).catch(err => {
     setSelectingBooking(null);
 
       setCardUpdateLoading(null)
-      return 0;
-
+ 
       window.alert("There seems to be a problem, please try again!")
   })
   }

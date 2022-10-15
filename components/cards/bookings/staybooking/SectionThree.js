@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import {IoCheckboxOutline} from 'react-icons/io5';
+import {IoMdSquareOutline} from 'react-icons/io'; 
 import { getIndianPrice } from '../../../../services/getIndianPrice';
 import Spinner from '../../../Spinner';
 const Container = styled.div`
@@ -29,12 +30,12 @@ const Section= (props) => {
    if(props.data)
     return(
       <Container className='font-opensans'>  
-                <div onClick={() => props._deselectBookingHandler(props.data)} style={{height: 'max-content', display: 'flex', fontSize: '13px', alignItems: 'center', fontWeight: '700', padding: '0.25rem', backgroundColor: '#f7e700', borderRadius: '5px'}} >
+                <div onClick={() => props._deselectBookingHandler(props.data)} style={{height: 'max-content', display: 'flex', fontSize: '13px', alignItems: 'center', fontWeight: '700', padding: '0.25rem', backgroundColor: props.data.user_selected ?  '#f7e700' : 'transparent', borderRadius: '5px', borderWidth: '1px', borderStyle: 'solid' , borderColor: props.data.user_selected ? '#f7e700' : "#e4e4e4"}} >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
-                       : <IoCheckboxOutline style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline>}
+                       : props.data.user_selected ?  <IoCheckboxOutline style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
                     </div>
-                    <div style={{marginLeft: '4px'}}>Selected</div>
+                    <div style={{marginLeft: '4px'}}>{props.data.user_selected ? 'Selected' : 'Select'}</div>
             
                 </div >
                 {/* <div></div> */}

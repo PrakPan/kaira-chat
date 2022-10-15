@@ -284,14 +284,16 @@ const Booking = (props) => {
             if(props.stayBookings[i].costings_breakdown.length)
             number_of_rooms = props.stayBookings[i].costings_breakdown[0]["number_of_rooms"];
              if(!props.stayBookings[i].user_selected && !props.stayBookings[i].alternate_to){
-              null;
+              bookings_accommodations.push(
+                <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+             )
               //set as selectable booking
             }
             else if(!props.stayBookings[i].user_selected && props.stayBookings[i].alternate_to){
               //add in alternate list
               alternatesarr[props.stayBookings[i].alternate_to].push(props.stayBookings[i]);
             }
-            else if(props.stayBookings[i].user_selected)
+            else 
             bookings_accommodations.push(
             <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
          )}
