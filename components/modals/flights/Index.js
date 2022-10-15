@@ -14,9 +14,11 @@ import {connect} from 'react-redux';
 import axiosflightsearch from '../../../services/bookings/FlightSearch';
 import LogInModal from '../Login';
 
+import SectionOne from './SectionOne';
+import SectionTwo from './SectionTwo';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
-import Flight from './flight/Index';
+import Flight from './new-flight-searched/Index';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -33,7 +35,7 @@ const OptionsContainer = styled.div`
     overflow-x: hidden;
     width: 100%;
     position: relative;
-    max-height: 65vh;
+    max-height: 90vh;
 
     @media screen and (min-width: 768px) {
         max-height: 80vh;
@@ -450,10 +452,15 @@ setViewMoreStatus(false);
 if(props.token)
   return(
       <div>
-        <Modal   id="bookingedit-modal" show={props.showFlightModal}  size="xl"  onHide={props.setHideFlightModal} style={{padding: "0"}}>
+        <Modal   className="booking-modal" show={props.showFlightModal}  size="xl"  onHide={props.setHideFlightModal} style={{padding: "0"}}>
            {/* <Modal.Header>2</Modal.Header> */}
-            <Modal.Body style={{padding: "0.5rem",  borderStyle: "solid", borderColor: "#F7e700", borderWidth: "0.5rem", borderRadius: '16px', backgroundColor: 'white', }} >
-            <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon>
+           <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
+           <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
+              <SectionTwo></SectionTwo>
+
+           </Modal.Header>
+            <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
+            {/* <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> */}
                <GridContainer style={{clear: 'right'}}>
                 <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar>
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
@@ -486,7 +493,7 @@ if(props.token)
                
                </ContentContainer>
                </GridContainer>
-               {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null}
+               {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
 
             </Modal.Body>
            

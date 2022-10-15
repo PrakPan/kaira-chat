@@ -285,7 +285,7 @@ const Booking = (props) => {
             number_of_rooms = props.stayBookings[i].costings_breakdown[0]["number_of_rooms"];
              if(!props.stayBookings[i].user_selected && !props.stayBookings[i].alternate_to){
               bookings_accommodations.push(
-                <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+                <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
              )
               //set as selectable booking
             }
@@ -295,7 +295,7 @@ const Booking = (props) => {
             }
             else 
             bookings_accommodations.push(
-            <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+            <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
          )}
      
       }
@@ -303,9 +303,9 @@ const Booking = (props) => {
     setAlternates(alternatesarr);
     
     setBookingAccommodationsDesktopJSX(<DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>);
-    setBookingAccommodationsMobileJSX(<Flickity cards={bookings_accommodations}></Flickity>);
+    setBookingAccommodationsMobileJSX(<Flickity initialIndex={props.stayFlickityIndex}  cards={bookings_accommodations}></Flickity>);
     
-  }, [props.stayBookings, props.selectingBooking]);
+  }, [props.stayBookings, props.selectingBooking, props.stayFlickityIndex]);
 
       useEffect(() => {
 
@@ -404,7 +404,7 @@ const Booking = (props) => {
  
      
           bookings_flights.push(
-            <FlightBookingCard is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
+            <FlightBookingCard setShowFlightModal={props.setShowFlightModal}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
          );
         
       }

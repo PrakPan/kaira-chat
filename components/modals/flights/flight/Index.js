@@ -48,12 +48,8 @@ const Accommodation = (props) => {
   
     useEffect(() => {
       if(props.data)
-      if(props.data.FareRules)
-          // axiosflightlogoinstance.get('/?airline_code='+props.data.AirlineCode).then( res => {
-          //      setUrl(res.data["image"])
-
-          // }
-          // )
+      // if(props.data.FareRules)
+        
           setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.AirlineCode+".png");
     }, [props.data]);
  //   if(!showPhotos)

@@ -70,9 +70,9 @@ export default function TemporaryDrawer(props) {
    className="filters-mobile-tabs"
    id="filter-tab" 
   >
-            <Tab  id="filter-budget" key="filter-budget" label={"Budget"} className={"booking-filter-tab font-opensans"}></Tab>
-            <Tab  id="filter-type" key="filter-type" label={"Type"} className={"booking-filter-tab font-opensans"}></Tab>
-            <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-opensans"}></Tab>
+            <Tab  id="filter-budget" key="filter-budget" label={"Stops"} className={"booking-filter-tab font-opensans"}></Tab>
+            <Tab  id="filter-type" key="filter-type" label={"Airline"} className={"booking-filter-tab font-opensans"}></Tab>
+            <Tab  id="filter-starcategory" key="filter-starcategory" label={"Arrival"} className={"booking-filter-tab font-opensans"}></Tab>
 
   </Tabs>
           <Drawer

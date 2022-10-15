@@ -1,8 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components'
 //  import { getHumanDate } from '../../../../services/getHumanDate';
-  import SectionOne from './sectionone/Index';
-import SectionTwo from './sectiontwo/Index';
+ import SectionTwo from './sectiontwo/Index';
   import media from '../../../media';
  import SectionThree from './SectionThree';
 import SectionFour from './SectionFour';
@@ -13,6 +12,7 @@ import SectionFour from './SectionFour';
     display: flex;
     flex-flow: column;
     height: 100%;
+    margin-bottom: 0.5rem;
     @media screen and (min-width: 768px){
         border-radius: 10px;
         position: relative;
@@ -28,7 +28,7 @@ const Booking = (props) =>{
     let isPageWide = media('(min-width: 768px)')
 
     
-
+console.log(props.data);
   
     // const detailsarr=[]
     // for(var i=0; i<props.details.length; i++){
@@ -40,10 +40,9 @@ const Booking = (props) =>{
     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
-         <SectionOne data={props.data}></SectionOne>
-         <SectionTwo data={props.data}></SectionTwo>
-         <SectionThree _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         <SectionFour setShowFlightModal={props.setShowFlightModal} ></SectionFour>
+          <SectionTwo data={props.data}></SectionTwo>
+         <SectionThree  _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
+         <SectionFour data={props.data}></SectionFour>
         </Container>
     );
  
