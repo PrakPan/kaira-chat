@@ -35,7 +35,7 @@ export default function TemporaryDrawer(props) {
     console.log(filter)
         if(filter === 'Budget') setFilterHeading('Budget')
         else if(filter === 'Type') setFilterHeading('Type');
-        else setFilterHeading('Star Category');
+        // else setFilterHeading('Star Category');
        setFilterSelected(filter);
         setState(true);
   }
@@ -73,7 +73,7 @@ export default function TemporaryDrawer(props) {
   >
             <Tab  id="filter-budget" key="filter-budget" label={"Budget"} className={"booking-filter-tab font-opensans"}></Tab>
             <Tab  id="filter-type" key="filter-type" label={"Type"} className={"booking-filter-tab font-opensans"}></Tab>
-            <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-opensans"}></Tab>
+            {/* <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-opensans"}></Tab> */}
 
   </Tabs>
           <Drawer

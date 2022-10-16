@@ -32,7 +32,7 @@ const Section= (props) => {
               </div>
             <div className="center-div text-center" style={{ padding: '1rem 0.5rem', borderColor: 'rgba(238, 238, 238, 1)', borderWidth: '1px', borderStyle: 'none none none solid'}}>
               {/* <ImageLoader url="media/icons/bookings/calendar (2).png" leftalign dimensions={{width: 200, height: 200}} width="1.5rem" widthmobile="1.5rem" ></ImageLoader> */}
-              <p style={{margin: '0', fontSize: '15px', fontWeight: '700'}} className="font-opensans text-center">Day 2</p>
+              <p style={{margin: '0', fontSize: '18px', fontWeight: '700'}} className="font-opensans text-center">Day 2</p>
             </div>
       </Container>
   ); 

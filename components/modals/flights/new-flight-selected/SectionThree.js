@@ -22,7 +22,7 @@ const Cost = styled.p`
 `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-  
+  console.log('d', props.data)
    if(props.data)
     return(
       <Container className='font-opensans'>  
@@ -38,7 +38,7 @@ const Section= (props) => {
                 {/* <div></div> */}
                 <div >
                 <Cost className='font-opensans'>
-                {props.data.Fare ? props.data.Fare.OfferedFare ?  "₹ "+ getIndianPrice(Math.round(props.data.Fare.OfferedFare))+" /-" : null : null}
+                {props.data.cost ?   "₹ "+ getIndianPrice(Math.round(props.data.cost))+" /-"  : null}
                 </Cost>
                 </div>
       </Container>

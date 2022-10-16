@@ -523,7 +523,7 @@ const Booking = (props) => {
             {bookingsAccommodationsDesktopJSX }
        </TabPanel>
        <TabPanel value={value} index={1} >
-          {!props.transferLoading ? <DesktopCardContainer>
+          {!props.flightLoading ? <DesktopCardContainer>
             {bookingsFlightsDesktopJSX}
             {/* {bookingsTransfersDesktopJSX} */}
 
@@ -577,7 +577,7 @@ const Booking = (props) => {
             {bookingsAccommodationsMobileJSX}
        </TabPanel>
        <TabPanel value={value} index={1} >
-            {bookingsFlightsMobileJSX}
+            {!props.flightLoading ? bookingsFlightsMobileJSX : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div> }
             {/* {bookingsTransfersMobileJSX} */}
        </TabPanel>
        <TabPanel value={value} index={2} >

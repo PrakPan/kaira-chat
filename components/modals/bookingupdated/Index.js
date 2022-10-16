@@ -2,7 +2,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
-import LeftSideBar from './leftsidebar/Index';
+// import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
 import AccommodationSearched from './new-accommodation-searched/Index';
 // import AccommodationModal from '../accommodation/Index';
@@ -155,6 +155,7 @@ const Booking = (props) => {
             })
       },[])
       const _updateOptionsHandlerWithFilter = () => {
+        console.log(filtersState);
           setOffset(0);
           setUpdateLoadingState(true);
             setNoResults(false);
@@ -249,11 +250,11 @@ const Booking = (props) => {
              }
 
 setViewMoreStatus(false);
+setUpdateLoadingState(true);
+             setMoreOptionsJSX([])
         axiosaccommodationinstance.post("/?limit="+limit+"&offset=0", 
         {
-            "cities": [props.selectedBooking.city],
-            // "check_in": "2022-02-01",
-            // "check_out": "2022-02-04",
+            "cities": props.selectedBooking.city,
             "check_in": props.selectedBooking.check_in,
             "check_out": props.selectedBooking.check_out,
             "accommodation_types": type,
@@ -268,10 +269,11 @@ setViewMoreStatus(false);
         if(res.data.results.length){
             setNoResults(false)
             let options = [];
+            console.log(res.data)
             for(var i = 0; i < res.data.results.length; i++){
-                 if(res.data.results[i].images.length > 3) //rmeove
-                if(res.data.results[i].name !== props.selectedBooking.name)
-                options.push(<Accommodation  selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} booking_id={props.selectedBooking.id} itinerary_id={props.selectedBooking.itinerary_id}  accommodation_id={res.data.results[i].id} room_type={res.data.results[i].live_data.roomtypeName} pricing_type={res.data.results[i].live_data.includeBreakfast ? "CP" : "EP"}  _updateBookingHandler={_updateBookingHandler} type={res.data.results[i].accommodation_type} review_score={res.data.results[i].live_data.reviewScore}   review_count={res.data.results[i].live_data.reviewCount} key={i} name={res.data.results[i].name} description={res.data.results[i].description} location={res.data.results[i].location} star={res.data.results[i].star_category} cost={Math.ceil(res.data.results[i].live_data.dailyRate/100)} images={res.data.results[i].images}  room_type={res.data.results[i].live_data.roomtypeName}  includeBreakfast={res.data.results[i].live_data.includeBreakfast} ></Accommodation>)
+                //  if(res.data.results[i].images.length > 1)
+                 if(res.data.results[i].name !== props.selectedBooking.name)
+                  options.push(<AccommodationSearched _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
                  
             }  
             if(res.data.next){
@@ -283,13 +285,13 @@ setViewMoreStatus(false);
                 setViewMoreStatus(false);
                 setOffset(0);
             }
-            setOptionsJSX(options)
+            setMoreOptionsJSX(options)
         }
         else{
             setNoResults(true);
             setOffset(0);
             setViewMoreStatus(false);
-            setOptionsJSX([]);
+            setMoreOptionsJSX([]);
 
         }
             setLoading(false);
@@ -303,7 +305,7 @@ setViewMoreStatus(false);
 
       }
       const _addFilterHandler= (filter, heading) => {
-
+        console.log(filter)
           let oldfilters = filtersState;
           let oldfiltersheadingarr = filtersState[heading];
 
@@ -569,13 +571,19 @@ setViewMoreStatus(false);
             
 
       }
+      const FILTERS = {
+        "budget": ["Below ₹3,000", "₹3,000 - ₹6,000","₹6,000 - ₹10,000", "Above ₹10,000"],
+        "type": [
+        'Hotels', 'Homestays', 'Hostels', 'Camps','Guest House', 'Cottage', 'Villa', 'Resort',  'Bed and Breakfast', 'Specialty Lodging', 'Entire House', 'Capsule Hotel'
+        ]   
+    }
      if(props.token)
   return(
       <div >
         <Modal className='booking-modal'  show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{}}>
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
            <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
-              <SectionTwo></SectionTwo>
+              <SectionTwo FILTERS={FILTERS} _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} ></SectionTwo>
 
            </Modal.Header>
             <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >

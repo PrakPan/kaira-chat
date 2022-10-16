@@ -86,7 +86,7 @@ const Booking = (props) =>{
                             </div>
                             <div style={{display: 'flex', gap: '0.25rem'}}>
                                 {props.data.Segments ? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.Segments[0][props.data.Segments[0].length-1].Destination.ArrTime)}</div> : <div></div> : <div></div>}
-                                {props.data.Segments? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.Segments[0][0].Destination.Airport.CityCode+")"}</div> : null : null}
+                                {props.data.Segments? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.Segments[0][props.data.Segments[0].length-1].Destination.Airport.CityCode+")"}</div> : null : null}
                             </div>
                             <div style={{width: 'max-content'}}>
                                 {props.data.Segments ? props.data.Segments[0].length ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300', color: 'rgba(91, 89, 89, 1)', textAlign: 'right'}}>{getDate(props.data.Segments[0][0].Origin.DepTime)}</div> : <div></div> : <div></div>}
@@ -95,7 +95,7 @@ const Booking = (props) =>{
                                 {/* {props.data.costings_breakdown? props.data.costings_breakdown.Segments ? props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal !=="" ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal}</div> : null : null : null} */}
                             </div>
                             <div >
-                            {props.data.Segments? props.data.Segments[0].length ? props.data.Segments[0].length > 1 ? <div className='font-opensans text-center' style={{fontSize: '0.65rem', fontWeight: '300',  color: 'rgba(91, 89, 89, 1)', marginTop: '-4px'}}>{props.data.Segments[0].length > 1 ? props.data.Segments[0].length-1+' stop(s)' : "No Stops"}</div> :  null: null : null}
+                            {props.data.Segments? props.data.Segments[0].length ? props.data.Segments[0].length > 1 ? <div className='font-opensans text-center' style={{fontSize: '0.65rem', fontWeight: '300',  color: 'rgba(91, 89, 89, 1)', marginTop: '-4px'}}>{props.data.Segments[0].length > 1 ? props.data.Segments[0].length-1+' stop(s)' : "No Stops"}</div> :  <div className='font-opensans text-center' style={{fontSize: '0.65rem', fontWeight: '300',  color: 'rgba(91, 89, 89, 1)', marginTop: '-4px'}}>No Stops</div>: null : null}
                             {/* {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length > 1 ? <div className='font-opensans text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>{minuteToHours(props.data.costings_breakdown.Segments[0][1].GroundTime)}</div> : null : null : null} */}
 
 

@@ -18,7 +18,7 @@ const Heading = styled.p`
 `;
 const Label = styled.p`
     font-size: 0.75rem;
-    margin: 0 0 0 0.5rem;
+    margin: 0 0 0 0rem;
 `;
 const Pannel = (props) =>{
     let filter = null;

@@ -19,6 +19,7 @@ import SectionTwo from './SectionTwo';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
 import Flight from './new-flight-searched/Index';
+import FlightSelected from './new-flight-selected/Index';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -155,7 +156,7 @@ const Booking = (props) => {
             localStorage.setItem('tbo_trace_id', res.data.TraceId)
             // const flights
              if(res.data.Results.length){
-                for(var i =0 ; i < 10  ; i++) {
+                for(var i =0 ; i < res.data.Results.length  ; i++) {
                     options.push(
                         <Flight itinerary_id={props.itinerary_id}  data={res.data.Results[i]} selectedBooking={props.selectedBooking} _updateBookingHandler={_newUpdateBookingHandler}></Flight>
                     )
@@ -404,6 +405,7 @@ setViewMoreStatus(false);
         // setUpdateLoadingState(true);
         setViewMoreStatus(false);
         setMoreLoadingState(true);
+        let trace_id = localStorage.getItem('tbo_trace_id')
        
         axiosflightsearch.get( "/?limit="+limit+"&offset="+offset, {headers: {
             'Authorization': `Bearer ${props.token}`
@@ -413,9 +415,10 @@ setViewMoreStatus(false);
             number_of_children: props.selectedBooking.pax.number_of_children,
             number_of_infants: props.selectedBooking.pax.number_of_infants,
             check_in: props.selectedBooking.check_in,
-            city: props.selectedBooking.costings_breakdown.Segments[0][0].Origin.Airport.CityName,
-            destination_city: props.selectedBooking.costings_breakdown.Segments[0][props.selectedBooking.costings_breakdown.Segments[0].length-1].Destination.Airport.CityName,
-            flight_cabin_class: '1'
+            city_code: props.selectedBooking.origin_iata,
+            destination_city_code: props.selectedBooking.destination_iata,
+            flight_cabin_class: '1',
+            trace_id: trace_id,
         }
     }).then( res => {
         setMoreLoadingState(false);
@@ -455,8 +458,8 @@ if(props.token)
         <Modal   className="booking-modal" show={props.showFlightModal}  size="xl"  onHide={props.setHideFlightModal} style={{padding: "0"}}>
            {/* <Modal.Header>2</Modal.Header> */}
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
-           <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
-              <SectionTwo></SectionTwo>
+           <SectionOne setHideBookingModal={props.setHideBookingModal} setHideFlightModal={props.setHideFlightModal}></SectionOne>
+              <SectionTwo setHideFlightModal={props.setHideBookingModal}></SectionTwo>
 
            </Modal.Header>
             <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
@@ -471,6 +474,7 @@ if(props.token)
                 {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-opensans"><Spinner/>Please wait while we update your flight</div> : null }
                { !noResults && !updateLoadingState && !unauthorized? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
+                    <FlightSelected data={props.selectedBooking}></FlightSelected>
                    {optionsJSX.length && !updateBookingState? optionsJSX : null}
                    {loading && !optionsJSX.length? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div"><Spinner/>Fetching flights</div> : null}
                    {!loading && !optionsJSX.length ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div">Oops, it looks like there are no alternate flights available.</div>: null }
@@ -481,7 +485,7 @@ if(props.token)
                </OptionsContainer> : null}
                {unauthorized ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div">Oops, this action is not allowed on another user's itinerary</div>  : null}
 
-               {noResults && !unauthorized? <p  className='font-opensans text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodation to our database everyday!</p>  : null}
+               {noResults && !unauthorized? <p  className='font-opensans text-center' >Oops, we couldn't find what you were searching!</p>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
                {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
