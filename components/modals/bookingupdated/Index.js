@@ -574,7 +574,7 @@ setUpdateLoadingState(true);
       const FILTERS = {
         "budget": ["Below ₹3,000", "₹3,000 - ₹6,000","₹6,000 - ₹10,000", "Above ₹10,000"],
         "type": [
-        'Hotels', 'Homestays', 'Hostels', 'Camps','Guest House', 'Cottage', 'Villa', 'Resort',  'Bed and Breakfast', 'Specialty Lodging', 'Entire House', 'Capsule Hotel'
+        'Hotels', 'Homestays', 'Hostels', 'Camps','Guest House', 'Cottage', 'Villa', 'Resort',  'Bed and Breakfast', 'Unique', 'Entire House', 'Capsule Hotel'
         ]   
     }
      if(props.token)
