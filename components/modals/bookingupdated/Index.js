@@ -127,7 +127,7 @@ const Booking = (props) => {
                 let options = [];
                  for(var i = 0; i< res.data.results.length; i++){
                      if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
-                    options.push(<AccommodationSearched _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                    options.push(<AccommodationSearched  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
                      
                 }       
                  if(!options.length) setNoResults(true);
@@ -398,6 +398,7 @@ setUpdateLoadingState(true);
     }
     const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
         setUpdateBookingState(true);
+        console.log(new_booking)
         // const token = localStorage.getItem('access_token');
          let updated_bookings_arr = [{
             "id": props.selectedBooking.id,
