@@ -41,7 +41,7 @@ const Pannel = (props) =>{
            
             <FormGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: '0.5rem', margin: '0 0.5rem 1.5rem 0.5rem' }}>
           { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
+          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={props.filtersState ? props.filtersState.budget ? props.filtersState.budget.includes(currentfilter) ? true : false : false : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
           }
       </FormGroup>   
       

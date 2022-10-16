@@ -583,7 +583,7 @@ setUpdateLoadingState(true);
         <Modal className='booking-modal'  show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{}}>
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
            <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
-              <SectionTwo FILTERS={FILTERS} _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} ></SectionTwo>
+              <SectionTwo filtersState={filtersState} FILTERS={FILTERS} _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} ></SectionTwo>
 
            </Modal.Header>
             <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >

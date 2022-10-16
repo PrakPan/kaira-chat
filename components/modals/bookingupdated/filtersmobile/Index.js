@@ -81,7 +81,7 @@ export default function TemporaryDrawer(props) {
             open={state}
             onClose={toggleDrawer( false)}
           >
-            <Pannel _updateStarFilterHandler={props._updateStarFilterHandler} onclose={_closePannel} heading={filterHeading} filterSelected={filterSelected} filters={props.filters}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} ></Pannel>
+            <Pannel filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler} onclose={_closePannel} heading={filterHeading} filterSelected={filterSelected} filters={props.filters}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} ></Pannel>
           </Drawer>
         </React.Fragment>
     </div>

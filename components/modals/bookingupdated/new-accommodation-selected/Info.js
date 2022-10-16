@@ -12,6 +12,8 @@ import { BsInfoCircle } from 'react-icons/bs';
 import ImageLoader from '../../../ImageLoader';
 import {IoStarSharp} from 'react-icons/io5';
 import {BsArrowDown} from 'react-icons/bs';
+import { getHumanDate } from '../../../../services/getHumanDate';
+// import { getIndianPrice } from '../../../../services/getIndianPrice';
 const Container = styled.div`
     position: relative;
     padding: 0 0.5rem;
@@ -55,16 +57,8 @@ const Cost = styled.p`
     font-weight: 800;
     font-size: 1rem;
     line-height: 1;
-    margin: 0 0 2px 0;
-    &:after{
-        content: 'Per Room';
-        display: block;
-        font-size: 0.8rem;
-        font-family: 'Open Sans', sans-serif !important;
-        font-weight: 300;
-        text-align: right;
-
-    }
+    margin: 0.75rem 0 2px 0;
+    
  `;
 const DesktopGridContainer = styled.div`
     display: grid;
@@ -89,7 +83,22 @@ const Accommodation = (props) => {
     if(props.rating < 4 && props.rating > 3) color="orange";
     else if(props.rating < 3) color="red";
     }
+    const getDate = (date) => {
+        let year = date.substring(0,4)
+        let month = date.substring(5,7);
+        let day = date.substring(8,10);
+        return(getHumanDate(day+"/"+month+"/"+year) );
+    
+    }
+    let rooms = [];
 
+    try{
+        props.selectedBooking.costings_breakdown.map(data => {
+            rooms.push(data);
+        })
+    }catch{
+
+    }
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}}>
@@ -114,22 +123,26 @@ const Accommodation = (props) => {
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div>
                             <p  style={{fontWeight: '600', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>Check In</p>
-                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>15th July</p>
+                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>{getDate(props.selectedBooking.check_in)}</p>
                         </div>
                         <div>
                             <p  style={{fontWeight: '600', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>Check Out</p>
-                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>17th July</p>
+                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>{getDate(props.selectedBooking.check_out)}</p>
                         </div>
                     </div>
                 </div>
                 <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/bed.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
-                        <div className='center-div'>
-                            {/* <Heading className='font-opensans'>Check In</Heading> */}
-                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>2 x Super Deluxe rooms</p>
-                        </div>
-                      
+                        
+                        { rooms.length ? 
+                        rooms.map(room => 
+                            <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+                                 <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>{room.number_of_rooms + " x "}</p>
+                                 <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0.25rem'}} className='font-opensans'>{room.room_type_name}</p>
+                            </div>
+                        )
+                      : null }
                     </div>
                 </div>
                 {/* <div style={{display: 'flex',  gap: '0.5rem'}}>
@@ -154,7 +167,7 @@ const Accommodation = (props) => {
                     </RatingContainer> : null}
         <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
-                <Cost  className='font-opensans'>₹ 5,000</Cost>
+                <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)}</Cost>
         </div>
         <div className='hidden-mobile'><Button onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
 </div>

@@ -18,7 +18,7 @@ const Section= (props) => {
     
      return(
       <Container className='font-opensans'>  
-            <FiltersMobile _updateStarFilterHandler={props._updateStarFilterHandler}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} filters={props.FILTERS}></FiltersMobile>
+            <FiltersMobile filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} filters={props.FILTERS}></FiltersMobile>
       </Container>
   ); 
 }
