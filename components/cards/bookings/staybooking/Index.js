@@ -93,6 +93,8 @@ const getDate = (date) => {
  
     //  if(isPageWide)
     return(
+        <div>
+            <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>
         <Container className='border' style={{borderRadius: "10px"}}>
             <ImageContainer images={props.data.images} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler}  setShowBookingModal={props.setShowBookingModal} setImagesHandler={props.setImagesHandler}></ImageContainer>
             <div  style={{padding: "",   flex: '1 1 auto', display:  'flex', flexFlow: 'column'}}>
@@ -140,6 +142,7 @@ const getDate = (date) => {
             </div>
          
         </Container>
+        </div>
     );
  
 }

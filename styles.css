@@ -295,16 +295,37 @@ b{
 .accommodationdetail-tab{
   text-transform: none !important;
   color: black !important;
-  border-style: none solid solid none !important;
+  border-style: none none solid none !important;
   border-width: 1px !important;
   border-color: #e4e4e4 !important;
   font-size: 0.75rem !important;
   min-width: 33vw !important;
   background-color: #f7e700;
+  font-family: 'Open Sans', sans-serif !important;
+
+}
+.flickity-viewport {
+  transition: height 0.2s;
 }
 .accommodationdetail-tab.Mui-selected{
   color: black !important;
-   font-weight: 800 !important;
+  font-weight: 400 !important;
+  font-family: 'Open Sans', sans-serif !important;
+
+ }
+.accommodationdetail-tab.Mui-selected .MuiTab-wrapper{
+  border-style: none none solid none !important;
+  border-width: 2px !important;
+  border-color: #f7e700;
+  font-family: 'Open Sans', sans-serif !important;
+
+
+}
+.accommodationdetail-tab  .MuiTab-wrapper{
+ 
+  font-family: 'Open Sans', sans-serif !important;
+
+
 }
 .bookingdetail-tab{
   text-transform: none !important;

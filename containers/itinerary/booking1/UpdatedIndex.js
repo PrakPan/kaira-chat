@@ -31,6 +31,7 @@ import urls from '../../../services/urls';
 import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
 import FlightBookingCard  from '../../../components/cards/bookings/flightbooking/Index';
 import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
+import FooterBannerMobile from './FooterBannerMobile';
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -487,7 +488,7 @@ const Booking = (props) => {
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
   
    
-    let message ="Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/"+router.asPath;
+    let message ="Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com"+router.asPath;
     const _setImagesHandler = (images) => {
       // window.scrollTo(0,0);
       setImages(images);
@@ -587,17 +588,17 @@ const Booking = (props) => {
        <TabPanel value={value} index={3} >
             {bookingsActivityMobileJSX}
        </TabPanel>
-             <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>
+             {/* <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>
              <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0 0 12.5vh 0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
-       Connect on WhatsApp</Button></MobileWidthContainer>
+       Connect on WhatsApp</Button></MobileWidthContainer> */}
             </BookingsContainer> : summaryContainerJSX}
             {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
              {props.showBookingModal ? <BookingModal getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
             {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
             {props.showFlightModal ? <FlightModal _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.stayBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
-
+        <FooterBannerMobile payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile>
             {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
         </Container>
   );

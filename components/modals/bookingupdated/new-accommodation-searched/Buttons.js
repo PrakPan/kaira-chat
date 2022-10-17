@@ -22,8 +22,8 @@ const Section= (props) => {
      return(
       <Container className='font-opensans hidden-desktop'>  
       <GridContainer>
-            {/* <Button fontSize="0.85rem" fontWeight="600" onclick={()=> props.setShowDetails(true)} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button> */}
-            <Button fontSize="0.85rem" fontWeight="600" onclick={()=> console.log('')} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
+            <Button fontSize="0.85rem" fontWeight="600" onclick={()=> props.setShowDetails(true)} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
+            {/* <Button fontSize="0.85rem" fontWeight="600" onclick={()=> console.log('')} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button> */}
 
             <Button 
               onclick={props._updateSearchedAccommodation}

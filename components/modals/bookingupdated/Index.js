@@ -121,15 +121,23 @@ const Booking = (props) => {
                 "number_of_infants": props.selectedBooking.pax.number_of_infants
             
         }).then(res => {
+            setLoading(false);
             setUpdateLoadingState(false);
+            console.log('data', res.data);
             if(res.data.results.length){
                 setNoResults(false);
                 let options = [];
                  for(var i = 0; i< res.data.results.length; i++){
+                    try{
                      if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
                     options.push(<AccommodationSearched  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
-                     
+                    }
+                    catch{
+                        options.push(<AccommodationSearched  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+
+                    }
                 }       
+                console.log(options)
                  if(!options.length) setNoResults(true);
                 setMoreOptionsJSX(options)
                 if(res.data.next){
@@ -578,6 +586,7 @@ setUpdateLoadingState(true);
         'Hotels', 'Homestays', 'Hostels', 'Camps','Guest House', 'Cottage', 'Villa', 'Resort',  'Bed and Breakfast', 'Unique', 'Entire House', 'Capsule Hotel'
         ]   
     }
+    console.log(moreOptionsJSX);
      if(props.token)
   return(
       <div >

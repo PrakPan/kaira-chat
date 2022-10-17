@@ -5,6 +5,8 @@ import media from '../../../media';
 import {IoStarSharp} from 'react-icons/io5';
 import ImageLoader from '../../../ImageLoader';
 const Container = styled.div`
+display: grid;
+grid-template-columns: auto max-content;
 border-style: none none solid none;
 border-color: rgba(238, 238, 238, 1);
 border-width: 2px;
@@ -17,7 +19,7 @@ padding: 0.5rem;
 
 `;
 const Name = styled.p`
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
 `;
@@ -57,24 +59,14 @@ const Section= (props) => {
     return(
       <Container className='font-opensans'>  
             <Name className='font-opensans'>{props.data.name}</Name>
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
-                <div style={{display: 'flex'}}>
-                    <ImageLoader url="media/icons/bookings/pin.png" leftalign dimensions={{width: 200, height: 250}} width="1.75rem" widthmobile="1.75rem" ></ImageLoader>
-                    <div style={{display: 'flex' , alignItems: 'center'}}>
-                        <Subtext className='font-opensans' style={{fontWeight: '600'}}>{props.data.duration > 1 ? props.data.duration+" Nights " : props.data.duration === 1 ? "1 Night " : null}</Subtext>
-                        <Subtext className='font-opensans' style={{fontWeight: '600', marginLeft: '0.25rem'}}>{props.data.city  ? "in "+props.data.city : null}</Subtext>
-
-                        {/* <Subtext className='font-opensans'>Vagator Beach</Subtext> */}
-                    </div>
-                </div>
+             
                 <div className='center-div'>
                 {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white', lineHeight: '1'}}/>
                          { props.data.user_rating  +" /5"} 
                     </RatingContainer> : null : null }
                 </div>
-            </div>
-      </Container>
+       </Container>
   ); 
   else return null;
 }

@@ -258,7 +258,7 @@ const ImageLoader = (props) => {
       onClick={props.onclick}
       style={{
           width: props.widthmobile ? props.widthmobile : '100%',
-          height:props.height ? props.height : 'max-content',
+          height:props.height ? props.height : 'auto',
           margin: props.leftalign ? "0" : "0 auto",
           filter:props.blur ? 'blur(0.5rem)' : 'blur(0)',
           borderRadius: props.borderRadius ? props.borderRadius : '0'
@@ -275,6 +275,9 @@ const ImageLoader = (props) => {
         }}></SmallImage>
         <FullImage
         src={!is_url  ?  error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
+        // src={!is_url  ?   `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
+        width={props.dimensionsMobile.width}
+        height={props.dimensionsMobile.height}
         onLoad={fullImageLoadedHandler}
           onError={props.onfail ? props.onfail: _handleError}
 

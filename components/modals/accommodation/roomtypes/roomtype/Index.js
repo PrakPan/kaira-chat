@@ -6,7 +6,7 @@ import {BsDot} from 'react-icons/bs'
 const Container = styled.div`
 width: 100%;
 display: grid;
-grid-template-columns: 1fr 2fr;
+grid-template-columns: 2fr 2fr;
 border-radius: 5px;
 @media screen and (min-width: 768px){
     
@@ -42,13 +42,13 @@ const RoomType = (props) => {
             setAmmenities(ammenities_arr)
         }
       }, [props.data]);
-
+console.log('i', props.images)
   return(
       <Container className='border-thin'>
-            <ImageLoader  url={props.images.length ? props.images[0].ImageUrl: 'media/website/grey.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="100%" height="100%" margin="auto"/> 
+            <ImageLoader  fit="cover" url={props.images.length ? props.images[0].ImageUrl: 'media/website/grey.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="100%"  margin="auto"/> 
             <ContentContainer>
                 <Name className='font-opensans'>{props.data.room_type}</Name>
-                <Tags data={props.data}></Tags>
+                {/* <Tags data={props.data}></Tags> */}
                 <AmenitiesContainer>
                     {ammenities}            
                 </AmenitiesContainer>
