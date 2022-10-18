@@ -372,8 +372,7 @@ const _reloadFlightBookings  = () => {
   }
 
   const _deselectStayBookingHandler = ( booking, user_selected) => {
-     console.log(stayBookings)
-    for(var i = 0; i< stayBookings.length; i++){
+     for(var i = 0; i< stayBookings.length; i++){
       if(stayBookings[i].id ===  booking.id){
         // flickity_index=i;
         setStayFlickityIndex(i);

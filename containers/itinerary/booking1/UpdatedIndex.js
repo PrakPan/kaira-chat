@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import BookingCard from '../../../components/cards/editablebookings/Index';
+import BookingCard from '../../../components/cards/bookings/activitybooking/Index';
 import Heading from '../../../components/heading/Heading';
 import Button from '../../../components/Button';
 import SummaryContainer from './TailoredDetails';
@@ -32,6 +32,7 @@ import StayBookingCard from '../../../components/cards/bookings/staybooking/Inde
 import FlightBookingCard  from '../../../components/cards/bookings/flightbooking/Index';
 import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
 import FooterBannerMobile from './FooterBannerMobile';
+import ImageLoader from '../../../components/ImageLoader';
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -466,7 +467,7 @@ const Booking = (props) => {
  
       
         bookings_activities.push(
-            <BookingCard check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
+            <BookingCard data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
         )
       }
     }
@@ -521,28 +522,36 @@ const Booking = (props) => {
        {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>
       <TabPanel value={value} index={0} >
-            {bookingsAccommodationsDesktopJSX }
+            {props.stayBookings ?  props.stayBookings.length ?bookingsAccommodationsDesktopJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
+            {!props.stayBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
        </TabPanel>
        <TabPanel value={value} index={1} >
-          {!props.flightLoading ? <DesktopCardContainer>
+          {!props.flightLoading ?  props.flightBookings ?  props.flightBookings.length ? <DesktopCardContainer>
             {bookingsFlightsDesktopJSX}
             {/* {bookingsTransfersDesktopJSX} */}
 
-            </DesktopCardContainer>    :  <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
+            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
+            {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
        </TabPanel>
        <TabPanel value={value} index={2} >
-          {!props.transferLoading ? <DesktopCardContainer>
+          {!props.transferLoading ? props.transferBookings ?  props.transferBookings.length ? <DesktopCardContainer>
             {/* {bookingsFlightsDesktopJSX} */}
             {bookingsTransfersDesktopJSX}
 
-            </DesktopCardContainer>    :  <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
+            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
+            {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
        </TabPanel>
        <TabPanel value={value} index={3} >
-           {bookingsAcivityDesktopJSX}
+           {props.activityBookings ?  props.activityBookings.length ? bookingsAcivityDesktopJSX :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
+           {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
        </TabPanel>
             </BookingsContainer>
           {summaryContainerJSX}
-          {props.showBookingModal ?  <BookingModal  getPaymentHandler={props.getPaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings ? props.stayBookings[0]["tailored_itinerary"] : null} _updatePaymentHandler={props._updatePaymentHandler}   _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
+          {props.showBookingModal ?  <BookingModal _setImagesHandler={_setImagesHandler}  getPaymentHandler={props.getPaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings ? props.stayBookings[0]["tailored_itinerary"] : null} _updatePaymentHandler={props._updatePaymentHandler}   _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
           {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
           {props.showFlightModal ? <FlightModal getPaymentHandler={props.getPaymentHandler} _updateFlightBookingHandler={props._updateFlightBookingHandler } _updateBookingHandler={props._updateBookingHandler} itinerary_id={props.stayBookings.length ?  props.stayBookings[0]["itinerary_id"] : null} setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
 
@@ -575,18 +584,25 @@ const Booking = (props) => {
        {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>
       <TabPanel value={value} index={0} >
-            {bookingsAccommodationsMobileJSX}
+            {props.stayBookings ?  props.stayBookings.length ? bookingsAccommodationsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
+            {!props.stayBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
        </TabPanel>
        <TabPanel value={value} index={1} >
-            {!props.flightLoading ? bookingsFlightsMobileJSX : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div> }
+            {!props.flightLoading ? props.flightBookings ? props.flightBookings.length?  bookingsFlightsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div> }
+            {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
             {/* {bookingsTransfersMobileJSX} */}
        </TabPanel>
        <TabPanel value={value} index={2} >
             {/* {bookingsFlightsMobileJSX} */}
-            {bookingsTransfersMobileJSX}
+            {!props.transferLoading ? props.transferBookings ?  props.transferBookings.length ? bookingsTransfersMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}
+            {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
        </TabPanel>
        <TabPanel value={value} index={3} >
-            {bookingsActivityMobileJSX}
+            {props.activityBookings ?  props.activityBookings.length ?  bookingsActivityMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
+            {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+
        </TabPanel>
              {/* <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>
              <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0 0 12.5vh 0" >
@@ -595,7 +611,7 @@ const Booking = (props) => {
             </BookingsContainer> : summaryContainerJSX}
             {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-             {props.showBookingModal ? <BookingModal getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
+             {props.showBookingModal ? <BookingModal _setImagesHandler={_setImagesHandler} getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
             {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
             {props.showFlightModal ? <FlightModal _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.stayBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
         <FooterBannerMobile payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile>

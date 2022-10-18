@@ -28,8 +28,7 @@ const Booking = (props) =>{
     let isPageWide = media('(min-width: 768px)')
 
     
-console.log(props.data);
-  
+   
     // const detailsarr=[]
     // for(var i=0; i<props.details.length; i++){
     //     if(props.details[i].length)

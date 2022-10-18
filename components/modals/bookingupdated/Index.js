@@ -103,7 +103,7 @@ const Booking = (props) => {
         let options = [];
          if(props.alternates)
         for(var i=0; i<props.alternates.length; i++){
-            options.push(<Accommodation alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
+            options.push(<Accommodation  _setImagesHandler={props._setImagesHandler} alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
         }
                         setOptionsJSX(options)
 
@@ -111,7 +111,7 @@ const Booking = (props) => {
 
     useEffect(() => {
         if(!props.alternates)
-        axiosaccommodationinstance.post("/?limit="+limit+"&offset="+offset, 
+        axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset="+offset, 
             {
                 "cities": props.selectedBooking.city,
                 "check_in": props.selectedBooking.check_in,
@@ -123,22 +123,20 @@ const Booking = (props) => {
         }).then(res => {
             setLoading(false);
             setUpdateLoadingState(false);
-            console.log('data', res.data);
-            if(res.data.results.length){
+             if(res.data.results.length){
                 setNoResults(false);
                 let options = [];
                  for(var i = 0; i< res.data.results.length; i++){
                     try{
                      if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
-                    options.push(<AccommodationSearched  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                    options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler}  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
                     }
                     catch{
-                        options.push(<AccommodationSearched  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                        options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
 
                     }
                 }       
-                console.log(options)
-                 if(!options.length) setNoResults(true);
+                  if(!options.length) setNoResults(true);
                 setMoreOptionsJSX(options)
                 if(res.data.next){
                     setViewMoreStatus(true);
@@ -163,8 +161,7 @@ const Booking = (props) => {
             })
       },[])
       const _updateOptionsHandlerWithFilter = () => {
-        console.log(filtersState);
-          setOffset(0);
+           setOffset(0);
           setUpdateLoadingState(true);
             setNoResults(false);
             let budgetarr = filtersState.budget;
@@ -260,7 +257,7 @@ const Booking = (props) => {
 setViewMoreStatus(false);
 setUpdateLoadingState(true);
              setMoreOptionsJSX([])
-        axiosaccommodationinstance.post("/?limit="+limit+"&offset=0", 
+        axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset=0", 
         {
             "cities": props.selectedBooking.city,
             "check_in": props.selectedBooking.check_in,
@@ -277,11 +274,10 @@ setUpdateLoadingState(true);
         if(res.data.results.length){
             setNoResults(false)
             let options = [];
-            console.log(res.data)
-            for(var i = 0; i < res.data.results.length; i++){
+             for(var i = 0; i < res.data.results.length; i++){
                 //  if(res.data.results[i].images.length > 1)
                  if(res.data.results[i].name !== props.selectedBooking.name)
-                  options.push(<AccommodationSearched _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                  options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler}s _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
                  
             }  
             if(res.data.next){
@@ -313,8 +309,7 @@ setUpdateLoadingState(true);
 
       }
       const _addFilterHandler= (filter, heading) => {
-        console.log(filter)
-          let oldfilters = filtersState;
+           let oldfilters = filtersState;
           let oldfiltersheadingarr = filtersState[heading];
 
           oldfiltersheadingarr.push(filter);
@@ -406,8 +401,8 @@ setUpdateLoadingState(true);
     }
     const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
         setUpdateBookingState(true);
-        console.log(new_booking)
-        // const token = localStorage.getItem('access_token');
+         // const token = localStorage.getItem('access_token');
+        
          let updated_bookings_arr = [{
             "id": props.selectedBooking.id,
                         "name": new_booking.name,
@@ -543,16 +538,21 @@ setUpdateLoadingState(true);
         if(res.data.results.length){
             setNoResults(false);
 
- 
+            console.log(moreOptionsJSX)
         let options = moreOptionsJSX.slice();
+        console.log(options)
              for(var i = 0; i < res.data.results.length; i++){
+                // console.log(res.data.results[i])
+                try{
                  if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
-                options.push(<AccommodationSearched token={props.token} _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler} token={props.token} _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                }
+                catch{
+                    options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler} token={props.token} _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
 
-                
-                 
+                }
             }   
-             setMoreOptionsJSX(options)
+             setMoreOptionsJSX([...options])
             
             if(res.data.next) {
                 setOffset(offset+20);
@@ -568,7 +568,7 @@ setUpdateLoadingState(true);
                 setNoResults(true);
                 setOffset(0);
                 setViewMoreStatus(false);
-                setOptionsJSX([]);
+                setMoreOptionsJSX([]);
         }
             setUpdateLoadingState(false);
 
@@ -586,8 +586,7 @@ setUpdateLoadingState(true);
         'Hotels', 'Homestays', 'Hostels', 'Camps','Guest House', 'Cottage', 'Villa', 'Resort',  'Bed and Breakfast', 'Unique', 'Entire House', 'Capsule Hotel'
         ]   
     }
-    console.log(moreOptionsJSX);
-     if(props.token)
+      if(props.token)
   return(
       <div >
         <Modal className='booking-modal'  show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{}}>

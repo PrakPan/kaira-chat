@@ -78,8 +78,7 @@ const Accommodation = (props) => {
     const RANDOM_RATING = [8.8, 8.9, 9.0, 9.1,9.2,9.3,9.4,9.5,9.6,9.7,9.8];
     let color="rgba(18, 105, 4, 1)";
     if(props.rating){
-        console.log(props.rating)
-
+ 
     if(props.rating < 4 && props.rating > 3) color="orange";
     else if(props.rating < 3) color="red";
     }

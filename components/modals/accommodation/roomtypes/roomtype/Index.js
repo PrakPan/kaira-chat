@@ -42,8 +42,7 @@ const RoomType = (props) => {
             setAmmenities(ammenities_arr)
         }
       }, [props.data]);
-console.log('i', props.images)
-  return(
+   return(
       <Container className='border-thin'>
             <ImageLoader  fit="cover" url={props.images.length ? props.images[0].ImageUrl: 'media/website/grey.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="100%"  margin="auto"/> 
             <ContentContainer>

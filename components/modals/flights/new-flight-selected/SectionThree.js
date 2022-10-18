@@ -22,8 +22,7 @@ const Cost = styled.p`
 `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-  console.log('d', props.data)
-   if(props.data)
+    if(props.data)
     return(
       <Container className='font-opensans'>  
                 {/* <div onClick={() => props._deselectBookingHandler(props.data)} style={{height: 'max-content',display: 'flex', fontSize: '13px', alignItems: 'center', fontWeight: '700', padding: '0.25rem', backgroundColor: '#f7e700', borderRadius: '5px'}} >

@@ -106,8 +106,15 @@ font-weight: 400;
 `;
 
 const Overview = (props) => {
- 
-  
+    let images = [];
+    try{
+    for(var i=0; i<props.images.length; i++){
+        images.push(props.images[i].image);
+    }
+}catch{
+
+}
+ console.log(props.images);
   return(
       <Container>
         <Name align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.data.name}</Name>
@@ -122,7 +129,7 @@ const Overview = (props) => {
         </ImageContainer> */}
           <ImageContainer>
                  <ImageLoader fit="contain" dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 400}} url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="25vh" width="100%"></ImageLoader> 
-                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)}  className="font-opensans">
+                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(images)}  className="font-opensans">
                      {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
                     All Photos
                     </PhotosButton> : null : null}
@@ -137,12 +144,29 @@ const Overview = (props) => {
         
         <DetailsContainer>
             <Location data={props.data}></Location>
-            {props.data.rooms_available? props.data.rooms_available.length && props.data.rooms_available[0].prices.min_price  ? <Cost className='font-opensans'>{ "₹ "+getIndianPrice(Math.round(props.data.rooms_available[0].prices.min_price/100))}</Cost> : null : null}
+            {/* {props.data.rooms_available? props.data.rooms_available.length && props.data.rooms_available[0].prices.min_price  ? <Cost className='font-opensans'>{ "₹ "+getIndianPrice(Math.round(props.data.rooms_available[0].prices.min_price/100))}</Cost> : null : null} */}
+            {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-opensans'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
+           <div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', gridGap: '1rem'}}>
+           {props.data.check_in ? 
+           <div className='font-opensans text-center'>
+            <CheckIn style={{fontWeight: '600', fontSize: '0.9rem'}}  className='font-opensans'>{"Check in"}</CheckIn>
+            <CheckIn style={{fontWeight: '300', fontSize: '0.75rem'}}  className='font-opensans'>{getHumanTime(props.data.check_in.slice(0,-3))}</CheckIn>
 
+           </div>
+            : null}
+            {props.data.check_in ? 
+           <div className='font-opensans text-center'>
+            <CheckIn style={{fontWeight: '600', fontSize: '0.9rem'}} className='font-opensans'>{"Check in"}</CheckIn>
+            <CheckIn style={{fontWeight: '300', fontSize: '0.75rem'}}  className='font-opensans'>{getHumanTime(props.data.check_in.slice(0,-3))}</CheckIn>
+
+           </div>
+            : null}
+
+           </div>
         </DetailsContainer>
         {/* <Filters data={props.data}></Filters> */}
         {/* <Icons></Icons> */}
-        {props.data.check_in && props.data.check_out ? <CheckIn className='font-opensans'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null}
+        {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-opensans'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
       </Container>
   );
 

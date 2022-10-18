@@ -12,6 +12,7 @@ import axiosaccommodationinstance from '../../../services/bookings/FetchAccommod
 import {connect} from 'react-redux';
 import {TbArrowBack} from 'react-icons/tb';
 import Spinner from '../../Spinner';
+
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover{
     cursor: pointer;
@@ -30,8 +31,7 @@ const POI = (props) => {
     .then(res => {
       setLoading(false);
        setData(res.data);
-       console.log('data', res.data)
-  
+   
     }).catch(error => {
       setLoading(false);
       // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
@@ -47,7 +47,7 @@ const POI = (props) => {
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>
             <Modal.Body style={{   padding:'0' }}>
-                {!loading ? <div><Overview data={data} images={data.images ? data.images : []} experience_filters={props.poi ? props.poi.experience_filters : null} name={props.poi ? props.poi.name : null} duration={props.poi ? props.poi.ideal_duration_hours : null}></Overview>
+                {!loading ? <div><Overview  _setImagesHandler={props._setImagesHandler}data={data} images={data.images ? data.images : []} experience_filters={props.poi ? props.poi.experience_filters : null} name={props.poi ? props.poi.name : null} duration={props.poi ? props.poi.ideal_duration_hours : null}></Overview>
                 <Tabs  
                 data={data}
               

@@ -285,8 +285,7 @@ const _handleFlighModalShow=()=> {
    props.setShowFlightModal(true);
 }
 const _handleFlightModalClose=()=> {
-  console.log('test')
-  props.setShowFlightModal(false);
+   props.setShowFlightModal(false);
 }
   return (
     <div className={classes.root}>

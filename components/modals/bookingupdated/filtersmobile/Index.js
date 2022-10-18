@@ -32,8 +32,7 @@ export default function TemporaryDrawer(props) {
     const [filterHeading, setFilterHeading] = useState('Budget');
 
   const _selectFilter = (filter) => {
-    console.log(filter)
-        if(filter === 'Budget') setFilterHeading('Budget')
+         if(filter === 'Budget') setFilterHeading('Budget')
         else if(filter === 'Type') setFilterHeading('Type');
         // else setFilterHeading('Star Category');
        setFilterSelected(filter);

@@ -155,6 +155,7 @@
 }
 .booking-modal .modal-dialog{
     margin:  0 !important;
+    max-width: 100% !important;
 }
 .booking-modal .modal-dialog .modal-content{
   border:  none !important;
@@ -304,9 +305,7 @@ b{
   font-family: 'Open Sans', sans-serif !important;
 
 }
-.flickity-viewport {
-  transition: height 0.2s;
-}
+
 .accommodationdetail-tab.Mui-selected{
   color: black !important;
   font-weight: 400 !important;

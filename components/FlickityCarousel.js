@@ -6,7 +6,7 @@ const FlickityCarousel = (props) => {
         initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
         prevNextButtons: false,
         wrapAround: false,
-        adaptiveHeight: true,
+      
         pageDots: false,
 
     };
@@ -15,7 +15,7 @@ const FlickityCarousel = (props) => {
       prevNextButtons: false,
       wrapAround: false,
       pageDots: false,
-      adaptiveHeight: true,
+      
 
     }
     const flickityOptionsIpad = {
@@ -23,11 +23,10 @@ const FlickityCarousel = (props) => {
       prevNextButtons: false,
       wrapAround: false,
       pageDots: false,
-      adaptiveHeight: true,
+      
 
-    }
-    console.log(props.initialIndex)
-    let cards=[];
+    } 
+     let cards=[];
     if(props.twocards){
     props.cards.map( (card,index) => {
       cards.push(

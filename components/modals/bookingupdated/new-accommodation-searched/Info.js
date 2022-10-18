@@ -24,9 +24,12 @@ const Name = styled.div`
     font-weight: 700;
     display: inline;
     line-height: 1;
-    margin-bottom: 0.75rem
+    margin-bottom: 0.75rem;
+    @media screen and (min-width: 768px) {
 
-`;
+        font-size: 1.5rem;
+        }
+ `;
  
  
  
@@ -41,6 +44,10 @@ const Tag = styled.div`
     border-radius: 5px !important;
     margin-right: 0.5rem;
     font-size: 0.75rem;
+    @media screen and (min-width: 768px) {
+
+        font-size: 0.9rem;
+        }
 `;
  
 const RatingContainer = styled.div`
@@ -55,6 +62,10 @@ const RatingContainer = styled.div`
     display: flex !important;
     justify-content: center;
     align-items: center;
+    @media screen and (min-width: 768px) {
+
+        font-size: 0.9rem;
+        }
 `;
  const Cost = styled.p`
     font-weight: 800;
@@ -70,6 +81,10 @@ const RatingContainer = styled.div`
         text-align: right;
 
     }
+    @media screen and (min-width: 768px) {
+
+        font-size: 1.25rem;
+        }
  `;
 const DesktopGridContainer = styled.div`
     display: grid;
@@ -78,16 +93,34 @@ const DesktopGridContainer = styled.div`
     grid-template-columns: auto max-content;
     }
 `;
+const RoomText = styled.p`
+    font-size: 0.75rem;
+    font-weight: 300;
+    margin: 0;
+    @media screen and (min-width: 768px) {
+
+        font-size: 0.9rem;
+        }
+
+`;
 const Accommodation = (props) => {
    let isPageWide = media('(min-width: 768px)')
    
     const RANDOM_RATING = [8.8, 8.9, 9.0, 9.1,9.2,9.3,9.4,9.5,9.6,9.7,9.8];
     let color="rgba(18, 105, 4, 1)";
     if(props.rating){
-        console.log(props.rating)
-
+ 
     if(props.rating < 4 && props.rating > 3) color="orange";
     else if(props.rating < 3) color="red";
+    }
+    let room = [];
+    try{
+    for(var i = 0 ; i < props.accommodation.rooms_available.length; i++){
+        if(props.accommodation.rooms_available[i].prices.min_price){
+            room.push(props.accommodation.rooms_available[i].room_type)
+        }
+    }}catch{
+
     }
 
   return(
@@ -112,9 +145,9 @@ const Accommodation = (props) => {
             <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                 <ImageLoader leftalign url="media/icons/bookings/bed.png" width="2rem" widthmobile="2rem"></ImageLoader>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>
+                <RoomText  className='font-opensans'>
                 <span>{props.number_of_rooms ? props.number_of_rooms +" x " : "1 x "}</span>
-                {props.accommodation.rooms_available.length ? ''+ props.accommodation.rooms_available[0].room_type : ' Standard Room'}</p>
+                {room.length ? ''+ room[0] : ' Standard Room'}</RoomText>
       
                 </div>
                
@@ -133,7 +166,7 @@ const Accommodation = (props) => {
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
                 {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))}</Cost> : null}
         </div>
-        <div className='hidden-mobile'><Button onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
+        <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
 </div>
         
       </Container>

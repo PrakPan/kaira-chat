@@ -129,8 +129,7 @@ const Booking = (props) => {
         star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
     }
     useEffect(() => {
-        console.log('sb', props.selectedBooking)
-        // let options = [];
+         // let options = [];
         // if(props.alternates)
         // for(var i=0; i<props.alternates.length; i++){
         //     options.push(<Accommodation bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
