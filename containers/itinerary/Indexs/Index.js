@@ -62,6 +62,9 @@ const [plan, setPlan] = useState(null);
 
     const [selectingBooking, setSelectingBooking] = useState(null);
     const [stayFlickityIndex, setStayFlickityIndex] = useState(0);
+    const [transferFlickityIndex, setTransferFlickityIndex] = useState(0);
+    const [flightFlickityIndex, setFlightFlickityIndex] = useState(0);
+    const [activityFlickityIndex, setActivityFlickityIndex] = useState(0);
 
     const [payment, setPayment] = useState(null);
     const [noBookings, setNoBookings] = useState(false);
@@ -322,7 +325,9 @@ const _reloadFlightBookings  = () => {
     setStayBookings(json)
   }
 
-  
+  const _updateActivityBookingHandler = (json)=> {
+    setActivityBookings(json);
+  }
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
@@ -402,7 +407,7 @@ const _reloadFlightBookings  = () => {
     // }
   
     // const token = localStorage.getItem('access_token')
-    axiosbookingupdateinstance.post("/?booking_type=Accommodation", data, {headers: {
+    axiosbookingupdateinstance.post("/?booking_type=accommodation", data, {headers: {
       'Authorization': `Bearer ${props.token}`
       }}).then(res => {
         setCardUpdateLoading(null)
@@ -421,6 +426,156 @@ const _reloadFlightBookings  = () => {
       window.alert("There seems to be a problem, please try again!")
   })
   }
+  const _deselectFlightBookingHandler = ( booking, user_selected) => {
+    for(var i = 0; i< flightBookings.length; i++){
+     if(stayBookings[i].id ===  booking.id){
+       // flickity_index=i;
+       setFlightFlickityIndex(i);
+       break;
+     }
+   }
+   setSelectingBooking(booking.id)
+   let data =[];
+   
+       data.push( {
+         "id": booking.id,
+         "booking_type": booking.booking_type,
+         "itinerary_type": "Tailored",
+         "user_selected": user_selected,			
+         "itinerary_id": booking.itinerary_id,
+         "tailored_itinerary": booking.tailored_itinerary,
+         "itinerary_name": booking.itinerary_name,
+         "itinerary_db_id": null,
+         "check_in": booking.check_in,
+         "check_out": booking.check_out,
+         "city": booking.city,
+         "costings_breakdown": booking.costings_breakdown,
+         "accommodation": booking.accommodation,
+         "is_estimated_price": booking.is_estimated_price
+     });
+     // else data.push(bookings[i]);
+   // }
+ 
+   // const token = localStorage.getItem('access_token')
+   axiosbookingupdateinstance.post("/?booking_type=Flight", data, {headers: {
+     'Authorization': `Bearer ${props.token}`
+     }}).then(res => {
+       setCardUpdateLoading(null)
+          _updateFlightHandler(res.data.bookings);
+          setSelectingBooking(null);
+          setTimeout(function(){ 
+               
+           getPaymentHandler(); }, 1000);
+ 
+ 
+ }).catch(err => {
+   setSelectingBooking(null);
+
+     setCardUpdateLoading(null)
+
+     window.alert("There seems to be a problem, please try again!")
+ })
+ }
+  const _deselectTransferBookingHandler = ( booking, user_selected) => {
+    for(var i = 0; i< transferBookings.length; i++){
+     if(transferBookings[i].id ===  booking.id){
+       // flickity_index=i;
+       setTransferFlickityIndex(i);
+       break;
+     }
+   }
+   setSelectingBooking(booking.id)
+   let data =[];
+   
+       data.push( {
+         "id": booking.id,
+         "booking_type": booking.booking_type,
+         "itinerary_type": "Tailored",
+         "user_selected": user_selected,			
+         "itinerary_id": booking.itinerary_id,
+         "tailored_itinerary": booking.tailored_itinerary,
+         "itinerary_name": booking.itinerary_name,
+         "itinerary_db_id": null,
+         "check_in": booking.check_in,
+         "check_out": booking.check_out,
+         "city": booking.city,
+         "costings_breakdown": booking.costings_breakdown,
+         "accommodation": booking.accommodation,
+         "is_estimated_price": booking.is_estimated_price
+     });
+     // else data.push(bookings[i]);
+   // }
+ 
+   // const token = localStorage.getItem('access_token')
+   axiosbookingupdateinstance.post("/?booking_type=Taxi", data, {headers: {
+     'Authorization': `Bearer ${props.token}`
+     }}).then(res => {
+       setCardUpdateLoading(null)
+          _updateTransferBookingHandler(res.data.bookings);
+          setSelectingBooking(null);
+          setTimeout(function(){ 
+               
+           getPaymentHandler(); }, 1000);
+ 
+ 
+ }).catch(err => {
+   setSelectingBooking(null);
+
+     setCardUpdateLoading(null)
+
+     window.alert("There seems to be a problem, please try again!")
+ })
+ }
+ const _deselectActivityBookingHandler = ( booking, user_selected) => {
+  for(var i = 0; i< transferBookings.length; i++){
+   if(activityBookings[i].id ===  booking.id){
+     // flickity_index=i;
+     setActivityFlickityIndex(i);
+     break;
+   }
+ }
+ setSelectingBooking(booking.id)
+ let data =[];
+ 
+     data.push( {
+       "id": booking.id,
+       "booking_type": booking.booking_type,
+       "itinerary_type": "Tailored",
+       "user_selected": user_selected,			
+       "itinerary_id": booking.itinerary_id,
+       "tailored_itinerary": booking.tailored_itinerary,
+       "itinerary_name": booking.itinerary_name,
+       "itinerary_db_id": null,
+       "check_in": booking.check_in,
+       "check_out": booking.check_out,
+       "city": booking.city,
+       "costings_breakdown": booking.costings_breakdown,
+       "accommodation": booking.accommodation,
+       "is_estimated_price": booking.is_estimated_price
+   });
+   // else data.push(bookings[i]);
+ // }
+
+ // const token = localStorage.getItem('access_token')
+ axiosbookingupdateinstance.post("/?booking_type=Activity", data, {headers: {
+   'Authorization': `Bearer ${props.token}`
+   }}).then(res => {
+     setCardUpdateLoading(null)
+        _updateActivityBookingHandler(res.data.bookings);
+        setSelectingBooking(null);
+        setTimeout(function(){ 
+             
+         getPaymentHandler(); }, 1000);
+
+
+}).catch(err => {
+ setSelectingBooking(null);
+
+   setCardUpdateLoading(null)
+
+   window.alert("There seems to be a problem, please try again!")
+})
+}
 
    const _updatePaymentHandler = (json) => {
      setPayment(json);
@@ -441,7 +596,7 @@ const _reloadFlightBookings  = () => {
                  <FullImgContainer heading={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null} plan={plan}></FullImgContainer>
            </FullImg> 
             <div id="itinerary-anchor">
-              <Menu flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectStayBookingHandler={_deselectStayBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightHandler={_updateFlightHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
+              <Menu transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightHandler={_updateFlightHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
               {/* <ItineraryMobile></ItineraryMobile> */}
               {/* <Cities></Cities> */}
             </div>

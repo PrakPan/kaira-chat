@@ -17,7 +17,8 @@ import Button from '../../ui/button/Index';
 import LogInModal from '../Login';
 import AccommodationSelected from './new-accommodation-selected/Index';
 import SectionOne from './SectionOne';
-import SectionTwo from './SectionTwo'
+import SectionTwo from './SectionTwo';
+import gif from '../../../public/assets/loader.gif';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -37,6 +38,8 @@ const OptionsContainer = styled.div`
  
     @media screen and (min-width: 768px) {
          min-height: 80vh;
+         width: 80%;
+         margin: auto;
 
     }
 `;
@@ -110,7 +113,8 @@ const Booking = (props) => {
       },[props.alternates, props.bookings])
 
     useEffect(() => {
-        if(!props.alternates)
+        if(!props.alternates){
+            let filters=_generateFilterKeys(filtersState)
         axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset="+offset, 
             {
                 "cities": props.selectedBooking.city,
@@ -118,17 +122,30 @@ const Booking = (props) => {
                 "check_out": props.selectedBooking.check_out,                
                 "number_of_adults": props.selectedBooking.pax.number_of_adults,
                 "number_of_children": props.selectedBooking.pax.number_of_children,
-                "number_of_infants": props.selectedBooking.pax.number_of_infants
+                "number_of_infants": props.selectedBooking.pax.number_of_infants,
+                "accommodation_types": filters.type,
+                "price_lower_range": filters.price_lower_range,
+                "price_upper_range": filters.price_upper_range,
             
         }).then(res => {
             setLoading(false);
             setUpdateLoadingState(false);
+             
              if(res.data.results.length){
                 setNoResults(false);
+                let is_min_price_present = false;
+            
                 let options = [];
                  for(var i = 0; i< res.data.results.length; i++){
                     try{
-                     if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
+                        for(var j = 0 ; j < res.data.results[i].rooms_available.length; j++){
+                            if(res.data.results[i].rooms_available[j].prices.min_price) {
+                                is_min_price_present = true;
+                                break;
+                            }
+                    }
+    
+                     if(res.data.results[i].name !== props.selectedBooking.name  && is_min_price_present)
                     options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler}  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
                     }
                     catch{
@@ -158,101 +175,107 @@ const Booking = (props) => {
                 setLoading(false);
             }).catch(err => {
                 
-            })
-      },[])
+            })}
+      },[]);
+      const _generateFilterKeys = (filtersState) => {
+        let budgetarr = filtersState.budget;
+        let typearr = filtersState.type;
+        let sta_catgeoryarr  = filtersState.star_category;
+
+        let type=[];
+        let price_lower_range = null;
+        let price_upper_range = null;
+        let price_set = false;
+        if(!typearr.length){
+        }
+        else{
+            for(var i = 0; i < typearr.length; i++){
+                if(typearr[i] === 'All') null;
+                else{
+                    if(typearr[i] === 'Unique'){
+                        type.push("Speciality Lodging");
+                        type.push("Boat / Cruise");
+                        type.push("Holiday Park / Caravan Park");
+                        type.push("Capsule Hotel");
+                    }
+                    else type.push(typearr[i])
+                }
+            }
+        }
+
+        //BUDGET FILTERS
+        if(!budgetarr.length){
+            //send default
+            price_lower_range = 0;
+            price_upper_range = 100000000;
+        }
+        else{
+       
+            if(budgetarr.includes('Below ₹3,000')){
+
+                price_lower_range = 0;
+                price_upper_range = 300000;
+                if(budgetarr.includes("Above ₹10,000")){
+                    price_upper_range = null;
+                }
+                else if(budgetarr.includes("₹6,000 - ₹10,000")){
+                    price_upper_range = 1000000;
+                }
+                else if(budgetarr.includes("₹3,000 - ₹6,000")){
+                    price_upper_range = 600000;
+                }
+                price_set = true;
+            }
+            if(budgetarr.includes('Above ₹10,000')){
+                price_upper_range = 100000000;
+                price_lower_range = 1000000;
+                if(budgetarr.includes("Below ₹3,000")){
+                    price_lower_range = 0;
+                }
+                else if(budgetarr.includes("₹3,000 - ₹6,000")){
+                    price_lower_range = 300000;
+                }
+                else if(budgetarr.includes("₹6,000 - ₹10,000")){
+                    price_lower_range = 600000;
+                }
+                price_set = true;   
+            }
+            if(!price_set){
+                if(budgetarr.includes("₹3,000 - ₹6,000")){
+                    price_lower_range = 300000;
+                    if(budgetarr.includes("₹6,000 - ₹10,000")){
+                        price_upper_range = 1000000;
+                    }
+                    else price_upper_range = 600000
+                }
+                else if(budgetarr.includes("₹6,000 - ₹10,000")){
+                    price_lower_range = 600000;
+                    if(budgetarr.includes("Above ₹10,000")){
+                        price_upper_range = 100000000;;
+                    }
+                    else price_upper_range = 1000000;
+                }
+            }
+         }
+         return {
+            type: type,
+            price_lower_range: price_lower_range,
+            price_upper_range: price_upper_range
+         }
+      }
       const _updateOptionsHandlerWithFilter = () => {
            setOffset(0);
           setUpdateLoadingState(true);
             setNoResults(false);
-            let budgetarr = filtersState.budget;
-            let typearr = filtersState.type;
-            let sta_catgeoryarr  = filtersState.star_category;
-
-            let type=[];
-            let price_lower_range = null;
-            let price_upper_range = null;
-            let price_set = false;
           
-            if(!typearr.length){
-            }
-            else{
-                for(var i = 0; i < typearr.length; i++){
-                    if(typearr[i] === 'All') null;
-                    else{
-                        if(typearr[i] === 'Unique'){
-                            type.push("Speciality Lodging");
-                            type.push("Boat / Cruise");
-                            type.push("Holiday Park / Caravan Park");
-                            type.push("Capsule Hotel");
-                        }
-                        else type.push(typearr[i])
-                    }
-                }
-            }
-
+          
+          let filters = _generateFilterKeys(filtersState)
             //BUDGET FILTERS
-            if(!budgetarr.length){
-                //send default
-                price_lower_range = 0;
-                price_upper_range = 100000000;
-            }
-            else{
-                // for(var i = 0 ; i < budgetarr.length; i++){
-                // }
-
+           
  
 
                  
  
- 
- 
-
-                if(budgetarr.includes('Below ₹3,000')){
-
-                    price_lower_range = 0;
-                    price_upper_range = 300000;
-                    if(budgetarr.includes("Above ₹10,000")){
-                        price_upper_range = null;
-                    }
-                    else if(budgetarr.includes("₹6,000 - ₹10,000")){
-                        price_upper_range = 1000000;
-                    }
-                    else if(budgetarr.includes("₹3,000 - ₹6,000")){
-                        price_upper_range = 600000;
-                    }
-                    price_set = true;
-                }
-                if(budgetarr.includes('Above ₹10,000')){
-                    price_upper_range = 100000000;
-                    price_lower_range = 1000000;
-                    if(budgetarr.includes("Below ₹3,000")){
-                        price_lower_range = 0;
-                    }
-                    else if(budgetarr.includes("₹3,000 - ₹6,000")){
-                        price_lower_range = 300000;
-                    }
-                    else if(budgetarr.includes("₹6,000 - ₹10,000")){
-                        price_lower_range = 600000;
-                    }
-                    price_set = true;   
-                }
-                if(!price_set){
-                    if(budgetarr.includes("₹3,000 - ₹6,000")){
-                        price_lower_range = 300000;
-                        if(budgetarr.includes("₹6,000 - ₹10,000")){
-                            price_upper_range = 1000000;
-                        }
-                        else price_upper_range = 600000
-                    }
-                    else if(budgetarr.includes("₹6,000 - ₹10,000")){
-                        price_lower_range = 600000;
-                        if(budgetarr.includes("Above ₹10,000")){
-                            price_upper_range = 100000000;;
-                        }
-                        else price_upper_range = 1000000;
-                    }
-                }
-             }
 
 setViewMoreStatus(false);
 setUpdateLoadingState(true);
@@ -262,9 +285,9 @@ setUpdateLoadingState(true);
             "cities": props.selectedBooking.city,
             "check_in": props.selectedBooking.check_in,
             "check_out": props.selectedBooking.check_out,
-            "accommodation_types": type,
-            "price_lower_range": price_lower_range,
-            "price_upper_range": price_upper_range,
+            "accommodation_types": filters.type,
+            "price_lower_range": filters.price_lower_range,
+            "price_upper_range": filters.price_upper_range,
             "number_of_adults": props.selectedBooking.pax.number_of_adults,
             "number_of_children": props.selectedBooking.pax.number_of_children,
             "number_of_infants": props.selectedBooking.pax.number_of_infants
@@ -520,7 +543,7 @@ setUpdateLoadingState(true);
         setUpdateLoadingState(true);
         setViewMoreStatus(false);
         // setMoreLoadingState(true);
-        
+        let filters = _generateFilterKeys(filtersState)
         axiosaccommodationinstance.post("/?limit="+limit+"&offset="+offset, 
         {
             "cities": props.selectedBooking.city,
@@ -528,7 +551,10 @@ setUpdateLoadingState(true);
             "check_out": props.selectedBooking.check_out,                
             "number_of_adults": props.selectedBooking.pax.number_of_adults,
             "number_of_children": props.selectedBooking.pax.number_of_children,
-            "number_of_infants": props.selectedBooking.pax.number_of_infants
+            "number_of_infants": props.selectedBooking.pax.number_of_infants,
+            "accommodation_types": filters.type,
+                "price_lower_range": filters.price_lower_range,
+                "price_upper_range": filters.price_upper_range,
         
     }).then(res => {
         // setOffset(res.data.nextOffset);
@@ -602,17 +628,21 @@ setUpdateLoadingState(true);
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                <ContentContainer style={{position: 'relative'}}>
                 {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-opensans'><Spinner></Spinner>Please wait while we update your bookings</div> : null }
+                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-opensans'><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your bookings</div> : null }
                { !noResults  && !updateBookingState ? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                    <AccommodationSelected selectedBooking={props.selectedBooking}></AccommodationSelected>
 
                    {optionsJSX.length ? optionsJSX :moreOptionsJSX.length? moreOptionsJSX : null}
                     {/* {moreOptionsJSX} */}
-                   {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null}
+                   {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching stay recommendations for you</div> : null}
+                   {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
+
                    </div>
                    
-                   {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null} 
+                   {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
+                   {updateLoadingState ?  <div className='center-div' style={{ }}><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div> : null} 
+
                     {viewMoreStatus && !optionsJSX.length? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}

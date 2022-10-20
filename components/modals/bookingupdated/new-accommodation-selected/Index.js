@@ -4,6 +4,8 @@ import media from '../../../media';
 import Info from './Info';
 import Gallery from './gallery/Index';
 import Buttons from './Buttons';
+import AccommodationModal from '../../accommodation/Index';
+
 const Container = styled.div`
     margin: 0 0 1rem 0; 
      border-radius: 10px !important;
@@ -36,16 +38,20 @@ const ImageContainer = styled.div`
 const Accommodation = (props) => {
    let isPageWide = media('(min-width: 768px)')
   //   if(!showPhotos)
+  const [showDetails, setShowDetails] = useState(false);
+
   return(
       <Container className='border'>
            <GridContainer>
               <ImageContainer className='center-di'>
                  
-                <Gallery images={props.selectedBooking.images} ></Gallery>
+                <Gallery setShowDetails={() => setShowDetails(true)}  images={props.selectedBooking.images} ></Gallery>
               </ImageContainer>
-                <Info rating={4.2}  selectedBooking={props.selectedBooking}   />
+                <Info    setShowDetails={() => setShowDetails(true)}   rating={4.2}  selectedBooking={props.selectedBooking}   />
           </GridContainer>
-          <Buttons></Buttons>
+          <AccommodationModal  _setImagesHandler={props._setImagesHandler} onHide={() => setShowDetails(false)} id={props.selectedBooking.accommodation} show={showDetails}></AccommodationModal>
+
+          <Buttons  setShowDetails={() => setShowDetails(true)}  ></Buttons>
       </Container>
   );
 //   else return(

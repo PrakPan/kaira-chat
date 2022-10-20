@@ -153,6 +153,24 @@
   border: 5px solid #f7e700 !important;
   margin-top: 5px !important;
 }
+#taxi-dropdown{
+  background-color: transparent !important;
+  color: black !important;
+  border-style: none !important;
+
+
+}
+#taxi-dropdown.btn-sucess{
+  background-color: transparent !important;
+  color: black !important;
+  border-style: none !important;
+}
+.btn-check:focus + .btn-success, .btn-success:focus{
+  background-color: transparent !important;
+  color: black !important;
+  border-style: none !important;
+  box-shadow: none !important;
+}
 .booking-modal .modal-dialog{
     margin:  0 !important;
     max-width: 100% !important;

@@ -9,6 +9,7 @@ import ImageContainer from './imagecontainer/Index';
  import SectionTwo from './SectionTwo';
  import SectionThree from './SectionThree';
  import SectionFour from './SectionFour';
+ import AccommodationModal from '../../../modals/accommodation/Index'
  const Container = styled.div`
     width: 100%;        
     background-color: white;
@@ -60,11 +61,6 @@ const Booking = (props) =>{
     else if(props.price_type === "MAP" ) mealplan="Breakfast and Lunch / Dinner included";
     else if(props.price_type === "AP" ) mealplan="Breakfast, Lunch and Dinner Included";
 
-    // let color="green";
-    // if(props.rating){
-    // if(props.rating < 4 && props.rating > 3) color="orange";
-    // else if(props.rating < 3) color="red";
-    // }
 
  
 const getDate = (date) => {
@@ -90,6 +86,8 @@ const getDate = (date) => {
         }
         setRoomsJSX(roomsJSX)
       }, [props.rooms]);
+      const [showDetails, setShowDetails] = useState(false);
+
      //  if(isPageWide)
     return(
         <div>
@@ -102,10 +100,10 @@ const getDate = (date) => {
                         <FontAwesomeIcon icon={faStar} style={{fontSize: '0.75rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
-                    <SectionOne data={props.data}  ></SectionOne>
+                    <SectionOne  setShowDetails={() => setShowDetails(true)} data={props.data}  ></SectionOne>
                     <SectionTwo data={props.data}></SectionTwo>
                     <SectionThree data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
-                    <SectionFour setShowBookingModal={props.setShowBookingModal}></SectionFour>
+                    <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour>
                     {/* {props.type === "Accommodation" ? 
                     <div>
                         {props.check_in ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
@@ -139,7 +137,8 @@ const getDate = (date) => {
             </ButtonContainer>: null} */}
                     </div>
             </div>
-         
+            <AccommodationModal  _setImagesHandler={props._setImagesHandler} onHide={() => setShowDetails(false)} id={props.data.accommodation} show={showDetails}></AccommodationModal>
+
         </Container>
         </div>
     );

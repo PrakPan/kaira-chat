@@ -33,10 +33,10 @@ const GridContainer = styled.div`
 // `;
 const TargetContainer = styled.div`
     padding: 1rem 1rem;
-     overflow-y: scroll;
+     overflow-y: hidden;
      min-height: 80vw;
     @media screen and (min-width: 768px){
-        height: 35vh;
+        min-height: max-content;
 
     }
 `;

@@ -126,7 +126,7 @@ const Accommodation = (props) => {
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}}>
-            <Name className='font-opensans'>
+            <Name className='font-opensans hover-pointer' onClick={props.setShowDetails}>
              {props.name}
             </Name>
             
@@ -164,7 +164,7 @@ const Accommodation = (props) => {
                     </RatingContainer> : null}
         <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
-                {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))}</Cost> : null}
+                {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))+" /-"}</Cost> : null}
         </div>
         <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
 </div>

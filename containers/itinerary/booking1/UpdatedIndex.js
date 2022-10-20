@@ -352,20 +352,20 @@ const Booking = (props) => {
           ) 
         }
          else{
- 
+          
      
            bookings_transfers.push(
-            <TaxiBookingCard is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
+            <TaxiBookingCard  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
         )
       }
     }
   
     // setAlternates(alternatesarr);
     setBookingTransfersDesktopJSX([ ...bookings_transfers]);
-    setBookingTransfersMobileJSX(<Flickity cards={[ ...bookings_transfers]}></Flickity>);
+    setBookingTransfersMobileJSX(<Flickity initialIndex={props.transferFlickityIndex}  cards={[ ...bookings_transfers]}></Flickity>);
 
   }
-   }, [props.transferBookings, props.cardUpdateLoading]);
+   }, [props.transferBookings, props.cardUpdateLoading, props.selectingBooking]);
    
    useEffect(() => {
 
@@ -406,17 +406,17 @@ const Booking = (props) => {
  
      
           bookings_flights.push(
-            <FlightBookingCard setShowFlightModal={props.setShowFlightModal}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
+            <FlightBookingCard _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex} setShowFlightModal={props.setShowFlightModal}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
          );
         
       }
     }
     // setAlternates(alternatesarr);
     setBookingFlightsDesktopJSX([...bookings_flights]);
-    setBookingFlightsMobileJSX(<Flickity cards={[...bookings_flights]}></Flickity>);
+    setBookingFlightsMobileJSX(<Flickity initialIndex={props.flightFlickityIndex}  cards={[...bookings_flights]}></Flickity>);
 
 
-   }, [props.flightBookings, props.cardUpdateLoading]);
+   }, [props.flightBookings, props.cardUpdateLoading, props.selectingBooking]);
    
 
       useEffect(() => {
@@ -467,7 +467,7 @@ const Booking = (props) => {
  
       
         bookings_activities.push(
-            <BookingCard data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
+            <BookingCard _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
         )
       }
     }
@@ -475,10 +475,10 @@ const Booking = (props) => {
     
    
     setBookingActivityDesktopJSX(<DesktopCardContainer>{bookings_activities}</DesktopCardContainer>);
-    setBookingActivityMobileJSX(<Flickity cards={bookings_activities}></Flickity>);
+    setBookingActivityMobileJSX(<Flickity initialIndex={props.activityFlickityIndex}  cards={bookings_activities}></Flickity>);
 
 
-   }, [props.activityBookings]);
+   }, [props.activityBookings, props.selectingBooking]);
 
   useEffect(() => {
       if(props.payment){

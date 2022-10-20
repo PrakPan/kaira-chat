@@ -22,7 +22,7 @@ const Section= (props) => {
      return(
       <Container className='font-opensans'>  
       <GridContainer>
-            <Button  onclick={props.setShowBookingModal} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
+            <Button  onclick={props.setShowDetails} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
             <Button  onclick={props.setShowBookingModal}  width="100%"borderRadius="0 0  10px 0"  borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px"  onclickparam={null} >Change</Button>
             </GridContainer>
       </Container>

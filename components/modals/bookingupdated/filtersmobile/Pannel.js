@@ -6,6 +6,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import StarSlider from '../leftsidebar/StarSlider';
+import {TbArrowBack} from 'react-icons/tb';
 
 const Container  = styled.div`
 
@@ -35,7 +36,9 @@ const Pannel = (props) =>{
     //   if(props.heading!=='Star Category')
     return(
         <Container >
-            <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon>
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}><TbArrowBack onClick={() => props.onclose()} className="hover-pointer"  style={{margin: '0.5rem', fontSize: '1.75rem' , textAlign: 'right', margin:  '1rem'}} ></TbArrowBack></div>
+
+            {/* <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon> */}
             <Heading className='font-opensans'>{props.heading}</Heading>
             {props.heading!=='Star Category' ?<div style={{margin: '0 auto'}}>
            

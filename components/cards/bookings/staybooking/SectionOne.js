@@ -18,10 +18,16 @@ padding: 0.5rem;
 
 
 `;
-const Name = styled.p`
+const Name = styled.div`
     font-size: 20px;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
+      overflow: hidden;
+      line-height: 1.5;
+ text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 1;
+-webkit-box-orient: vertical;
 `;
 const Subtext = styled.p`
     font-size: 0.85rem;
@@ -57,7 +63,7 @@ const Section= (props) => {
    if(props.data)
     return(
       <Container className='font-opensans'>  
-            <Name className='font-opensans'>{props.data.name}</Name>
+            <Name className='font-opensans  hover-pointer' onClick={props.setShowDetails}>{props.data.name}</Name>
              
                 <div className='center-div'>
                 {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>

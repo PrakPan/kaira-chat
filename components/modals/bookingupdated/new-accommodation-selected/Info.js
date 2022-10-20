@@ -24,7 +24,13 @@ const Name = styled.div`
     font-weight: 700;
     display: inline;
     line-height: 1;
-    margin-bottom: 0.75rem
+    margin-bottom: 0.75rem;
+    @media screen and (min-width: 768px) {
+        font-size: 1.5rem;
+
+    }
+
+
 
 `;
  
@@ -57,7 +63,7 @@ const Cost = styled.p`
     font-weight: 800;
     font-size: 1rem;
     line-height: 1;
-    margin: 0.75rem 0 2px 0;
+    margin: 0rem 0 2px 0;
     
  `;
 const DesktopGridContainer = styled.div`
@@ -101,7 +107,7 @@ const Accommodation = (props) => {
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}}>
-            <Name className='font-opensans'>
+            <Name className='font-opensans hover-pointer' onClick={props.setShowDetails}>
              {props.selectedBooking ? props.selectedBooking.name : null}
             </Name>
             
@@ -164,11 +170,11 @@ const Accommodation = (props) => {
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null}
-        <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row', margin: '0 0 0 0'}}>
+        <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
-                <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)}</Cost>
+                <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)+" /-"}</Cost>
         </div>
-        <div className='hidden-mobile'><Button onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
+        <div className='hidden-mobile'><Button onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Selected</Button></div>
 </div>
         
        </Container>

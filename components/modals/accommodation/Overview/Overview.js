@@ -38,7 +38,7 @@ const DetailsContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     @media screen and (min-width: 768px){
-        width: 60%;
+        width: 40%;
         margin: auto;
     }
 `;
@@ -70,6 +70,10 @@ const ImageContainer = styled.div`
     position: relative;
     background-image: url(${bg});
     min-height: 20vh;
+    @media screen and (min-width: 768px){
+        margin: auto;
+        width: 40%;
+    }
     
 `;
 
@@ -114,7 +118,7 @@ const Overview = (props) => {
 }catch{
 
 }
- console.log(props.images);
+ console.log('im',props.images);
   return(
       <Container>
         <Name align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.data.name}</Name>
@@ -128,7 +132,7 @@ const Overview = (props) => {
 
         </ImageContainer> */}
           <ImageContainer>
-                 <ImageLoader fit="contain" dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 400}} url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="25vh" width="100%"></ImageLoader> 
+                 <ImageLoader   url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="30vh" width="100%"></ImageLoader> 
                 {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(images)}  className="font-opensans">
                      {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
                     All Photos
