@@ -47,8 +47,8 @@ const Booking = (props) =>{
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo data={props.data}></SectionTwo>
-         <SectionThree  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         {/* <SectionFour></SectionFour> */}
+         <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
+         <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
         </Container>
     );
  

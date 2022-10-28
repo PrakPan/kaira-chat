@@ -105,7 +105,7 @@ const getDate = (date) => {
                     </RatingContainer> : null} */}
                     <SectionOne data={props.data}  ></SectionOne>
                     <SectionTwo data={props.data}></SectionTwo>
-                    <SectionThree  _deselectBookingHandler={props._deselectActivityBookingHandler} data={props.data}  is_selecting={props.is_selecting}></SectionThree>
+                    <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectActivityBookingHandler} data={props.data}  is_selecting={props.is_selecting}></SectionThree>
                     <SectionFour setShowBookingModal={props.setShowBookingModal}></SectionFour>
                     {/* {props.type === "Accommodation" ? 
                     <div>

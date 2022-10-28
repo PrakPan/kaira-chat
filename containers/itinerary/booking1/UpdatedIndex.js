@@ -11,6 +11,7 @@ import ComingSoon from './ComingSoon';
 import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import Timer from '../timer/Index';
 // import OldBookingModal from '../../../components/modals/booking/Index';
+import {connect} from 'react-redux';
 
 import BookingModal from '../../../components/modals/bookingupdated/Index';
 import FlightModal from '../../../components/modals/flights/Index';
@@ -24,15 +25,20 @@ import FlightCard from '../../../components/cards/editableflights/Index';
 import DesktopCardContainer from './DesktopCardCotainer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Spinner from '../../../components/Spinner';
+// import Spinner from '../../../components/Spinner';
+import gif from '../../../public/assets/loader.gif';
 import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
-
+import * as authaction from '../../../store/actions/auth';
 import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
 import FlightBookingCard  from '../../../components/cards/bookings/flightbooking/Index';
 import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
+import BusBookingCard from '../../../components/cards/bookings/busbooking/Index';
+
 import FooterBannerMobile from './FooterBannerMobile';
 import ImageLoader from '../../../components/ImageLoader';
+import LogInModal from '../../../components/modals/Login';
+import TaxiModal from '../../../components/modals/taxis/Index';
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -97,7 +103,7 @@ const MessageContainer = styled.div`
 `;
 const TargetContainer = styled.div`
   padding: 1rem 0;
-  min-height: 40vh;
+  min-height: 50vh;
 `;
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -139,7 +145,7 @@ const Booking = (props) => {
     const [alternates, setAlternates] = useState(null);
     const [showpayment, setShowpayment] = useState(false);
      const [images, setImages] = useState(null);
-
+    const [showLoginModal, setShowLoginModal]=useState(false);
      const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] = useState([]);
     const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] = useState([]);
    
@@ -203,6 +209,27 @@ const Booking = (props) => {
         destination_iata: destination_iata
       })
       props.setShowFlightModal();
+    }
+    const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata) => {
+    console.log('test')
+      ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
+      setSelectedBooking({
+        ...selectedBooking,
+        name: name,
+        itinerary_id: itinerary_id,
+        id: id,
+        tailored_id: tailored_id,
+        check_in: check_in,
+        check_out: check_out,
+        pax: pax,
+        city: city,
+        itinerary_name: itinerary_name,
+        cost: Math.round(cost/100),
+        costings_breakdown: costings_breakdown,
+        origin_iata: origin_iata,
+        destination_iata: destination_iata
+      })
+      props.setShowTaxiModal(true);
     }
 
     useEffect(()=> {
@@ -287,7 +314,7 @@ const Booking = (props) => {
             number_of_rooms = props.stayBookings[i].costings_breakdown[0]["number_of_rooms"];
              if(!props.stayBookings[i].user_selected && !props.stayBookings[i].alternate_to){
               bookings_accommodations.push(
-                <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+                <StayBookingCard  setShowLoginModal={setShowLoginModal} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
              )
               //set as selectable booking
             }
@@ -297,7 +324,7 @@ const Booking = (props) => {
             }
             else 
             bookings_accommodations.push(
-            <StayBookingCard is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+            <StayBookingCard setShowLoginModal={setShowLoginModal} token={props.token} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
          )}
      
       }
@@ -307,13 +334,13 @@ const Booking = (props) => {
     setBookingAccommodationsDesktopJSX(<DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>);
     setBookingAccommodationsMobileJSX(<Flickity initialIndex={props.stayFlickityIndex}  cards={bookings_accommodations}></Flickity>);
     
-  }, [props.stayBookings, props.selectingBooking, props.stayFlickityIndex]);
+  }, [props.stayBookings, props.selectingBooking, props.stayFlickityIndex, props.token, props.payment]);
 
       useEffect(() => {
 
     if(props.transferBookings)
     for(var i=0 ; i < props.transferBookings.length ; i++){
-       if(props.transferBookings[i].user_selected){
+       if(true){
         let oldbooking = false;
         if(props.transferBookings[i].version === 'v1') oldbooking= true;
         if(props.traveleritinerary) oldbooking=true;
@@ -353,10 +380,14 @@ const Booking = (props) => {
         }
          else{
           
-     
+          if(props.transferBookings[i].booking_type === 'Taxi')
            bookings_transfers.push(
-            <TaxiBookingCard  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
+            <TaxiBookingCard setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
         )
+        else if(props.transferBookings[i].booking_type === 'Bus')
+        bookings_transfers.push(
+          <BusBookingCard setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></BusBookingCard>
+      )
       }
     }
   
@@ -365,7 +396,7 @@ const Booking = (props) => {
     setBookingTransfersMobileJSX(<Flickity initialIndex={props.transferFlickityIndex}  cards={[ ...bookings_transfers]}></Flickity>);
 
   }
-   }, [props.transferBookings, props.cardUpdateLoading, props.selectingBooking]);
+   }, [props.transferBookings, props.cardUpdateLoading, props.selectingBooking, props.token, props.payment]);
    
    useEffect(() => {
 
@@ -406,7 +437,7 @@ const Booking = (props) => {
  
      
           bookings_flights.push(
-            <FlightBookingCard _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex} setShowFlightModal={props.setShowFlightModal}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
+            <FlightBookingCard  setShowLoginModal={setShowLoginModal} token={props.token} _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex} setShowFlightModal={props.setShowFlightModal}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
          );
         
       }
@@ -416,7 +447,7 @@ const Booking = (props) => {
     setBookingFlightsMobileJSX(<Flickity initialIndex={props.flightFlickityIndex}  cards={[...bookings_flights]}></Flickity>);
 
 
-   }, [props.flightBookings, props.cardUpdateLoading, props.selectingBooking]);
+   }, [props.flightBookings, props.cardUpdateLoading, props.selectingBooking, props.token, props.payment]);
    
 
       useEffect(() => {
@@ -467,8 +498,8 @@ const Booking = (props) => {
  
       
         bookings_activities.push(
-            <BookingCard _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
-        )
+            <BookingCard  is_selecting={ props.activityBookings[i].id === props.selectingBooking} setShowLoginModal={setShowLoginModal} token={props.token} _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
+        ) 
       }
     }
     setAlternates(alternatesarr);
@@ -478,7 +509,7 @@ const Booking = (props) => {
     setBookingActivityMobileJSX(<Flickity initialIndex={props.activityFlickityIndex}  cards={bookings_activities}></Flickity>);
 
 
-   }, [props.activityBookings, props.selectingBooking]);
+   }, [props.activityBookings, props.selectingBooking, props.token, props.payment]);
 
   useEffect(() => {
       if(props.payment){
@@ -491,13 +522,13 @@ const Booking = (props) => {
    
     let message ="Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com"+router.asPath;
     const _setImagesHandler = (images) => {
-      // window.scrollTo(0,0);
-      setImages(images);
+       setImages(images);
     }
- 
+ console.log('p', props.paymentLoading)
     if(true){
     if(!images){
     if(isPageWide){
+      if(true)
     return(
       <div>
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
@@ -531,8 +562,8 @@ const Booking = (props) => {
             {bookingsFlightsDesktopJSX}
             {/* {bookingsTransfersDesktopJSX} */}
 
-            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
-            {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div>}        
+            {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={2} >
@@ -540,13 +571,13 @@ const Booking = (props) => {
             {/* {bookingsFlightsDesktopJSX} */}
             {bookingsTransfersDesktopJSX}
 
-            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}        
-            {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div>}        
+            {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={3} >
            {props.activityBookings ?  props.activityBookings.length ? bookingsAcivityDesktopJSX :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
-           {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+           {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
             </BookingsContainer>
@@ -559,21 +590,29 @@ const Booking = (props) => {
         {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
     </div>
   ); 
-    }
   else return(
+    <div>
+    
+          <LogInModal
+              show={true}
+              onhide={props.setHideBookingModal}>
+            </LogInModal>
+    </div>
+      );
+    }
+  else{ 
+    if(!showLoginModal)
+    return(
       <Container  style={{marginTop :  '0' }}>
             {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            {/* <MobileWidthContainer><MessageContainer className='border-thin font-opensans'>
-              Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
-              </MessageContainer></MobileWidthContainer> */}
-             {/* {bookingMobileJSX} */}
+           
              <Tabs
         value={value}
         onChange={handleChange}
         variant={!isPageWide ? 'scrollable': "fullWidth"}
-        scrollButtons={false}
-        allowScrollButtonsMobile
+        scrollButtons={false} 
+        allowScrollButtonsMobile 
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
@@ -588,15 +627,15 @@ const Booking = (props) => {
             {!props.stayBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
        </TabPanel>
        <TabPanel value={value} index={1} >
-            {!props.flightLoading ? props.flightBookings ? props.flightBookings.length?  bookingsFlightsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div> }
-            {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            {!props.flightLoading ? props.flightBookings ? props.flightBookings.length?  bookingsFlightsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div> }
+            {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
             {/* {bookingsTransfersMobileJSX} */}
        </TabPanel>
        <TabPanel value={value} index={2} >
             {/* {bookingsFlightsMobileJSX} */}
-            {!props.transferLoading ? props.transferBookings ?  props.transferBookings.length ? bookingsTransfersMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: '50vh'}} className="center-div"><Spinner></Spinner></div>}
-            {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            {!props.transferLoading ? props.transferBookings ?  props.transferBookings.length ? bookingsTransfersMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div>}
+            {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={3} >
@@ -611,13 +650,25 @@ const Booking = (props) => {
             </BookingsContainer> : summaryContainerJSX}
             {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-             {props.showBookingModal ? <BookingModal _setImagesHandler={_setImagesHandler} getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
+             {props.showBookingModal ? <BookingModal budget={props.budget} _setImagesHandler={_setImagesHandler} getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
             {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
             {props.showFlightModal ? <FlightModal _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.stayBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
-        <FooterBannerMobile payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile>
+            {props.showTaxiModal? <TaxiModal showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
+
+        <FooterBannerMobile paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile>
             {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
         </Container>
   );
+  else return(
+    <div>
+    
+          <LogInModal
+              show={true}
+              onhide={() => setShowLoginModal(false)}>
+            </LogInModal>
+    </div>
+      );
+}
         }
     else return <FullScreenGallery closeGalleryHandler={() => setImages(null)} images={images} ></FullScreenGallery>;
     }
@@ -626,5 +677,25 @@ const Booking = (props) => {
        <ComingSoon></ComingSoon></div>
         );
 }
+const mapStateToPros = (state) => {
+  return{
+  
+    name: state.auth.name,
+    emailFail: state.auth.emailFail,
+    token: state.auth.token,
+    phone: state.auth.phone,
+    email: state.auth.email,
+    authRedirectPath: state.auth.authRedirectPath,
+    loadingsocial: state.auth.loadingsocial,
+    emailfailmessage: state.auth.emailfailmessage,
+    loginmessage: state.auth.loginmessage,
+    hideloginclose: state.auth.hideloginclose
+  }
+}
+const mapDispatchToProps = dispatch => {
+    return{
+ 
+    }
+  }
 
-export default React.memo((Booking));
+export default  connect(mapStateToPros,mapDispatchToProps)(Booking);

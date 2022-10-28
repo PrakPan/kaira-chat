@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import Button from '../../../components/ui/button/Index';
 import { getIndianPrice } from '../../../services/getIndianPrice';
 import ImageLoader from '../../../components/ImageLoader';
-
+import Spinner from '../../../components/Spinner';
 const FixedContainer = styled.div`
 width: 100%;
 color: white;
@@ -70,7 +70,7 @@ const DiscountContainer = styled.div`
 `;
 
 const Banner = (props) => {
-  
+  console.log(props.paymentLoading)
     
   //  if(props.payment)
   try{
@@ -79,8 +79,8 @@ const Banner = (props) => {
     <FixedContainer>
       <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" leftalign widthmobile="2rem" height="2rem"></ImageLoader>
       <CostContainer >
-        <DiscountContainer>
-           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.total_cost/100))+"/-"}</Cost>
+        <DiscountContainer> 
+           {!props.paymentLoading ? <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.total_cost/100))+"/-"}</Cost>:<Spinner display="inline" color="white" size={16} padding="0"></Spinner>}
           </DiscountContainer>
            <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">Book Now</Button>
     </CostContainer> 

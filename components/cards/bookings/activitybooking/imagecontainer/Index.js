@@ -85,7 +85,7 @@ const Booking = (props) =>{
                     </PhotosButton> : null : null}
                   
                     <div style={{position: 'absolute', bottom: '0.25rem', right: '0.25rem', display: 'flex', }}>
-                            <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>Hotel</EditButton>
+                            <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>Activity</EditButton>
                             {props.star_category ? <EditButton className="font-opensans">{props.star_category+" star"}</EditButton> : null}
 
                     </div>

@@ -57,8 +57,16 @@ const Section= (props) => {
    if(props.data)
     return(
       <Container className='font-opensans'>  
+      <div>
             <Name className='font-opensans'>{props.data.name}</Name>
-             
+            <div style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+                <ImageLoader leftalign url="media/icons/bookings/map-cropped.svg" width="1.5rem" height="auto" widthmobile="1.5rem"></ImageLoader>
+              <div style={{display: 'flex', alignItems: 'center', marginLeft: '0.25rem'}}>
+              <Subtext className='font-opensans'>New Delhi</Subtext>
+
+              </div>
+                </div>
+                </div>
                 <div className='center-div'>
                 {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white', lineHeight: '1'}}/>

@@ -684,6 +684,7 @@ outline: none !important;
 }
 .booking-filter-tab:nth-child(n) span{
   font-size: 0.75rem !important;
+  font-weight: 400 !important;
 
 }
 #filter-tab .MuiTabs-scroller{

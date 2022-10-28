@@ -13,6 +13,7 @@ import {connect} from 'react-redux';
 import {TbArrowBack} from 'react-icons/tb';
 import Spinner from '../../Spinner';
 import media from '../../media';
+import gif from '../../../public/assets/loader.gif';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover{
     cursor: pointer;
@@ -57,7 +58,7 @@ const POI = (props) => {
                   {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
                   {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
                 </div>
-                </div>: <div style={{height: '100%', paddingTop: '20vw' }} className="center-div"><Spinner></Spinner></div>}
+                </div>: <div style={{height: '100%', paddingTop: '20vw' }} className="center-div"><img src={gif} style={{width: '3rem', height: '3rem'}}/></div>}
 
             </Modal.Body>
       </Modal>

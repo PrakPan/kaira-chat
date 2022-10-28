@@ -87,13 +87,13 @@ const getDate = (date) => {
         setRoomsJSX(roomsJSX)
       }, [props.rooms]);
       const [showDetails, setShowDetails] = useState(false);
-
+console.log('d', props.data)
      //  if(isPageWide)
     return(
         <div>
             <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>
         <Container className='border' style={{borderRadius: "10px"}}>
-            <ImageContainer star_category={props.data.star_category} images={props.data.images} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler}  setShowBookingModal={props.setShowBookingModal} setImagesHandler={props.setImagesHandler}></ImageContainer>
+            <ImageContainer type={props.data.accommodation_type} star_category={props.data.star_category} images={props.data.images} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler}  setShowBookingModal={props.setShowBookingModal} setImagesHandler={props.setImagesHandler}></ImageContainer>
             <div  style={{padding: "",   flex: '1 1 auto', display:  'flex', flexFlow: 'column'}}>
                 <div   style={{padding: "",   flex: '1 1 auto', display:  'flex', flexFlow: 'column', height: '100%'}} >
                     {/* {props.type === "Accommodation" && props.rating &&  color!=='red'? <RatingContainer style={{backgroundColor: color, lineHeight: '1'}}>
@@ -102,7 +102,7 @@ const getDate = (date) => {
                     </RatingContainer> : null} */}
                     <SectionOne  setShowDetails={() => setShowDetails(true)} data={props.data}  ></SectionOne>
                     <SectionTwo data={props.data}></SectionTwo>
-                    <SectionThree data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
+                    <SectionThree are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
                     <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour>
                     {/* {props.type === "Accommodation" ? 
                     <div>
@@ -137,7 +137,7 @@ const getDate = (date) => {
             </ButtonContainer>: null} */}
                     </div>
             </div>
-            <AccommodationModal  _setImagesHandler={props._setImagesHandler} onHide={() => setShowDetails(false)} id={props.data.accommodation} show={showDetails}></AccommodationModal>
+            <AccommodationModal  _setImagesHandler={props.setImagesHandler} onHide={() => setShowDetails(false)} id={props.data.accommodation} show={showDetails}></AccommodationModal>
 
         </Container>
         </div>

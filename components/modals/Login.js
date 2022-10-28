@@ -24,6 +24,9 @@ const Enquiry = (props) => {
   //   background-size: cover;
 
   // `;
+  useEffect ( () => {
+  if(props.token) if(props.onhide) props.onhide();
+}, [props.token, props.onhide]);
   
 
   if(isPageWide)
@@ -55,7 +58,8 @@ const Enquiry = (props) => {
 const mapStateToPros = (state) => {
   return{
    
-    hideloginclose: state.auth.hideloginclose
+    hideloginclose: state.auth.hideloginclose,
+    token: state.auth.token, 
   }
 }
 const mapDispatchToProps = dispatch => {

@@ -1,0 +1,114 @@
+import React from 'react';
+import styled from 'styled-components';
+import media from '../../../../media';
+import ImageLoader from '../../../../ImageLoader';
+import { getHumanDate } from '../../../../../services/getHumanDate';
+const Container = styled.div`
+padding: 0.75rem 0.5rem;
+display: flex;
+flex-direction: column;
+max-width: 100%;
+  `;
+const RouteContainer = styled.div`
+display: flex;
+ 
+@media screen and (min-width: 768px){
+   
+    
+}
+
+
+`;
+const Heading = styled.p`
+font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    line-height: 1;
+`;
+const Location = styled.p`
+    font-size: 13px;
+    font-weight: 400;
+    margin: 0;
+
+`;
+ 
+const IconHeading  = styled.p`
+font-size: 13px;
+font-weight: 700;
+margin:0;
+line-height: 1;
+
+`;
+const Text = styled.p`
+font-size: 13px;
+font-weight: 300;
+margin:0;
+letter-spacing: 1px;
+color: rgba(91, 89, 89, 1);
+
+`;
+const Section= (props) => {
+    let isPageWide = media('(min-width: 768px)')
+    const getDate = (date) => {
+      if(date){
+      let year = date.substring(0,4)
+      let month = date.substring(5,7);
+      let day = date.substring(8,10);
+      return(getHumanDate(day+"/"+month+"/"+year) );
+      }
+  
+  }
+   if(props.selectedBooking)
+    return(
+      <Container>
+        <Heading>{"Taxi"}</Heading>
+      <RouteContainer className='font-opensans'>  
+      {/* <div style={{margin: '0 2px 0 0'}}><ImageLoader url="media/icons/bookings/pin.png" leftalign dimensions={{width: 200, height: 250}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader></div> */}
+
+          <Location className="font-opensans">{'props.data.city'}</Location>
+            <div style={{margin: '0 2px'}}>
+              <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader>
+            </div>
+            <Location className="font-opensans">{'props.data.destination_city'}</Location>
+           
+      </RouteContainer>
+      <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.25rem', marginTop: '0.75rem'}}>
+                    <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    <div style={{display: 'flex', gap: '1rem'}}> 
+                        {props.selectedBooking.check_in ? <div>
+                            <IconHeading className='font-opensans'>Trip Start</IconHeading>
+                            <Text className='font-nunito'>{getDate(props.selectedBooking.check_in)}</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
+
+                        </div> : null}
+                        {props.selectedBooking.check_in ? <div>
+                            <IconHeading className='font-opensans'>Trip End</IconHeading>
+                            <Text className='font-nunito'>{getDate(props.selectedBooking.check_in)}</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
+
+                        </div> : null}
+                    </div>
+    </div>
+    <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem', marginTop: '0.75rem'}}>
+                    <ImageLoader url="media/icons/bookings/distance.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    <div style={{display: 'flex', gap: '1rem'}}> 
+                        {props.selectedBooking.check_in ? <div>
+                            <IconHeading className='font-opensans'>1512 km</IconHeading>
+                            <Text className='font-nunito'>Included</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
+
+                        </div> : null}
+                        {props.selectedBooking.check_in ? <div>
+                            <IconHeading className='font-opensans'>5 days</IconHeading>
+                            <Text className='font-nunito'>Included</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
+
+                        </div> : null}
+                    </div>
+    </div>
+      </Container>
+  ); 
+  else return null;
+}
+
+export default Section;

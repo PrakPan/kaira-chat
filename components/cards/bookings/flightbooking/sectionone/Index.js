@@ -26,7 +26,7 @@ const Section= (props) => {
     if(props.data)
     return(
       <Container className='font-opensans'>  
-          <div style={{display: 'flex', gap:  '0.5rem', marginRight: '1rem'}}>
+          <div style={{display: 'flex', gap:  '0.5rem', marginRight: '0rem'}}>
                   <div style={{padding:'1rem 0 1rem 0.5rem'}}><ImageLoader url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="2.5rem" ></ImageLoader></div>
               <Route data={props.data}></Route>
               </div>
