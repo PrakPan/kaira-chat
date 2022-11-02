@@ -121,15 +121,11 @@ const _handleTailoredClick = () => {
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Rajasthan</Heading>        
-        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Unique Rajasthan"]} ></Experiences>
+        <Experiences   margin="2.5rem 0" experiences={rajasthancontent["Unique Rajasthan"]} ></Experiences>
         {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
         </SetWidthContainer>
     <WhyUs></WhyUs>
 {/*Add Banner*/}
-  
-
-   
-    
   
  
       <SetWidthContainer>

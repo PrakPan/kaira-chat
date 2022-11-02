@@ -155,7 +155,7 @@ const experiences = {
             "name": "Explore Rajasthan's Exquisite Cuisine",
             "experience_region": "Rajasthan",
             "rating": 4.7,
-            "duration": "3 days",
+            "duration": "7 days",
             "short_text": "Make your way to the Land of Kings and taste the food that is a big part of the authentic Rajasthani experience!",
              "images": {
                 "main_image": "media/experiences/166476259790351676940917968750.jpg",
@@ -163,11 +163,11 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 8428001,
+                  "cost": 4214001,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "3 days"
+                  "duration": "7 days"
                 }
               ],
         },
@@ -178,7 +178,7 @@ const experiences = {
             "name": "Haunted Adventures in Rajasthan!",
             "experience_region": "Andaman",
             "rating": 4.9,
-            "duration": "3 days",
+            "duration": "7 days",
             "short_text": "Take this thrilling trip to Rajasthan if you want to explore the haunted grounds in the state!",
             "starting_cost" : "100000",
             "images": {
@@ -187,11 +187,11 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 9194401,
+                  "cost": 2151301,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "3 days"
+                  "duration": "7 days"
                 }
               ],
         },
@@ -201,8 +201,8 @@ const experiences = {
             "experience_filters": ["Cultural"],
             "name": "A Religious Trip to Rajasthan!",
             "experience_region": "Rajasthan",
-            "rating": 4.9,
-            "duration": "3 days",
+            "rating": 4.7,
+            "duration": "6 days",
             "short_text": "Find a balance between your spirituality and living in this religiously rooted haven of peace!",
              "images": {
                 "main_image": "media/experiences/166475651219883298873901367188.jpg",
@@ -210,11 +210,11 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 9194401,
+                  "cost": 2516151,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "3 days"
+                  "duration": "6 days"
                 }
               ],
         },
