@@ -7,7 +7,7 @@ const experiences = {
             "name": "Rajasthani Family Trip!",
             "experience_region": "Rajasthan",
             "rating": 4.5,
-            "duration": "7 days",
+            "duration": "6 days",
             "short_text": "Take your loved ones and explore the beautiful state of Rajasthan and all the wonders it has to offer!",
              "images": {
                 "main_image": "media/experiences/166476628720720839500427246094.jpg",
@@ -15,11 +15,11 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 2815951,
+                  "cost": 2705201,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "7 days"
+                  "duration": "6 days"
                 }
               ],
         },
@@ -27,7 +27,7 @@ const experiences = {
             "id":"ifgPvZyQcBXXPYdJ",
             "slug": "experience-rajasthan-for-friends---7-days-luxury",
             "experience_filters": ["Culture"],
-            "name": "A Luxury Trip to Rajasthan for friends",
+            "name": "6-days Luxury in Rajasthan",
             "experience_region": "Rajasthan",
             "rating": 4.7,
             "duration": "7 days",
@@ -38,7 +38,7 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 9900601,
+                  "cost": 3300201,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
@@ -48,12 +48,12 @@ const experiences = {
         },
         {  
             "id":"BuFe3xJmrZPpXOsu",
-            "slug": "experience-the-culture-of-rajasthan---7-days",
+            "slug": "Culture-Rajasthan",
             "experience_filters": ["Culture"],
             "name": "Grandeurs of Rajasthan's Culture",
             "experience_region": "Andaman",
             "rating": 4.6,
-            "duration": "1 days",
+            "duration": "6 days",
             "short_text": "Explore in the culturally vibrant and diverse charm of Rajasthan and experience the wonders of the land of royals.",
              "images": {
                 "main_image": "media/experiences/166463371452242851257324218750.jpg",
@@ -61,11 +61,11 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 6540501,
+                  "cost": 3270251,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "1 days"
+                  "duration": "6 days"
                 }
               ],
         },
@@ -218,6 +218,75 @@ const experiences = {
                 }
               ],
         },
+        {  
+          "id":"0O0saoIB3VsEI0tKb6Ch",
+          "slug": "offbeat-rajasthan-caravan-experience",
+          "experience_filters": ["Adventure"],
+          "name": "Offbeat Rajasthan Caravan experience",
+          "experience_region": "Rajasthan",
+          "rating": 4.9,
+          "duration": "4 days",
+          "short_text": "Enjoy a caravan trip amid the offbeat paths of Rajasthan.",
+           "images": {
+              "main_image": "media/experiences/166739043284674215316772460938.jpg",
+              "main_image_alt_text": null,
+            },
+            "payment_info": [
+              {
+                "cost": 1699551,
+                "currency": "USD",
+                "total_cost": 185000,
+                "service_fee": 15000,
+                "duration": "4 days"
+              }
+            ],
+      },
+      {  
+        "id":"0O0saoIB3VsEI0tKb6Ch",
+        "slug": "rajasthan-experience-for-friends-budget-7-days",
+        "experience_filters": ["Culture"],
+        "name": "Pocket Friendly Rajasthan Extravaganza",
+        "experience_region": "Rajasthan",
+        "rating": 4.8,
+        "duration": "6 days",
+        "short_text": "A week in the land of rich cultural heritages and royals.",
+         "images": {
+            "main_image": "media/experiences/166309192638587450981140136719.jpg",
+            "main_image_alt_text": null,
+          },
+          "payment_info": [
+            {
+              "cost": 100000,
+              "currency": "USD",
+              "total_cost": 185000,
+              "service_fee": 15000,
+              "duration": "6 days"
+            }
+          ],
+    },
+    {  
+      "id":"0O0saoIB3VsEI0tKb6Ch",
+      "slug": "experience-adventure-in-rajasthan---7-days",
+      "experience_filters": ["Culture"],
+      "name": "Zippy Rajasthan Adventure",
+      "experience_region": "Rajasthan",
+      "rating": 4.8,
+      "duration": "7 days",
+      "short_text": "Take an adventurous tour around the mighty offerings of Rajasthan.",
+       "images": {
+          "main_image": "media/experiences/166463648322483634948730468750.jpg",
+          "main_image_alt_text": null,
+        },
+        "payment_info": [
+          {
+            "cost": 5832701,
+            "currency": "USD",
+            "total_cost": 185000,
+            "service_fee": 15000,
+            "duration": "7 days"
+          }
+        ],
+  },
       
     ]
 }
