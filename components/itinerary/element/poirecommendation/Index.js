@@ -33,6 +33,7 @@ const Food = (props) =>{
 
     useEffect(() => { 
          let POI_JSX=[];
+         try{
         let data_arr = JSON.parse(props.text);
         for(var i = 0; i<data_arr.length; i++){
             POI_JSX.push(
@@ -41,7 +42,10 @@ const Food = (props) =>{
             )
 
         }
-        setJSX(POI_JSX)
+        setJSX(POI_JSX)}
+        catch{
+            
+        }
     }, [props.text]);
     
             return(

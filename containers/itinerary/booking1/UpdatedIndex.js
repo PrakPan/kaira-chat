@@ -210,7 +210,7 @@ const Booking = (props) => {
       })
       props.setShowFlightModal();
     }
-    const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata) => {
+    const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type) => {
     console.log('test')
       ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
       setSelectedBooking({
@@ -227,7 +227,9 @@ const Booking = (props) => {
         cost: Math.round(cost/100),
         costings_breakdown: costings_breakdown,
         origin_iata: origin_iata,
-        destination_iata: destination_iata
+        destination_iata: destination_iata,
+        destination_city: destination_city,
+        taxi_type: taxi_type
       })
       props.setShowTaxiModal(true);
     }
@@ -361,12 +363,13 @@ const Booking = (props) => {
           number_of_children: props.transferBookings[i]["number_of_children"],
           number_of_infants: props.transferBookings[i]["number_of_infants"],
         }
+        console.log(props.transferBookings[i]);
         let city=props.transferBookings[i]["city"];
         let room_type = props.transferBookings[i]["room_type"];
         let taxi_type=props.transferBookings[i]["taxi_type"];
         let transfer_type=props.transferBookings[i]["transfer_type"];
         let city_id=props.transferBookings[i]["city_id"]; 
-        let destination_city_id=props.transferBookings[i]["destination_city_id"];  
+        let destination_city=props.transferBookings[i]["destination_city"];  
         let duration=props.transferBookings[i]["duration"];  
         let origin_iata=props.transferBookings[i]["origin_city_iata_code"]; 
         let destination_iata=props.transferBookings[i]["destination_city_iata_code"]; 
@@ -375,14 +378,14 @@ const Booking = (props) => {
 
           
            bookings_transfers.push(
-              <OldBookingCard payment={props.payment} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.transferBookings[i]["name"]} details={ props.transferBookings[i]["points"]}  rating={props.transferBookings[i]["user_rating"]} setImagesHandler = {_setImagesHandler} images={ props.transferBookings[i]["images"]}></OldBookingCard>
+              <OldBookingCard payment={props.payment} key={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.transferBookings[i]["name"]} details={ props.transferBookings[i]["points"]}  rating={props.transferBookings[i]["user_rating"]} setImagesHandler = {_setImagesHandler} images={ props.transferBookings[i]["images"]}></OldBookingCard>
           ) 
         }
          else{
           
           if(props.transferBookings[i].booking_type === 'Taxi')
            bookings_transfers.push(
-            <TaxiBookingCard setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
+            <TaxiBookingCard setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></TaxiBookingCard>
         )
         else if(props.transferBookings[i].booking_type === 'Bus')
         bookings_transfers.push(
@@ -425,19 +428,16 @@ const Booking = (props) => {
         }
         let city=props.flightBookings[i]["city"];
         let room_type = props.flightBookings[i]["room_type"];
-         let origin_iata=props.flightBookings[i]["origin_city_iata_code"]; 
-        let destination_iata=props.flightBookings[i]["destination_city_iata_code"]; 
+         let origin_iata=props.flightBookings[i]["origin_code"]; 
+        let destination_iata=props.flightBookings[i]["destination_code"]; 
         if(oldbooking){
-          
-          bookings_flights.push(
+           bookings_flights.push(
               <OldBookingCard payment={props.payment} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.flightBookings[i]["name"]} details={ props.flightBookings[i]["points"]}  rating={props.flightBookings[i]["user_rating"]}  images={ props.flightBookings[i]["images"]}></OldBookingCard>
           ) 
         }
          else{
- 
-     
-          bookings_flights.push(
-            <FlightBookingCard  setShowLoginModal={setShowLoginModal} token={props.token} _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex} setShowFlightModal={props.setShowFlightModal}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
+           bookings_flights.push(
+            <FlightBookingCard    setShowLoginModal={setShowLoginModal} token={props.token} _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
          );
         
       }
@@ -584,7 +584,7 @@ const Booking = (props) => {
           {summaryContainerJSX}
           {props.showBookingModal ?  <BookingModal _setImagesHandler={_setImagesHandler}  getPaymentHandler={props.getPaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings ? props.stayBookings[0]["tailored_itinerary"] : null} _updatePaymentHandler={props._updatePaymentHandler}   _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
           {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
-          {props.showFlightModal ? <FlightModal getPaymentHandler={props.getPaymentHandler} _updateFlightBookingHandler={props._updateFlightBookingHandler } _updateBookingHandler={props._updateBookingHandler} itinerary_id={props.stayBookings.length ?  props.stayBookings[0]["itinerary_id"] : null} setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
+          {props.showFlightModal ? <FlightModal getPaymentHandler={props.getPaymentHandler} _updateFlightBookingHandler={props._updateFlightBookingHandler } _updateBookingHandler={props._updateBookingHandler} itinerary_id={props.stayBookings.length ?  props.flightBookings[0]["itinerary_id"] : null} setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
 
         </Container>
         {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
@@ -652,7 +652,7 @@ const Booking = (props) => {
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
              {props.showBookingModal ? <BookingModal budget={props.budget} _setImagesHandler={_setImagesHandler} getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
             {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
-            {props.showFlightModal ? <FlightModal _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.stayBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
+            {props.showFlightModal ? <FlightModal _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.flightBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
             {props.showTaxiModal? <TaxiModal showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 
         <FooterBannerMobile paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile>

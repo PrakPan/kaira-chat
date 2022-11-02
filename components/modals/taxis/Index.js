@@ -3,8 +3,8 @@ import {Modal} from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
 // import LeftSideBar from './leftsidebar/Index';
-import Accommodation from './accommodation/Index';
-import AccommodationSearched from './new-accommodation-searched/Index';
+// import Accommodation from './accommodation/Index';
+// import AccommodationSearched from './new-accommodation-searched/Index';
 // import AccommodationModal from '../accommodation/Index';
  import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
  import axiostaxiinstance from '../../../services/bookings/FetchTaxiRecommendations';
@@ -16,11 +16,12 @@ import {connect} from 'react-redux';
  // import Button from '../../Button';
 import Button from '../../ui/button/Index';
 import LogInModal from '../Login';
-import AccommodationSelected from './new-accommodation-selected/Index';
+// import AccommodationSelected from './new-accommodation-selected/Index';
 import SectionOne from './SectionOne';
 import SectionTwo from './SectionTwo';
 import gif from '../../../public/assets/loader.gif';
 import TaxiSelected from './taxi-selected/Index';
+import TaxiSearched from './taxi-searched/Index'
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -57,7 +58,7 @@ const ContentContainer = styled.div`
  
 const Booking = (props) => {
     let isPageWide = media('(min-width: 768px)')
-
+console.log('b', props.selectedBooking)
     let OptionsJSX = [];
     const [optionsJSX, setOptionsJSX] = useState([]);
     const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -105,12 +106,12 @@ const Booking = (props) => {
         star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
     }
     useEffect(() => {
-        let options = [];
-         if(props.alternates)
-        for(var i=0; i<props.alternates.length; i++){
-            options.push(<Accommodation  _setImagesHandler={props._setImagesHandler} alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
-        }
-                        setOptionsJSX(options)
+        // let options = [];
+        //  if(props.alternates)
+        // for(var i=0; i<props.alternates.length; i++){
+        //     options.push(<Accommodation  _setImagesHandler={props._setImagesHandler} alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
+        // }
+        //                 setOptionsJSX(options)
 
       },[props.alternates, props.bookings])
 
@@ -135,13 +136,15 @@ const Booking = (props) => {
         }).then(res => {
             setLoading(false);
             setUpdateLoadingState(false);
-             
-             if(res.data.results.length){
+            console.log(res.data.choices)
+             if(res.data.choices.length){
                 setNoResults(false);
                 let is_min_price_present = false;
-            
+                console.log(res.data.choices.length)
                 let options = [];
-                 for(var i = 0; i< res.data.results.length; i++){
+                 for(var i = 0; i< res.data.choices.length; i++){
+                    console.log(res.data.choices[i])
+
                     // try{
                     //     for(var j = 0 ; j < res.data.results[i].rooms_available.length; j++){
                     //         if(res.data.results[i].rooms_available[j].prices.min_price) {
@@ -151,7 +154,7 @@ const Booking = (props) => {
                     // }
     
                     //  if(res.data.results[i].name !== props.selectedBooking.name  && is_min_price_present)
-                    // options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler}  bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                    options.push(<TaxiSearched selectedBooking={props.selectedBooking} data={res.data.choices[i]}  ></TaxiSearched>)
                     // }
                     // catch{
                     //     options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
@@ -184,12 +187,10 @@ const Booking = (props) => {
       },[props.alternates, props.budget]);
     
  
- 
- 
+  
     const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
         setUpdateBookingState(true);
-         // const token = localStorage.getItem('access_token');
-         let room = [];
+          let room = [];
          try{
          for(var i = 0 ; i < new_booking.rooms_available.length; i++){
              if(new_booking.rooms_available[i].prices.min_price){

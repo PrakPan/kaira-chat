@@ -58,51 +58,33 @@ const Section= (props) => {
       }
   
   }
-   if(props.selectedBooking)
+  console.log(props.selectedBooking)
+   if(props.data)
     return(
       <Container>
-        <Heading>{"Inter-City Taxi"}</Heading>
+        <Heading>{"Taxi"}</Heading>
       <RouteContainer className='font-opensans'>  
-      {/* <div style={{margin: '0 2px 0 0'}}><ImageLoader url="media/icons/bookings/pin.png" leftalign dimensions={{width: 200, height: 250}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader></div> */}
-
+ 
           <Location className="font-opensans">{props.selectedBooking.city}</Location>
             <div style={{margin: '0 2px'}}>
               <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader>
             </div>
-            <Location className="font-opensans">{props.selectedBooking.destination_city}</Location>
+            <Location className="font-opensans">{'props.data.destination_city'}</Location>
            
       </RouteContainer>
-      <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.25rem', marginTop: '0.75rem'}}>
-                    <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                    <div style={{display: 'flex', gap: '1rem'}}> 
-                        {props.selectedBooking.check_in ? <div>
-                            <IconHeading className='font-opensans'>Trip Start</IconHeading>
-                            <Text className='font-nunito'>{getDate(props.selectedBooking.check_in)}</Text>
-                            {/* <Text className='font-nunito'>10:00AM</Text> */}
-
-                        </div> : null}
-                        {props.selectedBooking.check_in ? <div>
-                            <IconHeading className='font-opensans'>Trip End</IconHeading>
-                            <Text className='font-nunito'>{getDate(props.selectedBooking.check_in)}</Text>
-                            {/* <Text className='font-nunito'>10:00AM</Text> */}
-
-                        </div> : null}
-                    </div>
-    </div>
+      
     <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem', marginTop: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
-                        {props.selectedBooking.check_in ? <div>
+                        {true ? <div>
                             <IconHeading className='font-opensans'>1512 km</IconHeading>
                             <Text className='font-nunito'>Included</Text>
-                            {/* <Text className='font-nunito'>10:00AM</Text> */}
-
+ 
                         </div> : null}
-                        {props.selectedBooking.check_in ? <div>
+                        {true ? <div>
                             <IconHeading className='font-opensans'>5 days</IconHeading>
                             <Text className='font-nunito'>Included</Text>
-                            {/* <Text className='font-nunito'>10:00AM</Text> */}
-
+ 
                         </div> : null}
                     </div>
     </div>

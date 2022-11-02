@@ -118,7 +118,7 @@ const Overview = (props) => {
 }catch{
 
 }
- console.log('im',props.images);
+ console.log('im',props.data);
   return(
       <Container>
         <Name align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.data.name}</Name>
@@ -139,7 +139,7 @@ const Overview = (props) => {
                     </PhotosButton> : null : null}
                   
                     <div style={{position: 'absolute', bottom: '0.25rem', right: '0.25rem', display: 'flex', }}>
-                            <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>Hotel</EditButton>
+                            {props.data.accommodation_type ? <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>{props.data.accommodation_type}</EditButton> : null}
                             {/* <EditButton className="font-opensans">5 star</EditButton> */}
 
                     </div>
@@ -147,7 +147,7 @@ const Overview = (props) => {
             </ImageContainer>
         
         <DetailsContainer>
-            <Location data={props.data}></Location>
+            {props.data.location ? <Location data={props.data}></Location> : null}
             {/* {props.data.rooms_available? props.data.rooms_available.length && props.data.rooms_available[0].prices.min_price  ? <Cost className='font-opensans'>{ "₹ "+getIndianPrice(Math.round(props.data.rooms_available[0].prices.min_price/100))}</Cost> : null : null} */}
             {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-opensans'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
            <div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', gridGap: '1rem'}}>

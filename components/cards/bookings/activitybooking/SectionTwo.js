@@ -61,12 +61,12 @@ const Section= (props) => {
                             <Text className='font-opensans'>{getDate(props.data.check_in)}</Text>
                             </div>
                         </div> : null}
-                        {props.data.ideal_duration_hours ? <div style={{display: 'flex', gap: '0.5rem'}}>
+                        {props.data.ideal_duration_hours_text ? <div style={{display: 'flex', gap: '0.5rem'}}>
                         <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                         <div>
 
                             <Heading className='font-opensans'>Duration</Heading>
-                            <Text className='font-opensans'>{props.data.ideal_duration_hours}</Text>
+                            <Text className='font-opensans'>{props.data.ideal_duration_hours_text}</Text>
                             </div>
 
                         </div> : null}

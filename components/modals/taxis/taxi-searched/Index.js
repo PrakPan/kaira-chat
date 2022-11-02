@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components'
 //  import { getHumanDate } from '../../../../services/getHumanDate';
   import SectionOne from './sectionone/Index';
-import SectionTwo from './SectionTwo';
+// import SectionTwo from './SectionTwo';
   import media from '../../../media';
 //  import SectionThree from './SectionThree';
 import SectionFour from './SectionFour';
@@ -46,9 +46,8 @@ const Booking = (props) =>{
     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
-         <SectionOne selectedBooking={props.selectedBooking}></SectionOne>
-         {/* <SectionTwo data={props.selectedBooking}></SectionTwo> */}
-         {/* <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree> */}
+         <SectionOne selectedBooking={props.selectedBooking} data={props.data}></SectionOne>
+          {/* <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree> */}
          <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
         </Container>
     );

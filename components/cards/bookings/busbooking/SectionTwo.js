@@ -44,6 +44,7 @@ const Section= (props) => {
     const getTime = (datetime) => {
         return(getHumanTime(datetime.substring(11,16)));
     }
+    console.log('d', props.data)
    if(props.data)
     return(
       <Container className='font-opensans'>  
@@ -58,13 +59,15 @@ const Section= (props) => {
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div> : null}
-                        {props.data.check_out ? <div>
-                            <Heading className='font-opensans'>Trip End</Heading>
-                            <Text className='font-nunito'>{getTime(props.data.check_out)}</Text>
-                            <Text className='font-nunito'>{getDate(props.data.check_out)}</Text>
+                        {props.data.duration ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
+                        <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                        <div>
+                            <Heading className='font-opensans'>Duration</Heading>
+                            {/* <Text className='font-nunito'>{getTime(props.data.check_out)}</Text> */}
+                            <Text className='font-nunito'>{props.data.duration}</Text>
 
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
-
+                        </div>
                         </div> : null}
                     </div>
                     {/* <div style={{display: 'flex', flexGrow: '1', flexDirection: 'column', alignItems: 'flex-end'}}>

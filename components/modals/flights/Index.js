@@ -4,11 +4,12 @@ import styled from 'styled-components';
 import media from '../../media';
 import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';import Spinner from '../../Spinner';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronUp, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
+// import Spinner from '../../Spinner';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faChevronUp, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import { Link, animateScroll as scroll} from "react-scroll";
-import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
+// import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import {connect} from 'react-redux';
 import axiosflightsearch from '../../../services/bookings/FlightSearch';
@@ -20,6 +21,8 @@ import SectionTwo from './SectionTwo';
 import Button from '../../ui/button/Index';
 import Flight from './new-flight-searched/Index';
 import FlightSelected from './new-flight-selected/Index';
+import gif from '../../../public/assets/loader.gif';
+
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -33,14 +36,11 @@ const GridContainer = styled.div`
 
 const OptionsContainer = styled.div`
     min-height: 40vh;
-    overflow-x: hidden;
-    width: 100%;
+     width: 100%;
     position: relative;
-    max-height: 90vh;
-
+ 
     @media screen and (min-width: 768px) {
-        max-height: 80vh;
-        min-height: 80vh;
+         min-height: 80vh;
 
     }
 `;
@@ -138,6 +138,7 @@ const Booking = (props) => {
         // const token = localStorage.getItem('access_token');
         let options = [];
         setLoading(true);
+        console.log('sb', props.selectedBooking)
         if(props.selectedBooking && props.token)
         axiosflightsearch.get( "/?limit="+limit+"&offset="+offset, {headers: {
             'Authorization': `Bearer ${props.token}`
@@ -469,16 +470,16 @@ if(props.token)
                <ContentContainer style={{position: 'relative'}}>
                 {/* <Flight></Flight> */}
                 {/* {!loading && !updateBookingState? optionsJSX : !optionsJSX ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching flights for you</div>  : null} */}
-                {updateLoadingState && !updateBookingState? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null }
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-opensans"><Spinner/>Please wait while we update your flight</div> : null }
+                {updateLoadingState && !updateBookingState? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching best fares</div> : null }
+                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-opensans"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your flight</div> : null }
                { !noResults && !updateLoadingState && !unauthorized? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                     <FlightSelected data={props.selectedBooking}></FlightSelected>
                    {optionsJSX.length && !updateBookingState? optionsJSX : null}
-                   {loading && !optionsJSX.length? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div"><Spinner/>Fetching flights</div> : null}
+                   {loading && !optionsJSX.length? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching best fares</div> : null}
                    {!loading && !optionsJSX.length ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div">Oops, it looks like there are no alternate flights available.</div>: null }
                    </div>
-                   {moreLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null} 
+                   {moreLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/></div> : null} 
                     {viewMoreStatus ? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
