@@ -110,9 +110,16 @@ const _handleTailoredClick = () => {
 <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Top Selling Experiences"]} ></Experiences>
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Rajasthan on Road</Heading>        
+        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Rajasthan on Road"]} pastitinerary></Experiences>
+       
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Customer Tales</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Customer Tales"]} pastitinerary></Experiences>
-
+        
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Rajasthan</Heading>        
+        <Experiences three  margin="2.5rem 0" experiences={rajasthancontent["Unique Rajasthan"]} ></Experiences>
+      
+      
 </SetWidthContainer>
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer>
@@ -120,9 +127,7 @@ const _handleTailoredClick = () => {
         <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Rajasthan</Heading>        
-        <Experiences   margin="2.5rem 0" experiences={rajasthancontent["Unique Rajasthan"]} ></Experiences>
-        {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
+      {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
         </SetWidthContainer>
     <WhyUs></WhyUs>
 {/*Add Banner*/}

@@ -218,76 +218,81 @@ const experiences = {
                 }
               ],
         },
-        {  
-          "id":"0O0saoIB3VsEI0tKb6Ch",
-          "slug": "offbeat-rajasthan-caravan-experience",
-          "experience_filters": ["Adventure"],
-          "name": "Offbeat Rajasthan Caravan experience",
-          "experience_region": "Rajasthan",
-          "rating": 4.9,
-          "duration": "4 days",
-          "short_text": "Enjoy a caravan trip amid the offbeat paths of Rajasthan.",
-           "images": {
-              "main_image": "media/experiences/166739043284674215316772460938.jpg",
-              "main_image_alt_text": null,
-            },
-            "payment_info": [
-              {
-                "cost": 1699551,
-                "currency": "USD",
-                "total_cost": 185000,
-                "service_fee": 15000,
-                "duration": "4 days"
-              }
-            ],
-      },
+
+  
+      
+    ],
+    "Rajasthan on Road" : [
       {  
         "id":"0O0saoIB3VsEI0tKb6Ch",
-        "slug": "rajasthan-experience-for-friends-budget-7-days",
-        "experience_filters": ["Culture"],
-        "name": "Pocket Friendly Rajasthan Extravaganza",
+        "slug": "offbeat-rajasthan-caravan-experience",
+        "experience_filters": ["Adventure"],
+        "name": "Offbeat Rajasthan Caravan experience",
         "experience_region": "Rajasthan",
-        "rating": 4.8,
-        "duration": "6 days",
-        "short_text": "A week in the land of rich cultural heritages and royals.",
+        "rating": 4.9,
+        "duration": "4 days",
+        "short_text": "Enjoy a caravan trip amid the offbeat paths of Rajasthan.",
          "images": {
-            "main_image": "media/experiences/166309192638587450981140136719.jpg",
+            "main_image": "media/experiences/166739043284674215316772460938.jpg",
             "main_image_alt_text": null,
           },
           "payment_info": [
             {
-              "cost": 100000,
+              "cost": 1699551,
               "currency": "USD",
               "total_cost": 185000,
               "service_fee": 15000,
-              "duration": "6 days"
+              "duration": "4 days"
             }
           ],
     },
     {  
       "id":"0O0saoIB3VsEI0tKb6Ch",
-      "slug": "experience-adventure-in-rajasthan---7-days",
+      "slug": "rajasthan-experience-for-friends-budget-7-days",
       "experience_filters": ["Culture"],
-      "name": "Zippy Rajasthan Adventure",
+      "name": "Pocket Friendly Rajasthan Extravaganza",
       "experience_region": "Rajasthan",
       "rating": 4.8,
-      "duration": "7 days",
-      "short_text": "Take an adventurous tour around the mighty offerings of Rajasthan.",
+      "duration": "6 days",
+      "short_text": "A week in the land of rich cultural heritages and royals.",
        "images": {
-          "main_image": "media/experiences/166463648322483634948730468750.jpg",
+          "main_image": "media/experiences/166309192638587450981140136719.jpg",
           "main_image_alt_text": null,
         },
         "payment_info": [
           {
-            "cost": 5832701,
+            "cost": 100000,
             "currency": "USD",
             "total_cost": 185000,
             "service_fee": 15000,
-            "duration": "7 days"
+            "duration": "6 days"
           }
         ],
   },
-      
+  {  
+    "id":"0O0saoIB3VsEI0tKb6Ch",
+    "slug": "experience-adventure-in-rajasthan---7-days",
+    "experience_filters": ["Culture"],
+    "name": "Zippy Rajasthan Adventure",
+    "experience_region": "Rajasthan",
+    "rating": 4.8,
+    "duration": "7 days",
+    "short_text": "Take an adventurous tour around the mighty offerings of Rajasthan.",
+     "images": {
+        "main_image": "media/experiences/166463648322483634948730468750.jpg",
+        "main_image_alt_text": null,
+      },
+      "payment_info": [
+        {
+          "cost": 5832701,
+          "currency": "USD",
+          "total_cost": 185000,
+          "service_fee": 15000,
+          "duration": "7 days"
+        }
+      ],
+},
+    
     ]
 }
 export default experiences;
