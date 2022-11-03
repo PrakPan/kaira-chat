@@ -111,7 +111,7 @@ const _handleTailoredClick = () => {
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Top Selling Experiences"]} ></Experiences>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Rajasthan on Road</Heading>        
-        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Rajasthan on Road"]} pastitinerary></Experiences>
+        <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Rajasthan on Road"]}></Experiences>
        
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Customer Tales</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={rajasthancontent["Customer Tales"]} pastitinerary></Experiences>
