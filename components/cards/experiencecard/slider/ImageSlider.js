@@ -61,7 +61,7 @@ const ImageSlider = (props) => {
             <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)"></BackgroundImageLoader>
             {typeof window !== 'undefined' ? <IconsContainer>
              <IconTextContainer style={{}}><IconHoverContainer><div><FontAwesomeIcon icon={faMapMarkerAlt} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.location}</IconHoverContainer> </IconTextContainer>
-             <IconTextContainer style={{borderStyle: "none solid none solid", borderWidth: "1px", borderColor: "#E4E4E4"}}><IconHoverContainer><div><FontAwesomeIcon icon={faCalendarWeek} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.duration+"+"}</IconHoverContainer></IconTextContainer>
+             <IconTextContainer style={{borderStyle: "none solid none solid", borderWidth: "1px", borderColor: "#E4E4E4"}}><IconHoverContainer><div><FontAwesomeIcon icon={faCalendarWeek} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.duration}</IconHoverContainer></IconTextContainer>
              <IconTextContainer  style={{}}><IconHoverContainer><div><FontAwesomeIcon icon={faCog} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.filter}</IconHoverContainer></IconTextContainer>
 
            </IconsContainer> : null}
