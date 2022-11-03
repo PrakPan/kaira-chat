@@ -204,8 +204,9 @@ const getDate = (date) => {
                     <Heading className="font-opensans">Details</Heading>
                     {props.type === "Accommodation" ? 
                     <div>
-                        {props.check_in ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
-                        {props.check_out ? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
+                        {props.check_in && !props.experience? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
+                        {props.check_out && !props.experience? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
+                        {props.duration && props.experience? <Detail  className='font-opensans'>{props.duration}</Detail>:null}
 
                         {RoomsJSX}
                         {props.plan?  
@@ -262,9 +263,9 @@ const getDate = (date) => {
                 <Heading className="font-opensans">Details</Heading>
                 {props.type === "Accommodation" ? 
                 <div>
-                {props.check_in ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
-                        {props.check_out ? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
-
+                {props.check_in && !props.experience ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
+                        {props.check_out && !props.experience ? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
+                {props.experience && props.duration ? <Detail  className='font-opensans'>{props.duration}</Detail>: null }
                 {RoomsJSX}
                 {props.plan? <div>
                   <FontAwesomeIcon icon={faMale} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
