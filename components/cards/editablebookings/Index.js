@@ -206,7 +206,7 @@ const getDate = (date) => {
                     <div>
                         {props.check_in && !props.experience? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
                         {props.check_out && !props.experience? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
-                        {props.duration && props.experience? <Detail  className='font-opensans'>{props.duration}</Detail>:null}
+                        {props.duration && props.experience? <Detail  className='font-opensans'>{props.duration + " Night(s)"}</Detail>:null}
 
                         {RoomsJSX}
                         {props.plan?  
