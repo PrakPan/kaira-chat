@@ -11,6 +11,10 @@ const Container = styled.div`
     border-radius: 10px !important;
       @media screen and (min-width: 768px) {
         padding: 0.5rem;
+        &:hover{
+          cursor: pointer;
+          background-color: rgba(247,231,0,0.1);
+        }
 
     }
 `;

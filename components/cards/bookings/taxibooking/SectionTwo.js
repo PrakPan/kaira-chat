@@ -39,6 +39,7 @@ const Section= (props) => {
         }
     
     }
+    console.log('data', props.data);
    if(props.data)
     return(
       <Container className='font-opensans'>  
@@ -51,7 +52,7 @@ const Section= (props) => {
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div> : null}
-                        {props.data.check_out ? <div>
+                        {props.data.check_out && props.data.transfer_type !== 'Intercity one-way' ? <div>
                             <Heading className='font-opensans'>Trip End</Heading>
                             <Text className='font-nunito'>{getDate(props.data.check_out)}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
@@ -59,7 +60,7 @@ const Section= (props) => {
                         </div> : null}
                     </div>
                     <div style={{display: 'flex', flexGrow: '1', flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.duration ? props.data.costings_breakdown.duration.text :null  : null}</Heading>
+                            <Heading style={{textAlign: 'right'}}   className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.duration ? props.data.costings_breakdown.duration.text :null  : null}</Heading>
                             <Text style={{textAlign: 'right'}} className='font-nunito'>Included</Text>
                         </div>
                 </div>

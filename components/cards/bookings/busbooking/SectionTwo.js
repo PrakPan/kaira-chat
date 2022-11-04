@@ -59,16 +59,13 @@ const Section= (props) => {
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div> : null}
-                        {props.data.duration ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
+                        {props.data.costings_breakdown  ? props.data.costings_breakdown.duration ?  <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                         <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                        <div>
-                            <Heading className='font-opensans'>Duration</Heading>
+                             <div><Heading className='font-opensans'>Duration</Heading>
                             {/* <Text className='font-nunito'>{getTime(props.data.check_out)}</Text> */}
-                            <Text className='font-nunito'>{props.data.duration}</Text>
-
-                            {/* <Text className='font-nunito'>10:00AM</Text> */}
-                        </div>
-                        </div> : null}
+                            <Text className='font-nunito'>{props.data.costings_breakdown.duration.text }</Text></div>
+                             {/* <Text className='font-nunito'>10:00AM</Text> */}
+                         </div> : null : null }
                     </div>
                     {/* <div style={{display: 'flex', flexGrow: '1', flexDirection: 'column', alignItems: 'flex-end'}}>
                             <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? props.data.costings_breakdown.no_of_seats :null  : null}</Heading>

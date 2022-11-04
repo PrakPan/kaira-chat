@@ -405,59 +405,8 @@ setUpdateLoadingState(true);
 
     }
 
-    const _updateBookingHandler = ({old_booking_id, itinerary_id, tailored_id, accommodation, costing_breakdown, itinerary_name, new_booking_id, old_accommodation_id}) => {
-             
-            setUpdateBookingState(true);
-             axiosbookingupdateinstance.post("?booking_type=accommodation", 
-            [
-                {
-                    "id": new_booking_id,
-                    "booking_type": "Accommodation",
-                    "itinerary_type": "Tailored",
-                    "city":props.selectedBooking.city,
-                    "user_selected": true,			
-                    "accommodation": accommodation,
-                    "itinerary_id": itinerary_id,
-                    "tailored_itinerary": tailored_id,
-                    "costings_breakdown": costing_breakdown,
-                    "itinerary_name": itinerary_name,
-                    "itinerary_db_id": null,
-                },
-                {
-                    "id": old_booking_id,
-                    "booking_type": "Accommodation",
-                    "itinerary_type": "Tailored",
-                    "city":props.selectedBooking.city,
-                    "user_selected": false,			
-                    "accommodation": props.selectedBooking.accommodation_id,
-                    "itinerary_id": itinerary_id,
-                    "tailored_itinerary": tailored_id,
-                    "costings_breakdown": props.selectedBooking.costings_breakdown,
-                    "itinerary_name": itinerary_name,
-                    "itinerary_db_id": null,
-                    "accommodation": old_accommodation_id
-                },
-            
-            ], {headers: {
-                'Authorization': `Bearer ${props.token}`
-                }}).then(res => {
-                     props._updateBookingHandler(res.data.bookings);
-                     setTimeout(function(){ 
-                
-                        props.getPaymentHandler(); }, 1000);
-                     
-
-                    // props._updatePaymentHandler(res.data.payment_info);
-                    // setUpdateLoadingState(false);  
-                    setUpdateBookingState(false);
-  
-            }).catch(err => {
-                // setUpdateLoadingState(false);
-                setUpdateBookingState(false);
-
-                window.alert("There seems to be a problem, please try again!")
-            })
-    }
+      
+      
     const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
         setUpdateBookingState(true);
          // const token = localStorage.getItem('access_token');
@@ -589,7 +538,7 @@ setUpdateLoadingState(true);
         setViewMoreStatus(false);
         // setMoreLoadingState(true);
         let filters = _generateFilterKeys(filtersState)
-        axiosaccommodationinstance.post("/?limit="+limit+"&offset="+offset, 
+        axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset="+offset, 
         {
             "cities": props.selectedBooking.city,
             "check_in": props.selectedBooking.check_in,
@@ -655,7 +604,8 @@ setUpdateLoadingState(true);
         "budget": ["Below ₹3,000", "₹3,000 - ₹6,000","₹6,000 - ₹10,000", "Above ₹10,000"],
         "type": [
         'Hotels', 'Homestays', 'Hostels', 'Camps','Guest House', 'Cottage', 'Villa', 'Resort',  'Bed and Breakfast', 'Unique', 'Entire House', 'Capsule Hotel'
-        ]   
+        ],
+        "star_category": ["1 star", "2 star", "3 star", "4 star", "5 star"]
     }
     let room = [];
     try{
