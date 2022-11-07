@@ -72,7 +72,7 @@ const Section= (props) => {
                             <Text style={{textAlign: 'right'}} className='font-nunito'>Person(s)</Text>
                         </div> */}
                 </div>
-                <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',   gridGap: '0.5rem', marginBottom: '0.75rem'}}>
+                {props.data.costings_breakdown ? props.data.costings_breakdown.seat_type ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',   gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/car-seat.svg" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>
@@ -82,6 +82,7 @@ const Section= (props) => {
                      
                     </div>
                 </div>
+                : null : null}
             
              
       </Container>

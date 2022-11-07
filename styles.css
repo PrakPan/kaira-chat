@@ -765,6 +765,10 @@ outline: none !important;
 }
 
 @media only screen and (min-width: 768px){
+  .booking-modal{
+   width: 55vw !important;
+   left: 22.5vw !important
+  }
   .hidden-desktop{
     display: none !important;
   }

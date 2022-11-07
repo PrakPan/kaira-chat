@@ -455,7 +455,7 @@ setViewMoreStatus(false);
 if(props.token)
   return(
       <div>
-        <Modal   className="booking-modal" show={props.showFlightModal}  size="xl"  onHide={props.setHideFlightModal} style={{padding: "0"}}>
+        <Modal   className="booking-modal" show={props.showFlightModal}  size="md"  onHide={props.setHideFlightModal} style={{padding: "0"}}>
            {/* <Modal.Header>2</Modal.Header> */}
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
            <SectionOne setHideBookingModal={props.setHideBookingModal} setHideFlightModal={props.setHideFlightModal}></SectionOne>
