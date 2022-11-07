@@ -239,6 +239,7 @@ console.log('b', props.selectedBooking)
         })
     }
   
+    console.log('b', props.selectedBooking)
    
       if(props.token)
   return(

@@ -43,6 +43,7 @@ const Booking = (props) =>{
  
 
   
+    console.log('d', props.data)
     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>

@@ -76,16 +76,16 @@ const Section= (props) => {
     <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem', marginTop: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
-                        {true ? <div>
-                            <IconHeading className='font-opensans'>1512 km</IconHeading>
+                        {props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.duration ?  <div>
+                            <IconHeading className='font-opensans'>{props.selectedBooking.costings_breakdown.distance.text}</IconHeading>
                             <Text className='font-nunito'>Included</Text>
  
-                        </div> : null}
-                        {true ? <div>
-                            <IconHeading className='font-opensans'>5 days</IconHeading>
+                        </div> : null : null} 
+                        {props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.duration ? <div>
+                            <IconHeading className='font-opensans'>{props.selectedBooking.costings_breakdown.duration.text}</IconHeading>
                             <Text className='font-nunito'>Included</Text>
  
-                        </div> : null}
+                        </div> : null : null}
                     </div>
     </div>
       </Container>
