@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import Button from '../../../ui/button/Index';
+import {AiFillPlusSquare, AiOutlinePlusSquare} from 'react-icons/ai';
  const Container = styled.div`
  margin: 0;
 @media screen and (min-width: 768px){
@@ -16,9 +17,11 @@ import Button from '../../../ui/button/Index';
 grid-template-columns: 1fr 1fr;
 
  `;
+ const CounterContainer = styled.div`
+ background-color: #f7e700;
+`;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-  
      return(
       <Container className='font-opensans hidden-desktop'>  
       <GridContainer>
@@ -34,6 +37,7 @@ const Section= (props) => {
                   tailored_id: props.tailored_id,
                   }}
             fontSize="0.85rem" fontWeight="600"   width="100%"borderRadius="0 0  10px 0" bgColor="#f7e700" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >Select</Button>
+    
             </GridContainer>
       </Container>
   ); 

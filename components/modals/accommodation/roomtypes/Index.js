@@ -17,9 +17,14 @@ const Rooms = (props) => {
         let rooms_arr = [];
         if(props.data.rooms_available){
             for(var i=0; i<props.data.rooms_available.length; i++){
+                try{
+                if(props.data.rooms_available[i].prices.min_price)
                 rooms_arr.push(
                     <Room data={props.data.rooms_available[i]} images={props.data.rooms_available[i].images}></Room>
                 );
+                }catch{
+                    
+                }
             }
             setRooms(rooms_arr)
         }

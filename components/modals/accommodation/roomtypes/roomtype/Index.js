@@ -5,6 +5,8 @@ import Tags from './Tags';
 import {GoPrimitiveDot} from 'react-icons/go'
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import Button from '../../../../ui/button/Index';
+import {AiFillPlusSquare, AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
+
 const Container = styled.div`
 width: 100%;
 display: grid;
@@ -52,8 +54,31 @@ margin: 0 0 2px 0;
     font-size: 1.25rem;
     }
 `;
+const CounterContainer = styled.div`
+background-color: #f7e700;
+border-radius: 5px;
+padding: 0.25rem 1rem;
+margin: 0.5rem 0  0 0;
+&:hover{
+    cursor: pointer;
+}
+`;
 const RoomType = (props) => {
     const [ammenities, setAmmenities] = useState(null);
+    const [showCounter, setShowCounter] = useState(false);
+    const [counterValue, setCounterValue] = useState(1);
+
+    const _increaseCounter = () => {
+        setCounterValue(counterValue+1);
+    }
+
+    const _decreaseCounter = () => {
+        if(counterValue === 1) setShowCounter(false);
+        else {
+            setCounterValue(counterValue - 1);
+        }
+    }
+
     useEffect(() => {
         let ammenities_arr = [];
         if(props.data.room_facilities){
@@ -76,6 +101,7 @@ const RoomType = (props) => {
             }
         }
       }
+      console.log(props.data)
       if(true)
    return(
       <Container className='border-thin'>
@@ -94,10 +120,19 @@ const RoomType = (props) => {
                 </div>
                 <div style={{display: 'flex', flexDirection: 'column', flexGrow: '1', alignItems : 'flex-end', justifyContent: 'flex-end'}}>
                     <Cost>
-                    {"₹ " + getIndianPrice(Math.round(500000/100)) +" /-"}
+                    {"₹ " + (getIndianPrice(Math.round(props.data.prices.min_price*counterValue/100)) )+" /-"}
                     </Cost>
                     <div>
-                        <Button onclick={() => console.log('')} bgColor="#f7e700" borderWidth="0" fontSize="0.75rem" padding="0.25rem 1rem" borderRadius="5px" bold margin="0.5rem 0 0 0">Select</Button>
+                        {!showCounter ? <Button onclick={() => setShowCounter(true)} bgColor="#f7e700" borderWidth="0" fontSize="1rem" lineHeight="1" padding="0.25rem 1rem" borderRadius="5px" bold margin="0.5rem 0 0 0" width="100%">Select</Button>
+                       :  <CounterContainer className='center-div font-opensans' >
+            <div style={{width: 'max-content', display: 'grid', gridGap: '0.25rem', gridTemplateColumns: 'max-content max-content max-content'}}>
+            <div className='center-div'><AiOutlineMinusSquare onClick={_decreaseCounter} style={{fontSize: '1rem'}}></AiOutlineMinusSquare></div>
+            <div style={{lineHeight: '1'}}>{counterValue}</div>
+            <div className='center-div'><AiOutlinePlusSquare onClick={_increaseCounter}></AiOutlinePlusSquare></div>
+
+            </div>
+          
+          </CounterContainer>}
                     </div>
                 </div>
             </ContentContainer>

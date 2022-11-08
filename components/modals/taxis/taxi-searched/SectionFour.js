@@ -16,6 +16,7 @@ import Button from '../../../ui/button/Index';
 grid-template-columns:  1fr;
 
  `;
+
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
   
