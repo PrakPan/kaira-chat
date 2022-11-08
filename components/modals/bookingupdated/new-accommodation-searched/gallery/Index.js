@@ -17,12 +17,20 @@ import media from '../../../../media';
  
 const Gallery = (props) => {
   let isPageWide = media('(min-width: 768px)')
-   
+   const [url, setUrl] = useState(null);
+   useEffect(() => {
+        if(props.images.length) setUrl(props.images[0].image);
+        else setUrl('media/icons/bookings/notfounds/noroom.png');
+  },[props.images])
+
+  const _handleFail = ( ) => {
+    setUrl('media/icons/bookings/notfounds/noroom.png');
+  }
   return(
       <Container className=''>
           
      
-      <ImageLoader hoverpointer onclick={props.setShowDetails } borderRadius="10px" url={props.images.length ? props.images[0].image : 'media/website/grey.png'}   width='12.5vw' widthmobile="30vw" height={isPageWide ? "12.5vw" : "25vw"}   dimensions={{width: 800, height: 800}} dimensionsMobile={{width: 600, height: 600}}></ImageLoader>
+      <ImageLoader onfail={_handleFail} hoverpointer onclick={props.setShowDetails } borderRadius="10px" url={url}   width='12.5vw' widthmobile="30vw" height={isPageWide ? "12.5vw" : "25vw"}   dimensions={{width: 800, height: 800}} dimensionsMobile={{width: 600, height: 600}}></ImageLoader>
 
       </Container> 
   );

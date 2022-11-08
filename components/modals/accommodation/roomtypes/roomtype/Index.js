@@ -106,7 +106,7 @@ const RoomType = (props) => {
    return(
       <Container className='border-thin'>
             <div style={{padding: '2vw'}}>
-            <ImageLoader  fit="contain" url={props.images.length ? image: 'media/website/grey.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="100%" height="41vw" widthmobile="41vw"  margin="auto"/> 
+            <ImageLoader  fit="contain" url={props.images.length ? image: 'media/icons/bookings/notfounds/noroom.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="100%" height="41vw" widthmobile="41vw"  margin="auto"/> 
                            <Name className='font-opensans'>{props.data.room_type}</Name>
 
             </div>
