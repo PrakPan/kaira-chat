@@ -1,7 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import Button from '../../../ui/button/Index';
+import {AiFillPlusSquare, AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
+import { getIndianPrice } from '../../../../services/getIndianPrice';
  const Container = styled.div`
  margin: 0;
 @media screen and (min-width: 768px){
@@ -12,21 +14,66 @@ import Button from '../../../ui/button/Index';
 
 `;
  const GridContainer=styled.div`
- display: grid;
-grid-template-columns:  1fr;
-
+ display: flex;
+ flex-direction: column;
+ align-items: flex-end;
+ 
  `;
+ const Cost = styled.p`
+font-weight: 800;
+font-size: 1rem;
+line-height: 1;
+margin: 1rem 0 2px 0;
 
+@media screen and (min-width: 768px) {
+
+    font-size: 1.25rem;
+    }
+`;
+ const CounterContainer = styled.div`
+ background-color: #f7e700;
+ border-radius: 10px;
+ padding: 0.25rem 1rem;
+ margin: 0.25rem 0  0 0;
+ &:hover{
+     cursor: pointer;
+ }
+ `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-  
+    const [showCounter, setShowCounter] = useState(false);
+    const [counterValue, setCounterValue] = useState(1);
+
+    const _increaseCounter = () => {
+        setCounterValue(counterValue+1);
+    }
+
+    const _decreaseCounter = () => {
+        if(counterValue === 1) setShowCounter(false);
+        else {
+            setCounterValue(counterValue - 1);
+        }
+    }
 //    if(props.data)
     return(
       <Container className='font-opensans'>  
       <GridContainer>
+        <Cost>
+      {"₹ " + (getIndianPrice(Math.round(props.data.price * counterValue/100)) )+" /-"}
+      </Cost>
             {/* <Button width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => console.log('test')}>View Details</Button> */}
-            <Button width="100%" borderRadius="0 0 10px 10px" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" bgColor="#f7e700" color="black" onclickparam={null} onclick={() =>  console.log('')}>Select</Button>
-            </GridContainer>
+            {!showCounter ? 
+            <Button width="max-content" margin="0.25rem 0 0 0"  padding="0.25rem 1rem" borderRadius="10px" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" bgColor="#f7e700" color="black" onclickparam={null} onclick={() =>  setShowCounter(true)}>Select</Button>
+         : <CounterContainer className='center-div font-opensans' >
+         <div style={{width: 'max-content', display: 'grid', gridGap: '0.25rem', gridTemplateColumns: 'max-content max-content max-content'}}>
+         <div className='center-div'><AiOutlineMinusSquare onClick={_decreaseCounter} style={{fontSize: '1rem'}}></AiOutlineMinusSquare></div>
+         <div style={{lineHeight: 'normal'}}>{counterValue}</div>
+         <div className='center-div'><AiOutlinePlusSquare onClick={_increaseCounter}></AiOutlinePlusSquare></div>
+
+         </div>
+       
+       </CounterContainer>}
+         </GridContainer>
       </Container>
   ); 
 //   else return null;

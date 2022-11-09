@@ -5,7 +5,7 @@ import Tags from './Tags';
 import {GoPrimitiveDot} from 'react-icons/go'
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import Button from '../../../../ui/button/Index';
-import {AiFillPlusSquare, AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
+import {  AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
 
 const Container = styled.div`
 width: 100%;

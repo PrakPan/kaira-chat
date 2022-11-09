@@ -29,7 +29,7 @@ const Section= (props) => {
           
             <div className="center-dv" style={{ padding: '0.75rem 0.5rem', borderColor: 'rgba(238, 238, 238, 1)', borderWidth: '1px', borderStyle: 'none solid none none'}}>
               {/* <DropDown></DropDown> */}
-              <ImageLoader url="media/icons/bookings/car (2).png"   width="5rem" widthmobile="5rem" height="auto" ></ImageLoader>
+              <ImageLoader url={props.data.images ? props.data.images.image ? props.data.images.image : "media/icons/bookings/car (2).png" : "media/icons/bookings/car (2).png"}   width="5rem" widthmobile="5rem" height="auto" ></ImageLoader>
               <p style={{margin: '0.5rem 0rem 0rem 0rem', fontSize: '15px', fontWeight: '700'}} className="font-opensans text-center">{props.data.taxi_type}</p>
               <p style={{margin: '0 0rem 0.25rem 0rem', fontSize: '13px', fontWeight: '300'}} className="font-opensans text-center">{props.data.no_of_seats + "-seater"}</p>
 

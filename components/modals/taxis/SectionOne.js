@@ -22,9 +22,9 @@ const Section= (props) => {
      return(
       <Container className='font-opensans'>  
       {/* <div></div> */}
-                   <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0', visibility: 'hidden'}} ></FontAwesomeIcon>
-                   <FontAwesomeIcon className="hover-pointer" icon={faSearch} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0', fontSize: '1.5rem', visibility: 'hidden'}} ></FontAwesomeIcon>
-                   <TbArrowBack className="hover-pointer"  onClick={props.setHideBookingModal} style={{margin: '0.5rem',  fontSize: '1.75rem'}} ></TbArrowBack>
+                   <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideTaxiModal} style={{margin: '0.5rem', position: 'sticky', top: '0', visibility: 'hidden'}} ></FontAwesomeIcon>
+                   <FontAwesomeIcon className="hover-pointer" icon={faSearch} onClick={props.setHideTaxiModal} style={{margin: '0.5rem', position: 'sticky', top: '0', fontSize: '1.5rem', visibility: 'hidden'}} ></FontAwesomeIcon>
+                   <TbArrowBack className="hover-pointer"  onClick={props.setHideTaxiModal} style={{margin: '0.5rem',  fontSize: '1.75rem'}} ></TbArrowBack>
 
       </Container>
   ); 

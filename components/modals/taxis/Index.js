@@ -244,9 +244,9 @@ console.log('b', props.selectedBooking)
       if(props.token)
   return(
       <div >
-        <Modal className='booking-modal'  show={props.showTaxiModal}  size="xl"  onHide={props.setHideBookingModal} style={{}}>
+        <Modal className='booking-modal'  show={props.showTaxiModal}  size="xl"  onHide={props.setHideTaxiModal} style={{}}>
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
-           <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
+           <SectionOne setHideTaxiModal={props.setHideTaxiModal}></SectionOne>
               {/* <SectionTwo dler}_addFilterHandler={_addFilterHandler} ></SectionTwo> */}
 
            </Modal.Header>

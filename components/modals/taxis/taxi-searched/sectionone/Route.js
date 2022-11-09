@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import media from '../../../../media';
 import ImageLoader from '../../../../ImageLoader';
 import { getHumanDate } from '../../../../../services/getHumanDate';
+import SectionFour from '../SectionFour';
+
 const Container = styled.div`
 padding: 0.75rem 0.5rem;
 display: flex;
@@ -69,7 +71,7 @@ const Section= (props) => {
             <div style={{margin: '0 2px'}}>
               <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader>
             </div>
-            <Location className="font-opensans">{'props.data.destination_city'}</Location>
+            <Location className="font-opensans">{'props.data sdestination_city'}</Location>
            
       </RouteContainer>
       
@@ -88,6 +90,8 @@ const Section= (props) => {
                         </div> : null : null}
                     </div>
     </div>
+    <SectionFour data={props.data} setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
+
       </Container>
   ); 
   else return null;
