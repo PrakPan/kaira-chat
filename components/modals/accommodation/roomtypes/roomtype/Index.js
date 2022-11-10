@@ -6,6 +6,7 @@ import {GoPrimitiveDot} from 'react-icons/go'
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import Button from '../../../../ui/button/Index';
 import {  AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
+import media from '../../../../media';
 
 const Container = styled.div`
 width: 100%;
@@ -13,7 +14,8 @@ display: grid;
 grid-template-columns: 45vw auto;
 border-radius: 5px;
 @media screen and (min-width: 768px){
-    
+    grid-template-columns: max-content auto;
+
 }
 `;
 const NoImageContainer = styled.div`
@@ -67,6 +69,7 @@ const RoomType = (props) => {
     const [ammenities, setAmmenities] = useState(null);
     const [showCounter, setShowCounter] = useState(false);
     const [counterValue, setCounterValue] = useState(1);
+    let isPageWide = media('(min-width: 768px)')
 
     const _increaseCounter = () => {
         setCounterValue(counterValue+1);
@@ -92,7 +95,7 @@ const RoomType = (props) => {
         }
        
       }, [props.data]);
-      let image = 'media/website/grey.png';
+      let image = 'media/icons/bookings/notfounds/noroom.png';
       if(props.images.length){
         for(var i = 0 ; i < props.images.length ; i++){
             if(props.images[i].ImageType === '2'){
@@ -105,8 +108,8 @@ const RoomType = (props) => {
       if(true)
    return(
       <Container className='border-thin'>
-            <div style={{padding: '2vw'}}>
-            <ImageLoader  fit="contain" url={props.images.length ? image: 'media/icons/bookings/notfounds/noroom.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="100%" height="41vw" widthmobile="41vw"  margin="auto"/> 
+            <div style={{padding: !isPageWide ?  '2vw' : '1vw', width: isPageWide ? '25vh' : 'max-cotent'}}>
+            <ImageLoader  fit="contain" url={props.images.length ? image: 'media/icons/bookings/notfounds/noroom.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="20vh" height={isPageWide ? '20vh' : "41vw" } widthmobile="41vw"  margin="auto"/> 
                            <Name className='font-opensans'>{props.data.room_type}</Name>
 
             </div>

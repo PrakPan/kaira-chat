@@ -38,7 +38,7 @@ const DetailsContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     @media screen and (min-width: 768px){
-        width: 40%;
+        width: 60%;
         margin: auto;
     }
 `;
@@ -46,8 +46,7 @@ const CheckIn = styled.div`
 font-size: 0.9rem;
 font-weight:  300;
 @media screen and (min-width: 768px){
-    width: 60%;
-    margin: auto;
+     margin: auto;
 }
 `;
 const Cost = styled.div`
@@ -72,7 +71,7 @@ const ImageContainer = styled.div`
     min-height: 20vh;
     @media screen and (min-width: 768px){
         margin: auto;
-        width: 40%;
+        width: 60%;
     }
     
 `;

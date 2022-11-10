@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import {IoLocationSharp} from 'react-icons/io5'
 const Container = styled.div`
-display: flex;
-
+display: grid;
+grid-template-columns: max-content auto;
 @media screen and (min-width: 768px){
     
 }

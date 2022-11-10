@@ -62,6 +62,7 @@ const RatingContainer = styled.div`
     display: flex !important;
     justify-content: center;
     align-items: center;
+    height: max-content;
     @media screen and (min-width: 768px) {
 
         font-size: 0.9rem;
@@ -124,7 +125,7 @@ const Accommodation = (props) => {
     }
 
   return(
-      <Container className=''>
+      <Container className='' onClick={props.setShowDetails}>
         <div style={{display: 'flex', alignItems: 'center'}}>
             <Name className='font-opensans hover-pointer' onClick={props.setShowDetails}>
              {props.name}
@@ -158,10 +159,10 @@ const Accommodation = (props) => {
                     </RatingContainer> : null} 
             
         </DesktopGridContainer>
-        {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
+        {/* {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
-                    </RatingContainer> : null}
+                    </RatingContainer> : null} */}
         <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
                 {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))+" /-"}</Cost> : null}

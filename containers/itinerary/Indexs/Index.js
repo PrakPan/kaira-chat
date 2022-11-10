@@ -390,29 +390,40 @@ const _reloadFlightBookings  = () => {
     }
     setPaymentLoading(true);
     setSelectingBooking(booking.id)
+    let costings_breakdown = [];
+    for(var i = 0 ; i < booking.costings_breakdown.length; i ++){
+      costings_breakdown.push({
+        "id": booking.costings_breakdown[i].id,
+        "room_type": booking.costings_breakdown[i].room_type,
+        "pricing_type":   booking.costings_breakdown[i].pricing_type,
+        "room_type_name":  booking.costings_breakdown[i].room_type_name,
+        "number_of_rooms": booking.costings_breakdown[i].number_of_rooms,
+        "number_of_adults":  booking.costings_breakdown[i].number_of_adults,
+        "number_of_infants": booking.costings_breakdown[i].number_of_infants,
+        "number_of_children": booking.costings_breakdown[i].number_of_children
+      })
+    }
     let data =[];
-    
+    console.log('booking', booking);
         data.push( {
           "id": booking.id,
-          "booking_type": booking.booking_type,
-          "itinerary_type": "Tailored",
+           "booking_type": "Accommodation",
+           "city": booking.city, 
           "user_selected": user_selected,			
+          "accommodation": booking.accommodation,
           "itinerary_id": booking.itinerary_id,
           "tailored_itinerary": booking.tailored_itinerary,
+          "costings_breakdown": costings_breakdown,
           "itinerary_name": booking.itinerary_name,
           "itinerary_db_id": null,
-          "check_in": booking.check_in,
-          "check_out": booking.check_out,
-          "city": booking.city,
-          "costings_breakdown": booking.costings_breakdown,
-          "accommodation": booking.accommodation,
-          "is_estimated_price": booking.is_estimated_price
+          "is_estimated_price": booking.is_estimated_price,
+          "itinerary_type": 'Tailored',
       });
       // else data.push(bookings[i]);
     // }
   
     // const token = localStorage.getItem('access_token')
-    axiosbookingupdateinstance.post("/?booking_type=accommodation", data, {headers: {
+    axiosbookingupdateinstance.post("/?booking_type=Accommodation&itinerary_id="+booking.itinerary_id, data, {headers: {
       'Authorization': `Bearer ${props.token}`
       }}).then(res => {
         setCardUpdateLoading(null)
@@ -455,7 +466,7 @@ const _reloadFlightBookings  = () => {
    // }
  
    // const token = localStorage.getItem('access_token')
-   axiosbookingupdateinstance.post("/?booking_type=Flight", data, {headers: {
+   axiosbookingupdateinstance.post("/?booking_type=Flight&itinerary_id="+booking.itinerary_id, data, {headers: {
      'Authorization': `Bearer ${props.token}`
      }}).then(res => {
        setCardUpdateLoading(null)
@@ -502,7 +513,7 @@ const _reloadFlightBookings  = () => {
    // }
  
    // const token = localStorage.getItem('access_token')
-   axiosbookingupdateinstance.post("/?booking_type=Taxi,Bus", data, {headers: {
+   axiosbookingupdateinstance.post("/?booking_type=Taxi,Bus&itinerary_id="+booking.itinerary_id, data, {headers: {
      'Authorization': `Bearer ${props.token}`
      }}).then(res => {
        setCardUpdateLoading(null)
@@ -554,7 +565,7 @@ const _reloadFlightBookings  = () => {
  // }
 
  // const token = localStorage.getItem('access_token')
- axiosbookingupdateinstance.post("/?booking_type=Activity", data, {headers: {
+ axiosbookingupdateinstance.post("/?booking_type=Activity&itinerary_id="+booking.itinerary_id, data, {headers: {
    'Authorization': `Bearer ${props.token}`
    }}).then(res => {
      setCardUpdateLoading(null)

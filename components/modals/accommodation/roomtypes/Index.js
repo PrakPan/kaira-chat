@@ -5,8 +5,7 @@ const Container = styled.div`
 display: grid;
 grid-gap: 0.5rem;
 @media screen and (min-width: 768px){
-    width: 80%;
-    margin: auto;
+   
 }
 `;
 
@@ -23,7 +22,7 @@ const Rooms = (props) => {
                     <Room data={props.data.rooms_available[i]} images={props.data.rooms_available[i].images}></Room>
                 );
                 }catch{
-                    
+
                 }
             }
             setRooms(rooms_arr)

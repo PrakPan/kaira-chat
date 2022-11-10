@@ -249,7 +249,7 @@ const Booking = (props) => {
        
             if(budgetarr.includes('Below ₹3,000')){
 
-                price_lower_range = 0;
+                price_lower_range = 1;
                 price_upper_range = 300000;
                 if(budgetarr.includes("Above ₹10,000")){
                     price_upper_range = null;
@@ -266,7 +266,7 @@ const Booking = (props) => {
                 price_upper_range = 100000000;
                 price_lower_range = 1000000;
                 if(budgetarr.includes("Below ₹3,000")){
-                    price_lower_range = 0;
+                    price_lower_range = 1;
                 }
                 else if(budgetarr.includes("₹3,000 - ₹6,000")){
                     price_lower_range = 300000;
@@ -423,6 +423,7 @@ setUpdateLoadingState(true);
          let updated_bookings_arr = [{
             "id": props.selectedBooking.id,
                         "name": new_booking.name,
+                        "city": new_booking.city, 
                         "booking_type": "Accommodation",
                         "itinerary_type": "Tailored",
                         "user_selected": true,			
@@ -441,8 +442,8 @@ setUpdateLoadingState(true);
                         "itinerary_name": itinerary_name,
                         "itinerary_db_id": null,
         }];
-  
-        axiosbookingupdateinstance.post("?booking_type=Accommodation", updated_bookings_arr, {headers: {
+        console.log(props.selectedBooking)
+        axiosbookingupdateinstance.post("?booking_type=Accommodation&itinerary_id="+props.selectedBooking.itinerary_id, updated_bookings_arr, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
                 props._updateStayBookingHandler(res.data.bookings);

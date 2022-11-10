@@ -210,7 +210,7 @@ const Booking = (props) => {
       })
       props.setShowFlightModal();
     }
-    const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type) => {
+    const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type) => {
     console.log('test')
       ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
       setSelectedBooking({
@@ -229,7 +229,8 @@ const Booking = (props) => {
         origin_iata: origin_iata,
         destination_iata: destination_iata,
         destination_city: destination_city,
-        taxi_type: taxi_type
+        taxi_type: taxi_type,
+        transfer_type: transfer_type
       })
       props.setShowTaxiModal(true);
     }
@@ -385,7 +386,7 @@ const Booking = (props) => {
           
           if(props.transferBookings[i].booking_type === 'Taxi')
            bookings_transfers.push(
-            <TaxiBookingCard setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
+            <TaxiBookingCard setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
         )
         else if(props.transferBookings[i].booking_type === 'Bus')
         bookings_transfers.push(

@@ -44,9 +44,9 @@ const Accommodation = (props) => {
     const [showDetails, setShowDetails] = useState(false);
  //   if(!showPhotos)
   return(
-      <Container className='border'>
+      <Container className='border' >
            <GridContainer>
-              <ImageContainer className='center-di'>
+              <ImageContainer className='center-di' onClick={() => setShowDetails(true)}>
                  
                 <Gallery  setShowDetails={() => setShowDetails(true)}  images={props.accommodation.images} ></Gallery>
               </ImageContainer>
@@ -57,9 +57,7 @@ const Accommodation = (props) => {
 
       </Container>
   );
-//   else return(
-//       <FullScreenGallery images={images} closeGalleryHandler={closePhotosHandler}></FullScreenGallery>
-//   )
+ 
   
 
 }

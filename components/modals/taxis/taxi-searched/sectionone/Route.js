@@ -64,14 +64,14 @@ const Section= (props) => {
    if(props.data)
     return(
       <Container>
-        <Heading>{"Taxi"}</Heading>
+        <Heading>{props.selectedBooking.transfer_type ==='Intercity round-trip' ? 'Round-trip Taxi' : 'One-way Taxi' }</Heading>
       <RouteContainer className='font-opensans'>  
  
           <Location className="font-opensans">{props.selectedBooking.city}</Location>
             <div style={{margin: '0 2px'}}>
               <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader>
             </div>
-            <Location className="font-opensans">{'props.data sdestination_city'}</Location>
+            <Location className="font-opensans">{props.selectedBooking.destination_city}</Location>
            
       </RouteContainer>
       
