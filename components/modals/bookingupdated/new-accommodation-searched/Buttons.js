@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import media from '../../../media';
 import Button from '../../../ui/button/Index';
 import {AiFillPlusSquare, AiOutlinePlusSquare} from 'react-icons/ai';
+import Dropdown from './Dropdown';
  const Container = styled.div`
  margin: 0;
 @media screen and (min-width: 768px){
@@ -27,7 +28,7 @@ const Section= (props) => {
       <GridContainer>
             <Button fontSize="0.85rem" fontWeight="600" onclick={()=> props.setShowDetails(true)} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
             {/* <Button fontSize="0.85rem" fontWeight="600" onclick={()=> console.log('')} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button> */}
-
+{/* 
             <Button 
               onclick={props._updateSearchedAccommodation}
               onclickparam={
@@ -37,7 +38,8 @@ const Section= (props) => {
                   tailored_id: props.tailored_id,
                   }}
             fontSize="0.85rem" fontWeight="600"   width="100%"borderRadius="0 0  10px 0" bgColor="#f7e700" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >Select</Button>
-    
+     */}
+     <Dropdown></Dropdown>
             </GridContainer>
       </Container>
   ); 

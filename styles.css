@@ -4,6 +4,9 @@
     height: 0.6rem;
     
   }
+  .dropdown-toggle::after {
+    display: none !important; 
+  }
  
   .full-width{
     width: '100% important'
@@ -160,11 +163,44 @@
 
 
 }
+
 #taxi-dropdown.btn-sucess{
   background-color: transparent !important;
   color: black !important;
   border-style: none !important;
 }
+#staylisting-dropdown{
+  background-color: #f7e700 !important;
+  font-size: 0.85rem;
+  color: black !important;
+   border-style: none !important;
+   border-radius: 0 0 10px 0px;
+   font-weight: 600;
+   font-family: 'Open Sans', sans-serif !important;
+   width: 100%;
+
+
+}
+#staylisting-dropdown.dropdown-toggle{
+  padding: 0.5rem;
+}
+#staylisting-dropdown-menu{
+width: 100%;
+padding: 0;
+font-size: 0.75rem;
+font-family: 'Open Sans', sans-serif !important;
+
+
+}
+#staylisting-dropdown-menu .dropdown-item{
+padding: 0.25rem;
+border-style: none none solid none;
+border-width: 1px;
+border-color: #e4e4e4;
+padding: 0.5rem;
+text-align: right;
+  }
+
 .btn-check:focus + .btn-success, .btn-success:focus{
   background-color: transparent !important;
   color: black !important;
