@@ -3,12 +3,12 @@ import Dropdown from 'react-bootstrap/Dropdown';
 function BasicExample() {
   return (
     <Dropdown  drop={'up'} >
-      <Dropdown.Toggle  variant="success" id="staylisting-dropdown">
+      <Dropdown.Toggle  variant="success" id="staylisting-dropdown" className="border">
         Select
       </Dropdown.Toggle>
 
-      <Dropdown.Menu id="staylisting-dropdown-menu">
-        <p style={{margin: '0rem', padding: '0.5rem', textAlign: 'right', fontWeight: '600', backgroundColor: 'black', color: '#f7e700'}}>How many rooms?</p>
+      <Dropdown.Menu id="staylisting-dropdown-menu" className='border-thin'>
+        <p style={{margin: '0rem', padding: '0.75rem 0.5rem', borderRadius: '10px 10px 0 0', textAlign: 'right', fontWeight: '600', backgroundColor: 'black', color: '#f7e700'}}>How many rooms?</p>
         <Dropdown.Item>1</Dropdown.Item>
         <Dropdown.Item>2</Dropdown.Item>
         <Dropdown.Item>3</Dropdown.Item>

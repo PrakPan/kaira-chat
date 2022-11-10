@@ -189,7 +189,7 @@ width: 100%;
 padding: 0;
 font-size: 0.75rem;
 font-family: 'Open Sans', sans-serif !important;
-
+border-radius: 10px 10px 0 0;
 
 }
 #staylisting-dropdown-menu .dropdown-item{
