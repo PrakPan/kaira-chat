@@ -163,7 +163,7 @@ const experiences = {
               },
               "payment_info": [
                 {
-                  "cost": 4214001,
+                  "cost": 2583501,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
