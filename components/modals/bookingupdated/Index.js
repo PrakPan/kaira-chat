@@ -408,6 +408,7 @@ setUpdateLoadingState(true);
       
       
     const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
+        console.log('test');
         setUpdateBookingState(true);
          // const token = localStorage.getItem('access_token');
          let room = [];

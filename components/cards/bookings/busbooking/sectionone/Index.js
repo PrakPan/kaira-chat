@@ -30,7 +30,7 @@ const Section= (props) => {
           
             <div className="center-dv" style={{ padding: '0.75rem 0.5rem', borderColor: 'rgba(238, 238, 238, 1)', borderWidth: '1px', borderStyle: 'none solid none none'}}>
               {/* <DropDown></DropDown> */}
-              <p style={{margin: '0w', fontSize: '15px', fontWeight: '700'}} className="font-opensans text-center">{'Bus'}</p>
+              <p style={{margin: '0', fontSize: '15px', fontWeight: '700'}} className="font-opensans text-center">{'Bus'}</p>
               <ImageLoader url="media/icons/bookings/transfers/bus.svg"   width="3.5rem" widthmobile="3.5rem" height="auto" ></ImageLoader>
               {/* <p className='text-center font-opensans' style={{fontSize: '13px', margin: '0'}}>Occupancy: 5</p> */}
             </div>

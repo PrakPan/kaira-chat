@@ -39,7 +39,7 @@ const Section= (props) => {
                   }}
             fontSize="0.85rem" fontWeight="600"   width="100%"borderRadius="0 0  10px 0" bgColor="#f7e700" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >Select</Button>
      */}
-     <Dropdown></Dropdown>
+     <Dropdown onclick={props._updateSearchedAccommodation}></Dropdown>
             </GridContainer>
       </Container>
   ); 
