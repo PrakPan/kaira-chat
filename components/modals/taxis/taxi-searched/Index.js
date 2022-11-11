@@ -47,7 +47,7 @@ const Booking = (props) =>{
     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
-         <SectionOne  setShowTaxiModal={props.setShowTaxiModal} selectedBooking={props.selectedBooking} data={props.data}></SectionOne>
+         <SectionOne  _updateSearchedTaxi={props._updateSearchedTaxi} setShowTaxiModal={props.setShowTaxiModal} selectedBooking={props.selectedBooking} data={props.data}></SectionOne>
           {/* <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree> */}
          {/* <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> */}
         </Container>

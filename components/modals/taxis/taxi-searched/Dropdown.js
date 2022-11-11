@@ -2,14 +2,17 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 const DropDown = (props) =>  {
     const _handleChange = (event) => {
-        console.log(event.target.innerHTML)
-        props.onclick({bookings: props.bookings,
-            new_booking: props.new_booking,
-            itinerary_id: props.itinerary_id,
-            tailored_id: props.tailored_id,
-            number_of_rooms: parseInt(event.target.innerHTML),
-            })
+        // console.log(event.target.innerHTML)
+        props.onclick( {
+          itinerary_id: props.itinerary_id,
+          taxi_type: props.taxi_type, 
+          transfer_type: props.transfer_type,
+          duration: props.duration,
+          total_taxi: parseInt(event.target.innerHTML),
+        }
+      )
     }
+    console.log('id', props.itinerary_id)
   return (
     <Dropdown  drop={'up'} onChange={_handleChange} >
       <Dropdown.Toggle  variant="success" id="staylisting-dropdown" className="border">
@@ -22,7 +25,7 @@ const DropDown = (props) =>  {
         <Dropdown.Item onClick={_handleChange}>2</Dropdown.Item>  
         <Dropdown.Item onClick={_handleChange}>3</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>4</Dropdown.Item>
-        <Dropdown.Item onClick={_handleChange}>5</Dropdown.Item>
+        <Dropdown.Item onClick={_handleChange}> 5</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>6</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>7</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>8</Dropdown.Item>

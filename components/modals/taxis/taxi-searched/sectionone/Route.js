@@ -78,7 +78,7 @@ const Section= (props) => {
     <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem', marginTop: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
-                        {props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.duration ?  <div>
+                        {props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.distance?  <div>
                             <IconHeading className='font-opensans'>{props.selectedBooking.costings_breakdown.distance.text}</IconHeading>
                             <Text className='font-nunito'>Included</Text>
  
@@ -90,7 +90,7 @@ const Section= (props) => {
                         </div> : null : null}
                     </div>
     </div>
-    <SectionFour data={props.data} setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
+    <SectionFour selectedBooking={props.selectedBooking} _updateSearchedTaxi={props._updateSearchedTaxi} data={props.data} setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
 
       </Container>
   ); 

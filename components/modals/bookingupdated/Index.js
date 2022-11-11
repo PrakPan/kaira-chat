@@ -407,7 +407,7 @@ setUpdateLoadingState(true);
 
       
       
-    const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
+    const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name, number_of_rooms}) => {
         console.log('test');
         setUpdateBookingState(true);
          // const token = localStorage.getItem('access_token');
@@ -432,9 +432,7 @@ setUpdateLoadingState(true);
                         "itinerary_id": itinerary_id,
                         "tailored_itinerary": tailored_id,
                         "costings_breakdown": [{
-                            number_of_adults: props.selectedBooking.pax.number_of_adults,
-                            number_of_children: props.selectedBooking.pax.number_of_children,
-                            number_of_infants: props.selectedBooking.pax.number_of_infants,
+                           number_of_rooms: number_of_rooms,
                             number_of_extra_beds: 0,
                             id: room[0].id,
                             room_type: room[0].room_type,

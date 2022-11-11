@@ -4,6 +4,7 @@ import media from '../../../media';
 import Button from '../../../ui/button/Index';
 import {AiFillPlusSquare, AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
+import DropDown from './Dropdown';
  const Container = styled.div`
  margin: 0;
 @media screen and (min-width: 768px){
@@ -54,6 +55,7 @@ const Section= (props) => {
             setCounterValue(counterValue - 1);
         }
     }
+     console.log('bb', props.selectedBooking)
 //    if(props.data)
     return(
       <Container className='font-opensans'>  
@@ -62,7 +64,7 @@ const Section= (props) => {
       {"₹ " + (getIndianPrice(Math.round(props.data.price * counterValue/100)) )+" /-"}
       </Cost>
             {/* <Button width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => console.log('test')}>View Details</Button> */}
-            {!showCounter ? 
+            {/* {!showCounter ? 
             <Button width="max-content" margin="0.25rem 0 0 0"  padding="0.25rem 1rem" borderRadius="10px" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" bgColor="#f7e700" color="black" onclickparam={null} onclick={() =>  setShowCounter(true)}>Select</Button>
          : <CounterContainer className='center-div font-opensans' >
          <div style={{width: 'max-content', display: 'grid', gridGap: '0.25rem', gridTemplateColumns: 'max-content max-content max-content'}}>
@@ -72,7 +74,8 @@ const Section= (props) => {
 
          </div>
        
-       </CounterContainer>}
+       </CounterContainer>} */}
+       <DropDown itinerary_id={props.selectedBooking.itinerary_id} transfer_type={props.selectedBooking.transfer_type} taxi_type={props.data.taxi_type} duration={props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.duration ? props.selectedBooking.costings_breakdown.duration.value : null : null}  onclick={props._updateSearchedTaxi}  ></DropDown>
          </GridContainer>
       </Container>
   ); 

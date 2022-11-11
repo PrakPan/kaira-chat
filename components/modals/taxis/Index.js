@@ -154,7 +154,7 @@ console.log('b', props.selectedBooking)
                     // }
     
                     //  if(res.data.results[i].name !== props.selectedBooking.name  && is_min_price_present)
-                    options.push(<TaxiSearched selectedBooking={props.selectedBooking} data={res.data.choices[i]}  ></TaxiSearched>)
+                    options.push(<TaxiSearched _updateSearchedTaxi={_updateSearchedTaxi} selectedBooking={props.selectedBooking} data={res.data.choices[i]}  ></TaxiSearched>)
                     // }
                     // catch{
                     //     options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
@@ -188,46 +188,30 @@ console.log('b', props.selectedBooking)
     
  
   
-    const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
+    const _updateSearchedTaxi = ({  itinerary_id, taxi_type, transfer_type, duration, total_taxi}) => {
         setUpdateBookingState(true);
-          let room = [];
-         try{
-         for(var i = 0 ; i < new_booking.rooms_available.length; i++){
-             if(new_booking.rooms_available[i].prices.min_price){
-                 room.push(new_booking.rooms_available[i]);
-                 break;
-             }
-         }}catch{
-     
-         }
+       
          let updated_bookings_arr = [{
             "id": props.selectedBooking.id,
-                        "name": new_booking.name,
-                        "booking_type": "Accommodation",
-                        "itinerary_type": "Tailored",
+                        "booking_type": "Taxi",
+                         "itinerary_type": "Tailored",
                         "user_selected": true,			
-                        "accommodation": new_booking.id,
-                        "itinerary_id": itinerary_id,
-                        "tailored_itinerary": tailored_id,
-                        "costings_breakdown": [{
-                            number_of_adults: props.selectedBooking.pax.number_of_adults,
-                            number_of_children: props.selectedBooking.pax.number_of_children,
-                            number_of_infants: props.selectedBooking.pax.number_of_infants,
-                            number_of_extra_beds: 0,
-                            id: room[0].id,
-                            room_type: room[0].room_type,
-                            pricing_type: room[0].prices.min_pricing_type
-                        }],
-                        "itinerary_name": itinerary_name,
-                        "itinerary_db_id": null,
-        }];
-  
-        axiosbookingupdateinstance.post("?booking_type=Accommodation", updated_bookings_arr, {headers: {
+                         "itinerary_id": itinerary_id,
+                         "taxi_type": taxi_type,
+                         "transfer_type": transfer_type,
+                         "costings_breakdown": {
+                            "duration": {
+                                "value": duration,
+                            },
+                            "total_taxi": total_taxi, 
+                        },
+         }];
+         console.dir(updated_bookings_arr);
+        axiosbookingupdateinstance.post("?booking_type=Taxi", updated_bookings_arr, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
-                props._updateStayBookingHandler(res.data.bookings);
-                // props._updatePaymentHandler(res.data.payment_info);
-                props.getPaymentHandler();
+                // props._updateStayBookingHandler(res.data.bookings);
+                //  props.getPaymentHandler();
 
                 setUpdateBookingState(false);
 

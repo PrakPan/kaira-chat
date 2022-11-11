@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import media from '../../../../media';
 import ImageLoader from '../../../../ImageLoader';
 import Route from './Route';
-import DropDown from './Dropdown';
+import DropDown from '../Dropdown';
 const Container = styled.div`
 
 display: grid;
@@ -36,7 +36,7 @@ const Section= (props) => {
               {/* <p className='text-center font-opensans' style={{fontSize: '13px', margin: '0'}}>Occupancy: 5</p> */}
             </div>
             {/* <div style={{padding:'1rem 0 1rem 0.5rem'}}><ImageLoader url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="2.5rem" ></ImageLoader></div> */}
-              <Route selectedBooking={props.selectedBooking} data={props.data}></Route>
+              <Route selectedBooking={props.selectedBooking} data={props.data} _updateSearchedTaxi={props._updateSearchedTaxi}></Route>
       </Container>
   ); 
   else return null;
