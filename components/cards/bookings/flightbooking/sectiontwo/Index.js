@@ -46,7 +46,7 @@ const Booking = (props) =>{
         return  rhours + " h " + rminutes + " m";
         }
     let isPageWide = media('(min-width: 768px)')
-    const [url, setUrl] = useState('https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png')
+    const [url, setUrl] = useState('https://d31aoa0ehgvjdi.cloudfront.net/crm/flight.webp')
     useEffect(() => {
         if(props.data.costings_breakdown)
         if(props.data.costings_breakdown.Segments)
