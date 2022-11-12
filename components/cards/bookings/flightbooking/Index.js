@@ -39,12 +39,15 @@ const Booking = (props) =>{
     // } 
     //  if(isPageWide)
     return(
+        <div style={{height: 'max-content'}}>
+        <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - day 2'}</div>
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo data={props.data}></SectionTwo>
          <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} _deselectBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
          <SectionFour setShowFlightModal={props.setShowFlightModal} ></SectionFour>
         </Container>
+        </div>
     );
  
 }

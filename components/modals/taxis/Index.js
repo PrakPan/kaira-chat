@@ -248,7 +248,7 @@ console.log('b', props.selectedBooking)
 
                    {optionsJSX.length ? optionsJSX :moreOptionsJSX.length? moreOptionsJSX : null}
                     {/* {moreOptionsJSX} */}
-                   {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching stay recommendations for you</div> : null}
+                   {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching recommendations for you</div> : null}
                    {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
 
                    </div>

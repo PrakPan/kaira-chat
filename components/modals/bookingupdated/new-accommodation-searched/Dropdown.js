@@ -1,6 +1,9 @@
 import Dropdown from 'react-bootstrap/Dropdown';
+// import Collapse from 'react-bootstrap/Collapse';
+import { useState } from 'react';
 
 const DropDown = (props) =>  {
+    const [open, setOpen] = useState(false);
     const _handleChange = (event) => {
         console.log(event.target.innerHTML)
         props.onclick({bookings: props.bookings,
@@ -12,22 +15,22 @@ const DropDown = (props) =>  {
     }
   return (
     <Dropdown  drop={'up'} onChange={_handleChange} >
-      <Dropdown.Toggle  variant="success" id="staylisting-dropdown" className="border">
+      <Dropdown.Toggle  onClick={() => setOpen(!open)} variant="success" id="staylisting-dropdown" className="border">
         Select
       </Dropdown.Toggle>
-
-      <Dropdown.Menu id="staylisting-dropdown-menu" className='border-thin'>
-        <p style={{margin: '0rem', padding: '0.75rem 0.5rem', borderRadius: '10px 10px 0 0', textAlign: 'right', fontWeight: '600', backgroundColor: 'black', color: '#f7e700'}}>How many rooms?</p>
+      {/* <Collapse in={open}> */}
+      <Dropdown.Menu id="staylisting-dropdown-menu" className='bordr'>
+        <p style={{margin: '0rem', padding: '0.75rem 0.5rem', borderRadius: '10px 10px 0 0', borderStyle: 'none none solid none', borderWidth: '1px', borderColor: '#e4e4e4', textAlign: 'right', fontWeight: '600',}}>How many rooms?</p>
         <Dropdown.Item onClick={_handleChange}>1</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>2</Dropdown.Item>  
         <Dropdown.Item onClick={_handleChange}>3</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>4</Dropdown.Item>
-        <Dropdown.Item onClick={_handleChange}>5</Dropdown.Item>
-        <Dropdown.Item onClick={_handleChange}>6</Dropdown.Item>
-        <Dropdown.Item onClick={_handleChange}>7</Dropdown.Item>
-        <Dropdown.Item onClick={_handleChange}>8</Dropdown.Item>
+        <Dropdown.Item onClick={_handleChange} style={{border: 'none'}}>5</Dropdown.Item>
+
 
       </Dropdown.Menu>
+      {/* </Collapse> */}
+
     </Dropdown>
   );
 }

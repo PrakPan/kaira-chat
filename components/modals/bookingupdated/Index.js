@@ -625,7 +625,7 @@ setUpdateLoadingState(true);
               <SectionTwo filtersState={filtersState} FILTERS={FILTERS} _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} ></SectionTwo>
 
            </Modal.Header>
-            <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
+            <Modal.Body style={{padding: "0rem", backgroundColor: 'white', }} >
             
                  <GridContainer style={{clear: 'right'}}>
                 {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}

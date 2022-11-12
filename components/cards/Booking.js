@@ -129,7 +129,7 @@ const Booking = (props) =>{
 <Container className="border-thin">
             <ImageContainer>
             {/* <ImageLoader fit="cover" url={props.images[0].image} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} widthmobile="100%" height="20vh" ></ImageLoader> */}
-                <ImageLoader blur={props.blur} url={props.images[0].image} dimensionsMobile={{ width: 1600, height: 900 }}  fit="cover" width="100%" height="25vh" />
+                <ImageLoader blur={props.blur} url={props.images.length ? props.images[0].image : 'media/website/grey.png'} dimensionsMobile={{ width: 1600, height: 900 }}  fit="cover" width="100%" height="25vh" />
                 <PhotosButton onClick={() => props.setImagesHandler(imagesarr)} className="font-opensans" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", bottom: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>                <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
                 All Photos</PhotosButton>
             </ImageContainer>
