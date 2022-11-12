@@ -15,7 +15,7 @@ const DropDown = (props) =>  {
     }
   return (
     <Dropdown  drop={'up'} onChange={_handleChange} >
-      <Dropdown.Toggle  onClick={() => setOpen(!open)} variant="success" id="staylisting-dropdown" className="border">
+      <Dropdown.Toggle   variant="success" id="staylisting-dropdown" className="border">
         Select
       </Dropdown.Toggle>
       {/* <Collapse in={open}> */}

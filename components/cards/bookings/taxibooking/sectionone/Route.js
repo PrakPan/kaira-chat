@@ -4,7 +4,7 @@ import media from '../../../../media';
 import ImageLoader from '../../../../ImageLoader';
 
 const Container = styled.div`
-padding: 0.75rem 0.5rem;
+padding: 1rem 0.5rem;
 display: flex;
 flex-direction: column;
 max-width: 100%;
