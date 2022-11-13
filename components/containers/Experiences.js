@@ -1,6 +1,6 @@
 import React, {useRef, useEffect} from 'react';
 import styled from 'styled-components';
-import ExperienceCard from '../cards/experiencecard/ExperienceCard';
+import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../cards/itinerarycard/Index';
 import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
 import Carousel from '../FlickityCarousel';
