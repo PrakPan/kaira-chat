@@ -120,17 +120,29 @@ console.log('b', props.selectedBooking)
            
             
             // console.log(FILTERS);
- 
+ console.log(props.selectedBooking)
+ let params = null;
+ if(props.selectedBooking.transfer_type === "Intercity one-way"){
+    params =  {
+        'transfer_type': 'Intercity one-way',
+        'search_by': 'name',
+        'locations' : props.selectedBooking.city+","+props.selectedBooking.destination_city
+    }
+}
+else params = {
+    "transfer_type": "Intercity round-trip",
+    "duration": props.selectedBooking.costings_breakdown.duration.value,
+    "distance": props.selectedBooking.costings_breakdown.distance.value,
+}
         axiostaxiinstance.get("/", {
         //  params:   {
         //         "transfer_type": props.selectedBooking.transfer_type,
         //         "duration": props.selectedBooking.costings_breakdown["duration"].value,
         //         "distance": props.selectedBooking.costings_breakdown["distance"].value,
         //     }
+      
         params:   {
-            "transfer_type": "Intercity round-trip",
-            "duration": 8,
-            "distance": 230000,
+           ...params
         }
             
         }).then(res => {

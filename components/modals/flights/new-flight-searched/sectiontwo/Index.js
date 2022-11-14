@@ -3,8 +3,8 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components'
 //  import { getHumanDate } from '../../../../services/getHumanDate';
-import right from '../../../../../public/assets/right-arrow-flight.png';
-
+import right from '../../../../../public/assets/right-arrow-flight-11.png';
+import arrow from '../../../../../public/assets/right-arrow-flight-12.png'
   import media from '../../../../media';
   import { getHumanTime } from '../../../../../services/getHumanTime';
   import { getHumanDate } from '../../../../../services/getHumanDate';
@@ -74,6 +74,7 @@ const Booking = (props) =>{
         >
         
         </img>
+
     {/* {props.data.costings_breakdown? props.data.costings_breakdown.Segments?     <div className='font-opensans text-center' style={{fontWeight: '400', fontSize: '0.75rem', margin: '0.25rem 0 0 0', lineHeight: '1'}}><em>{'Indigo'}</em></div> : null : null} */}
 </LogoContainer>
 <DetailsGridContainer>
@@ -81,10 +82,11 @@ const Booking = (props) =>{
                                 {props.data.Segments ? props.data.Segments[0].length ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.Segments[0][0].Origin.DepTime)}</div>: <div></div> : <div></div>}
                                 {props.data.Segments ? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.Segments[0][0].Origin.Airport.CityCode+")"}</div>  : null :null}
                             </div>
-                            <div style={{margin: '0'}}>
-                                <img  height='1rem' src={right} style={{height: '0.9rem', width: '100%', margin: 'auto', display: 'block'}}></img>
+                            <div style={{margin: '0', display: 'grid', gridTemplateColumns: 'max-content max-content'}}>
+                                <img  height='1rem' src={right} style={{height: '0.9rem', width: '2rem', margin: 'auto', display: 'block'}}></img>
+                                <img height="1rem" src={arrow} style={{height: '0.5rem', width: '0.5rem', margin: 'auto', display: 'block'}}></img>
                             </div>
-                            <div style={{display: 'flex', gap: '0.25rem'}}>
+                         <div style={{display: 'flex', gap: '0.25rem'}}>
                                 {props.data.Segments ? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.Segments[0][props.data.Segments[0].length-1].Destination.ArrTime)}</div> : <div></div> : <div></div>}
                                 {props.data.Segments? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.Segments[0][props.data.Segments[0].length-1].Destination.Airport.CityCode+")"}</div> : null : null}
                             </div>

@@ -24,14 +24,18 @@ import FlightSelected from './new-flight-selected/Index';
 import gif from '../../../public/assets/loader.gif';
 
 const GridContainer = styled.div`
-@media screen and (min-width: 768px) {
+min-height: 65vh;
+max-height: 40vh;
 
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    grid-gap: 1rem;
+@media screen and (min-width: 768px) {
+    min-height: 80vh;
+  
+    overflow-y: scroll;
+ 
     @media screen and (min-width: 768px) {
     
     }
+    
 `;
 
 const OptionsContainer = styled.div`
@@ -45,13 +49,10 @@ const OptionsContainer = styled.div`
     }
 `;
 const ContentContainer = styled.div`
-    min-height: 65vh;
-    max-height: 40vh;
-    @media screen and (min-width: 768px) {
-        min-height: 80vh;
-        max-height: 80vh;
-        overflow-y: scroll;
-    }
+      @media screen and (min-width: 768px) {
+        width: 70%;
+        margin: auto;
+     }
 `;
 const InfiniteOptionsContainer = styled.div`
 
@@ -93,7 +94,7 @@ const Booking = (props) => {
     });
     const [limit, setLimit] = useState(20);
     const [offset, setOffset] = useState(0);
-    const [viewMoreStatus, setViewMoreStatus] = useState(true);
+    const [viewMoreStatus, setViewMoreStatus] = useState(false);
 
     const [updateBookingState, setUpdateBookingState] = useState(false);
     const [updateLoadingState, setUpdateLoadingState] = useState(false);
@@ -362,14 +363,15 @@ setViewMoreStatus(false);
     }
 
     
-    const _newUpdateBookingHandler = ({bookings, booking_id, itinerary_id, result_index}) => {
+    const _newUpdateBookingHandler = ({  booking_id, itinerary_id, result_index}) => {
+        // setViewMoreStatus(false);
         setUpdateBookingState(true);
         setUnauthorized(false);
         // const token = 'OGTY7bDGph15WP7BXBf051Ra4lvNoh';
         // const token = localStorage.getItem('access_token');
          let updated_bookings_arr = [];
             
-                 //
+                 
                 updated_bookings_arr.push(
                     {
                         "trace_id": localStorage.getItem('tbo_trace_id'),
@@ -388,10 +390,11 @@ setViewMoreStatus(false);
         axiosbookingupdateinstance.post("?booking_type=Taxi,Flight", updated_bookings_arr, {headers: {
                 'Authorization': `Bearer ${props.token}`
                 }}).then(res => {
-                     props. _updateFlightBookingHandler(res.data.bookings);
+                     props._updateFlightBookingHandler(res.data.bookings);
                      setTimeout(function(){ 
                 
-                        props.getPaymentHandler(); }, 1000);                    setUpdateBookingState(false);
+                        props.getPaymentHandler(); }, 1000); 
+                        setUpdateBookingState(false);
 
   
             }).catch(err => {
@@ -424,14 +427,15 @@ setViewMoreStatus(false);
         setMoreLoadingState(false);
             localStorage.setItem('tbo_trace_id', res.data.TraceId)
             // const flights
-             let options = optionsJSX.splice();
+             let options = optionsJSX.slice();
+             console.log(optionsJSX);
             if(res.data.Results.length){
                 for(var i =0 ; i < res.data.Results.length  ; i++) {
                     options.push(
                         <Flight itinerary_id={props.itinerary_id}  data={res.data.Results[i]} selectedBooking={props.selectedBooking} _updateBookingHandler={_newUpdateBookingHandler}></Flight>
                     )
                 }
-                setOptionsJSX(options)
+                setOptionsJSX([...options])
             }
             if(res.data.next_page){
                 setViewMoreStatus(true);
@@ -465,7 +469,7 @@ if(props.token)
             <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
             {/* <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> */}
                <GridContainer style={{clear: 'right'}}>
-                <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar>
+                {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                <ContentContainer style={{position: 'relative'}}>
                 {/* <Flight></Flight> */}
@@ -474,16 +478,16 @@ if(props.token)
                 {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-opensans"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your flight</div> : null }
                { !noResults && !updateLoadingState && !unauthorized? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
-                    <FlightSelected data={props.selectedBooking}></FlightSelected>
+                    {/* <FlightSelected data={props.selectedBooking}></FlightSelected> */}
                    {optionsJSX.length && !updateBookingState? optionsJSX : null}
                    {loading && !optionsJSX.length? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching best fares</div> : null}
                    {!loading && !optionsJSX.length ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div">Oops, it looks like there are no alternate flights available.</div>: null }
                    </div>
                    {moreLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/></div> : null} 
-                    {viewMoreStatus ? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
+                    {viewMoreStatus && !updateBookingState? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
-               {unauthorized ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div">Oops, this action is not allowed on another user's itinerary</div>  : null}
+               {unauthorized ? <div style={{width: '100%', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div text-center">Oops, this action is not allowed on another user's itinerary</div>  : null}
 
                {noResults && !unauthorized? <p  className='font-opensans text-center' >Oops, we couldn't find what you were searching!</p>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}

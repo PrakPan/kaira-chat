@@ -7,7 +7,7 @@ import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import Button from '../../../../ui/button/Index';
 import {  AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
 import media from '../../../../media';
-
+import Dropdown from './Dropdown';
 const Container = styled.div`
 width: 100%;
 display: grid;
@@ -126,7 +126,7 @@ const RoomType = (props) => {
                     {"₹ " + (getIndianPrice(Math.round(props.data.prices.min_price*counterValue/100)) )+" /-"}
                     </Cost>
                     <div>
-                        {!showCounter ? <Button onclick={() => setShowCounter(true)} bgColor="#f7e700" borderWidth="0" fontSize="1rem" lineHeight="1" padding="0.25rem 1rem" borderRadius="5px" bold margin="0.5rem 0 0 0" width="100%">Select</Button>
+                        {/* {!showCounter ? <Button onclick={() => setShowCounter(true)} bgColor="#f7e700" borderWidth="0" fontSize="1rem" lineHeight="1" padding="0.25rem 1rem" borderRadius="5px" bold margin="0.5rem 0 0 0" width="100%">Select</Button>
                        :  <CounterContainer className='center-div font-opensans' >
             <div style={{width: 'max-content', display: 'grid', gridGap: '0.25rem', gridTemplateColumns: 'max-content max-content max-content'}}>
             <div className='center-div'><AiOutlineMinusSquare onClick={_decreaseCounter} style={{fontSize: '1rem'}}></AiOutlineMinusSquare></div>
@@ -135,7 +135,8 @@ const RoomType = (props) => {
 
             </div>
           
-          </CounterContainer>}
+          </CounterContainer>} */}
+          <Dropdown></Dropdown>
                     </div>
                 </div>
             </ContentContainer>

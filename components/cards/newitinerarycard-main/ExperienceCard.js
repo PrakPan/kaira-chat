@@ -79,10 +79,10 @@ const redirect = () => {
     return(
       <Container className="netflix-ite">
         <ImageContainer>
-              <ImageGallery filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
+              <ImageGallery filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
        </ImageContainer>  
        <ContentContainer className="text-cente">
-        <Info></Info>
+        <Info   starting_cost={props.starting_cost}></Info>
        
        </ContentContainer>
        <div className='font-opensans text-center' style={{background: '#ECECEC', padding: '0.4rem', letterSpacing: '0.2em', fontWeight: '300', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>

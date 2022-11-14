@@ -37,11 +37,12 @@ const Booking = (props) =>{
     //     );
     // } 
     //  if(isPageWide)
+    console.log('b', props.selectedBooking);
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
           <SectionTwo data={props.data}></SectionTwo>
          <SectionThree  _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         <SectionFour data={props.data}></SectionFour>
+         <SectionFour selectedBooking={props.selectedBooking} data={props.data} _updateBookingHandler={props._updateBookingHandler}></SectionFour>
         </Container>
     );
  

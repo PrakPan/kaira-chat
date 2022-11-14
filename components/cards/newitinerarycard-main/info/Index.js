@@ -17,7 +17,7 @@ const Info = (props) => {
     return(
         <Container  >
           <Pax></Pax>
-          <Cost></Cost>
+          <Cost starting_cost={props.starting_cost}></Cost>
           <div>
             <ImageLoader url={"media/icons/bookings/bookmark-white.png" } leftalign  width="2rem" widthmobile="1.5rem" height="auto" ></ImageLoader>
           </div>

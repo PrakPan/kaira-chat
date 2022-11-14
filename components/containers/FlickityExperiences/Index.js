@@ -1,7 +1,7 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import ExperienceCard from '../../cards/experiencecard/ExperienceCard';
+import ExperienceCard from '../../cards/newitinerarycard-main/ExperienceCard';
 import Carousel from '../../FlickityCarousel';
 import media from '../../media';
 import { useRouter } from 'next/router';

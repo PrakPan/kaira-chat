@@ -39,7 +39,7 @@ const Booking = (props) =>{
     // } 
     //  if(isPageWide)
     return(
-        <div style={{height: 'max-content'}}>
+        <div style={{height: 'max-content',}}>
         <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - day 2'}</div>
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>

@@ -19,16 +19,27 @@ import {GoStar} from 'react-icons/go';
         border-width: 1px;
          background-color: rgba(255, 255, 255, 0.7);;
           color: black;
-         padding: 5px 0;
+          padding: 2px 0;
+
+         @media screen and (min-width: 768px){
+          padding: 5px 0;
+
+        }
 
       `;
       
       const IconHoverContainer = styled.div`
+    
       &:hover{
 
         }
         margin: 0 0.25rem;
-        padding: 0.5rem;
+        padding: 4px;
+
+        @media screen and (min-width: 768px){
+          padding: 0.5rem;
+
+        }
       `;
 
       const Container = styled.div`
@@ -56,18 +67,33 @@ import {GoStar} from 'react-icons/go';
         font-weight: 700;
         letter-spacing: 0.02em;
         margin: 0;
-    `;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+     `;
     const Subheading=styled.p`
     text-align: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 300;
     letter-spacing: 0.02em;
+    @media screen and (min-width: 768px){
+      font-size: 1.25rem;
+
+    }
     `;
     const HeadingContainer = styled.div`
-    width: 100%;
-    top: 3.5rem;
+     top: 2.75rem;
     position: absolute;
     color: white;
+   width: 100%;
+   padding: 0 0.25rem;
+   @media screen and (min-width: 768px){
+    top: 3.5rem;
+
+  }
+
      
     `;
     const CustomizableContainer = styled.div`
@@ -104,30 +130,29 @@ const ImageSlider = (props) => {
             <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
             <IconsContainer className='font-opensans'>
             
-               <IconHoverContainer>
-                Adventure
+               <IconHoverContainer className='center-div'>
+                {props.filter}
                 </IconHoverContainer> 
-                <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "0.5rem", marginBottom: "0rem"}}/></div>
+                <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "6px", marginBottom: "0rem"}}/></div>
 
-               <IconHoverContainer>
+               <IconHoverContainer className='center-div'>
                 Affordable
                 </IconHoverContainer> 
-                <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "0.5rem", marginBottom: "0rem"}}/></div>
+                <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "6px", marginBottom: "0rem"}}/></div>
 
-               <IconHoverContainer>
+               <IconHoverContainer className='center-div'>
                 Family Trip
                 </IconHoverContainer> 
             </IconsContainer>
             <RatingContainer className='font-opensans'>
             <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
-
-                4.5/5
-            </RatingContainer>
+            {props.rating + '/5'}
+             </RatingContainer>
             <CustomizableContainer className='font-opensans'>
             100% customizable
             </CustomizableContainer>
 <HeadingContainer>
-  <Heading className='font-opensans'>6 Days in Rajasthan</Heading>
+  <Heading className='font-opensans'>{props.experience}</Heading>
   <Subheading className='font-opensans'>Explore Delhi, Rishikesh + 3 </Subheading>
 </HeadingContainer>
         </Container>

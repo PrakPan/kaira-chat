@@ -3,7 +3,8 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components'
 //  import { getHumanDate } from '../../../../services/getHumanDate';
-import right from '../../../../../public/assets/right-arrow-flight.png';
+import right from '../../../../../public/assets/right-arrow-flight-11.png';
+import arrow from '../../../../../public/assets/right-arrow-flight-12.png';
 
   import media from '../../../../media';
   import { getHumanTime } from '../../../../../services/getHumanTime';
@@ -87,14 +88,15 @@ const Booking = (props) =>{
 <DetailsGridContainer>
                             <div style={{display: 'flex', gap: '0.25rem'}}>
                                 {props.data.check_in ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.check_in)}</div>: <div></div>}
-                                {props.data.origin_code? <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.origin_code+")"}</div>  : null}
+                                {props.data.origin_code? <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{ !getTime(props.data.check_in) ? props.data.city + " ("+props.data.origin_code+")" :"("+props.data.origin_code+")"}</div>  : null}
                             </div>
-                            <div style={{margin: '0'}}>
-                                <img  height='1rem' src={right} style={{height: '0.9rem', width: '100%', margin: 'auto', display: 'block'}}></img>
+                            <div style={{margin: '0', display: 'grid', gridTemplateColumns: 'max-content max-content'}}>
+                                <img  height='1rem' src={right} style={{height: '0.9rem', width: '2rem', margin: 'auto', display: 'block'}}></img>
+                                <img height="1rem" src={arrow} style={{height: '0.5rem', width: '0.5rem', margin: 'auto', display: 'block'}}></img>
                             </div>
                             <div style={{display: 'flex', gap: '0.25rem'}}>
                                 {props.data.check_out ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.check_out)}</div> : <div></div>}
-                                {props.data.destination_code? <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.destination_code+")"}</div> : null}
+                                {props.data.destination_code? <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{!getTime(props.data.check_out) ? props.data.destination_city + " ("+props.data.destination_code+")" :  "("+props.data.destination_code+")"}</div> : null}
                             </div>
                             <div style={{width: 'max-content'}}>
                                 {props.data.check_in ? <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300', color: 'rgba(91, 89, 89, 1)', textAlign: 'right'}}>{getDate(props.data.check_in).slice(0,-4)}</div> : <div></div>}

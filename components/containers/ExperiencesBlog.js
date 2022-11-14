@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
- import Card from '../cards/experiencecard/ExperienceCard';
+ import Card from '../cards/newitinerarycard-main/ExperienceCard';
  import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
  import BlogNew from '../cards/Blog';
 import Carousel from '../FlickityCarousel';

@@ -169,6 +169,37 @@
   color: black !important;
   border-style: none !important;
 }
+#stayroom-dropdown{
+  background-color: #f7e700 !important;
+  font-size: 0.85rem;
+  color: black !important;
+   border-style: none !important;
+   border-radius: 10px;
+   font-weight: 600;
+   font-family: 'Open Sans', sans-serif !important;
+   width: 100%;
+
+}
+#stayroom-dropdown.dropdown-toggle{
+  padding: 0.5rem;
+}
+#stayroom-dropdown-menu{
+width: 100%;
+padding: 0;
+margin: 0.25rem 0;
+font-size: 0.75rem;
+font-family: 'Open Sans', sans-serif !important;
+border-radius: 10px;
+box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 500px;
+}
+#stayroom-dropdown-menu .dropdown-item{
+padding: 0.25rem;
+border-style: none none solid none;
+border-width: 1px;
+border-color: #e4e4e4;
+padding: 0.5rem;
+text-align: right;
+  }
 #staylisting-dropdown{
   background-color: #f7e700 !important;
   font-size: 0.85rem;
