@@ -79,7 +79,7 @@ const ImageFive = styled.div`
 }
 `;
 
- 
+
 const Gallery = (props) => {
   let ImageContainerTopPadding = 0;
   let imageheight = null;
@@ -159,8 +159,7 @@ const Gallery = (props) => {
              
             />
           </ImageFive>
-         
-        </ImageContainer>
+         </ImageContainer>
 
   );
 }

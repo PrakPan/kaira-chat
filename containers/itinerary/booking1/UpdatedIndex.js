@@ -539,9 +539,7 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-              <MessageContainer className='border-thin font-opensans'>
-              Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
-              </MessageContainer>
+             
               <Tabs
         value={value}
         onChange={handleChange}
@@ -553,7 +551,7 @@ const Booking = (props) => {
       >
             <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
        <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       <Tab label={props.flightBookings ? " + Add Flight" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
+       <Tab label={props.flightBookings ? " + Add Flight" : " + Add Flight"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
 
        {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>

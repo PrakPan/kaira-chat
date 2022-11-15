@@ -83,6 +83,16 @@ const Section= (props) => {
                     </div>
                 </div>
                 : null : null}
+                {props.data.costings_breakdown ? props.data.costings_breakdown.distance ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
+                    <ImageLoader url="media/icons/bookings/distance.png" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    <div style={{display: 'flex', gap: '1rem'}}> 
+                        <div className='centerdiv'>
+                            <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
+                            <Text   className='font-nunito'>Included</Text>
+                        </div>
+                     
+                    </div>
+                </div> : null : null}
             
              
       </Container>

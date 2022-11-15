@@ -64,7 +64,11 @@ const Cost = styled.p`
     font-size: 1rem;
     line-height: 1;
     margin: 0rem 0 2px 0;
-    
+
+    @media screen and (min-width: 768px) {
+        font-size: 1.2rem;
+
+    }
  `;
 const DesktopGridContainer = styled.div`
     display: grid;
@@ -170,11 +174,11 @@ const Accommodation = (props) => {
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null}
-        <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0 0 0 0'}}>
+        <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems:  isPageWide ? 'center' : 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
                 <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)+" /-"}</Cost>
         </div>
-        <div className='hidden-mobile'><Button onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Selected</Button></div>
+        <div className='hidden-mobile'><Button fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="black" color="white" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Selected</Button></div>
 </div>
         
        </Container>

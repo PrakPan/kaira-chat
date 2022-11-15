@@ -106,7 +106,7 @@ const Section= (props) => {
                     <div style={{display: 'grid', gridTemplateColumns: 'max-content auto' , gridGap: '0.5rem',}}><ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                
                         {props.selectedBooking.check_in ? <div>
-                            <Heading className='font-opensans'>Trip Start</Heading>
+                            <IconHeading className='font-opensans'>Trip Start</IconHeading>
                             <Text className='font-nunito'>{getDate(props.selectedBooking.check_in)}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 

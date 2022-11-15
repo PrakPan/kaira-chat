@@ -12,7 +12,7 @@ grid-template-rows: auto auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
-    grid-gap: 1rem;
+    grid-gap: 2rem;
     padding: 0.5rem;
 }
 @media (min-width: 768px) and (max-width: 1024px) {

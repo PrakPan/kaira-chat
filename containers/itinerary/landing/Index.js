@@ -61,9 +61,11 @@ const ExperienceName = styled.h1`
 `;
 const Duration = styled.p`
   text-align: center;
-  margin-bottom: 5vh;
+  margin-bottom: 3vh;
 `;
+const Heading = styled.h1`
  
+`;
  
  
  
@@ -71,18 +73,28 @@ const BlackContainer = (props) => {
 
   let isPageWide = media('(min-width: 768px)')
 
-
-   
+console.log('im', props.images)
+   if(props.images){ if(props.images.length)
    return (
     <>
 
       <Wrapper>
   
         
-       {props.images.length === 5 ? <Gallery5 setGalleryOpen={null} images={props.images} ></Gallery5> : null}
-       {props.images.length === 3 || props.images.length === 4 ? <Gallery3 setGalleryOpen={null} images={props.images} ></Gallery3> : null}
-       {props.images.length === 2 ? <Gallery2 setGalleryOpen={null} images={props.images} ></Gallery2> : null}
-        {
+       {props.images.length > 4 ? <Gallery5 setGalleryOpen={null} images={props.images} title={props.title}></Gallery5> :  <div style={{margin: isPageWide ? '5vh auto 0 auto' : 'auto', borderRadius: '5px', width: isPageWide ? '65vw' : '95vw',   height: isPageWide ?  '28.43vw' : '95vw', backgroundColor: "#e4e4e4"}}><ImageLoader
+          width="65vw"
+           url={props.images[0]}
+          borderRadius='0.5rem'
+          height='100%'
+          heighttab="100%"
+          dimensions={{width: 1600, height: 700}}
+          dimensionsMobile={{width: 1200, height: 1200}}
+          fit="cover"
+          widthmobile="95vw"
+        /></div> }
+       {/* {props.images.length === 3 || props.images.length === 4 ? <Gallery3 setGalleryOpen={null} images={props.images} ></Gallery3> : null} */}
+       {/* {props.images.length === 2 ? <Gallery2 setGalleryOpen={null} images={props.images} ></Gallery2> : null} */}
+        {/* {
           props.images.length === 1 ? 
           <div style={{margin: isPageWide ? '5vh auto 0 auto' : 'auto', borderRadius: '5px', width: isPageWide ? '65vw' : '95vw',   height: isPageWide ?  '28.43vw' : '95vw', backgroundColor: "#e4e4e4"}}><ImageLoader
           width="65vw"
@@ -95,7 +107,7 @@ const BlackContainer = (props) => {
           fit="cover"
           widthmobile="95vw"
         /></div> : null
-        }
+        } */}
         <IconListContainer>
         <DetailsContainer>
             <ExperienceName className='font-opensans' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
@@ -105,12 +117,16 @@ const BlackContainer = (props) => {
       
           </DetailsContainer> 
       </IconListContainer>
+      {/* <Heading className="font-opensans">{props.title}</Heading> */}
 
       </Wrapper>
       
     </>
   );
-  // else return <div></div>
+  else return <div></div>
+      }
+      else return <div></div>
+
 };
 
 export default React.memo(BlackContainer);

@@ -20,7 +20,7 @@ const DropDown = (props) =>  {
       </Dropdown.Toggle>
 
       <Dropdown.Menu id="taxilisting-dropdown-menu" className='border-thin'>
-        <p style={{margin: '0rem', padding: '0.75rem 0.5rem', borderRadius: '10px 10px 0 0', textAlign: 'right', fontWeight: '600', backgroundColor: 'black', color: '#f7e700'}}>How many cars?</p>
+        <p style={{margin: '0rem', padding: '0.75rem 0.5rem', borderRadius: '10px 10px 0 0', textAlign: 'right', fontWeight: '600', backgroundColor: 'white', color: 'black', borderStyle: 'none none solid none', borderWidth: '1px' ,borderColor: "#e4e4e4"}}>How many cars?</p>
         <Dropdown.Item onClick={_handleChange}>1</Dropdown.Item>
         <Dropdown.Item onClick={_handleChange}>2</Dropdown.Item>  
         <Dropdown.Item onClick={_handleChange}>3</Dropdown.Item>

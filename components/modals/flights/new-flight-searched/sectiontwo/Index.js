@@ -82,9 +82,9 @@ const Booking = (props) =>{
                                 {props.data.Segments ? props.data.Segments[0].length ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.Segments[0][0].Origin.DepTime)}</div>: <div></div> : <div></div>}
                                 {props.data.Segments ? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{"("+props.data.Segments[0][0].Origin.Airport.CityCode+")"}</div>  : null :null}
                             </div>
-                            <div style={{margin: '0', display: 'grid', gridTemplateColumns: 'max-content max-content'}}>
-                                <img  height='1rem' src={right} style={{height: '0.9rem', width: '2rem', margin: 'auto', display: 'block'}}></img>
-                                <img height="1rem" src={arrow} style={{height: '0.5rem', width: '0.5rem', margin: 'auto', display: 'block'}}></img>
+                            <div style={{margin: '0',position: 'relative'}}>
+                                <img  height='1rem' src={right} style={{position: 'absolute', height: '0.9rem', width: '90%', margin: 'auto', display: 'block'}}></img>
+                                <img height="1rem" src={arrow} style={{ position: 'absolute', top: '0.2rem', left: '90%', height: '0.5rem', width: '0.5rem', margin: 'auto', display: 'block'}}></img>
                             </div>
                          <div style={{display: 'flex', gap: '0.25rem'}}>
                                 {props.data.Segments ? props.data.Segments[0].length ?  <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.Segments[0][props.data.Segments[0].length-1].Destination.ArrTime)}</div> : <div></div> : <div></div>}

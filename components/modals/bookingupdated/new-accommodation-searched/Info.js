@@ -11,6 +11,8 @@ import { BiRupee } from 'react-icons/bi';
 import { BsInfoCircle } from 'react-icons/bs';
 import ImageLoader from '../../../ImageLoader';
 import {IoStarSharp} from 'react-icons/io5';
+import Dropdown from './Dropdown';
+
 import {BsArrowDown} from 'react-icons/bs';
 const Container = styled.div`
     position: relative;
@@ -84,7 +86,7 @@ const RatingContainer = styled.div`
     }
     @media screen and (min-width: 768px) {
 
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         }
  `;
 const DesktopGridContainer = styled.div`
@@ -125,9 +127,9 @@ const Accommodation = (props) => {
     }
 
   return(
-      <Container className='' onClick={props.setShowDetails}>
-        <div style={{display: 'flex', alignItems: 'center'}}>
-            <Name className='font-opensans hover-pointer' onClick={props.setShowDetails}>
+      <Container className=''>
+        <div style={{display: 'flex', alignItems: 'center'}} onClick={props.setShowDetails}>
+            <Name className='font-opensans hover-pointer'  >
              {props.name}
             </Name>
             
@@ -136,15 +138,15 @@ const Accommodation = (props) => {
             <Star src={star} style={{marginLeft: '0.25rem'}}></Star> */}
 
         </div>
-        <TagsContainer>
+        <TagsContainer onClick={props.setShowDetails}>
                 {props.star ? <Tag className='border'>
                      {props.star+" star"}
                 </Tag> : null}
                  
         </TagsContainer>
-        <DesktopGridContainer style={{marginBottom: '0rem'}}>
+        <DesktopGridContainer style={{marginBottom: '0rem'}} onClick={props.setShowDetails}>
             <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
-                <ImageLoader leftalign url="media/icons/bookings/bed.png" width="2rem" widthmobile="2rem"></ImageLoader>
+                <ImageLoader hoverpointer leftalign url="media/icons/bookings/bed.png" width="2rem" widthmobile="2rem"></ImageLoader>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                 <RoomText  className='font-opensans'>
                 <span>{props.number_of_rooms ? props.number_of_rooms +" x " : "1 x "}</span>
@@ -167,7 +169,9 @@ const Accommodation = (props) => {
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
                 {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))+" /-"}</Cost> : null}
         </div>
-        <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
+        {/* <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div> */}
+        <div className='hidden-mobile'><Dropdown fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Dropdown></div>
+
 </div>
         
       </Container>

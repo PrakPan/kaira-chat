@@ -90,9 +90,9 @@ const Booking = (props) =>{
                                 {props.data.check_in ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.check_in)}</div>: <div></div>}
                                 {props.data.origin_code? <div style={{ margin: '0', fontWeight: '400', fontSize: '0.95rem'}} className='font-opensans'>{ !getTime(props.data.check_in) ? props.data.city + " ("+props.data.origin_code+")" :"("+props.data.origin_code+")"}</div>  : null}
                             </div>
-                            <div style={{margin: '0', display: 'grid', gridTemplateColumns: 'max-content max-content'}}>
-                                <img  height='1rem' src={right} style={{height: '0.9rem', width: '2rem', margin: 'auto', display: 'block'}}></img>
-                                <img height="1rem" src={arrow} style={{height: '0.5rem', width: '0.5rem', margin: 'auto', display: 'block'}}></img>
+                            <div style={{margin: '0', position: 'relative' }}>
+                                <img  height='1rem' src={right} style={{position: 'absolute',  height: '0.9rem', width: '100%', margin: 'auto', display: 'block'}}></img>
+                                <img height="1rem" src={arrow} style={{position: 'absolute', left: '100%', top: '0.2rem', height: '0.5rem', width: '0.5rem', display: 'block'}}></img>
                             </div>
                             <div style={{display: 'flex', gap: '0.25rem'}}>
                                 {props.data.check_out ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.95rem'}} className='font-opensans'>{getTime(props.data.check_out)}</div> : <div></div>}

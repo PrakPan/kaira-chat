@@ -14,7 +14,7 @@ const DropDown = (props) =>  {
             })
     }
   return (
-    <Dropdown  drop={'up'} onChange={_handleChange} >
+    <Dropdown  drop={'left'} onChange={_handleChange} >
       <Dropdown.Toggle   variant="success" id="stayroom-dropdown" className="border">
         Select
       </Dropdown.Toggle>

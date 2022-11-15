@@ -9,8 +9,8 @@ import Spinner from '../../../Spinner';
 import {connect} from 'react-redux';
 
 const Container = styled.div`
-margin: 1.5rem 0.5rem 0 0.5rem;
-padding: 0.5rem 0;
+margin: 0.5rem;
+padding:  0;
 display: flex;
 justify-content: space-between;
 @media screen and (min-width: 768px){
@@ -24,6 +24,8 @@ const Cost = styled.p`
     font-size: 23px;
     font-weight: 700;
     margin: 0;
+    text-align: right;
+   
 `;
 const HoverConainer = styled.div`
     &:hover{
@@ -45,7 +47,7 @@ const Section= (props) => {
             
                 </HoverConainer > */}
 
-                <div></div>
+                <div style={{fontSize: '14px', fontWeight: '300'}} className="font-opensans center-div">Flights starting from</div>
                 <div >
                 {!props.are_prices_hidden ? <Cost className='font-opensans'>
                 {"₹"+ getIndianPrice(Math.round(props.data.booking_cost/100))+" /-"}

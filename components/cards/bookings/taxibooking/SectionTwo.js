@@ -69,7 +69,7 @@ const Section= (props) => {
                             </div>
                         </div> : null}
                 </div>
-                <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}>
+                <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>

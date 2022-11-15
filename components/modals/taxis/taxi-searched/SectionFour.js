@@ -16,15 +16,16 @@ import DropDown from './Dropdown';
 `;
  const GridContainer=styled.div`
  display: flex;
- flex-direction: column;
- align-items: flex-end;
+ flex-direction: row;
+ justify-content: flex-end;
+ align-items: center;
  
  `;
  const Cost = styled.p`
 font-weight: 800;
 font-size: 1rem;
 line-height: 1;
-margin: 1rem 0 2px 0;
+margin:   0;
 
 @media screen and (min-width: 768px) {
 
@@ -60,9 +61,9 @@ const Section= (props) => {
     return(
       <Container className='font-opensans'>  
       <GridContainer>
-        <Cost>
+        <div className='center-div' style={{marginRight: '0.5rem'}}><Cost>
       {"₹ " + (getIndianPrice(Math.round(props.data.price * counterValue/100)) )+" /-"}
-      </Cost>
+      </Cost></div>
             {/* <Button width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => console.log('test')}>View Details</Button> */}
             {/* {!showCounter ? 
             <Button width="max-content" margin="0.25rem 0 0 0"  padding="0.25rem 1rem" borderRadius="10px" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" bgColor="#f7e700" color="black" onclickparam={null} onclick={() =>  setShowCounter(true)}>Select</Button>

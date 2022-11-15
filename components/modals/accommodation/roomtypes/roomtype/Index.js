@@ -8,6 +8,7 @@ import Button from '../../../../ui/button/Index';
 import {  AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
 import media from '../../../../media';
 import Dropdown from './Dropdown';
+import Details from '../../../details/Index';
 const Container = styled.div`
 width: 100%;
 display: grid;
@@ -41,9 +42,13 @@ const AmenitiesContainer = styled.div`
      flex-wrap: wrap;
 `;
 const Ammenity = styled.div`
-    margin-right: 0.5rem;
-    font-size: 0.75rem;
-    
+    font-size: 0.65rem;
+    background-color: hsl(0,0%,95%);
+    padding: 0.25rem;
+    margin: 2px;
+    border-radius: 5px;
+    width: max-content;
+    display: inline-block;
 `;
 const Cost = styled.p`
 font-weight: 800;
@@ -88,7 +93,7 @@ const RoomType = (props) => {
             for(var i=0; i<props.data.room_facilities.length; i++){
                 // if(i === 5) break;
                 ammenities_arr.push(
-                    <Ammenity className='font-opensans'><GoPrimitiveDot style={{marginRight: '3px'}}></GoPrimitiveDot>{props.data.room_facilities[i]}</Ammenity>
+                    <Ammenity className='font-opensans'>{props.data.room_facilities[i]}</Ammenity>
                 );
             }
             setAmmenities(ammenities_arr)
@@ -104,7 +109,7 @@ const RoomType = (props) => {
             }
         }
       }
-      console.log(props.data)
+      console.log('data', props.data)
       if(true)
    return(
       <Container className='border-thin'>
@@ -117,9 +122,9 @@ const RoomType = (props) => {
                 {/* <Name className='font-opensans'>{props.data.room_type}</Name> */}
                 {/* <Tags data={props.data}></Tags> */}
                 <div ><AmenitiesContainer>
-                    {ammenities  ? ammenities.length ? ammenities.length > 5 ?  ammenities.splice(0,4) : ammenities : null : null}            
+                    {ammenities  ? ammenities.length ? !isPageWide ?  ammenities.length > 5 ?  ammenities.splice(0,4) : ammenities : ammenities.length > 20 ? ammenities.splice(0,19) : ammenities : null :  null}            
                 </AmenitiesContainer>
-                {ammenities  ? ammenities.length ? ammenities.length > 5 ?  <p style={{fontSize: '0.75rem', marginLeft: '3px', marginTop: '0.5rem', textDecoration: 'underline' , color:  'rgba(91, 89, 89, 1)'}} className="font-opensans">View All</p> : null : null : null}
+                {ammenities  ? ammenities.length ? ( ammenities.length > 5 && !isPageWide ) || ( ammenities.length > 20 && isPageWide ) ?  <p style={{fontSize: '0.75rem', marginLeft: '3px', marginTop: '0.5rem', textDecoration: 'underline' , color:  'rgba(91, 89, 89, 1)'}} className="font-opensans">View All</p> : null : null : null}
                 </div>
                 <div style={{display: 'flex', flexDirection: 'column', flexGrow: '1', alignItems : 'flex-end', justifyContent: 'flex-end'}}>
                     <Cost>
@@ -140,6 +145,9 @@ const RoomType = (props) => {
                     </div>
                 </div>
             </ContentContainer>
+            {/* <Details show={true}>
+                {ammenities}
+            </Details> */}
      </Container>
   );
   else return(

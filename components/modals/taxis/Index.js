@@ -148,14 +148,14 @@ else params = {
         }).then(res => {
             setLoading(false);
             setUpdateLoadingState(false);
-            console.log(res.data.choices)
-             if(res.data.choices.length){
+            console.log('r', res.data[0])
+             if(res.data[0].choices.length){
                 setNoResults(false);
                 let is_min_price_present = false;
-                console.log(res.data.choices.length)
+                console.log('l', res.data[0].choices.length)
                 let options = [];
-                 for(var i = 0; i< res.data.choices.length; i++){
-                    console.log(res.data.choices[i])
+                 for(var i = 0; i< res.data[0].choices.length; i++){
+                    console.log('c', res.data[0].choices[i])
 
                     // try{
                     //     for(var j = 0 ; j < res.data.results[i].rooms_available.length; j++){
@@ -166,7 +166,7 @@ else params = {
                     // }
     
                     //  if(res.data.results[i].name !== props.selectedBooking.name  && is_min_price_present)
-                    options.push(<TaxiSearched _updateSearchedTaxi={_updateSearchedTaxi} selectedBooking={props.selectedBooking} data={res.data.choices[i]}  ></TaxiSearched>)
+                    options.push(<TaxiSearched _updateSearchedTaxi={_updateSearchedTaxi} selectedBooking={props.selectedBooking} data={res.data[0].choices[i]}  ></TaxiSearched>)
                     // }
                     // catch{
                     //     options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)

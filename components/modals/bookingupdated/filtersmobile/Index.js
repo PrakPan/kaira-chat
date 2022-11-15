@@ -5,7 +5,7 @@ import Pannel from './Pannel';
 import styled from 'styled-components'
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-
+ import media from '../../../media';
 const FiltersContainer  = styled.div`
     display: flex;
     margin: 0.5rem 0;
@@ -24,8 +24,29 @@ align-items: center;
 justify-content: center;
 text-align: center;
 `;
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+          <div>{children}</div>
+       
+      )}
+    </div>
+  );
+}
+
 export default function TemporaryDrawer(props) {
 
+  let isPageWide = media('(min-width: 768px)')
 
   const [state, setState] = React.useState(false);
   const [filterSelected, setFilterSelected] = useState(null);
@@ -79,13 +100,30 @@ export default function TemporaryDrawer(props) {
             {/* <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-opensans"}></Tab> */}
 
   </Tabs>
-          <Drawer
+  {isPageWide && state ? <TabPanel value={filterSelected} index={0} >
+            {/* <Rooms data={props.data}></Rooms> */}
+            <Pannel filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler} onclose={_closePannel} heading={filterHeading} filterSelected={filterSelected} filters={props.filters}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} ></Pannel>
+
+       </TabPanel> : null}
+       {isPageWide && state ? <TabPanel value={filterSelected} index={1} >
+            {/* <Rooms data={props.data}></Rooms> */}
+            <Pannel filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler} onclose={_closePannel} heading={filterHeading} filterSelected={filterSelected} filters={props.filters}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} ></Pannel>
+
+       </TabPanel> : null}
+       {isPageWide && state? <TabPanel value={filterSelected} index={2} >
+            {/* <Rooms data={props.data}></Rooms> */}
+            <Pannel filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler} onclose={_closePannel} heading={filterHeading} filterSelected={filterSelected} filters={props.filters}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} ></Pannel>
+
+       </TabPanel> : null}
+      {!isPageWide  ? <Drawer
+          variant='persistant'
             anchor={'bottom'}
             open={state}
+            
             onClose={toggleDrawer( false)}
           >
             <Pannel filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler} onclose={_closePannel} heading={filterHeading} filterSelected={filterSelected} filters={props.filters}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} ></Pannel>
-          </Drawer>
+          </Drawer> : null  }
         </React.Fragment>
     </div>
   );

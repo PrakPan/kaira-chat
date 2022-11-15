@@ -68,7 +68,7 @@ const Section= (props) => {
                 <div className='center-div'>
                 {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white', lineHeight: '1'}}/>
-                         { props.data.user_rating  +" /5"} 
+                         { props.data.user_rating  +" / 5"} 
                     </RatingContainer> : null : null }
                 </div>
        </Container>
