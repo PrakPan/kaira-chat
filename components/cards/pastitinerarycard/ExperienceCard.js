@@ -55,6 +55,7 @@ margin: 0rem 0 1rem 0;
 const Text = styled.p`
 font-weight: 300;
 line-height: 1.5rem;
+
 `;
 
 
@@ -63,11 +64,13 @@ font-size: 1.25rem;
 font-weight: 700;
 margin: 0.5rem 0 0 0;
 line-height: 1.25;
+
 @media screen and (min-width: 768px){
 font-size: 1.25rem;
 margin: 0.75rem 0;
 font-weight: 600;
 color: #212529;
+
 }
 `;
 const ButtonsContainer= styled.div`

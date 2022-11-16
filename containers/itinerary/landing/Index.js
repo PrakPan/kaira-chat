@@ -60,8 +60,10 @@ const ExperienceName = styled.h1`
   }
 `;
 const Duration = styled.p`
+font-weight: 300;
   text-align: center;
   margin-bottom: 3vh;
+  font-size: 1.25rem;
 `;
 const Heading = styled.h1`
  

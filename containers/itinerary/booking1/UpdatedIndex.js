@@ -321,7 +321,7 @@ const Booking = (props) => {
             number_of_rooms = props.stayBookings[i].costings_breakdown[0]["number_of_rooms"];
              if(!props.stayBookings[i].user_selected && !props.stayBookings[i].alternate_to){
               bookings_accommodations.push(
-                <StayBookingCard  setShowLoginModal={setShowLoginModal} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+                <StayBookingCard token={props.token}  setShowLoginModal={setShowLoginModal} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
              )
               //set as selectable booking
             }
@@ -390,11 +390,11 @@ const Booking = (props) => {
           
           if(props.transferBookings[i].booking_type === 'Taxi')
            bookings_transfers.push(
-            <TaxiBookingCard setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
+            <TaxiBookingCard token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
         )
         else if(props.transferBookings[i].booking_type === 'Bus')
         bookings_transfers.push(
-          <BusBookingCard setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></BusBookingCard>
+          <BusBookingCard  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></BusBookingCard>
       )
       }
     }
@@ -437,7 +437,7 @@ const Booking = (props) => {
         let destination_iata=props.flightBookings[i]["destination_code"]; 
         if(oldbooking){
            bookings_flights.push(
-              <OldBookingCard payment={props.payment} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.flightBookings[i]["name"]} details={ props.flightBookings[i]["points"]}  rating={props.flightBookings[i]["user_rating"]}  images={ props.flightBookings[i]["images"]}></OldBookingCard>
+              <OldBookingCard payment={props.payment} setShowLoginModal={setShowLoginModal} token={props.token} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.flightBookings[i]["name"]} details={ props.flightBookings[i]["points"]}  rating={props.flightBookings[i]["user_rating"]}  images={ props.flightBookings[i]["images"]}></OldBookingCard>
           ) 
         }
          else{
@@ -496,14 +496,14 @@ const Booking = (props) => {
 
           
           bookings_activities.push(
-              <OldBookingCard payment={props.payment} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} setImagesHandler = {_setImagesHandler} images={ props.activityBookings[i]["images"]}></OldBookingCard>
+              <OldBookingCard  payment={props.payment} key ={i}  setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler =  {props.setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} setImagesHandler = {_setImagesHandler} images={ props.activityBookings[i]["images"]}></OldBookingCard>
           )
         }
          else{
  
       
         bookings_activities.push(
-            <BookingCard  is_selecting={ props.activityBookings[i].id === props.selectingBooking} setShowLoginModal={setShowLoginModal} token={props.token} _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
+            <BookingCard is_selecting={ props.activityBookings[i].id === props.selectingBooking} setShowLoginModal={setShowLoginModal} token={props.token} _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
         ) 
       }
     }
@@ -533,7 +533,7 @@ const Booking = (props) => {
     if(true){
     if(!images){
     if(isPageWide){
-      if(true)
+      if(!showLoginModal)
     return(
       <div>
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
@@ -599,7 +599,7 @@ const Booking = (props) => {
     
           <LogInModal
               show={true}
-              onhide={props.setHideBookingModal}>
+              onhide={() => setShowLoginModal(false)}>
             </LogInModal>
     </div>
       );

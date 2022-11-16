@@ -111,10 +111,10 @@ const Tabscomponent= (props) => {
       >
        <Tab  label="Rooms" className="accommodationdetail-tab font-opensans"></Tab>
        <Tab label="Amenities"  className="accommodationdetail-tab font-opensans"></Tab>
-       <Tab label="Location"  className="accommodationdetail-tab font-opensans"></Tab>
+       {props.data.addr1 ? <Tab label="Location"  className="accommodationdetail-tab font-opensans"></Tab> : null}
 
        {/* <Tab  label="Policies"  className="accommodationdetail-tab font-opensans"></Tab> */}
-       <Tab label="Description"  className="accommodationdetail-tab font-opensans"></Tab>
+       {props.data.description ? <Tab label="Description"  className="accommodationdetail-tab font-opensans"></Tab> : null}
        {/* <Tab label="About"></Tab> */}
       </Tabs>
       <TabPanel value={value} index={0} >

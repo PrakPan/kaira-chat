@@ -6,6 +6,7 @@ import SectionTwo from './SectionTwo';
   import media from '../../../media';
  import SectionThree from './SectionThree';
 import SectionFour from './SectionFour';
+import { getHumanDate } from '../../../../services/getHumanDate';
  const Container = styled.div`
     width: 100%;        
     background-color: white;
@@ -25,6 +26,15 @@ import SectionFour from './SectionFour';
  
  
 const Booking = (props) =>{
+    const getDate = (date) => {
+        if(date){
+        let year = date.substring(0,4)
+        let month = date.substring(5,7);
+        let day = date.substring(8,10);
+        return(getHumanDate(day+"/"+month+"/"+year) );
+        }
+    
+    }
     let isPageWide = media('(min-width: 768px)')
 
     
@@ -45,8 +55,9 @@ const Booking = (props) =>{
     //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
-        <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - day 2'}</div>
-       
+        <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Bus Booking'}</div>
+        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-opensans'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
+
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo data={props.data}></SectionTwo>

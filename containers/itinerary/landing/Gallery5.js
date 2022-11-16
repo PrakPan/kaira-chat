@@ -8,7 +8,6 @@ const ImageContainer = styled.div`
   height: 55vh;
   display: grid;
   width: max-content;
-
   margin: auto;
   grid-template-columns: 45vw 45vw;
   grid-template-rows: 50% 50%;
@@ -40,11 +39,13 @@ const ImageContainer = styled.div`
 const ImageOne = styled.div`
   grid-area: one;
   background-color: #e4e4e4;
+  border-radius: 5px;
 `;
 
 const ImageTwoPointOne = styled.div`
   grid-area: two;
   background-color: #e4e4e4;
+  border-radius: 5px;
 
   @media screen and (min-width: 768px) {
     grid-area: twopointone;
@@ -56,6 +57,7 @@ const ImageTwoPointOne = styled.div`
 const ImageTwoPointTwo = styled.div`
 grid-area: three;
 background-color: #e4e4e4;
+border-radius: 5px;
 
 @media screen and (min-width: 768px) {
   grid-area: twopointtwo;
@@ -65,6 +67,7 @@ background-color: #e4e4e4;
 const ImageThree = styled.div`
   grid-area: three;
   background-color: #e4e4e4;
+  border-radius: 5px;
 
 
 `;
@@ -73,6 +76,7 @@ const ImageThree = styled.div`
 const ImageFive = styled.div`
   grid-area: one;
   background-color: #e4e4e4;
+  border-radius: 5px;
 
 @media screen and (min-width: 768px) {
   grid-area: five;
