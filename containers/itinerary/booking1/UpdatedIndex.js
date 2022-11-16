@@ -39,6 +39,7 @@ import FooterBannerMobile from './FooterBannerMobile';
 import ImageLoader from '../../../components/ImageLoader';
 import LogInModal from '../../../components/modals/Login';
 import TaxiModal from '../../../components/modals/taxis/Index';
+import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -396,6 +397,10 @@ const Booking = (props) => {
         bookings_transfers.push(
           <BusBookingCard  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></BusBookingCard>
       )
+      else if(props.transferBookings[i].booking_type === 'Ferry')
+      bookings_transfers.push(
+        <FerryBookingCard token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></FerryBookingCard>
+    )
       }
     }
   

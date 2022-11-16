@@ -23,13 +23,6 @@ const Heading = styled.p`
 font-size: 15px;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
-    overflow: hidden;
-    line-height: 1.5;
-text-overflow: ellipsis;
-display: -webkit-box;
--webkit-line-clamp: 1;
--webkit-box-orient: vertical;
-
 `;
 const Location = styled.p`
     font-size: 13px;
@@ -40,11 +33,11 @@ const Location = styled.p`
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
- console.log(props.data)
+ console.log('dat', props.data);
    if(props.data)
     return(
       <Container>
-        <Heading>{props.data.bus_type}</Heading>
+        <Heading>{'Ferry'}</Heading>
       <RouteContainer className='font-opensans'>  
       {/* <div style={{margin: '0 2px 0 0'}}><ImageLoader url="media/icons/bookings/pin.png" leftalign dimensions={{width: 200, height: 250}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader></div> */}
 
