@@ -61,6 +61,7 @@ const Booking = (props) =>{
          let actualdate = (date.slice(5)+"-"+date.substring(0,4)).replaceAll('-','/') + " "+ date.substring(0,4)
         return(getHumanDate(day+"/"+month+"/"+year) + " " + year);
     }
+    console.log('dat', props.data)
      return(
         <GridContainer>
 
@@ -108,6 +109,18 @@ const Booking = (props) =>{
 
                                 {/* {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length ?  props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal !=="" ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal}</div> : null : null : null : null} */}
                             </div>
+                            <div>
+                            {props.data.Segments ? props.data.Segments[0].length ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300', color: 'rgba(91, 89, 89, 1)', textAlign: 'right', marginTop: '0.25rem'}}>{(props.data.Segments[0][0].Origin.Airport.AirportName)}</div> : <div></div> : <div></div>}
+                            {props.data.Segments ? props.data.Segments[0].length  ? <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300', color: 'rgba(91, 89, 89, 1)', textAlign: 'right', marginTop: '0.25rem'}}>{props.data.Segments[0][0].Origin.Airport.Terminal ? ("Terminal "+   props.data.Segments[0][0].Origin.Airport.Terminal) : ''}</div> : <div></div> : <div></div>}
+
+                            </div>
+                            <div></div>
+                            <div>
+                            {props.data.Segments ? props.data.Segments[0].length ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300', color: 'rgba(91, 89, 89, 1)', textAlign: 'right', marginTop: '0.25rem'}}>{(props.data.Segments[0][props.data.Segments[0].length-1].Destination.Airport.AirportName)}</div> : <div></div> : <div></div>}
+                            {props.data.Segments ? props.data.Segments[0].length  ? <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300', color: 'rgba(91, 89, 89, 1)', textAlign: 'right', marginTop: '0.25rem'}}>{props.data.Segments[0][props.data.Segments[0].length-1].Destination.Airport.Terminal ? ("Terminal "+   props.data.Segments[0][props.data.Segments[0].length-1].Destination.Airport.Terminal) : ''}</div> : <div></div> : <div></div>}
+
+                            </div>
+
                         </DetailsGridContainer>
 </GridContainer>
     );

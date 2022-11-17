@@ -362,7 +362,7 @@ const _reloadFlightBookings  = () => {
     // }
   
     // const token = localStorage.getItem('access_token')
-    axiosbookingupdateinstance.post("/?booking_type=Taxi,Bus,Ferry", data, {headers: {
+    axiosbookingupdateinstance.post("/?booking_type=Taxi,Bus,Ferry&itinerary_id="+props.id, data, {headers: {
       'Authorization': `Bearer ${props.token}`
       }}).then(res => {
         setCardUpdateLoading(null)
@@ -412,7 +412,7 @@ const _reloadFlightBookings  = () => {
     // }
   
     // const token = localStorage.getItem('access_token')
-    axiosbookingupdateinstance.post("/?booking_type=accommodation", data, {headers: {
+    axiosbookingupdateinstance.post("/?booking_type=accommodation&itinerary_id="+props.id, data, {headers: {
       'Authorization': `Bearer ${props.token}`
       }}).then(res => {
         setCardUpdateLoading(null)
@@ -455,7 +455,7 @@ const _reloadFlightBookings  = () => {
    // }
  
    // const token = localStorage.getItem('access_token')
-   axiosbookingupdateinstance.post("/?booking_type=Flight", data, {headers: {
+   axiosbookingupdateinstance.post("/?booking_type=Flight&itinerary_id="+props.id, data, {headers: {
      'Authorization': `Bearer ${props.token}`
      }}).then(res => {
        setCardUpdateLoading(null)
@@ -502,7 +502,7 @@ const _reloadFlightBookings  = () => {
    // }
  
    // const token = localStorage.getItem('access_token')
-   axiosbookingupdateinstance.post("/?booking_type=Taxi,Bus,Ferry", data, {headers: {
+   axiosbookingupdateinstance.post("/?booking_type=Taxi,Bus,Ferry&itinerary_id="+props.id, data, {headers: {
      'Authorization': `Bearer ${props.token}`
      }}).then(res => {
        setCardUpdateLoading(null)
@@ -554,7 +554,7 @@ const _reloadFlightBookings  = () => {
  // }
 
  // const token = localStorage.getItem('access_token')
- axiosbookingupdateinstance.post("/?booking_type=Activity", data, {headers: {
+ axiosbookingupdateinstance.post("/?booking_type=Activity&itinerar_id="+props.id, data, {headers: {
    'Authorization': `Bearer ${props.token}`
    }}).then(res => {
      setCardUpdateLoading(null)
