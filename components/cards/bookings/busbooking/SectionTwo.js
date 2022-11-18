@@ -72,28 +72,34 @@ const Section= (props) => {
                             <Text style={{textAlign: 'right'}} className='font-nunito'>Person(s)</Text>
                         </div> */}
                 </div>
-                {props.data.costings_breakdown ? props.data.costings_breakdown.seat_type ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',   gridGap: '0.5rem', marginBottom: '0.75rem'}}>
-                    <ImageLoader url="media/icons/bookings/car-seat.svg" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                    <div style={{display: 'flex', gap: '1rem'}}> 
-                        <div className='centerdiv'>
-                            <Heading className='font-opensans'>Seats</Heading>
-                            <Text   className='font-nunito'>{props.data.costings_breakdown ? props.data.costings_breakdown.seat_type ? props.data.costings_breakdown.distance.no_of_seats + " x "+props.data.costings_breakdown.seat_type: null  : null}</Text>
-                        </div>
-                     
-                    </div>
-                </div>
-                : null : null}
-                {props.data.costings_breakdown ? props.data.costings_breakdown.distance ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
+ 
+                {props.data.costings_breakdown ? true ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',   gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '1rem'}}> 
+
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>
-                            <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
+                          <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
                             <Text   className='font-nunito'>Included</Text>
                         </div>
                      
                     </div>
+                    {props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
+                    <ImageLoader url="media/icons/bookings/car-seat.svg" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    <div style={{display: 'flex', gap: '1rem'}}> 
+                        <div className='centerdiv'>
+                        <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? props.data.costings_breakdown.no_of_seats + " Seats (s)": null  : null}</Heading>
+                            <Text   className='font-nunito'>Included</Text>
+                           
+                        </div>
+                     
+                    </div>
                 </div> : null : null}
-            
+                </div>
+                </div>
+                : null : null}
+               
+             
              
       </Container>
   ); 

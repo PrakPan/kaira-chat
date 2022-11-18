@@ -69,6 +69,8 @@ const Section= (props) => {
                             </div>
                         </div> : null}
                 </div>
+                <div style={{display: 'grid',  gridGap: '1rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>
+
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
@@ -78,6 +80,16 @@ const Section= (props) => {
                         </div>
                      
                     </div>
+                </div>
+                {true ? 
+                   <div style={{display: 'grid', gridGap: '0.5rem', gridTemplateColumns: 'max-content auto'}}>
+                  <ImageLoader url="media/icons/bookings/car-seat.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                       <div>
+                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.costings_breakdown ? props.data.costings_breakdown.total_taxi ? props.data.costings_breakdown.total_taxi + " People" : null : null}</Heading>
+                            <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{'Occupancy'}</Text>
+                            {/* <Text className='font-nunito'>10:00AM</Text> */}
+
+                        </div></div> : null}
                 </div>
             
              

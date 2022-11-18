@@ -468,7 +468,7 @@ setUpdateLoadingState(true);
                 "costings_breakdown": props.selectedBooking.costings_breakdown,
                  "accommodation" : props.selectedBooking.accommodation,
                  "is_estimated_price": true,
-
+                    "alternate_to": null,
                 "booking_type": "Accommodation",
                 "itinerary_type": "Tailored",
                  "user_selected": false,			
