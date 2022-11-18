@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import Heading from '../../../components/heading/Heading';
+import Heading from '../../../components/newheading/heading/Index';
 import Option from '../../../components/forms/Option';
 import Dropdown from '../../../components/forms/Dropdown';
 import Button from '../../../components/Button';
@@ -13,6 +13,7 @@ import { useRouter } from 'next/router'
 import { getIndianPrice } from '../../../services/getIndianPrice';
 import { getHumanDate } from '../../../services/getHumanDate';
 import urls from '../../../services/urls';
+import Accordion from './Accordion';
  const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
@@ -149,7 +150,7 @@ const Details = (props) => {
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
-    <Heading blur={props.blur} bold margin="0 auto 1.5rem auto" blur={props.blur} align="center">Book Now</Heading>
+    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">Book Now</Heading>
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
                 <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>STARTING DATE</p>
                 <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p> 
@@ -168,16 +169,18 @@ const Details = (props) => {
         </div> : null}
         <div style={{marginBottom: '1.5rem'}}>
             {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>WHAT'S INCLUDED?</p> */}
-            <BookingListCostContainer>
+            {/* <BookingListCostContainer>
            {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
-           </BookingListCostContainer>
+           </BookingListCostContainer> */}
+                     <Accordion stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} payment={props.payment}></Accordion>
+
            {!oldaccommodation && !props.payment.are_prices_hidden ? <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'Service Fee'}</p>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.total_service_fee/100))}</p>
+                  <p style={{fontSize: "0.75rem", fontWeight: "300", textAlign: 'right', letterSpacing: "1px", marginBottom: '0.25rem', marginRight: '24px'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.total_service_fee/100))}</p>
           </div> : null}
           {!oldaccommodation && !props.payment.are_prices_hidden  ? <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'GST'}</p>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.gst/100))}</p>
+                  <p style={{fontSize: "0.75rem", textAlign: 'right', fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', marginRight: '24px'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.gst/100))}</p>
           </div> : null}
           {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'GST'}</p>
@@ -202,6 +205,7 @@ const Details = (props) => {
           Connect on WhatsApp</Button> */}
           {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
+          {/* <Accordion></Accordion> */}
             <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>

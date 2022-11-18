@@ -25,12 +25,12 @@ const Section= (props) => {
     if(props.data)
     return(
       <Container className='font-opensans'>  
-          <Location>{props.data.city}</Location>
+          <Location className={props.data.user_selected ? '' : 'blurry-text'} >{props.data.city}</Location>
             <div style={{margin: '0 0.25rem'}}>
-            <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.5rem" widthmobile="1.5rem" ></ImageLoader>
+            <ImageLoader blur={!props.data.user_selected}  url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.5rem" widthmobile="1.5rem" ></ImageLoader>
 
             </div>
-            <Location>{props.data.destination_city}</Location>
+            <Location className={props.data.user_selected ? '' : 'blurry-text'}>{props.data.destination_city}</Location>
            
       </Container>
   ); 

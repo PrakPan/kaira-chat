@@ -122,17 +122,29 @@ console.log('b', props.selectedBooking)
             // console.log(FILTERS);
  console.log(props.selectedBooking)
  let params = null;
+ try{
  if(props.selectedBooking.transfer_type === "Intercity one-way"){
     params =  {
         'transfer_type': 'Intercity one-way',
         'search_by': 'name',
-        'locations' : props.selectedBooking.city+","+props.selectedBooking.destination_city
+        'locations' : props.selectedBooking.city+","+props.selectedBooking.destination_city,
+        'distance': Math.trunc(props.selectedBooking.costings_breakdown.distance.value),
+
     }
 }
+ 
 else params = {
     "transfer_type": "Intercity round-trip",
     "duration": props.selectedBooking.costings_breakdown.duration.value,
-    "distance": props.selectedBooking.costings_breakdown.distance.value,
+    "distance": Math.trunc(props.selectedBooking.costings_breakdown.distance.value),
+}}
+catch{
+    params={
+        "transfer_type": "Intercity one-way",
+        'search_by': 'name',
+
+        'locations' : 'Munnar,Kochi',
+    }
 }
         axiostaxiinstance.get("/", {
         //  params:   {
@@ -213,18 +225,20 @@ else params = {
                          "transfer_type": transfer_type,
                          "costings_breakdown": {
                             "duration": {
-                                "value": duration,
+                                "value": Math.trunc(duration),
                             },
                             "total_taxi": total_taxi, 
                         },
          }];
          console.dir(updated_bookings_arr);
-        axiosbookingupdateinstance.post("?booking_type=Taxi", updated_bookings_arr, {headers: {
+        axiosbookingupdateinstance.post("?booking_type=Taxi,Bus,Ferry", updated_bookings_arr, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
-                // props._updateStayBookingHandler(res.data.bookings);
+                props._updateTaxiBookingHandler(res.data.bookings);
                 //  props.getPaymentHandler();
-
+                setTimeout(function(){ 
+                
+                    props.getPaymentHandler(); }, 1000);
                 setUpdateBookingState(false);
 
         }).catch(err => {

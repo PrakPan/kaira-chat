@@ -56,7 +56,7 @@ const Booking = (props) =>{
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo data={props.data}></SectionTwo>
          <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} _deselectBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         <SectionFour setShowFlightModal={props.setShowFlightModal} ></SectionFour>
+         <SectionFour setShowFlightModal={props.setShowFlightModal} data={props.data} ></SectionFour>
         </Container>
         </div>
     );

@@ -6,12 +6,13 @@ const DropDown = (props) =>  {
     const [open, setOpen] = useState(false);
     const _handleChange = (event) => {
         console.log(event.target.innerHTML)
-        props.onclick({bookings: props.bookings,
-            new_booking: props.new_booking,
-            itinerary_id: props.itinerary_id,
-            tailored_id: props.tailored_id,
+        props.onclick({alternates: props.alternates,
+          new_booking: props.new_booking,
+          itinerary_id: props.itinerary_id,
+          tailored_id: props.tailored_id,
             number_of_rooms: parseInt(event.target.innerHTML),
             })
+           
     }
   return (
     <Dropdown  drop={'up'} onChange={_handleChange} >

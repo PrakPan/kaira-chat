@@ -387,7 +387,7 @@ setViewMoreStatus(false);
          
         
         // const token = localStorage.getItem('access_token');
-        axiosbookingupdateinstance.post("?booking_type=Taxi,Flight", updated_bookings_arr, {headers: {
+        axiosbookingupdateinstance.post("?booking_type=Flight", updated_bookings_arr, {headers: {
                 'Authorization': `Bearer ${props.token}`
                 }}).then(res => {
                      props._updateFlightBookingHandler(res.data.bookings);

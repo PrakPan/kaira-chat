@@ -4,6 +4,21 @@
     height: 0.6rem;
     
   }
+  #itinerary-booking-summary-accordion{
+    padding: 0 !important;
+    display: flex !important;
+  }
+ 
+  .MuiAccordionSummary-content{
+    margin: 0 !important;
+  }
+  .MuiAccordion-root::before{
+      display: none !important;
+  }
+  .MuiIconButton-root{
+    padding: 0 !important;
+    margin: 0 !important;
+  }
   .dropdown-toggle::after {
     display: none !important; 
   }

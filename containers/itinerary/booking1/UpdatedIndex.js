@@ -524,7 +524,7 @@ const Booking = (props) => {
   useEffect(() => {
       if(props.payment){
 
-       setSummaryContainerJSX(<SummaryContainer setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId}></SummaryContainer>);
+       setSummaryContainerJSX(<SummaryContainer stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
@@ -556,7 +556,7 @@ const Booking = (props) => {
       >
             <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
        <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       <Tab label={props.flightBookings ? " + Add Flight" : " + Add Flight"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
+       <Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
 
        {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>
@@ -593,7 +593,7 @@ const Booking = (props) => {
           {props.showBookingModal ?  <BookingModal _setImagesHandler={_setImagesHandler}  getPaymentHandler={props.getPaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings ? props.stayBookings[0]["tailored_itinerary"] : null} _updatePaymentHandler={props._updatePaymentHandler}   _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
           {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
           {props.showFlightModal ? <FlightModal getPaymentHandler={props.getPaymentHandler} _updateFlightBookingHandler={props._updateFlightBookingHandler } _updateBookingHandler={props._updateBookingHandler} itinerary_id={props.stayBookings.length ?  props.flightBookings[0]["itinerary_id"] : null} setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
-          {props.showTaxiModal? <TaxiModal  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
+          {props.showTaxiModal? <TaxiModal getPaymentHandler={props.getPaymentHandler} _updateTaxiBookingHandler={props._updateTaxiBookingHandler}  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 
         </Container>
         {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
@@ -627,7 +627,7 @@ const Booking = (props) => {
       >
        <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
        <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       <Tab label={props.flightBookings ? "+ Add Flight" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
+       <Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>
 
        {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
       </Tabs>
@@ -662,7 +662,7 @@ const Booking = (props) => {
              {props.showBookingModal ? <BookingModal budget={props.budget} _setImagesHandler={_setImagesHandler} getPaymentHandler={props.getPaymentHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
             {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
             {props.showFlightModal ? <FlightModal   _updateFlightBookingHandler={props._updateFlightBookingHandler } getPaymentHandler={props.getPaymentHandler} _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.flightBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
-            {props.showTaxiModal? <TaxiModal  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
+            {props.showTaxiModal? <TaxiModal getPaymentHandler={props.getPaymentHandler} _updateTaxiBookingHandler={props._updateTaxiBookingHandler}  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 
         {showFooterBannerMobile ? <FooterBannerMobile paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
             {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}

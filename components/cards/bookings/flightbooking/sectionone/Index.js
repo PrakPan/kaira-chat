@@ -27,7 +27,7 @@ const Section= (props) => {
     return(
       <Container className='font-opensans'>  
           <div style={{display: 'flex', gap:  '0.5rem', marginRight: '0rem'}}>
-                  <div style={{padding:'0.5rem 0.5rem 0.5rem 1rem'}}><ImageLoader url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="3rem" ></ImageLoader></div>
+                  <div style={{padding:'0.5rem 0.5rem 0.5rem 1rem'}}><ImageLoader blur={!props.data.user_selected}  url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="3rem" ></ImageLoader></div>
               </div>
             <div className=" text-center" style={{ padding: '1rem 0.5rem', borderColor: 'rgba(238, 238, 238, 1)', borderWidth: '1px', borderStyle: 'none none none solid', display: 'flex'}}>
               {/* <ImageLoader url="media/icons/bookings/calendar (2).png" leftalign dimensions={{width: 200, height: 200}} width="1.5rem" widthmobile="1.5rem" ></ImageLoader> */}

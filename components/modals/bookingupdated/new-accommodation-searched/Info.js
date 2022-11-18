@@ -125,7 +125,7 @@ const Accommodation = (props) => {
     }}catch{
 
     }
-
+console.log('a', props.alternates)
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}} onClick={props.setShowDetails}>
@@ -169,8 +169,15 @@ const Accommodation = (props) => {
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
                 {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))+" /-"}</Cost> : null}
         </div>
-        {/* <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div> */}
-        <div className='hidden-mobile'><Dropdown fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Dropdown></div>
+        {props.alternates ? <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={props._updateSearchedAccommodation} 
+        onclickparam={{
+            alternates: props.alternates ,
+                  new_booking: props.accommodation,
+                  itinerary_id: props.itinerary_id,
+                  tailored_id: props.tailored_id,
+        }}
+         bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
+       :  <div className='hidden-mobile'><Dropdown fontSize="1rem" fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Dropdown></div>}
 
 </div>
         

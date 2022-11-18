@@ -66,7 +66,7 @@ const Booking = (props) => {
         type: [],
         star_category: [],
     });
-    const [limit, setLimit] = useState(20);
+    const [limit, setLimit] = useState(10);
     const [offset, setOffset] = useState(0);
     const [viewMoreStatus, setViewMoreStatus] = useState(false);
 
@@ -106,7 +106,7 @@ const Booking = (props) => {
         let options = [];
          if(props.alternates)
         for(var i=0; i<props.alternates.length; i++){
-            options.push(<Accommodation  _setImagesHandler={props._setImagesHandler} alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
+            options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateSearchedAccommodation={_newUpdateBookingHandler} key={i} ></AccommodationSearched>)
         }
                         setOptionsJSX(options)
 
@@ -193,7 +193,7 @@ const Booking = (props) => {
                 setMoreOptionsJSX(options)
                 if(res.data.next){
                     setViewMoreStatus(true);
-                    setOffset(offset+20);
+                    setOffset(offset+limit);
                 }
                 else{
                     setViewMoreStatus(false);
@@ -336,12 +336,12 @@ setUpdateLoadingState(true);
              for(var i = 0; i < res.data.results.length; i++){
                 //  if(res.data.results[i].images.length > 1)
                  if(res.data.results[i].name !== props.selectedBooking.name)
-                  options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler}s _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
+                  options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler}s _updateSearchedAccommodation={_newUpdateBookingHandler} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
                  
             }  
             if(res.data.next){
                 setViewMoreStatus(true);    
-                setOffset(20);
+                setOffset(limit);
 
             } 
             else {
@@ -575,7 +575,7 @@ setUpdateLoadingState(true);
              setMoreOptionsJSX([...options])
             
             if(res.data.next) {
-                setOffset(offset+20);
+                setOffset(offset+limit);
                 setViewMoreStatus(true);
 
             }
