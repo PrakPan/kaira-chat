@@ -22,8 +22,7 @@ import Button from '../../ui/button/Index';
 import Flight from './new-flight-searched/Index';
 import FlightSelected from './new-flight-selected/Index';
 import gif from '../../../public/assets/loader.gif';
-
-const GridContainer = styled.div`
+ const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
 

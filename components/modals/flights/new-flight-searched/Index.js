@@ -5,7 +5,7 @@ import styled from 'styled-components'
   import media from '../../../media';
  import SectionThree from './SectionThree';
 import SectionFour from './SectionFour';
- const Container = styled.div`
+  const Container = styled.div`
     width: 100%;        
     background-color: white;
      border-radius: 10px;
@@ -43,6 +43,7 @@ const Booking = (props) =>{
           <SectionTwo data={props.data}></SectionTwo>
          <SectionThree selectedBooking={props.selectedBooking} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
          <SectionFour selectedBooking={props.selectedBooking} data={props.data} _updateBookingHandler={props._updateBookingHandler}></SectionFour>
+
         </Container>
     );
  
