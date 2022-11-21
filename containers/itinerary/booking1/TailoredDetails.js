@@ -174,11 +174,11 @@ const Details = (props) => {
            </BookingListCostContainer> */}
                      <Accordion stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} payment={props.payment}></Accordion>
 
-           {!oldaccommodation && !props.payment.are_prices_hidden ? <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
+           {!oldaccommodation && !props.payment.are_prices_hidden ? <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'Service Fee'}</p>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", textAlign: 'right', letterSpacing: "1px", marginBottom: '0.25rem', marginRight: '24px'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.total_service_fee/100))}</p>
           </div> : null}
-          {!oldaccommodation && !props.payment.are_prices_hidden  ? <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
+          {!oldaccommodation && !props.payment.are_prices_hidden  ? <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'GST'}</p>
                   <p style={{fontSize: "0.75rem", textAlign: 'right', fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', marginRight: '24px'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.gst/100))}</p>
           </div> : null}

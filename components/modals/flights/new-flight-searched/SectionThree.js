@@ -19,6 +19,15 @@ const Cost = styled.p`
     font-size: 23px;
     font-weight: 700;
     margin: 0;
+    text-align: right;
+
+  
+`;
+const Pax = styled.p`
+font-size: 14px;
+font-weight: 300;
+margin: 0;
+text-align: right;
 `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
@@ -40,6 +49,7 @@ const Section= (props) => {
                 <Cost className='font-opensans'>
                 {props.data.Fare ? props.data.Fare.OfferedFare ?  "₹ "+ getIndianPrice(Math.round(props.data.Fare.OfferedFare))+" /-" : null : null}
                 </Cost>
+                <Pax>{"For "+props.selectedBooking.pax.number_of_adults + " Adult(s)" + (props.selectedBooking.pax.number_of_children ? ", " + props.selectedBooking.pax.number_of_children + " Child(s)" : "")}</Pax>
                 </div>
       </Container>
   ); 

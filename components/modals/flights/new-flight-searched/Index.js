@@ -41,7 +41,7 @@ const Booking = (props) =>{
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
           <SectionTwo data={props.data}></SectionTwo>
-         <SectionThree  _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
+         <SectionThree selectedBooking={props.selectedBooking} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
          <SectionFour selectedBooking={props.selectedBooking} data={props.data} _updateBookingHandler={props._updateBookingHandler}></SectionFour>
         </Container>
     );

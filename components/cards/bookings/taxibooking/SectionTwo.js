@@ -85,7 +85,7 @@ const Section= (props) => {
                    <div style={{display: 'grid', gridGap: '0.5rem', gridTemplateColumns: 'max-content auto'}}>
                   <ImageLoader url="media/icons/bookings/car-seat.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                        <div>
-                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.costings_breakdown ? props.data.costings_breakdown.total_taxi ? props.data.costings_breakdown.total_taxi + " People" : null : null}</Heading>
+                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.costings_breakdown ? props.data.costings_breakdown.total_taxi ? props.data.costings_breakdown.taxi_occupancy + " People" : null : null}</Heading>
                             <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{'Occupancy'}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
