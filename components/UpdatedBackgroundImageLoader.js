@@ -76,7 +76,7 @@ useEffect(() => {
           },
         },
       });
-    if(props.dimensions)
+    if(props.dimensions){
       imageRequest = JSON.stringify({
       bucket: "thetarzanway-web",
       key: props.url,
@@ -88,6 +88,18 @@ useEffect(() => {
         }
       }
     });
+    smallImageRequest=JSON.stringify({
+      bucket: "thetarzanway-web",
+      key: props.url,
+      edits: {
+        resize: {
+          width: Math.round(props.dimensions.width/100),
+          height: Math.round(props.dimensions.height)/100,
+          fit: "cover"
+        }
+      }
+    });
+  }
     else if(props.dimensionsMobile){
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
@@ -100,8 +112,20 @@ useEffect(() => {
           }
         }
       });
+      smallImageRequest = JSON.stringify({
+        bucket: "thetarzanway-web",
+        key: props.url,
+        edits: {
+          resize: {
+            width: Math.round(props.dimensionsMobile.width/100),
+            height: Math.round(props.dimensionsMobile.height)/100,
+            fit: "cover"
+          }
+        }
+      });
     }
-    else imageRequest = JSON.stringify({
+    else {
+      imageRequest = JSON.stringify({
       bucket: "thetarzanway-web",
       key: props.url,
       edits: {
@@ -112,6 +136,19 @@ useEffect(() => {
         }
       }
     });
+    smallImageRequest = JSON.stringify({
+      bucket: "thetarzanway-web",
+      key: props.url,
+      edits: {
+        resize: {
+          width: 40,
+          height: 30,
+          fit: "cover"
+        }
+      }
+    });
+
+  }
    
     const img = new Image();
     img.src = `${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`;
