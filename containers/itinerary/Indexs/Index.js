@@ -108,20 +108,20 @@ axiosbreifinstance.get(`/?itinerary_id=`+props.id)
    for(var i = 0 ; i<res.data.city_slabs.length ; i++){
       if(res.data.city_slabs[i].duration) setTotalduration(totalduration+parseInt(res.data.city_slabs[i].duration));
    }
-  //  else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+   else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
   }
-  // else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
   }
-  // else    window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  else    window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
    if(res.data.city_slabs) if(!res.data.city_slabs.length) if(!breif.city_slabs) if(!breif.city_slabs.length)
    setTimeout(getBreifHandler, 3000);
 
 }).catch(error => {
   setBreifLoading(false);
 
-  // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 });
 }
 
@@ -197,13 +197,13 @@ setStayLoading(false);
              setItineraryLoading(false);
              }
             else {
-              // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+              window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
             }
 
           }).catch(error => {
 
              setItineraryLoading(false);
-            // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
           });
          getBreifHandler();
