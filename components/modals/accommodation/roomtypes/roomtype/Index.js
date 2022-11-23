@@ -141,7 +141,7 @@ const RoomType = (props) => {
             </div>
           
           </CounterContainer>} */}
-          <Dropdown></Dropdown>
+          {/* <Dropdown></Dropdown> */}
                     </div>
                 </div>
             </ContentContainer>

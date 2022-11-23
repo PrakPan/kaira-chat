@@ -85,7 +85,7 @@ const redirect = () => {
         <Info id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
        
        </ContentContainer>
-       <div className='font-opensans text-center' style={{background: 'black' , color: 'white', padding: '0.4rem', letterSpacing: '0.2em', fontWeight: '300', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
+       <div className='font-opensans text-center' style={{background: 'white' , borderWidth: '1px', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontWeight: '300', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
         TTW EXCLUSIVE
         </div>
       </Container> 

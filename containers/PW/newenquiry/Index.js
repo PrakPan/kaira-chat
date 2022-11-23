@@ -155,7 +155,7 @@ const Enquiry = (props) => {
 
         setLoading(true);
         let data = {
-            "locations": ["Rajasthan"],
+            "locations": [],
             // "experience_filters_selected": filters,
             "budget": "Affordable",
             // "extra_data": extra_data,
@@ -231,7 +231,7 @@ return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-            {!submitted? <Heading>{"Get your free travel plan!" }</Heading> : null}
+            {!submitted? <Heading>{"Custmise your plan now!" }</Heading> : null}
             <div>
             </div>
             
@@ -307,7 +307,7 @@ return(
                             </Grid>
                 <Grid item xs={12}>
                     {!loading ? 
-                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">View Plan</Button>
+                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Submit</Button>
                         : 
                         <Button onclickparam={null} onclick={() => null} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
                             Preparing Plan

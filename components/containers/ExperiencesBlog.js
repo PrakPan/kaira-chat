@@ -117,6 +117,9 @@ const Experiences= (props) => {
               slug={props.experiences[3].slug}
               id={props.experiences[3].id}
               text={props.experiences[3].short_text} 
+              budget={props.experiences[3].budget}
+              group_type={props.experiences[3].group_type}
+              number_of_adults={props.experiences[3].number_of_adults}
               experience={props.experiences[3].name}
               cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : null}
               duration={props.experiences[3].duration}
