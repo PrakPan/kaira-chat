@@ -79,7 +79,7 @@ const redirect = () => {
     return(
       <Container className="netflix-ite">
         <ImageContainer>
-              <ImageGallery locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
+              <ImageGallery budget={props.budget} group_type={props.group_type}   locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
        </ImageContainer>  
        <ContentContainer className="text-cente">
         <Info id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>

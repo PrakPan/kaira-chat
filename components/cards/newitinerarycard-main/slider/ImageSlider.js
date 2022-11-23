@@ -186,12 +186,12 @@ const ImageSlider = (props) => {
                 <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "6px", marginBottom: "0rem"}}/></div>
 
                <IconHoverContainer className='center-div'>
-                Affordable
+                {props.budget}
                 </IconHoverContainer> 
                 <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "6px", marginBottom: "0rem"}}/></div>
 
                <IconHoverContainer className='center-div'>
-                Family Trip
+                {props.group_type}
                 </IconHoverContainer> 
             </IconsContainer> : 
             <PWContainer style={{display: 'none'}}>

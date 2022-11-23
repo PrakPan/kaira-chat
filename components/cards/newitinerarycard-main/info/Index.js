@@ -23,7 +23,7 @@ const Info = (props) => {
           <Pax number_of_adults={props.number_of_adults}></Pax>
           <Cost starting_cost={props.starting_cost}></Cost>
           <div>
-            <ImageLoader url={"media/icons/bookings/bookmark-white.png" } leftalign  width="2rem" widthmobile="1.5rem" height="auto" ></ImageLoader>
+            {/* <ImageLoader url={"media/icons/bookings/bookmark-white.png" } leftalign  width="2rem" widthmobile="1.5rem" height="auto" ></ImageLoader> */}
           </div>
           <div style={{display: 'flex', justifyContent: 'flex-end'}}>
             <Button

@@ -50,6 +50,9 @@ const Experiences= (props) => {
         key={experience.id}
         starting_cost={experience.payment_info ? experience.payment_info[0].cost : experience.starting_price}
         slug={experience.slug}
+        budget={experience.budget}
+        group_type={experience.group_type}
+        number_of_adults={experience.number_of_adults}
         id={experience.id}
         filter={experience.experience_filters[0]}
         rating={experience.rating}
@@ -71,6 +74,9 @@ const Experiences= (props) => {
         id={experience.id}
         filter={experience.experience_filters[0]}
         rating={experience.rating}
+        budget={experience.budget}
+        group_type={experience.group_type}
+        number_of_adults={experience.number_of_adults}
         hardcoded={experience.payment_info ? true : false }
         text={experience.short_text} 
         experience={experience.name}
