@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import {IoLocationSharp} from 'react-icons/io5'
 const Container = styled.div`
-display: flex;
-
+display: grid;
+grid-template-columns: max-content auto;
 @media screen and (min-width: 768px){
     
 }
@@ -20,9 +20,9 @@ const Location = (props) => {
   return(
       <Container>
         <StyledIcon></StyledIcon>
-        <TextContainer>
+        <TextContainer className='center-div'>
           <div className='font-opensans' style={{fontSize: '0.9rem'}}>{props.data.location}</div>
-          <div className='font-opensans' style={{fontSize: '0.75rem'}}><em>{props.data.city}</em></div>
+          {/* <div className='font-opensans' style={{fontSize: '0.75rem'}}><em>{props.data.city}</em></div> */}
         </TextContainer>
      </Container>
   );

@@ -220,19 +220,19 @@ props.headerColor === 'black'? <ImageLoader  width="7vh" widthmobile="15vh"  lef
           {/* <SearchBar />  */}
           <NavItemsContainer style={{ marginRight: props.token ? '0rem' : '0'}}>
             
-            <NavItem>
+            {/* <NavItem>
               <Link href={urls.travel_experiences.BASE} className="next-link" passHref={true}>
                {router.pathname === '/travel-experiences' ? <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Experiences</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Experiences</StyledLink>}
               </Link>
-            </NavItem>
+            </NavItem> */}
             {/* <NavItem>
                 <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
             </NavItem> */}
-            <NavItem>
+            {/* <NavItem>
               <Link href={urls.travel_guide.BASE} className="next-link" passHref={true}>
               { router.pathname === '/travel-guide' ?  <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Travel Guide</StyledLink> :  <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Travel Guide</StyledLink>}
               </Link>
-            </NavItem>
+            </NavItem> */}
             <NavItem>
               <Link href={urls.CONTACT} passHref={true}>
               {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}

@@ -1,0 +1,55 @@
+import React, {useRef, useEffect, useState} from 'react';
+import {Modal} from 'react-bootstrap';
+import styled from 'styled-components';
+import media from '../../media';
+   import axiosflightsearch from '../../../services/bookings/FlightSearch';
+import Header from './Header';
+import gif from '../../../public/assets/loader.gif';
+
+   const FareRules = (props) => {
+const [html, setHtml] = useState(null);
+    useEffect(() => {
+        const TBO_TRACE_ID =  localStorage.getItem('tbo_trace_id')
+if(props.showFareRules)
+        axiosflightsearch.get( "/", {headers: {
+           'Authorization': `Bearer ${props.token}`
+           },
+       params: {
+        result_index: props.result_index,
+        search_type : 'farerule',
+        trace_id : TBO_TRACE_ID,
+       }
+   }).then( res => {
+        setHtml(res.data.FareRules[0].FareRuleDetail)
+   })
+   .catch(err => {});
+},[props.showFareRules])
+
+// if(props.token)
+  return(
+      <div>
+        <Modal   className="booking-modal" show={props.showFareRules}  size="md"  onHide={props.hide} style={{padding: "0"}}>
+            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
+           <Header hide={props.hide}></Header>
+             </Modal.Header>
+            <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
+                {html ? <div dangerouslySetInnerHTML={{__html: html}} style={{overflowX: 'scroll'}}>
+
+                </div> : 
+                <div className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', margin: '3rem'}}/></div>
+                }
+
+            </Modal.Body>
+           
+      </Modal>
+      {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
+      </div>
+  );
+
+ 
+
+}
+
+
+ 
+export default  FareRules;

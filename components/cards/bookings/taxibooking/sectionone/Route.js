@@ -4,7 +4,7 @@ import media from '../../../../media';
 import ImageLoader from '../../../../ImageLoader';
 
 const Container = styled.div`
-padding: 0.75rem 0.5rem;
+padding: 1rem 0.5rem;
 display: flex;
 flex-direction: column;
 max-width: 100%;
@@ -33,19 +33,19 @@ const Location = styled.p`
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
- 
+ console.log('dat', props.data);
    if(props.data)
     return(
       <Container>
-        <Heading>{"Inter-City Taxi "}</Heading>
+        <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.transfer_type === 'Intercity one-way' ? "One-way Taxi" : 'Round-trip Taxi'}</Heading>
       <RouteContainer className='font-opensans'>  
       {/* <div style={{margin: '0 2px 0 0'}}><ImageLoader url="media/icons/bookings/pin.png" leftalign dimensions={{width: 200, height: 250}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader></div> */}
 
-          <Location className="font-opensans">{props.data.city}</Location>
+          <Location className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.city}</Location>
             <div style={{margin: '0 2px'}}>
               <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader>
             </div>
-            <Location className="font-opensans">{props.data.destination_city}</Location>
+            <Location className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.destination_city}</Location>
            
       </RouteContainer>
       </Container>

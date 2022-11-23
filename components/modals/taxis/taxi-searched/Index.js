@@ -1,0 +1,58 @@
+import React, {useState, useRef, useEffect} from 'react';
+import styled from 'styled-components'
+//  import { getHumanDate } from '../../../../services/getHumanDate';
+  import SectionOne from './sectionone/Index';
+// import SectionTwo from './SectionTwo';
+  import media from '../../../media';
+//  import SectionThree from './SectionThree';
+import SectionFour from './SectionFour';
+ const Container = styled.div`
+    width: 100%;        
+    background-color: white;
+     border-radius: 10px;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    margin-bottom: 0.5rem;
+    @media screen and (min-width: 768px){
+        border-radius: 10px;
+        position: relative;
+
+    }
+    
+`;
+
+ 
+ 
+ 
+const Booking = (props) =>{
+    let isPageWide = media('(min-width: 768px)')
+
+    
+
+  
+    // const detailsarr=[]
+    // for(var i=0; i<props.details.length; i++){
+    //     if(props.details[i].length)
+    //     detailsarr.push(
+    //         <li className={props.blur ? 'blurry-text' : ''} style={{fontSize: "0.75rem",  margin: "0.5rem 0 0.5rem 0rem", fontWeight: "300"}} >{props.details[i]}</li>
+    //     );
+    // }
+  
+ 
+ 
+
+  
+    console.log('d', props.data)
+    //  if(isPageWide)
+    return(
+        <Container className='border' style={{ borderRadius: "10px"}}>
+         <SectionOne  _updateSearchedTaxi={props._updateSearchedTaxi} setShowTaxiModal={props.setShowTaxiModal} selectedBooking={props.selectedBooking} data={props.data}></SectionOne>
+          {/* <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree> */}
+         {/* <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> */}
+        </Container>
+    );
+ 
+}
+
+export default  (Booking);

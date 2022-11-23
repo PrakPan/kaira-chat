@@ -54,6 +54,23 @@ const Text = styled.p`
 
    
  
+const Heading = styled.p`
+font-size: 1.5rem;
+font-weight: 700;
+margin: 0.5rem 0.5rem 0 0.5rem;
+line-height: 1.25;
+overflow: hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+@media screen and (min-width: 768px){
+  font-size: 1.25rem;
+  margin: 0.75rem 0.5rem;
+  font-weight: 600;
+  color: #212529;
+}
+`;
 
 const ExperienceCard= (props) => {
     let isPageWide = media('(min-width: 768px)');
@@ -116,18 +133,7 @@ const ExperienceCard= (props) => {
     }
     }, [props.itineraryDate, props.timeRequired]);
    
-      const Heading = styled.p`
-      font-size: ${props => props.theme.fontsizes.mobile.text.one};
-      font-weight: 700;
-      margin: 0.5rem 0.5rem 0 0.5rem;
-      line-height: 1.25;
-      @media screen and (min-width: 768px){
-        font-size: ${props => props.theme.fontsizes.desktop.text.three};
-        margin: 0.75rem 0.5rem;
-        font-weight: 600;
-        color: #212529;
-      }
-      `;
+
    
       const ShortText = styled.p`
       font-size: ${props => props.theme.fontsizes.mobile.text.default};

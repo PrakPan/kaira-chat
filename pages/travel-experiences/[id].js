@@ -6,8 +6,7 @@ import axios from 'axios';
 const Experience = (props) => {
  
     const router = useRouter();
-//     if(typeof window !== 'undefined')
-    return <Layout itinerary>
+     return <Layout itinerary>
          <Head>
          <meta
       name="description"
@@ -44,9 +43,7 @@ export async function getStaticProps(context){
               notFound: true,
             }
           }
-        
-   
-      return{
+       return{
             props: {
                   experienceData: data
             }

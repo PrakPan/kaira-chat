@@ -5,7 +5,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 const Container = styled.div`
-display: ${props => props.display ? props.display: "block"}
+display: ${props => props.display ? props.display: "block"};
+height: max-content;
 `;
 
 const Spinner = styled(CircularProgress)`

@@ -6,21 +6,29 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import StarSlider from '../leftsidebar/StarSlider';
-
+import {TbArrowBack} from 'react-icons/tb';
+import media from '../../../media';
+import {GrFormClose} from 'react-icons/gr';
 const Container  = styled.div`
+@media screen and (min-width: 768px) {
+    padding: 0.5rem;
+    border-radius: 5px;
+}
 
-`;
+ `;
 const Heading = styled.p`
     font-size: 1.25rem;
     font-weight: 600;
     text-align: center;
-    margin: 2rem 0;
+    margin:  0 0 1.5rem 0;
 `;
 const Label = styled.p`
     font-size: 0.75rem;
-    margin: 0 0 0 0.5rem;
+    margin: 0 0 0 0rem;
 `;
 const Pannel = (props) =>{
+    let isPageWide = media('(min-width: 768px)')
+
     let filter = null;
     const _onChangeHandler = (checked, filter, heading) => {
          if(checked)
@@ -34,14 +42,17 @@ const Pannel = (props) =>{
 
     //   if(props.heading!=='Star Category')
     return(
-        <Container >
-            <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '1rem'}} ></FontAwesomeIcon>
-            <Heading className='font-opensans'>{props.heading}</Heading>
-            {props.heading!=='Star Category' ?<div style={{width: 'max-content', margin: '2rem auto'}}>
+        <Container className={isPageWide ? 'border-thin' : ''}>
+            <div className="hidden-desktop" style={{display: 'flex', justifyContent: 'flex-end'}}><TbArrowBack onClick={() => props.onclose()} className="hover-pointer"  style={{ fontSize: '1.75rem' , textAlign: 'right', margin:  '1rem'}} ></TbArrowBack></div>
+            <div className="hidden-mobile" style={{display: 'flex', justifyContent: 'flex-end'}}><GrFormClose onClick={() => props.onclose()} className="hover-pointer"  style={{ fontSize: '1.5rem' , textAlign: 'right', marginBottom:  '0.5rem'}} ></GrFormClose></div>
+
+            {/* <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon> */}
+            <Heading className='font-opensans hidden-desktop'>{props.heading}</Heading>
+            {props.heading!=='Star Category' ?<div style={{margin: '0 auto'}}>
            
-            <FormGroup>
+            <FormGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: '0.5rem', margin: '0 0.5rem 1.5rem 0.5rem' }}>
           { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
+          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={props.filtersState ? props.filtersState.budget ? props.filtersState.budget.includes(currentfilter) ? true : false : false : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
           }
       </FormGroup>   
       

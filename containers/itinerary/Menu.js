@@ -19,7 +19,7 @@ import PriceBannerMobile from './PriceBannerMobile';
 // import Accommodation from '../../components/modals/accommodation/Index';
 import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
 import * as ga from '../../services/ga/Index';
-
+import Spinner from '../../components/Spinner';
 const Location = styled.div`
 padding: 1rem;
 display: flex;
@@ -160,6 +160,7 @@ const [selectedPoi, setSelectedPoi] = useState({name: 'Kasol'});
   
  
   const handleChange = (event, newValue) => {
+    // console.log('nw', event, newValue)
     const tabs = ['brief', 'itinerary', 'booking']
     ga.event({
       action: "Itinerary-tabs-"+tabs[newValue],
@@ -176,6 +177,8 @@ const [selectedPoi, setSelectedPoi] = useState({name: 'Kasol'});
     if(newValue === 2){
       // if(props.getAccommodationAndActivitiesHandler)
       props.getAccommodationAndActivitiesHandler();
+      props._reloadFlightBookings();
+      props._reloadTransferBookings();
       // getAccommodationAndActivitiesHandler
        if(timerValid){
         setShowBookingTimer(true);
@@ -284,6 +287,9 @@ const _handlePoiEditModalOpen = (poi) => {
 const _handleFlighModalShow=()=> {
    props.setShowFlightModal(true);
 }
+const _handleFlightModalClose=()=> {
+   props.setShowFlightModal(false);
+}
   return (
     <div className={classes.root}>
       <AppBar position="sticky" className={classes.appbar}>
@@ -293,7 +299,7 @@ const _handleFlighModalShow=()=> {
           {!isGroup ? <Tab label="Booking" className="font-opensans experience-tab"/> : <Tab label="Register" className="font-opensans experience-tab"/>}
         </Tabs>
         {value!==2 && props.payment ? <CostContainer >
-          {true ? <DiscountContainer>
+          {true? <DiscountContainer>
             {/* <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.payment.total_cost/100)/0.85))}</StrikedCost> */}
            <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.total_cost/100))+ " /-"}</Cost>
           </DiscountContainer> : null}
@@ -318,7 +324,7 @@ const _handleFlighModalShow=()=> {
         }
       </TabPanel>
       <TabPanel value={value} index={2}>
-        {isGroup ? <Register></Register> : <Booking getPaymentHandler={props.getPaymentHandler} flightLoading={props.flightLoading} flightBookings={props.flightBookings} transferLoading={props.transferLoading}  cardUpdateLoading={props.cardUpdateLoading} _updateFlightBookingHandler ={props._updateFlightBookingHandler} _updateStayBookingHandler={props._updateStayBookingHandler} activityBookings={props.activityBookings} transferBookings={props.transferBookings} stayBookings={props.stayBookings} _selectTaxiHandler={props._selectTaxiHandler} showFlightModal={props.showFlightModal} setShowFlightModal={_handleFlighModalShow} setHideFlightModal={() => props.setShowFlightModal(false)} user_email={props.user_email} no_bookings={props.no_bookings} traveleritinerary={props.traveleritinerary} preview={props.preview} id={props.id} is_stock={props.is_stock} _updatePaymentHandler={props._updatePaymentHandler} _updateBookingHandler={props._updateBookingHandler}  setShowBookingModal={() => props.setShowBookingModal(true)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} hours={hours} minutes={minutes} seconds={seconds}    timeRequired={props.timeRequired} hideTimer={minimseBookingTimer} showTimer={false} itineraryDate={props.itineraryDate} blur={false} openItinerary={_previewItineraryHandler}  _handleTimerClose={_minimiseBookingTimerHandler} setImagesHandler={props.setImagesHandler} payment={props.payment} booking={props.booking} _reloadTransferBookings={props._reloadTransferBookings}></Booking>}
+        {isGroup ? <Register></Register> : <Booking _updateTaxiBookingHandler={props._updateTaxiBookingHandler} showTaxiModal={props.showTaxiModal}  setShowTaxiModal={props.setShowTaxiModal} paymentLoading={props.paymentLoading}  budget={props.budget} _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} stayFlickityIndex={props.stayFlickityIndex} setStayFlickityIndex={props.setStayFlickityIndex} selectingBooking={props.selectingBooking} _deselectStayBookingHandler={props._deselectStayBookingHandler} _reloadFlightBookings={props._reloadFlightBookings} getPaymentHandler={props.getPaymentHandler} flightLoading={props.flightLoading} flightBookings={props.flightBookings} transferLoading={props.transferLoading}  cardUpdateLoading={props.cardUpdateLoading} _updateFlightBookingHandler ={props._updateFlightBookingHandler} _updateStayBookingHandler={props._updateStayBookingHandler} activityBookings={props.activityBookings} flightBookings={props.flightBookings} transferBookings={props.transferBookings} stayBookings={props.stayBookings} _selectTaxiHandler={props._selectTaxiHandler} showFlightModal={props.showFlightModal} setShowFlightModal={_handleFlighModalShow} setHideFlightModal={_handleFlightModalClose} user_email={props.user_email} no_bookings={props.no_bookings} traveleritinerary={props.traveleritinerary} preview={props.preview} id={props.id} is_stock={props.is_stock} _updatePaymentHandler={props._updatePaymentHandler} _updateBookingHandler={props._updateBookingHandler}  setShowBookingModal={() => props.setShowBookingModal(true)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} hours={hours} minutes={minutes} seconds={seconds}    timeRequired={props.timeRequired} hideTimer={minimseBookingTimer} showTimer={false} itineraryDate={props.itineraryDate} blur={false} openItinerary={_previewItineraryHandler}  _handleTimerClose={_minimiseBookingTimerHandler} setImagesHandler={props.setImagesHandler} payment={props.payment} booking={props.booking} _reloadTransferBookings={props._reloadTransferBookings}></Booking>}
       </TabPanel>
       { !props.preview ? <PoiEditModal setItinerary={props.setItinerary} itinerary_id={props.id} selectedPoi={selectedPoi} tailored_id={props.booking ? props.booking[0]["tailored_itinerary"] : ''} _updatePaymentHandler={props._updatePaymentHandler} setShowPoiModal={() => _handlePoiEditModalOpen({name: 'kasol'})} showPoiModal={props.showPoiModal} setHidePoiModal={props.setHidePoiModal}></PoiEditModal> : null}
 {/* <Accommodation show={true} ></Accommodation> */}

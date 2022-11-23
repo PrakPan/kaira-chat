@@ -8,7 +8,7 @@ const Container = styled.div`
 width: 80%;
 margin: auto;
 display: grid;
-grid-template-columns: 1fr 1.5fr;
+grid-template-columns: 1fr ;
 grid-gap: 2rem;
 `;
 
@@ -29,9 +29,9 @@ return(
         <p className='font-opensans' style={{fontWeight: '300'}}>{props.data.addr1}</p>
         <p className='font-opensans' style={{fontWeight: '300'}}>{props.data.addr2}</p>
     </Address>
-    <Map>
+    {/* <Map>
 
-    </Map>
+    </Map> */}
 </Container>
 );
 

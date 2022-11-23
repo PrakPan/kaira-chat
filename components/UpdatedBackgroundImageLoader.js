@@ -76,7 +76,7 @@ useEffect(() => {
           },
         },
       });
-    if(props.dimensions)
+    if(props.dimensions){
       imageRequest = JSON.stringify({
       bucket: "thetarzanway-web",
       key: props.url,
@@ -88,6 +88,18 @@ useEffect(() => {
         }
       }
     });
+    smallImageRequest=JSON.stringify({
+      bucket: "thetarzanway-web",
+      key: props.url,
+      edits: {
+        resize: {
+          width: Math.round(props.dimensions.width/100),
+          height: Math.round(props.dimensions.height)/100,
+          fit: "cover"
+        }
+      }
+    });
+  }
     else if(props.dimensionsMobile){
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
@@ -100,8 +112,20 @@ useEffect(() => {
           }
         }
       });
+      smallImageRequest = JSON.stringify({
+        bucket: "thetarzanway-web",
+        key: props.url,
+        edits: {
+          resize: {
+            width: Math.round(props.dimensionsMobile.width/100),
+            height: Math.round(props.dimensionsMobile.height)/100,
+            fit: "cover"
+          }
+        }
+      });
     }
-    else imageRequest = JSON.stringify({
+    else {
+      imageRequest = JSON.stringify({
       bucket: "thetarzanway-web",
       key: props.url,
       edits: {
@@ -112,6 +136,19 @@ useEffect(() => {
         }
       }
     });
+    smallImageRequest = JSON.stringify({
+      bucket: "thetarzanway-web",
+      key: props.url,
+      edits: {
+        resize: {
+          width: 40,
+          height: 30,
+          fit: "cover"
+        }
+      }
+    });
+
+  }
    
     const img = new Image();
     img.src = `${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`;
@@ -133,7 +170,7 @@ useEffect(() => {
         </SmallContainer>
         <FullContainer
             className={props.center ? "center-div " : ""}
-        style={{backgroundImage: props.filter? props.filter+`, url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`: `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`, width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",display: fullLoaded ? "flex" : "none",backgroundRepeat: 'no-repeat',backgroundPosition:"center",backgroundSize:"cover"}}
+        style={{backgroundImage: props.filter? props.filter+`, url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`: `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`, width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",display: fullLoaded ? "flex" : "none",backgroundRepeat: 'no-repeat',backgroundPosition:"center",backgroundSize:"cover", borderRadius: props.borderRadius ? props.borderRadius : '0'}}
         >
          
            {props.children}

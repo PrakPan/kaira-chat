@@ -1,6 +1,6 @@
 import React, {useRef, useEffect} from 'react';
 import styled from 'styled-components';
-import ExperienceCard from '../cards/experiencecard/ExperienceCard';
+import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../cards/itinerarycard/Index';
 import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
 import Carousel from '../FlickityCarousel';
@@ -83,6 +83,9 @@ const Experiences = [
           key={props.experiences[i].id}
             slug={props.experiences[i].slug}
             rating={props.experiences[i].rating}
+            budget={props.experiences[i].budget}
+            group_type={props.experience[i].group_type}
+            number_of_adults={props.experience[i].number_of_adults}
             filter={props.experiences[i].experience_filters[0]}
             id={props.experiences[i].id}
             text={props.experiences[i].short_text} 
@@ -113,6 +116,9 @@ const Experiences = [
           rating={props.experiences[j].rating}
           slug={props.experiences[j].slug}
           id={props.experiences[j].id}
+          budget={props.experiences[j].budget}
+          group_type={props.experiences[j].group_type}
+          number_of_adults={props.experiences[j].number_of_adults}
           text={props.experiences[j].short_text} 
           experience={props.experiences[j].name}
           cost={props.experiences[j].payment_info ? props.experiences[j].payment_info[0].cost : null}
@@ -135,6 +141,7 @@ const Experiences = [
             // filter={props.itineraries[j].experience_filters[0]}
             key={props.itineraries[j].itinerary_id}
             budget={props.itineraries[j].budget}
+            
             rating={props.itineraries[j].rating}
             slug={props.itineraries[j].slug}
             id={props.itineraries[j].itinerary_id}

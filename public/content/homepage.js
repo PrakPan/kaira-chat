@@ -65,8 +65,12 @@ const experiences = {
           "slug": "life-in-a-pahadi-village",
           "experience_filters": ["Isolated"],
           "name": "Life in a Pahadi Village",
+          'number_of_adults': 2,
+
           "experience_region": "Rishikesh",
           "rating": 4.8,
+          'budget': 'Affordable',
+          'group_type': 'Friends',
           "duration": "4 days",
           "short_text": "With this immersive travel experience, the focus is providing insight, to the travelers, into the lifestyle, culture and local traditions of a Pahadi Village. Travelers are encouraged to interact with the local community, and, celebrate wearing the fabric of diversity and pluralism.",
           "starting_cost" : "550000",
@@ -88,9 +92,14 @@ const experiences = {
             "id": "pOoRBeFl9IDkuG0G",
             "slug": "the-lake-city-caravan-experience",
             "name": "The Lake City Caravan Experience",
+            'number_of_adults': 6,
+
             "experience_filters": [    "Adventure and Outdoors",          ],
             "starting_cost": "20000000",
             "experience_region": "Uttarakhand",
+            'budget': 'Luxury',
+            'group_type': 'Friends',
+
             "rating": 4.8,
             "duration": "4 days",
             "short_text": "Enjoy the serenity away from the hustle and bustle of city life from the romantic lake city of Bhimtal to Pangoot, a town filled with colorful winged birds who will make you want to fly!",
@@ -113,6 +122,9 @@ const experiences = {
             "id":"gykv0NEx0QhV5mOC",
             "slug": "meadows-of-kheerganga",
             "name": "Meadows of Kheerganga",
+            'budget': 'Affordable',
+            'number_of_adults': 2,
+          'group_type': 'Friends',
             "experience_filters": [    "Adventure and Outdoors",          ],
             "experience_region": "Kasol",
             "rating": 4.8,
@@ -135,6 +147,9 @@ const experiences = {
         },
         {  
             "id":"m91UR7oDHz9Hgqaj",
+            'budget': 'Affordable',
+          'group_type': 'Solo',
+          'number_of_adults': 1,
             "slug": "workcation-at-manali",
              "experience_filters": [    "Nature and Retreat",       ],
 
@@ -162,6 +177,9 @@ const experiences = {
     "Work from home redefined": [
       {  
         "id":"E7bUyDHPiTpnpUcL",
+        'budget': 'Affordable',
+        'group_type': 'Solo',
+        'number_of_adults': 1,
         "slug": "workcation-in-goa",
         "experience_filters": [    "Nature and Retreat",       ],
         "starting_cost": "7500",
@@ -189,6 +207,9 @@ const experiences = {
             "id":"m91UR7oDHz9Hgqaj",
             "name": "Workcation at Manali",
             "slug": "workcation-at-manali",
+            'budget': 'Affordable',
+            'group_type': 'Solo',
+            'number_of_adults': 1,
             "experience_filters": [    "Nature and Retreat",       ],
             "experience_region": "Manali",
             "rating": 4.8,
@@ -214,7 +235,9 @@ const experiences = {
           "id":"HfZn6sweUzYf5IVY",
           "slug": "workcation-in-kasol",
           "experience_filters": [    "Nature and Retreat",       ],
-
+          'budget': 'Affordable',
+          'group_type': 'Solo',
+          'number_of_adults': 1,
           "name": "Workcation at Kasol",
           "experience_region": "Kasol",
           "starting_cost" : "6000",
@@ -240,7 +263,9 @@ const experiences = {
         "slug": "workcation-in-rishikesh",
         "name": "Workcation in Rishikesh",
         "experience_filters": [    "Adventure and Outdoors",          ],
-
+        'budget': 'Affordable',
+        'group_type': 'Solo',
+        'number_of_adults': 1,
         "experience_region": "Rishikesh",
         "rating": 4.7,
         "duration": "1 week",
@@ -271,6 +296,9 @@ const experiences = {
     //3rd experiences grid
     "Travel with a purpose": [
         {  
+          'budget': 'Affordable',
+          'group_type': 'Solo',
+          'number_of_adults': 1,
             "id":"nfxqyIEL0p6MrUwA",
             "slug": "social-travel-north-india",
             "name": "Social Travel: North India",
@@ -296,6 +324,9 @@ const experiences = {
               ],
         },
         {  
+          'budget': 'Affordable',
+          'group_type': 'Solo',
+          'number_of_adults': 1,
           "id":"rm6WQxKhFE9SXrmf",
           "name": "Volunteering with woman community",
           "experience_filters": [    "Art and Culture",          ],
@@ -321,6 +352,9 @@ const experiences = {
             ],
       },
         {  
+          'budget': 'Affordable',
+          'group_type': 'Solo',
+          'number_of_adults': 1,
             "id":"PlQ0KBMgeM9sX0bT",
             "name": "Volunteer in Delhi",
             "experience_region": "Delhi",
@@ -346,6 +380,9 @@ const experiences = {
 
         },
         {  
+          'budget': 'Affordable',
+          'group_type': 'Friends',
+          'number_of_adults': 2,
             "id":"oLbmmI8iye1VNblc",
             "name": "An offbeat vacation at Bishnoi Village",
             "experience_region": "Rajasthan",
@@ -387,6 +424,9 @@ const experiences = {
         {  
             "id":"Nj3FSTBYHN4REuON",
             "name": "Life of a Nomad",
+            'budget': 'Affordable',
+            'group_type': 'Friends',
+            'number_of_adults': 4,
             "slug": "life-of-a-nomad",
             "experience_filters": [ "Adventure and Outdoors",],
             "experience_region": "Ladakh",
@@ -413,7 +453,9 @@ const experiences = {
             "name": "An offbeat vacation at Bishnoi Village",
             "experience_region": "Rajasthan",
             "experience_filters": [    "Art and Culture",          ],
-
+            'budget': 'Affordable',
+            'group_type': 'Friends',
+            'number_of_adults': 4,
             "slug": "an-offbeat-vacation-at-bishnoi-village",
             "rating": 4.8,
             "duration": "4 days",
@@ -438,6 +480,9 @@ const experiences = {
             "id":"BFQiYWY2KGOBLtM2",
             "name": "Off the grid Goa",
             "slug": "off-the-grid-goa",
+            'budget': 'Affordable',
+            'group_type': 'Couple',
+            'number_of_adults': 2,
             "experience_filters": ["Nature and Retreat",],
             "experience_region": "Goa",
             "starting_cost" : "5500",
@@ -463,7 +508,9 @@ const experiences = {
           "slug": "manali-trance",
           "name": "Manali Trance",
           "starting_cost": "6000",
-    
+          'budget': 'Affordable',
+          'group_type': 'Friends',
+          'number_of_adults': 4,
             "experience_filters": ["Adventure and Outdoors"],
           "experience_region": "Manali",
           "rating": 4.8,
@@ -489,6 +536,9 @@ const experiences = {
       {  
         "id": "3uB5m3sBWOGtAGF-uXDI",
         "slug": "manali-trance",
+        'budget': 'Luxury',
+        'group_type': 'Solo',
+        'number_of_adults': 1,
         "name": "Neha's solo workation",
         "starting_cost": "6000",
         "experience_filters": ["Adventure"],
@@ -514,6 +564,9 @@ const experiences = {
     {  
       "id": "rOLMAnwBWOGtAGF-JU43",
       "slug": "manali-trance",
+      'budget': 'Luxury',
+      'group_type': 'Solo',
+      'number_of_adults': 1,
       "name": "Harshitha's solo cultural",
       "starting_cost": "6000",
       "experience_filters": ["Heritage"],
@@ -541,6 +594,9 @@ const experiences = {
     "slug": "manali-trance",
     "name": "Monsterrat's solo volunteering",
     "starting_cost": "6000",
+    'budget': 'Affordable',
+    'group_type': 'Solo',
+    'number_of_adults': 1,
     "experience_filters": ["Culture"],
     "experience_region": "North India",
     "rating": 4.8,
@@ -563,6 +619,9 @@ const experiences = {
 }, {  
   "id": "--BR_HoBlZvI8TSUql8l",
   "slug": "manali-trance",
+  'budget': 'Luxury',
+  'group_type': 'Friends',
+  'number_of_adults':5,
   "name": "Gorika's women trip",
   "starting_cost": "6000",
   "experience_filters": ["Nature & retreat"],

@@ -76,17 +76,16 @@ const Booking = (props) =>{
     }
     // if(window.innerWidth >= 768)
     return(
-        <Container className="">
+        <Container className="" onClick={props.images ? props.images.length ? () => props._setImagesHandler(imagesarr) : console.log('') : console.log('')} >
             <ImageContainer>
                 <div style={{minHeight: '20vh'}}><ImageLoader borderRadius="10px 10px 0 0" fit="cover" url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="25vh" width="100%"></ImageLoader></div>
-                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)}  className="font-opensans">
-                     {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
+                {/* {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)}  className="font-opensans">
                     All Photos
-                    </PhotosButton> : null : null}
+                    </PhotosButton> : null : null} */}
                   
                     <div style={{position: 'absolute', bottom: '0.25rem', right: '0.25rem', display: 'flex', }}>
-                            <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>Hotel</EditButton>
-                            <EditButton className="font-opensans">5 star</EditButton>
+                            {props.type ? <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>{props.type}</EditButton> : null}
+                            {props.star_category ? <EditButton className="font-opensans">{props.star_category+" star"}</EditButton> : null}
 
                     </div>
                     {props.tag ? <Tag star_category={props.star_category} tag={props.tag}></Tag> : null}

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
- import Card from '../cards/experiencecard/ExperienceCard';
+ import Card from '../cards/newitinerarycard-main/ExperienceCard';
  import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
  import BlogNew from '../cards/Blog';
 import Carousel from '../FlickityCarousel';
@@ -50,6 +50,9 @@ const Experiences= (props) => {
         key={experience.id}
         starting_cost={experience.payment_info ? experience.payment_info[0].cost : experience.starting_price}
         slug={experience.slug}
+        budget={experience.budget}
+        group_type={experience.group_type}
+        number_of_adults={experience.number_of_adults}
         id={experience.id}
         filter={experience.experience_filters[0]}
         rating={experience.rating}
@@ -71,6 +74,9 @@ const Experiences= (props) => {
         id={experience.id}
         filter={experience.experience_filters[0]}
         rating={experience.rating}
+        budget={experience.budget}
+        group_type={experience.group_type}
+        number_of_adults={experience.number_of_adults}
         hardcoded={experience.payment_info ? true : false }
         text={experience.short_text} 
         experience={experience.name}
@@ -111,6 +117,9 @@ const Experiences= (props) => {
               slug={props.experiences[3].slug}
               id={props.experiences[3].id}
               text={props.experiences[3].short_text} 
+              budget={props.experiences[3].budget}
+              group_type={props.experiences[3].group_type}
+              number_of_adults={props.experiences[3].number_of_adults}
               experience={props.experiences[3].name}
               cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : null}
               duration={props.experiences[3].duration}

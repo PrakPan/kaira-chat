@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 // import ImageLoader from './ImageLoader';
 import Spinner from './Spinner';
+import gif from '../public/assets/loader.gif';
+
 const ExperienceIndexLoading = (props) => {
     const quotes = [
         "India is the wettest inhabited place on Earth?",
@@ -62,7 +64,8 @@ const ExperienceIndexLoading = (props) => {
     return(
             <Container className="center-div">
         {/* <ImageLoader width="5vw" url="media/gifs/loadergif.gif"></ImageLoader> */}
-        <Spinner></Spinner>
+        {/* <Spinner></Spinner> */}
+        <img src={gif} style={{width: '3rem', height: '3rem'}}/>
         <DidYouKnow className="font-opensans">Did you know?</DidYouKnow>
     <Quote style={{color: "black"}} className="font-nunito"><em>{quotes[Math.floor(Math.random() * 16)]}</em></Quote>
     </Container>

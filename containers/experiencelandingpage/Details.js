@@ -18,6 +18,7 @@ const DetailsContainer = styled.div`
 width: 100%;
 margin: 0 auto 10vh auto;
 padding: 0 1rem;
+background-color: white;
 @media screen and (min-width: 768px) {
   width: 80%;
   padding: 0;
