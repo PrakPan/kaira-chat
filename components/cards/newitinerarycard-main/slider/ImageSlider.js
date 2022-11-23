@@ -79,7 +79,7 @@ import {GoStar} from 'react-icons/go';
     font-weight: 300;
     letter-spacing: 0.02em;
     @media screen and (min-width: 768px){
-      font-size: 1.25rem;
+      font-size: 1rem;
 
     }
     `;
@@ -106,6 +106,26 @@ import {GoStar} from 'react-icons/go';
     font-size: 0.75rem;
     font-weight: 300;
     `;
+    const PWContainer=styled.div`
+    color: white;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+     display: grid;
+    grid-template-columns: 1fr max-content 1fr max-content 1fr;
+    font-size: 0.85rem;
+    border-style: none;
+    border-width: 1px;
+     background-color: rgba(255, 255, 255, 0.7);;
+      color: black;
+      padding: 2px 0;
+
+     @media screen and (min-width: 768px){
+      padding: 5px 0;
+
+    }
+
+    `;
 const ImageSlider = (props) => {
   
   const Component = useRef();
@@ -128,7 +148,7 @@ const ImageSlider = (props) => {
         <Container  props={props} ref={Component} >
             {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
             <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
-            <IconsContainer className='font-opensans'>
+            {/* <IconsContainer className='font-opensans'>
             
                <IconHoverContainer className='center-div'>
                 {props.filter}
@@ -143,11 +163,14 @@ const ImageSlider = (props) => {
                <IconHoverContainer className='center-div'>
                 Family Trip
                 </IconHoverContainer> 
-            </IconsContainer>
-            <RatingContainer className='font-opensans'>
+            </IconsContainer> */}
+            <PWContainer>
+
+            </PWContainer>
+            {/* <RatingContainer className='font-opensans'>
             <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
             {props.rating + '/5'}
-             </RatingContainer>
+             </RatingContainer> */}
             <CustomizableContainer className='font-opensans'>
             100% customizable
             </CustomizableContainer>

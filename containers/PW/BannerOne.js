@@ -31,7 +31,7 @@ const GridContainer = styled.div`
 const Text = styled.p`
     font-weight: 600;
     margin: 0.5rem 0 0 0;
-    font-size: 0.85rem;
+    font-size: 8px;
     @media screen and (min-width: 768px){
         font-size: 1rem;
         margin: 1rem 0 0 0;

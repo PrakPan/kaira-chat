@@ -39,23 +39,31 @@ color: white;
 
 `;
 
+const PaddingContianer = styled.div`
+padding: 5vh 0 0 0;
+@media screen and (min-width: 768px){
+    padding: 10vh 0 0 0;
+
+}
+`
+
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
 
     return (
 
         <Container className='font-opensans center-di text-center'>
-           <div style={{padding: '5vh 0 0 0'}}>
+           <PaddingContianer >
             <Heading>Physics Wallah Planner</Heading>
-            <SubText>As per your
-                <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
+            <SubText>Flat 50% off, use code:
+                <span style={{marginLeft: '6px', fontWeight: '800'}}>TTWxPW</span>
             </SubText>
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
 
             <Button  onclick={()=> window.location.href=urls.WHATSAPP+"?text=Hey Team! I'm looking to book a travel plan to Andaman and Nicobar Islands. Can you help me personalize my itinerary?"} onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 {/* <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp> */}
                 View Trips</Button>
-                </div>
+                </PaddingContianer>
                
         </Container>
     );

@@ -22,7 +22,13 @@ import Reviews from './CaseStudies/Index';
 import BannerMobile from './MobileBanner';
 import Enquiry from './newenquiry/Index';
 import Menu from './Menu';
+import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
+import gif from '../../public/assets/loader.gif';
+
+// import qs from qs;
+var qs = require('qs');
+
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -63,16 +69,212 @@ const GridContainer = styled.div`
 display: grid;
 padding: 1rem;
 grid-gap: 1rem;
+
 @media screen and (min-width: 768px){
   padding: 2rem;
   grid-gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr;
 }
 `;
+const MinHeightContainer = styled.div`
+min-height: 40vh;
+
+@media screen and (min-width: 768px){
+  min-height: 60vh;
+}
+`;
 const  Homepage = (props) =>{
 
-  let isPageWide = media('(min-width: 768px)');
+
+			
+let isPageWide = media('(min-width: 768px)');
+let cards = [];
+const ID_LIST= [
+  'a4f1e1c6-f259-448b-be72-b044a78a82cb',
+  'ae3eb149-584f-4179-b311-ccf1497341f5',
+
+];
+const DATA=[
+	{
+		"id": "ae3eb149-584f-4179-b311-ccf1497341f5",
+		"images": [
+			"media/experiences/166331126839925050735473632812.jpg",
+			"media/experiences/166331126849031925201416015625.jpg",
+			"media/experiences/166504024451419639587402343750.jpg",
+			"media/experiences/166331126871775841712951660156.jpg",
+			"media/experiences/166331126881593394279479980469.jpg",
+			"media/experiences/166331126891320276260375976562.jpg"
+		],
+		"itinerary_locations": null,
+		"payment_info": {
+			"total_cost": 0,
+			"per_person_total_cost": 1200000
+		},
+		"name": "Exotic Highlights of Kerala",
+		"duration_unit": "days",
+		"duration_number": 8,
+		"locations": [],
+		"budget": null,
+		"experience_filters_selected": [
+			"Adventure and Outdoors",
+			"Nature and Retreat",
+			"Isolated",
+			"Shopping"
+		],
+		"group_type": null,
+		"number_of_adults": 1,
+		"number_of_children": null,
+		"number_of_infants": null,
+		"review": null,
+		"is_stock": true,
+		"released_for_customer_on": null,
+		"user_name": "TTW Exclusive",
+		"user_location": {
+			"region": "",
+			"country": "",
+			"location": ""
+		},
+		"itinerary_status": "ITINERARY_NOT_PREPARED",
+		"theme_category": [
+			"Tailored"
+		],
+		"duration_based_category": [
+			"Week Long Vacation"
+		],
+		"budget_based_category": [
+			"Average"
+		],
+		"group_type_category": [
+			"Family"
+		],
+		"slug": "8-days-kerala-generic-itinerary"
+	}
+];
+const [loading, setLoading] = useState(true);
+const [itinerariesJSX, setItinerariesJSX] = useState(null);
+const [filters, setFilters] = useState({
+  'Trek': true,
+  'Road Trip': true,
+}
+) 
+const _populateResultsHandelr = (filters) => {
+  let itineraries = [];
+  // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
+  setLoading(true);
+
+  axiossearchinstance.post(`?search_type=itinerary&page_id=1`, { 
+    "theme_category": filters
+   }).then(res => {
+    setLoading(false);
+
+    // console.log(res)
+    for(var i =0 ; i<res.data.length; i++){
+      itineraries.push(
+      <ExperienceCard 
+         key={res.data[i].short_text}
+         hardcoded={res.data[i].payment_info ?true : false }
+         filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
+         rating={res.data[i].rating}
+         slug={res.data[i].slug}
+         id={res.data[i].id}
+         text={res.data[i].short_text} 
+         experience={res.data[i].name}
+         cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
+         duration={res.data[i].duration}
+         location={res.data[i]["experience_region"]}
+         starting_cost={res.data[i].payment_info? res.data[i].payment_info.length?  res.data[i].payment_info[0].cost : res.data[i].starting_price : res.data[i].starting_price }
+       images={res.data[i].images}></ExperienceCard>
+      )
+    }
+   
+    setItinerariesJSX(itineraries);
+  }).catch(err => {
+    setLoading(false);
+
+  });
+}
+const _fetchResultsHandler = (filter) => {
+  let FILTERS = [];
+  console.log('k', filter==='Road Trip')
+  switch(filter){
+    case 'Trek':
+      if(!filters["Trek"]) FILTERS.push("Trek");
+      if(filters["Road Trip"]) FILTERS.push('Road Trip');
+      break;
+    case 'Road Trip': 
+      if(!filters["Road Trip"]) FILTERS.push("Road Trip");
+      if(filters["Trek"]) FILTERS.push('Trek');
+      break;
+    default:
+      FILTERS.push('Road Trip');
+      FILTERS.push('Trek');
+
+   
+
+  }
  
+  console.log('f1', FILTERS)
+  _populateResultsHandelr(FILTERS)
+
+}
+
+const _toggleFilterHandler = (filter_text) => {
+  console.log('ft', filter_text)
+  switch(filter_text){
+    case 'Treks':
+        _fetchResultsHandler('Trek');
+        setFilters({...filters, 'Trek' : !filters['Trek']});
+
+        break;
+    case 'Road Trips':
+      _fetchResultsHandler('Road Trip');
+      setFilters({...filters, 'Road Trip' : !filters['Road Trip']})
+      break;
+    default: 
+    _fetchResultsHandler();
+  }
+
+}
+
+ useEffect(() => {
+  let itineraries = [];
+  // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
+
+  axiossearchinstance.post(`?search_type=itinerary&page_id=1`, { 
+    "theme_category": []
+   }).then(res => {
+    setLoading(false);
+     for(var i =0 ; i<res.data.length; i++){
+      itineraries.push(
+      <ExperienceCard 
+         key={res.data[i].short_text}
+         hardcoded={res.data[i].payment_info ?true : false }
+         filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
+         rating={res.data[i].rating}
+         slug={res.data[i].slug}
+         id={res.data[i].id}
+         text={res.data[i].short_text} 
+         experience={res.data[i].name}
+         cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
+         duration={res.data[i].duration}
+         location={res.data[i]["experience_region"]}
+         starting_cost={res.data[i].payment_info? res.data[i].payment_info.length?  res.data[i].payment_info[0].cost : res.data[i].starting_price : res.data[i].starting_price }
+       images={res.data[i].images}></ExperienceCard>
+      )
+    }
+   
+    setItinerariesJSX(itineraries);
+  }).catch(err => {
+    setLoading(false);
+
+  });
+
+
+
+  
+  
+ 
+ }, [])
 
 //JSX for How it works 
 
@@ -134,7 +336,7 @@ const EXPERIENCE = {
       }
     ],
 };
-
+console.log('filters', filters)
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url="media/website/Andaman.jpeg" center={isPageWide ? false : true} >
@@ -142,155 +344,13 @@ const EXPERIENCE = {
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>
-<Menu></Menu>
+<Menu _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
 <SetWidthContainer>
-  <GridContainer>
-    <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-   <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-   <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-   <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-   <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-   <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-   <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard> <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard> <ExperienceCard 
-     key={EXPERIENCE.short_text}
-     hardcoded={EXPERIENCE.payment_info ?true : false }
-     filter={EXPERIENCE.experience_filters[0]}
-     rating={EXPERIENCE.rating}
-     slug={EXPERIENCE.slug}
-     id={EXPERIENCE.id}
-     text={EXPERIENCE.short_text} 
-     experience={EXPERIENCE.name}
-     cost={EXPERIENCE.payment_info ? EXPERIENCE.payment_info[0].cost : null}
-     duration={EXPERIENCE.duration}
-     location={EXPERIENCE["experience_region"]}
-     starting_cost={EXPERIENCE.payment_info? EXPERIENCE.payment_info[0].cost : EXPERIENCE.starting_price }
-   images={EXPERIENCE.images}>
-
-   </ExperienceCard>
-  
-
-
-  </GridContainer>
+  {!loading ? <GridContainer>
+    { itinerariesJSX}
+ 
+  </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
+  }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Top Selling Experiences"]} ></Experiences>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Customer Tales</Heading>        
