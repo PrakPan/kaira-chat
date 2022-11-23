@@ -462,7 +462,7 @@ if(props.token)
            {/* <Modal.Header>2</Modal.Header> */}
            <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
            <SectionOne setHideBookingModal={props.setHideBookingModal} setHideFlightModal={props.setHideFlightModal}></SectionOne>
-              <SectionTwo setHideFlightModal={props.setHideBookingModal}></SectionTwo>
+              {/* <SectionTwo setHideFlightModal={props.setHideBookingModal}></SectionTwo> */}
 
            </Modal.Header>
             <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
