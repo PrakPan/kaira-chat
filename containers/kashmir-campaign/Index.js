@@ -6,11 +6,12 @@ import FullImage from '../../components/FullImage';
 // import {connect} from 'react-redux';
 import DesktopBanner from '../../components/containers/Banner';
 import Experiences from '../../components/containers/Experiences';
-  
+  import Enquiry from './newenquiry/Index';
  import AsSeenIn from '../testimonial/AsSeenIn';
  import Heading from '../../components/newheading/heading/Index';
   import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import media from '../../components/media';
+import BannerTwo from './BannerTwo';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
  import WhyUs from '../testimonial/whyttw/Index';
@@ -103,6 +104,8 @@ const _handleTailoredClick = () => {
       <FullImage url="media/website/Kashmir122.jpeg" center={isPageWide ? false : true} >
           <FullImgContent/>
       </FullImage>
+      <div className='hidden-desktop'><Enquiry></Enquiry></div>
+
 <BannerOne></BannerOne>
 <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Experiences</Heading>        
@@ -132,6 +135,8 @@ const _handleTailoredClick = () => {
       <SetWidthContainer>
       
         <AsSeenIn disablelinks></AsSeenIn>
+        <div className='hidden-mobile'><BannerTwo></BannerTwo></div>
+
         <ChatWithUs></ChatWithUs>
       </SetWidthContainer>
 

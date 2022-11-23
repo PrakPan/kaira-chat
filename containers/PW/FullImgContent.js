@@ -60,7 +60,7 @@ const FullImgContent = (props) => {
             </SubText>
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
 
-            <Button  onclick={()=> window.location.href=urls.WHATSAPP+"?text=Hey Team! I'm looking to book a travel plan to Andaman and Nicobar Islands. Can you help me personalize my itinerary?"} onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
+            <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 {/* <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp> */}
                 View Trips</Button>
                 </PaddingContianer>

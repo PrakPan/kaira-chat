@@ -57,6 +57,14 @@ padding: 1rem 0;
 
 }
 `;
+const NoBookingContainer = styled.div`
+margin: 0 0.5rem;
+
+@media screen and (min-width: 768px){
+    width: 30vw;
+    margin: auto;
+}
+`;
 const Booking = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
@@ -115,7 +123,7 @@ const Booking = (props) => {
                
               if(props.bookings[i].costings_breakdown.length)
            bookings.push(
-                <BookingCard  experience rooms={props.bookings[i].costings_breakdown} is_stock={true} payment={{}} city={props.bookings[i].city} type={props.bookings[i].booking_type} key ={i} setShowBookingModal={null} showBookingModal={null} setHideBookingModal={null} blur={props.blur} setImagesHandler={(images) => setImagesHandler(images)} accommodation heading={props.bookings[i]["name"]} rating={props.bookings[i]["weighted_rating"]} details={ props.bookings[i]["points"]}   rating={props.bookings[i]["user_rating"]} images={ props.bookings[i]["images"]} price={props.bookings[i]["booking_cost"]}  price_type={props.bookings[i].costings_breakdown.length ? props.bookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.bookings[i]["number_of_rooms"]} check_in={props.bookings[i]["check_in"]} check_out={props.bookings[i]["check_out"]} room_type={props.bookings[i]["room_type"]} ></BookingCard>
+                <BookingCard  duration={props.bookings[i].duration} experience rooms={props.bookings[i].costings_breakdown} is_stock={true} payment={{}} city={props.bookings[i].city} type={props.bookings[i].booking_type} key ={i} setShowBookingModal={null} showBookingModal={null} setHideBookingModal={null} blur={props.blur} setImagesHandler={(images) => setImagesHandler(images)} accommodation heading={props.bookings[i]["name"]} rating={props.bookings[i]["weighted_rating"]} details={ props.bookings[i]["points"]}   rating={props.bookings[i]["user_rating"]} images={ props.bookings[i]["images"]} price={props.bookings[i]["booking_cost"]}  price_type={props.bookings[i].costings_breakdown.length ? props.bookings[i].costings_breakdown[0]["pricing_type"] : null}  number_of_rooms={props.bookings[i]["number_of_rooms"]} check_in={props.bookings[i]["check_in"]} check_out={props.bookings[i]["check_out"]} room_type={props.bookings[i]["room_type"]} ></BookingCard>
               // <BookingCard rooms={props.booking[i].costings_breakdown} is_stock={props.is_stock} payment={props.payment} city={props.booking[i].city} type={props.booking[i].booking_type} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} blur={props.blur} setImagesHandler = {props.setImagesHandler} accommodation heading={props.booking[i]["name"]} rating={props.booking[i]["weighted_rating"]} details={ props.booking[i]["points"]}   rating={props.booking[i]["user_rating"]} images={ props.booking[i]["images"]} price={props.booking[i]["booking_cost"]}  price_type={props.booking[i]["pricing_type"]}  number_of_rooms={props.booking[i]["number_of_rooms"]} check_in={props.booking[i]["check_in"]} check_out={props.booking[i]["check_out"]} room_type={props.booking[i]["room_type"]} ></BookingCard>
           )}
           else bookings.push(
@@ -156,7 +164,7 @@ const Booking = (props) => {
   );
     }
     else return(
-        <div style={{minHeight: '100vh'}}><Enquiry experience={props.experience}></Enquiry></div> 
+        <NoBookingContainer style={{}}><Enquiry experience={props.experience}></Enquiry></NoBookingContainer> 
     )
 }
 

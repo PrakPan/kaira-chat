@@ -51,7 +51,7 @@ const FullImgContent = (props) => {
             <SubText>Personalize a Completely Unique Plan Now!</SubText>
            <SubText>Get Benefit of Exclusive Festive Offers</SubText> 
 
-            <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text=Hey Team! I'm looking to book a travel plan to Andaman and Nicobar Islands. Can you help me personalize my itinerary?"} onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"2.5rem 0 0 0"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" padding="0.75rem 1.5rem">
+            <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text=Hey Team! I'm looking to book a travel plan to Rajasthan. Can you help me personalize my itinerary?"} onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"2.5rem 0 0 0"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" padding="0.75rem 1.5rem">
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 WhatsApp Now!</Button>
                 </div>

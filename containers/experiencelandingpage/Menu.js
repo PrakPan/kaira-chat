@@ -231,7 +231,7 @@ const EnquireButton = styled.div`
         {props.itinerary && props.brief ? <Itinerary itinerary={props.itinerary} brief={props.brief}></Itinerary> : null}
       </TabPanel>
       <TabPanel value={value} index={2}>
-      <div className='hidden-desktop'><HeaderExtraPadding></HeaderExtraPadding></div>
+      {/* <div className='hidden-desktop'><HeaderExtraPadding></HeaderExtraPadding></div> */}
             {true  ? <Booking starting_price={props.data.starting_price}  setGalleryOpen={() => props.setGalleryOpen(true)} setGalleryImages={(imagesArr) => props.setGalleryImages(imagesArr)} experience={props.title}  bookings={props.bookings} payment={props.payment} experienceId={props.data.id} itinerary_id={props.data.itinerary_id} ></Booking> : null}
       </TabPanel>
     </div> 

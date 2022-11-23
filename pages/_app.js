@@ -12,7 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { useRouter } from 'next/router'
  
 import * as ga from '../lib/ga/Index';
-// import {HOTJAR_HJID, HOTJAR_HJSV} from '../services/constants';
+import {FACEBOOK_PIXEL_ID} from '../services/constants';
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter()
@@ -39,16 +39,16 @@ function MyApp({ Component, pageProps, store }) {
 
     // If the component is unmounted, unsubscribe
     // from the event with the `off` method
-    // import('react-facebook-pixel')
-    // .then((x) => x.default)
-    // .then((ReactPixel) => {
-    //   ReactPixel.init(FACEBOOK_PIXEL_ID) // facebookPixelId
-    //   ReactPixel.pageView()
+    import('react-facebook-pixel')
+    .then((x) => x.default)
+    .then((ReactPixel) => {
+      ReactPixel.init(FACEBOOK_PIXEL_ID) // facebookPixelId
+      ReactPixel.pageView()
 
-    //   router.events.on('routeChangeComplete', () => {
-    //     ReactPixel.pageView()
-    //   })
-    // })
+      router.events.on('routeChangeComplete', () => {
+        ReactPixel.pageView()
+      })
+    })
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange)
     }
