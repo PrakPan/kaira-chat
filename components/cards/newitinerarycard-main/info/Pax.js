@@ -36,7 +36,7 @@ const Pax = (props) => {
         <Container  >
             <ImageLoader url={"media/icons/bookings/user (1).png" } leftalign  width="2rem" widthmobile="2rem" height="auto" ></ImageLoader>
         <div className='font-opensans'>
-            <PaxText>4</PaxText>
+            <PaxText>{props.number_of_adults}</PaxText>
             <PaxSubtext>Travelers</PaxSubtext>
 
         </div>

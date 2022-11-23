@@ -61,6 +61,21 @@ import {GoStar} from 'react-icons/go';
         font-weight: 300;
 
     `;
+    const DurationContainer = styled.div`
+    position: absolute;
+    top: 0;
+     width: max-content;
+    font-size: 0.75rem;
+    color: white;
+    border-radius: 5px;
+    padding: 0.25rem;
+    right: 0;
+    background: rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.2em;
+
+    margin: 0.5rem;
+    font-weight: 300;
+    `;
     const Heading = styled.p`
     text-align: center;
         font-size: 1.75rem;
@@ -70,7 +85,7 @@ import {GoStar} from 'react-icons/go';
         text-overflow: ellipsis;
         overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: ${(props) => (props.locations ? props.locations.length ? '1': '2' : '2')};
     -webkit-box-orient: vertical;
      `;
     const Subheading=styled.p`
@@ -100,6 +115,7 @@ import {GoStar} from 'react-icons/go';
     position: absolute;
     top: 0;
     margin: 0.5rem;
+    letter-spacing: 0.2em;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 5px;
     padding: 0.25rem;
@@ -142,16 +158,30 @@ const ImageSlider = (props) => {
       image = props.images[0];
       else image = props.images.main_image;
 
+        let LOCATIONS_TO_SHOW = "";
+      if(props.locations){
+        if(props.locations.length > 2) {
+            LOCATIONS_TO_SHOW=props.locations[0]+", "+props.locations[1]+ "+" +props.locations.length-2;
+        }
+        else{
+          if(props.locations.length===1)
+          LOCATIONS_TO_SHOW="Explore" + props.locations[0];
+          else if(props.locations.length === 2) LOCATIONS_TO_SHOW="Explore" + props.locations[0]+", "+props.locations[1];
+          
+        }
+
+      }
+      console.log(props.locations)
       
     
     return(
         <Container  props={props} ref={Component} >
             {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
             <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
-            {/* <IconsContainer className='font-opensans'>
+            {!props.PW ? <IconsContainer className='font-opensans'>
             
                <IconHoverContainer className='center-div'>
-                {props.filter}
+                {props.filter.split(' ')[0]}
                 </IconHoverContainer> 
                 <div className='center-div'><FontAwesomeIcon icon={faCircle} style={{fontSize: "6px", marginBottom: "0rem"}}/></div>
 
@@ -163,20 +193,23 @@ const ImageSlider = (props) => {
                <IconHoverContainer className='center-div'>
                 Family Trip
                 </IconHoverContainer> 
-            </IconsContainer> */}
-            <PWContainer>
+            </IconsContainer> : 
+            <PWContainer style={{display: 'none'}}>
 
-            </PWContainer>
+            </PWContainer> }
             {/* <RatingContainer className='font-opensans'>
             <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
             {props.rating + '/5'}
              </RatingContainer> */}
+             <DurationContainer className='font-opensans'>
+             {!props.duration  ? props.duration_number+ " " + props.duration_unit : props.duration}
+             </DurationContainer>
             <CustomizableContainer className='font-opensans'>
             100% customizable
             </CustomizableContainer>
 <HeadingContainer>
-  <Heading className='font-opensans'>{props.experience}</Heading>
-  <Subheading className='font-opensans'>Explore Delhi, Rishikesh + 3 </Subheading>
+  <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>
+  <Subheading className='font-opensans'>{LOCATIONS_TO_SHOW}</Subheading>
 </HeadingContainer>
         </Container>
     );

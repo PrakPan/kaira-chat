@@ -79,14 +79,14 @@ const redirect = () => {
     return(
       <Container className="netflix-ite">
         <ImageContainer>
-              <ImageGallery filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
+              <ImageGallery locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
        </ImageContainer>  
        <ContentContainer className="text-cente">
-        <Info   starting_cost={props.starting_cost}></Info>
+        <Info id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
        
        </ContentContainer>
-       <div className='font-opensans text-center' style={{background: '#ECECEC', padding: '0.4rem', letterSpacing: '0.2em', fontWeight: '300', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
-        CREATED  BY  OUR  USER  FROM  NEW  DELHI
+       <div className='font-opensans text-center' style={{background: 'black' , color: 'white', padding: '0.4rem', letterSpacing: '0.2em', fontWeight: '300', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
+        TTW EXCLUSIVE
         </div>
       </Container> 
   ); 

@@ -12,7 +12,7 @@ const Text = styled.p`
     width: 100%;
     line-height: 1;
      &:after{
-        content: 'Price per person';
+        content: 'per person';
         margin-top: 0.25rem;
         font-size: 0.75rem;
         font-weight: 300;

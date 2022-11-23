@@ -177,12 +177,20 @@ const _populateResultsHandelr = (filters) => {
          rating={res.data[i].rating}
          slug={res.data[i].slug}
          id={res.data[i].id}
+         number_of_adults={res.data[i].number_of_adults}
+         PW={true}
+         locations={res.data[i]["itinerary_locations"]}
+
+         
+
          text={res.data[i].short_text} 
          experience={res.data[i].name}
          cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
-         duration={res.data[i].duration}
+         duration_number={res.data[i].duration_number}
+         duration_unit={res.data[i].duration_unit}
+
          location={res.data[i]["experience_region"]}
-         starting_cost={res.data[i].payment_info? res.data[i].payment_info.length?  res.data[i].payment_info[0].cost : res.data[i].starting_price : res.data[i].starting_price }
+         starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
        images={res.data[i].images}></ExperienceCard>
       )
     }
@@ -253,12 +261,16 @@ const _toggleFilterHandler = (filter_text) => {
          rating={res.data[i].rating}
          slug={res.data[i].slug}
          id={res.data[i].id}
+         number_of_adults={res.data[i].number_of_adults}
+        PW={true}
+        locations={res.data[i]["itinerary_locations"]}
          text={res.data[i].short_text} 
          experience={res.data[i].name}
          cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
-         duration={res.data[i].duration}
-         location={res.data[i]["experience_region"]}
-         starting_cost={res.data[i].payment_info? res.data[i].payment_info.length?  res.data[i].payment_info[0].cost : res.data[i].starting_price : res.data[i].starting_price }
+         duration_number={res.data[i].duration_number}
+         duration_unit={res.data[i].duration_unit}
+        location={res.data[i]["experience_region"]}
+         starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
        images={res.data[i].images}></ExperienceCard>
       )
     }
