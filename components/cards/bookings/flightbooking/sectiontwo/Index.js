@@ -69,8 +69,7 @@ const Booking = (props) =>{
          let actualdate = (date.slice(5)+"-"+date.substring(0,4)).replaceAll('-','/') + " "+ date.substring(0,4)
         return(getHumanDate(day+"/"+month+"/"+year) + " " + year);
     }
-    console.log(props.data);
-     return(
+      return(
         <GridContainer>
 
         <LogoContainer>

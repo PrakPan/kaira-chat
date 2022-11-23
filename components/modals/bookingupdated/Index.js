@@ -116,8 +116,7 @@ const Booking = (props) => {
         if(!props.alternates){
             let FILTERS_KEY;
             let BUDGET_TEXT;
-            console.log('b', props.budget)
-            try{
+             try{
             switch(props.budget){
                 case 'Luxury':
                     BUDGET_TEXT=FILTERS.budget[2];
@@ -135,8 +134,7 @@ const Booking = (props) => {
             catch{
                 BUDGET_TEXT=FILTERS.budget[1];
             }
-            console.log(BUDGET_TEXT)
-            if(props.budget)
+             if(props.budget)
             FILTERS_KEY = {
                 budget: [BUDGET_TEXT],
                 type: [],
@@ -149,8 +147,7 @@ const Booking = (props) => {
             };
             // console.log(FILTERS);
                         let filters=_generateFilterKeys(FILTERS_KEY);
-                        console.log(filters);
-
+ 
         axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset="+offset, 
             {
                 "cities": props.selectedBooking.city,
@@ -408,8 +405,7 @@ setUpdateLoadingState(true);
       
       
     const _updateSearchedAccommodation = ({bookings, new_booking, itinerary_id, tailored_id, itinerary_name, number_of_rooms}) => {
-        console.log('test');
-        setUpdateBookingState(true);
+         setUpdateBookingState(true);
          // const token = localStorage.getItem('access_token');
          let room = [];
          try{
@@ -441,8 +437,7 @@ setUpdateLoadingState(true);
                         "itinerary_name": itinerary_name,
                         "itinerary_db_id": null,
         }];
-        console.log(props.selectedBooking)
-        axiosbookingupdateinstance.post("?booking_type=Accommodation&itinerary_id="+props.selectedBooking.itinerary_id, updated_bookings_arr, {headers: {
+         axiosbookingupdateinstance.post("?booking_type=Accommodation&itinerary_id="+props.selectedBooking.itinerary_id, updated_bookings_arr, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
                 props._updateStayBookingHandler(res.data.bookings);
@@ -558,10 +553,8 @@ setUpdateLoadingState(true);
         if(res.data.results.length){
             setNoResults(false);
 
-            console.log(moreOptionsJSX)
-        let options = moreOptionsJSX.slice();
-        console.log(options)
-             for(var i = 0; i < res.data.results.length; i++){
+         let options = moreOptionsJSX.slice();
+              for(var i = 0; i < res.data.results.length; i++){
                 // console.log(res.data.results[i])
                 try{
                  if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)

@@ -56,8 +56,7 @@ const Section= (props) => {
             setCounterValue(counterValue - 1);
         }
     }
-     console.log('bb', props.selectedBooking)
-//    if(props.data)
+ //    if(props.data)
     return(
       <Container className='font-opensans'>  
       <GridContainer>

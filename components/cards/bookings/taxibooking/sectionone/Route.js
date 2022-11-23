@@ -33,8 +33,7 @@ const Location = styled.p`
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
- console.log('dat', props.data);
-   if(props.data)
+    if(props.data)
     return(
       <Container>
         <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{props.data.transfer_type === 'Intercity one-way' ? "One-way Taxi" : 'Round-trip Taxi'}</Heading>

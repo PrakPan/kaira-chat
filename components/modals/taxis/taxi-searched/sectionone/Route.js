@@ -60,8 +60,7 @@ const Section= (props) => {
       }
   
   }
-  console.log(props.selectedBooking)
-   if(props.data)
+    if(props.data)
     return(
       <Container>
         <Heading>{props.selectedBooking.transfer_type ==='Intercity round-trip' ? 'Round-trip Taxi' : 'One-way Taxi' }</Heading>

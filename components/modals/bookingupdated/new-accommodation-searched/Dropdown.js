@@ -5,8 +5,7 @@ import { useState } from 'react';
 const DropDown = (props) =>  {
     const [open, setOpen] = useState(false);
     const _handleChange = (event) => {
-        console.log(event.target.innerHTML)
-        props.onclick({alternates: props.alternates,
+         props.onclick({alternates: props.alternates,
           new_booking: props.new_booking,
           itinerary_id: props.itinerary_id,
           tailored_id: props.tailored_id,

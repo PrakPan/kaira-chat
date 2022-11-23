@@ -58,8 +58,7 @@ const ContentContainer = styled.div`
  
 const Booking = (props) => {
     let isPageWide = media('(min-width: 768px)')
-console.log('b', props.selectedBooking)
-    let OptionsJSX = [];
+     let OptionsJSX = [];
     const [optionsJSX, setOptionsJSX] = useState([]);
     const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
 
@@ -120,8 +119,7 @@ console.log('b', props.selectedBooking)
            
             
             // console.log(FILTERS);
- console.log(props.selectedBooking)
- let params = null;
+  let params = null;
  try{
  if(props.selectedBooking.transfer_type === "Intercity one-way"){
     params =  {
@@ -160,15 +158,12 @@ catch{
         }).then(res => {
             setLoading(false);
             setUpdateLoadingState(false);
-            console.log('r', res.data[0])
-             if(res.data[0].choices.length){
+              if(res.data[0].choices.length){
                 setNoResults(false);
                 let is_min_price_present = false;
-                console.log('l', res.data[0].choices.length)
-                let options = [];
+                 let options = [];
                  for(var i = 0; i< res.data[0].choices.length; i++){
-                    console.log('c', res.data[0].choices[i])
-
+ 
                     // try{
                     //     for(var j = 0 ; j < res.data.results[i].rooms_available.length; j++){
                     //         if(res.data.results[i].rooms_available[j].prices.min_price) {
@@ -249,8 +244,7 @@ catch{
         })
     }
   
-    console.log('b', props.selectedBooking)
-   
+    
       if(props.token)
   return(
       <div >

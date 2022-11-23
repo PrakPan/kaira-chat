@@ -39,8 +39,7 @@ const Section= (props) => {
         }
     
     }
-    console.log('data', props.data);
-   if(props.data)
+    if(props.data)
     return(
       <Container className='font-opensans'>  
                 <div style={{display: 'grid',  gridGap: '1rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>

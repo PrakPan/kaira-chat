@@ -19,8 +19,7 @@ grid-template-columns: 1fr 1fr;
  `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-    console.log('c', props.selectedBooking)
-    const [showFareRules, setShowFareRules] = useState(false);
+     const [showFareRules, setShowFareRules] = useState(false);
 //    if(props.data)
     return(
       <Container className='font-opensans'>  

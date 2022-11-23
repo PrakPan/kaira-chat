@@ -44,8 +44,7 @@ const Section= (props) => {
     const getTime = (datetime) => {
         return(getHumanTime(datetime.substring(11,16)));
     }
-    console.log('d', props.data)
-   if(props.data)
+    if(props.data)
     return(
       <Container className='font-opensans'>  
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>

@@ -33,8 +33,7 @@ const Location = styled.p`
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
- console.log('dat', props.data);
-   if(props.data)
+    if(props.data)
     return(
       <Container>
         <Heading>{'Ferry'}</Heading>

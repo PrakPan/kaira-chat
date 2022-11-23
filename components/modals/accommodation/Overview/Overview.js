@@ -117,8 +117,7 @@ const Overview = (props) => {
 }catch{
 
 }
- console.log('im',props.data);
-  return(
+   return(
       <Container>
         <Name align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.data.name}</Name>
         {/* <ImageContainer>

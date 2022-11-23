@@ -91,8 +91,7 @@ const getDate = (date) => {
         setRoomsJSX(roomsJSX)
       }, [props.rooms]);
      //  if(isPageWide)
-     console.log(props.data)
-    return(
+     return(
         <div>
             <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>
         <Container className='border' style={{borderRadius: "10px"}}>

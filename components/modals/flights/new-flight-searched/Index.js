@@ -37,8 +37,7 @@ const Booking = (props) =>{
     //     );
     // } 
     //  if(isPageWide)
-    console.log('b', props.selectedBooking);
-    return(
+     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
           <SectionTwo data={props.data}></SectionTwo>
          <SectionThree selectedBooking={props.selectedBooking} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>

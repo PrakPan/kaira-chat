@@ -68,8 +68,7 @@ const Section= (props) => {
     }catch{
 
     }
-    console.log('r',rooms[0])
-   if(props.data)
+    if(props.data)
     return(
       <Container className='font-opensans'>  
                 <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}>

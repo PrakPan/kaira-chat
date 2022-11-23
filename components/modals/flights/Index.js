@@ -138,8 +138,7 @@ const Booking = (props) => {
         // const token = localStorage.getItem('access_token');
         let options = [];
         setLoading(true);
-        console.log('sb', props.selectedBooking)
-        if(props.selectedBooking && props.token)
+         if(props.selectedBooking && props.token)
         axiosflightsearch.get( "/?limit="+limit+"&offset="+offset, {headers: {
             'Authorization': `Bearer ${props.token}`
             },
@@ -427,8 +426,7 @@ setViewMoreStatus(false);
             localStorage.setItem('tbo_trace_id', res.data.TraceId)
             // const flights
              let options = optionsJSX.slice();
-             console.log(optionsJSX);
-            if(res.data.Results.length){
+             if(res.data.Results.length){
                 for(var i =0 ; i < res.data.Results.length  ; i++) {
                     options.push(
                         <Flight itinerary_id={props.itinerary_id}  data={res.data.Results[i]} selectedBooking={props.selectedBooking} _updateBookingHandler={_newUpdateBookingHandler}></Flight>

@@ -87,8 +87,7 @@ const getDate = (date) => {
         setRoomsJSX(roomsJSX)
       }, [props.rooms]);
       const [showDetails, setShowDetails] = useState(false);
-console.log('d', props.data)
-     //  if(isPageWide)
+      //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
             <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>

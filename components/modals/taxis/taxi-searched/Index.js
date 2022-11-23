@@ -43,8 +43,7 @@ const Booking = (props) =>{
  
 
   
-    console.log('d', props.data)
-    //  if(isPageWide)
+     //  if(isPageWide)
     return(
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne  _updateSearchedTaxi={props._updateSearchedTaxi} setShowTaxiModal={props.setShowTaxiModal} selectedBooking={props.selectedBooking} data={props.data}></SectionOne>

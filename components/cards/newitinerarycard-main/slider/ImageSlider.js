@@ -171,8 +171,7 @@ const ImageSlider = (props) => {
         }
 
       }
-      console.log(props.locations)
-      
+       
     
     return(
         <Container  props={props} ref={Component} >

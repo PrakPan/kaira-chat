@@ -12,8 +12,7 @@ const DropDown = (props) =>  {
         }
       )
     }
-    console.log('id', props.itinerary_id)
-  return (
+   return (
     <Dropdown  drop={'up'} onChange={_handleChange} >
       <Dropdown.Toggle  variant="success" id="taxilisting-dropdown" className="border">
         Select

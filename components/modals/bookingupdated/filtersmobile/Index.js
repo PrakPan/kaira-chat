@@ -53,8 +53,7 @@ export default function TemporaryDrawer(props) {
     const [filterHeading, setFilterHeading] = useState('Budget');
 
   const _selectFilter = (event, filter) => {
-    console.log('f', filter.id);
-         if(filter === 0) setFilterHeading('Budget')
+          if(filter === 0) setFilterHeading('Budget')
         else if(filter === 1) setFilterHeading('Type');
         // else setFilterHeading('Star Category');
        setFilterSelected(filter);
@@ -73,8 +72,7 @@ export default function TemporaryDrawer(props) {
       setState(false);
  }
  const _handleChange = (event, value) => {
-  console.log(event, value);
- }
+  }
   return (
     <div>
         <React.Fragment key={'bottom'}>

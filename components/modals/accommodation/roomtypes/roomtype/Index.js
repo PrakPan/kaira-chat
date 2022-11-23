@@ -109,8 +109,7 @@ const RoomType = (props) => {
             }
         }
       }
-      console.log('data', props.data)
-      if(true)
+       if(true)
    return(
       <Container className='border-thin'>
             <div style={{padding: !isPageWide ?  '2vw' : '1vw', width: isPageWide ? '25vh' : 'max-cotent'}}>

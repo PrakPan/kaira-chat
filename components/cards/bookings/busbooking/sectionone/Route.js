@@ -40,8 +40,7 @@ const Location = styled.p`
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
- console.log(props.data)
-   if(props.data)
+    if(props.data)
     return(
       <Container>
         <Heading>{props.data.bus_type}</Heading>
