@@ -125,7 +125,7 @@ const Accommodation = (props) => {
     }}catch{
 
     }
-   return(
+  return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}} onClick={props.setShowDetails}>
             <Name className='font-opensans hover-pointer'  >
@@ -176,7 +176,7 @@ const Accommodation = (props) => {
                   tailored_id: props.tailored_id,
         }}
          bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Button></div>
-       :  <div className='hidden-mobile'><Dropdown itinerary_id={props.itinerary_id}  tailored_id={props.tailored_id} fontSize="1rem" new_booking={props.accommodation} fontSizeDesktop="1.25rem" onclick={props.} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Dropdown></div>}
+       :  <div className='hidden-mobile'><Dropdown itinerary_id={props.itinerary_id}  tailored_id={props.tailored_id} fontSize="1rem" new_booking={props.accommodation} fontSizeDesktop="1.25rem" onclick={props._updateSearchedAccommodation} bgColor="#f7e700" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Select</Dropdown></div>}
 
 </div>
         
