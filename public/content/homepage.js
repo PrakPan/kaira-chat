@@ -61,7 +61,7 @@ const experiences = {
     "Recommended experiences": [
         //Add mukteshwar caravan experience
         {  
-          "id":"tVgVmsv340DH84sB",
+          "id":"553f6a52-40af-40b9-bc18-10121194026d",
           "slug": "life-in-a-pahadi-village",
           "experience_filters": ["Isolated"],
           "name": "Life in a Pahadi Village",
@@ -89,7 +89,7 @@ const experiences = {
             ],
       },
         {  
-            "id": "pOoRBeFl9IDkuG0G",
+            "id": "edc49cb9-d375-4473-aa2f-3555dd4354c3",
             "slug": "the-lake-city-caravan-experience",
             "name": "The Lake City Caravan Experience",
             'number_of_adults': 6,
@@ -119,7 +119,7 @@ const experiences = {
               ],
         },
         {  
-            "id":"gykv0NEx0QhV5mOC",
+            "id":"8975c808-d678-481d-af0b-bdc0b0342db4",
             "slug": "meadows-of-kheerganga",
             "name": "Meadows of Kheerganga",
             'budget': 'Affordable',
@@ -146,7 +146,7 @@ const experiences = {
               ],
         },
         {  
-            "id":"m91UR7oDHz9Hgqaj",
+            "id":"ac14fffd-9115-4dec-a3ad-08239b831c74",
             'budget': 'Affordable',
           'group_type': 'Solo',
           'number_of_adults': 1,
@@ -176,7 +176,7 @@ const experiences = {
     //Experiences under second heading
     "Work from home redefined": [
       {  
-        "id":"E7bUyDHPiTpnpUcL",
+        "id":"269b812b-53cc-4ad7-9946-8a97b91e197f",
         'budget': 'Affordable',
         'group_type': 'Solo',
         'number_of_adults': 1,
@@ -204,7 +204,7 @@ const experiences = {
           ],
       },  
         {  
-            "id":"m91UR7oDHz9Hgqaj",
+            "id":"ac14fffd-9115-4dec-a3ad-08239b831c74",
             "name": "Workcation at Manali",
             "slug": "workcation-at-manali",
             'budget': 'Affordable',
@@ -232,7 +232,7 @@ const experiences = {
 
         },
         {  
-          "id":"HfZn6sweUzYf5IVY",
+          "id":"b7afefa3-928b-44e2-a00e-0968fb3db817",
           "slug": "workcation-in-kasol",
           "experience_filters": [    "Nature and Retreat",       ],
           'budget': 'Affordable',
@@ -259,7 +259,7 @@ const experiences = {
             ],
       },
       {  
-        "id":"DWems4qeVK82azJH",
+        "id":"091a8312-5578-471b-8bca-57110fd13483",
         "slug": "workcation-in-rishikesh",
         "name": "Workcation in Rishikesh",
         "experience_filters": [    "Adventure and Outdoors",          ],
@@ -299,7 +299,7 @@ const experiences = {
           'budget': 'Affordable',
           'group_type': 'Solo',
           'number_of_adults': 1,
-            "id":"nfxqyIEL0p6MrUwA",
+            "id":"5138a1cc-c3e8-4aa1-96ad-47d599702447",
             "slug": "social-travel-north-india",
             "name": "Social Travel: North India",
             "experience_filters": [    "Art and Culture",          ],
@@ -327,12 +327,12 @@ const experiences = {
           'budget': 'Affordable',
           'group_type': 'Solo',
           'number_of_adults': 1,
-          "id":"rm6WQxKhFE9SXrmf",
-          "name": "Volunteering with woman community",
-          "experience_filters": [    "Art and Culture",          ],
+          "id":"40b075cc-3a2c-4643-aae4-687bbd7b2004",
+          "name": "Matt's volunteering in India",
+          "experience_filters": [    "Social",          ],
           "slug": "volunteer-with-woman-community",
 
-          "experience_region": "Rajasthan",
+          "experience_region": "India",
           "rating": 4.8,
           "duration": "5 days",
           "starting_cost" : "5500",
@@ -343,7 +343,7 @@ const experiences = {
             },
             "payment_info": [
               {
-                "cost": 550000,
+                "cost": 1550000,
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
@@ -355,7 +355,7 @@ const experiences = {
           'budget': 'Affordable',
           'group_type': 'Solo',
           'number_of_adults': 1,
-            "id":"PlQ0KBMgeM9sX0bT",
+            "id":"27abbde4-932a-4076-85ea-103f9ba34b4e",
             "name": "Volunteer in Delhi",
             "experience_region": "Delhi",
             "slug": "volunteer-in-delhi",
@@ -383,7 +383,7 @@ const experiences = {
           'budget': 'Affordable',
           'group_type': 'Friends',
           'number_of_adults': 2,
-            "id":"oLbmmI8iye1VNblc",
+            "id":"772e2aab-16f0-48d1-a485-23ca05c09a07",
             "name": "An offbeat vacation at Bishnoi Village",
             "experience_region": "Rajasthan",
             "rating": 4.8,
@@ -422,7 +422,7 @@ const experiences = {
     //4th expeirneces grid
     "Live a different lifestyle": [
         {  
-            "id":"Nj3FSTBYHN4REuON",
+            "id":"61928a60-59d3-479b-b561-559a435c1a2c",
             "name": "Life of a Nomad",
             'budget': 'Affordable',
             'group_type': 'Friends',
@@ -449,7 +449,7 @@ const experiences = {
 
         },
         {  
-            "id":"oLbmmI8iye1VNblc",
+            "id":"772e2aab-16f0-48d1-a485-23ca05c09a07",
             "name": "An offbeat vacation at Bishnoi Village",
             "experience_region": "Rajasthan",
             "experience_filters": [    "Art and Culture",          ],
@@ -477,7 +477,7 @@ const experiences = {
 
         },
         {  
-            "id":"BFQiYWY2KGOBLtM2",
+            "id":"95b726fa-e00c-4cd2-b77c-ac47316ba414",
             "name": "Off the grid Goa",
             "slug": "off-the-grid-goa",
             'budget': 'Affordable',
@@ -504,7 +504,7 @@ const experiences = {
 
         },
         {  
-          "id": "nvL5bBaPijoycZJh",
+          "id": "1895df40-80bf-457e-a8fd-6460d96de284",
           "slug": "manali-trance",
           "name": "Manali Trance",
           "starting_cost": "6000",
@@ -534,7 +534,7 @@ const experiences = {
     ],
     "Women's Day Specials": [
       {  
-        "id": "3uB5m3sBWOGtAGF-uXDI",
+        "id": "f65b8d06-f497-4313-9f06-42933ebb009d",
         "slug": "manali-trance",
         'budget': 'Luxury',
         'group_type': 'Solo',
@@ -562,7 +562,7 @@ const experiences = {
   
     },
     {  
-      "id": "rOLMAnwBWOGtAGF-JU43",
+      "id": "04fa8a36-64a8-4f61-a4db-4759df73c4c8",
       "slug": "manali-trance",
       'budget': 'Luxury',
       'group_type': 'Solo',
@@ -590,7 +590,7 @@ const experiences = {
 
   },
   {  
-    "id": "zTd8ZX8BHJjZ2cHLyZW2",
+    "id": "cb24dd9e-2529-4717-9f1f-ee80930aacce",
     "slug": "manali-trance",
     "name": "Monsterrat's solo volunteering",
     "starting_cost": "6000",
@@ -617,7 +617,7 @@ const experiences = {
       ],
 
 }, {  
-  "id": "--BR_HoBlZvI8TSUql8l",
+  "id": "bdb09db1-3c34-4a69-a3e0-98cfbda0c49e",
   "slug": "manali-trance",
   'budget': 'Luxury',
   'group_type': 'Friends',
