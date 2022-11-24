@@ -79,7 +79,7 @@ const Element = (props) =>{
                       
                 {props.text && !props.is_food && !props.is_poi_rec? <Description className={props.blur ? "font-opensans blurry-text" : "font-opensans"}>{props.text}</Description> : null}
                 {props.is_food ? <Food text={props.text}></Food> : null}
-                {props.meta  ? <Notes blur={props.blur} meta={props.meta}></Notes> : null}
+                {props.meta && !(props.element_type === ITINERARY_ELEMENT_TYPES.transfer)  ? <Notes blur={props.blur} meta={props.meta}></Notes> : null}
                 {props.is_poi_rec ? <Poi text={props.text}></Poi> : null}
                 {props.activity_data ? props.activity_data.poi ? props.activity_data.poi.tips ?  props.activity_data.poi.tips.length ? 
                  <div className='font-opensans' style={{fontSize: '0.75rem', margin: '0.5rem 0'}}>
