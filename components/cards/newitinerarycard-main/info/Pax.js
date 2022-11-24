@@ -23,7 +23,7 @@ const PaxSubtext = styled.p`
     margin: 0;
     font-size: 0.75rem;
     @media screen and (min-width: 768px){
-        font-size: 1rem;
+        font-size: 0.85rem;
 
     }
 

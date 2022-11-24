@@ -14,16 +14,14 @@ const Text = styled.p`
      &:after{
         content: 'per person';
         margin-top: 0.25rem;
-        font-size: 0.75rem;
+        font-size: 0.75rem !important;
         font-weight: 300;
         display: block;
         color: rgba(91, 89, 89, 1);
     }
     @media screen and (min-width: 768px){
-        font-size: 1.25rem;
-
         &:after{
-            font-size: 1rem;
+            font-size: 0.85rem !important;
            
         }
     }

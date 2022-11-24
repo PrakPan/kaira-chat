@@ -103,7 +103,7 @@ const getDate = (date) => {
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
                     <SectionOne data={props.data}  ></SectionOne>
-                    <SectionTwo data={props.data}></SectionTwo>
+                    <SectionTwo isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
                     <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectActivityBookingHandler} data={props.data}  is_selecting={props.is_selecting}></SectionThree>
                     <SectionFour setShowBookingModal={props.setShowBookingModal}></SectionFour>
                     {/* {props.type === "Accommodation" ? 

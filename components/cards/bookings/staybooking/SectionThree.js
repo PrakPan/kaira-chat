@@ -46,9 +46,9 @@ const Section= (props) => {
                 </HoverConainer >
                 {/* <div></div> */}
                 <div className='center-di'>
-                <Cost className='font-opensans'>
+                {/* <Cost className='font-opensans'>
                 {!props.are_prices_hidden ? props.data.booking_cost ? "₹ " + getIndianPrice(Math.round(props.data.booking_cost/100)) +" /-": null : null}
-                </Cost>
+                </Cost> */}
                 </div>
       </Container>
   ); 

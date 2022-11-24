@@ -157,16 +157,17 @@ const ImageSlider = (props) => {
       if(isArr || props.images === null)
       image = props.images[0];
       else image = props.images.main_image;
-
+console.log('locations', props.locations)
         let LOCATIONS_TO_SHOW = "";
       if(props.locations){
         if(props.locations.length > 2) {
-            LOCATIONS_TO_SHOW=props.locations[0]+", "+props.locations[1]+ "+" +props.locations.length-2;
-        }
+            LOCATIONS_TO_SHOW="Explore "+props.locations[0]+", "+props.locations[1]+ "+" +(props.locations.length-2).toString();
+            console.log('locations to show', LOCATIONS_TO_SHOW)
+          }
         else{
           if(props.locations.length===1)
-          LOCATIONS_TO_SHOW="Explore" + props.locations[0];
-          else if(props.locations.length === 2) LOCATIONS_TO_SHOW="Explore" + props.locations[0]+", "+props.locations[1];
+          LOCATIONS_TO_SHOW="Explore " + props.locations[0];
+          else if(props.locations.length === 2) LOCATIONS_TO_SHOW="Explore " + props.locations[0]+", "+props.locations[1];
           
         }
 

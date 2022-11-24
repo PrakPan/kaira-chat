@@ -50,9 +50,9 @@ const Section= (props) => {
 
                 <div style={{fontSize: '14px', fontWeight: '300'}} className="font-opensans center-div blurry-text">Flights starting from</div> }
                 <div >
-                {!props.are_prices_hidden ? <Cost className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>
+                {/* {!props.are_prices_hidden ? <Cost className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>
                 {"₹"+ getIndianPrice(Math.round(props.data.booking_cost/100))+" /-"}
-                </Cost>:null}
+                </Cost>:null} */}
                 </div>
       </Container>
   ); 

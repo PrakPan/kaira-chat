@@ -99,8 +99,8 @@ const getDate = (date) => {
                         <FontAwesomeIcon icon={faStar} style={{fontSize: '0.75rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
-                    <SectionOne  setShowDetails={() => setShowDetails(true)} data={props.data}  ></SectionOne>
-                    <SectionTwo data={props.data}></SectionTwo>
+                    <SectionOne   setShowDetails={() => setShowDetails(true)} data={props.data}  ></SectionOne>
+                    <SectionTwo  isDatePresent={props.isDatePresent}  data={props.data}></SectionTwo>
                     <SectionThree are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
                     <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour>
                     {/* {props.type === "Accommodation" ? 
