@@ -9,13 +9,12 @@ const Container = styled.div`
 position: sticky;
 top: 0;
 padding: 0.5rem;
-display: flex;
-align-items: center;
+ display: flex;
+ align-items: center;
 background-color: black;
 z-index: 1000;
 height: 66px;
-display: grid;
-grid-template-columns: auto max-content;
+
 @media screen and (min-width: 768px){
 
 }
@@ -63,12 +62,24 @@ font-weight: 700;
    }
  `;
 
+ const SetWidthContainer = styled.div`
+ display: grid;
+grid-template-columns: auto max-content;
+ @media screen and (min-width: 768px){
+    width: 90vw;
+    margin: auto ;
+    padding-left: 2rem;
+
+
+   }
+ `;
 const Menu = (props) => {
     const router = useRouter();
 
   
   return(
     <Container className="" style={{}}>
+        <SetWidthContainer>
        <FiltersContainer style={{ }}>
         {/* <DropDown className='font-opensans hover-pointer'>Duration</DropDown>
         <DropDown className='font-opensans hover-pointer'>Budget</DropDown>
@@ -112,6 +123,7 @@ const Menu = (props) => {
             <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
 
         </div>
+        </SetWidthContainer>
    </Container>
   );
 }

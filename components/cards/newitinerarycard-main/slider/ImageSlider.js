@@ -70,8 +70,8 @@ import {GoStar} from 'react-icons/go';
     border-radius: 5px;
     padding: 0.25rem;
     right: 0;
-    background: rgba(0, 0, 0, 0.4);
-    letter-spacing: 0.2em;
+    background: rgba(0, 0, 0, 0.6);
+    letter-spacing: 0.1em;
 
     margin: 0.5rem;
     font-weight: 300;
@@ -115,8 +115,8 @@ import {GoStar} from 'react-icons/go';
     position: absolute;
     top: 0;
     margin: 0.5rem;
-    letter-spacing: 0.2em;
-    background: rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.1em;
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 5px;
     padding: 0.25rem;
     font-size: 0.75rem;
@@ -202,10 +202,10 @@ console.log('locations', props.locations)
             {props.rating + '/5'}
              </RatingContainer> */}
              <DurationContainer className='font-opensans'>
-             {!props.duration  ? props.duration_number+ " " + props.duration_unit : props.duration}
+             {!props.duration  ? props.duration_number+ " " + props.duration_unit.toUpperCase() : props.duration.toUpperCase()}
              </DurationContainer>
             <CustomizableContainer className='font-opensans'>
-            100% customizable
+            100% CUSTOMISABLE
             </CustomizableContainer>
 <HeadingContainer>
   <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>

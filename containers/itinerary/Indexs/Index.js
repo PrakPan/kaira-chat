@@ -218,7 +218,7 @@ setStayLoading(false);
             }
             else {
                setUserEmail(res.data.user_email);
-               if(res.data.check_in) setIsDatePresent(true);
+               if(res.data.start_date) setIsDatePresent(true);
               setItineraryReleased(res.data.is_visible_to_customer);
               setItineraryDate(res.data.created_at);
               setTimeRequired(res.data.time_needed_for_itinerary_completion);

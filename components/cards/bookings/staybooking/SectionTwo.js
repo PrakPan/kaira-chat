@@ -71,19 +71,19 @@ const Section= (props) => {
     if(props.data)
     return(
       <Container className='font-opensans'>  
-                <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}>
+                {props.isDatePresent ? <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
-                        {props.data.check_in &&  props.isDatePresent ? <div>
+                        {props.data.check_in   ? <div>
                             <Heading className='font-opensans'>Check In</Heading>
                             <Text className='font-opensans'>{getDate(props.data.check_in)}</Text>
                         </div> : null}
-                        {props.data.check_out &&  props.isDatePresent? <div>
+                        {props.data.check_out ? <div>
                             <Heading className='font-opensans'>Check Out</Heading>
                             <Text className='font-opensans'>{getDate(props.data.check_out)}</Text>
                         </div> : null}
                     </div>
-                </div>
+                </div> : null}
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridColumnGap: '0.5rem', marginBottom: '0.25rem'}}>
                     <ImageLoader url="media/icons/bookings/bed.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 

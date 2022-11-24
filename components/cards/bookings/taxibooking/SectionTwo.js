@@ -43,7 +43,7 @@ const Section= (props) => {
     return(
       <Container className='font-opensans'>  
                 <div style={{display: 'grid',  gridGap: '1rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>
-                    <div style={{display: 'grid', gridTemplateColumns: 'max-content auto' , gridGap: '0.5rem',}}><ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    {props.isDatePresent ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto' , gridGap: '0.5rem',}}><ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                
                         {props.data.check_in &&  props.isDatePresent ? <div>
                             <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>Trip Start</Heading>
@@ -52,8 +52,8 @@ const Section= (props) => {
 
                         </div> : <div></div>}
                 
-                     </div>
-                    {props.data.check_out && props.data.transfer_type !== 'Intercity one-way' ? <div>
+                     </div> : null}
+                    {props.data.check_out && props.data.transfer_type !== 'Intercity one-way' && props.isDatePresent? <div>
                             <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>Trip End</Heading>
                             <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans blurry-text'}>{getDate(props.data.check_out)}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}

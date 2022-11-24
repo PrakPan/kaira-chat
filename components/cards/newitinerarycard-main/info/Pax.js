@@ -18,7 +18,7 @@ line-height: 1;
 }
 `;
 const PaxSubtext = styled.p`
-    font-weight: 300;
+    font-weight: 400;
     color: rgba(91, 89, 89, 1);
     margin: 0;
     font-size: 0.75rem;
@@ -30,8 +30,6 @@ const PaxSubtext = styled.p`
 `;
 const Pax = (props) => {
   
- 
-    
     return(
         <Container  >
             <ImageLoader url={"media/icons/bookings/user (1).png" } leftalign  width="2rem" widthmobile="2rem" height="auto" ></ImageLoader>

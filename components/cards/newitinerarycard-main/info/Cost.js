@@ -15,7 +15,7 @@ const Text = styled.p`
         content: 'per person';
         margin-top: 0.25rem;
         font-size: 0.75rem !important;
-        font-weight: 300;
+        font-weight: 400;
         display: block;
         color: rgba(91, 89, 89, 1);
     }
