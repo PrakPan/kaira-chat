@@ -202,7 +202,7 @@ console.log('locations', props.locations)
             {props.rating + '/5'}
              </RatingContainer> */}
              <DurationContainer className='font-opensans'>
-             {!props.duration  ? props.duration_number+ " " + props.duration_unit.toUpperCase() : props.duration.toUpperCase()}
+             {!props.duration  ? props.duration_unit && props.duration_number ? props.duration_number+ " " + props.duration_unit.toUpperCase() : null : props.duration ? props.duration.toUpperCase() : null}
              </DurationContainer>
             <CustomizableContainer className='font-opensans'>
             100% CUSTOMISABLE
