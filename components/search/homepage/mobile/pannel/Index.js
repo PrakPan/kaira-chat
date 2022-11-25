@@ -10,13 +10,13 @@ import * as ga from '../../../../../services/ga/Index';
 const Container = styled.div`
     background-color: white;
     border-radius: 2rem;
-    height: 90vh;
+    height: 100vh;
     text-align: left;
     position: fixed;
-top: 20vw;
+top: 0;
 width: 100%;
 z-index: 1100;
-overflow: scroll;
+overflow: hidden;
 @media screen and (min-width: 768px){
         width: 100%;
     }

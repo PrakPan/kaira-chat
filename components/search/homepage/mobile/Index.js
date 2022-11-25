@@ -19,11 +19,16 @@ const MobileSearch= (props) => {
          axioslocationsinstance.get("").then(response => {
                   setHotLocationsData(response.data);
              });
-       },[]);
+             if(props.open) setPannelOpen(true)
+       },[props.open]);
+       const _handlePannelClose = () => {
+         setPannelOpen(false);
+         if(props.onclose) props.onclose();
+       }
     return(
         <Container>
       
-           {pannelOpen ? <Pannel hotlocations={hotLocationsData} setPannelClose={() => setPannelOpen(false)}></Pannel> : <Bar setPannelOpen={() => setPannelOpen(true)}></Bar>} 
+           {pannelOpen ? <Pannel hotlocations={hotLocationsData} setPannelClose={_handlePannelClose}></Pannel> : <Bar setPannelOpen={() => setPannelOpen(true)}></Bar>} 
         </Container>
     );
 }

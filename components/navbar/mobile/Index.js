@@ -13,6 +13,8 @@ import ImageLoader from '../../ImageLoader';
 import cross from '../../../public/assets/close.png';
 import * as logout from '../../../store/actions/logout';
 import Notifications from '../../modals/Notifications/Index';
+import SearchMobile from '../../search/homepage/mobile/Index';
+import {FaSearch} from 'react-icons/fa'
 // import ImageLoader from '../../ImageLoader';
 const Container = styled.div`
 background-color: white;
@@ -83,6 +85,7 @@ const RedDot = styled.div`
 const Mobile = (props) => {
     const [toggleMenu, setToggleMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [toggleSearch, setToggleSearch] = useState(false);
 
     const _handleNotifications = ( ) => {
         setToggleMenu(false);
@@ -110,7 +113,7 @@ const Mobile = (props) => {
              {/* <TTWLogo src={TTWlogowhite}></TTWLogo> */}
              {props.headerColor === 'black' ? <Link  href='/'><ImageLoader  hoverpointer  onclick={_handleHomepageRedirect} width="15vw" leftalign widthmobile="15vw" url={'media/website/logowhite.svg'} ></ImageLoader></Link> : <Link href='/'><ImageLoader  hoverpointer  onclick={_handleHomepageRedirect} leftalign width="15vw" widthmobile="15vw"  url={'media/website/logoblack.svg'}></ImageLoader></Link>}
             </div>
-        <div></div>
+            <div style={{}}className="center-div" onClick={() => setToggleSearch(true)}><FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black'}}></FaSearch></div>
         <div style={{display:'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
         {props.notifications.length && props.notOpenCount ? <RedDot className="center-div font-opensans">{props.notOpenCount}</RedDot> : null}
             {props.token?<ImageLoader url={props.image!==null && props.image!=='null' ? props.image : "media/website/user.svg"} onclick={() => setToggleMenu(true)} width="3rem" leftalign height="3rem" widthmobile="3rem" borderRadius="50%"></ImageLoader>:null}
@@ -188,6 +191,8 @@ const Mobile = (props) => {
       </DrawerContainer>
     </Drawer>
     </Container>
+    {toggleSearch ? <div className='hidden-desktop' style={{width: '100%'}}><SearchMobile onclose={() => setToggleSearch(false)} open={true}></SearchMobile></div> : null}
+
     <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} _deleteNotificationHandler={props._deleteNotificationHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)}></Notifications>
 
     </div>

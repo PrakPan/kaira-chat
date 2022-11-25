@@ -20,7 +20,7 @@ import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/Locations';
-import FullImgContent from './search/BlackFriday';
+import FullImgContent from './search/SearchFullImgContent';
 import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
 // import howitworksimg1 from '../../public/assets/arts/whyus/1.webp';
