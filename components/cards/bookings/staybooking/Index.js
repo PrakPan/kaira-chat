@@ -70,6 +70,7 @@ const getDate = (date) => {
     return(getHumanDate(day+"/"+month+"/"+year) + " " + year);
 
 }
+// console.log('pri', props.price_type)
      let roomsJSX=[];
     const [RoomsJSX, setRoomsJSX] = useState([]);
     useEffect(() => {
@@ -87,10 +88,15 @@ const getDate = (date) => {
         setRoomsJSX(roomsJSX)
       }, [props.rooms]);
       const [showDetails, setShowDetails] = useState(false);
+      console.log('dat', props.data.costings_breakdown)
       //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
-            <div style={{margin: '0 0 1rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>
+            <div style={{margin: '0 0 0.5rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>
+            {props.data.costings_breakdown ? props.data.costings_breakdown.length ? props.data.costings_breakdown[0].pricing_type==='CP' ? <div className='font-opensans' style={{fontWeight: '300', lineHeight: '1', marginBottom: '1rem'}}>with breakfast</div> : null : null : null}
+            {props.data.costings_breakdown ? props.data.costings_breakdown.length ? props.data.costings_breakdown[0].pricing_type==='MAP' ? <div className='font-opensans' style={{fontWeight: '300', lineHeight: '1', marginBottom: '1rem'}}>with breakfast & lunch / dinner</div> : null : null : null}
+            {props.data.costings_breakdown ? props.data.costings_breakdown.length ? props.data.costings_breakdown[0].pricing_type==='AP' ? <div className='font-opensans' style={{fontWeight: '300', lineHeight: '1', marginBottom: '1rem'}}>with breakfast, lunch & dinner</div> : null : null : null}
+
         <Container className='border' style={{borderRadius: "10px"}}>
             <ImageContainer type={props.data.accommodation_type} star_category={props.data.star_category} images={props.data.images} are_prices_hidden={props.are_prices_hidden} _setImagesHandler={props.setImagesHandler}  setShowBookingModal={props.setShowBookingModal} setImagesHandler={props.setImagesHandler}></ImageContainer>
             <div  style={{padding: "",   flex: '1 1 auto', display:  'flex', flexFlow: 'column'}}>
