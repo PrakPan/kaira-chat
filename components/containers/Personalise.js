@@ -52,7 +52,7 @@ const Personalise= (props) => {
           <div className="center-div">
         <Icon src={img}></Icon>
         </div>  
-        <Heading align="center" aligndesktop="left" margin="0" noline  bold>Can't find a suitable experince?</Heading>        
+        <Heading align="center" aligndesktop="left" margin="0" noline  bold>Can't find a suitable experience?</Heading>        
 
         <div className="center-div">
 
