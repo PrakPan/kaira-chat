@@ -177,7 +177,7 @@ console.log('locations', props.locations)
     return(
         <Container  props={props} ref={Component} >
             {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
-            <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
+            <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
             {!props.PW ? <IconsContainer className='font-opensans'>
             
                <IconHoverContainer className='center-div'>

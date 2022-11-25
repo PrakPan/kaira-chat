@@ -22,7 +22,7 @@ const fullimage = (props) =>{
      if(props.center){
         return(
         <Container>
-            {props.img ? <BackgroundImageLoader  center url={props.url} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 900, height: 600}} className="center-div" style={{backgroundImage: `url(${props.img})`}}>{props.children}</BackgroundImageLoader> : <BackgroundImageLoader  center className="center-div" url={props.url} dimensions={{width: 1600, height: 900}}  className="center-div">{props.children}</BackgroundImageLoader>}
+            {props.img ? <BackgroundImageLoader filter={props.filter}  center url={props.url} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 900, height: 600}} className="center-div" style={{backgroundImage: `url(${props.img})`}}>{props.children}</BackgroundImageLoader> : <BackgroundImageLoader  center className="center-div" url={props.url} dimensions={{width: 1600, height: 900}}  className="center-div">{props.children}</BackgroundImageLoader>}
         </Container>
         
     )
@@ -30,7 +30,7 @@ const fullimage = (props) =>{
     else{ 
         return(
         <Container className="center-dv">
- <BackgroundImageLoader  url={props.url} dimensions={{width: 1600, height: 900}}  dimensionsMobile={{width: 900, height: 600}} className="center-dv">{props.children}</BackgroundImageLoader>       
+ <BackgroundImageLoader filter={props.filter} url={props.url} dimensions={{width: 1600, height: 900}}  dimensionsMobile={{width: 900, height: 600}} className="center-dv">{props.children}</BackgroundImageLoader>       
   </Container>
     );
     }

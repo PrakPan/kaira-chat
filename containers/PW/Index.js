@@ -351,7 +351,7 @@ const EXPERIENCE = {
 console.log('filters', filters)
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage url="media/website/Andaman.jpeg" center={isPageWide ? false : true} >
+      <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" center={isPageWide ? false : true} >
           <FullImgContent/>
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
