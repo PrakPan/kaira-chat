@@ -170,7 +170,7 @@ useEffect(() => {
         </SmallContainer>
         <FullContainer
             className={props.center ? "center-div " : ""}
-        style={{backgroundImage: props.filter? props.filter+`, url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`: `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`, width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",display: fullLoaded ? "flex" : "none",backgroundRepeat: 'no-repeat',backgroundPosition:"center",backgroundSize:"cover", borderRadius: props.borderRadius ? props.borderRadius : '0'}}
+        style={{backgroundImage: props.filter? props.filter+`, url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`: `url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`, width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",display: fullLoaded ? "flex" : "none",backgroundRepeat: 'no-repeat',backgroundPosition:"center",backgroundSize:"cover", borderRadius: props.borderRadius ? props.borderRadius : '0'}}
         >
          
            {props.children}

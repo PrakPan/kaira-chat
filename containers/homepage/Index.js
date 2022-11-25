@@ -20,7 +20,7 @@ import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/Locations';
-import FullImgContent from './search/SearchFullImgContent';
+import FullImgContent from './search/BlackFriday';
 import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
 // import howitworksimg1 from '../../public/assets/arts/whyus/1.webp';
@@ -130,8 +130,8 @@ const _handleExperiencesClick = () => {
 }
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage center url="media/website/website banner .png">
-          <FullImgContent tagline="Explore different realities" text="Find an immersive experience or craft one for yourself"/>
+      <FullImage center url="media/website/bf.jpg">
+          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="BLACK FRIDAY" text="20% discount on all tours"/>
       </FullImage>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>

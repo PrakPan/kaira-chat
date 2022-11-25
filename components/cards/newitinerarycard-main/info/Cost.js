@@ -11,6 +11,7 @@ const Text = styled.p`
     text-align: right;
     width: 100%;
     line-height: 1;
+ 
      &:after{
         content: 'per person';
         margin-top: 0.25rem;
@@ -18,11 +19,15 @@ const Text = styled.p`
         font-weight: 400;
         display: block;
         color: rgba(91, 89, 89, 1);
+        text-decoration: none !important;
+
     }
+    
     @media screen and (min-width: 768px){
         &:after{
             font-size: 0.85rem !important;
-           
+            text-decoration: none !important;
+
         }
     }
 `;

@@ -78,7 +78,7 @@ console.log('b', bookings)
         console.log('test', bookings[props.payment.summary[key].bookings[i].id])
         try{
         bookingslist.push(
-          <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem',}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{}</p>
+          <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem',}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{bookings[props.payment.summary[key].bookings[i].id].name}</p>
         )
         bookinglistwithcost.push(
           <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', margin: '0.5rem 0', gridGap: '1rem'}}>
@@ -101,7 +101,7 @@ console.log('b', bookings)
 
       >
         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0'}} >{key}</Typography>
-        <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{"₹ "+ getIndianPrice(Math.round(props.payment.summary[key].cost/100))}</Typography>
+        <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{!props.payment.are_prices_hidden ? "₹ "+ getIndianPrice(Math.round(props.payment.summary[key].cost/100)) : null}</Typography>
 
       </AccordionSummary>
          <div style={{margin: '0 1rem', borderStyle: 'none none none none', borderWidth: '1px', borderColor: "#F7e700", position: 'relative', top: '-0.5rem'}}></div>
