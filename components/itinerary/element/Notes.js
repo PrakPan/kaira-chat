@@ -31,7 +31,7 @@ margin : 0.25rem 0;
 const Notes = (props) =>{
       let NotesArr = [];
         for (const property in props.meta) {
-            if(property !== 'Journey time in secs' && property!=='Time' && property!=="Distance")
+            if(property !== 'Journey time in secs' && property!=='Time' && property!=="Distance" && property!=='distance' && property!=='duration' && property!=='estimated_cost')
                 NotesArr.push(
                     <Text className={props.blur ? "font-opensans blurry-text" : "font-opensans "}><b style={{fontWeight: "600"}} className={props.blur ? "font-opensans blurry-text" : "font-opensans"}>{`${property}: `}</b>{props.meta[property]}</Text>
                 )
