@@ -14,7 +14,8 @@ import Notifications from '../modals/Notifications/Index';
 import urls from '../../services/urls';
 import ImageLoader from '../ImageLoader';
 import * as ga from '../../services/ga/Index';
-
+import {FaSearch} from 'react-icons/fa';
+import DesktopSearch from '../search/header/desktop/Index';
 const NavItemsContainer = styled.div`
   display: none;
 
@@ -26,8 +27,9 @@ const NavItemsContainer = styled.div`
 `;
 
 const NavbarContainer = styled.div`
-
+position: relative;
   color: black;
+  display: flex;
   @media screen and (min-width: 768px) {
     transition: all 0.3s ease-in-out;
     height: 10vh;
@@ -191,12 +193,14 @@ const Navbar = (props) => {
     })
   
   }
+  const [toggleSearch, setToggleSearch] = useState(false);
      return (
     <div>
     <Header changeHeight={Height} >
       <NavbarContainer bgColor={props.bgColor} hideNav={props.hideNav} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white', opacity : props.hideNav ? '0' : '1'}}>
-        
-        <CenterNav>
+      <div style={{position: 'absolute', left: '50%'}} className="center-div" onClick={() => setToggleSearch(true)}><FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black', width: '26px', height:  '26px', marginTop: '20px'}}></FaSearch></div>
+      {toggleSearch ? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : 
+         <CenterNav>
           
           <TTWLogoContainer>
             {/* <Link href='/'> */}
@@ -276,7 +280,7 @@ props.headerColor === 'black'? <ImageLoader  width="7vh" widthmobile="15vh"  lef
             headerColor={props.headerColor}
                /> }
           </NavItemsContainer>
-        </CenterNav>
+        </CenterNav> }
       </NavbarContainer>
             <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)} ></Notifications>
     </Header></div>

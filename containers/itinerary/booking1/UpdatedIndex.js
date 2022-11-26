@@ -556,9 +556,9 @@ const Booking = (props) => {
       >
             <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
         <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab> : null : null}
+       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab> : <Tab label={"Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights" style={{display: 'none'}}></Tab> : <Tab label={"Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights" style={{display: 'none'}}></Tab>}
 
-       {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
+       {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> :  <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab>: <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab> }
       </Tabs>
       <TabPanel value={value} index={0} >
             {props.stayBookings ?  props.stayBookings.length ?bookingsAccommodationsDesktopJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
@@ -584,7 +584,7 @@ const Booking = (props) => {
 
        </TabPanel>
        <TabPanel value={value} index={3} >
-           {props.activityBookings ?  props.activityBookings.length ? bookingsAcivityDesktopJSX :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
+           {true ? true ? bookingsAcivityDesktopJSX :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
            {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
@@ -627,9 +627,9 @@ const Booking = (props) => {
       >
        <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
        <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>: null : null}
+       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>: <Tab label={"Flights"}  style={{display: 'none'}} className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab> :  <Tab label={"Flights"}  style={{display: 'none'}} className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>}
 
-       {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-opensans"></Tab> : null : null}
+       {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-opensans"></Tab> : <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab> : <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab>}
       </Tabs>
       <TabPanel value={value} index={0} >
             {props.stayBookings ?  props.stayBookings.length ? bookingsAccommodationsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
@@ -649,7 +649,7 @@ const Booking = (props) => {
        </TabPanel>
        <TabPanel value={value} index={3} >
             {props.activityBookings ?  props.activityBookings.length ?  bookingsActivityMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
-            {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
              {/* <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>

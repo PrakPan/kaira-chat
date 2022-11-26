@@ -53,9 +53,7 @@ const ExperienceCard= (props) => {
  
 
 const router = useRouter();
-const _handleRedirect = () => {
-  router.push('/travel-experiences/'+props.slug)
-}
+ 
  
 const [loading, setLoading] = useState(false);
 
@@ -76,8 +74,12 @@ const redirect = () => {
     callback: redirect,
   })
 }
+const _handleRedirect = () => {
+  router.push('/itinerary/'+props.id)
+ }
+    
     return(
-      <Container className="netflix-ite">
+      <Container className="netflix-ite" onClick={_handleRedirect}>
         <ImageContainer>
               <ImageGallery budget={props.budget} group_type={props.group_type}   locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
        </ImageContainer>  
