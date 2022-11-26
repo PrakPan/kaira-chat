@@ -54,7 +54,7 @@ const FullImgContent = (props) => {
 
         <Container className='font-opensans center-di text-center'>
            <PaddingContianer >
-            <Heading>Physics Wallah Planner</Heading>
+            <Heading>Physics Wallah Holidays</Heading>
             <SubText>Flat 50% off, use code:
                 <span style={{marginLeft: '6px', fontWeight: '800'}}>TTWxPW</span>
             </SubText>

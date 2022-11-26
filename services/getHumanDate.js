@@ -10,7 +10,7 @@ export const getHumanDate = (dateString) => {
 
         // month is 0-based, that's why we need d[1] - 1
         let date = new Date(d[2], d[1] - 1, d[0]);
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
         let day = date.getDate();
         if(day === 11) day ='11th';
         else if(day === 12) day ='12th';

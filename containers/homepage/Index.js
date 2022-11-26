@@ -131,7 +131,7 @@ const _handleExperiencesClick = () => {
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage center url="media/website/bf.jpg" >
-          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="BLACK FRIDAY" text="20% discount on all tours"/>
+          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="BLACK FRIDAY" text="20% discount on all trips"/>
       </FullImage>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
