@@ -37,7 +37,7 @@ const Experience = (props) => {
         <div style={{minHeight: '100vh'}}>
           <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
           <div>
-            <FullImage center url={true ? 'media/website/Cropped guide home.png' : ""} >
+            <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   center url={true ? 'media/website/Cropped guide home.png' : ""} >
             <FullImgContent tagline="Travel Guides" text="Wherever you go becomes a part of you somehow"/>
 
             </FullImage>
@@ -74,7 +74,7 @@ const Experience = (props) => {
 
         <div style={{}}>
           {/* <ExperienceGallery   filter={experienceLoaded && experienceData.data.most_popular_for ? experienceData.data.most_popular_for[0] : null}  experienceLoaded={experienceLoaded} title={experienceData.data.name} region={experienceLoaded ? experienceData.data.state_name : null} duration={experienceLoaded ? experienceData.data.ideal_duration_days+" Days" : null}  setGalleryOpen={setGalleryOpen} images={experienceData.data.images}  /> */}
-          <FullImage url={true ? "media/website/Cropped guide home.png" : ""} >
+          <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   url={true ? "media/website/Cropped guide home.png" : ""} >
               <FullImgContent tagline="Travel Guides" text="Wherever you go becomes a part of you somehow"/>
           </FullImage>
           <Menu   data={props.guideData}   ></Menu>

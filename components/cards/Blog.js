@@ -35,6 +35,12 @@ const Name = styled.p`
         margin: 2rem auto;
         text-align: center;
     }
+    overflow: hidden;
+    line-height: 1.5;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
 `;
 
 
@@ -71,6 +77,12 @@ const Experiences= (props) => {
         line-height: 1;
         display: block;
     }
+    overflow: hidden;
+    line-height: 1.5;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 4;
+-webkit-box-orient: vertical;
 
        
 `;
@@ -91,22 +103,9 @@ const Experiences= (props) => {
       <Container className="center-div">  
         {/* <img style={{ width: "40%", margin: "auto", borderRadius: "50%"}} src={img}></img> */}
         <ImageLoader width={props.location ? '30%' : "40%"} margin="auto" borderRadius="50%" widthmobile="50%" dimensions={{width: 600, height: 600}} url={props.img}></ImageLoader>  
-          <Name className="font-opensans text-center"><b>{props.heading}</b></Name>
-          <Review className="text-center font-nunito" dangerouslySetInnerHTML={props.text ? { __html: props.text.substring(0,150)+"...</p>" } : { __html: +"Looks like there was a problem loading this..." }}></Review>
-          {/* <Button
-            borderRadius="2rem"
-            margin="1rem auto"
-            borderWidth="1px"
-            padding="0.5rem 1rem"
-            color="#212529"
-            fontWeight="300"
-            hoverBgColor="black"
-            hoverColor="white"
-            fontSize="1rem"
-            onclick={props.page || props.link? _onClickHandler : null}
-            >
-                Read More
-            </Button> */}
+          <Name  onClick={props.page || props.link? _onClickHandler : null}  className="font-opensans text-center hover-pointer"><b>{props.heading}</b></Name>
+          <Review             onClick={props.page || props.link? _onClickHandler : null}  className="text-center font-nunito hover-pointer" dangerouslySetInnerHTML={props.text ? { __html: props.text } : { __html: +"Looks like there was a problem loading this..." }}></Review>
+          
      <Button
                boxShadow
             borderRadius="2rem"

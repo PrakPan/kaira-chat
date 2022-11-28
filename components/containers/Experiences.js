@@ -112,7 +112,7 @@ const Experiences = [
           <ExperienceCard 
           key={props.experiences[j].short_text}
           hardcoded={props.experiences[j].payment_info ?true : false }
-          filter={props.experiences[j].experience_filters[0]}
+          filter={props.experiences[j].experience_filters ?  props.experiences[j].experience_filters.length  ? props.experiences[j].experience_filters[0]  : null :  null}
           rating={props.experiences[j].rating}
           slug={props.experiences[j].slug}
           id={props.experiences[j].id}
@@ -121,10 +121,9 @@ const Experiences = [
           number_of_adults={props.experiences[j].number_of_adults}
           text={props.experiences[j].short_text} 
           experience={props.experiences[j].name}
-          cost={props.experiences[j].payment_info ? props.experiences[j].payment_info[0].cost : null}
-          duration={props.experiences[j].duration}
+           duration={props.experiences[j].duration}
           location={props.experiences[j]["experience_region"]}
-          starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info[0].cost : props.experiences[j].starting_price }
+          starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price }
         images={props.experiences[j].images}>
           
           </ExperienceCard>

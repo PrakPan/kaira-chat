@@ -16,7 +16,7 @@ const Container = styled.div`
       @media screen and (min-width: 768px){
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 2.5rem;
+        grid-gap: 1.5rem;
       }
   
     `;

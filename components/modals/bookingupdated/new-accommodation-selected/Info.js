@@ -176,7 +176,7 @@ const Accommodation = (props) => {
                     </RatingContainer> : null}
         <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems:  isPageWide ? 'center' : 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
-                <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)+" /-"}</Cost>
+                {/* <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)+" /-"}</Cost> */}
         </div>
         <div className='hidden-mobile'><Button fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="black" color="white" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Selected</Button></div>
 </div>

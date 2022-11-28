@@ -12,7 +12,8 @@ const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
 @media screen and (min-width: 768px){
-  width: 80%;
+  width: 90%;
+  padding: 0 2rem;
 }
 `;
 const content = {
@@ -186,10 +187,10 @@ const Details = (props) => {
         )
         JSX.push(<div key={i+1000} style={{margin: '5rem'}}></div>)
       }
-      if(props.data[i].experiences.length){
-        for(var j = 0; j < props.data[i].experiences.length ; j++)
-            experiences.push(props.data[i].experiences[j]);
-        if(props.data[i].experiences.length > 3)
+      if(props.data[i].itineraries.length){
+        for(var j = 0; j < props.data[i].itineraries.length ; j++)
+            experiences.push(props.data[i].itineraries[j]);
+        if(props.data[i].itineraries.length > 3)
           JSX.push(<FlickityExperiences    margin="0" experiences={experiences}></FlickityExperiences>)
         else JSX.push(<Experiences    margin="0" experiences={experiences}></Experiences>)
         JSX.push(<div key={i+2000} style={{margin: '5rem'}}></div>)

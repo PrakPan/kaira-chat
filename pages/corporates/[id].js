@@ -19,7 +19,7 @@ const Itinerary = () => {
      
 }, []);
     return (
-    <Layout itinerary>
+    <Layout>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}
         <Head>
             <title> Physics Wallah and TTW | TTW Corporates </title>

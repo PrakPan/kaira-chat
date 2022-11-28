@@ -101,7 +101,7 @@ const Section= (props) => {
             <Text className='font-opensans'>2 Adults , 1 Child(s)</Text>
         </div> */}
         { rooms.length ? 
-            <div className='' style={{display: 'flex', alignItems: 'center'}}>
+            <div className='' style={{display: 'flex', alignItems: 'center',  flexDirection: 'column'}}>
                 <Text className='font-opensans'>{rooms[0].number_of_adults > 1 ?  rooms[0].number_of_adults + " Adults " : "1 Adult"}</Text>
                 <Text className='font-opensans' style={{marginLeft: '0.25rem'}}>{rooms[0].number_of_children ? rooms[0].number_of_children === 1 ?  "1 Child" : rooms[0].number_of_children==='0' ? null : rooms[0].number_of_children + " Children"  : null}</Text>
                 <Text className='font-opensans' style={{marginLeft: '0.25rem'}}>{rooms[0].number_of_infants ? rooms[0].number_of_infants  === 1 ?  "1 Infant" : rooms[0].number_of_infants==='0' ? null : rooms[0].number_of_infants + " Infants" : null}</Text>
@@ -112,7 +112,7 @@ const Section= (props) => {
 </div>
 {props.data.costings_breakdown ? props.data.costings_breakdown.length ? props.data.costings_breakdown[0].pricing_type!=='TBO' && props.data.costings_breakdown[0].pricing_type!=='EP'  ?<div style={{display: 'grid',  gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
     <ImageLoader url="media/icons/bookings/stays/restaurant.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-    <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}> 
+    <div style={{display: 'flex', gap: '1rem', alignItems: 'center',}}> 
         {/* <div className='center-div'>
             <Text className='font-opensans'>2 Adults , 1 Child(s)</Text>
         </div> */}
