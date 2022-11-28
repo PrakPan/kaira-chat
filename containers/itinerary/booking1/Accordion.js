@@ -66,6 +66,14 @@ const HEADINGS = [
 catch{
 
 }
+try{
+  for(var k = 0 ; k < props.activityBookings.length ; k++){
+    bookings= {...bookings, [props.activityBookings[k].id] : props.activityBookings[k] };
+    
+  }}
+catch{
+
+}
 console.log(props.flightBookings)
 console.log('b', bookings)
   for(var key in props.payment.summary){

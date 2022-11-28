@@ -5,6 +5,8 @@ import ImageLoader from '../../components/ImageLoader';
 import {IoCheckboxOutline} from 'react-icons/io5';
 import {IoMdSquareOutline} from 'react-icons/io'; 
 import Spinner from '../../components/Spinner';
+import {AiFillSetting} from  'react-icons/ai';
+// import ImageLoader from '../../components/ImageLoader';
 const Container = styled.div`
 position: sticky;
 top: 0;
@@ -81,9 +83,20 @@ const Menu = (props) => {
     <Container className="" style={{}}>
         <SetWidthContainer>
        <FiltersContainer style={{ }}>
-        {/* <DropDown className='font-opensans hover-pointer'>Duration</DropDown>
+        {/* <div className='center-div'><AiFillSetting style={{color: 'white'}}></AiFillSetting></div> */}
+        {/* <div className='center-div'>
+        <ImageLoader
+        url="media/icons/ui/filter.svg"
+        width="1rem"
+        height="max-content"
+        leftalign
+        >
+        </ImageLoader>
+        </div> */}
+
+        <DropDown className='font-opensans hover-pointer'>Duration</DropDown>
         <DropDown className='font-opensans hover-pointer'>Budget</DropDown>
-        <DropDown className='font-opensans hover-pointer'>Treks</DropDown> */}
+        <DropDown className='font-opensans hover-pointer'>Theme</DropDown>
         {/* <FilterContainer className='hover-pointer' onClick={props.token ? () => props._deselectBookingHandler() : () => props.setShowLoginModal(true)}  >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
@@ -92,7 +105,7 @@ const Menu = (props) => {
                     <FilterText style={{marginLeft: '4px'}}>{true ? 'All Trips' : 'Select'}</FilterText>
             
                 </FilterContainer > */}
-        <FilterContainer  className='hover-pointer'  onClick={() => props._toggleFilterHandler("Treks")}  >
+        {/* <FilterContainer  className='hover-pointer'  onClick={() => props._toggleFilterHandler("Treks")}  >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : props.filters["Trek"]?  <IoCheckboxOutline  style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline    style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
@@ -107,7 +120,7 @@ const Menu = (props) => {
                     </div>
                     <FilterText style={{marginLeft: '4px'}}>{true ? 'Road Trips' : 'Select'}</FilterText>
             
-                </FilterContainer  > 
+                </FilterContainer  >  */}
                 {/* <FilterContainer className='hover-pointer'  onClick={true ? () => props._deselectBookingHandler() : () => props.setShowLoginModal(true)}   >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>

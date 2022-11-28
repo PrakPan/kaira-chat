@@ -348,7 +348,7 @@ const EXPERIENCE = {
       }
     ],
 };
-console.log('filters', filters)
+console.log('dat',props.experienceData)
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >

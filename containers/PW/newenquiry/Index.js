@@ -231,7 +231,7 @@ return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-            {!submitted? <Heading>{"Custmise your plan now!" }</Heading> : null}
+            {!submitted? <Heading>{"Customise your plan now!" }</Heading> : null}
             <div>
             </div>
             
