@@ -17,15 +17,12 @@ import media from '../../components/media';
  import WhyUs from '../testimonial/whyttw/Index';
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
-import andamancontent from '../../public/content/campaigns/Andaman';
-import Reviews from './CaseStudies/Index';
-import BannerMobile from './MobileBanner';
-import Enquiry from './newenquiry/Index';
-import Menu from './Menu';
+ import Reviews from './CaseStudies/Index';
+ import Menu from './Menu';
 import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
 import gif from '../../public/assets/loader.gif';
-
+import Overview from './Overview';
 // import qs from qs;
 var qs = require('qs');
 
@@ -247,9 +244,16 @@ const _toggleFilterHandler = (filter_text) => {
  useEffect(() => {
   let itineraries = [];
   // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
+let locations = [];
+try{
+for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
+  locations.push(props.experienceData.locations[i].name);
+}
+}catch{
 
-  axiossearchinstance.post(`?search_type=itinerary&page_id=1`, { 
-    "theme_category": []
+}
+  axiossearchinstance.post(`?search_type=itinerary`, { 
+    "city_list": locations
    }).then(res => {
     setLoading(false);
      for(var i =0 ; i<res.data.length; i++){
@@ -262,8 +266,7 @@ const _toggleFilterHandler = (filter_text) => {
          slug={res.data[i].slug}
          id={res.data[i].id}
          number_of_adults={res.data[i].number_of_adults}
-        PW={true}
-        locations={res.data[i]["itinerary_locations"]}
+         locations={res.data[i]["itinerary_locations"]}
          text={res.data[i].short_text} 
          experience={res.data[i].name}
          cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
@@ -286,7 +289,7 @@ const _toggleFilterHandler = (filter_text) => {
   
   
  
- }, [])
+ }, [props.experienceData])
 
 //JSX for How it works 
 
@@ -352,11 +355,12 @@ console.log('dat',props.experienceData)
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
-          <FullImgContent/>
+          <FullImgContent title={props.experienceData.overview_heading+" Travel Planner"}/>
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>
 <Menu _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
+<Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
   {!loading ? <GridContainer>
     { itinerariesJSX}
