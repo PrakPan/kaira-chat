@@ -3,6 +3,15 @@
     width: 0.6rem;
     height: 0.6rem;
     
+
+  }
+  #planner-filter-checkbox{
+    background-color: white;
+   }
+  #planner-filter-checkbox:checked{
+   }
+  #planner-filter-checkbox:focus{
+ 
   }
   #itinerary-booking-summary-accordion{
     padding: 0 !important;

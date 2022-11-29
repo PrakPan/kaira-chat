@@ -2,10 +2,7 @@ import React from 'react';
 import styled from 'styled-components'
 import { useRouter } from 'next/router';
 import ImageLoader from '../../components/ImageLoader';
-import {IoCheckboxOutline} from 'react-icons/io5';
-import {IoMdSquareOutline} from 'react-icons/io'; 
-import Spinner from '../../components/Spinner';
-import {AiFillSetting} from  'react-icons/ai';
+import DropDown from './Dropdown';
 // import ImageLoader from '../../components/ImageLoader';
 const Container = styled.div`
 position: sticky;
@@ -22,13 +19,7 @@ height: 66px;
 }
    `;
 
-const DropDown = styled.div`
-    background-color: #f7e700;
-    border-radius: 5px;
-    padding: 6px 10px;
-    font-weight: 600;
-    color: black;
-`;
+ 
 const FiltersContainer = styled.div`
 display: flex;
  gap: 0.5rem;
