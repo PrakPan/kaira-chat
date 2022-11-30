@@ -140,7 +140,7 @@ const Details = (props) => {
         </div>
      
         <div ref={experiencesRef}>
-        {props.data.experiences.length ? 
+        {/* {props.data.experiences.length ? 
         <Element id='experiences' >
           <div className='hidden-desktop'><Row  heading='Experiences' top="0" padding="0 1rem">
           <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={props.data.experiences} ></ExperiencesBlog>
@@ -150,7 +150,7 @@ const Details = (props) => {
           <div  style={{height: '2rem'}}></div>
           <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={props.data.experiences} ></ExperiencesBlog>
           </div>: null}
-        </Element> : null}
+        </Element> : null} */}
         </div>
       </DetailsContainer>
      

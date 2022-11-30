@@ -91,10 +91,9 @@ const Experiences = [
             text={props.experiences[i].short_text} 
             experience={props.experiences[i].name} 
             images={props.experiences[i].images}
-            cost={props.experiences[i].payment_info ? props.experiences[i].payment_info[0].cost : null}
+            starting_cost={props.experiences[i].payment_info ? props.experiences[i].payment_info.per_person_total_cost : null}
             duration={props.experiences[i].duration}
             location={props.experiences[i].locations[0].name}
-            starting_cost={props.experiences[i].starting_cost}
             hardcoded={props.experiences[j].payment_info ?true : false }
             >
             </ExperienceCard>
@@ -123,7 +122,7 @@ const Experiences = [
           experience={props.experiences[j].name}
            duration={props.experiences[j].duration}
           location={props.experiences[j]["experience_region"]}
-          starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price }
+          starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost ?  props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price : props.experiences[j].starting_price }
         images={props.experiences[j].images}>
           
           </ExperienceCard>
@@ -175,7 +174,7 @@ const Experiences = [
           cost={props.experiences[j].payment_info ? props.experiences[j].payment_info[0].cost : null}
           duration={props.experiences[j].duration}
           location={props.experiences[j]["experience_region"]}
-          starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info[0].cost : props.experiences[j].starting_price }
+          starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price }
         images={props.experiences[j].images}>
         
           

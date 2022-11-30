@@ -48,7 +48,7 @@ const Experiences= (props) => {
         <PastItineraryCard 
         // filter={props.itineraries[j].experience_filters[0]}
         key={experience.id}
-        starting_cost={experience.payment_info ? experience.payment_info[0].cost : experience.starting_price}
+        starting_cost={experience.payment_info ? experience.payment_info.per_person_total_cost : experience.starting_price}
         slug={experience.slug}
         budget={experience.budget}
         group_type={experience.group_type}
@@ -69,7 +69,7 @@ const Experiences= (props) => {
     else experiencecards.push(              
         <Card
         key={experience.short_text}
-        starting_cost={experience.payment_info ? experience.payment_info[0].cost : experience.starting_price}
+        starting_cost={experience.payment_info ? experience.payment_info.per_person_total_cost : experience.starting_price}
         slug={experience.slug}
         id={experience.id}
         filter={experience.experience_filters[0]}
@@ -80,8 +80,7 @@ const Experiences= (props) => {
         hardcoded={experience.payment_info ? true : false }
         text={experience.short_text} 
         experience={experience.name}
-        cost={experience.payment_info ? experience.payment_info[0].cost : null}
-        duration={experience.duration}
+         duration={experience.duration}
         location={experience["experience_region"]}
         images={experience.images ? experience.images : experience.main_image}>
         </Card>
@@ -121,12 +120,11 @@ const Experiences= (props) => {
               group_type={props.experiences[3].group_type}
               number_of_adults={props.experiences[3].number_of_adults}
               experience={props.experiences[3].name}
-              cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : null}
-              duration={props.experiences[3].duration}
+               duration={props.experiences[3].duration}
               rating={props.experiences[3].rating}
               hardcoded={props.experiences[3].payment_info ?true : false }
               location={props.experiences[3]["experience_region"]}          
-              starting_cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : props.experiences[3].starting_price}
+              starting_cost={props.experiences[3].payment_info ? props.experiences[3].payment_info.per_person_total_cost : props.experiences[3].starting_price}
               images={props.experiences[3].images ? props.experiences[3].images : props.experiences[3].main_image}>
         </Card> }
             </div>

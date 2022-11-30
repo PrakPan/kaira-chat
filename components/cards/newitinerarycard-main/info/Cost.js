@@ -37,9 +37,9 @@ const Cost = (props) => {
     
     return(
         <Container className='center-div' >
-           <Text className='font-opensans'>
+           {props.starting_cost ? <Text className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
-            </Text>
+            </Text>: null}
         </Container>
     );
 }

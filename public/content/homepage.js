@@ -78,15 +78,15 @@ const experiences = {
               "main_image": "media/experiences/Main.jpg",
               "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
               {
-                "cost": 550000,
+                "per_person_total_cost": 550000,
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
                 "duration": "4 weeks"
               }
-            ],
+            ,
       },
         {  
             "id": "edc49cb9-d375-4473-aa2f-3555dd4354c3",
@@ -108,15 +108,15 @@ const experiences = {
               "main_image": "media/experiences/162555084767278409004211425781.jpeg",
               "main_image_alt_text": null,
               },
-              "payment_info": [
+              "payment_info": 
                 {
-                  "cost": 2750000,
+                  "per_person_total_cost": 2750000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
         },
         {  
             "id":"8975c808-d678-481d-af0b-bdc0b0342db4",
@@ -135,15 +135,15 @@ const experiences = {
                 "main_image": "media/experiences/161712852740653038024902343750.jpeg",
                 "main_image_alt_text": null,
               },
-              "payment_info": [
+              "payment_info": 
                 {
-                  "cost": 550000,
+                  "per_person_total_cost": 550000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
         },
         {  
             "id":"ac14fffd-9115-4dec-a3ad-08239b831c74",
@@ -162,15 +162,15 @@ const experiences = {
                 "main_image": "media/experiences/162270407079772591590881347656.jpeg",
                 "main_image_alt_text": null,
               },
-              "payment_info": [
+              "payment_info": 
                 {
-                  "cost": 750000,
+                  "per_person_total_cost": 750000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
         },
     ],
     //Experiences under second heading
@@ -193,15 +193,15 @@ const experiences = {
             "main_image": "media/experiences/162499173904613351821899414062.jpg",
             "main_image_alt_text": null,
           },
-          "payment_info": [
+          "payment_info": 
             {
-              "cost": 800000,
+              "per_person_total_cost": 800000,
               "currency": "USD",
               "total_cost": 185000,
               "service_fee": 15000,
               "duration": "4 weeks"
             }
-          ],
+          ,
       },  
         {  
             "id":"ac14fffd-9115-4dec-a3ad-08239b831c74",
@@ -220,15 +220,15 @@ const experiences = {
                 "main_image": "media/experiences/162270407079772591590881347656.jpeg",
                 "main_image_alt_text": null,
               },
-              "payment_info": [
+              "payment_info": 
                 {
-                  "cost": 750000,
+                  "per_person_total_cost": 750000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
 
         },
         {  
@@ -248,15 +248,15 @@ const experiences = {
               "main_image": "media/experiences/162488183213306903839111328125.jpeg",
               "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
               {
-                "cost": 600000,
+                "per_person_total_cost": 600000,
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
                 "duration": "4 weeks"
               }
-            ],
+            ,
       },
       {  
         "id":"091a8312-5578-471b-8bca-57110fd13483",
@@ -275,15 +275,15 @@ const experiences = {
             "main_image": "media/experiences/162149091225943279266357421875.jpg",
             "main_image_alt_text": null,
           },
-          "payment_info": [
+          "payment_info": 
             {
-              "cost": 650000,
+              "per_person_total_cost": 650000,
               "currency": "USD",
               "total_cost": 185000,
               "service_fee": 15000,
               "duration": "4 weeks"
             }
-          ],
+          ,
     },
     ],
     //Blog
@@ -313,15 +313,15 @@ const experiences = {
                 "main_image": "media/experiences/Main-julian-yu-unsplash.jpg",
                 "main_image_alt_text": null,
               },
-              "payment_info": [
+              "payment_info": 
                 {
-                  "cost": 2050000,
+                  "per_person_total_cost": 2050000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
         },
         {  
           'budget': 'Affordable',
@@ -341,15 +341,15 @@ const experiences = {
               "main_image": "media/experiences/162029797381059408187866210938.jpg",
               "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
               {
-                "cost": 1550000,
+                "per_person_total_cost": 1550000,
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
                 "duration": "4 weeks"
               }
-            ],
+            ,
       },
         {  
           'budget': 'Affordable',
@@ -368,15 +368,15 @@ const experiences = {
             "images": {
                 "main_image": "media/experiences/Main-maahid-mohamed-JsQ_buQ5fUg-unsplash.jpg",
                  "main_image_alt_text": null,
-            },"payment_info": [
+            },"payment_info": 
                 {
-                  "cost": 550000,
+                  "per_person_total_cost": 550000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
 
         },
         {  
@@ -398,15 +398,15 @@ const experiences = {
                 "main_image": "media/experiences/162393124563373136520385742188.jpg",
                 "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
                 {
-                  "cost": 450000,
+                  "per_person_total_cost": 450000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
 
         },
     ],
@@ -437,15 +437,15 @@ const experiences = {
                 "main_image": "media/experiences/Main_3AGXPc6.jpg",
                 "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
                 {
-                  "cost": 1450000,
+                  "per_person_total_cost": 1450000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
 
         },
         {  
@@ -465,15 +465,15 @@ const experiences = {
                 "main_image": "media/experiences/162393124563373136520385742188.jpg",
                 "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
                 {
-                  "cost": 450000,
+                  "per_person_total_cost": 450000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              
 
         },
         {  
@@ -492,15 +492,15 @@ const experiences = {
                 "main_image": "media/experiences/162330867965037083625793457031.jpg",
                 "main_image_alt_text": null,
             },
-            "payment_info": [
+            "payment_info": 
                 {
-                  "cost": 550000,
+                  "per_person_total_cost": 550000,
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
                   "duration": "4 weeks"
                 }
-              ],
+              ,
 
         },
         {  
@@ -520,15 +520,15 @@ const experiences = {
               "main_image": "media/experiences/162339664600439214706420898438.jpg",
               "main_image_alt_text": null,
           },
-          "payment_info": [
+          "payment_info": 
               {
-                "cost": 600000,
+                "per_person_total_cost": 600000,
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
                 "duration": "4 weeks"
               }
-            ],
+            ,
     
       },
     ],
@@ -669,15 +669,15 @@ const experiences = {
         "main_image": "media/experiences/164700256084951996803283691406.jpeg",
         "main_image_alt_text": null,
     },
-    "payment_info": [
+    "payment_info": 
         {
-          "cost": 350900,
+          "per_person_total_cost": 350900,
           "currency": "USD",
           "total_cost": 185000,
           "service_fee": 15000,
           "duration": "4 weeks"
         }
-      ],
+      ,
 
 },
 {  
@@ -695,15 +695,15 @@ const experiences = {
       "main_image": "media/experiences/164699452462671470642089843750.jpeg",
       "main_image_alt_text": null,
   },
-  "payment_info": [
+  "payment_info": 
       {
-        "cost": 1040000,
+        "per_person_total_cost": 1040000,
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
         "duration": "4 weeks"
       }
-    ],
+    ,
 
 },
 {  
@@ -722,15 +722,15 @@ const experiences = {
       "main_image": "media/experiences/164685659738783478736877441406.jpeg",
       "main_image_alt_text": null,
   },
-  "payment_info": [
+  "payment_info": 
       {
-        "cost": 360000,
+        "per_person_total_cost": 360000,
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
         "duration": "4 weeks"
       }
-    ],
+    ,
 
 },
 
@@ -750,16 +750,15 @@ const experiences = {
       "main_image": "media/experiences/164685316741237425804138183594.jpeg",
       "main_image_alt_text": null,
   },
-  "payment_info": [
+  "payment_info": 
       {
-        "cost": 350900,
+        "per_person_total_cost": 350900,
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
         "duration": "4 weeks"
       }
-    ],
-
+    ,
 },
 {  
 	"id": "I6IkfdUxv98lBwLL",
@@ -777,15 +776,15 @@ const experiences = {
       "main_image": "media/experiences/164685096918450093269348144531.jpeg",
       "main_image_alt_text": null,
   },
-  "payment_info": [
+  "payment_info": 
       {
-        "cost": 600000,
+        "per_person_total_cost": 600000,
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
         "duration": "4 weeks"
       }
-    ],
+    ,
 
 },
 {  
@@ -804,15 +803,15 @@ const experiences = {
       "main_image": "media/experiences/164682686492217326164245605469.jpeg",
       "main_image_alt_text": null,
   },
-  "payment_info": [
+  "payment_info": 
       {
-        "cost": 958400,
+        "per_person_total_cost": 958400,
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
         "duration": "4 weeks"
       }
-    ],
+    ,
 
 },
 ]
