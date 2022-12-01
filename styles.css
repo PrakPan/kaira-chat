@@ -5,6 +5,16 @@
     
 
   }
+  #bookingsummary-pax{
+    height: 4rem;
+  }
+  #bookingsummary-date-container  .MuiFormControl-root .MuiOutlinedInput-root{
+    height: 4.15rem ;
+    margin-top: -4.5px;
+  }
+  #bookingsummary-date-container  .MuiInputLabel-root{
+    margin-top: -4.5px;
+  }
   #planner-filter-checkbox{
     background-color: white;
    }

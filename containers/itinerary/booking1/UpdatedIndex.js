@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import BookingCard from '../../../components/cards/bookings/activitybooking/Index';
 import Heading from '../../../components/heading/Heading';
 import Button from '../../../components/Button';
-import SummaryContainer from './TailoredDetails';
+import SummaryContainer from './gittailored/Index';
 import Flickity from '../../../components/FlickityCarousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
@@ -524,7 +524,7 @@ const Booking = (props) => {
   useEffect(() => {
       if(props.payment){
 
-       setSummaryContainerJSX(<SummaryContainer stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId}></SummaryContainer>);
+       setSummaryContainerJSX(<SummaryContainer  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
