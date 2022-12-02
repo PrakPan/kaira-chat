@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Modal} from 'react-bootstrap';
  import styled from 'styled-components';
  import { TbArrowBack } from 'react-icons/tb';
  import media from '../../../components/media';
- import Form from './form/Index';
+ import Email from './Email';
+//  import Form from './form/Index';
 const Body=styled(Modal.Body)`
     
   `;
@@ -11,6 +12,8 @@ const Body=styled(Modal.Body)`
 const RegistrationModal = (props) => {
     let isPageWide = media('(min-width: 768px)')
 
+    const [email, setEmail] = useState('devansh@gmail.com');
+    const [emailError, setEmailError] = useState(false);
 
   return(
       <div>
@@ -22,8 +25,8 @@ const RegistrationModal = (props) => {
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>
              <Body className="">
-                <p className='font-opensans text-center'>Some Text Here</p>
-                <Form id={props.id}></Form>
+                <p className='font-opensans text-center'>You're not authorized to purchase this, verify email</p>
+                <Email email={email} setEmail={setEmail} emailError={emailError}></Email>
              </Body>
       </Modal>
       </div>

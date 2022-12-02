@@ -39,7 +39,7 @@ const Person = (props) => {
         style={{zIndex: '1', minHeight: 'max-content'}}
 
       >
-         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '1rem', margin: '0.25rem 0' , color: expanded ? 'black' : verificationfailed ? 'red' : 'green'}} >{  email ? email : 'Person'}</Typography> 
+         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '1rem', margin: '0.25rem 0' , color: expanded ? 'black' : verificationfailed  ? 'red' : email?  'green' : 'black'}} >{  email ? email : 'Person'}</Typography> 
  
         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{''}</Typography>
 

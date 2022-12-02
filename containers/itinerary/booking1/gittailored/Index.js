@@ -18,6 +18,7 @@ import SelectDate from './SelectDate';
 import SelectPax from './SelectPax';
 import SelectDetails from './SelectDetails';
 import RegistrationModal from '../../../../components/modals/gitregistrationform/Index';
+import VerificationModal from '../../../../components/modals/verify/Index';
  const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
@@ -51,8 +52,17 @@ border-style: none none solid none;
   
 }
 `;
+const GetTripContainer  = styled.div`
+    background-color: #e4e4e4;
+    padding: 0.25rem;
+    text-align: center;
+
+
+
+`;
 const Details = (props) => {
   const router = useRouter()
+    const [getTrip, setGetTrip] = useState(false);
 
     const [details , setDetails] = useState({
         date: new Date('2021-04-20T21:11:54'),
@@ -211,10 +221,14 @@ const Details = (props) => {
           {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
-            <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
+            <div  onclick={()=> console.log('')} >
+      {/* <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/> */}
+       Get This Trip</div>
+       <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>
-       <RegistrationModal id={props.id} show={true}></RegistrationModal>
+       <RegistrationModal id={props.id} show={false}></RegistrationModal>
+       <VerificationModal show={true}></VerificationModal>
 </SummaryContainer>
 
   );
