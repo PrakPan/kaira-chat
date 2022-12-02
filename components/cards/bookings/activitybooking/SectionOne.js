@@ -62,7 +62,7 @@ const Section= (props) => {
             <div style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
                 <ImageLoader leftalign url="media/icons/bookings/map-cropped.svg" width="1.5rem" height="auto" widthmobile="1.5rem"></ImageLoader>
               <div style={{display: 'flex', alignItems: 'center', marginLeft: '0.25rem'}}>
-              <Subtext className='font-opensans'>New Delhi</Subtext>
+              <Subtext className='font-opensans'>{props.data.city}</Subtext>
 
               </div>
                 </div>
