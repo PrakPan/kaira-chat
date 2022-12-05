@@ -8,7 +8,7 @@ import {Modal} from 'react-bootstrap';
  import {connect} from 'react-redux';
 import { useRouter } from 'next/router';
 import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
-
+import Cart from './cart/Index';
 const Body=styled(Modal.Body)`
     
   `;
@@ -17,7 +17,49 @@ const RegistrationModal = (props) => {
   const router = useRouter();
     let isPageWide = media('(min-width: 768px)')
 
+    const _startRazorpayHandler = (data) => {
+
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+      //Razorpay payload
+      let razorpayOptions = {
+        "amount": data.amount, 
+        // "currency": "INR",
+        "name": "The Tarzan Way Payment Portal",
+        "description":' data.data.description',
+        "image": "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
+        "order_id": data.order_id,
+        //Payment successfull handler passed to razorpay
+        "handler": function (response){
+                    axios.post("https://apis.tarzanway.com/pay/capture/",{...response },{headers: 
+                    {'Authorization': `Bearer ${token}`}} )
+                    .then( data => {
+                        dispatch(orderPlaced());
+                        window.location.href = "/thank-you";
+                     })
+                    .catch( err => {
+                    alert("There was an error, please try again :(");
+                        // window.location.href="/experiences/"+getState().experience.experienceId
+                     });
+                },
+        //User details will be present as user is logged in
+        "prefill": {
+        // "name": getState().auth.name,
+        // "email": getState().auth.email,
+        // "contact": getState().auth.phone,
+        },
+        "theme": {
+        "color": "#F7e700"
+        }
+    } 
+    var rzp1 = new window.Razorpay(razorpayOptions);
+    rzp1.open();
+
+    }
     const _saleCreateHandler = (id) => {
+      
   axiossalecreateinstance.post("/", 
         {
             "itinerary_id": id,
@@ -25,7 +67,8 @@ const RegistrationModal = (props) => {
         }, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
-          // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id         
+          // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id  
+          _startRazorpayHandler(res.data)       
 
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id         
@@ -34,7 +77,7 @@ const RegistrationModal = (props) => {
     }
     
     const _cloneHandler = (data) => {
-        
+        console.log('data', data)
         axiospurchaseinstance.post("/", 
         {
             "itinerary_id": props.id,
@@ -42,12 +85,12 @@ const RegistrationModal = (props) => {
             "number_of_children": 0,
             "number_of_infants": 0,
             "start_date": props.date.format('YYYY-MM-DD'),
-            "registered_users": data
+            "registered_users": data.slice()
         }, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id   
-          _saleCreateHandler(res.data.itinerary_id)      
+          _saleCreateHandler(res.data.itinerary.id)      
 
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id         
@@ -59,13 +102,17 @@ const RegistrationModal = (props) => {
       <div>
          
          <Modal className='booking-modal'  show={props.show} size="xl" onHide={props.hide}>
-         <Modal.Header style={{ float: 'right', height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-end', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
-            <TbArrowBack onClick={props.hide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
+         <Modal.Header style={{   height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-start', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
+         <TbArrowBack onClick={props.hide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
+
+            <p style={{fontWeight: '800', margin: '0', fontSize: '19px'}} className="font-opensans">Confirm and Buy</p>
 
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>
+
              <Body className="">
-                <p className='font-opensans text-center'>Registration Form</p>
+              <Cart></Cart>
+                <p className='font-opensans text-center' style={{fontWeight: '800'}}>Traveler Details</p>
                 <Form  token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
              </Body>
       </Modal>

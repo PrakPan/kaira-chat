@@ -12,6 +12,7 @@ height: max-content;
 const Spinner = styled(CircularProgress)`
         color:  ${props => props.color ? props.color+" !important" : "black !important"};
         margin: ${props => props.margin ? props.margin : "1rem"};
+        visibility:  ${props => props.visibility ? props.visibility : 'visibile'};
         
     `;
 
@@ -22,7 +23,7 @@ const spinner = (props) =>{
     if(props.size)  size=props.size;
     return(
         <Container display={props.display}>
-            <Spinner color={props.color} hoverColor={props.hoverColor} margin={props.margin} size={size}></Spinner>
+            <Spinner color={props.color} hoverColor={props.hoverColor} visibility={props.visibility} margin={props.margin} size={size}></Spinner>
         </Container>
     );
 }

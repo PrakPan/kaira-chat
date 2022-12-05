@@ -73,7 +73,10 @@ const RegistrationModal = (props) => {
                 props.setUserDetails({
                     email: email,
                 })
-                _cloneHandler();
+                // _cloneHandler();
+                //close modal
+                //hit paymnet info 
+                props.onSuccess();
 
     }).catch(err => {
         setButtonLoading(false);

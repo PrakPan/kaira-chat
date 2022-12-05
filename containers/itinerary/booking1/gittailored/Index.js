@@ -236,12 +236,12 @@ const _handleVerificationSuccess = ()  => {
           {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
-        {props.token ? null :  <div  onClick={() => props.setShowLoginModal(true)} >
-        Login</div>}
+        {props.token ? null :  <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0" onclick={props.setShowLoginModal} onclickparam={true} >
+        Login</Button>}
         {
-          props.payment ? props.payment.email_reverification_needed ? <div  onClick={ () => setShowVerification(true) } >
-          Get This Trip</div> :  <div  onClick={ () => setShowRegistartion(true) } >
-          Get This Trip</div>: null
+          props.payment && props.token ? props.payment.email_reverification_needed ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
+          Buy Now</Button> :  <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={setShowRegistartion} onclickparam={true} >
+          Buy Now</Button>: null
         }
         
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >

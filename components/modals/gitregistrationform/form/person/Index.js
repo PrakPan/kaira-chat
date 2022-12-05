@@ -10,8 +10,9 @@ import Email from './Email';
 import Id from './Id';
 import Grid from '@material-ui/core/Grid';
 import axiosgitregisterinstance from '../../../../../services/sales/git/register';
-
-
+import Button from '../../../../ui/button/Index';
+import Spinner from '../../../../Spinner';
+import {AiOutlinePlusSquare} from 'react-icons/ai';
 const Accordion = withStyles({
     root: {
      marginBottom: 10,
@@ -28,7 +29,7 @@ const Person = (props) => {
     const [expanded, setExpanded] = useState(false);
     const [verificationfailed, setVerificationFailed] = useState(false);
     const [verified, setVerified] = useState(false);
-
+    const [verificationLoading, setVerificationLoading] = useState(false);
     const [email, setEmail] = useState(null);
     const [id, setId] = useState(null);
 
@@ -42,6 +43,7 @@ const Person = (props) => {
       }
 
       const _checkValidation = (email) => { 
+        setVerificationLoading(true);
         const data = {
             "itinerary_id": "344fc89a-3e48-4a0c-9afe-368d85538634",
             "registered_users": [
@@ -54,6 +56,8 @@ const Person = (props) => {
         axiosgitregisterinstance.post('/', data, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
+              setVerificationLoading(false);
+
             // if(!res.data.verified) 
             setVerificationFailed(false);
             setVerified(true);
@@ -65,6 +69,8 @@ const Person = (props) => {
             // console.log(res.data)
      }).catch(err => {
         setVerificationFailed(true);
+        setVerificationLoading(false);
+
      })
       }
 
@@ -80,7 +86,7 @@ const Person = (props) => {
         style={{zIndex: '1', minHeight: 'max-content'}}
 
       >
-         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '1rem', margin: '0.25rem 0' , color: expanded ? 'black' : verificationfailed  ? 'red' : email?  'green' : 'black'}} >{  email ? email : 'Add person '+props.index}</Typography> 
+         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '1rem', margin: '0.25rem 0' , color: expanded ? 'black' : verificationfailed  ? 'red' : email?  'green' : 'black'}} >{  email ? email : 'Add Traveler '+props.index}</Typography> 
  
         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{''}</Typography>
 
@@ -96,7 +102,12 @@ const Person = (props) => {
                     <Id verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
                </Grid>
         </Grid> 
-            <div onClick={_handleClose}>{verified ? 'Change' : 'Add'}</div>
+            <Button onclick={_handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
+              {verified ? 'Change' : 'Add Traveler'}
+              {/* <GrAdd></GrAdd> */}
+              {verificationLoading ? 
+                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
+              </Button>
        </AccordionDetails>
      </Accordion>
       </div>

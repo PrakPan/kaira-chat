@@ -528,7 +528,7 @@ const Booking = (props) => {
         if(!props.payment.is_registration_needed)
        setSummaryContainerJSX(<SummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
-      else setSummaryContainerJSX(<GITSummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
+      else setSummaryContainerJSX(<GITSummaryContainer getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
 
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
@@ -537,6 +537,11 @@ const Booking = (props) => {
     let message ="Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com"+router.asPath;
     const _setImagesHandler = (images) => {
        setImages(images);
+    }
+    const _handleLoginClose = ( ) => {
+      props.getPaymentHandler();
+      setShowLoginModal(false);
+
     }
  console.log('p', props.paymentLoading)
     if(true){
@@ -608,7 +613,7 @@ const Booking = (props) => {
     
           <LogInModal
               show={true}
-              onhide={() => setShowLoginModal(false)}>
+              onhide={_handleLoginClose}>
             </LogInModal>
     </div>
       );
@@ -677,7 +682,7 @@ const Booking = (props) => {
     
           <LogInModal
               show={true}
-              onhide={() => setShowLoginModal(false)}>
+              onhide={_handleLoginClose}>
             </LogInModal>
     </div>
       );

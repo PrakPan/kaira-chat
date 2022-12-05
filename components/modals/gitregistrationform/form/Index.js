@@ -3,15 +3,29 @@ import React, {useState} from "react";
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Person from './person/Index';
+import Button from '../../../ui/button/Index';
 
-  const Container = styled.div`
+const Container = styled.div`
  
 @media screen and (min-width: 768px){
     
 }
 `;
  
- 
+ const PayNow = styled.div`
+    padding: 0.75rem;
+    width: 100%;
+    border-radius: 5px;
+    text-align: center;
+    line-height: 1;
+    margin: 0.75rem 0;
+    font-weight: 600;
+    background-color: #f7e700;
+    &:hover{
+        backgroud-color: black;
+        color: white;
+    }
+ `;
 
 const Enquiry = (props) => {
     const [paxList, setPaxList] = useState([]);
@@ -44,7 +58,7 @@ return(
                
             </Grid> 
            {/* <div onClick={null}></div> */}
-           <div onClick={() => props.onSuccess(paxList)}>Submit</div>
+           <PayNow className="hover-pointer font-opensans" onClick={() => props.onSuccess(paxList)} >Pay Now</PayNow>
      </Container>
 );
 }
