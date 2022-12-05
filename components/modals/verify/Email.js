@@ -28,12 +28,13 @@ const Person = (props) => {
      })
          }
 
+        
  
     // _checkValidation();
   return(
       <div className='bordr'>
        
- <TextField  autoFocus value={props.email} onFocus={null} onChange={(event) => props.setEmail(event.target.value)} onBlur={() => console.log(props.email)} error={props.emailError? true : false } helperText={props.emailError ? `This doesn't seem right ` : 'Enter work email'} type="text" placeholder="employee@pwlive.com" key="email"  variant="outlined" required fullWidth name="email" label="Work Email" id="email" />
+ <TextField disabled={props.otpSent} autoFocus value={props.email} onFocus={null} onChange={(event) => props.setEmail(event.target.value)} onBlur={() => console.log(props.email)} error={props.emailError? true : false } helperText={props.emailError ? `This doesn't seem right ` : 'Enter work email'} type="text" placeholder="employee@pwlive.com" key="email"  variant="outlined" required fullWidth name="email" label="Work Email" id="email" />
        </div>
   );
 

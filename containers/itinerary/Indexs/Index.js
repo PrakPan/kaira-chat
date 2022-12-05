@@ -130,7 +130,9 @@ const getPaymentHandler = ( ) => {
   axios.post(MIS_SERVER_HOST+'/payment/info/', {
     "itinerary_type": "Tailored",
     "itinerary_id": props.id,
-  })
+  }, {headers: {
+    'Authorization': `Bearer ${props.token}`
+    }})
   .then(res => {
     setPaymentLoading(false);
 

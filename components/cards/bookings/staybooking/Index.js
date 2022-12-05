@@ -104,8 +104,8 @@ const getDate = (date) => {
                     </RatingContainer> : null} */}
                     <SectionOne   setShowDetails={() => setShowDetails(true)} data={props.data}  ></SectionOne>
                     <SectionTwo  isDatePresent={props.isDatePresent}  data={props.data}></SectionTwo>
-                    <SectionThree are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
-                    <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour>
+                    <SectionThree  is_registration_needed={props.is_registration_needed} are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
+                    {!props.is_registration_needed ? <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour> : null}
                     {/* {props.type === "Accommodation" ? 
                     <div>
                         {props.check_in ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}

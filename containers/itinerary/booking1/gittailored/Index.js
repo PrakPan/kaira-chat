@@ -7,6 +7,7 @@ import Button from '../../../../components/Button';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons";
 import {connect} from 'react-redux';
 import * as orderaction from '../../../../store/actions/order';
+import * as authaction from '../../../../store/actions/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRupeeSign, faTimes, faMale, faChild, faBaby} from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router'
@@ -19,7 +20,9 @@ import SelectPax from './SelectPax';
 import SelectDetails from './SelectDetails';
 import RegistrationModal from '../../../../components/modals/gitregistrationform/Index';
 import VerificationModal from '../../../../components/modals/verify/Index';
- const SummaryContainer = styled.div`
+import dayjs from 'dayjs';
+
+  const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
 padding: 1rem;
@@ -160,7 +163,19 @@ const Details = (props) => {
   
   setBookingSummary();
  let message ="Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/"+router.asPath;
+// props.setUserDetails();
+ const [showVerification, setShowVerification] = useState(false);
+ const [showRegistration, setShowRegistartion] = useState(false);
 
+const [pax, setPax] = useState(5)
+const [date, setDate] =useState((dayjs()));
+
+const _handleVerificationSuccess = ()  => {
+    props.getPaymentHandler();
+    setShowVerification(false);
+
+   
+}
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
@@ -168,7 +183,7 @@ const Details = (props) => {
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
                 {props.is_stock ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"STARTING DATE "}</p> : <div></div>}
                 {props.is_stock ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p>  : <div></div>}
-                {props.is_stock ? <div style={{display: 'flex', alignItems: 'center', fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.meta_info ? props.payment.meta_info.start_date ?  getHumanDate(props.payment.meta_info.start_date.replaceAll('-','/')) :  null :null}</div> : <SelectDate token={props.token}></SelectDate>}
+                {props.is_stock ? <div style={{display: 'flex', alignItems: 'center', fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.meta_info ? props.payment.meta_info.start_date ?  getHumanDate(props.payment.meta_info.start_date.replaceAll('-','/')) :  null :null}</div> : <SelectDate date={date} setDate={setDate} token={props.token}></SelectDate>}
                 {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.number_of_people}</p> */}
                 {props.payment.meta_info && props.is_stock ? <div>
                   <FontAwesomeIcon icon={faMale} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
@@ -179,7 +194,7 @@ const Details = (props) => {
                   <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.payment.meta_info.number_of_infants}</p>
 
 
-                </div> : <SelectPax token={props.token} setShowLoginModal={props.setShowLoginModal}></SelectPax>}
+                </div> : <SelectPax  setPax={setPax} token={props.token} setShowLoginModal={props.setShowLoginModal}></SelectPax>}
         </div> : null}
         {/* <SelectDetails></SelectDetails> */}
         <div style={{marginBottom: '1.5rem'}}>
@@ -221,14 +236,19 @@ const Details = (props) => {
           {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
-            <div  onclick={()=> console.log('')} >
-      {/* <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/> */}
-       Get This Trip</div>
+        {props.token ? null :  <div  onClick={() => props.setShowLoginModal(true)} >
+        Login</div>}
+        {
+          props.payment ? props.payment.email_reverification_needed ? <div  onClick={ () => setShowVerification(true) } >
+          Get This Trip</div> :  <div  onClick={ () => setShowRegistartion(true) } >
+          Get This Trip</div>: null
+        }
+        
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>
-       <RegistrationModal id={props.id} show={false}></RegistrationModal>
-       <VerificationModal show={true}></VerificationModal>
+       <RegistrationModal date={date} id={props.id} show={showRegistration} hide={() => setShowRegistartion(false)} pax={pax}></RegistrationModal>
+       <VerificationModal onSuccess={_handleVerificationSuccess}  show={showVerification} hide={() => setShowVerification(false)}></VerificationModal>
 </SummaryContainer>
 
   );
@@ -252,6 +272,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
     return{
       setOrderDetails: (details) => dispatch(orderaction.setOrderDetails(details)),
+    //   setUserDetails: (details) => dispatch(authaction.setUserDetails(details)),
+
 
     }
 }

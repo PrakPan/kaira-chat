@@ -45,6 +45,12 @@ export const authSuccess = (token) => {
 };
 //Set user name and email
 export const setUserDetails = (userdetails) => {
+    console.log('test', userdetails);
+    try{
+        localStorage.setItem('email', userdetails.email);
+    }catch{
+
+    }
     return {
         type: actionTypes.AUTH_SETUSERDETAILS,
         data: userdetails,

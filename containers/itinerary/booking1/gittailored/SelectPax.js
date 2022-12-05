@@ -46,7 +46,7 @@ const QueryType = (props) => {
     const [queryType, setQueryType] = useState('');
     const _handleQueryTypeChange = (event) => {
         setQueryType(event.target.value);
-        // props.setAdults(event.target.value);
+        props.setPax(event.target.value);
       };
     // if(!showLoginModal)
     return(

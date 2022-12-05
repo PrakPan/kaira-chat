@@ -129,7 +129,7 @@ const Section= (props) => {
                         {/* <div className='center-div'>
                             <Text className='font-opensans'>2 x Super Deluxe rooms</Text>
                         </div> */}
-                      { rooms.length ? 
+                      { rooms.length  && !props.is_registration_needed? 
                         rooms.map(room => 
                             <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
                                 <Text className='font-opensans' style={{}}>{room.number_of_rooms + " x "}</Text>
@@ -137,6 +137,11 @@ const Section= (props) => {
                             </div>
                         )
                       : null }
+                      { props.is_registration_needed ? 
+                        <div className=''>
+                                 <Text className='font-opensans'>Double / triple sharing rooms</Text>
+                            </div>
+                     : null }
                     </div>
                 </div>
               
