@@ -111,9 +111,9 @@ const RegistrationModal = (props) => {
             </Modal.Header>
 
              <Body className="">
-              <Cart></Cart>
+              <Cart date={props.date} pax={props.pax} plan={props.plan}></Cart>
                 <p className='font-opensans text-center' style={{fontWeight: '800'}}>Traveler Details</p>
-                <Form  token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
+                <Form token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
              </Body>
       </Modal>
       </div>

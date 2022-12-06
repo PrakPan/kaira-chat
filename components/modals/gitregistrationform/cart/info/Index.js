@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
- import styled from 'styled-components';
- 
+import styled from 'styled-components';
+import { getHumanDate } from '../../../../../services/getHumanDate'; 
  const Container = styled.div`
     padding: 0  0.5rem;
  `;
@@ -39,22 +39,29 @@ margin-bottom: 0px;
 font-size: 13px;
 `
 const Cart = (props) => {
-
+    const getDate = (date) => {
+        let year = date.substring(0,4)
+        let month = date.substring(5,7);
+        let day = date.substring(8,10);
+       
+        return(getHumanDate(day+"/"+month+"/"+year) );
+    
+    }
   
   return(
       <Container className=''>
-            <Heading className='font-opensans'>Kanatal Excursion</Heading>
-            <Duration className='font-opensans' >3 Nights</Duration >
+            <Heading className='font-opensans'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading>
+            <Duration className='font-opensans' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration >
             <hr style={{margin: '0.3rem 0'}}></hr>
             <HeadingTwo className='font-opensans'>Trip Details</HeadingTwo>
             <GridContainer>
                 <div>
                     <HeadingThree>Start Date</HeadingThree>
-                    <Subheading>13th Dec</Subheading>
+                    <Subheading>{props.date ? getDate(props.date.format('YYYY-MM-DD') ): null}</Subheading>
                 </div>
                 <div>
                     <HeadingThree>Travelers</HeadingThree>
-                    <Subheading>5</Subheading>
+                    <Subheading>{props.pax ? props.pax : null}</Subheading>
 
                 </div>
             </GridContainer>
