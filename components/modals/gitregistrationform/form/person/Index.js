@@ -13,7 +13,9 @@ import axiosgitregisterinstance from '../../../../../services/sales/git/register
 import Button from '../../../../ui/button/Index';
 import Spinner from '../../../../Spinner';
 import {AiOutlinePlusSquare} from 'react-icons/ai';
+import media from '../../../../media';
 const Accordion = withStyles({
+
     root: {
      marginBottom: 10,
      border: '0px solid #e4e4e4',
@@ -26,6 +28,8 @@ const Accordion = withStyles({
   })(MuiAccordion);
   
 const Person = (props) => {
+  let isPageWide = media('(min-width: 768px)')
+
     const [expanded, setExpanded] = useState(false);
     const [verificationfailed, setVerificationFailed] = useState(false);
     const [verified, setVerified] = useState(false);
@@ -35,6 +39,7 @@ const Person = (props) => {
 
     useEffect(() => {
             if(props.first) setExpanded(true);
+            if(props.first) setEmail(props.email);
       },[]);
 
       const _handleClose = () => {
@@ -57,7 +62,7 @@ const Person = (props) => {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
               setVerificationLoading(false);
-
+              props.setVerificationCount(props.verificationCount + 1)
             // if(!res.data.verified) 
             setVerificationFailed(false);
             setVerified(true);
@@ -95,10 +100,10 @@ const Person = (props) => {
        <AccordionDetails style={{display: 'block', padding: '0'}}>
        
         <Grid container spacing={2} style={{padding: '0.25rem'}}>
-                <Grid style={{width: '100%'}} item={12}>
+                <Grid style={{width: !isPageWide ? '100%' : 'auto'}} item md={6} xs={12}>
                  <Email verified={verified} setVerified={setVerified} token={props.token} email={email} setEmail={setEmail} verificationfailed={verificationfailed} setVerificationFailed={setVerificationFailed} id={props.id}></Email>
                </Grid>
-               <Grid style={{width: '100%'}} item={12}>
+               <Grid style={{width: !isPageWide ? '100%' : 'auto'}}  item md={6} xs={12}>
                     <Id verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
                </Grid>
         </Grid> 

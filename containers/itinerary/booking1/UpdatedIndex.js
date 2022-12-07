@@ -242,6 +242,7 @@ const Booking = (props) => {
 
     useEffect(()=> {
       if(isPageWide) setShowpayment(true);
+      if(props.loadtopayment) setShowpayment(true);
 
   
 

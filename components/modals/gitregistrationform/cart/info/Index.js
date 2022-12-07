@@ -1,18 +1,27 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import { getHumanDate } from '../../../../../services/getHumanDate'; 
+import ImageLoader from '../../../../ImageLoader';
+import { getIndianPrice } from '../../../../../services/getIndianPrice';
  const Container = styled.div`
-    padding: 0  0.5rem;
+    padding: 0 0.5rem;
+    @media screen and (min-width: 768px){
+        padding: 0 1rem;
+    }
  `;
 const Heading = styled.p`
     font-weight: 600;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    line-height: 1.2;
+
 `
 const Duration = styled.p`
-    font-weight: 300;
-    color:  rgba(91, 89, 89, 1);
-    margin-bottom: 0px;
+    font-weight: 400;
+    color: black;
+     margin-bottom: 1rem;
 font-size: 13px;
+line-height: 1;
+
 
 `;
 const HeadingTwo = styled.p`
@@ -22,22 +31,58 @@ font-weight: 600;
  
 
 `;
+const OuterGridContainer = styled.div`
+    display: grid;
+    grid-row-gap: 2.5rem;
+`;
 const GridContainer = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr;
-`;
+    grid-template-columns: auto max-content;
+    grid-row-gap: 1rem;
+ `;
 
+ const FlexContainer = styled.div`
+    display: flex;
+    gap: 0.25rem;
+ `
 const HeadingThree =  styled.p`
-font-weight: 400;
+font-weight: 600;
     margin-bottom: 2px;
     font-size: 13px;
+    line-height: 1;
+
 `
 const Subheading = styled.p`
 font-weight: 300;
 color:  rgba(91, 89, 89, 1);
 margin-bottom: 0px;
+line-height: 1;
 font-size: 13px;
 `
+
+const StrikedCost = styled.p`
+position: relative;
+ width: max-content;  
+ margin-bottom: 0;
+ margin-right: 8px;
+  font-weight: 400;
+    font-size: 13px;
+    line-height: 1;
+    text-align: center;
+  &:before {
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 45%;
+    right: 0;
+    border-top: 1px solid;
+    border-color: inherit;
+    -webkit-transform: skewY(-10deg);
+    -moz-transform: skewY(-10deg);
+    transform: skewY(-10deg);
+  }
+
+`;
 const Cart = (props) => {
     const getDate = (date) => {
         let year = date.substring(0,4)
@@ -50,21 +95,67 @@ const Cart = (props) => {
   
   return(
       <Container className=''>
-            <Heading className='font-opensans'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading>
-            <Duration className='font-opensans' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration >
-            <hr style={{margin: '0.3rem 0'}}></hr>
-            <HeadingTwo className='font-opensans'>Trip Details</HeadingTwo>
+            {/* <Heading className='font-opensans'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading> */}
+            {/* <Duration className='font-opensans' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration > */}
+            <OuterGridContainer>
             <GridContainer>
+                <FlexContainer>
+                <ImageLoader url="media/icons/bookings/stays/check-in.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+
                 <div>
                     <HeadingThree>Start Date</HeadingThree>
                     <Subheading>{props.date ? getDate(props.date.format('YYYY-MM-DD') ): null}</Subheading>
+ 
                 </div>
+                </FlexContainer>
+
+                <FlexContainer>
+                    <ImageLoader url="media/icons/bookings/tourist.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    <div>
+                        <HeadingThree>Travelers</HeadingThree>
+                        <Subheading>{props.pax ? props.pax : null}</Subheading>
+                    </div>
+                </FlexContainer>
+
+                </GridContainer>
+
+                <GridContainer>
+
                 <div>
-                    <HeadingThree>Travelers</HeadingThree>
-                    <Subheading>{props.pax ? props.pax : null}</Subheading>
+                    {/* <HeadingThree>Total Cost</HeadingThree> */}
+                    {/* <Subheading>{'₹ 8320 /-'}</Subheading> */}
+                </div>
+                <div style={{textAlign: 'right'}}>
+                    <div style={{display: 'flex'}}>
+                    <StrikedCost>
+                        { props.cost ? 
+                            "₹ " + getIndianPrice(Math.round(Math.round(props.cost)/100)*2)+ " /-"
+                            : null
+                        }
+                    </StrikedCost>
+                    <HeadingThree>
+                        { props.cost ? 
+                            "₹ " + getIndianPrice(Math.round(Math.round(props.cost)/100))+ " /-"
+                            : null
+                        }
+                    </HeadingThree>
+                    </div>
+                    <Subheading style={{fontSize: '11px'}}>Per Person</Subheading>
 
                 </div>
+               
             </GridContainer>
+            
+            </OuterGridContainer>
+            <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', marginTop: '1rem'}}>
+            <div>
+                     <Subheading style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading>
+                </div>
+                <div>
+                    <Subheading style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading>
+
+                </div>
+            </div>
         </Container>
   );
 
