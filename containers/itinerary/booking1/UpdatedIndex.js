@@ -14,7 +14,7 @@ import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import Timer from '../timer/Index';
 // import OldBookingModal from '../../../components/modals/booking/Index';
 import {connect} from 'react-redux';
-
+import {BsPatchCheckFill} from 'react-icons/bs';
 import BookingModal from '../../../components/modals/bookingupdated/Index';
 import FlightModal from '../../../components/modals/flights/Index';
 import OldBookingCard from '../../../components/cards/Booking';
@@ -103,6 +103,56 @@ const MessageContainer = styled.div`
     margin: 0 0 2rem 0;
 
   }
+`;
+const BookingSuccessContainer = styled.div`
+display: grid;
+grid-template-columns: 1fr 4fr;
+grid-column-gap: 1rem;
+background-color: rgba(0,128,10,0.1);
+ padding: 1rem;
+border-radius: 5px;
+margin: 0.5rem;
+@media screen and (min-width: 768px){
+  grid-template-columns: 1fr 10fr;
+
+  margin: 0;
+}
+`;
+const BookingSuccessText = styled.div`
+@media screen and (min-width: 768px){
+
+display: flex;
+  margin: 0;
+}
+`;
+const CopyLink = styled.div`
+position: relative;
+display: inline-block;
+border-style: solid;
+border-color: rgb(0,128,10);
+border-width: 1px;
+width: max-content; 
+padding: 0 0.25rem;
+margin-top: 0.5rem;
+ border-radius: 5px;
+
+@media screen and (min-width: 768px){
+  font-size: 12px; 
+  margin-left: 0.5rem;
+margin-top: 0;
+
+&:hover{
+  cursor: pointer;
+  background-color: rgb(0,128,10);
+  color: white;
+}
+}
+`;
+const LinkCopied = styled.div`
+position: absolute;
+left: 100%;
+margin-left: 0.25rem;
+top: 0;
 `;
 const TargetContainer = styled.div`
   padding: 1rem 0;
@@ -242,7 +292,7 @@ const Booking = (props) => {
 
     useEffect(()=> {
       if(isPageWide) setShowpayment(true);
-      if(props.loadtopayment) setShowpayment(true);
+      // if(props.loadtopayment) setShowpayment(true);
 
   
 
@@ -551,10 +601,20 @@ const Booking = (props) => {
       if(!showLoginModal)
     return(
       <div>
-        {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
+        {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary}   _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-             
+            {props.payment_status ? <BookingSuccessContainer>
+            <div className='center-div'><ImageLoader url="media/icons/bookings/payment/success-green.svg"  height="max-content" margin="0" width="100%"></ImageLoader></div>
+                <BookingSuccessText style={{color: 'green'}}>
+                  <span style={{lineHeight: '2'}} className="font-opensans">Your payment was successfull jdn  dobduy  whbwked hdnlwj dpkwon jhbdy8hd nwendiu obdni uwhdtg hjni ubeuid nk iwedb
+                  <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+                    {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
+                  </CopyLink>
+                  </span>
+                </BookingSuccessText>
+            </BookingSuccessContainer> : null}
+
               <Tabs
         value={value}
         onChange={handleChange}
@@ -625,7 +685,20 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-           
+            {props.payment_status ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                    </div>
+                  { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+                    <LinkCopied style={{}}>Copied!</LinkCopied>
+                  </CopyLink>: null}
+
+                </BookingSuccessText>
+
+            </BookingSuccessContainer> : null}
+
              <Tabs
         value={value}
         onChange={handleChange}

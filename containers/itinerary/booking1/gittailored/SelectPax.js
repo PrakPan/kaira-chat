@@ -31,7 +31,16 @@ const Option = styled.option`
 `;
 const QueryType = (props) => {
     if(typeof window !== "undefined"){
+        console.log('pax', props.number_of_adults)
+        // let [optionsJSX, setOp]
+        let optionsJSX = [];
+    for(var i =props.number_of_adults ; i<= 20 ; i++){
+        optionsJSX.push(
+            <Option value={i} className="font-nunito">{i}</Option>
 
+        )
+
+    }
     const classes = useStyles();
     const queries =[
         "Conferences or offsites",
@@ -52,26 +61,11 @@ const QueryType = (props) => {
     return(
         <div>
         <FormControl id="bookingsummary-pax" className={classes.fullWidth}  variant="outlined" >
-        <InputLabel htmlFor="contact-query-select" id="contact-query-label">Adults</InputLabel>
+        <InputLabel  htmlFor="contact-query-select" id="contact-query-label">Adults</InputLabel>
         <Select disabled={props.token ? false : true} onClick={props.token ? null : () => setShowLoginModal(true)} native={ true ?  true : false } label="Topic of interest" value={queryType} 
                 onChange={_handleQueryTypeChange} className={classes.relative}>
                     <Option aria-label="None" value=""  style={{display: 'none'}}/>
-                    <Option value={1} className="font-nunito">1</Option>
-                    <Option value={2}  className="font-nunito">2</Option>
-                    <Option  value={3} className="font-nunito">3</Option>
-                    <Option  value={4} className="font-nunito">4</Option>
-                    <Option value={5} className="font-nunito">5</Option>
-                    <Option value={6} className="font-nunito">6</Option>
-                    <Option value={7} className="font-nunito">7</Option>
-                    <Option value={8} className="font-nunito">8</Option>
-                    <Option value={9} className="font-nunito">9</Option>
-                    <Option value={10} className="font-nunito">10</Option>
-                    <Option value={11} className="font-nunito">11</Option>
-                    <Option value={12} className="font-nunito">12</Option>
-                    <Option value={13} className="font-nunito">13</Option>
-                    <Option value={14} className="font-nunito">14</Option>
-                    <Option value={15} className="font-nunito">15</Option>
-
+                  {optionsJSX}
 
 
         </Select>

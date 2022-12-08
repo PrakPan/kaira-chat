@@ -50,6 +50,10 @@ font-weight: 600;
     margin-bottom: 2px;
     font-size: 13px;
     line-height: 1;
+    @media screen and (min-width: 768px){
+        font-size: 16px;
+
+    }
 
 `
 const Subheading = styled.p`
@@ -58,7 +62,22 @@ color:  rgba(91, 89, 89, 1);
 margin-bottom: 0px;
 line-height: 1;
 font-size: 13px;
+@media screen and (min-width: 768px){
+    font-size: 16px;
+
+}
 `
+const Subheading2 = styled.p`
+font-weight: 300;
+color:  rgba(91, 89, 89, 1);
+margin-bottom: 0px;
+line-height: 1;
+font-size: 10px;
+color: blue;
+@media screen and (min-width: 768px){
+    font-size: 13px;
+
+}`;
 
 const StrikedCost = styled.p`
 position: relative;
@@ -82,6 +101,10 @@ position: relative;
     transform: skewY(-10deg);
   }
 
+  @media screen and (min-width: 768px){
+    font-size: 16px;
+
+}
 `;
 const Cart = (props) => {
     const getDate = (date) => {
@@ -149,10 +172,10 @@ const Cart = (props) => {
             </OuterGridContainer>
             <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', marginTop: '1rem'}}>
             <div>
-                     <Subheading style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading>
+                     <Subheading2 style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2>
                 </div>
                 <div>
-                    <Subheading style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading>
+                    <Subheading2 style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading2>
 
                 </div>
             </div>

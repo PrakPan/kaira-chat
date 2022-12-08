@@ -8,7 +8,8 @@ import Spinner from "../../../Spinner";
 const Container = styled.div`
  
 @media screen and (min-width: 768px){
-    
+    width: 75%;
+    margin: auto;
 }
 `;
  
@@ -59,7 +60,7 @@ return(
               <div>
             </div>
             
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
                 {pax}
                
             </Grid> 

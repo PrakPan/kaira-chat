@@ -12,8 +12,23 @@ import Grid from '@material-ui/core/Grid';
 import axiosgitregisterinstance from '../../../../../services/sales/git/register';
 import Button from '../../../../ui/button/Index';
 import Spinner from '../../../../Spinner';
+import styled from  'styled-components';
 import {AiOutlinePlusSquare} from 'react-icons/ai';
 import media from '../../../../media';
+
+const StyledTypo = styled(Typography)`
+margin: 0.25rem 0;
+@media screen and (min-width: 768px){
+  font-size: 0.5rem;
+  margin: 0.75rem 0; 
+}
+`;
+const StyledGridContainer = styled(Grid)`
+padding: 0.25rem;
+@media screen and (min-width: 768px){
+  padding: 0.75rem;
+}
+`;
 const Accordion = withStyles({
 
     root: {
@@ -91,7 +106,7 @@ const Person = (props) => {
         style={{zIndex: '1', minHeight: 'max-content'}}
 
       >
-         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '1rem', margin: '0.25rem 0' , color: expanded ? 'black' : verificationfailed  ? 'red' : email?  'green' : 'black'}} >{  email ? email : 'Add Traveler '+props.index}</Typography> 
+         <StyledTypo content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && verified?  'green' : 'black'}} >{  email && verified? email : 'Traveler '+props.index}</StyledTypo> 
  
         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{''}</Typography>
 
@@ -99,20 +114,26 @@ const Person = (props) => {
          <div style={{margin: '0 1rem', borderStyle: 'none none none none', borderWidth: '1px', borderColor: "#F7e700", position: 'relative', top: '-0.5rem'}}></div>
        <AccordionDetails style={{display: 'block', padding: '0'}}>
        
-        <Grid container spacing={2} style={{padding: '0.25rem'}}>
+        <StyledGridContainer container spacing={2}>
                 <Grid style={{width: !isPageWide ? '100%' : 'auto'}} item md={6} xs={12}>
                  <Email verified={verified} setVerified={setVerified} token={props.token} email={email} setEmail={setEmail} verificationfailed={verificationfailed} setVerificationFailed={setVerificationFailed} id={props.id}></Email>
                </Grid>
                <Grid style={{width: !isPageWide ? '100%' : 'auto'}}  item md={6} xs={12}>
                     <Id verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
                </Grid>
-        </Grid> 
-            <Button onclick={_handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
+        </StyledGridContainer> 
+            <div className='hidden-desktop'><Button onclick={_handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
               {verified ? 'Change' : 'Add Traveler'}
               {/* <GrAdd></GrAdd> */}
               {verificationLoading ? 
                 <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
-              </Button>
+              </Button></div>
+              {!verified ? <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={_handleClose} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
+              {verified ? 'Change' : 'Add Traveler'}
+              {/* <GrAdd></GrAdd> */}
+              {verificationLoading ? 
+                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
+              </Button></div> : null}
        </AccordionDetails>
      </Accordion>
       </div>

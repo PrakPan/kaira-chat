@@ -4,6 +4,13 @@ import ImageLoader from '../../../ImageLoader';
 import Info from './info/Index';
 import  media from '../../../media';
 import BackgroundImageLoader from '../../../BackgroundImageLoader';
+
+const Container = styled.div`
+@media screen and (min-width: 768px){
+    width: 85%;
+    margin: auto;
+}
+`;
 const GridContainer = styled.div`
     display: grid;
     grid-template-columns: max-content auto;
@@ -18,6 +25,7 @@ const AbsoluteContainer = styled.div`
     height: 100%;
     border-radius: 5px;
     color: white;
+    width: 100%;
      padding: 0.5rem;
 `;
 const Heading = styled.p`
@@ -25,6 +33,10 @@ const Heading = styled.p`
     margin-bottom: 0.25rem;
     font-size: 13px;
     line-height: 1.2;
+    @media screen and (min-width: 768px){
+        font-size: 16px;
+
+    }
 
 `;
 const Subheading = styled.p`
@@ -40,13 +52,13 @@ const Cart = (props) => {
 
   
   return(
-      <div className='' >
+      <Container className='' >
             <GridContainer>
                 <RelativeContainer>
                 <ImageLoader 
                 url={props.plan ? props.plan.images ? props.plan.images.length ? props.plan.images[0] : "media/website/grey.png" : "media/website/grey.png" : "media/website/grey.png"}
                 widthmobile="40vw"
-                width="10vw"
+                width="12vw"
                 borderRadius="5px"
                 height={'100%'}
                 ></ImageLoader>
@@ -63,7 +75,7 @@ const Cart = (props) => {
                 <Info date={props.date} cost={props.cost} pax={props.pax} plan={props.plan}></Info>
             </GridContainer>
             <hr style={{margin: '6px 0'}}></hr>
-        </div>
+        </Container>
   );
 
 }

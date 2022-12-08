@@ -25,6 +25,7 @@ import { ITINERARY_STATUSES } from '../../../../services/constants';
 import axios from 'axios';
 import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCreate';
 import Spinner from '../../../../components/Spinner';
+import { set } from 'nprogress';
 
   const SummaryContainer = styled.div`
 height: max-content;
@@ -179,9 +180,14 @@ const Details = (props) => {
     }
   }
     useEffect(()=> {
-      // if(props.payment.payment_info.length)
+      try{
+        setPax(props.payment.meta_info.number_of_adults)
+      }
+      catch{
+        set(5)
+      }
       // _calculateServiceFee(props.payment.payment_info[0]["starting_point"], 1)
-  },[])
+  },[props.payment])
   let bookingslist = [];
   let bookinglistwithcost = [];
    //Date on which agoda changes made to box
@@ -220,7 +226,7 @@ const _startRazorpayHandler = (data) => {
           //Payment successfull handler passed to razorpay
           "handler": function (response){
                       setPaymentLoading(true)
-                      axios.patch("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                      axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                       {'Authorization': `Bearer ${props.token}`}} )
                       .then( res => {
                            setPaymentLoading(false);
@@ -285,7 +291,7 @@ const _startRazorpayHandler = (data) => {
                   <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.payment.meta_info.number_of_infants}</p>
 
 
-                </div> : <SelectPax  setPax={setPax} token={props.token} setShowLoginModal={props.setShowLoginModal}></SelectPax>}
+                </div> : <SelectPax number_of_adults={props.payment ? props.payment.meta_info ? props.payment.meta_info.number_of_adults : 5 : 5} setPax={setPax} token={props.token} setShowLoginModal={props.setShowLoginModal}></SelectPax>}
         </div> : null}
         {/* <SelectDetails></SelectDetails> */}
         <div style={{marginBottom: '1.5rem'}}>
@@ -353,7 +359,7 @@ const _startRazorpayHandler = (data) => {
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>
-       <RegistrationModal payment={props.payment} plan={props.plan} date={date} id={props.id} show={showRegistration} hide={() => setShowRegistartion(false)} pax={pax}></RegistrationModal>
+       <RegistrationModal number_of_adults={props.payment ? props.payment.meta_info ? props.payment.meta_info.number_of_adults : 5 : 5} payment={props.payment} plan={props.plan} date={date} id={props.id} show={showRegistration} hide={() => setShowRegistartion(false)} pax={pax}></RegistrationModal>
        <VerificationModal date={date} pax={pax} onSuccess={_handleVerificationSuccess}  show={showVerification} hide={() => setShowVerification(false)}></VerificationModal>
 </SummaryContainer>
 

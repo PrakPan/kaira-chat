@@ -11,7 +11,6 @@ import LogInModal from '../../../../components/modals/Login';
 
 const SelectDate = (props) => {
 
-    const [valueStart, setValueStart] =useState((dayjs()));
     const [open, setOpen] =useState(false);
 
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -41,13 +40,13 @@ const SelectDate = (props) => {
   
 onOpen={_handleOpen}
     label="Start Date"
-    value={valueStart}
+    value={props.date}
      onClose={() => setOpen(false)}
     open={open}
     onChange={(newValue) => {
-      setValueStart(newValue);
+      props.setDate(newValue);
     }}
-    renderInput={(params) => <TextField    onKeyDown={onKeyDown}  id="bookingsummary-pax" 
+    renderInput={(params) => <TextField  onKeyDown={onKeyDown}  id="bookingsummary-pax" 
     {...params} fullWidth />}
   />
 </LocalizationProvider>
