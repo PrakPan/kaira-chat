@@ -200,8 +200,7 @@ const _populateResultsHandelr = (filters) => {
 }
 const _fetchResultsHandler = (filter) => {
   let FILTERS = [];
-  console.log('k', filter==='Road Trip')
-  switch(filter){
+   switch(filter){
     case 'Trek':
       if(!filters["Trek"]) FILTERS.push("Trek");
       if(filters["Road Trip"]) FILTERS.push('Road Trip');
@@ -218,14 +217,12 @@ const _fetchResultsHandler = (filter) => {
 
   }
  
-  console.log('f1', FILTERS)
-  _populateResultsHandelr(FILTERS)
+   _populateResultsHandelr(FILTERS)
 
 }
 
 const _toggleFilterHandler = (filter_text) => {
-  console.log('ft', filter_text)
-  switch(filter_text){
+   switch(filter_text){
     case 'Treks':
         _fetchResultsHandler('Trek');
         setFilters({...filters, 'Trek' : !filters['Trek']});
@@ -351,8 +348,7 @@ const EXPERIENCE = {
       }
     ],
 };
-console.log('dat',props.experienceData)
-  return (
+   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent title={props.experienceData.overview_heading+" Travel Planner"}/>

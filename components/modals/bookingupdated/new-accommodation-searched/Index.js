@@ -42,8 +42,7 @@ const ImageContainer = styled.div`
 const Accommodation = (props) => {
    let isPageWide = media('(min-width: 768px)')
     const [showDetails, setShowDetails] = useState(false);
-    console.log(props.selectedBooking)
- //   if(!showPhotos)
+  //   if(!showPhotos)
   return(
       <Container className='border' >
            <GridContainer>

@@ -72,7 +72,7 @@ const Section= (props) => {
     if(props.data)
     return(
       <Container className='font-opensans'>  
-            {props.isDatePresent ?<div style={{display: 'grid',  gridGap: '0.5rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>
+            {props.isDatePresent  && !props.is_registration_needed ?<div style={{display: 'grid',  gridGap: '0.5rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>
                  <div style={{display: 'grid',  gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                     <ImageLoader url="media/icons/bookings/stays/check-in.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{}}> 
@@ -129,7 +129,7 @@ const Section= (props) => {
                         {/* <div className='center-div'>
                             <Text className='font-opensans'>2 x Super Deluxe rooms</Text>
                         </div> */}
-                      { rooms.length ? 
+                      { rooms.length  && !props.is_registration_needed? 
                         rooms.map(room => 
                             <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
                                 <Text className='font-opensans' style={{}}>{room.number_of_rooms + " x "}</Text>
@@ -137,6 +137,11 @@ const Section= (props) => {
                             </div>
                         )
                       : null }
+                      { props.is_registration_needed ? 
+                        <div className=''>
+                                 <Text className='font-opensans'>Double / triple sharing rooms</Text>
+                            </div>
+                     : null }
                     </div>
                 </div>
               

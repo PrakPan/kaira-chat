@@ -22,8 +22,7 @@ border-width: 1px;
  
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
-    console.log(props.selectedBooking)
-    if(props.selectedBooking)
+     if(props.selectedBooking)
     return(
       <Container className='font-opensans'>  
           

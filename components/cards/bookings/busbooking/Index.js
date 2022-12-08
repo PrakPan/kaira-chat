@@ -61,8 +61,8 @@ const Booking = (props) =>{
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
-         <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         <SectionFour></SectionFour>
+         <SectionThree  is_registration_needed={props.is_registration_needed} are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
+         {!props.is_registration_needed ? <SectionFour></SectionFour> : null}
         </Container>
         </div>
     );

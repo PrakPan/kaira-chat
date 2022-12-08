@@ -1,4 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
+import { useRouter } from 'next/router'
+
 import styled from 'styled-components'
 import FullImg from '../fullimg/FullImg';
 import FullImgContainer from '../fullimg/FullImgContent';
@@ -29,6 +31,7 @@ const btoa = (text) => {
   return Buffer.from(text, 'binary').toString('base64');
 };
 const Itinerary = (props) =>{
+  const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [totalduration, setTotalduration] = useState(0);
     // let totalduration = 0;  
@@ -87,6 +90,8 @@ const [plan, setPlan] = useState(null);
     const [showPoiModal, setShowPoiModal] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
 
+    const [hasUserPaid, setHasUserPaid] = useState(false);
+
     const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
     const [is_stock, setIsStock] = useState(false);
     // const closeGalleryHandler = () => {
@@ -108,20 +113,20 @@ axiosbreifinstance.get(`/?itinerary_id=`+props.id)
    for(var i = 0 ; i<res.data.city_slabs.length ; i++){
       if(res.data.city_slabs[i].duration) setTotalduration(totalduration+parseInt(res.data.city_slabs[i].duration));
    }
-   else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  //  else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
   }
-  else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  // else   window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
   }
-  else    window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  // else    window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
    if(res.data.city_slabs) if(!res.data.city_slabs.length) if(!breif.city_slabs) if(!breif.city_slabs.length)
    setTimeout(getBreifHandler, 3000);
 
 }).catch(error => {
   setBreifLoading(false);
 
-  window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+  // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 });
 }
 
@@ -130,11 +135,27 @@ const getPaymentHandler = ( ) => {
   axios.post(MIS_SERVER_HOST+'/payment/info/', {
     "itinerary_type": "Tailored",
     "itinerary_id": props.id,
-  })
+  }, {headers: {
+    'Authorization': `Bearer ${props.token}`
+    }})
   .then(res => {
     setPaymentLoading(false);
 
      setPayment(res.data);
+ 
+     //check if user has already paid
+    // try{
+      for(var i=0; i < res.data.registered_users.length ; i++){
+        // console.log(res.data.registered_users[i])
+        if(res.data.registered_users[i].email === props.email){
+           if(res.data.registered_users[i].payment_status === 'captured') setHasUserPaid(true);
+          break;
+        }
+      }
+    // }catch{
+
+    // }
+
   }).catch(error => {
     setPaymentLoading(false);
 
@@ -185,7 +206,7 @@ setStayLoading(false);
 }
 
      useEffect(() => {
-      props.checkAuthState();
+       props.checkAuthState();
 
          window.scrollTo(0,0);
         if(TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);
@@ -197,13 +218,13 @@ setStayLoading(false);
              setItineraryLoading(false);
              }
             else {
-              window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+              // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
             }
 
           }).catch(error => {
 
              setItineraryLoading(false);
-            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+            // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
           });
          getBreifHandler();
@@ -410,8 +431,7 @@ const _reloadFlightBookings  = () => {
       })
     }
     let data =[];
-    console.log('booking', booking);
-        data.push( {
+         data.push( {
           "id": booking.id,
            "booking_type": "Accommodation",
            "city": booking.city, 
@@ -503,8 +523,7 @@ const _reloadFlightBookings  = () => {
 
    setSelectingBooking(booking.id)
    let data =[];
-   console.log(booking)
-       data.push( {
+        data.push( {
          "id": booking.id,
          "booking_type": booking.booking_type,
          "itinerary_type": "Tailored",
@@ -600,8 +619,7 @@ const _reloadFlightBookings  = () => {
   const setHidePoiModal = () => {
     setShowPoiModal(false);
   }
-   console.log('i', itinerary)
-    if(breif && !itineraryLoading)
+     if(breif && !itineraryLoading)
     return(
       // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>
 
@@ -612,7 +630,7 @@ const _reloadFlightBookings  = () => {
            </FullImg>  */}
            <Landing title={itinerary.name} images={itinerary.images} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}></Landing>
             <div id="itinerary-anchor">
-              <Menu isDatePresent={isDatePresent} _updateTaxiBookingHandler={_updateTaxiBookingHandler} showTaxiModal={showTaxiModal}  setShowTaxiModal={setShowTaxiModal}paymentLoading={paymentLoading} budget={plan ? plan.budget : null} _deselectActivityBookingHandler={_deselectActivityBookingHandler} activityFlickityIndex={activityFlickityIndex} transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightBookingHandler={_updateFlightBookingHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
+              <Menu  hasUserPaid={hasUserPaid} plan={plan} isDatePresent={isDatePresent} _updateTaxiBookingHandler={_updateTaxiBookingHandler} showTaxiModal={showTaxiModal}  setShowTaxiModal={setShowTaxiModal}paymentLoading={paymentLoading} budget={plan ? plan.budget : null} _deselectActivityBookingHandler={_deselectActivityBookingHandler} activityFlickityIndex={activityFlickityIndex} transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightBookingHandler={_updateFlightBookingHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
               {/* <ItineraryMobile></ItineraryMobile> */}
               {/* <Cities></Cities> */}
             </div>
@@ -632,6 +650,7 @@ const _reloadFlightBookings  = () => {
 const mapStateToPros = (state) => {
   return{
     token: state.auth.token,
+    email: state.auth.email
 
   }
 }

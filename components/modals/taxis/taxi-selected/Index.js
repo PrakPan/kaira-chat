@@ -40,8 +40,7 @@ const Booking = (props) =>{
     // }
   
  
- console.log('b', props.selectedBooking)
-
+ 
   
     //  if(isPageWide)
     return(

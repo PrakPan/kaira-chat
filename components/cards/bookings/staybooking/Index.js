@@ -88,8 +88,7 @@ const getDate = (date) => {
         setRoomsJSX(roomsJSX)
       }, [props.rooms]);
       const [showDetails, setShowDetails] = useState(false);
-      console.log('dat', props.data.costings_breakdown)
-      //  if(isPageWide)
+       //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
             <div style={{margin: '0 0 0.5rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{props.data ? props.data.duration ? " - "+props.data.duration + " night(s) stay": '' : ''}</div>
@@ -103,9 +102,9 @@ const getDate = (date) => {
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
                     <SectionOne   setShowDetails={() => setShowDetails(true)} data={props.data}  ></SectionOne>
-                    <SectionTwo  isDatePresent={props.isDatePresent}  data={props.data}></SectionTwo>
-                    <SectionThree are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
-                    <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour>
+                    <SectionTwo  is_registration_needed={props.is_registration_needed} isDatePresent={props.isDatePresent}  data={props.data}></SectionTwo>
+                    <SectionThree  is_registration_needed={props.is_registration_needed} are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token} data={props.data} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting}></SectionThree>
+                    {!props.is_registration_needed ? <SectionFour setShowDetails={() => setShowDetails(true)} setShowBookingModal={props.setShowBookingModal}></SectionFour> : null}
                     {/* {props.type === "Accommodation" ? 
                     <div>
                         {props.check_in ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}

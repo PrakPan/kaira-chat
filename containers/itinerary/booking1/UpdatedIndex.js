@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import BookingCard from '../../../components/cards/bookings/activitybooking/Index';
-import Heading from '../../../components/heading/Heading';
-import Button from '../../../components/Button';
-import SummaryContainer from './TailoredDetails';
+ import SummaryContainer from './TailoredDetails';
+import GITSummaryContainer from './gittailored/Index';
+
 import Flickity from '../../../components/FlickityCarousel';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-import ComingSoon from './ComingSoon';
+ import ComingSoon from './ComingSoon';
 import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import Timer from '../timer/Index';
 // import OldBookingModal from '../../../components/modals/booking/Index';
 import {connect} from 'react-redux';
-
-import BookingModal from '../../../components/modals/bookingupdated/Index';
+ import BookingModal from '../../../components/modals/bookingupdated/Index';
 import FlightModal from '../../../components/modals/flights/Index';
 import OldBookingCard from '../../../components/cards/Booking';
 import { useRouter } from 'next/router'
@@ -21,16 +18,14 @@ import media from '../../../components/media';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 // import Accommodation from '../../../components/modals/accommodation/Index';
-import FlightCard from '../../../components/cards/editableflights/Index';
-import DesktopCardContainer from './DesktopCardCotainer';
+ import DesktopCardContainer from './DesktopCardCotainer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 // import Spinner from '../../../components/Spinner';
 import gif from '../../../public/assets/loader.gif';
 import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
-import * as authaction from '../../../store/actions/auth';
-import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
+ import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
 import FlightBookingCard  from '../../../components/cards/bookings/flightbooking/Index';
 import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
 import BusBookingCard from '../../../components/cards/bookings/busbooking/Index';
@@ -101,6 +96,56 @@ const MessageContainer = styled.div`
     margin: 0 0 2rem 0;
 
   }
+`;
+const BookingSuccessContainer = styled.div`
+display: grid;
+grid-template-columns: 1fr 4fr;
+grid-column-gap: 1rem;
+background-color: rgba(0,128,10,0.1);
+ padding: 1rem;
+border-radius: 5px;
+margin: 0.5rem;
+@media screen and (min-width: 768px){
+  grid-template-columns: 1fr 10fr;
+
+  margin: 0;
+}
+`;
+const BookingSuccessText = styled.div`
+@media screen and (min-width: 768px){
+
+display: flex;
+  margin: 0;
+}
+`;
+const CopyLink = styled.div`
+position: relative;
+display: inline-block;
+border-style: solid;
+border-color: rgb(0,128,10);
+border-width: 1px;
+width: max-content; 
+padding: 0 0.25rem;
+margin-top: 0.5rem;
+ border-radius: 5px;
+
+@media screen and (min-width: 768px){
+  font-size: 12px; 
+  margin-left: 0.5rem;
+margin-top: 0;
+
+&:hover{
+  cursor: pointer;
+  background-color: rgb(0,128,10);
+  color: white;
+}
+}
+`;
+const LinkCopied = styled.div`
+position: absolute;
+left: 100%;
+margin-left: 0.25rem;
+top: 0;
 `;
 const TargetContainer = styled.div`
   padding: 1rem 0;
@@ -214,8 +259,7 @@ const Booking = (props) => {
       props.setShowFlightModal();
     }
     const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type) => {
-    console.log('test')
-      ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
+       ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
       setSelectedBooking({
         ...selectedBooking,
         name: name,
@@ -240,6 +284,7 @@ const Booking = (props) => {
 
     useEffect(()=> {
       if(isPageWide) setShowpayment(true);
+      // if(props.loadtopayment) setShowpayment(true);
 
   
 
@@ -322,7 +367,7 @@ const Booking = (props) => {
             number_of_rooms = props.stayBookings[i].costings_breakdown[0]["number_of_rooms"];
              if(!props.stayBookings[i].user_selected && !props.stayBookings[i].alternate_to){
               bookings_accommodations.push(
-                <StayBookingCard  isDatePresent={props.isDatePresent}  token={props.token}  setShowLoginModal={setShowLoginModal} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+                <StayBookingCard is_registration_needed={props.payment ? props.payment.is_registration_needed : false}   isDatePresent={props.isDatePresent}  token={props.token}  setShowLoginModal={setShowLoginModal} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
              )
               //set as selectable booking
             }
@@ -332,7 +377,7 @@ const Booking = (props) => {
             }
             else 
             bookings_accommodations.push(
-            <StayBookingCard  isDatePresent={props.isDatePresent}  setShowLoginModal={setShowLoginModal} token={props.token} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
+            <StayBookingCard  is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  isDatePresent={props.isDatePresent}  setShowLoginModal={setShowLoginModal} token={props.token} is_selecting={ props.stayBookings[i].id === props.selectingBooking}  _deselectBookingHandler={props._deselectStayBookingHandler} is_stock={props.is_stock} is_selected={true}   is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown, images)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}  setImagesHandler = {_setImagesHandler} data={props.stayBookings[i]} ></StayBookingCard>
          )}
      
       }
@@ -369,8 +414,7 @@ const Booking = (props) => {
           number_of_children: props.transferBookings[i]["number_of_children"],
           number_of_infants: props.transferBookings[i]["number_of_infants"],
         }
-        console.log(props.transferBookings[i]);
-        let city=props.transferBookings[i]["city"];
+         let city=props.transferBookings[i]["city"];
         let room_type = props.transferBookings[i]["room_type"];
         let taxi_type=props.transferBookings[i]["taxi_type"];
         let transfer_type=props.transferBookings[i]["transfer_type"];
@@ -391,15 +435,15 @@ const Booking = (props) => {
           
           if(props.transferBookings[i].booking_type === 'Taxi')
            bookings_transfers.push(
-            <TaxiBookingCard  isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
+            <TaxiBookingCard is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_registration_needed={props.payment ? props.payment.is_registration_needed : false}   payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
         )
         else if(props.transferBookings[i].booking_type === 'Bus')
         bookings_transfers.push(
-          <BusBookingCard   isDatePresent={props.isDatePresent}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></BusBookingCard>
+          <BusBookingCard is_registration_needed={props.payment ? props.payment.is_registration_needed : false}   isDatePresent={props.isDatePresent}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} ></BusBookingCard>
       )
       else if(props.transferBookings[i].booking_type === 'Ferry')
       bookings_transfers.push(
-        <FerryBookingCard  isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></FerryBookingCard>
+        <FerryBookingCard  is_registration_needed={props.payment ? props.payment.is_registration_needed : false} isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></FerryBookingCard>
     )
       }
     }
@@ -447,7 +491,7 @@ const Booking = (props) => {
         }
          else{
            bookings_flights.push(
-            <FlightBookingCard  isDatePresent={props.isDatePresent}    setShowLoginModal={setShowLoginModal} token={props.token} _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
+            <FlightBookingCard is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  isDatePresent={props.isDatePresent}    setShowLoginModal={setShowLoginModal} token={props.token} _deselectFlightBookingHandler={props._deselectFlightBookingHandler} flightFlickityIndex={props.flightFlickityIndex}  is_selecting={ props.flightBookings[i].id === props.selectingBooking}  data={props.flightBookings[i]} is_stock={props.is_stock} bookings={props.flightBookings} setShowFlightModal={(props) => _changeFlightHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata)} showFlightModal={props.showFlightModal} is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}    is_auth={props.is_auth}  are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  is_stock={props.is_stock} payment={props.payment} key ={i} setShowBookingModal={(props) => _changeBookingHandler(name, itinerary_id, tailored_id, accommodation, id, check_in, check_out, pax, city, room_type, number_of_rooms, itinerary_name, cost, costings_breakdown)} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal} setImagesHandler = {_setImagesHandler} ></FlightBookingCard>
          );
         
       }
@@ -508,7 +552,7 @@ const Booking = (props) => {
  
       
         bookings_activities.push(
-            <BookingCard  isDatePresent={props.isDatePresent}  is_selecting={ props.activityBookings[i].id === props.selectingBooking} setShowLoginModal={setShowLoginModal} token={props.token} _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
+            <BookingCard is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  isDatePresent={props.isDatePresent}  is_selecting={ props.activityBookings[i].id === props.selectingBooking} setShowLoginModal={setShowLoginModal} token={props.token} _deselectActivityBookingHandler={props._deselectActivityBookingHandler} activityFlickityIndex={props.activityFlickityIndex} data={props.activityBookings[i]} check_in={check_in}  is_stock={props.is_stock}  tailored_id={tailored_id} booking_id={id} booking_name={name} booking_type={booking_type} itinerary_id={itinerary_id} itinerary_name={itinerary_name} _selectTaxiHandler={props._selectTaxiHandler} is_selected={props.activityBookings[i].user_selected} price={props.activityBookings[i]["booking_cost"]}  is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}_stock={props.is_stock} payment={props.payment} key ={i}   blur={props.blur} setImagesHandler =  {_setImagesHandler} accommodation heading={ props.activityBookings[i]["name"]} details={ props.activityBookings[i]["points"]}  rating={props.activityBookings[i]["user_rating"]} images={ props.activityBookings[i]["images"]}></BookingCard>
         ) 
       }
     }
@@ -523,9 +567,11 @@ const Booking = (props) => {
 
   useEffect(() => {
       if(props.payment){
-
-       setSummaryContainerJSX(<SummaryContainer stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId}></SummaryContainer>);
+        if(!props.payment.is_registration_needed)
+       setSummaryContainerJSX(<SummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
+      else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.hasUserPaid}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
+
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
   
@@ -534,17 +580,47 @@ const Booking = (props) => {
     const _setImagesHandler = (images) => {
        setImages(images);
     }
- console.log('p', props.paymentLoading)
-    if(true){
+    const _handleLoginClose = ( ) => {
+      props.getPaymentHandler();
+      setShowLoginModal(false);
+
+    }
+     if(true){
     if(!images){
     if(isPageWide){
       if(!showLoginModal)
     return(
       <div>
-        {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
+        {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary}   _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-             
+            {props.payment_status && props.payment ?  props.payment.is_registration_needed ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+                    {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
+                  </CopyLink>: null}
+                    </div>
+                 
+
+                </BookingSuccessText>
+
+            </BookingSuccessContainer> : null : null}
+            {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
+            <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color:   'green' }}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  
+                    </div>
+                 
+
+                </BookingSuccessText>
+
+            </BookingSuccessContainer> : null}
+
               <Tabs
         value={value}
         onChange={handleChange}
@@ -604,7 +680,7 @@ const Booking = (props) => {
     
           <LogInModal
               show={true}
-              onhide={() => setShowLoginModal(false)}>
+              onhide={_handleLoginClose}>
             </LogInModal>
     </div>
       );
@@ -615,7 +691,32 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-           
+            {props.payment_status  && props.payment ? props.payment.is_registration_needed? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                    </div>
+                  { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+                    {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
+                  </CopyLink>: null}
+
+                </BookingSuccessText>
+
+            </BookingSuccessContainer> : null: null}
+            {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: 'rgba(0,128,10,0.1)'}}>
+            <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color:   'green' }}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  
+                    </div>
+                 
+
+                </BookingSuccessText>
+
+            </BookingSuccessContainer> : null}
+
              <Tabs
         value={value}
         onChange={handleChange}
@@ -673,7 +774,7 @@ const Booking = (props) => {
     
           <LogInModal
               show={true}
-              onhide={() => setShowLoginModal(false)}>
+              onhide={_handleLoginClose}>
             </LogInModal>
     </div>
       );
