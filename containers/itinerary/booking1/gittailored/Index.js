@@ -229,12 +229,15 @@ const _startRazorpayHandler = (data) => {
                       {'Authorization': `Bearer ${props.token}`}} )
                       .then( res => {
                            setPaymentLoading(false);
-                           router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-  
+                          //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
+                          window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+
                        })
                       .catch( err => {
                         setPaymentLoading(false);
-                        router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
+                        // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
+                        window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+
                       });
                   },
           //User details will be present as user is logged in
