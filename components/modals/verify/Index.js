@@ -107,8 +107,7 @@ const RegistrationModal = (props) => {
 
     const _editUserEmailHandler = (email) => {
         setButtonLoading(true);
-        console.log(props.email);
-        axiosusereditinfo.patch( "/", 
+         axiosusereditinfo.patch( "/", 
         // {headers: {
         //     'Authorization': `Bearer ${props.token}`
         //     },
@@ -150,8 +149,17 @@ const RegistrationModal = (props) => {
                 {otpSent ?  <Otp otp={otp} setOtp={setOtp} otpVerificationFailed={otpVerificationFailed} setEmailError={setEmailError}></Otp>:
     <div style={{visibility: 'hidden'}}> <Otp otp={otp} setOtp={setOtp} otpVerificationFailed={otpVerificationFailed} setEmailError={setEmailError}></Otp></div>
 }
-                <Button onclick={!otpSent ? _editUserEmailHandler : _verifyOtpHandler}  onclickparam={!otpSent ? email : otp}>{!otpSent ? "Get OTP" : 'Verify OTP'}</Button>
-                { buttonLoading ? <Spinner></Spinner> : null}
+                {!otpSent ? <Button margin="0.5rem 0" borderWidth="0" bgColor="#f7e700" color="black" hoverBgColor="#f7e700" hoverColor="black"  borderRadius="5px" onclick={ _editUserEmailHandler}  onclickparam={ email}>
+                    Get OTP 
+                    {buttonLoading ? 
+                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
+                </Button> : <Button  margin="0.5rem 0"  borderWidth="0" bgColor="#f7e700" color="black" hoverBgColor="#f7e700" hoverColor="black"  borderRadius="5px"  onclick={_verifyOtpHandler}  onclickparam={otp}>
+                    Verify OTP
+                    {buttonLoading ? 
+                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
+                    </Button>
+                    }
+                {/* { buttonLoading ? <Spinner></Spinner> : null} */}
              </Body>
       </Modal>
       </div>

@@ -31,8 +31,7 @@ const Option = styled.option`
 `;
 const QueryType = (props) => {
     if(typeof window !== "undefined"){
-        console.log('pax', props.number_of_adults)
-        // let [optionsJSX, setOp]
+         // let [optionsJSX, setOp]
         let optionsJSX = [];
     for(var i =props.number_of_adults ; i<= 20 ; i++){
         optionsJSX.push(

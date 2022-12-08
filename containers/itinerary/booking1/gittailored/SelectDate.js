@@ -16,8 +16,7 @@ const SelectDate = (props) => {
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     const _handleOpen  = () => {
-        console.log('testing')
-        if(props.token){
+         if(props.token){
         setOpen(true)
         }
         else {

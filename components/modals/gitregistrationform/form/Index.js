@@ -34,6 +34,11 @@ const Container = styled.div`
   
  `;
 
+ const Error = styled.p`
+    color: red;
+    font-size: 13px;
+    margin: 1rem 0 1rem 0;
+ `
 const Enquiry = (props) => {
     const [paxList, setPaxList] = useState([]);
 
@@ -45,8 +50,7 @@ const Enquiry = (props) => {
         setPaxList(pax);
 
     }
-    console.log('paxlist', paxList);
-    let pax = []
+     let pax = []
     for(var i = 0 ; i < props.pax ; i++){
         pax.push(
         <Grid item xs={12}>
@@ -65,6 +69,7 @@ return(
                
             </Grid> 
            {/* <div onClick={null}></div> */}
+           {props.formNotFilledError ? <Error>Please fill all traveler details</Error> : null} 
            <PayNow className="hover-pointer font-opensans" onClick={() => props.onSuccess(paxList)} >
                 Pay Now
              {props.paymentLoading ? <Spinner size={16} display="inline" margin=" 0 0 0 0.25rem"></Spinner> : null}

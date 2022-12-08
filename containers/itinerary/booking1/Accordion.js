@@ -41,8 +41,7 @@ const HEADINGS = [
 ]
   let FAQS = [];
   let HeadingsJSX = []
-  console.log('p', props.payment);
-  let bookings = {};
+   let bookings = {};
   try{
   for(var i = 0 ; i < props.stayBookings.length ; i++){
     bookings= {...bookings, [props.stayBookings[i].id] : props.stayBookings[i] };
@@ -74,17 +73,14 @@ try{
 catch{
 
 }
-console.log(props.flightBookings)
-console.log('b', bookings)
-  for(var key in props.payment.summary){
+   for(var key in props.payment.summary){
     if(props.payment.summary[key].cost){
       let ContentJSX = [];
       let bookingslist=  [];
       let bookinglistwithcost = [];
       //loop through summary key bookings, generate details list 
       for(var i = 0 ; i < props.payment.summary[key].bookings.length; i++){
-        console.log('test', bookings[props.payment.summary[key].bookings[i].id])
-        try{
+         try{
         bookingslist.push(
           <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem',}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{bookings[props.payment.summary[key].bookings[i].id].name}</p>
         )

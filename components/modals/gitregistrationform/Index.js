@@ -18,6 +18,8 @@ const RegistrationModal = (props) => {
    const router = useRouter();
   const [verificationCount, setVerificationCount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [formNotFilledError, setFormNotFilledError] = useState(false);
+
     let isPageWide = media('(min-width: 768px)')
     useEffect(() => {
       const script = document.createElement('script');
@@ -43,21 +45,19 @@ const RegistrationModal = (props) => {
         //Payment successfull handler passed to razorpay
         "handler": function (response){
                     setPaymentLoading(true)
-                    axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                    axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                     {'Authorization': `Bearer ${props.token}`}} )
                     .then( res => {
-                      console.log(res)
-                         setPaymentLoading(false);
-                        //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                         window.location.href="https://www.dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                          setPaymentLoading(false);
+                         router.push('/itinerary/'+data.itinerary+"?payment_status=success")
+                        //  window.location.href="https://www.dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
 
                      })
                     .catch( err => {
-                      console.log(err)
-                      setPaymentLoading(false);
-                      // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
+                       setPaymentLoading(false);
+                      router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
 
-                      window.location.href="https://www.dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                      // window.location.href="https://www.dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
                       });
                 },
         //User details will be present as user is logged in
@@ -96,8 +96,8 @@ const RegistrationModal = (props) => {
     }
     
     const _cloneHandler = (data) => {
-        console.log('check', verificationCount, props.pax)
-        if(verificationCount == props.pax){
+         if(verificationCount == props.pax){
+        setFormNotFilledError(false);
         setPaymentLoading(true);
         axiospurchaseinstance.post("/", 
         {
@@ -121,6 +121,9 @@ const RegistrationModal = (props) => {
             setPaymentLoading(false);
         })
       }
+      else{
+        setFormNotFilledError(true);
+      }
     }
 
   return(
@@ -138,7 +141,7 @@ const RegistrationModal = (props) => {
              <Body className="">
               <Cart cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
                 <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p>
-                <Form number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
+                <Form formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
              </Body>
       </Modal>
       </div>

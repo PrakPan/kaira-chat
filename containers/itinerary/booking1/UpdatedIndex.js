@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import BookingCard from '../../../components/cards/bookings/activitybooking/Index';
-import Heading from '../../../components/heading/Heading';
-import Button from '../../../components/Button';
-import SummaryContainer from './TailoredDetails';
+ import SummaryContainer from './TailoredDetails';
 import GITSummaryContainer from './gittailored/Index';
 
 import Flickity from '../../../components/FlickityCarousel';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-import ComingSoon from './ComingSoon';
+ import ComingSoon from './ComingSoon';
 import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import Timer from '../timer/Index';
 // import OldBookingModal from '../../../components/modals/booking/Index';
 import {connect} from 'react-redux';
-import {BsPatchCheckFill} from 'react-icons/bs';
-import BookingModal from '../../../components/modals/bookingupdated/Index';
+ import BookingModal from '../../../components/modals/bookingupdated/Index';
 import FlightModal from '../../../components/modals/flights/Index';
 import OldBookingCard from '../../../components/cards/Booking';
 import { useRouter } from 'next/router'
@@ -23,16 +18,14 @@ import media from '../../../components/media';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 // import Accommodation from '../../../components/modals/accommodation/Index';
-import FlightCard from '../../../components/cards/editableflights/Index';
-import DesktopCardContainer from './DesktopCardCotainer';
+ import DesktopCardContainer from './DesktopCardCotainer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 // import Spinner from '../../../components/Spinner';
 import gif from '../../../public/assets/loader.gif';
 import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
-import * as authaction from '../../../store/actions/auth';
-import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
+ import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
 import FlightBookingCard  from '../../../components/cards/bookings/flightbooking/Index';
 import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
 import BusBookingCard from '../../../components/cards/bookings/busbooking/Index';
@@ -266,8 +259,7 @@ const Booking = (props) => {
       props.setShowFlightModal();
     }
     const _changeTaxiHandler = (name, itinerary_id, tailored_id,   id, check_in, check_out, pax, city,  itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type) => {
-    console.log('test')
-      ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
+       ga.event({action: 'Itinerary-bookings-taxi_change', params: {name : name}})
       setSelectedBooking({
         ...selectedBooking,
         name: name,
@@ -422,8 +414,7 @@ const Booking = (props) => {
           number_of_children: props.transferBookings[i]["number_of_children"],
           number_of_infants: props.transferBookings[i]["number_of_infants"],
         }
-        console.log(props.transferBookings[i]);
-        let city=props.transferBookings[i]["city"];
+         let city=props.transferBookings[i]["city"];
         let room_type = props.transferBookings[i]["room_type"];
         let taxi_type=props.transferBookings[i]["taxi_type"];
         let transfer_type=props.transferBookings[i]["transfer_type"];
@@ -579,7 +570,7 @@ const Booking = (props) => {
         if(!props.payment.is_registration_needed)
        setSummaryContainerJSX(<SummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
-      else setSummaryContainerJSX(<GITSummaryContainer plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
+      else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.hasUserPaid}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
 
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
@@ -594,8 +585,7 @@ const Booking = (props) => {
       setShowLoginModal(false);
 
     }
- console.log('p', props.paymentLoading)
-    if(true){
+     if(true){
     if(!images){
     if(isPageWide){
       if(!showLoginModal)
@@ -604,15 +594,31 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary}   _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-            {props.payment_status ? <BookingSuccessContainer>
-            <div className='center-div'><ImageLoader url="media/icons/bookings/payment/success-green.svg"  height="max-content" margin="0" width="100%"></ImageLoader></div>
-                <BookingSuccessText style={{color: 'green'}}>
-                  <span style={{lineHeight: '2'}} className="font-opensans">Your payment was successfull jdn  dobduy  whbwked hdnlwj dpkwon jhbdy8hd nwendiu obdni uwhdtg hjni ubeuid nk iwedb
-                  <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+            {props.payment_status && props.payment ?  props.payment.is_registration_needed ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                     {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
-                  </CopyLink>
-                  </span>
+                  </CopyLink>: null}
+                    </div>
+                 
+
                 </BookingSuccessText>
+
+            </BookingSuccessContainer> : null : null}
+            {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
+            <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color:   'green' }}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  
+                    </div>
+                 
+
+                </BookingSuccessText>
+
             </BookingSuccessContainer> : null}
 
               <Tabs
@@ -685,15 +691,27 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            {props.payment_status ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            {props.payment_status  && props.payment ? props.payment.is_registration_needed? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
             <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
                   <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
                     </div>
                   { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
-                    <LinkCopied style={{}}>Copied!</LinkCopied>
+                    {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
                   </CopyLink>: null}
+
+                </BookingSuccessText>
+
+            </BookingSuccessContainer> : null: null}
+            {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: 'rgba(0,128,10,0.1)'}}>
+            <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
+  margin-left: 0.5rem;"></ImageLoader></div>
+                <BookingSuccessText style={{color:   'green' }}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  
+                    </div>
+                 
 
                 </BookingSuccessText>
 

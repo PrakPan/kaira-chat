@@ -90,6 +90,8 @@ const [plan, setPlan] = useState(null);
     const [showPoiModal, setShowPoiModal] = useState(false);
     const [userEmail, setUserEmail] = useState(null);
 
+    const [hasUserPaid, setHasUserPaid] = useState(false);
+
     const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
     const [is_stock, setIsStock] = useState(false);
     // const closeGalleryHandler = () => {
@@ -140,6 +142,20 @@ const getPaymentHandler = ( ) => {
     setPaymentLoading(false);
 
      setPayment(res.data);
+ 
+     //check if user has already paid
+    // try{
+      for(var i=0; i < res.data.registered_users.length ; i++){
+        // console.log(res.data.registered_users[i])
+        if(res.data.registered_users[i].email === props.email){
+           if(res.data.registered_users[i].payment_status === 'captured') setHasUserPaid(true);
+          break;
+        }
+      }
+    // }catch{
+
+    // }
+
   }).catch(error => {
     setPaymentLoading(false);
 
@@ -190,8 +206,7 @@ setStayLoading(false);
 }
 
      useEffect(() => {
-      console.log('q', router.query.payment_status)
-      props.checkAuthState();
+       props.checkAuthState();
 
          window.scrollTo(0,0);
         if(TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);
@@ -416,8 +431,7 @@ const _reloadFlightBookings  = () => {
       })
     }
     let data =[];
-    console.log('booking', booking);
-        data.push( {
+         data.push( {
           "id": booking.id,
            "booking_type": "Accommodation",
            "city": booking.city, 
@@ -509,8 +523,7 @@ const _reloadFlightBookings  = () => {
 
    setSelectingBooking(booking.id)
    let data =[];
-   console.log(booking)
-       data.push( {
+        data.push( {
          "id": booking.id,
          "booking_type": booking.booking_type,
          "itinerary_type": "Tailored",
@@ -606,8 +619,7 @@ const _reloadFlightBookings  = () => {
   const setHidePoiModal = () => {
     setShowPoiModal(false);
   }
-   console.log('i', itinerary)
-    if(breif && !itineraryLoading)
+     if(breif && !itineraryLoading)
     return(
       // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>
 
@@ -618,7 +630,7 @@ const _reloadFlightBookings  = () => {
            </FullImg>  */}
            <Landing title={itinerary.name} images={itinerary.images} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}></Landing>
             <div id="itinerary-anchor">
-              <Menu plan={plan} isDatePresent={isDatePresent} _updateTaxiBookingHandler={_updateTaxiBookingHandler} showTaxiModal={showTaxiModal}  setShowTaxiModal={setShowTaxiModal}paymentLoading={paymentLoading} budget={plan ? plan.budget : null} _deselectActivityBookingHandler={_deselectActivityBookingHandler} activityFlickityIndex={activityFlickityIndex} transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightBookingHandler={_updateFlightBookingHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
+              <Menu  hasUserPaid={hasUserPaid} plan={plan} isDatePresent={isDatePresent} _updateTaxiBookingHandler={_updateTaxiBookingHandler} showTaxiModal={showTaxiModal}  setShowTaxiModal={setShowTaxiModal}paymentLoading={paymentLoading} budget={plan ? plan.budget : null} _deselectActivityBookingHandler={_deselectActivityBookingHandler} activityFlickityIndex={activityFlickityIndex} transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler} getPaymentHandler={getPaymentHandler} flightLoading={flightLoading} flightBookings={flightBookings} noFlightBookings={noFlightBookings} transferLoading={transferLoading}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _reloadTransferBookings={_reloadTransferBookings} _reloadFlightBookings={_reloadFlightBookings} _updateFlightBookingHandler={_updateFlightBookingHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
               {/* <ItineraryMobile></ItineraryMobile> */}
               {/* <Cities></Cities> */}
             </div>
@@ -638,6 +650,7 @@ const _reloadFlightBookings  = () => {
 const mapStateToPros = (state) => {
   return{
     token: state.auth.token,
+    email: state.auth.email
 
   }
 }

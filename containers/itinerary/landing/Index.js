@@ -75,8 +75,7 @@ const BlackContainer = (props) => {
 
   let isPageWide = media('(min-width: 768px)')
 
-console.log('im', props.images)
-   if(props.images){ if(props.images.length)
+    if(props.images){ if(props.images.length)
    return (
     <>
 
