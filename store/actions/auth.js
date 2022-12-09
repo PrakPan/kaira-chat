@@ -146,6 +146,7 @@ export const checkAuthState = () => {
             }
             //Token valid
             else{
+
  
                 const userdata = {
                     name: localStorage.getItem('name'),
@@ -154,6 +155,7 @@ export const checkAuthState = () => {
                     id: localStorage.getItem('user_id'),
                     image: localStorage.getItem('user_image'),
                 }
+                // console.log(userdata)
                 //Update redux with token and user details 
                 dispatch(authSuccess(access_token));
                 dispatch(setUserDetails(userdata));

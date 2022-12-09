@@ -132,6 +132,8 @@ axiosbreifinstance.get(`/?itinerary_id=`+props.id)
 
 const getPaymentHandler = ( ) => {
    setPaymentLoading(true);
+  //  props.checkAuthState();
+
   axios.post(MIS_SERVER_HOST+'/payment/info/', {
     "itinerary_type": "Tailored",
     "itinerary_id": props.id,
@@ -145,9 +147,13 @@ const getPaymentHandler = ( ) => {
  
      //check if user has already paid
     // try{
+      let email = localStorage.getItem('email');
       for(var i=0; i < res.data.registered_users.length ; i++){
+        // console.log(props.email)
+
         // console.log(res.data.registered_users[i])
-        if(res.data.registered_users[i].email === props.email){
+        if(res.data.registered_users[i].email === email){
+          if(res.data.registered_users[i].payment_status)
            if(res.data.registered_users[i].payment_status === 'captured') setHasUserPaid(true);
           break;
         }
@@ -204,6 +210,11 @@ setStayLoading(false);
 })
 
 }
+useEffect(() => {
+  getPaymentHandler();
+}, [props.token]);
+
+
 
      useEffect(() => {
        props.checkAuthState();
@@ -652,7 +663,7 @@ const _reloadFlightBookings  = () => {
 const mapStateToPros = (state) => {
   return{
     token: state.auth.token,
-    email: state.auth.email
+    email: state.auth.email,
 
   }
 }
