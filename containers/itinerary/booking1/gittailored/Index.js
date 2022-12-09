@@ -287,7 +287,10 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-
+      const PAYMENT_MESSAGES= {
+        CREATED : "Your payment of amount INR X was successful. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
+        FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
+      }
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}

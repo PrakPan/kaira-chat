@@ -585,6 +585,11 @@ const Booking = (props) => {
       setShowLoginModal(false);
 
     }
+    const PAYMENT_MESSAGES= {
+      CREATED : "Your payment of amount INR X was successful. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
+      FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
+    }
+
      if(true){
     if(!images){
     if(isPageWide){
@@ -598,7 +603,7 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
+                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment_status==="success" ?  PAYMENT_MESSAGES.CREATED : PAYMENT_MESSAGES.FAILURE}
                   { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                     {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
                   </CopyLink>: null}
@@ -612,8 +617,8 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
-                  
+                  <div style={{lineHeight: '2'}} className="font-opensans">
+                  { PAYMENT_MESSAGES.CREATED}
                     </div>
                  
 
@@ -695,8 +700,7 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
-                    </div>
+                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment_status==="success" ?  PAYMENT_MESSAGES.CREATED : PAYMENT_MESSAGES.FAILURE}                    </div>
                   { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                     {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
                   </CopyLink>: null }
@@ -708,8 +712,8 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt lorem at ante lacinia feugiat. Etiam ligula eros, scelerisque id varius in, lacinia ac augue. Etiam congue dolor dignissim ante.
-                  
+                  <div style={{lineHeight: '2'}} className="font-opensans">
+                {PAYMENT_MESSAGES.CREATED}
                     </div>
                  
 
