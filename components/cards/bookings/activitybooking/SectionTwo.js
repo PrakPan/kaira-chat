@@ -54,7 +54,7 @@ const Section= (props) => {
                 {/* <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}> */}
                     {/* <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader> */}
                     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}> 
-                        {props.data.check_in &&  props.isDatePresent ? <div style={{display: 'flex', gap: '0.5rem'}}>
+                        {props.data.check_in &&  props.isDatePresent  &&  !props.is_registration_needed ? <div style={{display: 'flex', gap: '0.5rem'}}>
                             <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                             <div>
                             <Heading className='font-opensans'>Date</Heading>
