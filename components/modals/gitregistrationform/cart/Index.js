@@ -72,7 +72,7 @@ const Cart = (props) => {
                 filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" 
                   borderRadius="10px 10px 0 0"></BackgroundImageLoader> */}
 
-                <Info date={props.date} cost={props.cost} pax={props.pax} plan={props.plan}></Info>
+                <Info setShowTermsModal={props.setShowTermsModal} date={props.date} cost={props.cost} pax={props.pax} plan={props.plan}></Info>
             </GridContainer>
             <hr style={{margin: '6px 0'}}></hr>
         </Container>

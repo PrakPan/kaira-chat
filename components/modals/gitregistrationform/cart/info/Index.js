@@ -172,10 +172,11 @@ const Cart = (props) => {
             </OuterGridContainer>
             <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', marginTop: '1rem'}}>
             <div>
-                     <Subheading2 style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2>
+                     {/* <Subheading2 className="hover-pointer" onClick={() => props.setShowTermsModal(true)} style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2> */}
                 </div>
                 <div>
-                    <Subheading2 style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading2>
+                    {/* <Subheading2 style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading2> */}
+                    <Subheading2 className="hover-pointer" onClick={() => props.setShowTermsModal(true)} style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2>
 
                 </div>
             </div>

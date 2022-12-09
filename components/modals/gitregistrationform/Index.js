@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
 import Cart from './cart/Index';
 import axios from 'axios';
+import TermsModal from '../terms/Index';
 const Body=styled(Modal.Body)`
     padding: 0.5rem !important;
   `;
@@ -19,6 +20,7 @@ const RegistrationModal = (props) => {
   const [verificationCount, setVerificationCount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [formNotFilledError, setFormNotFilledError] = useState(false);
+const [showTermsModal, setShowTermsModal] = useState(false);
 
     let isPageWide = media('(min-width: 768px)')
     useEffect(() => {
@@ -142,12 +144,14 @@ const RegistrationModal = (props) => {
             </Modal.Header>
 
              <Body className="">
-              <Cart cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
+              <Cart setShowTermsModal={setShowTermsModal} cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
                 <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p>
                 <Form formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
              </Body>
+
       </Modal>
-      </div>
+      <TermsModal show={showTermsModal} hide={() => setShowTermsModal(false)}></TermsModal>
+        </div>
   );
 
 }

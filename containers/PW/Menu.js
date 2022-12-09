@@ -5,6 +5,7 @@ import ImageLoader from '../../components/ImageLoader';
 import {IoCheckboxOutline} from 'react-icons/io5';
 import {IoMdSquareOutline} from 'react-icons/io'; 
 import Spinner from '../../components/Spinner';
+import urls from '../../services/urls';
 const Container = styled.div`
 position: sticky;
 top: 0;
@@ -76,7 +77,9 @@ grid-template-columns: auto max-content;
 const Menu = (props) => {
     const router = useRouter();
 
-  
+   let message ="Hey TTWxPW! I need some help with planning my tailored experience.";
+
+
   return(
     <Container className="" style={{}}>
         <SetWidthContainer>
@@ -118,10 +121,9 @@ const Menu = (props) => {
                 </FilterContainer  >  */}
 
         </FiltersContainer>
-        <div className='hidden-mobile' style={{color: 'white', display: 'flex', flexGrow: '1',paddingRight: '1rem'}}>
+        <div className='hidden-mobile' style={{color: 'white', display: 'flex', flexGrow: '1',paddingRight: '1rem'}} onClick={()=> window.location.href=urls.WHATSAPP+"?text="+message}>
             <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
             <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
-
         </div>
         </SetWidthContainer>
    </Container>
