@@ -594,7 +594,7 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary}   _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-            {props.payment_status && props.payment ?  props.payment.is_registration_needed ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            {props.payment && props.payment_status ?  props.payment.is_registration_needed ? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
             <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
@@ -607,7 +607,7 @@ const Booking = (props) => {
 
                 </BookingSuccessText>
 
-            </BookingSuccessContainer> : null : null}
+            </BookingSuccessContainer> : null : null : null}
             {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>

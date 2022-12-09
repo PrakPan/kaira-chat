@@ -73,12 +73,11 @@ const GetTripContainer  = styled.div`
 `;
 const StrikedCost = styled.p`
 position: relative;
- width: max-content;  
- margin-bottom: 0;
-  font-weight: 600;
+ width: max-content; 
+  margin-bottom: 0;
+    font-weight: 600;
     font-size: 1rem;
-    text-align: center;
-  &:before {
+    &:before {
     position: absolute;
     content: '';
     left: 0;
@@ -91,6 +90,20 @@ position: relative;
     transform: skewY(-10deg);
   }
 
+  @media screen and (min-width: 768px){
+         &:before {
+            position: absolute;
+            content: '';
+            left: 0;
+            top: 45%;
+            right: 0;
+            border-top: 2px solid;
+            border-color: inherit;
+            -webkit-transform: skewY(-10deg);
+            -moz-transform: skewY(-10deg);
+            transform: skewY(-10deg);
+          }
+    }
 `;
 const Details = (props) => {
   const router = useRouter()
@@ -278,7 +291,7 @@ const _startRazorpayHandler = (data) => {
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
-    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{(props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized  && props.payment_status === 'success' ) || props.hasUserPaid ? 'Booked' : 'Book Now'}</Heading>
+    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? 'Booked' : 'Book Now'}</Heading>
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
                 {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"STARTING DATE "}</p> : <div></div>}
                 {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p>  : <div></div>}
@@ -356,6 +369,12 @@ const _startRazorpayHandler = (data) => {
           Buy Now
           {paymentLoading ? <Spinner display="inline" size={16} margin="0 0.5rem"></Spinner> : null}
           </Button>: null  : null
+        }
+        {
+          props.hasUserPaid ? 
+          <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="#f7e700" hoverColor="black" borderWidth="0"   onclick={() => console.log('')} onclickparam={props.id} >
+          PAID
+           </Button>: null
         }
         
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >

@@ -11,6 +11,7 @@ import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreat
 import Cart from './cart/Index';
 import axios from 'axios';
 import TermsModal from '../terms/Index';
+import LoadingPage from '../../LoadingPage';
 const Body=styled(Modal.Body)`
     padding: 0.5rem !important;
   `;
@@ -21,6 +22,7 @@ const RegistrationModal = (props) => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [formNotFilledError, setFormNotFilledError] = useState(false);
 const [showTermsModal, setShowTermsModal] = useState(false);
+const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
     let isPageWide = media('(min-width: 768px)')
     useEffect(() => {
@@ -46,11 +48,14 @@ const [showTermsModal, setShowTermsModal] = useState(false);
         "order_id": data.order_id,
         //Payment successfull handler passed to razorpay
         "handler": function (response){
+                    setRzVerificationLoading(true);
+
                     setPaymentLoading(true)
                     axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                     {'Authorization': `Bearer ${props.token}`}} )
                     .then( res => {
                           setPaymentLoading(false);
+                          // setRzVerificationLoading(false);
                         //  router.push('/itinerary/'+data.itinerary)
                         // window.location.href="http://localhost:3000/itinerary/"+data.itinerary+"?payment_status=fail"
 
@@ -59,6 +64,8 @@ const [showTermsModal, setShowTermsModal] = useState(false);
                      })
                     .catch( err => {
                        setPaymentLoading(false);
+                      //  setRzVerificationLoading(false);
+
                       // router.push('/itinerary/'+data.itinerary)
                       window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
 
@@ -130,7 +137,7 @@ const [showTermsModal, setShowTermsModal] = useState(false);
         setFormNotFilledError(true);
       }
     }
-
+  if(!rzVerificationLoading)
   return(
       <div>
          
@@ -153,6 +160,7 @@ const [showTermsModal, setShowTermsModal] = useState(false);
       <TermsModal show={showTermsModal} hide={() => setShowTermsModal(false)}></TermsModal>
         </div>
   );
+  else return <LoadingPage></LoadingPage>
 
 }
 

@@ -48,7 +48,7 @@ const Section= (props) => {
     return(
       <Container className='font-opensans'>  
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
-                    <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
+                    {props.data.check_in ? <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>: null}
                     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '1rem'}}> 
                         {props.data.check_in  &&  props.isDatePresent? <div>
                             <Heading className='font-opensans'>Trip Start</Heading>
@@ -57,7 +57,7 @@ const Section= (props) => {
 
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
-                        </div> : null}
+                        </div> : null}  
                         {props.data.costings_breakdown  ? props.data.costings_breakdown.duration ?  <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                         <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                              <div><Heading className='font-opensans'>Duration</Heading>

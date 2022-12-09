@@ -636,10 +636,15 @@ const _reloadFlightBookings  = () => {
         // </CheckAuthRedirect>
     );
   
-    else if(isPastTravelerItinerary)
+    else if(isPastTravelerItinerary )
     return(
       <OldSpinner></OldSpinner>
     );
+    else if(router.query.payment_status){
+       return(
+        <OldSpinner></OldSpinner>
+      );
+     }
     else return <Spinner></Spinner>
    
 }
