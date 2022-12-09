@@ -75,12 +75,12 @@ const Cost = (props) => {
  
     
     return(
-        <Container className='center-div' >
-           {props.starting_cost ? <div style={{display: 'flex', width: '100%'}}>
+        <Container className='center-di' >
+           {props.starting_cost ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
             <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost>
-            <Text className='font-opensans'>
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}><Text className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
-            </Text></div>: null}
+            </Text></div></div></div>: null}
         </Container>
     );
 }
