@@ -41,21 +41,21 @@ const CostContainer  = styled.div`
 
  
 `;
-const StrikedCost = styled.div`
-text-decoration: line-through;
-font-size: 0.75rem;
-  &:before{
-    margin-right: 0.5rem;
-  content: 'Starting From';
-  display: inline-block;
-  text-align: right;
-  line-height:1;
-  font-weight: 300;
-  font-size: 0.75rem;
-  text-decoration: none !important;
+// const StrikedCost = styled.div`
+// text-decoration: line-through;
+// font-size: 0.75rem;
+//   &:before{
+//     margin-right: 0.5rem;
+//   content: 'Starting From';
+//   display: inline-block;
+//   text-align: right;
+//   line-height:1;
+//   font-weight: 300;
+//   font-size: 0.75rem;
+//   text-decoration: none !important;
 
-}
-`;
+// }
+// `;
 const Cost = styled.div`
 text-align: right;
 line-height:1.5;
@@ -74,6 +74,45 @@ const DiscountContainer = styled.div`
   flex-direction: column;
   margin-right: 1rem;
 `;
+const StrikedCost = styled.p`
+position: relative;
+ width: max-content; 
+  flex-grow: 1;
+ margin-bottom: 0;
+ margin-right: 6px;
+   font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: center;
+  &:before {
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 23%;
+    right: 0;
+    border-top: 2px solid;
+    border-color: inherit;
+    -webkit-transform: skewY(-12deg);
+    -moz-transform: skewY(-12deg);
+    transform: skewY(-12deg);
+  }
+
+  @media screen and (min-width: 768px){
+        font-size: 1rem;
+        &:before {
+            position: absolute;
+            content: '';
+            left: 0;
+            top: 16%;
+            right: 0;
+            border-top: 2px solid;
+            border-color: inherit;
+            -webkit-transform: skewY(-12deg);
+            -moz-transform: skewY(-12deg);
+            transform: skewY(-12deg);
+          }
+    }
+`;
 
 const Banner = (props) => {
   
@@ -83,7 +122,9 @@ const Banner = (props) => {
     <FixedContainer>
       <CostContainer >
           {true ? <DiscountContainer>
-           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost>
+            <div style={{display: 'flex'}}>
+            {props.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100)*2)}</StrikedCost> :null}
+           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost></div>
           </DiscountContainer> : null}
            <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">Book Now</Button>
     </CostContainer> 

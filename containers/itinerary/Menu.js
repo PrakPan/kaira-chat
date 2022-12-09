@@ -54,21 +54,46 @@ display: none;
 }
  
 `;
-const StrikedCost = styled.div`
-text-decoration: line-through;
+const StrikedCost = styled.p`
+position: relative;
+ width: max-content; 
+  flex-grow: 1;
+ margin-bottom: 0;
+ margin-right: 6px;
+   font-weight: 400;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    text-align: center;
+  &:before {
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 23%;
+    right: 0;
+    border-top: 2px solid;
+    border-color: inherit;
+    -webkit-transform: skewY(-12deg);
+    -moz-transform: skewY(-12deg);
+    transform: skewY(-12deg);
+  }
 
-  &:before{
-    margin-right: 0.5rem;
-  content: '15% Off*';
-  display: inline-block;
-  text-align: right;
-  line-height:1;
-  font-weight: 300;
-  font-size: 0.75rem;
-  text-decoration: none !important;
-
-}
+  @media screen and (min-width: 768px){
+        font-size: 1rem;
+        &:before {
+            position: absolute;
+            content: '';
+            left: 0;
+            top: 16%;
+            right: 0;
+            border-top: 2px solid;
+            border-color: inherit;
+            -webkit-transform: skewY(-12deg);
+            -moz-transform: skewY(-12deg);
+            transform: skewY(-12deg);
+          }
+    }
 `;
+
 const Cost = styled.div`
 text-align: right;
 line-height:1.5;
@@ -313,13 +338,14 @@ const _handleFlightModalClose=()=> {
         </Tabs>
         {value!==2 && props.payment ? <CostContainer >
           {true? <DiscountContainer>
-            {/* <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.payment.total_cost/100)/0.85))}</StrikedCost> */}
-           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost>
+            <div style={{display: 'flex'}}>
+              {props.payment ? props.payment.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost/100)*2))}</StrikedCost> : null : null}
+           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost></div>
           </DiscountContainer> : null}
            <Button onclick={openBookingDesktop} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">Book Now</Button>
         </CostContainer> : null}
       </AppBar>
-      {!isPageWide && value!==2 ? <PriceBannerMobile openBooking={openBookingMobile} payment={props.payment}></PriceBannerMobile> : null}
+      {!isPageWide && value!==2 ? <PriceBannerMobile is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  openBooking={openBookingMobile} payment={props.payment}></PriceBannerMobile> : null}
       <TabPanel value={value} index={0} >
         <Breif traveleritinerary={props.traveleritinerary} hours={hours} minutes={minutes} seconds={seconds}   breif={props.breif} hideTimer={minimiseTimer} timeRequired={props.timeRequired} itineraryReleased={props.itineraryReleased} itineraryDate={props.itineraryDate} showTimer={showItineraryTimer} _hideTimerHandler={_minimiseTimerHandler} blur={blurItinerary}></Breif>
       </TabPanel>
