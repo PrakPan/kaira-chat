@@ -5,11 +5,50 @@ import styled from 'styled-components';
 const Container = styled.div`
   
 `;
+const StrikedCost = styled.p`
+position: relative;
+ width: max-content; 
+  flex-grow: 1;
+ margin-bottom: 0;
+ margin-right: 6px;
+   font-weight: 400;
+    font-size: 1.25rem;
+    line-height: 1;
+    text-align: center;
+  &:before {
+    position: absolute;
+    content: '';
+    left: 0;
+    top: 23%;
+    right: 0;
+    border-top: 2px solid;
+    border-color: inherit;
+    -webkit-transform: skewY(-12deg);
+    -moz-transform: skewY(-12deg);
+    transform: skewY(-12deg);
+  }
+
+  @media screen and (min-width: 768px){
+        font-size: 1rem;
+        &:before {
+            position: absolute;
+            content: '';
+            left: 0;
+            top: 16%;
+            right: 0;
+            border-top: 2px solid;
+            border-color: inherit;
+            -webkit-transform: skewY(-12deg);
+            -moz-transform: skewY(-12deg);
+            transform: skewY(-12deg);
+          }
+    }
+`;
 const Text = styled.p`
     font-weight: 600;
     font-size: 1.25rem;
     text-align: right;
-    width: 100%;
+    width: max-content;
     line-height: 1;
  
      &:after{
@@ -37,9 +76,11 @@ const Cost = (props) => {
     
     return(
         <Container className='center-div' >
-           {props.starting_cost ? <Text className='font-opensans'>
+           {props.starting_cost ? <div style={{display: 'flex', width: '100%'}}>
+            <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost>
+            <Text className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
-            </Text>: null}
+            </Text></div>: null}
         </Container>
     );
 }
