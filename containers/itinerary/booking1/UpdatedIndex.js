@@ -765,7 +765,7 @@ const Booking = (props) => {
             {props.showFlightModal ? <FlightModal   _updateFlightBookingHandler={props._updateFlightBookingHandler } getPaymentHandler={props.getPaymentHandler} _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.flightBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
             {props.showTaxiModal? <TaxiModal getPaymentHandler={props.getPaymentHandler} _updateTaxiBookingHandler={props._updateTaxiBookingHandler}  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 
-        {showFooterBannerMobile ? <FooterBannerMobile paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
+        {showFooterBannerMobile ? <FooterBannerMobile  hasUserPaid={props.hasUserPaid} paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
             {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
         </Container>
   );
