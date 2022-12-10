@@ -35,7 +35,7 @@ const Itinerary = (props) =>{
     const [loading, setLoading] = useState(true);
     const [totalduration, setTotalduration] = useState(0);
     // let totalduration = 0;  
-
+console.log(props.token)
 const [plan, setPlan] = useState(null);
     const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
     //states required for timer 
@@ -214,12 +214,16 @@ setStayLoading(false);
 useEffect(() => {
   getPaymentHandler();
 }, [props.token]);
+useEffect(() => {
+   props.checkAuthState();
+
+}, );
 
 
      useEffect(() => {
       // if(router.query.payment_status) window.location.reload();
-       props.checkAuthState();
-       console.log(props.token)
+      //  props.checkAuthState();
+      //  console.log('itinerary token',props.token)
 
          window.scrollTo(0,0);
         if(TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);

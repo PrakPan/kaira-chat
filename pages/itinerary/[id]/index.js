@@ -18,6 +18,7 @@ const Itinerary = () => {
     
      
 }, []);
+console.log('itinerary page loaded')
     return (
     <Layout itinerary>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}
