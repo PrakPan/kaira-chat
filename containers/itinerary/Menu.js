@@ -338,7 +338,7 @@ const _handleFlightModalClose=()=> {
               {props.payment ? props.payment.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost/100)*2))}</StrikedCost> : null : null}
            <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost></div>
           </DiscountContainer> : null}
-           <Button onclick={openBookingDesktop} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">{props.hasUserPaid ? "Deatils"  :"Book Now"}</Button>
+           <Button onclick={openBookingDesktop} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">{props.hasUserPaid ? "Details"  :"Book Now"}</Button>
         </CostContainer> : null}
       </AppBar>
       {!isPageWide && value!==2 ? <PriceBannerMobile hasUserPaid={props.hasUserPaid} is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  openBooking={openBookingMobile} payment={props.payment}></PriceBannerMobile> : null}
