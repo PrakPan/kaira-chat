@@ -128,9 +128,10 @@ export const authHideLoginClose = () =>{
 }
 //Check auth state
 export const checkAuthState = () => {
+    
     return dispatch => {
         const access_token = localStorage.getItem('access_token');
-        
+        console.log('auth', access_token)
         //No token present, Auth check completed (for checkAuth HOC)
         if(!access_token){
  

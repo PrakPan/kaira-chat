@@ -56,10 +56,10 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                     .then( res => {
                           setPaymentLoading(false);
                           // setRzVerificationLoading(false);
-                        //  router.push('/itinerary/'+data.itinerary)
-                        // window.location.href="http://localhost:3000/itinerary/"+data.itinerary+"?payment_status=fail"
+                        //  router.replace('/itinerary/'+data.itinerary)
+                        window.location.href="http://localhost:3002/itinerary/"+data.itinerary+"?payment_status=fail"
 
-                         window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                        //  window.location.href= ("https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success")
 
                      })
                     .catch( err => {
@@ -67,7 +67,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                       //  setRzVerificationLoading(false);
 
                       // router.push('/itinerary/'+data.itinerary)
-                      window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                      window.location.replace("https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail")
 
                       // window.location.href="http://localhost:3000/itinerary/"+data.itinerary+"?payment_status=fail"
                       });

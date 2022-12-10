@@ -216,9 +216,10 @@ useEffect(() => {
 }, [props.token]);
 
 
-
      useEffect(() => {
+      // if(router.query.payment_status) window.location.reload();
        props.checkAuthState();
+       console.log(props.token)
 
          window.scrollTo(0,0);
         if(TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);
