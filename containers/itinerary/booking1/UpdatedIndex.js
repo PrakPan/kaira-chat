@@ -586,7 +586,7 @@ const Booking = (props) => {
     }
     const PAYMENT_MESSAGES= {
       CREATED_ONE :  "Your payment of amount INR ",
-      CREATED_TWO: " was successful. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
+      CREATED_TWO: " was successful and your Payment Reference Id has been sent to you via email. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
         FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
     }
 
