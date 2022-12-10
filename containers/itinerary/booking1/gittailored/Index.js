@@ -287,14 +287,11 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-      const PAYMENT_MESSAGES= {
-        CREATED : "Your payment of amount INR X was successful. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
-        FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
-      }
+    console.log('p', props.hasUserPaid)
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
-    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? 'Booked' : 'Book Now'}</Heading>
+    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? "You're all set!" : 'Book Now'}</Heading>
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
                 {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"STARTING DATE "}</p> : <div></div>}
                 {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p>  : <div></div>}

@@ -119,7 +119,7 @@ const Banner = (props) => {
             :<Spinner display="inline" color="white" size={16} padding="0"></Spinner>}
             
           </DiscountContainer>
-           <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">Book Now</Button>
+           <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">{props.hasUserPaid ? 'Details' : "Book Now"}</Button>
     </CostContainer> 
      
      </FixedContainer>

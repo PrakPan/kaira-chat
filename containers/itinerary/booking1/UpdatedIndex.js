@@ -21,6 +21,7 @@ import Banner from '../../homepage/banner/Mobile';
  import DesktopCardContainer from './DesktopCardCotainer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { getIndianPrice } from '../../../services/getIndianPrice';
 // import Spinner from '../../../components/Spinner';
 import gif from '../../../public/assets/loader.gif';
 import * as ga from '../../../services/ga/Index';
@@ -586,8 +587,11 @@ const Booking = (props) => {
 
     }
     const PAYMENT_MESSAGES= {
-      CREATED : "Your payment of amount INR X was successful. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
-      FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
+      CREATED : {
+        ONE: "Your payment of amount INR ",
+        TWO: " was successful. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
+      },
+        FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
     }
 
      if(true){
@@ -599,14 +603,13 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary}   _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-            {props.payment && props.payment_status ?  props.payment.is_registration_needed ? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
-            <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+            {props.payment && props.payment_status ?  props.payment.is_registration_needed ? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.hasUserPaid? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.hasUserPaid ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
-                <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment_status==="success" ?  PAYMENT_MESSAGES.CREATED : PAYMENT_MESSAGES.FAILURE}
-                  { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
-                    {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
-                  </CopyLink>: null}
+                <BookingSuccessText style={{color: props.hasUserPaid ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">{props.hasUserPaid ?  PAYMENT_MESSAGES.CREATED.ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED.TWO : PAYMENT_MESSAGES.FAILURE}
+                  {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+                   </CopyLink>: null} */}
                     </div>
                  
 
@@ -696,14 +699,13 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            {props.payment_status  && props.payment ? props.payment.is_registration_needed? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.payment_status==="success" ? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
-            <div className='center-div'><ImageLoader url={props.payment_status==="success" ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+            {props.payment_status  && props.payment ? props.payment.is_registration_needed? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.hasUserPaid? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.hasUserPaid ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
-                <BookingSuccessText style={{color: props.payment_status==="success" ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment_status==="success" ?  PAYMENT_MESSAGES.CREATED : PAYMENT_MESSAGES.FAILURE}                    </div>
-                  { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
-                    {/* <LinkCopied style={{}}>Copied!</LinkCopied> */}
-                  </CopyLink>: null }
+                <BookingSuccessText style={{color: props.hasUserPaid ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">{props.hasUserPaid?  PAYMENT_MESSAGES.CREATED.ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED.TWO: PAYMENT_MESSAGES.FAILURE}                    </div>
+                  {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
+                   </CopyLink>: null } */}
 
                 </BookingSuccessText>
 
@@ -769,7 +771,7 @@ const Booking = (props) => {
             {props.showFlightModal ? <FlightModal   _updateFlightBookingHandler={props._updateFlightBookingHandler } getPaymentHandler={props.getPaymentHandler} _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.flightBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
             {props.showTaxiModal? <TaxiModal getPaymentHandler={props.getPaymentHandler} _updateTaxiBookingHandler={props._updateTaxiBookingHandler}  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 
-        {showFooterBannerMobile && !props.hasUserPaid? <FooterBannerMobile  hasUserPaid={props.hasUserPaid} paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
+        {showFooterBannerMobile? <FooterBannerMobile  hasUserPaid={props.hasUserPaid} paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
             {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
         </Container>
   );

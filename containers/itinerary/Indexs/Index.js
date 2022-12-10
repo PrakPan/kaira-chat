@@ -148,6 +148,7 @@ const getPaymentHandler = ( ) => {
      //check if user has already paid
     // try{
       let email = localStorage.getItem('email');
+      if(props.token)
       for(var i=0; i < res.data.registered_users.length ; i++){
         // console.log(props.email)
 

@@ -126,7 +126,7 @@ const Banner = (props) => {
             {props.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100)*2)}</StrikedCost> :null}
            <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost></div>
           </DiscountContainer> : null}
-           <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">Book Now</Button>
+           <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">{props.hasUserPaid ? "Details" : "Book Now"}</Button>
     </CostContainer> 
      
      </FixedContainer>
