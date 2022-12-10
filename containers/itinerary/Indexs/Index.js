@@ -35,8 +35,7 @@ const Itinerary = (props) =>{
     const [loading, setLoading] = useState(true);
     const [totalduration, setTotalduration] = useState(0);
     // let totalduration = 0;  
-console.log(props.token)
-const [plan, setPlan] = useState(null);
+ const [plan, setPlan] = useState(null);
     const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
     //states required for timer 
     const [itineraryReleased, setItineraryReleased] = useState(false);
@@ -215,7 +214,7 @@ useEffect(() => {
   getPaymentHandler();
 }, [props.token]);
 useEffect(() => {
-  if(!props.token)
+  if(!props.token && !props.showLogin)
    props.checkAuthState();
 
 }, );
@@ -671,6 +670,7 @@ const mapStateToPros = (state) => {
   return{
     token: state.auth.token,
     email: state.auth.email,
+    showLogin: state.auth.showLogin,
 
   }
 }

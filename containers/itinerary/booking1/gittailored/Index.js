@@ -287,8 +287,7 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-    console.log('p', props.hasUserPaid)
-   return(
+    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
     <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? "You're all set!" : 'Book Now'}</Heading>
