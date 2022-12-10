@@ -183,9 +183,7 @@ const Booking = (props) => {
       const tabs = ['S', 'T', 'A'];
       ga.event({action: 'Itinerary-bookings-tabs-'+tabs[newValue], params: {key : ''}});
 
-      if(newValue === 2) props._reloadFlightBookings();
-      else if(newValue === 1) props._reloadTransferBookings();
-      setValue(newValue);
+       setValue(newValue);
     };
 
   let isPageWide = media('(min-width: 768px)')
@@ -574,7 +572,7 @@ const Booking = (props) => {
       else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.hasUserPaid}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
 
       }
-  }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings]);
+  }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings, props.hasUserPaid]);
   
    
     let message ="Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com"+router.asPath;
@@ -582,7 +580,7 @@ const Booking = (props) => {
        setImages(images);
     }
     const _handleLoginClose = ( ) => {
-      props.getPaymentHandler();
+      // props.getPaymentHandler();
       setShowLoginModal(false);
 
     }
@@ -648,20 +646,20 @@ const Booking = (props) => {
 
        </TabPanel>
        <TabPanel value={value} index={2} >
-          {!props.flightLoading ?  props.flightBookings ?  props.flightBookings.length ? <DesktopCardContainer>
+          {props.flightBookings ?  props.flightBookings.length ? <DesktopCardContainer>
             {bookingsFlightsDesktopJSX}
             {/* {bookingsTransfersDesktopJSX} */}
 
-            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div>}        
+            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> }        
             {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={1} >
-          {!props.transferLoading ? props.transferBookings ?  props.transferBookings.length ? <DesktopCardContainer>
+          {props.transferBookings ?  props.transferBookings.length ? <DesktopCardContainer>
             {/* {bookingsFlightsDesktopJSX} */}
             {bookingsTransfersDesktopJSX}
 
-            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div>}        
+            </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> }        
             {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
@@ -741,14 +739,14 @@ const Booking = (props) => {
             {!props.stayBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
        </TabPanel>
        <TabPanel value={value} index={2} >
-            {!props.flightLoading ? props.flightBookings ? props.flightBookings.length?  bookingsFlightsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div> }
+            { props.flightBookings ? props.flightBookings.length?  bookingsFlightsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
             {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
             {/* {bookingsTransfersMobileJSX} */}
        </TabPanel>
        <TabPanel value={value} index={1} >
             {/* {bookingsFlightsMobileJSX} */}
-            {!props.transferLoading ? props.transferBookings ?  props.transferBookings.length ? bookingsTransfersMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader> : <div style={{height: 'max-content'}} className="center-div"><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div>}
+            { props.transferBookings ?  props.transferBookings.length ? bookingsTransfersMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
             {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
