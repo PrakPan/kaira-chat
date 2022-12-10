@@ -139,16 +139,21 @@ export const checkAuthState = () => {
             dispatch(authLogout()); //Clear auth status in redux if any
         }
         else{
+            console.log('auth token present in local storage')
+
             //Token expired
             const expirationDate = new Date(localStorage.getItem('expirationDate'));
             if(expirationDate <= new Date()){
+                console.log('auth token present in local storage is expired')
+
                  dispatch(authLogout());
                 //refresh token
             }
             //Token valid
             else{
 
- 
+                console.log('auth token present in local storage is valid')
+
                 const userdata = {
                     name: localStorage.getItem('name'),
                     phone: localStorage.getItem('phone'),
@@ -156,7 +161,7 @@ export const checkAuthState = () => {
                     id: localStorage.getItem('user_id'),
                     image: localStorage.getItem('user_image'),
                 }
-                // console.log(userdata)
+                console.log('userdata', userdata)
                 //Update redux with token and user details 
                 dispatch(authSuccess(access_token));
                 dispatch(setUserDetails(userdata));
