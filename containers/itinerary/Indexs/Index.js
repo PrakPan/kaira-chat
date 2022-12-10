@@ -227,7 +227,7 @@ useEffect(() => {
   getPaymentHandler();
 }, [props.token]);
 useEffect(() => {
-  if(!props.token && !props.showLogin)
+  if(!props.token && !props.otpSent)
    props.checkAuthState();
 
 }, );
@@ -614,7 +614,7 @@ const mapStateToPros = (state) => {
   return{
     token: state.auth.token,
     email: state.auth.email,
-    showLogin: state.auth.showLogin,
+    otpSent: state.auth.otpSent,
 
   }
 }

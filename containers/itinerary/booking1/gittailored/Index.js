@@ -290,7 +290,8 @@ const _startRazorpayHandler = (data) => {
     return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
-    {props.hasUserPaid ? <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{"You're all set!"}</Heading> :  <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{'Book Now'}</Heading> }
+    {props.hasUserPaid ? <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{"You're all set!"}</Heading> : null }
+    {!props.hasUserPaid ? <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{'Book Now'}</Heading>: null}
     {/* <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? "You're all set!" : 'Book Now'}</Heading> */}
 
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
