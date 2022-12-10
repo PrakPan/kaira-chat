@@ -50,7 +50,7 @@ const Section= (props) => {
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     {props.data.check_in && !props.is_registration_needed? <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>: null}
                     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '1rem'}}> 
-                        {props.data.check_in  &&  props.isDatePresent? <div>
+                        {props.data.check_in  &&  props.isDatePresent && !props.is_registration_needed? <div>
                             <Heading className='font-opensans'>Trip Start</Heading>
                             <Text className='font-nunito'>{getTime(props.data.check_in)}</Text>
                             <Text className='font-nunito'>{getDate(props.data.check_in)}</Text>

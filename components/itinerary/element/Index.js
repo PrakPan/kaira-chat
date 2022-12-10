@@ -74,7 +74,7 @@ const Element = (props) =>{
                 
                     <Name className={props.blur ? "font-opensans blurry-text" : "font-opensans"}>{props.name}
                     {/* {props.element_type === ITINERARY_ELEMENT_TYPES.activity ?  <StyledDetailIcon onClick={props.setShowPoiModal}></StyledDetailIcon> : null} */}
-                    {props.element_type === ITINERARY_ELEMENT_TYPES.activity && props.enablepoiedit && !props.is_stock && !props.is_experience && !props.is_preview && !props.traveleritinerary && props.is_auth?  <StyledEditIcon  onClick={() => props.setShowPoiModal({name: props.poi_name, city_id: props.city_id, day_slab_index: props.day_slab_index, slab_element_index: props.slab_element_index, element_index: props.element_index})}></StyledEditIcon> : null}
+                    {props.element_type === ITINERARY_ELEMENT_TYPES.activity && props.enablepoiedit && !props.is_stock && !props.is_experience && !props.is_preview && !props.traveleritinerary && props.is_auth && !props.is_registration_needed ?  <StyledEditIcon  onClick={() => props.setShowPoiModal({name: props.poi_name, city_id: props.city_id, day_slab_index: props.day_slab_index, slab_element_index: props.slab_element_index, element_index: props.element_index})}></StyledEditIcon> : null}
                     </Name>
                       
                 {props.text && !props.is_food && !props.is_poi_rec? <Description className={props.blur ? "font-opensans blurry-text" : "font-opensans"}>{props.text}</Description> : null}

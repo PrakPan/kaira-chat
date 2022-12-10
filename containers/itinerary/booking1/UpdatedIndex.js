@@ -619,7 +619,7 @@ const Booking = (props) => {
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
                   <div style={{lineHeight: '2'}} className="font-opensans">
-                  { PAYMENT_MESSAGES.CREATED_ONE + + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED_TWO}
+                  { PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED_TWO}
                     </div>
                  
 

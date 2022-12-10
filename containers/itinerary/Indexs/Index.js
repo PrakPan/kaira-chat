@@ -215,6 +215,7 @@ useEffect(() => {
   getPaymentHandler();
 }, [props.token]);
 useEffect(() => {
+  if(!props.token)
    props.checkAuthState();
 
 }, );
