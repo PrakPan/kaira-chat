@@ -33,7 +33,7 @@ const ExperienceIndexLoading = (props) => {
     top: 0;
     left: 0;
     width: 100vw;
-    z-index: 1000;
+    z-index: 1200;
     background-color: ${props => props.theme.colors.brandColor};
     color: white;
 

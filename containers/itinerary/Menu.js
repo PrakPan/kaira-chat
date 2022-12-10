@@ -232,7 +232,7 @@ const [selectedPoi, setSelectedPoi] = useState({name: 'Kasol'});
       }
     });
     window.scrollTo(0,window.innerHeight);
- 
+    props.getPaymentHandler();
     setValue(2);
 
   }

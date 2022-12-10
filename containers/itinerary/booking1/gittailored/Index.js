@@ -287,6 +287,7 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
+      // console.log('p', props.payment)
     return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
@@ -360,12 +361,12 @@ const _startRazorpayHandler = (data) => {
         {props.token ? null :  <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0" onclick={props.setShowLoginModal} onclickparam={true} >
         Login</Button>}
         {
-          props.payment && props.token && ! (props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized)  && !props.hasUserPaid   ? props.payment.email_reverification_needed ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
+          props.payment && props.token && ! (props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized)  && !props.payment.paid_user  ? props.payment.email_reverification_needed ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
           Buy Now</Button> :     <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={setShowRegistartion} onclickparam={true} >
           Buy Now</Button>: null 
         }
          {
-          props.payment && props.token && props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.hasUserPaid ? props.payment.email_reverification_needed  ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
+          props.payment && props.token && ( props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ) && !props.payment.paid_user ? props.payment.email_reverification_needed  ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
           Buy Now</Button> : props.payment.user_allowed_to_pay ? 
           <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
           Buy Now
@@ -373,10 +374,10 @@ const _startRazorpayHandler = (data) => {
           </Button>: null  : null
         }
         {
-          props.hasUserPaid ? 
-          <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="#f7e700" hoverColor="black" borderWidth="0"   onclick={() => console.log('')} onclickparam={props.id} >
+          props.payment ? props.payment.paid_user ? 
+          <Button fontWeight="700" borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="#f7e700" hoverColor="black" borderWidth="0"   onclick={() => console.log('')} onclickparam={props.id} >
           PAID
-           </Button>: null
+           </Button>: null : null
         }
         
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >

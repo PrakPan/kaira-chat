@@ -128,7 +128,7 @@ const Person = (props) => {
               {verificationLoading ? 
                 <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
               </Button></div>
-              {!verified ? <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={_handleClose} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
+              {!verified ? <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={_handleClose} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" hoverBgColor="#f7e700" hoverColor="black" borderRadius="10px">
               {verified ? 'Change' : 'Add Traveler'}
               {/* <GrAdd></GrAdd> */}
               {verificationLoading ? 
