@@ -65,7 +65,7 @@ const Person = (props) => {
       const _checkValidation = (email) => { 
         setVerificationLoading(true);
         const data = {
-            "itinerary_id": "344fc89a-3e48-4a0c-9afe-368d85538634",
+            "itinerary_id": props.id,
             "registered_users": [
                 {
                      "email": email,

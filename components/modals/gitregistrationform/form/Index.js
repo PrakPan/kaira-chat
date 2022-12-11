@@ -62,7 +62,7 @@ const Enquiry = (props) => {
     for(var i = 0 ; i < props.pax ; i++){
         pax.push(
         <Grid item xs={12}>
-            <Person _removePersonHandler={_removePersonHandler} verificationCount={props.verificationCount} setVerificationCount={props.setVerificationCount}  token={props.token} email={props.email} _addPersonHandler={_addPersonHandler} id={props.id} index={i+1} first={!(i)}></Person>
+            <Person id={props.id} _removePersonHandler={_removePersonHandler} verificationCount={props.verificationCount} setVerificationCount={props.setVerificationCount}  token={props.token} email={props.email} _addPersonHandler={_addPersonHandler} id={props.id} index={i+1} first={!(i)}></Person>
         </Grid> 
         )
     }
