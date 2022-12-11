@@ -63,7 +63,7 @@ const Section= (props) => {
    if(props.data)
     return(
       <Container className='font-opensans'>  
-            <Name className='font-opensans  hover-pointer' onClick={props.setShowDetails}>{props.data.name}</Name>
+            <Name className='font-opensans  hover-pointer' onClick={!props.is_registration_needed ? props.setShowBookingModal : () => console.log('')}>{props.data.name}</Name>
              
                 <div className='center-div'>
                 {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>
