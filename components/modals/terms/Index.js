@@ -38,7 +38,7 @@ const RegistrationModal = (props) => {
               <li>In case of non availability of enough rooms in the specified hotels, we'll inform you the same and will give you different options of hotels. In case you are not satisfied with any of the alternate options, the advance paid will be refunded.</li>
               <li>Early check-in or late check-out is subject to availability and the hotel may charge extra for the same</li>
               <li>All optional activity cost and entrance fees to the sightseeing places are excluded</li>
-              <li>Compulsory Gala Dinner on X'mas & New year Eve if applicable as per hotel policy</li> 
+              <li>Complementary Gala Dinner on X'mas & New year Eve if applicable as per hotel policy</li> 
              <li>The Tarzan Way is not liable for any mishaps at the accommodation, transportation or activity. Any disputes must be settled with the partners directly. However we will be providing live customer support for the same.</li>
              <li>Travelers are requested to take care of their belongings and TTW is not liable for the loss or theft of the belongings.</li>
              <li>Any cost or cancellation charge arising out of unforeseen circumstances is not included.</li>
