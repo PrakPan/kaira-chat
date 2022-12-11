@@ -362,14 +362,14 @@ const _startRazorpayHandler = (data) => {
         Login</Button>}
         {
           props.payment && props.token && ! (props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized)  && !props.payment.paid_user  ? props.payment.email_reverification_needed ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
-          Buy Now</Button> :     <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={setShowRegistartion} onclickparam={true} >
-          Buy Now</Button>: null 
+          Pay Now</Button> :     <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={setShowRegistartion} onclickparam={true} >
+          Pay Now</Button>: null 
         }
          {
           props.payment && props.token && ( props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ) && !props.payment.paid_user ? props.payment.email_reverification_needed  ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
-          Buy Now</Button> : props.payment.user_allowed_to_pay ? 
+          Pay Now</Button> : props.payment.user_allowed_to_pay ? 
           <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
-          Buy Now
+          Pay Now
           {paymentLoading ? <Spinner display="inline" size={16} margin="0 0.5rem"></Spinner> : null}
           </Button>: null  : null
         }

@@ -94,6 +94,14 @@ const Person = (props) => {
      })
       }
 
+      const _handleChange = () => {
+        setVerified(false);
+        props.setVerificationCount(props.verificationCount - 1);
+        props._removePersonHandler({
+          email: email,
+          employee_id: id,
+        })
+      }
     
   return(
       <div className='border'>
@@ -122,18 +130,18 @@ const Person = (props) => {
                     <Id verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
                </Grid>
         </StyledGridContainer> 
-            <div className='hidden-desktop'><Button onclick={_handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
+            <div className='hidden-desktop'><Button onclick={verified ? _handleChange : _handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
               {verified ? 'Change' : 'Add Traveler'}
               {/* <GrAdd></GrAdd> */}
               {verificationLoading ? 
                 <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
               </Button></div>
-              {!verified ? <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={_handleClose} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" hoverBgColor="#f7e700" hoverColor="black" borderRadius="10px">
+              <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={!verified ? _handleClose : _handleChange} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" hoverBgColor="#f7e700" hoverColor="black" borderRadius="10px">
               {verified ? 'Change' : 'Add Traveler'}
               {/* <GrAdd></GrAdd> */}
               {verificationLoading ? 
                 <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
-              </Button></div> : null}
+              </Button></div>
        </AccordionDetails>
      </Accordion>
       </div>
