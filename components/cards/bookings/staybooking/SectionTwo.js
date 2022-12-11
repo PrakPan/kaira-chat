@@ -124,7 +124,7 @@ const Section= (props) => {
 </div>
 {props.data.costings_breakdown ? props.data.costings_breakdown.length ? props.data.costings_breakdown[0].pricing_type!=='TBO' && props.data.costings_breakdown[0].pricing_type!=='EP'  ?<div style={{display: 'grid',  gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
     <ImageLoader url="media/icons/bookings/stays/restaurant.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-    <div style={{display: 'flex', gap: '1rem', alignItems: 'center',}}> 
+    <div style={{display: 'flex', gap: '1rem',}}> 
         {/* <div className='center-div'>
             <Text className='font-opensans'>2 Adults , 1 Child(s)</Text>
         </div> */}
