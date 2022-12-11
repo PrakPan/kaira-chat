@@ -14,7 +14,7 @@ const Person = (props) => {
   return(
       <div className='bordr'>
        
- <TextField disabled={props.verified} autoFocus value={props.email} onFocus={null} onChange={(event) => props.setEmail(event.target.value)} onBlur={null} error={props.verificationfailed ? true : false } helperText={props.verificationfailed ? `This doesn't seem right ` : null} type="text" placeholder="test@test.com" key="email"  variant="outlined" required fullWidth name="email" label="Work Email" id="email" />
+ <TextField disabled={props.verified} autoFocus value={props.email} onFocus={null} onChange={(event) => props.setEmail(event.target.value)} onBlur={null} error={props.verificationfailed ? true : false } helperText={props.verificationfailed ? `This email is not authorised to register.` : null} type="text" placeholder="test@test.com" key="email"  variant="outlined" required fullWidth name="email" label="Work Email" id="email" />
        </div>
   );
 

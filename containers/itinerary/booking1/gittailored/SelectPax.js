@@ -50,9 +50,11 @@ const QueryType = (props) => {
  
     ]
     const [showLoginModal , setShowLoginModal] = useState(false);
-    
+    const [selected, setSelected] = useState(false);
+
     const [queryType, setQueryType] = useState('');
     const _handleQueryTypeChange = (event) => {
+        setSelected(true);
         setQueryType(event.target.value);
         props.setPax(event.target.value);
       };
@@ -60,8 +62,8 @@ const QueryType = (props) => {
     return(
         <div>
         <FormControl id="bookingsummary-pax" className={classes.fullWidth}  variant="outlined" >
-        <InputLabel  htmlFor="contact-query-select" id="contact-query-label">Adults</InputLabel>
-        <Select disabled={props.token ? false : true} onClick={props.token ? null : () => setShowLoginModal(true)} native={ true ?  true : false } label="Topic of interest" value={queryType} 
+        <InputLabel  htmlFor="contact-query-select" id="contact-query-label">{"Adults"}</InputLabel>
+        <Select disabled={true ? false : true} onClick={props.token ? null : () => setShowLoginModal(true)} native={ true ?  true : false } label="Topic of interest" value={queryType} 
                 onChange={_handleQueryTypeChange} className={classes.relative}>
                     <Option aria-label="None" value=""  style={{display: 'none'}}/>
                   {optionsJSX}

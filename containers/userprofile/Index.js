@@ -16,6 +16,7 @@ import media from '../../components/media';
 import ImageLoader from '../../components/ImageLoader';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
+import Spinner from '../../components/Spinner';
 
 const Container = styled.div`
     width: 100%;
@@ -60,6 +61,7 @@ const NoPlans = styled.p`
 
 const UserDashboard = (props) => {
     const [myPlansArr, setMyPlansArr] = useState([]);
+    const [loading, setLoading] = useState(true);
     let isPageWide = media('(min-width: 768px)')
     let router = useRouter();
     useEffect(() => {
@@ -68,6 +70,8 @@ const UserDashboard = (props) => {
         axiomyplansinstance.get("", {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
+                
+
                 let plansarr = [];
 
                 for(var i=0 ; i<res.data.length; i++){
@@ -76,8 +80,10 @@ const UserDashboard = (props) => {
                     );
                 }
                 setMyPlansArr(plansarr)
+                setLoading(false);
             }).catch(err => {
-                
+                setLoading(false);
+
             })
         
       },[props.token]);
@@ -115,12 +121,18 @@ return(
             </Tabs> */}
             <ContentContainer ><Profile></Profile></ContentContainer>
                     <ContentContainer className="border-thi">
-                        {myPlansArr.length ? <Heading align='left' margin="0 0 2rem 0" bold noline>My Plans</Heading> : <Heading align='center' margin="0" bold  noline>My Plans</Heading>}
-                        {isPageWide && !myPlansArr.length ? <NoPlans className="font-opensans" >You don't have any plans yet. <Link href="/tailored-travel" passHref={true} ><a style={{color: 'black', textDecoration: 'none !important'}}>Start Planning</a></Link></NoPlans> : null}
+                        <div style={{display: 'flex'}}>{myPlansArr.length ? <Heading align='left' margin="0 0 2rem 0" bold noline>My Plans</Heading> :
+                         <Heading align='left' margin="0" bold  noline>My Plans
+                         </Heading>}
+                         {
+                            loading ? 
+                            <Spinner></Spinner> : null
+                         }</div>
+                        {isPageWide && !myPlansArr.length  && !loading? <NoPlans className="font-opensans" >You don't have any plans yet. <Link href="/tailored-travel" passHref={true} ><a style={{color: 'black', textDecoration: 'none !important'}}>Start Planning</a></Link></NoPlans> : null}
                        
-                        {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader>}
-                        {!isPageWide && !myPlansArr.length ? <NoPlans className="font-opensans" >You don't have any plans yet. </NoPlans> : null}
-                        {!isPageWide && !myPlansArr.length ? <Link href="/tailored-travel" passHref={true} ><a className="font-nunito" style={{color: 'black', fontWeight: '300', display: 'block', margin: '0.5rem auto', textDecoration: 'none !important', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '1px'}}>Start Planning</a></Link> : null}
+                        {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null}
+                        {!isPageWide && !myPlansArr.length && !loading ? <NoPlans className="font-opensans" >You don't have any plans yet. </NoPlans> : null}
+                        {!isPageWide && !myPlansArr.length  && !loading? <Link href="/tailored-travel" passHref={true} ><a className="font-nunito" style={{color: 'black', fontWeight: '300', display: 'block', margin: '0.5rem auto', textDecoration: 'none !important', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '1px'}}>Start Planning</a></Link> : null}
                     </ContentContainer>
                  
     </Container></CheckAuthRedirect>
