@@ -5,8 +5,8 @@ import media from './media';
 
 const ImageLoader = (props) => {
   const [error, setError] = useState(false);
-  if(typeof window === "undefined" ) return null;
-  else {
+  // if(typeof window === "undefined" ) return null;
+  // else {
   let isPageWide = media('(min-width: 768px)')
 
   const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
@@ -191,7 +191,7 @@ const ImageLoader = (props) => {
     >
       {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
       <SmallImage
-        src={!is_url ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : props.url}
+        src={!is_url ? typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : props.url}
         style={{
           height: props.height ? props.height : 'auto',
           display: !fullLoaded ? 'initial' : 'none',
@@ -199,7 +199,7 @@ const ImageLoader = (props) => {
       }}
         ></SmallImage>
       <FullImage
-        src={!is_url ? error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png': `${imgUrlEndPoint}/${btoa(imageRequest)}` :props.url}
+        src={!is_url ? error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png': typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(imageRequest)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png':props.url}
         onLoad={fullImageLoadedHandler}
         onError={props.onfail ? props.onfail: _handleError}
 
@@ -227,7 +227,7 @@ const ImageLoader = (props) => {
     >
       {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
       <SmallImage
-        src={!is_url  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : props.url}
+        src={!is_url  ? typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png" : props.url}
         style={{
           height: props.height ? props.height : 'auto',
           display: !fullLoaded ? 'initial' : 'none',
@@ -235,7 +235,7 @@ const ImageLoader = (props) => {
       }}
         ></SmallImage>
       <FullImage
-        src={!is_url  ? error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : `${imgUrlEndPoint}/${btoa(imageRequest)}` :props.url}
+        src={!is_url  ? error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(imageRequest)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png'  :props.url}
         onLoad={fullImageLoadedHandler}
         onError={props.onfail ? props.onfail: _handleError}
 
@@ -267,14 +267,14 @@ const ImageLoader = (props) => {
       >
         {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
         <SmallImage
-        src={!is_url ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : props.url}
+        src={!is_url ? typeof window !== "undefined" ?  `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : props.url}
         style={{
             height: props.height ? props.height : 'auto',
             display: !fullLoaded ? 'initial' : 'none',
             borderRadius: props.borderRadius ? props.borderRadius : '5px',
         }}></SmallImage>
         <FullImage
-        src={!is_url  ?  error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
+        src={!is_url  ?  error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' :props.url}
         // src={!is_url  ?   `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
         width={props.dimensionsMobile.width}
         height={props.dimensionsMobile.height}
@@ -305,14 +305,14 @@ const ImageLoader = (props) => {
       >
         {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
         <SmallImage
-        src={!is_url ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : props.url}
+        src={!is_url ?  typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`:'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png'   : props.url}
         style={{
             height: props.height ? props.height : 'auto',
             display: !fullLoaded ? 'initial' : 'none',
             borderRadius: props.borderRadius ? props.borderRadius : '5px',
         }}></SmallImage>
         <FullImage
-        src={!is_url  ?  error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' :  `${imgUrlEndPoint}/${btoa(imageRequest)}` :props.url}
+        src={!is_url  ?  error ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' : typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(imageRequest)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png' :props.url}
         onLoad={fullImageLoadedHandler}
           onError={props.onfail ? props.onfail: _handleError}
           style={{
@@ -325,7 +325,7 @@ const ImageLoader = (props) => {
       </Container>
     );
   }
-}
+// }
 };
 
 export default ImageLoader;
