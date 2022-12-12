@@ -74,6 +74,8 @@ const Booking = (props) => {
     const [updateLoadingState, setUpdateLoadingState] = useState(false);
 
     const [moreLoadingState, setMoreLoadingState] = useState(false);
+    const [unauthorized, setUnauthorized] = useState(false);
+
 
     const [noResults, setNoResults] = useState(false);
     
@@ -448,9 +450,10 @@ setUpdateLoadingState(true);
 
         }).catch(err => {
             // setUpdateLoadingState(false);
-            setUpdateBookingState(false);
+            setUpdateBookingState(false);   
+            setUnauthorized(true);
 
-            window.alert("There seems to be a problem, please try again!")
+            // window.alert("There seems to be a problem, please try again!")
         })
     }
     const _newUpdateBookingHandler = ({alternates, new_booking, itinerary_id, tailored_id, itinerary_name}) => {
@@ -523,9 +526,12 @@ setUpdateLoadingState(true);
   
             }).catch(err => {
                 // setUpdateLoadingState(false);
+                console.log(err)
                 setUpdateBookingState(false);
+                setUnauthorized(true);
+                console.log(err)
 
-                window.alert("There seems to be a problem, please try again!")
+                // window.alert("There seems to be a problem, please try again!")
             })
     }
      const _loadAccommodationsHandler = () => {
@@ -619,7 +625,8 @@ setUpdateLoadingState(true);
 
            </Modal.Header>
             <Modal.Body style={{padding: "0rem", backgroundColor: 'white', }} >
-            
+            {unauthorized ? <p style={{borderRadius: '5px', padding: '0.25rem', backgroundColor: 'rgba(255,0,0,0.1)' ,color: 'red', margin: '1rem'}} className='text-center font-opensans' >You're not authorized to take this action, please contact your experience captain.</p> : null}
+            {/* {!unauthorized ? } */}
                  <GridContainer style={{clear: 'right'}}>
                 {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}

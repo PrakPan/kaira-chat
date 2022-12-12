@@ -361,7 +361,7 @@ useEffect(() => {
   
       setCardUpdateLoading(null)
 
-      window.alert("There seems to be a problem, please try again!")
+      window.alert("You're not authorized to take this action, please contact your experience captain.")
   })
   }
 
@@ -423,7 +423,7 @@ useEffect(() => {
 
       setCardUpdateLoading(null)
  
-      window.alert("There seems to be a problem, please try again!")
+      window.alert("You're not authorized to take this action, please contact your experience captain.")
   })
   }
   const _deselectFlightBookingHandler = ( booking, user_selected) => {
@@ -466,8 +466,8 @@ useEffect(() => {
 
      setCardUpdateLoading(null)
 
-     window.alert("There seems to be a problem, please try again!")
- })
+     window.alert("You're not authorized to take this action, please contact your experience captain.")
+    })
  }
   const _deselectTransferBookingHandler = ( booking, user_selected) => {
     for(var i = 0; i< transferBookings.length; i++){
@@ -564,7 +564,7 @@ useEffect(() => {
 
    setCardUpdateLoading(null)
 
-   window.alert("There seems to be a problem, please try again!")
+      window.alert("You're not authorized to take this action, please contact your experience captain.")
 })
 }
 
