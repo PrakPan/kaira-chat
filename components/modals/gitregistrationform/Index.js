@@ -43,7 +43,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
         "amount": data.amount, 
         // "currency": "INR",
         "name": "The Tarzan Way Payment Portal",
-        "description":' data.data.description',
+        "description":'',
         "image": "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
         "order_id": data.order_id,
         //Payment successfull handler passed to razorpay
