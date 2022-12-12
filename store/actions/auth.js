@@ -144,7 +144,7 @@ export const checkAuthState = () => {
             //Token expired
             const expirationDate = new Date(localStorage.getItem('expirationDate'));
             if(expirationDate <= new Date()){
- 
+                    console.log('auth_token_expiration', expirationDate)
                  dispatch(authLogout());
                 //refresh token
             }
