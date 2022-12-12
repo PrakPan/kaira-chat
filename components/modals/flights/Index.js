@@ -388,7 +388,7 @@ setViewMoreStatus(false);
         axiosbookingupdateinstance.post("?booking_type=Flight", updated_bookings_arr, {headers: {
                 'Authorization': `Bearer ${props.token}`
                 }}).then(res => {
-                    //  props._updateFlightBookingHandler(res.data.bookings);
+                     props._updateFlightBookingHandler(res.data.bookings);
                      setTimeout(function(){ 
                 
                         props.getPaymentHandler(); }, 1000); 
