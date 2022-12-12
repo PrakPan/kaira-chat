@@ -243,13 +243,13 @@ const _startRazorpayHandler = (data) => {
                       .then( res => {
                            setPaymentLoading(false);
                           //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                          window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                          window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
 
                        })
                       .catch( err => {
                         setPaymentLoading(false);
                         // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                        window.location.href="https://www.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                        window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
 
                       });
                   },

@@ -227,8 +227,8 @@ useEffect(() => {
   getPaymentHandler();
 }, [props.token]);
 useEffect(() => {
-  if(!props.token && !props.otpSent)
-   props.checkAuthState();
+  // if(!props.token && !props.otpSent)
+  //  props.checkAuthState();
 
 }, );
 
