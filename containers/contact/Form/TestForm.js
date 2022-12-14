@@ -124,7 +124,7 @@ const verifyHandler = (event) => {
       <div>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
+              { typeof window !== "undefined" ? <TextField
                 autoComplete="fname"
                 name="firstName"
                 variant="outlined"
@@ -133,11 +133,11 @@ const verifyHandler = (event) => {
                 id="firstName"
                 label="First Name"
                 autoFocus
-                onChange={(event) => _changeDetailsHandler(event, 'fname')}
-              />
+                onChange={(event) => _changeDetailsHandler(event, 'fname')} 
+              />: null}
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+            { typeof window !== "undefined" ?<TextField
                 variant="outlined"
                 required
                 fullWidth
@@ -146,10 +146,10 @@ const verifyHandler = (event) => {
                 name="lastName"
                 autoComplete="lname"
                 onChange={(event) => _changeDetailsHandler(event, 'lname')}
-              />
+              />: null}
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
+            { typeof window !== "undefined" ? <TextField
                 variant="outlined"
                 required
                 fullWidth
@@ -158,10 +158,10 @@ const verifyHandler = (event) => {
                 name="country"
                 autoComplete="country"
                 onChange={(event) => _changeDetailsHandler(event, 'country')}
-              />
+              />: null}
             </Grid>
              <Grid item xs={12} sm={6}>
-              <TextField
+             { typeof window !== "undefined" ?<TextField
                 variant="outlined"
                 required
                 fullWidth
@@ -170,11 +170,11 @@ const verifyHandler = (event) => {
                 name="mobile"
                 autoComplete="mobile"
                 onChange={(event) => _changeDetailsHandler(event, 'mobile')}
-              />
+              />: null}
             </Grid>
             
             <Grid item xs={12}>
-              <TextField
+            { typeof window !== "undefined" ?  <TextField
                 error={emailFail}
                 helperText={emailFail ? "Invalid Email" : null}
                 variant="outlined"
@@ -185,13 +185,13 @@ const verifyHandler = (event) => {
                 name="email"
                 autoComplete="email"
                 onChange={(event) => _changeDetailsHandler(event, 'email')}
-              />
+              />: null}
             </Grid>
             <Grid item xs={12}>
                 <QueryType _changeDetailsHandler={_changeDetailsHandler}></QueryType>
             </Grid>
             <Grid item xs={12}>
-              <TextField
+            { typeof window !== "undefined" ? <TextField
                 variant="outlined"
                 required
                 fullWidth
@@ -203,7 +203,7 @@ const verifyHandler = (event) => {
                 type="message"
                 id="message"
                 onChange={(event) => _changeDetailsHandler(event, 'message')}
-              />
+              />: null}
             </Grid>
             <Grid item xs={12}>
                 {/* <div class="g-recaptcha" data-sitekey="6Lf4gqoZAAAAAAgeKAxQk5djc7DtaX-dRvUzvMs6"></div> */}
