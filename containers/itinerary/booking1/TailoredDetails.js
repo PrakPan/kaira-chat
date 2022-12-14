@@ -13,6 +13,9 @@ import { useRouter } from 'next/router'
 import { getIndianPrice } from '../../../services/getIndianPrice';
 import { getHumanDate } from '../../../services/getHumanDate';
 import urls from '../../../services/urls';
+import { ITINERARY_STATUSES } from '../../../services/constants';
+import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
+import axios from 'axios';
 import Accordion from './Accordion';
  const SummaryContainer = styled.div`
 height: max-content;
@@ -50,41 +53,9 @@ border-style: none none solid none;
 const Details = (props) => {
   const router = useRouter()
 
-    const [details , setDetails] = useState({
-        date: new Date('2021-04-20T21:11:54'),
-        pax: 1,
-        starting_point: "Delhi",
-
-    })
-  const [amount, setAmount] = useState(null);
-    const handlePaxChange = (event) => {
-      _calculateServiceFee(details.starting_point, event.target.value);
-      setDetails({...details, pax: event.target.value});
-    };
-    const handleTypeChange = (event) => {
-      setDetails({...details, starting_point: event.target.value})
-      _calculateServiceFee(event.target.value, details.pax);
-    };
-    const handleDateChange = (date) => {
-      setDetails({...details, date: date});
-      // _calculateServiceFee();
-
-    };
-      const handleBlur = (event) => {
-        if (event === undefined) return event;
-      }
-  const _startCheckoutHandler = () => {
-
-    props.setOrderDetails({...details, experienceId: props.experienceId, date: details.date.getFullYear()+"-"+details.date.getMonth()+"-"+details.date.getDate()});
-    props.history.push('/checkout/1')
-  }
+    
  
-  const _getBasePrice = (payment_info, starting_point) => {
-    for(var i = 0; i<payment_info.length; i++){
-      if(payment_info[i]["starting_point"]===starting_point) return payment_info[i].base_price;
-    }
-    return null;
-  }
+ 
   const setBookingSummary = ( ) => {
     try{
     if(props.payment){
@@ -122,21 +93,7 @@ const Details = (props) => {
 
     }
   }
-  const _calculateServiceFee = (starting_point, pax) => {
-    if(props.payment["service_fee_type"] ===  "% of base price"){
-        if(props.payment["service_fee_multiplier"]=== "Multiply"){
-          //get base price from selected starting point
-          const baseprice = _getBasePrice(props.payment.payment_info, starting_point)
-           // calculate final amount using base price, pax, service fee %
-           const totalprice = (baseprice*pax) + (props.payment["service_fee_value"]/100 * baseprice * pax);
-            setAmount(totalprice);
-        }
-    }
-  }
-    useEffect(()=> {
-      // if(props.payment.payment_info.length)
-      // _calculateServiceFee(props.payment.payment_info[0]["starting_point"], 1)
-  },[])
+  
   let bookingslist = [];
   let bookinglistwithcost = [];
    //Date on which agoda changes made to box
@@ -146,7 +103,70 @@ const Details = (props) => {
   
   setBookingSummary();
  let message ="Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/"+router.asPath;
+ const [paymentLoading, setPaymentLoading] = useState(false);
 
+ const _startRazorpayHandler = (data) => {
+        
+         //Razorpay payload
+         let razorpayOptions = {
+           "amount": data.amount, 
+           // "currency": "INR",
+           "name": "The Tarzan Way Payment Portal",
+           "description":' data.data.description',
+           "image": "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
+           "order_id": data.order_id,
+           //Payment successfull handler passed to razorpay
+           "handler": function (response){
+                       setPaymentLoading(true)
+                       axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                       {'Authorization': `Bearer ${props.token}`}} )
+                       .then( res => {
+                            setPaymentLoading(false);
+                           //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
+                           window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+ 
+                        })
+                       .catch( err => {
+                         setPaymentLoading(false);
+                         // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
+                         window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+ 
+                       });
+                   },
+           //User details will be present as user is logged in
+           "prefill": {
+           "name": props.name,
+           "email": props.email,
+           "contact": props.phone,
+           },
+           "theme": {
+           "color": "#F7e700"
+           }
+       } 
+       var rzp1 = new window.Razorpay(razorpayOptions);
+       rzp1.open();
+   
+       }
+       const _saleCreateHandler = (id) => {
+         setPaymentLoading(true)
+     axiossalecreateinstance.post("/", 
+           {
+               "itinerary_id": id,
+           
+           }, {headers: {
+               'Authorization': `Bearer ${props.token}`
+               }}).then(res => {
+                 setPaymentLoading(false);
+   
+             // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id  
+             _startRazorpayHandler(res.data)       
+   
+           }).catch(err => {
+             // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id         
+             setPaymentLoading(false);
+   
+           })
+       }
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
@@ -206,6 +226,17 @@ const Details = (props) => {
           {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
+          {
+            props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  ? 
+            <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
+          Pay Now</Button>
+            : null: null
+          }
+           {
+            !props.token ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ () => console.log('')} onclickparam={true} >
+          Login</Button>
+            : null
+          }
             <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>
@@ -223,6 +254,9 @@ const mapStateToProps = (state) => {
         serviceFee: state.experience.serviceFee,
         totalCost: state.experience.totalCost,
         token: state.auth.token,
+        name: state.auth.name,
+        phone: state.auth.phone,
+        email: state.auth.email,
         checkoutStarted: state.experience.checkoutStarted,
         orderCreated: state.experience.orderCreated,
         couponApplied: state.experience.couponApplied,

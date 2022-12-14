@@ -107,43 +107,9 @@ position: relative;
 `;
 const Details = (props) => {
   const router = useRouter()
-    const [getTrip, setGetTrip] = useState(false);
-
-    const [details , setDetails] = useState({
-        date: new Date('2021-04-20T21:11:54'),
-        pax: 1,
-        starting_point: "Delhi",
-
-    })
-  const [amount, setAmount] = useState(null);
-    const handlePaxChange = (event) => {
-      _calculateServiceFee(details.starting_point, event.target.value);
-      setDetails({...details, pax: event.target.value});
-    };
-    const handleTypeChange = (event) => {
-      setDetails({...details, starting_point: event.target.value})
-      _calculateServiceFee(event.target.value, details.pax);
-    };
-    const handleDateChange = (date) => {
-      setDetails({...details, date: date});
-      // _calculateServiceFee();
-
-    };
-      const handleBlur = (event) => {
-        if (event === undefined) return event;
-      }
-  const _startCheckoutHandler = () => {
-
-    props.setOrderDetails({...details, experienceId: props.experienceId, date: details.date.getFullYear()+"-"+details.date.getMonth()+"-"+details.date.getDate()});
-    props.history.push('/checkout/1')
-  }
+  
  
-  const _getBasePrice = (payment_info, starting_point) => {
-    for(var i = 0; i<payment_info.length; i++){
-      if(payment_info[i]["starting_point"]===starting_point) return payment_info[i].base_price;
-    }
-    return null;
-  }
+ 
   const setBookingSummary = ( ) => {
     try{
     if(props.payment){
@@ -181,17 +147,7 @@ const Details = (props) => {
 
     }
   }
-  const _calculateServiceFee = (starting_point, pax) => {
-    if(props.payment["service_fee_type"] ===  "% of base price"){
-        if(props.payment["service_fee_multiplier"]=== "Multiply"){
-          //get base price from selected starting point
-          const baseprice = _getBasePrice(props.payment.payment_info, starting_point)
-           // calculate final amount using base price, pax, service fee %
-           const totalprice = (baseprice*pax) + (props.payment["service_fee_value"]/100 * baseprice * pax);
-            setAmount(totalprice);
-        }
-    }
-  }
+ 
     useEffect(()=> {
       try{
         setPax(props.payment.meta_info.number_of_adults)
