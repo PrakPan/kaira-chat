@@ -17,6 +17,7 @@ import { ITINERARY_STATUSES } from '../../../services/constants';
 import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
 import axios from 'axios';
 import Accordion from './Accordion';
+import Spinner from '../../../components/Spinner';
  const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
@@ -123,13 +124,13 @@ const Details = (props) => {
                        .then( res => {
                             setPaymentLoading(false);
                            //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                           window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                           window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
  
                         })
                        .catch( err => {
                          setPaymentLoading(false);
                          // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                         window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                         window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
  
                        });
                    },
@@ -170,7 +171,7 @@ const Details = (props) => {
    return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
-    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">Book Now</Heading>
+    <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{props.payment ? props.payment.paid_user ? "You're all set!" : 'Book Now'  : 'Book Now'}</Heading>
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
                 <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>STARTING DATE</p>
                 <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p> 
@@ -229,7 +230,16 @@ const Details = (props) => {
           {
             props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  ? 
             <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
-          Pay Now</Button>
+          Pay Now
+          {paymentLoading ? <Spinner color="white" display="inline" size={16} margin="0 0.5rem"></Spinner> : null}
+
+          </Button>
+            : null: null
+          }
+            {
+            props.payment && props.token ? props.payment.paid_user  ? 
+            <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="#f7e700" hoverColor="black" borderWidth="0"  fontWeight="600"  onclick={() => console.log(' ')} onclickparam={null} >
+          PAID</Button>
             : null: null
           }
            {

@@ -36,6 +36,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import LogInModal from '../../../components/modals/Login';
 import TaxiModal from '../../../components/modals/taxis/Index';
 import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
+
 const Container = styled.div`
 width: 100%;
 margin: auto;
@@ -574,7 +575,7 @@ const Booking = (props) => {
         if(!props.payment.is_registration_needed)
        setSummaryContainerJSX(<SummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
-      else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.hasUserPaid}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
+      else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.payment ? props.payment.paid_user ? true : false: false}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
 
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings, props.hasUserPaid]);
@@ -589,11 +590,17 @@ const Booking = (props) => {
       setShowLoginModal(false);
 
     }
-    const PAYMENT_MESSAGES= {
+    const REGISTRATION_PAYMENT_MESSAGES= {
       CREATED_ONE :  "Your payment of amount INR ",
       CREATED_TWO: " was successful and your Payment Reference Id has been sent to you via email. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
         FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
     }
+    const TAILORED_PAYMENT_MESSAGES= {
+      CREATED_ONE :  "Your payment of amount INR ",
+      CREATED_TWO: " was successful and your Payment Reference Id has been sent to you via email.",
+        FAILURE: "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
+    }
+
 
      if(true){
     if(!images){
@@ -604,11 +611,11 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary}   _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-            {props.payment && props.payment_status ?  props.payment.is_registration_needed ? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.hasUserPaid? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
-            <div className='center-div'><ImageLoader url={props.hasUserPaid ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+            {props.payment && props.payment_status  ? props.payment.paid_user ? <BookingSuccessContainer style={{backgroundColor: props.payment.paid_user? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.payment.paid_user ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
-                <BookingSuccessText style={{color: props.hasUserPaid ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">{props.hasUserPaid ?  PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED_TWO : PAYMENT_MESSAGES.FAILURE}
+                <BookingSuccessText style={{color: props.payment.paid_user ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment.paid_user ?  props.is_registration_needed ?  REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO : TAILORED_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO  : REGISTRATION_PAYMENT_MESSAGES.FAILURE}
                   {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                    </CopyLink>: null} */}
                     </div>
@@ -616,19 +623,23 @@ const Booking = (props) => {
 
                 </BookingSuccessText>
 
-            </BookingSuccessContainer> : null : null : null}
-            {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
+            </BookingSuccessContainer>  : null  : null}
+            {!props.payment_status && props.payment ? props.payment.paid_user ?  <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
                   <div style={{lineHeight: '2'}} className="font-opensans">
-                  { PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED_TWO}
-                    </div>
+                  { props.is_registration_needed ? 
+                   REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
+                :  
+                 TAILORED_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO
+                 }
+                   </div>
                  
 
                 </BookingSuccessText>
 
-            </BookingSuccessContainer> : null}
+            </BookingSuccessContainer> : null : null}
 
               <Tabs
         value={value}
@@ -700,29 +711,29 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            {props.payment_status  && props.payment ? props.payment.is_registration_needed? props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: props.hasUserPaid? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
-            <div className='center-div'><ImageLoader url={props.hasUserPaid ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
+            {props.payment_status  && props.payment ? props.payment.is_registration_needed? props.payment.paid_user ? <BookingSuccessContainer style={{backgroundColor: props.payment.paid_user? 'rgba(0,128,10,0.1)': 'rgba(255,0,0,0.1)'}}>
+            <div className='center-div'><ImageLoader url={props.payment.paid_user ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
-                <BookingSuccessText style={{color: props.hasUserPaid ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">{props.hasUserPaid?  PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED_TWO: PAYMENT_MESSAGES.FAILURE}                    </div>
+                <BookingSuccessText style={{color: props.payment.paid_user ?  'green' : 'red'}}>
+                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment.paid_user?  props.payment.is_registration_needed ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO:  TAILORED_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO : REGISTRATION_PAYMENT_MESSAGES.FAILURE}                    </div>
                   {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                    </CopyLink>: null } */}
 
                 </BookingSuccessText>
 
             </BookingSuccessContainer> : null: null : null}
-            {!props.payment_status && props.hasUserPaid ? <BookingSuccessContainer style={{backgroundColor: 'rgba(0,128,10,0.1)'}}>
+            {!props.payment_status && props.payment ? props.payment.paid_user? <BookingSuccessContainer style={{backgroundColor: 'rgba(0,128,10,0.1)'}}>
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
                   <div style={{lineHeight: '2'}} className="font-opensans">
-                {PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + PAYMENT_MESSAGES.CREATED_TWO }
+                {props.payment.is_registration_needed ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO }
                     </div>
                  
 
                 </BookingSuccessText>
 
-            </BookingSuccessContainer> : null}
+            </BookingSuccessContainer> : null : null}
 
              <Tabs
         value={value}
@@ -772,7 +783,7 @@ const Booking = (props) => {
             {props.showFlightModal ? <FlightModal   _updateFlightBookingHandler={props._updateFlightBookingHandler } getPaymentHandler={props.getPaymentHandler} _updateBookingHandler={props._updateBookingHandler} itinerary_id={ props.flightBookings[0]["itinerary_id"] }  setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
             {props.showTaxiModal? <TaxiModal getPaymentHandler={props.getPaymentHandler} _updateTaxiBookingHandler={props._updateTaxiBookingHandler}  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 
-        {showFooterBannerMobile? <FooterBannerMobile  hasUserPaid={props.hasUserPaid} paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
+        {showFooterBannerMobile? <FooterBannerMobile  hasUserPaid={props.payment ? props.payment.paid_user ? true : false : false} paymentLoading={props.paymentLoading} payment={props.payment} openWhatsapp={()=> window.location.href=urls.WHATSAPP+"?text="+message} openBooking={_showPaymentHandler}></FooterBannerMobile> : null}
             {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
         </Container>
   );
