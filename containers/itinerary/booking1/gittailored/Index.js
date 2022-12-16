@@ -7,8 +7,7 @@ import Button from '../../../../components/Button';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons";
 import {connect} from 'react-redux';
 import * as orderaction from '../../../../store/actions/order';
-import * as authaction from '../../../../store/actions/auth';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRupeeSign, faTimes, faMale, faChild, faBaby} from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router'
 import { getIndianPrice } from '../../../../services/getIndianPrice';
@@ -17,16 +16,14 @@ import urls from '../../../../services/urls';
 import Accordion from '../Accordion';
 import SelectDate from './SelectDate';
 import SelectPax from './SelectPax';
-import SelectDetails from './SelectDetails';
-import RegistrationModal from '../../../../components/modals/gitregistrationform/Index';
+ import RegistrationModal from '../../../../components/modals/gitregistrationform/Index';
 import VerificationModal from '../../../../components/modals/verify/Index';
 import dayjs from 'dayjs';
 import { ITINERARY_STATUSES } from '../../../../services/constants';
 import axios from 'axios';
 import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCreate';
 import Spinner from '../../../../components/Spinner';
-import { set } from 'nprogress';
-
+ import RegisteredUsers from '../../../../components/modals/registeredusers/Index';
   const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
@@ -197,7 +194,6 @@ const Details = (props) => {
         setPax(props.payment.meta_info.number_of_adults)
       }
       catch{
-        set(5)
       }
       // _calculateServiceFee(props.payment.payment_info[0]["starting_point"], 1)
   },[props.payment])
@@ -385,6 +381,7 @@ const _startRazorpayHandler = (data) => {
        Connect on WhatsApp</Button>
        <RegistrationModal number_of_adults={props.payment ? props.payment.meta_info ? props.payment.meta_info.number_of_adults : 5 : 5} payment={props.payment} plan={props.plan} date={date} id={props.id} show={showRegistration} hide={() => setShowRegistartion(false)} pax={pax}></RegistrationModal>
        <VerificationModal date={date} pax={pax} onSuccess={_handleVerificationSuccess}  show={showVerification} hide={() => setShowVerification(false)}></VerificationModal>
+        {/* <RegisteredUsers registered_users={props.payment ? props.payment.registered_users : null} show={true} ></RegisteredUsers> */}
 </SummaryContainer>
 
   );

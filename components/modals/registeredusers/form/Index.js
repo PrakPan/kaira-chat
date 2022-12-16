@@ -3,87 +3,46 @@ import React, {useState} from "react";
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Person from './person/Index';
-import Button from '../../../ui/button/Index';
-import Spinner from "../../../Spinner";
-const Container = styled.div`
- 
+ const Container = styled.div`
+ display: grid;
+ grid-template-columns: 1fr 1fr;
 @media screen and (min-width: 768px){
     width: 75%;
     margin: auto;
 }
 `;
  
- const PayNow = styled.div`
-    padding: 0.75rem;
-    width: 100%;
-    border-radius: 5px;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    margin: 0.75rem 0;
-    font-weight: 600;
-    background-color: #f7e700;
-    @media screen and (min-width: 768px){
-        &:hover{
-            background-color: black;
-            color: white;
-        }
-    }
-  
- `;
-
- const Error = styled.p`
-    color: red;
-    font-size: 13px;
-    margin: 1rem 0 1rem 0;
- `
+ 
 const Enquiry = (props) => {
-    const [paxList, setPaxList] = useState([]);
-
-    const _addPersonHandler = (data) => {
-        let pax = paxList.slice();
-        pax.push(
-            data
-        )
-        setPaxList(pax);
-
-    }
-    const _removePersonHandler = (data) => {
-        let pax = paxList.slice();
-        let updated_pax = [];
-        for(var i = 0 ; i < pax.length; i++){
-                if(pax[i].email !== data.email) updated_pax.push(pax[i]);
-        }
-        setPaxList(updated_pax)
-    }
+    console.log(props.registered_users)
+    let emails = [];
+    let status = [];
+  
+    
      let pax = []
-    for(var i = 0 ; i < props.pax ; i++){
-        pax.push(
-        <Grid item xs={12}>
-            <Person id={props.id} _removePersonHandler={_removePersonHandler} verificationCount={props.verificationCount} setVerificationCount={props.setVerificationCount}  token={props.token} email={props.email} _addPersonHandler={_addPersonHandler} id={props.id} index={i+1} first={!(i)}></Person>
-        </Grid> 
-        )
+     try{
+    for(var i = 0 ; i < props.registered_users.length ; i++){
+        emails.push(
+            <div>email@pw.live</div>
+         )
+         status.push(
+            <div>Invited</div>
+         )
     }
-    console.log(paxList)
-    // setPaxJSX(pax);
+}
+catch{
+
+}
+     // setPaxJSX(pax);
 return(
     <Container className="borer center-div">
-              <div>
-            </div>
-            
-            <Grid container spacing={3}>
-                {pax}
-               
-            </Grid> 
-           {/* <div onClick={null}></div> */}
-           {props.formNotFilledError ? <Error>Please fill all traveler details</Error> : null} 
-           <PayNow className="hover-pointer font-opensans" onClick={() => props.onSuccess(paxList)} >
-                Pay Now
-             {props.paymentLoading ? <Spinner color="white" size={16} display="inline" margin=" 0 0 0 0.25rem"></Spinner> : null}
-            </PayNow>
-     </Container>
+       <div>
+            {emails}
+       </div>
+       <div>
+            {status}
+       </div>
+      </Container>
 );
 }
 

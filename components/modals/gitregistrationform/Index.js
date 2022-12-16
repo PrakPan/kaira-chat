@@ -21,6 +21,7 @@ const RegistrationModal = (props) => {
   const [verificationCount, setVerificationCount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [formNotFilledError, setFormNotFilledError] = useState(false);
+  const [formFailedError, setFormFailedError] = useState(false);
 const [showTermsModal, setShowTermsModal] = useState(false);
 const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
@@ -87,7 +88,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
     }
     const _saleCreateHandler = (id) => {
-    
+    setFormFailedError(false)
   axiossalecreateinstance.post("/", 
         {
             "itinerary_id": id,
@@ -102,12 +103,15 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id         
           setPaymentLoading(false);
+          setFormFailedError(true);
+          console.log(err)
 
         })
  
     }
     
     const _cloneHandler = (data) => {
+
          if(verificationCount == props.pax){
         setFormNotFilledError(false);
         setPaymentLoading(true);
@@ -129,7 +133,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id 
           // router.push('/itinerary/'+res.data.itinerary.id)
-        
+            console.log(err)
             setPaymentLoading(false);
         })
       }
@@ -153,7 +157,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
              <Body className="">
               <Cart setShowTermsModal={setShowTermsModal} cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
                 <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p>
-                <Form formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
+                <Form formFailedError={formFailedError} setFormFailedError={setFormFailedError} formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
              </Body>
 
       </Modal>

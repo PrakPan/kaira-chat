@@ -4,36 +4,24 @@ import {Modal} from 'react-bootstrap';
  import { TbArrowBack } from 'react-icons/tb';
  import media from '../../media';
  import Form from './form/Index';
- import axiospurchaseinstance from '../../../services/sales/itinerary/Purchase';
- import {connect} from 'react-redux';
+  import {connect} from 'react-redux';
 import { useRouter } from 'next/router';
-import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
-import Cart from './cart/Index';
-import axios from 'axios';
-import TermsModal from '../terms/Index';
-import LoadingPage from '../../LoadingPage';
+  
 const Body=styled(Modal.Body)`
     padding: 0.5rem !important;
   `;
 
 const RegistrationModal = (props) => {
    const router = useRouter();
-  const [verificationCount, setVerificationCount] = useState(0);
-  const [paymentLoading, setPaymentLoading] = useState(false);
-  const [formNotFilledError, setFormNotFilledError] = useState(false);
-const [showTermsModal, setShowTermsModal] = useState(false);
-const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
+  
 
     let isPageWide = media('(min-width: 768px)')
     useEffect(() => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      document.body.appendChild(script);
+     
     }, []);
     useEffect(() => {
-      setVerificationCount(0);
-    }, [props.show]);
+
+     }, [props.show]);
   
      return(
       <div>
@@ -42,7 +30,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
          <Modal.Header style={{   height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-start', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
          <TbArrowBack onClick={props.hide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
 
-            <p style={{fontWeight: '800', margin: '0', fontSize: '19px', }} className="font-opensans">Registred Travelers</p>
+            <p style={{fontWeight: '800', margin: '0', fontSize: '19px', }} className="font-opensans">Registered Travelers</p>
 
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>
@@ -52,7 +40,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
              </Body>
 
       </Modal>
-      <TermsModal show={showTermsModal} hide={() => setShowTermsModal(false)}></TermsModal>
+      {/* <TermsModal show={showTermsModal} hide={() => setShowTermsModal(false)}></TermsModal> */}
         </div>
   );
  
