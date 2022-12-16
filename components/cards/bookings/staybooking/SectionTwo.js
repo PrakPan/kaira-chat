@@ -85,7 +85,7 @@ const Section= (props) => {
                 <div style={{display: 'grid',  gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                     <ImageLoader url="media/icons/bookings/stays/check-out.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{}}> 
-                        {props.data.check_out   ? <div className='center-div'>
+                        {props.data.check_out   ? <div>
                             <Heading className='font-opensans'>Check Out</Heading>
                             <Text className='font-opensans'>{getDate(props.data.check_out)}</Text>
                         </div> : null}
