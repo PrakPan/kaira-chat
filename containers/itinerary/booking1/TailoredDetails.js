@@ -119,7 +119,7 @@ const Details = (props) => {
            //Payment successfull handler passed to razorpay
            "handler": function (response){
                        setPaymentLoading(true)
-                       axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                       axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                        {'Authorization': `Bearer ${props.token}`}} )
                        .then( res => {
                             setPaymentLoading(false);
