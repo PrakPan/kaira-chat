@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
-import Layout from '../../../../components/Layout';
-import Policy from '../../../../containers/policy/Index';
+// import Layout from '../../../../components/Layout';
+import Policy from '../../../../../containers/policy/Index';
 import Head  from 'next/head';
 // import Script from "next/script";
 const Itinerary = () => {
