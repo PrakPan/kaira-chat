@@ -38,7 +38,7 @@ const FullImgContent = (props) => {
     return (
 
         <Container className='font-opensans'>
-            <Flickity cards={[<Card heading={data[0].heading} text={data[0].text}></Card>, <Card heading={data[0].heading} text={data[0].text}></Card>, <Card heading={data[0].heading} text={data[0].text}></Card>]}></Flickity>
+            <Flickity cards={[<Card heading={data[0].heading} text={data[0].text}></Card>, <Card heading={data[1].heading} text={data[1].text}></Card>, <Card heading={data[2].heading} text={data[2].text}></Card>]}></Flickity>
         </Container>
     );
     else return(
