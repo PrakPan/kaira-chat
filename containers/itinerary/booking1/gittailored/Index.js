@@ -193,18 +193,18 @@ const _startRazorpayHandler = (data) => {
           //Payment successfull handler passed to razorpay
           "handler": function (response){
                       setPaymentLoading(true)
-                      axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                      axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                       {'Authorization': `Bearer ${props.token}`}} )
                       .then( res => {
                            setPaymentLoading(false);
                           //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                          window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                          window.location.href="https://thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=success"
 
                        })
                       .catch( err => {
                         setPaymentLoading(false);
                         // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                        window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                        window.location.href="https://thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=fail"
 
                       });
                   },
@@ -242,7 +242,7 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-      console.log('p', props.payment)
+      // console.log('p', props.payment)
     return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}

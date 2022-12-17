@@ -27,8 +27,7 @@ import ExperienceCard from '../../components/cards/newitinerarycard-main/Experie
 import gif from '../../public/assets/loader.gif';
 
 // import qs from qs;
-var qs = require('qs');
-
+ 
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -83,9 +82,17 @@ min-height: 40vh;
   min-height: 60vh;
 }
 `;
-const  Homepage = (props) =>{
-// const [isWindow, setIsWindow] = useState(false);
+const VideoContainer =styled.div`
+width: 90vw;
+height: 50vw;
 
+@media screen and (min-width: 768px){
+  width: 60vw;
+  height: 30vw;
+}
+`;
+const  Homepage = (props) =>{
+ 
 			
 let isPageWide = media('(min-width: 768px)');
 let cards = [];
@@ -240,7 +247,7 @@ const _toggleFilterHandler = (filter_text) => {
   }
 
 }
-
+ 
  useEffect(() => {
   let itineraries = [];
   // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
@@ -345,14 +352,7 @@ const EXPERIENCE = {
       }
     ],
 };
-let width = 200;
-let height = 200;
-try{
-width = Math.round(window.innerWidth*0.8);
-height=Math.round(window.innerWidth*0.3);
-
-}catch{
-}
+ 
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
@@ -384,12 +384,15 @@ height=Math.round(window.innerWidth*0.3);
          {/* <div style={{width: 'max-content', margin: 'auto'}}>
           <iframe width={typeof window != "undefined" ? Math.round(window.innerWidth*0.4) : '300'} height={typeof window != "undefined" ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>     
         </div> */}
-        <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
-          <iframe width={typeof window !== "undefined" ? Math.round(window.innerWidth*0.8) : '300'} height={typeof window !== "undefined" ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
-        </div>
-        <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
-          <iframe width={typeof window !== "undefined" ? Math.round(window.innerWidth*0.9) : '300'} height={typeof window !== "undefined" ? Math.round(window.innerWidth * 0.5) : '200'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
-        </div>
+        {/* {typeof window !== 'undefined' ?  <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+          <iframe width={Math.round(window.innerWidth*0.8)} height={Math.round(window.innerWidth * 0.3)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
+        </div> : null} */}
+         <VideoContainer style={{position: 'relative', display: 'block', margin: 'auto'}}>
+          <iframe style={{position: 'absolute', top: '0', left: '0', width: '100%', height: '100%'}} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
+        </VideoContainer> 
+        {/* {typeof window !== 'undefined' ? <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+          <iframe width={Math.round(window.innerWidth*0.9)} height={Math.round(window.innerWidth * 0.5)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
+        </div>:null} */}
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
