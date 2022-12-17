@@ -244,7 +244,7 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-      // console.log('p', props.payment)
+      console.log('p', props.payment)
     return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
@@ -303,7 +303,7 @@ const _startRazorpayHandler = (data) => {
                 {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-opensans text-enter">29th July 2021</p> */}
                  {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
         </div>
-        <div className='text-center font-opensans' style={{marginBottom: '1rem'}}>You Pay</div>
+        {props.payment ? props.payment.coupon ? props.payment.coupon.code ? <div className='text-center font-opensans' style={{marginBottom: '1rem'}}>{'Coupon Applied: '+props.payment.coupon.code}</div> : null : null : null}
         <div style={{display: 'flex', width: 'max-content', margin: 'auto', alignItems: 'center', gap: '0.75rem'}}>
      <StrikedCost show_per_person_cost={props.payment.show_per_person_cost} coupon={props.payment.coupon}  className={props.blur ? "font-opensans blurry-text" : "font-opensans"}><FontAwesomeIcon style={{marginRight: '2px'}} icon={faRupeeSign} ></FontAwesomeIcon>{getIndianPrice(Math.round(props.payment.per_person_total_cost/100)*2) }</StrikedCost>
      <INR show_per_person_cost={props.payment.show_per_person_cost} coupon={props.payment.coupon}  className={props.blur ? "font-opensans blurry-text" : "font-opensans"}><FontAwesomeIcon style={{marginRight: '0.25rem'}} icon={faRupeeSign}/>{ getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost)/100))+ " /-" }</INR>

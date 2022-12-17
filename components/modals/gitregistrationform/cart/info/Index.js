@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { getHumanDate } from '../../../../../services/getHumanDate'; 
 import ImageLoader from '../../../../ImageLoader';
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
+import dayjs from 'dayjs';
+
  const Container = styled.div`
     padding: 0 0.5rem;
     @media screen and (min-width: 768px){
@@ -127,7 +129,7 @@ const Cart = (props) => {
 
                 <div>
                     <HeadingThree>Start Date</HeadingThree>
-                    <Subheading>{props.date ? getDate(props.date.format('YYYY-MM-DD') ): null}</Subheading>
+                    <Subheading>{props.date ? getDate( dayjs(props.date).format('YYYY-MM-DD') ): null}</Subheading>
  
                 </div>
                 </FlexContainer>
@@ -135,7 +137,7 @@ const Cart = (props) => {
                 <FlexContainer>
                     <ImageLoader url="media/icons/bookings/tourist.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div>
-                        <HeadingThree>Travelers</HeadingThree>
+                        <HeadingThree>Members</HeadingThree>
                         <Subheading>{props.pax ? props.pax : null}</Subheading>
                     </div>
                 </FlexContainer>

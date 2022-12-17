@@ -75,7 +75,8 @@ const redirect = () => {
   })
 }
 const _handleRedirect = () => {
-  router.push('/itinerary/'+props.id)
+  if(props.PW) router.push('/itinerary/physicswallah/'+props.id);
+  else router.push('/itinerary/'+props.id)
  }
     
     return(

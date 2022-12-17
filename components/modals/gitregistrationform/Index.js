@@ -12,6 +12,8 @@ import Cart from './cart/Index';
 import axios from 'axios';
 import TermsModal from '../terms/Index';
 import LoadingPage from '../../LoadingPage';
+import dayjs from 'dayjs';
+
 const Body=styled(Modal.Body)`
     padding: 0.5rem !important;
   `;
@@ -117,7 +119,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
             "number_of_adults": parseInt(props.pax),
             "number_of_children": 0,
             "number_of_infants": 0,
-            "start_date": props.date.format('YYYY-MM-DD'),
+            "start_date": dayjs(props.date).format('YYYY-MM-DD'),
             "registered_users": data.slice()
         }, {headers: {
             'Authorization': `Bearer ${props.token}`
