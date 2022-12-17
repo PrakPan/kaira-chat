@@ -12,6 +12,8 @@ import Cart from './cart/Index';
 import axios from 'axios';
 import TermsModal from '../terms/Index';
 import LoadingPage from '../../LoadingPage';
+import dayjs from 'dayjs';
+
 const Body=styled(Modal.Body)`
     padding: 0.5rem !important;
   `;
@@ -27,10 +29,10 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
     let isPageWide = media('(min-width: 768px)')
     useEffect(() => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.async = true;
-      document.body.appendChild(script);
+      // const script = document.createElement('script');
+      // script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      // script.async = true;
+      // document.body.appendChild(script);
     }, []);
     useEffect(() => {
       setVerificationCount(0);
@@ -52,7 +54,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                     setRzVerificationLoading(true);
 
                     setPaymentLoading(true)
-                    axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                    axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                     {'Authorization': `Bearer ${props.token}`}} )
                     .then( res => {
                           setPaymentLoading(false);
@@ -60,7 +62,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                         //  router.push('/itinerary/'+data.itinerary, undefined, {shallow: true})
                         // window.location.href="http://localhost:3002/itinerary/"+data.itinerary+"?payment_status=fail"
 
-                         window.location.replace("https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success")
+                         window.location.replace("https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success")
 
                      })
                     .catch( err => {
@@ -68,7 +70,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                       //  setRzVerificationLoading(false);
 
                       // router.push('/itinerary/'+data.itinerary)
-                      window.location.href = ("https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail")
+                      window.location.href = ("https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail")
 
                       // window.location.href="http://localhost:3000/itinerary/"+data.itinerary+"?payment_status=fail"
                       });
@@ -121,7 +123,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
             "number_of_adults": parseInt(props.pax),
             "number_of_children": 0,
             "number_of_infants": 0,
-            "start_date": props.date.format('YYYY-MM-DD'),
+            "start_date": dayjs(props.date).format('YYYY-MM-DD'),
             "registered_users": data.slice()
         }, {headers: {
             'Authorization': `Bearer ${props.token}`
@@ -156,8 +158,13 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
              <Body className="">
               <Cart setShowTermsModal={setShowTermsModal} cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
+<<<<<<< HEAD
                 <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p>
                 <Form formFailedError={formFailedError} setFormFailedError={setFormFailedError} formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
+=======
+                <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Member Details</p>
+                <Form formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
+>>>>>>> development
              </Body>
 
       </Modal>

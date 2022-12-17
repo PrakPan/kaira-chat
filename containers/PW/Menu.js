@@ -79,7 +79,7 @@ const Menu = (props) => {
 
    let message ="Hey TTWxPW! I need some help with planning my tailored experience.";
 
-
+  
   return(
     <Container className="" style={{}}>
         <SetWidthContainer>
@@ -125,6 +125,7 @@ const Menu = (props) => {
             <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
             <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
         </div>
+        
         </SetWidthContainer>
    </Container>
   );

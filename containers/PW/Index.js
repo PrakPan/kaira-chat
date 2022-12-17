@@ -84,7 +84,7 @@ min-height: 40vh;
 }
 `;
 const  Homepage = (props) =>{
-
+// const [isWindow, setIsWindow] = useState(false);
 
 			
 let isPageWide = media('(min-width: 768px)');
@@ -345,6 +345,14 @@ const EXPERIENCE = {
       }
     ],
 };
+let width = 200;
+let height = 200;
+try{
+width = Math.round(window.innerWidth*0.8);
+height=Math.round(window.innerWidth*0.3);
+
+}catch{
+}
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
@@ -365,10 +373,23 @@ const EXPERIENCE = {
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Customer Tales"]} pastitinerary></Experiences>
  */}
 </SetWidthContainer>
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
+    {/* <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner> */}
       <SetWidthContainer>
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
-        <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
+        {/* <div style={{width: '100%' , position: 'relative', paddingBottom:  '56.25%', height: '0'}}>
+          <iframe style={{position: 'relative', top: '0', left: '0', border: '0', height: '100%'}} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
+        </div> */}
+       
+        {/* <div style={{width: typeof window !== "undefined" ? window.innerWidth / 2 : '300', height:  typeof window !== "undefined"? window.innerWidth/3 : '300' ,  position: 'relative', margin: 'auto' }}> */}
+         {/* <div style={{width: 'max-content', margin: 'auto'}}>
+          <iframe width={typeof window != "undefined" ? Math.round(window.innerWidth*0.4) : '300'} height={typeof window != "undefined" ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>     
+        </div> */}
+        <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+          <iframe width={typeof window !== "undefined" ? Math.round(window.innerWidth*0.8) : '300'} height={typeof window !== "undefined" ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
+        </div>
+        <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+          <iframe width={typeof window !== "undefined" ? Math.round(window.innerWidth*0.9) : '300'} height={typeof window !== "undefined" ? Math.round(window.innerWidth * 0.5) : '200'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
+        </div>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        

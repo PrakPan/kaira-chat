@@ -23,8 +23,10 @@ import { ITINERARY_STATUSES } from '../../../../services/constants';
 import axios from 'axios';
 import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCreate';
 import Spinner from '../../../../components/Spinner';
- import RegisteredUsers from '../../../../components/modals/registeredusers/Index';
-  const SummaryContainer = styled.div`
+
+import TermsModal from '../../../../components/modals/terms/Index';
+
+const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
 padding: 1rem;
@@ -104,44 +106,11 @@ position: relative;
 `;
 const Details = (props) => {
   const router = useRouter()
-    const [getTrip, setGetTrip] = useState(false);
-
-    const [details , setDetails] = useState({
-        date: new Date('2021-04-20T21:11:54'),
-        pax: 1,
-        starting_point: "Delhi",
-
-    })
-  const [amount, setAmount] = useState(null);
-    const handlePaxChange = (event) => {
-      _calculateServiceFee(details.starting_point, event.target.value);
-      setDetails({...details, pax: event.target.value});
-    };
-    const handleTypeChange = (event) => {
-      setDetails({...details, starting_point: event.target.value})
-      _calculateServiceFee(event.target.value, details.pax);
-    };
-    const handleDateChange = (date) => {
-      setDetails({...details, date: date});
-      // _calculateServiceFee();
-
-    };
-      const handleBlur = (event) => {
-        if (event === undefined) return event;
-      }
-  const _startCheckoutHandler = () => {
-
-    props.setOrderDetails({...details, experienceId: props.experienceId, date: details.date.getFullYear()+"-"+details.date.getMonth()+"-"+details.date.getDate()});
-    props.history.push('/checkout/1')
-  }
+  
+ const [showTerms, setShowTerms] = useState(false);
  
-  const _getBasePrice = (payment_info, starting_point) => {
-    for(var i = 0; i<payment_info.length; i++){
-      if(payment_info[i]["starting_point"]===starting_point) return payment_info[i].base_price;
-    }
-    return null;
-  }
   const setBookingSummary = ( ) => {
+
     try{
     if(props.payment){
       if(props.payment.costings_breakdown)
@@ -178,17 +147,7 @@ const Details = (props) => {
 
     }
   }
-  const _calculateServiceFee = (starting_point, pax) => {
-    if(props.payment["service_fee_type"] ===  "% of base price"){
-        if(props.payment["service_fee_multiplier"]=== "Multiply"){
-          //get base price from selected starting point
-          const baseprice = _getBasePrice(props.payment.payment_info, starting_point)
-           // calculate final amount using base price, pax, service fee %
-           const totalprice = (baseprice*pax) + (props.payment["service_fee_value"]/100 * baseprice * pax);
-            setAmount(totalprice);
-        }
-    }
-  }
+ 
     useEffect(()=> {
       try{
         setPax(props.payment.meta_info.number_of_adults)
@@ -234,18 +193,18 @@ const _startRazorpayHandler = (data) => {
           //Payment successfull handler passed to razorpay
           "handler": function (response){
                       setPaymentLoading(true)
-                      axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                      axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                       {'Authorization': `Bearer ${props.token}`}} )
                       .then( res => {
                            setPaymentLoading(false);
                           //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                          window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                          window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
 
                        })
                       .catch( err => {
                         setPaymentLoading(false);
                         // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                        window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                        window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
 
                       });
                   },
@@ -283,7 +242,7 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-      // console.log('p', props.payment)
+      console.log('p', props.payment)
     return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
@@ -342,6 +301,7 @@ const _startRazorpayHandler = (data) => {
                 {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-opensans text-enter">29th July 2021</p> */}
                  {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
         </div>
+        {props.payment ? props.payment.coupon ? props.payment.coupon.code ? <div className='text-center font-opensans' style={{marginBottom: '1rem'}}>{'Coupon Applied: '+props.payment.coupon.code}</div> : null : null : null}
         <div style={{display: 'flex', width: 'max-content', margin: 'auto', alignItems: 'center', gap: '0.75rem'}}>
      <StrikedCost show_per_person_cost={props.payment.show_per_person_cost} coupon={props.payment.coupon}  className={props.blur ? "font-opensans blurry-text" : "font-opensans"}><FontAwesomeIcon style={{marginRight: '2px'}} icon={faRupeeSign} ></FontAwesomeIcon>{getIndianPrice(Math.round(props.payment.per_person_total_cost/100)*2) }</StrikedCost>
      <INR show_per_person_cost={props.payment.show_per_person_cost} coupon={props.payment.coupon}  className={props.blur ? "font-opensans blurry-text" : "font-opensans"}><FontAwesomeIcon style={{marginRight: '0.25rem'}} icon={faRupeeSign}/>{ getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost)/100))+ " /-" }</INR>
@@ -366,7 +326,7 @@ const _startRazorpayHandler = (data) => {
           Pay Now</Button> : props.payment.user_allowed_to_pay ? 
           <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
           Pay Now
-          {paymentLoading ? <Spinner display="inline" size={16} margin="0 0.5rem"></Spinner> : null}
+          {paymentLoading ? <Spinner color="white" display="inline" size={16} margin="0 0.5rem"></Spinner> : null}
           </Button>: null  : null
         }
         {
@@ -379,10 +339,12 @@ const _startRazorpayHandler = (data) => {
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>
+       <div style={{color: 'blue', margin: '1rem 0 0 0', fontSize: '0.85rem'}} className=" text-center hover-pointer font-opensans" onClick={() => setShowTerms(true)}>Terms & Conditions</div>
        <RegistrationModal number_of_adults={props.payment ? props.payment.meta_info ? props.payment.meta_info.number_of_adults : 5 : 5} payment={props.payment} plan={props.plan} date={date} id={props.id} show={showRegistration} hide={() => setShowRegistartion(false)} pax={pax}></RegistrationModal>
        <VerificationModal date={date} pax={pax} onSuccess={_handleVerificationSuccess}  show={showVerification} hide={() => setShowVerification(false)}></VerificationModal>
-        {/* <RegisteredUsers registered_users={props.payment ? props.payment.registered_users : null} show={true} ></RegisteredUsers> */}
-</SummaryContainer>
+ 
+        <TermsModal show={showTerms} hide={() => setShowTerms(false)}></TermsModal>
+ </SummaryContainer>
 
   );
 }

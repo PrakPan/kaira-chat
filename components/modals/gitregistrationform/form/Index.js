@@ -62,7 +62,7 @@ const Enquiry = (props) => {
     for(var i = 0 ; i < props.pax ; i++){
         pax.push(
         <Grid item xs={12}>
-            <Person id={props.id} _removePersonHandler={_removePersonHandler} verificationCount={props.verificationCount} setVerificationCount={props.setVerificationCount}  token={props.token} email={props.email} _addPersonHandler={_addPersonHandler} id={props.id} index={i+1} first={!(i)}></Person>
+            <Person id={props.id} _removePersonHandler={_removePersonHandler} verificationCount={props.verificationCount} setVerificationCount={props.setVerificationCount}  token={props.token} email={props.email} _addPersonHandler={_addPersonHandler}  index={i+1} first={!(i)}></Person>
         </Grid> 
         )
     }
@@ -81,6 +81,7 @@ return(
            {props.formNotFilledError ? <Error>{props.formFailedError}</Error> : null} 
            {props.formFailedError ? <Error>{'Please fill all traveler details'}</Error> : null} 
 
+        
            <PayNow className="hover-pointer font-opensans" onClick={() => props.onSuccess(paxList)} >
                 Pay Now
              {props.paymentLoading ? <Spinner color="white" size={16} display="inline" margin=" 0 0 0 0.25rem"></Spinner> : null}

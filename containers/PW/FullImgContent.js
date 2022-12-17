@@ -85,7 +85,7 @@ const FullImgContent = (props) => {
             <Heading>Physics Wallah Holidays</Heading>
             <SubText>
                 {/* <span style={{marginLeft: '6px', fontWeight: '800'}}>TTWxPW</span> */}
-                Flat 50% off on all holidays
+                50% amount of your holiday will be paid by Physics Wallah
             </SubText>
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
            
