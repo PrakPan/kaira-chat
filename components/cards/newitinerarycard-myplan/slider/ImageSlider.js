@@ -105,7 +105,7 @@ import {GoStar} from 'react-icons/go';
    width: 100%;
    padding: 0 0.25rem;
    @media screen and (min-width: 768px){
-    top: 3.5rem;
+    top: 2.75rem;
 
   }
 
@@ -187,12 +187,12 @@ const ImageSlider = (props) => {
             <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
             {props.rating + '/5'}
              </RatingContainer> */}
-             <DurationContainer className='font-opensans'>
+             {/* <DurationContainer className='font-opensans'>
              {!props.duration  ? props.duration_unit && props.duration_number ? props.duration_number+ " " + props.duration_unit.toUpperCase() : null : props.duration ? props.duration.toUpperCase() : null}
-             </DurationContainer>
-            {!props.myplan ? <CustomizableContainer className='font-opensans'>
+             </DurationContainer> */}
+            <CustomizableContainer className='font-opensans'>
             100% CUSTOMISABLE
-            </CustomizableContainer>: null }
+            </CustomizableContainer> 
 <HeadingContainer>
   <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>
   <Subheading className='font-opensans'>{LOCATIONS_TO_SHOW}</Subheading>

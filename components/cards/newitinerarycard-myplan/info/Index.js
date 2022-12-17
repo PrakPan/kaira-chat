@@ -15,8 +15,7 @@ const Container = styled.div`
 const Info = (props) => {
   const router=useRouter();
  const _handleRedirect = () => {
-  if(props.PW) router.push('/itinerary/physicswallah/'+props.id);
-  else router.push('/itinerary/'+props.id)
+  router.push('/itinerary/'+props.id)
  }
     
     return(

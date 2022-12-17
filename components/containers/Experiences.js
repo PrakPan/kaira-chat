@@ -1,7 +1,7 @@
 import React, {useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
-import ItineraryCard from '../cards/itinerarycard/Index';
+import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
 import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
 import Carousel from '../FlickityCarousel';
 import media from '../media';
@@ -109,6 +109,7 @@ const Experiences = [
         // if height of text more than maxheight set maxheight to new height
         experiencecards.push(  
           <ExperienceCard 
+          myplan={props.myplan}
           key={props.experiences[j].short_text}
           hardcoded={props.experiences[j].payment_info ?true : false }
           filter={props.experiences[j].experience_filters ?  props.experiences[j].experience_filters.length  ? props.experiences[j].experience_filters[0]  : null :  null}
@@ -136,23 +137,22 @@ const Experiences = [
           // if height of text more than maxheight set maxheight to new height
           experiencecards.push(  
             <ItineraryCard 
-            // filter={props.itineraries[j].experience_filters[0]}
-            key={props.itineraries[j].itinerary_id}
-            budget={props.itineraries[j].budget}
-            
+            myplan={props.myplan}
+            key={props.itineraries[j].short_text}
+            hardcoded={props.itineraries[j].payment_info ?true : false }
+            filter={props.itineraries[j].experience_filters ?  props.itineraries[j].experience_filters.length  ? props.itineraries[j].experience_filters[0]  : null :  null}
             rating={props.itineraries[j].rating}
             slug={props.itineraries[j].slug}
-            id={props.itineraries[j].itinerary_id}
+            id={props.itineraries[j].id}
+            budget={props.itineraries[j].budget}
+            group_type={props.itineraries[j].group_type}
+            number_of_adults={props.itineraries[j].number_of_adults}
             text={props.itineraries[j].short_text} 
-            name={props.itineraries[j].name}
-            duration={props.itineraries[j].duration_number+" "+props.itineraries[j].duration_unit}
-            locations={props.itineraries[j]["locations"]}
-            starting_cost={props.itineraries[j]["starting_cost"]}
-            itinerary_status={props.itineraries[j]["itinerary_status"]}
-            itineraryDate={props.itineraries[j]["created_at"]}
-            timeRequired={props.itineraries[j]["time_needed_for_itinerary_completion"]}
-            status={props.itineraries[j]["itinerary_status"]}
-          image={props.itineraries[j].images[0]}>
+            experience={props.itineraries[j].name}
+             duration={props.itineraries[j].duration}
+            location={props.itineraries[j]["experience_region"]}
+            starting_cost={props.itineraries[j].payment_info? props.itineraries[j].payment_info.per_person_total_cost ?  props.itineraries[j].payment_info.per_person_total_cost : props.itineraries[j].starting_price : props.itineraries[j].starting_price }
+          images={props.itineraries[j].images}>
             
             </ItineraryCard >
             )

@@ -52,8 +52,8 @@ const CenterNav = styled.div`
 `;
 
 const TTWLogoContainer = styled(CenterNav)`
-  justify-content: center;
-  @media screen and (min-width: 768px) {
+  justify-content: center; 
+   @media screen and (min-width: 768px) {
     justify-content: flex-start;
     margin-left: 2rem;
    
@@ -206,18 +206,23 @@ const Navbar = (props) => {
             {/* <Link href='/'> */}
         {props.hidehomecta ? 
 props.headerColor === 'black'? <ImageLoader  width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader>: <ImageLoader   hoverpointer  leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader> : 
-        props.headerColor === 'black'? <Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
-        }
+        props.headerColor === 'black'?<Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
+        }           <div>
+
   {/* {props.headerColor === 'black'? <Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> } */}
         {props.hidehomecta ?  
-          <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '0'}} className="font-opensans">thetarzanway</CompanyName>
-
-        : 
+            <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} className="font-opensans">{'thetarzanway'}</CompanyName>
+         : 
           <Link href={urls.HOMEPAGE}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '0'}} className="font-opensans">thetarzanway</CompanyName></Link>
 
       }
+      {
+       props.PW ?  
+        <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} className="font-opensans">{'Physics Wallah Holidays'}</CompanyName>
+: null
+      }
               {/* <p style={{margin: "0", fontSize: "3vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '-2px'}} className="font-opensans">thetarzanway</p> */}
-              
+              </div> 
         {/* </Link> */}
           
           </TTWLogoContainer>

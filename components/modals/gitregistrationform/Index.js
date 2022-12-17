@@ -152,7 +152,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
              <Body className="">
               <Cart setShowTermsModal={setShowTermsModal} cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
-                <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p>
+                <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Member Details</p>
                 <Form formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
              </Body>
 

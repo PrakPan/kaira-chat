@@ -13,7 +13,7 @@ const Layout = (props) => {
 
     return (
       <div className='layout'>
-        <Header ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} />
+        <Header PW={props.PW} ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} />
         {props.children}
         <LoginModal
           show={props.showLogin}

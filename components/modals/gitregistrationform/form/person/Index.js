@@ -114,7 +114,7 @@ const Person = (props) => {
         style={{zIndex: '1', minHeight: 'max-content'}}
 
       >
-         <StyledTypo content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && verified?  'green' : 'black'}} >{  email && verified? email : 'Traveler '+props.index}</StyledTypo> 
+         <StyledTypo content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && verified?  'green' : 'black'}} >{  email && verified? email : 'Member '+props.index}</StyledTypo> 
  
         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{''}</Typography>
 
