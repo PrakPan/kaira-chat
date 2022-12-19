@@ -48,7 +48,7 @@ line-height:1.5;
 font-weight: 800;
 font-size: 1rem;
 &:after{
-  content: 'per person';
+  content: 'per member';
   display: block;
   font-size: 0.8rem;
   font-weight: 300;

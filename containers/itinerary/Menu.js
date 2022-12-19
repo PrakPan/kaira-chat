@@ -100,7 +100,7 @@ line-height:1.5;
 font-weight: 800;
 font-size: 1.25rem;
 &:after{
-  content: 'per person';
+  content: 'per member';
   display: block;
   font-size: 0.9rem;
   font-weight: 300;

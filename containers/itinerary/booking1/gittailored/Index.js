@@ -306,7 +306,7 @@ const _startRazorpayHandler = (data) => {
      <StrikedCost show_per_person_cost={props.payment.show_per_person_cost} coupon={props.payment.coupon}  className={props.blur ? "font-opensans blurry-text" : "font-opensans"}><FontAwesomeIcon style={{marginRight: '2px'}} icon={faRupeeSign} ></FontAwesomeIcon>{getIndianPrice(Math.round(props.payment.per_person_total_cost/100)*2) }</StrikedCost>
      <INR show_per_person_cost={props.payment.show_per_person_cost} coupon={props.payment.coupon}  className={props.blur ? "font-opensans blurry-text" : "font-opensans"}><FontAwesomeIcon style={{marginRight: '0.25rem'}} icon={faRupeeSign}/>{ getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost)/100))+ " /-" }</INR>
      </div>
-     <p className='font-opensans text-center'>Per Person</p>
+     <p className='font-opensans text-center'>Per Member</p>
      {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
         {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
           <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>

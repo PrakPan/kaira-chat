@@ -58,17 +58,18 @@ const Person = (props) => {
       },[]);
 
       const _handleClose = () => {
-        _checkValidation(email);
+        _checkValidation(email, id);
        
       }
 
-      const _checkValidation = (email) => { 
+      const _checkValidation = (email, id) => { 
         setVerificationLoading(true);
         const data = {
             "itinerary_id": props.id,
             "registered_users": [
                 {
                      "email": email,
+                    //  "employee_id": id,
                 }
             ]
         }
@@ -76,6 +77,7 @@ const Person = (props) => {
         axiosgitregisterinstance.post('/', data, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
+              console.log(res);
               setVerificationLoading(false);
               props.setVerificationCount(props.verificationCount + 1)
             // if(!res.data.verified) 
@@ -88,6 +90,13 @@ const Person = (props) => {
             })
             // console.log(res.data)
      }).catch(err => {
+      console.log({...err})
+      console.log(err.response.data)
+      try{
+        console.log(err.response.data.registered_users[0].email, err.response.data.registered_users[0].employee_id)
+      }catch{
+
+      }
         setVerificationFailed(true);
         setVerificationLoading(false);
 
