@@ -165,7 +165,7 @@ const Cart = (props) => {
                         }
                     </HeadingThree>
                     </div>
-                    <Subheading style={{fontSize: '11px'}}>Per Person</Subheading>
+                    <Subheading style={{fontSize: '11px'}}>Per Member</Subheading>
 
                 </div>
                
