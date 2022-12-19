@@ -54,7 +54,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                     setRzVerificationLoading(true);
 
                     setPaymentLoading(true)
-                    axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                    axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                     {'Authorization': `Bearer ${props.token}`}} )
                     .then( res => {
                           setPaymentLoading(false);
@@ -62,7 +62,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                         //  router.push('/itinerary/'+data.itinerary, undefined, {shallow: true})
                         // window.location.href="http://localhost:3002/itinerary/"+data.itinerary+"?payment_status=fail"
 
-                         window.location.replace("https://thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=success")
+                         window.location.replace("https://dev.thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=success")
 
                      })
                     .catch( err => {
@@ -70,7 +70,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
                       //  setRzVerificationLoading(false);
 
                       // router.push('/itinerary/'+data.itinerary)
-                      window.location.href = ("https://thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=fail")
+                      window.location.href = ("https://dev.thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=fail")
 
                       // window.location.href="http://localhost:3000/itinerary/"+data.itinerary+"?payment_status=fail"
                       });
