@@ -7,6 +7,8 @@ import urls from '../../services/urls';
 import Enquiry from './newenquiry/Index';
 import ImageLoader from '../../components/ImageLoader';
 import Banner from './BannerOne';
+import {BsFillCalendarFill} from 'react-icons/bs';
+import {BsYoutube} from 'react-icons/bs';BsYoutube
 const Container = styled.div`
     text-align: center;
  color:white;
@@ -75,6 +77,27 @@ display : flex;
 
 }
 `;
+const StyledA = styled.a`
+    color: black;
+    display: flex;
+    height: max-content;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    background-color: #f7e700;
+    margin: 24px 0;
+    padding: 12px 24px;
+    line-height:1;
+
+    @media screen and (min-width: 768px){
+
+    margin: 1rem auto 0 auto;
+font-size: 1.25rem;
+    &:hover{
+        color: black;
+    }
+}
+`;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
 
@@ -88,10 +111,21 @@ const FullImgContent = (props) => {
                 50% amount of your holiday will be paid by Physics Wallah
             </SubText>
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
-           
-            <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
+           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', width: 'max-content', margin: 'auto'}}>
+                <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 {/* <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp> */}
-                View Trips</Button>
+                View Trips
+                <BsFillCalendarFill style={{marginLeft: '0.5rem', fontSize: '14px', marginTop:'-3px'}}></BsFillCalendarFill>
+                </Button>
+                
+                <StyledA href='#link'>
+                    {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem"> */}
+                {/* <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp> */}
+                How it works
+                <BsYoutube style={{marginLeft: '0.5rem', marginTop: '-0px'}}></BsYoutube>
+                {/* </Button> */}
+                </StyledA>
+            </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}
                <LogosContainer>
