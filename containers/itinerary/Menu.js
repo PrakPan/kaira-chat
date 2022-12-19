@@ -100,6 +100,19 @@ line-height:1.5;
 font-weight: 800;
 font-size: 1.25rem;
 &:after{
+  content: 'per person';
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+`;
+const GITCost = styled.div`
+text-align: right;
+line-height:1.5;
+font-weight: 800;
+font-size: 1.25rem;
+&:after{
   content: 'per member';
   display: block;
   font-size: 0.9rem;
@@ -107,7 +120,7 @@ font-size: 1.25rem;
 }
 
 `;
-const DiscountContainer = styled.div`
+ const DiscountContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-right: 1rem;
@@ -336,7 +349,13 @@ const _handleFlightModalClose=()=> {
           {true? <DiscountContainer>
             <div style={{display: 'flex'}}>
               {props.payment ? props.payment.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost/100)*2))}</StrikedCost> : null : null}
-           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost></div>
+          
+          { props.payment? !props.payment.is_registration_needed ? <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost>
+           :
+           <GITCost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</GITCost>
+          : null}
+           </div>
+           
           </DiscountContainer> : null}
            <Button onclick={openBookingDesktop} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">{props.payment ? props.payment.paid_user ?  "Details"  :"Book Now" : 'Book Now'}</Button>
         </CostContainer> : null}

@@ -47,6 +47,8 @@ const Person = (props) => {
 
     const [expanded, setExpanded] = useState(false);
     const [verificationfailed, setVerificationFailed] = useState(false);
+    const [verificationfailedmessage, setVerificationFailedMessage] = useState(null);
+
     const [verified, setVerified] = useState(false);
     const [verificationLoading, setVerificationLoading] = useState(false);
     const [email, setEmail] = useState(null);
@@ -69,7 +71,7 @@ const Person = (props) => {
             "registered_users": [
                 {
                      "email": email,
-                    //  "employee_id": id,
+                     "employee_id": id,
                 }
             ]
         }
@@ -93,11 +95,13 @@ const Person = (props) => {
       console.log({...err})
       console.log(err.response.data)
       try{
-        console.log(err.response.data.registered_users[0].email, err.response.data.registered_users[0].employee_id)
+        console.log(err.response.data.registered_users[0].invalid_field)
+        setVerificationFailed(err.response.data.registered_users[0].invalid_field);
+        setVerificationFailedMessage(err.response.data.registered_users[0][err.response.data.registered_users[0].invalid_field])
       }catch{
 
       }
-        setVerificationFailed(true);
+        // setVerificationFailed(err.response.data.registered_users[0].invalid_field);
         setVerificationLoading(false);
 
      })
@@ -123,7 +127,7 @@ const Person = (props) => {
         style={{zIndex: '1', minHeight: 'max-content'}}
 
       >
-         <StyledTypo content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && verified?  'green' : 'black'}} >{  email && verified? email : 'Member '+props.index}</StyledTypo> 
+         <StyledTypo content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && id && verified?  'green' : 'black'}} >{  email && id && verified? email : 'Member '+props.index}</StyledTypo> 
  
         <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{''}</Typography>
 
@@ -136,7 +140,7 @@ const Person = (props) => {
                  <Email verified={verified} setVerified={setVerified} token={props.token} email={email} setEmail={setEmail} verificationfailed={verificationfailed} setVerificationFailed={setVerificationFailed} id={props.id}></Email>
                </Grid>
                <Grid style={{width: !isPageWide ? '100%' : 'auto'}}  item md={6} xs={12}>
-                    <Id verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
+                    <Id  verificationfailedmessage={verificationfailedmessage} verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
                </Grid>
         </StyledGridContainer> 
             <div className='hidden-desktop'><Button onclick={verified ? _handleChange : _handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
