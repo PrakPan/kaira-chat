@@ -86,10 +86,14 @@ const Person = (props) => {
             setVerificationFailed(false);
             setVerified(true);
             setExpanded(false);
+            try{
             props._addPersonHandler({
-                email: email,
-                employee_id: id,
+                email: res.data.registered_users[0].email,
+                employee_id: res.data.registered_users[0].employee_id,
             })
+          }catch{
+            
+          }
             // console.log(res.data)
      }).catch(err => {
       console.log({...err})
