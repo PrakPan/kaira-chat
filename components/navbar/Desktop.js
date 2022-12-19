@@ -179,6 +179,9 @@ const Navbar = (props) => {
   const _handleHomepageRedirect = (  ) => {
     router.push('/')
   }
+  const _handlePWRedirect = (  ) => {
+    router.push('/corporates/physicswallah')
+  }
   const _handleTailoredRedirect = () => {
     router.push('/tailored-travel')
   }
@@ -206,19 +209,19 @@ const Navbar = (props) => {
             {/* <Link href='/'> */}
         {props.hidehomecta ? 
 props.headerColor === 'black'? <ImageLoader  width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader>: <ImageLoader   hoverpointer  leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader> : 
-        props.headerColor === 'black'?<Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
+        props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
         }           <div>
 
   {/* {props.headerColor === 'black'? <Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> } */}
         {props.hidehomecta ?  
-            <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} className="font-opensans">{'thetarzanway'}</CompanyName>
+            <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0rem 0 0.25rem", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} className="font-opensans">{'thetarzanway'}</CompanyName>
          : 
-          <Link href={urls.HOMEPAGE}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '0'}} className="font-opensans">thetarzanway</CompanyName></Link>
+          <Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0.25rem", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '0'}} className="font-opensans">thetarzanway</CompanyName></Link>
 
       }
       {
        props.PW ?  
-        <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} className="font-opensans">{'Physics Wallah Holidays'}</CompanyName>
+       <Link href={'/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0.25rem", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} className="font-opensans">{'Physics Wallah Holidays'}</CompanyName></Link>
 : null
       }
               {/* <p style={{margin: "0", fontSize: "3vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '-2px'}} className="font-opensans">thetarzanway</p> */}
@@ -255,7 +258,7 @@ props.headerColor === 'black'? <ImageLoader  width="7vh" widthmobile="15vh"  lef
           {/* <NavItem>
               <Button>Login</Button>
           </NavItem> */}
-          {  !props.hidecta ? 
+          {  !props.hidecta  ? 
                         <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 1.5rem 0 0" padding="0.75rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
           : null}
           {props.token ? 

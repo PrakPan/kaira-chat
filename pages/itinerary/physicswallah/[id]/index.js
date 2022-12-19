@@ -22,7 +22,7 @@ const Itinerary = (props) => {
 
 }, []);
      return (
-    <Layout itinerary hidehomecta hidecta PW>
+    <Layout itinerary  hidecta PW>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}
         <Head>
             <title>Physics Wallah Itinerary | The Tarzan Way</title>
