@@ -70,6 +70,33 @@ const Text = styled.p`
         }
     }
 `;
+const GITText = styled.p`
+    font-weight: 600;
+    font-size: 1.25rem;
+    text-align: right;
+    width: max-content;
+    line-height: 1;
+ 
+     &:after{
+        content: 'per member';
+        margin-top: 0.25rem;
+        font-size: 0.75rem !important;
+        font-weight: 400;
+        display: block;
+        color: rgba(91, 89, 89, 1);
+        text-decoration: none !important;
+
+    }
+    
+    @media screen and (min-width: 768px){
+        &:after{
+            font-size: 0.85rem !important;
+            text-decoration: none !important;
+
+        }
+    }
+`;
+
 const Cost = (props) => {
   
  
@@ -78,9 +105,13 @@ const Cost = (props) => {
         <Container className='center-di' >
            {props.starting_cost ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
             {props.PW ? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : null}
-            <div style={{display: 'flex', justifyContent: 'flex-end'}}><Text className='font-opensans'>
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+               {!props.PW ?  <Text className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
-            </Text></div></div></div>: null}
+            </Text> : <GITText className='font-opensans'>
+           { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
+            </GITText>}
+            </div></div></div>: null}
         </Container>
     );
 }
