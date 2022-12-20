@@ -25,10 +25,15 @@ z-index: -1;
 background-position: center;
 `
 const ContentContainer=styled.div`
-padding: 10vh 0 0 0;
+padding: ${props => props.padding ? props.padding : '20vw 0 0 0'};
+
 display: flex;
     flex-direction: column;
     justify-content: center;
+    @media screen and (min-width: 768px){
+      padding: ${props => props.padding ? props.padding : '10vh 0 0 0'};
+
+    }
 
 `
 const FullContainer = styled.div`
@@ -37,9 +42,12 @@ background-position: center;
 background-repeat: no-repeat;
 background-size: cover;
 height: 60vh;
- 
+padding: ${props => props.padding ? props.padding : '20vw 0 0 0'};
+
 @media screen and (min-width: 768px){
   height: 85vh;
+  padding: ${props => props.padding ? props.padding : '10vh 0 0 0'};
+
 }
 
 `;
@@ -163,14 +171,15 @@ useEffect(() => {
         style={{display: !fullLoaded ? "flex" : "none",width: props.width ? props.width : '100%',  maxWidth: '100%',height:props.height ? props.height : "100%", padding: props.padding ? props.padding : '10vh 0 0 0', }}
         >
           <BackgroundImageContainer  style={{backgroundImage : props.filter ?props.filter+ `,url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`:(props.position? `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequestSlider).toString('base64')}`})`:`linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`),width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",backgroundRepeat: 'no-repeat',backgroundSize:'cover',zIndex:props.position ? "0":"-1"}}></BackgroundImageContainer>
-          <ContentContainer style={{width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "max-content", visibility: 'hidden'}}  >
+          <ContentContainer padding={props.padding} style={{width: props.width ? props.width : '100%', maxWidth: '100%',height:props.height ? props.height : "max-content", visibility: 'hidden'}}  >
 
            {props.children}
            </ContentContainer>
         </SmallContainer>
         <FullContainer
             className={props.center ? "center-div " : ""}
-        style={{backgroundImage: props.filter? props.filter+`, url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`: `url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`, width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",display: fullLoaded ? "flex" : "none",backgroundRepeat: 'no-repeat',backgroundPosition:"center",backgroundSize:"cover", borderRadius: props.borderRadius ? props.borderRadius : '0'}}
+            padding={props.padding}
+        style={{backgroundImage: props.filter? props.filter+`, url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`: `url(${`${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`})`, width: props.width ? props.width : '100%',  maxWidth: '100%',height:props.height ? props.height : "100%",display: fullLoaded ? "flex" : "none",backgroundRepeat: 'no-repeat',backgroundPosition:"center",backgroundSize:"cover", borderRadius: props.borderRadius ? props.borderRadius : '0'}}
         >
          
            {props.children}

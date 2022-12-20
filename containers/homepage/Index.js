@@ -20,7 +20,7 @@ import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/Locations';
-import FullImgContent from './search/BlackFriday';
+import FullImgContent from './search/NewYear';
 import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
 // import howitworksimg1 from '../../public/assets/arts/whyus/1.webp';
@@ -131,7 +131,7 @@ const _handleExperiencesClick = () => {
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage center url="media/website/bf.jpg" >
-          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="BLACK FRIDAY" text="20% discount on all trips"/>
+          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags & explore." text="Want to get in Santa's good list for sure?"/>
       </FullImage>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
