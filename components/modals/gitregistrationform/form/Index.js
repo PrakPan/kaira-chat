@@ -78,8 +78,8 @@ return(
                
             </Grid> 
            {/* <div onClick={null}></div> */}
-           {props.formNotFilledError ? <Error>{props.formFailedError}</Error> : null} 
-           {props.formFailedError ? <Error>{'Please fill all traveler details'}</Error> : null} 
+           {props.formNotFilledError ? <Error>{'Please fill all traveler details'}</Error> : null} 
+           {props.formFailedError ? <Error>{props.formFailedError}</Error> : null} 
 
         
            <PayNow className="hover-pointer font-opensans" onClick={() => props.onSuccess(paxList)} >

@@ -35,6 +35,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
       // document.body.appendChild(script);
     }, []);
     useEffect(() => {
+      if(!formFailedError)
       setVerificationCount(0);
     }, [props.show]);
   
@@ -90,7 +91,6 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
 
     }
     const _saleCreateHandler = (id) => {
-    setFormFailedError(false)
   axiossalecreateinstance.post("/", 
         {
             "itinerary_id": id,
@@ -105,19 +105,18 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id         
           setPaymentLoading(false);
-          setFormFailedError(true);
-          console.log(err)
-
+ 
         })
  
     }
     
     const _cloneHandler = (data) => {
-
+        setFormFailedError(false)
+        console.log('vc', verificationCount)
          if(verificationCount == props.pax){
         setFormNotFilledError(false);
         setPaymentLoading(true);
-        axiospurchaseinstance.post("/", 
+        axiospurchaseinstance.post("/",  
         {
             "itinerary_id": props.id,
             "number_of_adults": parseInt(props.pax),
@@ -135,7 +134,9 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id 
           // router.push('/itinerary/'+res.data.itinerary.id)
-            console.log(err)
+            console.log(err.response)
+            setFormFailedError(err.response.data.message);
+
             setPaymentLoading(false);
         })
       }

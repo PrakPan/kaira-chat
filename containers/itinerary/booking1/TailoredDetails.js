@@ -119,18 +119,18 @@ const Details = (props) => {
            //Payment successfull handler passed to razorpay
            "handler": function (response){
                        setPaymentLoading(true)
-                       axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                       axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                        {'Authorization': `Bearer ${props.token}`}} )
                        .then( res => {
                             setPaymentLoading(false);
                            //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                           window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                           window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
  
                         })
                        .catch( err => {
                          setPaymentLoading(false);
                          // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                         window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                         window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
  
                        });
                    },
@@ -227,7 +227,7 @@ const Details = (props) => {
           {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
-          {/* {
+          {
             props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  ? 
             <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
           Pay Now
@@ -235,18 +235,18 @@ const Details = (props) => {
 
           </Button>
             : null: null
-          } */}
-            {/* {
+          }
+            {
             props.payment && props.token ? props.payment.paid_user  ? 
             <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="#f7e700" hoverColor="black" borderWidth="0"  fontWeight="600"  onclick={() => console.log(' ')} onclickparam={null} >
           PAID</Button>
             : null: null
-          } */}
-           {/* {
+          }
+           {
             !props.token ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={props.setShowLoginModal} onclickparam={true} >
           Login</Button>
             : null
-          } */}
+          }
             <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
        Connect on WhatsApp</Button>

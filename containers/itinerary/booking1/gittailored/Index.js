@@ -23,9 +23,8 @@ import { ITINERARY_STATUSES } from '../../../../services/constants';
 import axios from 'axios';
 import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCreate';
 import Spinner from '../../../../components/Spinner';
-
 import TermsModal from '../../../../components/modals/terms/Index';
-
+import RegisteredUsersModal from '../../../../components/modals/registeredusers/Index';
 const SummaryContainer = styled.div`
 height: max-content;
 border-radius: 10px;
@@ -108,7 +107,7 @@ const Details = (props) => {
   const router = useRouter()
   
  const [showTerms, setShowTerms] = useState(false);
- 
+ const [showRegisteredUsers, setShowRegisteredUsers] = useState(false)
   const setBookingSummary = ( ) => {
 
     try{
@@ -321,6 +320,10 @@ const _startRazorpayHandler = (data) => {
           Pay Now</Button> :     <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={setShowRegistartion} onclickparam={true} >
           Pay Now</Button>: null 
         }
+          {/* {
+          props.payment? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ?
+           <p onClick={() => setShowRegisteredUsers(true)} className='hover-pointer font-opensans text-center' style={{fontSize: '0.85rem', textDecoration: 'underline'}}>2 out of 3 members have paid</p>
+           : null : null} */}
          {
           props.payment && props.token && ( props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ) && !props.payment.paid_user ? props.payment.email_reverification_needed  ? <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={ setShowVerification } onclickparam={true} >
           Pay Now</Button> : props.payment.user_allowed_to_pay ? 
@@ -335,6 +338,8 @@ const _startRazorpayHandler = (data) => {
           PAID
            </Button>: null : null
         }
+      
+        
         
        <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0" >
       <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
@@ -342,7 +347,7 @@ const _startRazorpayHandler = (data) => {
        <div style={{color: 'blue', margin: '1rem 0 0 0', fontSize: '0.85rem'}} className=" text-center hover-pointer font-opensans" onClick={() => setShowTerms(true)}>Terms & Conditions</div>
        <RegistrationModal number_of_adults={props.payment ? props.payment.meta_info ? props.payment.meta_info.number_of_adults : 5 : 5} payment={props.payment} plan={props.plan} date={date} id={props.id} show={showRegistration} hide={() => setShowRegistartion(false)} pax={pax}></RegistrationModal>
        <VerificationModal date={date} pax={pax} onSuccess={_handleVerificationSuccess}  show={showVerification} hide={() => setShowVerification(false)}></VerificationModal>
- 
+        <RegisteredUsersModal show={showRegisteredUsers} hide={() => setShowRegisteredUsers(false)}></RegisteredUsersModal>
         <TermsModal show={showTerms} hide={() => setShowTerms(false)}></TermsModal>
  </SummaryContainer>
 
