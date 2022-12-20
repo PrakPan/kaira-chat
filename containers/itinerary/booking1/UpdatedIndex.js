@@ -24,6 +24,7 @@ import Tab from '@material-ui/core/Tab';
 import { getIndianPrice } from '../../../services/getIndianPrice';
 // import Spinner from '../../../components/Spinner';
 import gif from '../../../public/assets/loader.gif';
+import { ITINERARY_STATUSES } from '../../../services/constants';
 import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
  import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
@@ -113,6 +114,7 @@ margin: 0.5rem;
   margin: 0;
 }
 `;
+ 
 const BookingSuccessText = styled.div`
 @media screen and (min-width: 768px){
 
@@ -573,9 +575,9 @@ const Booking = (props) => {
   useEffect(() => {
       if(props.payment){
         if(!props.payment.is_registration_needed)
-       setSummaryContainerJSX(<SummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
+       setSummaryContainerJSX(<SummaryContainer setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}   stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></SummaryContainer>);
       //   // setSummaryContainerJSX(S)
-      else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.payment ? props.payment.paid_user ? true : false: false}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  activityBookings={props.activityBookings} stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
+      else setSummaryContainerJSX(<GITSummaryContainer hasUserPaid={props.payment ? props.payment.paid_user ? true : false: false}  payment_status={props.payment_status} plan={props.plan} itinerary={props.itinerary} getPaymentHandler={props.getPaymentHandler} setUserDetails={props.setUserDetails}  id={props.id} stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)} payment={props.payment}  stayBookings={props.stayBookings} transferBookings={props.transferBookings} traveleritinerary={props.traveleritinerary} blur={props.blur}  hide={_hidePaymentHandler}  experienceId={props.experienceId} token={props.token} setShowLoginModal={setShowLoginModal}></GITSummaryContainer>);
 
       }
   }, [props.payment, props.traveleritinerary, props.stayBookings, props.transferBookings, props.hasUserPaid]);
@@ -624,6 +626,7 @@ const Booking = (props) => {
                 </BookingSuccessText>
 
             </BookingSuccessContainer>  : null  : null}
+            {props.payment.is_registration_needed ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_prepared ? <MessageContainer className='font-opensans' >Attention travelers! New Year's eve will be more expensive & crowded than usual. if you prefer peace & offbeat travel, then it's recommended to travel next month!</MessageContainer> : null : null}
             {!props.payment_status && props.payment ? props.payment.paid_user ?  <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
@@ -722,6 +725,8 @@ const Booking = (props) => {
                 </BookingSuccessText>
 
             </BookingSuccessContainer> : null: null : null}
+            {props.payment.is_registration_needed ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_prepared ? <MessageContainer className='font-opensans' >Attention travelers! New Year's eve will be more expensive & crowded than usual. if you prefer peace & offbeat travel, then it's recommended to travel next month!</MessageContainer> : null : null}
+
             {!props.payment_status && props.payment ? props.payment.paid_user? <BookingSuccessContainer style={{backgroundColor: 'rgba(0,128,10,0.1)'}}>
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
