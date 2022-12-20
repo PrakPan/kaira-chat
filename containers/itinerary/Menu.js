@@ -83,13 +83,13 @@ position: relative;
             position: absolute;
             content: '';
             left: 0;
-            top: 16%;
+            top: 20%;
             right: 0;
             border-top: 2px solid;
             border-color: inherit;
-            -webkit-transform: skewY(-12deg);
-            -moz-transform: skewY(-12deg);
-            transform: skewY(-12deg);
+            -webkit-transform: skewY(-10deg);
+            -moz-transform: skewY(-10deg);
+            transform: skewY(-10deg);
           }
     }
 `;
@@ -123,7 +123,7 @@ font-size: 1.25rem;
  const DiscountContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-right: 1rem;
+  margin-right: 0.5rem;
 `;
 
 
@@ -357,7 +357,7 @@ const _handleFlightModalClose=()=> {
            </div>
            
           </DiscountContainer> : null}
-           <Button onclick={openBookingDesktop} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">{props.payment ? props.payment.paid_user ?  "Details"  :"Book Now" : 'Book Now'}</Button>
+           <Button onclick={openBookingDesktop} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">{props.payment ? props.payment.paid_user ?  "Details"  : props.payment.bookings_count ?  "View " + props.payment.bookings_count+ " bookings" : "Book Now" : 'Book Now'}</Button>
         </CostContainer> : null}
       </AppBar>
       {!isPageWide && value!==2 ? <PriceBannerMobile hasUserPaid={props.payment? props.payment.paid_user : false} is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  openBooking={openBookingMobile} payment={props.payment}></PriceBannerMobile> : null}
