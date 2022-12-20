@@ -37,6 +37,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import LogInModal from '../../../components/modals/Login';
 import TaxiModal from '../../../components/modals/taxis/Index';
 import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
+import { BsInfoCircleFill } from 'react-icons/bs';
 
 const Container = styled.div`
 width: 100%;
@@ -89,12 +90,15 @@ padding: 1rem;
 `;
 
 const MessageContainer = styled.div`
-  padding: 0.5rem;
-  border-radius: 5px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: max-content auto;
+  grid-gap: 1rem;
+   border-radius: 5px;
   background-color: hsl(0,0%,97%);
   font-weight: 300;
-   
-  margin: 1rem 0;
+   font-size: 0.9rem;
+  margin: 1rem 0.25rem;
   @media screen and (min-width: 768px){
     margin: 0 0 2rem 0;
 
@@ -626,7 +630,17 @@ const Booking = (props) => {
                 </BookingSuccessText>
 
             </BookingSuccessContainer>  : null  : null}
-            {props.payment.is_registration_needed ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_prepared ? <MessageContainer className='font-opensans' >Attention travelers! New Year's eve will be more expensive & crowded than usual. if you prefer peace & offbeat travel, then it's recommended to travel next month!</MessageContainer> : null : null}
+            {!props.itinerary.featured ? <MessageContainer className='font-opensans border-thin' >
+              <div className='center-div'><BsInfoCircleFill style={{display: 'block', fontSize: '2rem'}}></BsInfoCircleFill></div>
+              {
+              "Hey there! New Year's eve will be more expensive & crowded than usual. At the moment, we are taking 24 hours to confirm all the bookings scheduled for dates between 25th December, 2022 to 5th January, 2023."
+            }</MessageContainer> :
+            <MessageContainer className='font-opensans border-thin' >
+              <div className='center-div'><BsInfoCircleFill style={{display: 'block', fontSize: '2rem'}}></BsInfoCircleFill></div>
+            {
+              "Hey there! This is a New Year Special Itinerary! The rates of these bookings may seem higher than usual. If you prefer peace & offbeat travel, then it's recommended to explore other itineraries!"
+            }</MessageContainer>
+            }
             {!props.payment_status && props.payment ? props.payment.paid_user ?  <BookingSuccessContainer style={{backgroundColor:  'rgba(0,128,10,0.1)'}}>
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
@@ -725,6 +739,17 @@ const Booking = (props) => {
                 </BookingSuccessText>
 
             </BookingSuccessContainer> : null: null : null}
+            {!props.itinerary.featured ? <MessageContainer className='font-opensans border-thin' >
+              <div className='center-div'><BsInfoCircleFill style={{display: 'block', fontSize: '2rem'}}></BsInfoCircleFill></div>
+              {
+              "Hey there! New Year's eve will be more expensive & crowded than usual. At the moment, we are taking 24 hours to confirm all the bookings scheduled for dates between 25th December, 2022 to 5th January, 2023."
+            }</MessageContainer> :
+            <MessageContainer className='font-opensans border-thin' >
+              <div className='center-div'><BsInfoCircleFill style={{display: 'block', fontSize: '2rem'}}></BsInfoCircleFill></div>
+            {
+              "Hey there! This is a New Year Special Itinerary! The rates of these bookings may seem higher than usual. If you prefer peace & offbeat travel, then it's recommended to explore other itineraries!"
+            }</MessageContainer>
+            }
             {props.payment.is_registration_needed ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_prepared ? <MessageContainer className='font-opensans' >Attention travelers! New Year's eve will be more expensive & crowded than usual. if you prefer peace & offbeat travel, then it's recommended to travel next month!</MessageContainer> : null : null}
 
             {!props.payment_status && props.payment ? props.payment.paid_user? <BookingSuccessContainer style={{backgroundColor: 'rgba(0,128,10,0.1)'}}>
