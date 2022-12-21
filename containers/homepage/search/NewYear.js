@@ -65,8 +65,8 @@ const BlackContainer = styled.div`
     }
 `;
 const Img = styled.img`
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: max-content;
     display: block;
     position: absolute;
     right: 0;
@@ -88,7 +88,7 @@ const SearchFullImg= (props) => {
              <Tagline className="font-opensans">{props.tagline}</Tagline>
              </ContentContainer>
               {/* <div className='hidden-mobile' style={{width: '100%'}}><NewSearchDesktop></NewSearchDesktop></div> */}
-                <Img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/santa-claus.svg">
+                <Img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/Untitled design (1).png">
                 </Img>
              <div className='hidden-desktop'><Button onclick={props._handleTailoredClick} margin="0 0 0 5vw" bgColor="#f7e700" color="black" bold  fontWeight="600" borderRadius="5px" borderWidth="0" fontSizeDesktop="1.25rem">Create a Trip</Button></div>
         </Container>
