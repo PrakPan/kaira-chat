@@ -3,13 +3,10 @@ import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
 import FullImage from '../../components/FullImage';
- import DesktopBanner from '../../components/containers/Banner';
-import Experiences from '../../components/containers/Experiences';
-  
+   
  import AsSeenIn from '../testimonial/AsSeenIn';
  import Heading from '../../components/newheading/heading/Index';
-  import HowItWorks from '../../components/containers/HowItWorksSlideshow';
- 
+  
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
@@ -17,15 +14,12 @@ import media from '../../components/media';
  import WhyUs from '../testimonial/whyttw/Index';
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
-import andamancontent from '../../public/content/campaigns/Andaman';
-import Reviews from './CaseStudies/Index';
-import BannerMobile from './MobileBanner';
-import Enquiry from './newenquiry/Index';
-import Menu from './Menu';
+ import Reviews from './CaseStudies/Index';
+ import Menu from './Menu';
 import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
 import gif from '../../public/assets/loader.gif';
-
+import FooterBannerMobile from './FooterBannerMobile';
 // import qs from qs;
  
 const SetWidthContainer = styled.div`
@@ -414,7 +408,9 @@ const EXPERIENCE = {
 
         <ChatWithUs></ChatWithUs>
       </SetWidthContainer>
-
+<div className='hidden-desktop'>
+  {/* <FooterBannerMobile></FooterBannerMobile> */}
+</div>
  
     </div>
   );
