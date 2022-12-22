@@ -65,12 +65,17 @@ const BlackContainer = styled.div`
     }
 `;
 const Img = styled.img`
-    width: 120px;
+    width: 20vw;
     height: max-content;
     display: block;
     position: absolute;
     right: 0;
     bottom: 0;
+    @media screen and (min-width: 768px){
+        width:10vw;
+        max-height: 70vh;
+
+    }
 `;
 const SearchFullImg= (props) => {
     let isPageWide = media('(min-width: 768px)')
@@ -86,11 +91,14 @@ const SearchFullImg= (props) => {
         <ContentContainer>
             <SubText className="font-nunito">{props.text}</SubText>
              <Tagline className="font-opensans">{props.tagline}</Tagline>
+             <div className='hidden-deskto'><Button onclick={props._handleTailoredClick} margin="3rem 0 0 0vw" bgColor="#f7e700" color="black" bold  fontWeight="600" borderRadius="5px" borderWidth="0" fontSizeDesktop="1.25rem">Create a Trip</Button></div>
+
              </ContentContainer>
               {/* <div className='hidden-mobile' style={{width: '100%'}}><NewSearchDesktop></NewSearchDesktop></div> */}
                 <Img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/Untitled design (1).png">
                 </Img>
-             <div className='hidden-desktop'><Button onclick={props._handleTailoredClick} margin="0 0 0 5vw" bgColor="#f7e700" color="black" bold  fontWeight="600" borderRadius="5px" borderWidth="0" fontSizeDesktop="1.25rem">Create a Trip</Button></div>
+             {/* <div className='hidden-mobile' style={{width: '100%'}}><NewSearchDesktop></NewSearchDesktop></div> */}
+
         </Container>
     );
 

@@ -130,7 +130,7 @@ const _handleExperiencesClick = () => {
 }
   return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage center url="media/website/bf.jpg" >
+      <FullImage center url="media/website/Chrsitmas.png" >
           <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags and explore!" text="Want to get in Santa's good list for sure?"/>
       </FullImage>
 
