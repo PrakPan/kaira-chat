@@ -136,10 +136,11 @@ const _handleExperiencesClick = () => {
       <FullImage center url="media/website/Chrsitmas.png" >
           <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags and explore!" text="Want to get in Santa's good list for sure?"/>
       </FullImage>
+      <div style={{zIndex: '9999', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
-      <SetWidthContainer>
-      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Destinations</Heading>        
+      <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
+      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 5rem 0"}  bold>Top Destinations</Heading>        
       <Locations locations={homepagecontent["Top Locations"]} viewall></Locations>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Best Sellers</Heading>        
         <ExperiencesBlog link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></ExperiencesBlog>
@@ -203,7 +204,7 @@ const _handleExperiencesClick = () => {
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
       <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
       {/* <Chatbot history={props.history}/>     */}
-
+      </div>
     </div>
   );
 }
