@@ -404,7 +404,7 @@ const EXPERIENCE = {
       <SetWidthContainer>
       
         <AsSeenIn disablelinks></AsSeenIn>
-        <div className='hidden-mobile'><BannerTwo></BannerTwo></div>
+        {/* <div className='hidden-mobile'><BannerTwo></BannerTwo></div> */}
 
         <ChatWithUs></ChatWithUs>
       </SetWidthContainer>

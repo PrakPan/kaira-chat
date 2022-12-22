@@ -119,18 +119,18 @@ const Details = (props) => {
            //Payment successfull handler passed to razorpay
            "handler": function (response){
                        setPaymentLoading(true)
-                       axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                       axios.post("https://suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                        {'Authorization': `Bearer ${props.token}`}} )
                        .then( res => {
                             setPaymentLoading(false);
                            //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-                           window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
+                           window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=success"
  
                         })
                        .catch( err => {
                          setPaymentLoading(false);
                          // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                         window.location.href="https://dev.thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
+                         window.location.href="https://thetarzanway.com/itinerary/"+data.itinerary+"?payment_status=fail"
  
                        });
                    },
@@ -230,7 +230,7 @@ const Details = (props) => {
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
           {
-            props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  ? 
+            props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  && props.payment.user_allowed_to_pay ? 
             <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
           Pay Now
           {paymentLoading ? <Spinner color="white" display="inline" size={16} margin="0 0.5rem"></Spinner> : null}

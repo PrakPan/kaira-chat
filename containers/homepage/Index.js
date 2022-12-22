@@ -33,6 +33,7 @@ import BackgroundImageLoader from '../../components/BackgroundImageLoader';
 import * as ga from '../../services/ga/Index';
 import Spinner from '../../components/Spinner';
 import urls from '../../services/urls';
+import Snowflakes from '../../components/HOC/Snowflakes';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -129,9 +130,11 @@ const _handleExperiencesClick = () => {
 
 }
   return (
+    
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage center url="media/website/bf.jpg" >
-          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags & explore." text="Want to get in Santa's good list for sure?"/>
+      <Snowflakes></Snowflakes>
+      <FullImage center url="media/website/Chrsitmas.png" >
+          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags and explore!" text="Want to get in Santa's good list for sure?"/>
       </FullImage>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>

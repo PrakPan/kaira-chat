@@ -65,6 +65,7 @@ font-weight: 700;
 
  const SetWidthContainer = styled.div`
  display: grid;
+ width: 100%;
 grid-template-columns: auto max-content;
  @media screen and (min-width: 768px){
     width: 90vw;
@@ -83,7 +84,7 @@ const Menu = (props) => {
   return(
     <Container className="" style={{}}>
         <SetWidthContainer>
-       <FiltersContainer style={{ }}>
+       {/* <FiltersContainer style={{ }}> */}
         {/* <DropDown className='font-opensans hover-pointer'>Duration</DropDown>
         <DropDown className='font-opensans hover-pointer'>Budget</DropDown>
         <DropDown className='font-opensans hover-pointer'>Treks</DropDown> */}
@@ -95,7 +96,7 @@ const Menu = (props) => {
                     <FilterText style={{marginLeft: '4px'}}>{true ? 'All Trips' : 'Select'}</FilterText>
             
                 </FilterContainer > */}
-        <FilterContainer  className='hover-pointer'  onClick={() => props._toggleFilterHandler("Treks")}  >
+        {/* <FilterContainer  className='hover-pointer'  onClick={() => props._toggleFilterHandler("Treks")}  >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : props.filters["Trek"]?  <IoCheckboxOutline  style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline    style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
@@ -110,7 +111,7 @@ const Menu = (props) => {
                     </div>
                     <FilterText style={{marginLeft: '4px'}}>{true ? 'Road Trips' : 'Select'}</FilterText>
             
-                </FilterContainer  > 
+                </FilterContainer  >  */}
                 {/* <FilterContainer className='hover-pointer'  onClick={true ? () => props._deselectBookingHandler() : () => props.setShowLoginModal(true)}   >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
@@ -120,13 +121,24 @@ const Menu = (props) => {
             
                 </FilterContainer  >  */}
 
-        </FiltersContainer>
+        {/* </FiltersContainer> */}
+        {/* <div className='font-opensans  hover-pointer' style={{color: 'white', display: 'flex',}}>
+                    <ImageLoader hoverpointer leftalign  onclick={props.openWhatsapp} url="media/icons/bookings/terms-and-conditions.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
+
+            <div style={{display: 'flex', alignItems: 'center', marginLeft: '4px'}}>Terms and Conditions</div>
+        </div> */}
+        <div></div>
         <div className='hidden-mobile' style={{color: 'white', display: 'flex', flexGrow: '1',paddingRight: '1rem'}} onClick={()=> window.location.href=urls.WHATSAPP+"?text="+message}>
             <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
             <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
         </div>
-        
+   
+        <div className='hidden-desktop' style={{color: 'white', display: 'flex', width: '100%', justifyContent: 'flex-end', paddingRight: '1rem'}} onClick={()=> window.location.href=urls.WHATSAPP+"?text="+message}>
+            <div className='font-opensans hidden-moble hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
+            <ImageLoader onclick={props.openWhatsapp} leftalign url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
+        </div>
         </SetWidthContainer>
+        
    </Container>
   );
 }
