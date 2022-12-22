@@ -230,7 +230,7 @@ const Details = (props) => {
        Proceed to Payment</Button> */}
           {/* <Accordion></Accordion> */}
           {
-            props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  ? 
+            props.payment && props.token ? props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user  && props.payment.user_allowed_to_pay ? 
             <Button borderRadius="5px" bgColor="#f7e700" width="100%" margin="0 0 0.25rem 0" hoverBgColor="black" hoverColor="white" borderWidth="0"   onclick={_saleCreateHandler} onclickparam={props.id} >
           Pay Now
           {paymentLoading ? <Spinner color="white" display="inline" size={16} margin="0 0.5rem"></Spinner> : null}
