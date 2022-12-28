@@ -4,7 +4,7 @@ import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
 import {BsWhatsapp} from 'react-icons/bs';
 import urls from '../../services/urls';
-import Enquiry from './newenquiry/Index';
+import Enquiry from '../../components/tailoredform/Index';
 
 const Container = styled.div`
     text-align: center;

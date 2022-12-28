@@ -3,17 +3,15 @@ import dayjs, { Dayjs } from 'dayjs';
 
 import styled from 'styled-components';
   import Grid from '@material-ui/core/Grid';
-import Button from '../../../components/ui/button/Index';
-// import DateTime from './DateTime';
- // import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-  import * as ga from '../../../services/ga/Index';
+import Button from '../ui/button/Index';
+ 
+  import * as ga from '../../services/ga/Index';
 
- import axiostailoredinstance from '../../../services/leads/tailored';
-import Spinner from '../../../components/Spinner';
-// import Pax from '../../personaliseform/grouptype/Index';
-import extensions from '../../../public/content/extensionsdata';
+ import axiostailoredinstance from '../../services/leads/tailored';
+import Spinner from '../Spinner';
+//  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
-import SlideOne from "./SlideOne";
+// import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
 
 const Container = styled.div`
@@ -59,22 +57,13 @@ margin: 2px 1rem;
 `;
 const Enquiry = (props) => {
     const flickity_ref=useRef(null);
-    const flickityOptions = {
-        initialIndex:0,
-        prevNextButtons: false,
-        wrapAround: false,
-      
-        pageDots: false,
-
-    };
+   
     const [calendarOpen, setCalendarOpen] = useState(false);
 
-
-    const [firstName, setFirstName] = useState(null);
-    const [lastName, setLastName] = useState(null)
+ 
      
 
-    const [phone, setPhone]= useState(null);
+    // const [phone, setPhone]= useState(null);
     const[email, setEmail]= useState(null);
     const [type, setType] = useState(null);
     const [extension, setExtension] = useState('India');  //store extension
@@ -92,37 +81,22 @@ const Enquiry = (props) => {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
 
-    const [firstNameError, setFirstNameError] = useState(false);
-    const [lastNameError, setLastNameError] = useState(false);
+    // const [firstNameError, setFirstNameError] = useState(false);
+    // const [lastNameError, setLastNameError] = useState(false);
 
-    const [phoneError, setPhoneError] = useState(false);
+    // const [phoneError, setPhoneError] = useState(false);
     // const [companyError, setCompanyError] = useState(false);
-    const [emailError, setEmailError] = useState(false);
-    let ExtensionOptions = [];
-    for(const country in extensions){
-        ExtensionOptions.push(
-          <CountryCodeOption key={country} value={country} onClick={() => handleExtensionChangeOption(country)}>
-                  <CountryImg src={extensions[country].img}  onClick={() => handleExtensionChangeOption(country)}></CountryImg>
-          </CountryCodeOption>
-        )
-      }
+    // const [emailError, setEmailError] = useState(false);
+    // let ExtensionOptions = [];
+    // for(const country in extensions){
+    //     ExtensionOptions.push(
+    //       <CountryCodeOption key={country} value={country} onClick={() => handleExtensionChangeOption(country)}>
+    //               <CountryImg src={extensions[country].img}  onClick={() => handleExtensionChangeOption(country)}></CountryImg>
+    //       </CountryCodeOption>
+    //     )
+    //   }
 
-   
-    const resetForm = () => {
-        setLoading(false);
-        setSubmitted(false);
-        setFirstNameError(false);
-        setLastNameError(false);
-
-        setPhoneError(false);
-        setEmailError(false);
-        setFirstName(null);
-        setLastName(null);
-
-        setPhone(null);
-        setEmail(null);
-        setType(null);
-    }
+ 
      
      const _submitDataHandler = () => {
         ga.event({action: 'C-Andaman-Form-initiate', params: {key : ''}})
@@ -141,9 +115,9 @@ const Enquiry = (props) => {
             "start_date": valueStart.toISOString().slice(0, 10),
             "end_date": valueEnd.toISOString().slice(0, 10),
             "user_email": email,
-            "user_phone": extensions[extension].label+phone,
-            "user_first_name": firstName,
-            "user_last_name": lastName
+            // "user_phone": extensions[extension].label+phone,
+            // "user_first_name": firstName,
+            // "user_last_name": lastName
             // "user_location": {
             //   "lat": lat,
             //   "long": long,
@@ -172,10 +146,10 @@ const Enquiry = (props) => {
             setLoading(false);
 
              if(err.response.data.email){
-                setEmailError(err.response.data.email)
+                // setEmailError(err.response.data.email)
             }
             if(err.response.data.phone){
-                setPhoneError(err.response.data.phone)
+                // setPhoneError(err.response.data.phone)
 
             }
             if(err.response.data.service){
@@ -183,14 +157,14 @@ const Enquiry = (props) => {
 
             }
             if(err.response.data.user_first_name){
-                setFirstNameError(err.response.data.user_first_name)
+                // setFirstNameError(err.response.data.user_first_name)
             }
             if(err.response.data.user_last_name){
-                setLastNameError(err.response.data.user_last_name)
+                // setLastNameError(err.response.data.user_last_name)
             }
             if(err.response.data.organization_name){
                 // setError()
-                setCompanyError(err.response.data.organization_name[0])
+                // setCompanyError(err.response.data.organization_name[0])
 
             }
             // err.json().then(json => {
@@ -201,6 +175,7 @@ const Enquiry = (props) => {
            
         })
     }
+    const [slideIndex, setSlideIndex] = useState(0);
 return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
@@ -211,28 +186,20 @@ return(
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
 
             <Flickity
-        //   className={'carousel'}
-        //   elementType={'div'}
-        //   options={flickityOptions}
-        //   reloadOnUpdate
-        //   static
-        //   ref={flickity_ref}
-        //   next={}
-
+            slideIndex={slideIndex}
         >
                            
-
         </Flickity>
-        <div onClick={() => flickity_ref.current.next()}>
-            next
-            </div>
+        <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+            Continue
+            </Button>
             <Grid container spacing={2}>
            
  
     
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     {!loading ? 
-                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">View Plan</Button>
+                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
                         : 
                         <Button onclickparam={null} onclick={() => null} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
                             Preparing Plan
@@ -240,7 +207,7 @@ return(
                         </Button>
 
                     }
-                    </Grid>
+                    </Grid> */}
             </Grid> 
            
             {/* </Modal.Body> */}
