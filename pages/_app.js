@@ -13,11 +13,15 @@ import { useRouter } from 'next/router'
  
 import * as ga from '../lib/ga/Index';
 import {FACEBOOK_PIXEL_ID} from '../services/constants';
+import mixpanel from 'mixpanel-browser';
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter()
  
   useEffect(() => {
+    // mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true, ignore_dnt: true}); 
+
+    // mixpanel.track('Sign up');
     // window.scrollTo(0, 0);
     // localStorage.removeItem('access_token');
     // Remove the server-side injected CSS.
