@@ -1,71 +1,46 @@
-import React  from 'react';
-import styled from 'styled-components';
-// import Counter from './pax/counter';
-// import questions from '../../../containers/personaliseform/questions';
-// import Button from '../../../components/Button';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faEdit } from '@fortawesome/free-solid-svg-icons';
-// import questioncontansts from '../../../containers/personaliseform/questioncontansts';
-import ImageLoader from '../../ImageLoader';
-const Container = styled.div`
-    width: 100%;
-    margin: 1rem auto;
-     @media screen and (min-width: 768px){
-        padding-bottom: 0;
-        margin: auto;
-    }
-`;
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Slider from '@mui/material/Slider';
 
+const marks = [
+  {
+    value: 0,
+    label: <div style={{marginLeft: '50%'}}>₹3,000<div>per day</div></div>
+  },
+  {
+    value: 33,
+    label: '',
+  },
+  {
+    value: 66,
+    label: '',
+  },
+  {
+    value: 100,
+    label: <div style={{position: 'relative', left: '-50%'}}>₹10,000<div style={{textAlign: 'right'}}>per day</div></div>
+  },
+];
 
-const GridContainer = styled.div`
-display: grid;
-grid-template-columns: 1fr 1fr 1fr;
-grid-gap: 1rem;
-width: 100%;
-@media screen and (min-width: 768px){
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
- }
-`;
- const OptionContainer = styled.div`
-    padding: 0.5rem;
-    text-align: center;
-    border-radius: 10px;
-    font-size: 0.85rem;
- `;
- 
-const GroupType = (props) => {
-
-    let defaultcounters = [2,0,0];
-    
-     return(
-        <Container>
-            <GridContainer onClick={() => props.setShowPax(true)}>
-                <OptionContainer className='border-thin font-opensans'>
-                  <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Budget/affordable.png"></ImageLoader>
-                    Affordable
-                </OptionContainer>
-                <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Budget/average.png"></ImageLoader>
-
-                    Average
-                </OptionContainer>
-                <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Budget/luxury.png"></ImageLoader>
-                    Luxury
-                </OptionContainer>
-                <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Budget/ultra luxury.png"></ImageLoader>
-                    Luxury +
-                </OptionContainer>
-                {/* <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/friends.png"></ImageLoader>
-                    Large group
-                </OptionContainer> */}
-            </GridContainer>
-        </Container>
-    );
-   
+function valuetext(value) {
+  return `${value}°C`;
 }
 
-export default GroupType;
+function valueLabelFormat(value) {
+  return marks.findIndex((mark) => mark.value === value) + 1;
+}
+
+export default function DiscreteSliderValues() {
+  return (
+    <Box sx={{ width: 300 }}>
+      <Slider
+        aria-label="Restricted values"
+        defaultValue={20}
+        valueLabelFormat={valueLabelFormat}
+        getAriaValueText={valuetext}
+        step={null}
+        valueLabelDisplay="auto"
+        marks={marks}
+      />
+    </Box>
+  );
+}

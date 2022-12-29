@@ -15,19 +15,24 @@ width: 100%;
 
 `;
 
- 
+const Section = styled.div`
+margin-bottom: 1.5rem;
+`;
 const SlideOne = (props) =>{
 
   let isPageWide = media('(min-width: 768px)');
   
   return (
    <Container>
+    <Section>
         <Question>Where do  you want to go?</Question>
 
         <Destinations></Destinations>
+      </Section>
+      <Section>
         <Question >What are your dates?</Question>
 <Dates></Dates>
-
+</Section>
     </Container>
   );
 }

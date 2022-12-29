@@ -42,20 +42,20 @@ const GroupType = (props) => {
         <Container>
             <GridContainer onClick={() => props.setShowPax(true)}>
                 <OptionContainer className='border-thin font-opensans'>
-                  <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/solo.png"></ImageLoader>
+                  {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/solo.png"></ImageLoader> */}
                     Solo
                 </OptionContainer>
                 <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/couple.png"></ImageLoader>
+                    {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/couple.png"></ImageLoader> */}
 
                     Couple
                 </OptionContainer>
                 <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/family.png"></ImageLoader>
+                    {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/family.png"></ImageLoader> */}
                     Friends
                 </OptionContainer>
                 <OptionContainer className='border-thin font-opensans'>
-                    <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/friends.png"></ImageLoader>
+                    {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/friends.png"></ImageLoader> */}
                     Family
                 </OptionContainer>
                 {/* <OptionContainer className='border-thin font-opensans'>
