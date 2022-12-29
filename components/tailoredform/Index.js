@@ -18,6 +18,7 @@ const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
  background-color: white;
+ width: 100%;
  margin: 0.5rem;
 border-radius: 10px !important;
  @media screen and (min-width: 768px){
