@@ -21,6 +21,7 @@ import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/Locations';
 import FullImgContent from './search/NewYear';
+import FullImgContentChristmas from './search/Christmas';
 import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
 // import howitworksimg1 from '../../public/assets/arts/whyus/1.webp';
@@ -134,10 +135,12 @@ const _handleExperiencesClick = () => {
     
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <Snowflakes></Snowflakes>
-      <FullImage  fit="contain" center url="media/website/newyearbanner.png" height="60vh" heightmobile="30vh" >
+      {isPageWide ?<FullImage  fit="contain" center url="media/website/newyearbanner.png" height="60vh" heightmobile="30vh" >
           <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Celebrating explorers" text="2022 Edition"/>
-      </FullImage>
-      <Explorers></Explorers>
+      </FullImage> : <FullImage  fit="contain" center url="media/website/Chrsitmas.png" height="60vh" heightmobile="60vh" >
+          <FullImgContentChristmas _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags and explore!" text="Want to get in Santa's good list for sure?"/>
+      </FullImage>}
+      <div className='hidden-mobile'><Explorers></Explorers></div>
       <div style={{zIndex: '9999', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
