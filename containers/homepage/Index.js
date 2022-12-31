@@ -134,7 +134,7 @@ const _handleExperiencesClick = () => {
     
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <Snowflakes></Snowflakes>
-      <FullImage center url="media/website/Chrsitmas.png" height="60vh" heightmobile="30vh" >
+      <FullImage  fit="contain" center url="media/website/newyearbanner.png" height="60vh" heightmobile="30vh" >
           <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Celebrating explorers" text="2022 Edition"/>
       </FullImage>
       <Explorers></Explorers>
