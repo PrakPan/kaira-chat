@@ -19,21 +19,19 @@ background-color: rgba(0,0,0,0.4);
 }
 `;
 const ContentContainer = styled.div`
-margin: 5vw 1rem 0 5vw;
+margin: 5vw 0 0 5vw;
 @media screen and (min-width: 768px){
-    margin: 10vh 20vh;
+    margin: 10vh 10vh;
 }
 `;
 const Tagline = styled.h1`
 color: white;
   font-weight: 800;
-
-text-align: right;
-  margin: 0rem 0 0.5rem 0;
+margin: 0rem 0 0.5rem 0;
 
 font-size: 2rem;
 @media screen and (min-width: 768px){
-  font-size: 3.5rem;
+  font-size: 3rem;
   margin: 0 auto 1rem auto;
    font-weight: 700;
    width: 100%;
@@ -42,15 +40,13 @@ font-size: 2rem;
 `;
 const SubText = styled.h3`
 color: white;
-text-align: right;
-
     font-weight: 100;
     width: 99%;
     line-height: 1;
     font-size: 1.5rem;
     margin-bottom: 0rem;
     @media screen and (min-width: 768px){
-        font-size: 2.25rem;
+        font-size: 2rem;
         margin-bottom: 0;
         line-height: normal;
     }
@@ -93,15 +89,14 @@ const SearchFullImg= (props) => {
     return(
         <Container className="center-dv"> 
         <ContentContainer>
-        <Tagline className="font-opensans">{props.tagline}</Tagline>
-
             <SubText className="font-nunito">{props.text}</SubText>
-             {/* <div className='hidden-deskto'><Button onclick={props._handleTailoredClick} margin="3rem 0 0 0vw" bgColor="#f7e700" color="black" bold  fontWeight="600" borderRadius="5px" borderWidth="0" fontSizeDesktop="1.25rem">Create a Trip</Button></div> */}
+             <Tagline className="font-opensans">{props.tagline}</Tagline>
+             <div className='hidden-deskto'><Button onclick={props._handleTailoredClick} margin="3rem 0 0 0vw" bgColor="#f7e700" color="black" bold  fontWeight="600" borderRadius="5px" borderWidth="0" fontSizeDesktop="1.25rem">Create a Trip</Button></div>
 
              </ContentContainer>
               {/* <div className='hidden-mobile' style={{width: '100%'}}><NewSearchDesktop></NewSearchDesktop></div> */}
-                {/* <Img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/Untitled design (1).png">
-                </Img> */}
+                <Img src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/Untitled design (1).png">
+                </Img>
              {/* <div className='hidden-mobile' style={{width: '100%'}}><NewSearchDesktop></NewSearchDesktop></div> */}
 
         </Container>

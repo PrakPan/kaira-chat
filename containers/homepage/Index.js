@@ -34,6 +34,7 @@ import * as ga from '../../services/ga/Index';
 import Spinner from '../../components/Spinner';
 import urls from '../../services/urls';
 import Snowflakes from '../../components/HOC/Snowflakes';
+import Explorers from './Explorers';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -133,9 +134,10 @@ const _handleExperiencesClick = () => {
     
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <Snowflakes></Snowflakes>
-      <FullImage center url="media/website/Chrsitmas.png" >
-          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags and explore!" text="Want to get in Santa's good list for sure?"/>
+      <FullImage center url="media/website/Chrsitmas.png" height="60vh" heightmobile="30vh" >
+          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Celebrating explorers" text="2022 Edition"/>
       </FullImage>
+      <Explorers></Explorers>
       <div style={{zIndex: '9999', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
