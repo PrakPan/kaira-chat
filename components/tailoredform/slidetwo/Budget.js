@@ -1,8 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
-import { styled } from '@mui/material/styles';
-const marks = [
+ const marks = [
   {
     value: 0,
     label: <div style={{marginLeft: '50%'}} className="font-opensans" >{'₹3,000'}<div style={{fontSize: '0.65rem', fontWeight: '300'}}>per day or less</div></div>
