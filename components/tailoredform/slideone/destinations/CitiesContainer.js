@@ -27,12 +27,12 @@ const LocationsContainer = (props) => {
   
   return (
     <LocationContainer className='border-thi' >
-                <Location image="" text="Andaman" onclick={props.setShowCities}></Location>
-                <Location  image="" text="Rajasthan" onclick={() => props.setShowCities(true)}></Location>
-                <Location  image="" text="Sikkim" onclick={() => props.setShowCities(true)}></Location>
-                <Location image="" text="Andaman" onclick={() => props.setShowCities(true)}></Location>
-                <Location  image="" text="Rajasthan" onclick={() => props.setShowCities(true)}></Location>
-                <Location  image="" text="Sikkim" onclick={() => props.setShowCities(true)}></Location>
+                <Location image="" text="Port Blair"></Location>
+                <Location  image="" text="Niel Island"></Location>
+                <Location  image="" text="Havelock"></Location>
+                <Location image="" text="Ross Island"></Location>
+                <Location  image="" text="Rajasthan"></Location>
+                <Location  image="" text="Sikkim"></Location>
    </LocationContainer>
   );
 }

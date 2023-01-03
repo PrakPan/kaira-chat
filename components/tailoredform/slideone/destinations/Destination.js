@@ -56,9 +56,9 @@ const Location = (props) => {
                         dimensions={{width: 600, height: 400}}
                         dimensionsMobile={{width: 600, height:400}}
                         fit="cover"
-                     
+                     onclick={props.onclick}
                         hoverpointer/>
-                        <HoverContainer className='center-div' style={{ borderRadius: '5px',position: 'absolute', top: '0',width: '100%', height: '100%', fontSize: '0.85rem'}}>{props.text}</HoverContainer>
+                        <HoverContainer  onClick={() => props.onclick(true)} className='center-div' style={{ borderRadius: '5px',position: 'absolute', top: '0',width: '100%', height: '100%', fontSize: '0.85rem'}}>{props.text}</HoverContainer>
                         </div>
                         {/* <ImageTextContainer className='font-opensans'>
                         
