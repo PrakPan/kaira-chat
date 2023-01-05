@@ -8,7 +8,7 @@ import {BsWhatsapp} from 'react-icons/bs';
 // import ImageLoader from '../../components/ImageLoader';
 // import Banner from './BannerOne';
 import TailoredForm from '../../components/tailoredform/Index';
-// import Rolodex from './Rolodex';
+import Rolodex from './Rolodex';
 const Container = styled.div`
   color:white;
  width: 100%;
@@ -84,10 +84,10 @@ console.log('c', props.cities)
         <Container className='font-opensans center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.title}</Heading>
-            <SubText>As per your 
+            {/* <SubText>As per your 
                 <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
-            </SubText>
-            {/* <Rolodex></Rolodex> */}
+            </SubText> */}
+            <Rolodex></Rolodex>
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
            
             {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
