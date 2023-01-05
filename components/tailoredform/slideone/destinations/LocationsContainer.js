@@ -27,7 +27,7 @@ const LocationsContainer = (props) => {
   
   return (
     <LocationContainer className='border-thi' >
-                <Location image="" text="Andaman" onclick={props.setShowCities}></Location>
+                <Location image="" text="Andaman" onclick={() => props.setShowCities(true)}></Location>
                 <Location  image="" text="Rajasthan" onclick={() => props.setShowCities(true)}></Location>
                 <Location  image="" text="Sikkim" onclick={() => props.setShowCities(true)}></Location>
                 <Location image="" text="Andaman" onclick={() => props.setShowCities(true)}></Location>

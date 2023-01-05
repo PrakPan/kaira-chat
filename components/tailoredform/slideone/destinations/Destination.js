@@ -6,6 +6,7 @@ import styled from 'styled-components';
  import ImageLoader from '../../../ImageLoader';
 
  import BackgroundImageLoader  from '../../../UpdatedBackgroundImageLoader';
+ import {BsCheckCircleFill} from 'react-icons/bs';
  const LocationContainer = styled.div`
   &:hover{
      cursor: pointer;
@@ -28,11 +29,13 @@ font-size: 0.75rem;
 `;
 
 const HoverContainer = styled.div`
-background-color: rgba(0,0,0,0.4);
-color: white;
+
+background-color: ${(props) => (props.is_selected ?  'rgba(247,231,0,0.3);' : 'rgba(0,0,0,0.4);')};
+color:  ${(props) => (props.is_selected ?  'black' : 'white')};
+font-weight: ${(props) => (props.is_selected ?  '600' : '400')};
 
  &:hover{
-  background-color: rgba(247,231,0,0.1);
+  background-color: rgba(247,231,0,0.3);
   color: black;
   font-weight: 600;
  }
@@ -48,7 +51,7 @@ const Location = (props) => {
                 {/* <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" height="4rem"  url={'media/website/Goa.jpg'} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader> */}
 <div style={{position: 'relative'}}>
                    <ImageLoader
-                        url={'media/website/Goa.jpg'}
+                        url={props.image}
                         borderRadius='5px'
                         height='auto'
                         width="100%"
@@ -58,7 +61,9 @@ const Location = (props) => {
                         fit="cover"
                      onclick={props.onclick}
                         hoverpointer/>
-                        <HoverContainer  onClick={() => props.onclick(true)} className='center-div' style={{ borderRadius: '5px',position: 'absolute', top: '0',width: '100%', height: '100%', fontSize: '0.85rem'}}>{props.text}</HoverContainer>
+                        <HoverContainer  is_selected={props.is_selected} onClick={() => props.onclick(props.onclickparam)} className='center-div' style={{ borderRadius: '5px',position: 'absolute', top: '0',width: '100%', height: '100%', fontSize: '0.85rem'}}>{props.text}
+                        {props.is_selected ? <BsCheckCircleFill/> : null}
+                        </HoverContainer>
                         </div>
                         {/* <ImageTextContainer className='font-opensans'>
                         

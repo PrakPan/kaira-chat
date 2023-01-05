@@ -21,13 +21,47 @@ margin-bottom: 1.5rem;
 const SlideOne = (props) =>{
 
   let isPageWide = media('(min-width: 768px)');
-  
+  const CITIES = [
+    {
+      'name': 'Port Blair',
+      'id': 1,
+      'image': ''
+    },
+    {
+      'name': 'Por Blair',
+      'id': 2,
+      'image': ''
+    },
+    {
+      'name': 'Prt Blair',
+      'id': 3,
+      'image': ''
+    },
+    {
+      'name': 'Pot Blair',
+      'id': 4,
+      'image': ''
+    },
+    {
+      'name': 'Port Blair',
+      'id': 5,
+      'image': ''
+    },
+    {
+      'name': 'Port Blair',
+      'id': 6,
+      'image': ''
+    }
+
+  ]
+  const [selectedCities, setSelectedCities] = useState([]);
+  console.log(props.cities)
   return (
    <Container>
     <Section>
         <Question>Where do  you want to go?</Question>
 
-        <Destinations></Destinations>
+        <Destinations CITIES={props.cities ? props.cities : CITIES} selectedCities={selectedCities} setSelectedCities={setSelectedCities}></Destinations>
       </Section>
       <Section>
         <Question >What are your dates?</Question>

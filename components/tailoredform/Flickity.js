@@ -32,7 +32,7 @@ const FlickityComp = (props) => {
       return (
         <div style={{width: '100%'}}>
           
-                            {!props.slideIndex ? <Card><SlideOne></SlideOne></Card> : null}
+                            {!props.slideIndex ? <Card><SlideOne cities={props.cities}></SlideOne></Card> : null}
                             {props.slideIndex === 1 ? <Card><SlideTwo></SlideTwo></Card>: null}
                             {/* <Card><SlideOne></SlideOne></Card> */}
 

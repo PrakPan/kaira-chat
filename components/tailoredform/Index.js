@@ -188,6 +188,7 @@ return(
 
             <Flickity
             slideIndex={slideIndex}
+            cities={props.cities}
         >
                            
         </Flickity>
