@@ -38,7 +38,7 @@ const Itinerary = () => {
             /> */}
         </Head>
  
-        <PWContainer id={router.query.id}></PWContainer>
+        <PWContainer></PWContainer>
     </Layout>);
 }
 
