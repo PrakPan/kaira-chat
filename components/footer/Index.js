@@ -17,7 +17,7 @@ const useStyles = makeStyles({
 
 const Container = styled.div`
 max-width: 100vw !important;
-z-index: 1100;
+z-index: 1000;
 position: relative;
 @media screen and (min-width: 768px){
   padding-bottom: 0;
