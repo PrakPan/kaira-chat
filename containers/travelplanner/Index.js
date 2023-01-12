@@ -149,6 +149,7 @@ const DATA=[
 ];
 const [loading, setLoading] = useState(true);
 const [itinerariesJSX, setItinerariesJSX] = useState(null);
+const [itinerariesToShowJSX, setItinerariesToShowJSX] = useState(null);
 const [filters, setFilters] = useState({
   'Trek': true,
   'Road Trip': true,
@@ -276,6 +277,8 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
     }
    
     setItinerariesJSX(itineraries);
+    setOffset(9);
+    setItinerariesToShowJSX(itineraries.slice(0,9));
   }).catch(err => {
     setLoading(false);
 
@@ -287,7 +290,19 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
   
  
  }, [props.experienceData])
-
+ const [offset, setOffset] = useState(0);
+const _showMoreItineraries = () => {
+  if(offset > itinerariesJSX.length) return 0 ;
+  else {
+    let itineraries = itinerariesToShowJSX.slice();
+    console.log('itineraries_length' , itineraries.length)
+    for(var i = offset; i < offset + 9 ; i++ ){
+      itineraries.push(itinerariesJSX[i]);
+    }
+    setOffset(offset+9);
+    setItinerariesToShowJSX(itineraries)
+  }
+}
 //JSX for How it works 
 
 const HowitWorksHeadingsArr=[
@@ -359,9 +374,13 @@ const EXPERIENCE = {
 <Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
   {!loading ? <GridContainer>
-    { itinerariesJSX}
+    { itinerariesToShowJSX}
  
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
+  }
+  {
+    !loading ? <div onClick={_showMoreItineraries}>more</div> 
+    : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Top Selling Experiences"]} ></Experiences>
