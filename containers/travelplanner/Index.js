@@ -371,7 +371,7 @@ const EXPERIENCE = {
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
-          <FullImgContent cities={props.experienceData.locations} title={props.experienceData.destination+" Travel Planner"}/>
+          <FullImgContent cities={props.experienceData.locations} title={props.experienceData.banner_heading}/>
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>

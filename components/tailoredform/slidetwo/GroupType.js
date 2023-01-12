@@ -31,9 +31,9 @@ width: 100%;
     padding: 0.5rem;
     text-align: center;
     border-radius: 10px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     &:hover{
-        background-color: rgba(247,231,0,0.3);
+        background-color: rgba(247,231,0,0.1);
   color: black;
     }
  `;
