@@ -26,6 +26,7 @@ const Section = styled.div`
 const SlideTwo = (props) =>{
     const [showPax, setShowPax] = useState(false);
     const [showPreferences, setShowPreferences] = useState(false);
+    const [selectedPreferences, setSelectedPreferences] = useState([]);
   let isPageWide = media('(min-width: 768px)');
   
   return (
@@ -47,7 +48,7 @@ const SlideTwo = (props) =>{
 
 
          </div>
-         {showPreferences ? <Preferences></Preferences> : null}
+         {showPreferences ? <Preferences selectedPreferences={selectedPreferences} setSelectedPreferences={setSelectedPreferences}></Preferences> : null}
 
     </Container>
   );

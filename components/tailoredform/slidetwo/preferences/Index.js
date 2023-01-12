@@ -30,6 +30,8 @@ width: 100%;
     text-align: center;
     border-radius: 10px;
     font-size: 0.85rem;
+    background-color: ${(props) => (props.is_selected ? 'rgba(247,231,0,0.3)' : "transparent")};
+
     &:hover{
         background-color: rgba(247,231,0,0.3);
   color: black;
@@ -37,28 +39,61 @@ width: 100%;
  `;
  
 const GroupType = (props) => {
-
+    const _isPreferenceAdded =  (preference) => {
+        // console.log('1', city);
+        // var i;
+        // console.log(props.selectedCities);
+        for (var i = 0; i < props.selectedPreferences.length; i++) {
+            if (props.selectedPreferences[i] === preference) {
+                return true;
+            }
+        }
+      
+        return false;
+      }
+    const _handleClick = (preference) => {
+        // console.log(preference)
+        let is_preference_added = _isPreferenceAdded(preference);
+        console.log(is_preference_added)
+        if(!is_preference_added){
+            let selected_preferences = props.selectedPreferences.slice();
+            selected_preferences.push(preference)
+            props.setSelectedPreferences(selected_preferences)
+            }
+        else{
+            let selected_preferences =[];
+            for(var i = 0 ; i < props.selectedPreferences.length; i++){
+              if(props.selectedPreferences[i] !== preference)          selected_preferences.push(props.selectedPreferences[i]);
+              
+              else {
+                // selected_cities.push(city);
+              }
+            }
+            props.setSelectedPreferences(selected_preferences)
+      
+        }
+    }
      
      return(
         <Container>
             <GridContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'>
+                <OptionContainer  is_selected={_isPreferenceAdded('Adventure & Outdoor')} className='border-thin font-opensans hover-pointer' onClick={() => _handleClick('Adventure & Outdoor')}>
                     Adventure & Outdoor
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'>
+                <OptionContainer  is_selected={_isPreferenceAdded('Nature & Retreat')} className='border-thin font-opensans hover-pointer' onClick={() => _handleClick('Nature & Retreat')}>
                     Nature & Retreat 
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'  onClick={() => props.setShowPax(true)}>
+                <OptionContainer  is_selected={_isPreferenceAdded('Heritage & Culture')} className='border-thin font-opensans hover-pointer'  onClick={() => _handleClick('Heritage & Culture')}>
                      Heritage & Culture
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'>
-                    Adventure & Outdoor
+                <OptionContainer  is_selected={_isPreferenceAdded('Adventure & Outdoo')} className='border-thin font-opensans hover-pointer' onClick={() => _handleClick('Adventure & Outdoo')}>
+                    Adventure & Outdoo
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'>
-                    Nature & Retreat 
+                <OptionContainer  is_selected={_isPreferenceAdded('Nature & Retrea')} className='border-thin font-opensans hover-pointer' onClick={() => _handleClick('Nature & Retrea')}>
+                    Nature & Retrea
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'  onClick={() => props.setShowPax(true)}>
-                     Heritage & Culture
+                <OptionContainer  is_selected={_isPreferenceAdded('Heritage & Cultur')} className='border-thin font-opensans hover-pointer' onClick={() => _handleClick('Heritage & Cultur')}>
+                     Heritage & Cultur
                 </OptionContainer>
             </GridContainer>
         </Container>
