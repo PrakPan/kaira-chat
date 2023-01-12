@@ -29,7 +29,7 @@ font-size: 0.75rem;
 `;
 
 const HoverContainer = styled.div`
-
+text-align: center;
 background-color: ${(props) => (props.is_selected ?  'rgba(247,231,0,0.3);' : 'rgba(0,0,0,0.4);')};
 color:  ${(props) => (props.is_selected ?  'black' : 'white')};
 font-weight: ${(props) => (props.is_selected ?  '800' : '400')};

@@ -16,6 +16,9 @@ import Flickity from './Flickity';
 
 const Container = styled.div`
 height: max-content;
+color: black;
+z-index :2;
+position: relative;
 padding: 1rem 1rem 1rem 1rem;
  background-color: white;
  width: 100%;
@@ -177,24 +180,30 @@ const Enquiry = (props) => {
         })
     }
     const [slideIndex, setSlideIndex] = useState(0);
+    const _prevSlideHandler = () => {
+        console.log('test')
+        if(slideIndex) setSlideIndex(slideIndex-1);
+    }
 return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
             {!submitted? <Heading>{"Get your free travel plan!" }</Heading> : null}
+            {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
             <div>
             </div>  
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
 
             <Flickity
+            _handlePrev={_prevSlideHandler}
             slideIndex={slideIndex}
             cities={props.cities}
         >
                            
         </Flickity>
-        <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+        {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
             Continue
-            </Button>
+            </Button> : null}
             <Grid container spacing={2}>
            
  

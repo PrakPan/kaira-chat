@@ -2,12 +2,14 @@ import React, {useState, useEffect } from 'react';
   
 import media from '../../media';
  
-import styled from 'styled-components';
+import styled  from 'styled-components';
  import Pax from './pax/Index';
  import GroupType from './GroupType';
  import Question from '../Question';
  import Budget from './Budget';
  import {AiFillCaretDown} from 'react-icons/ai'
+ import Preferences from './preferences/Index';
+
 const Container = styled.div`
 color: black;
 width: 100%;
@@ -23,7 +25,7 @@ const Section = styled.div`
  
 const SlideTwo = (props) =>{
     const [showPax, setShowPax] = useState(false);
-
+    const [showPreferences, setShowPreferences] = useState(false);
   let isPageWide = media('(min-width: 768px)');
   
   return (
@@ -37,12 +39,16 @@ const SlideTwo = (props) =>{
          <Question className="font-opensans">What's your budget?</Question>
          <Budget setShowPax={setShowPax}></Budget>
          </Section>
-         <div style={{display: 'flex'}}>
-         <Question>What's kind of activities?</Question>
+         <div style={{display: 'flex'}} onClick={() => setShowPreferences(!showPreferences)}>
+         <Question  hover_pointer>What's kind of activities?</Question>
           <div style={{flexGrow: '1', textAlign: 'right'}}>
-            <AiFillCaretDown style={{verticalAlign: 'initial'}} className="hover-pointer"> </AiFillCaretDown>
+            <AiFillCaretDown  style={{verticalAlign: 'initial'}} className="hover-pointer"> </AiFillCaretDown>
           </div>
+
+
          </div>
+         {showPreferences ? <Preferences></Preferences> : null}
+
     </Container>
   );
 }

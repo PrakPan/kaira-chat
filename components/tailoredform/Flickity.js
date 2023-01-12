@@ -5,6 +5,8 @@ import SlideOne from "./slideone/SlideOne";
 import React, {useState, useRef} from "react";
 import SlideTwo from './slidetwo/SlideTwo';
 import { fadeIn } from 'react-animations'
+import Login from '../userauth/LogInModal';
+import {IoIosArrowBack} from 'react-icons/io'
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Card = styled.div`
@@ -31,9 +33,10 @@ const FlickityComp = (props) => {
   
       return (
         <div style={{width: '100%'}}>
-          
+                      {props.slideIndex ? <IoIosArrowBack onClick={props._handlePrev} className="hover-pointer" style={{marginBottom: props.slideIndex === 2 ? '0.75rem' : '0.25rem'}}></IoIosArrowBack> : null}
                             {!props.slideIndex ? <Card><SlideOne cities={props.cities}></SlideOne></Card> : null}
                             {props.slideIndex === 1 ? <Card><SlideTwo></SlideTwo></Card>: null}
+                            {props.slideIndex === 2 ? <Login nospacing noheading noicons hideloginclose noclose></Login> : null}
                             {/* <Card><SlideOne></SlideOne></Card> */}
 
         

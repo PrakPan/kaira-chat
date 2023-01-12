@@ -35,6 +35,7 @@ const useStyles = makeStyles(themes => ({
       justifyContent: 'center',
       padding: "0",
       position: 'relative',
+      color: 'black'
 
 
     },
@@ -329,9 +330,9 @@ const googleResponse = (response) => {
 // if(!props.loadingsocial)
   return(
     <div className={classes.paper}>
-      <h1 style={{textAlign: "center", margin: '2rem 1rem', fontWeight: '700'}} className="font-opensans">
+      {!props.noheading ? <h1 style={{textAlign: "center", margin: '2rem 1rem', fontWeight: '700'}} className="font-opensans">
       {props.loginmessage ? props.loginmessage : 'Log In'}
-      </h1>
+      </h1> : null}
       {!props.noclose && !props.hideloginclose ? <StyledCrossFontAwesomeIcon icon={faTimes} onClick={props.onhide} /> : null}
       {props.noicons || (props.token && !props.phone ) || ( props.token && props.phone === 'null' )  ?  null : <div style={{display: "grid", gridTemplateColumns: "33% 33% 33%", margin: "5vh 0"}}>
         <div style={{textAlign: "center"}}>
@@ -351,7 +352,7 @@ const googleResponse = (response) => {
       </div>}
       {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? <p style={{margin: '0 1rem 4rem 1rem', fontWeight: '100'}} className="font-opensans text-center">This is where your experience captain can reach you to personalize your plan.</p> : null}
       {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? 
-        <form className={classes.form} noValidate ><Grid container spacing={2}>
+        <form className={classes.form} noValidate ><Grid container spacing={props.nospacing ? 0 : 2}>
 
        <Grid item xs={3}>
           <TextField
@@ -404,7 +405,7 @@ const googleResponse = (response) => {
         </Button>
       </Grid> </form>
       : <form className={classes.form} noValidate >
-        <Grid container spacing={2}>
+        <Grid container spacing={props.nospacing ? 1 : 2}>
           <Grid item xs={3}>
           <TextField
           select
@@ -451,7 +452,7 @@ const googleResponse = (response) => {
           color="primary"
           className={classes.submit}
           onClick={otpHandler}
-          style={{display: !props.otpSent ? 'initial' : 'none' }}
+          style={{display: !props.otpSent ? 'initial' : 'none' , margin: props.nospacing ? '0' :  '0.5rem 0'}}
         >
           Get OTP
             {props.loading ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
@@ -461,13 +462,13 @@ const googleResponse = (response) => {
           variant="contained"
           color="primary"
           className={classes.submit}
-          style={{display: props.otpSent && props.token === null ?  'initial' : 'none' }}
+          style={{display: props.otpSent && props.token === null ?  'initial' : 'none', margin: props.nospacing ? '0' : '0.5rem 0' }}
           onClick={submitOtpHandler}
        >
           Login
           {props.loading ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
         </Button>
-        {props.newUser || ( props.otpSent && !props.name  ) ? <Grid container spacing={2}>
+        {props.newUser || ( props.otpSent && !props.name  ) ? <Grid container spacing={props.nospacing ? 1 : 2}>
           <Grid item xs={12}>
           <FormGroup>
   <FormControlLabel control={<Checkbox size='small' defaultChecked  value={whatsapp} onChange={() => setWhatsapp(!whatsapp)}  />} label={<div className='font-opensans' style={{fontWeight: '300', fontSize: '0.75rem'}}>Receive booking updates via WhatsApp?</div>} className='font-opensans' />
@@ -477,7 +478,7 @@ const googleResponse = (response) => {
         </Grid> : null}
         <div><hr></hr></div>
       
-        <Grid container spacing={2}>
+        <Grid container spacing={0}>
           <Grid item xs={12}>
     
         <GoogleLogin
@@ -493,7 +494,7 @@ const googleResponse = (response) => {
                       color="primary"
                       className={classes.google}
                       onClick={renderProps.onClick}
-                      style={{textTransform: 'none'}}
+                      style={{textTransform: 'none', margin: props.nospacing ? '0' : '0.5rem 0'}}
                     >
                       <img src={google} style={{height: '1.5rem', margin: "0 0.5rem"}}></img>
                       <p style={{margin: '0', fontWeight: '300'}} className="font-opensans">Continue with Google</p>
