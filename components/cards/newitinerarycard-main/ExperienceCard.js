@@ -1,20 +1,17 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
+import styled, {keyframes} from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
-import Button from '../../ui/button/Index';
-import Link from 'next/link';
-import media from '../../media';
+    import media from '../../media';
 import { useRouter } from 'next/router';
-import { getIndianPrice } from '../../../services/getIndianPrice';
-import urls from '../../../services/urls';
+ import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
-import Spinner from '../../Spinner';
-import Info from './info/Index';
-
+ import Info from './info/Index';
+const fadeInAnimation = keyframes`${fadeIn}`;
+import { fadeIn } from 'react-animations'
 const Container = styled.div`
 width: 100%;
+animation: 1s ${fadeInAnimation};
+
 background-color: white;
 box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 border-radius: 10px;

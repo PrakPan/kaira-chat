@@ -9,7 +9,7 @@ import Experiences from '../../components/containers/Experiences';
  import AsSeenIn from '../testimonial/AsSeenIn';
  import Heading from '../../components/newheading/heading/Index';
   import HowItWorks from '../../components/containers/HowItWorksSlideshow';
- 
+
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
@@ -23,6 +23,10 @@ import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
 import gif from '../../public/assets/loader.gif';
 import Overview from './Overview';
+import Button from '../../components/ui/button/Index';
+import {IoIosArrowBack} from 'react-icons/io'
+
+
 // import qs from qs;
 var qs = require('qs');
 
@@ -66,6 +70,7 @@ const GridContainer = styled.div`
 display: grid;
 padding: 1rem;
 grid-gap: 1rem;
+
 
 @media screen and (min-width: 768px){
   padding: 2rem;
@@ -295,7 +300,7 @@ const _showMoreItineraries = () => {
   if(offset > itinerariesJSX.length) return 0 ;
   else {
     let itineraries = itinerariesToShowJSX.slice();
-    console.log('itineraries_length' , itineraries.length)
+    // console.log('itineraries_length' , itineraries.length)
     for(var i = offset; i < offset + 9 ; i++ ){
       itineraries.push(itinerariesJSX[i]);
     }
@@ -379,7 +384,7 @@ const EXPERIENCE = {
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   }
   {
-    !loading ? <div onClick={_showMoreItineraries}>more</div> 
+    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreItineraries} >View More</Button> 
     : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
