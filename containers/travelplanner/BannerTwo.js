@@ -7,7 +7,7 @@ import * as ga from '../../services/ga/Index';
 
 import styled from 'styled-components';
 import ImageLoader from '../../components/ImageLoader';
-import Enquiry from './newenquiry/Index';
+import Enquiry from '../../components/tailoredform/Index';
 
 const Container = styled.div`
  @media screen and (min-width: 768px){
@@ -41,7 +41,7 @@ const  Banner = (props) =>{
           <div className='center-div'>
             <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader>
             </div>       
-            <Enquiry></Enquiry>
+            <Enquiry cities={props.cities}></Enquiry>
         </GridContainer>
        
     </Container>

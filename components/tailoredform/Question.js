@@ -5,13 +5,17 @@ import React, {useState, useEffect } from 'react';
 import styled from 'styled-components';
  
  
- const Heading = styled.p``;
+ const Heading = styled.p`
+ margin: ${(props) =>
+  props.margin ? props.margin : "0 0 0.5rem 0"};
+
+ `;
  
 const Question = (props) =>{
  
 //   let isPageWide = media('(min-width: 768px)');
   
-  return <Heading className={props.hover_pointer ? "text-centr font-opensans hover-pointer" : "text-centr font-opensans"}>{props.children}</Heading>;
+  return <Heading margin={props.margin} className={props.hover_pointer ? "text-centr font-opensans hover-pointer" : "text-centr font-opensans"}>{props.children}</Heading>;
 }
 
 

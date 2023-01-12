@@ -397,7 +397,7 @@ const EXPERIENCE = {
       <SetWidthContainer>
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
         <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
@@ -414,7 +414,7 @@ const EXPERIENCE = {
       <SetWidthContainer>
       
         <AsSeenIn disablelinks></AsSeenIn>
-        <div className='hidden-mobile'><BannerTwo></BannerTwo></div>
+        <div className='hidden-mobile'><BannerTwo cities={props.experienceData.locations} ></BannerTwo></div>
 
         <ChatWithUs></ChatWithUs>
       </SetWidthContainer>

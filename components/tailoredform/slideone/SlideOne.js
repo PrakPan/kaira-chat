@@ -6,6 +6,7 @@ import styled from 'styled-components';
  import Destinations from './destinations/Index';
  import Question from '../Question';
 import Dates from './Dates';
+import StartingLocation from './startinglocation/Index';
 const Container = styled.div`
 color: black;
 width: 100%;
@@ -66,6 +67,11 @@ const SlideOne = (props) =>{
       <Section>
         <Question >What are your dates?</Question>
 <Dates></Dates>
+
+</Section>
+<Section style={{marginBottom: '0.5rem'}}>
+<StartingLocation></StartingLocation>
+
 </Section>
     </Container>
   );
