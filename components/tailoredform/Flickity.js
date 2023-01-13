@@ -34,7 +34,7 @@ const FlickityComp = (props) => {
       return (
         <div style={{width: '100%'}}>
                       {props.slideIndex ? <IoIosArrowBack onClick={props._handlePrev} className="hover-pointer" style={{marginBottom: props.slideIndex === 2 ? '0.75rem' : '0.25rem'}}></IoIosArrowBack> : null}
-                            {!props.slideIndex ? <Card><SlideOne cities={props.cities}></SlideOne></Card> : null}
+                            {!props.slideIndex ? <Card><SlideOne cities={props.cities} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></SlideOne></Card> : null}
                             {props.slideIndex === 1 ? <Card><SlideTwo></SlideTwo></Card>: null}
                             {props.slideIndex === 2 ? <Login nospacing noheading noicons hideloginclose noclose></Login> : null}
                             {/* <Card><SlideOne></SlideOne></Card> */}

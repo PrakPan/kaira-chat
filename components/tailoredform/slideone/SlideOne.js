@@ -55,14 +55,15 @@ const SlideOne = (props) =>{
     }
 
   ]
-  const [selectedCities, setSelectedCities] = useState([]);
+  // const [selectedCities, setSelectedCities] = useState([]);
+  
   console.log(props.cities)
   return (
    <Container>
     <Section>
         <Question>Where do  you want to go?</Question>
 
-        <Destinations CITIES={props.cities ? props.cities : CITIES} selectedCities={selectedCities} setSelectedCities={setSelectedCities}></Destinations>
+        <Destinations CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>
         <Question >What are your dates?</Question>

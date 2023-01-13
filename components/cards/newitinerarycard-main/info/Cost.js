@@ -111,7 +111,15 @@ const Cost = (props) => {
             </Text> : <GITText className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
             </GITText>}
-            </div></div></div>: null}
+            </div></div></div>: <div style={{display: 'flex', justifyContent: 'flex-end', visibility: 'hidden'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
+            {props.PW ? <StrikedCost> {"₹ 0"}</StrikedCost> : null}
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+               {!props.PW ?  <Text className='font-opensans'>
+           { "₹ 0 /-"}
+            </Text> : <GITText className='font-opensans'>
+           { "₹ 0/-"}
+            </GITText>}
+            </div></div></div>}
         </Container>
     );
 }

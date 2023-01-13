@@ -60,23 +60,14 @@ margin: 2px 1rem;
  
 `;
 const Enquiry = (props) => {
-    const flickity_ref=useRef(null);
-   
-    const [calendarOpen, setCalendarOpen] = useState(false);
-
+    
+ 
  
      
 
-    // const [phone, setPhone]= useState(null);
-    const[email, setEmail]= useState(null);
-    const [type, setType] = useState(null);
-    const [extension, setExtension] = useState('India');  //store extension
-    const handleExtensionChangeOption = (country) => {
-        setExtension(country); 
-      };
-    // const [] = useState(null);
-    const [valueStart, setValueStart] =useState((dayjs()));
-    const [valueEnd, setValueEnd] =useState((dayjs()));
+   
+  
+     
 
 
    
@@ -84,7 +75,7 @@ const Enquiry = (props) => {
     
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-
+    const [selectedCities, setSelectedCities] = useState([]);
     // const [firstNameError, setFirstNameError] = useState(false);
     // const [lastNameError, setLastNameError] = useState(false);
 
@@ -103,25 +94,28 @@ const Enquiry = (props) => {
  
      
      const _submitDataHandler = () => {
-        ga.event({action: 'C-Andaman-Form-initiate', params: {key : ''}})
+        // ga.event({action: 'C-Andaman-Form-initiate', params: {key : ''}})
 
         setLoading(true);
+        const cityids =[];
+        const citynames=[];
+        for(var i =0 ; i < selectedCities.length; i++){
+          cityids.push(parseInt(selectedCities[i].city_id));
+          citynames.push(selectedCities[i].name);
+        }
         let data = {
-            "locations": ["Andaman"],
-            // "experience_filters_selected": filters,
-            "budget": "Affordable",
-            // "extra_data": extra_data,
-            "city_id": [278],
-            // "group_type": grouptype,
-            "number_of_adults": parseInt(adults),
-            "number_of_children": parseInt(children),
-            "number_of_infants": parseInt(infants),
-            "start_date": valueStart.toISOString().slice(0, 10),
-            "end_date": valueEnd.toISOString().slice(0, 10),
-            "user_email": email,
-            // "user_phone": extensions[extension].label+phone,
-            // "user_first_name": firstName,
-            // "user_last_name": lastName
+            "locations": citynames,
+            "experience_filters_selected": filters,
+            "budget": budget_to_send,
+            "extra_data": extra_data,
+            "city_id": cityids,
+            "group_type": grouptype,
+            "number_of_adults": number_of_adults,
+            "number_of_children": number_of_children,
+            "number_of_infants": number_of_infants,
+            "start_date": start_date,
+            "end_date": end_date,
+          
             // "user_location": {
             //   "lat": lat,
             //   "long": long,
@@ -198,6 +192,8 @@ return(
             _handlePrev={_prevSlideHandler}
             slideIndex={slideIndex}
             cities={props.cities}
+            selectedCities={selectedCities}
+            setSelectedCities={setSelectedCities}
         >
                            
         </Flickity>
