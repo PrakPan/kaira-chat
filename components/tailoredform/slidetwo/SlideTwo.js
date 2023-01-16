@@ -26,19 +26,35 @@ const Section = styled.div`
 const SlideTwo = (props) =>{
     const [showPax, setShowPax] = useState(false);
     const [showPreferences, setShowPreferences] = useState(false);
-    const [selectedPreferences, setSelectedPreferences] = useState([]);
+    // const [selectedPreferences, setSelectedPreferences] = useState([]);
   let isPageWide = media('(min-width: 768px)');
+  const _handleShowPax = (grouptype) => {
+    props.setGroupType(grouptype);
+    if(grouptype === 'Friends' || grouptype === 'Family'){
+      // props.setNumberOfAdults(2);
+    setShowPax(true);
   
+    }
+  }
   return (
    <Container>
     <Section style={{marginBottom: '1.5rem'}}>
         <Question>How many travelers?</Question>
-        {showPax ? <Pax></Pax> : 
-        <GroupType setShowPax={setShowPax}></GroupType>}
+        {showPax ? <Pax
+         numberOfAdults={props.numberOfAdults}
+         setNumberOfAdults={props.setNumberOfAdults}
+         numberOfChildren={props.numberOfChildren} 
+         setNumberOfChildren={props.setNumberOfChildren}
+         numberOfInfants={props.numberOfInfants}
+         setNumberOfInfants={props.setNumberOfInfants}
+        ></Pax> : 
+        <GroupType setShowPax={setShowPax} _handleShowPax={_handleShowPax}></GroupType>}
         </Section>
         <Section>
          <Question className="font-opensans">What's your budget?</Question>
-         <Budget setShowPax={setShowPax}></Budget>
+         <Budget setShowPax={setShowPax}
+         setBudget ={props.setBudget }
+          ></Budget>
          </Section>
          <div style={{display: 'flex'}} onClick={() => setShowPreferences(!showPreferences)}>
          <Question  hover_pointer>What's kind of activities?</Question>
@@ -48,7 +64,7 @@ const SlideTwo = (props) =>{
 
 
          </div>
-         {showPreferences ? <Preferences selectedPreferences={selectedPreferences} setSelectedPreferences={setSelectedPreferences}></Preferences> : null}
+         {showPreferences ? <Preferences selectedPreferences={props.selectedPreferences} setSelectedPreferences={props.setSelectedPreferences}></Preferences> : null}
 
     </Container>
   );

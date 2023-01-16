@@ -71,24 +71,47 @@ const Counter = (props) => {
     //    newanswers[props.answerIndex] = counter+1;
        setCounter(counter+1)
     //    props.setAnswers(newanswers);
-     let UPDATED_NEW_ANSWERS = {...props.newAnswers} || { };
-     let test = {}
-     test[props.type] = counter+1;
-     UPDATED_NEW_ANSWERS[questioncontansts.PAX] = {...UPDATED_NEW_ANSWERS[questioncontansts.PAX], ...test};
-     props.setNewAnswers(UPDATED_NEW_ANSWERS)
+    switch(props.type){
+        case 'number_of_adults': 
+        props.setNumberOfAdults(props.numberOfAdults + 1)
+        break;
+        case 'number_of_children': 
+        props.setNumberOfChildren(props.numberOfChildren + 1)
+        break;
+        case 'number_of_infants': 
+        props.setNumberOfInfants(props.numberOfInfants + 1)
+        break;
+        default: 
+        null;
+        break;
+    }
 
 
    }
    const _decreaseCounter = () => {
        if(counter){
-        let UPDATED_NEW_ANSWERS = {...props.newAnswers} || { };
-        let test = {}
-        test[props.type] = counter-1;
-        UPDATED_NEW_ANSWERS[questioncontansts.PAX] = {...UPDATED_NEW_ANSWERS[questioncontansts.PAX], ...test};
-        props.setNewAnswers(UPDATED_NEW_ANSWERS)
+        // let UPDATED_NEW_ANSWERS = {...props.newAnswers} || { };
+        // let test = {}
+        // test[props.type] = counter-1;
+        // UPDATED_NEW_ANSWERS[questioncontansts.PAX] = {...UPDATED_NEW_ANSWERS[questioncontansts.PAX], ...test};
+        // props.setPax()
 
         // let newanswers = props.answers
         // newanswers[props.answerIndex] = counter-1;
+        switch(props.type){
+            case 'number_of_adults': 
+            props.setNumberOfAdults(props.numberOfAdults - 1)
+            break;
+            case 'number_of_children': 
+            props.setNumberOfChildren(props.numberOfChildren - 1)
+            break;
+            case 'number_of_infants': 
+            props.setNumberOfInfants(props.numberOfInfants - 1)
+            break;
+            default: 
+            null;
+            break;
+        }
     setCounter(counter-1)
     // props.setAnswers(newanswers);
 

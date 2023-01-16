@@ -34,8 +34,26 @@ const FlickityComp = (props) => {
       return (
         <div style={{width: '100%'}}>
                       {props.slideIndex ? <IoIosArrowBack onClick={props._handlePrev} className="hover-pointer" style={{marginBottom: props.slideIndex === 2 ? '0.75rem' : '0.25rem'}}></IoIosArrowBack> : null}
-                            {!props.slideIndex ? <Card><SlideOne cities={props.cities} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></SlideOne></Card> : null}
-                            {props.slideIndex === 1 ? <Card><SlideTwo></SlideTwo></Card>: null}
+                            {!props.slideIndex ? <Card><SlideOne 
+                            cities={props.cities} 
+                            selectedCities={props.selectedCities} 
+                            setSelectedCities={props.setSelectedCities} 
+                            valueStart={props.valueStart}
+                            valueEnd={props.valueEnd}
+                            setValueStart={props.setValueStart}
+                            setValueEnd={props.setValueEnd}></SlideOne></Card> : null}
+                            {props.slideIndex === 1 ? <Card><SlideTwo 
+                            numberOfAdults={props.numberOfAdults}
+                            setNumberOfAdults={props.setNumberOfAdults}
+                            numberOfChildren={props.numberOfChildren} 
+                            setNumberOfChildren={props.setNumberOfChildren}
+                            numberOfInfants={props.numberOfInfants}
+                            setNumberOfInfants={props.setNumberOfInfants}
+                            setGroupType={props.setGroupType}
+                            setBudget={props.setBudget}
+                            selectedPreferences={props.selectedPreferences} 
+                            setSelectedPreferences={props.setSelectedPreferences}
+                            ></SlideTwo></Card>: null}
                             {props.slideIndex === 2 ? <Login nospacing noheading noicons hideloginclose noclose></Login> : null}
                             {/* <Card><SlideOne></SlideOne></Card> */}
 

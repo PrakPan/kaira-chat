@@ -60,9 +60,9 @@ const Pax= (props) => {
                 </div>
             </GroupTypeContainer> */}
             <GridContainer>
-                <Counter type="number_of_adults" newAnswers={props.newAnswers} setNewAnswers={props.setNewAnswers} img="media/icons/Questionnaire/Group size/pax/Adults.png"  heading="Adults" age="12+ years" defaultcounter={defaultcounters[0]} setAnswers={props.setAnswers} answers={props.answers} questionIndex={props.questionIndex} answerIndex={6}/>
-                <Counter type="number_of_children" newAnswers={props.newAnswers} setNewAnswers={props.setNewAnswers} img="media/icons/Questionnaire/Group size/pax/children.png" heading="Children" age="2 - 12 years" defaultcounter={defaultcounters[1]} setAnswers={props.setAnswers} answers={props.answers} questionIndex={props.questionIndex} answerIndex={7}/>
-                <Counter type="number_of_infants" newAnswers={props.newAnswers} setNewAnswers={props.setNewAnswers}  img="media/icons/Questionnaire/Group size/pax/infants.png" heading="Infants" age="< 2 years" defaultcounter={defaultcounters[2]} setAnswers={props.setAnswers} answers={props.answers} questionIndex={props.questionIndex} answerIndex={8}/>
+                <Counter numberOfAdults={props.numberOfAdults} setNumberOfAdults={props.setNumberOfAdults} type="number_of_adults"  img="media/icons/Questionnaire/Group size/pax/Adults.png"  heading="Adults" age="12+ years" defaultcounter={defaultcounters[0]} setAnswers={props.setAnswers} answers={props.answers} questionIndex={props.questionIndex} answerIndex={6}/>
+                <Counter  numberOfChildren={props.numberOfChildren} setNumberOfChildren={props.setNumberOfChildren} type="number_of_children" img="media/icons/Questionnaire/Group size/pax/children.png" heading="Children" age="2 - 12 years" defaultcounter={defaultcounters[1]} setAnswers={props.setAnswers} answers={props.answers} questionIndex={props.questionIndex} answerIndex={7}/>
+                <Counter  numberOfInfants={props.numberOfInfants} setNumberOfInfants={props.setNumberOfInfants} type="number_of_infants"  img="media/icons/Questionnaire/Group size/pax/infants.png" heading="Infants" age="< 2 years" defaultcounter={defaultcounters[2]} setAnswers={props.setAnswers} answers={props.answers} questionIndex={props.questionIndex} answerIndex={8}/>
 
             </GridContainer>
         </Container>

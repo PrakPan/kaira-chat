@@ -4,8 +4,7 @@ import media from '../../media';
  
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
- import dayjs, { Dayjs } from 'dayjs';
- import TextField from '@mui/material/TextField';
+  import TextField from '@mui/material/TextField';
  import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
  import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
  import {  DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -23,8 +22,7 @@ width: 100%;
 
  
 const Dates = (props) => {
-    const [valueStart, setValueStart] =useState((dayjs()));
-    const [valueEnd, setValueEnd] =useState((dayjs()));
+    
 
     const [openStart, setOpenStart]  = useState(false);
     const [openEnd, setOpenEnd]  = useState(false);
@@ -43,9 +41,9 @@ const Dates = (props) => {
               onClose={() => setOpenStart(false)}
               disablePast
                label="Start Date"
-               value={valueStart}
+               value={props.valueStart}
                onChange={(newValue) => {
-                 setValueStart(newValue);
+                 props.setValueStart(newValue);
                }}
                renderInput={(params) => <TextField  onClick={(e) => setOpenStart(true)} {...params} fullWidth />}
              />
@@ -63,9 +61,9 @@ const Dates = (props) => {
                           onOpen={() => setOpenEnd(true)}
                           onClose={() => setOpenEnd(false)}
                           label="End Date"
-                          value={valueEnd}
+                          value={props.valueEnd}
                           onChange={(newValue) => {
-                            setValueEnd(newValue);
+                            props.setValueEnd(newValue);
                           }}
                           renderInput={(params) => <TextField onClick={(e) => setOpenEnd(true)} {...params} fullWidth />}
                         />

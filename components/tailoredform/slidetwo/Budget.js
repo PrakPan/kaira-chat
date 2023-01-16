@@ -21,7 +21,7 @@ import Slider from '@mui/material/Slider';
 ];
 
 function valuetext(value) {
-  return `${value}°C`;
+  return `${value}`;
 }
 
 function valueLabelFormat(value) {
@@ -55,19 +55,39 @@ function valueLabelFormat(value) {
 // },
 // });
 
-export default function DiscreteSliderValues() {
+const  DiscreteSliderValues = (props) =>  {
+  const _handleChange = (event) => {
+    switch(event.target.value){
+      case 0: 
+      props.setBudget('Affordable');
+      break;
+      case 33: 
+      props.setBudget('Average');
+       break;
+      case 66: 
+      props.setBudget('Luxury');
+       break;
+      case 100: 
+      props.setBudget('Luxury +');
+       break;
+    }
+  
+  }
   return (
     <Box>
       <Slider
-        aria-label="Restricted values"
+        aria-label="Budget per day"
         defaultValue={0}
         style={{color:'#f7e700'}}
         valueLabelFormat={valueLabelFormat}
         getAriaValueText={valuetext}
         step={null}
+        onChange={(event) => _handleChange(event)}
         valueLabelDisplay="auto"
         marks={marks}
       />
     </Box>
   );
 }
+
+export default DiscreteSliderValues

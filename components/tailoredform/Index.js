@@ -1,16 +1,18 @@
 import React, {useState, useRef} from "react";
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs  from 'dayjs';
 
 import styled from 'styled-components';
   import Grid from '@material-ui/core/Grid';
 import Button from '../ui/button/Index';
  
   import * as ga from '../../services/ga/Index';
+  import {format } from  "date-fns";
 
  import axiostailoredinstance from '../../services/leads/tailored';
 import Spinner from '../Spinner';
 //  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
+ 
 // import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
 
@@ -60,22 +62,14 @@ margin: 2px 1rem;
  
 `;
 const Enquiry = (props) => {
-    
- 
- 
-     
-
-   
-  
-     
-
-
-   
+       
     const router = useRouter();
     
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [selectedCities, setSelectedCities] = useState([]);
+    const [groupType, setGroupType] = useState(null);
+    
     // const [firstNameError, setFirstNameError] = useState(false);
     // const [lastNameError, setLastNameError] = useState(false);
 
@@ -95,20 +89,25 @@ const Enquiry = (props) => {
      
      const _submitDataHandler = () => {
         // ga.event({action: 'C-Andaman-Form-initiate', params: {key : ''}})
-
+        // console.log(selectedCities);
         setLoading(true);
         const cityids =[];
         const citynames=[];
         for(var i =0 ; i < selectedCities.length; i++){
-          cityids.push(parseInt(selectedCities[i].city_id));
+          cityids.push(parseInt(selectedCities[i].id));
           citynames.push(selectedCities[i].name);
         }
+        // console.log(citynames);
+        // console.log(cityids);
+        // console.log(format(valueStart,  "yyyy-MM-dd"));
+        const start_date = format(valueStart,  "yyyy-MM-dd");
+        const end_date =  format(valueEnd,  "yyyy-MM-dd");
+        console.log(selectedPreferences);
         let data = {
             "locations": citynames,
             "experience_filters_selected": filters,
             "budget": budget_to_send,
-            "extra_data": extra_data,
-            "city_id": cityids,
+             "city_id": cityids,
             "group_type": grouptype,
             "number_of_adults": number_of_adults,
             "number_of_children": number_of_children,
@@ -123,61 +122,44 @@ const Enquiry = (props) => {
             
           };
   
-         axiostailoredinstance.post('',
-       data
-        ).then(response => {
+    //      axiostailoredinstance.post('',
+    //    data
+    //     ).then(response => {
 
-            setSubmitted(true);
-            if(!response.data.auto_itinerary_created) {
-                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+    //         setSubmitted(true);
+    //         if(!response.data.auto_itinerary_created) {
+    //             window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
-                 }
-             else{
-                ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
+    //              }
+    //          else{
+    //             ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
   
-                setTimeout(function(){ 
+    //             setTimeout(function(){ 
                    
-                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 3000);
+    //               router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 3000);
   
-              }
-        }).catch(err => {
-            setLoading(false);
+    //           }
+    //     }).catch(err => {
+    //         setLoading(false);
 
-             if(err.response.data.email){
-                // setEmailError(err.response.data.email)
-            }
-            if(err.response.data.phone){
-                // setPhoneError(err.response.data.phone)
-
-            }
-            if(err.response.data.service){
-                // setTypeError( err.response.data.service[0])
-
-            }
-            if(err.response.data.user_first_name){
-                // setFirstNameError(err.response.data.user_first_name)
-            }
-            if(err.response.data.user_last_name){
-                // setLastNameError(err.response.data.user_last_name)
-            }
-            if(err.response.data.organization_name){
-                // setError()
-                // setCompanyError(err.response.data.organization_name[0])
-
-            }
-            // err.json().then(json => {
-            //     getPaymentHandler();
-            //     setTransferBookings(json.bookings)
-            //     // setFlightBookings(json.bookings);
-            //   })
-           
-        })
+    //          if(err.response.data.email){
+    //          }
+    //     })
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {
         console.log('test')
         if(slideIndex) setSlideIndex(slideIndex-1);
     }
+    const [valueStart, setValueStart] =useState((dayjs()));
+    const [valueEnd, setValueEnd] =useState((dayjs()));
+    const [numberOfAdults, setNumberOfAdults] = useState(2);
+    const [numberOfChildren, setNumberOfChildren] = useState(0);
+    const [numberOfInfants, setNumberOfInfants] = useState(0);
+    const [budget, setBudget] = useState('Affordable');
+    const [selectedPreferences, setSelectedPreferences]  = useState([]);
+    // const [budgetLower,setBudgetLower] = useState(0);
+
 return(
     <Container className="border center-div">
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
@@ -194,12 +176,28 @@ return(
             cities={props.cities}
             selectedCities={selectedCities}
             setSelectedCities={setSelectedCities}
+            valueStart={valueStart}
+            valueEnd={valueEnd}
+            setValueStart={setValueStart}
+            setValueEnd={setValueEnd}
+            setGroupType={setGroupType}
+            numberOfAdults={numberOfAdults}
+         setNumberOfAdults={setNumberOfAdults}
+         numberOfChildren={numberOfChildren} 
+         setNumberOfChildren={setNumberOfChildren}
+         numberOfInfants={numberOfInfants}
+         setNumberOfInfants={setNumberOfInfants}
+         setBudget ={setBudget}
+         selectedPreferences={selectedPreferences} 
+         setSelectedPreferences={setSelectedPreferences}
         >
                            
         </Flickity>
         {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
             Continue
-            </Button> : null}
+            </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
+            Submit
+            </Button> }
             <Grid container spacing={2}>
            
  

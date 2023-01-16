@@ -67,7 +67,12 @@ const SlideOne = (props) =>{
       </Section>
       <Section>
         <Question >What are your dates?</Question>
-<Dates></Dates>
+<Dates 
+ valueStart={props.valueStart}
+ valueEnd={props.valueEnd}
+ setValueStart={props.setValueStart}
+ setValueEnd={props.setValueEnd}
+></Dates>
 
 </Section>
 <Section style={{marginBottom: '0.5rem'}}>
