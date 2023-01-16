@@ -1,7 +1,7 @@
 import React, {useState, useRef} from "react";
 import dayjs  from 'dayjs';
 
-import styled from 'styled-components';
+import styled , {keyframes}from 'styled-components';
   import Grid from '@material-ui/core/Grid';
 import Button from '../ui/button/Index';
  
@@ -12,10 +12,13 @@ import Button from '../ui/button/Index';
 import Spinner from '../Spinner';
 //  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
- 
+import {connect} from 'react-redux';
+
 // import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
+import { fadeIn } from 'react-animations'
 
+const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
 height: max-content;
 color: black;
@@ -60,6 +63,17 @@ const Card = styled.div`
 width: 80%;
 margin: 2px 1rem;
  
+`;
+const BlackContainer = styled.div`
+  background-color: rgba(0,0,0,0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  animation: 0.5s ${fadeInAnimation};
+
 `;
 const Enquiry = (props) => {
        
@@ -116,7 +130,7 @@ const Enquiry = (props) => {
         let data = {
             "locations": citynames,
             "experience_filters_selected": selectedPreferences,
-            "budget": budget_to_send,
+            "budget": budget,
              "city_id": cityids,
             "group_type": groupType,
             "number_of_adults": number_of_adults,
@@ -125,37 +139,38 @@ const Enquiry = (props) => {
             "start_date": start_date,
             "end_date": end_date,
           
-            // "user_location": {
-            //   "lat": lat,
-            //   "long": long,
-            // },
+            "user_location": {
+                "place_id": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
+            }
             
           };
-          console.log(data)
-  
-    //      axiostailoredinstance.post('',
-    //    data
-    //     ).then(response => {
-
-    //         setSubmitted(true);
-    //         if(!response.data.auto_itinerary_created) {
-    //             window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+        //   console.log(data)
+          setLoading(true);
+         axiostailoredinstance.post('',
+       data, {headers: {
+        'Authorization': `Bearer ${props.token}`
+        }}
+        ).then(response => {
+            setSubmitted(true);
+            if(!response.data.auto_itinerary_created) {
+                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
-    //              }
-    //          else{
-    //             ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
+                 }
+             else{
+                // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
   
-    //             setTimeout(function(){ 
+                setTimeout(function(){ 
                    
-    //               router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 3000);
-  
-    //           }
-    //     }).catch(err => {
-    //         setLoading(false);
+                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 3000);
+                  setLoading(false);
 
-    //          if(err.response.data.email){
-    //          }
-    //     })
+              }
+        }).catch(err => {
+            setLoading(false);
+
+             if(err.response.data.email){
+             }
+        })
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {
@@ -168,10 +183,15 @@ const Enquiry = (props) => {
     const [numberOfInfants, setNumberOfInfants] = useState(0);
     const [budget, setBudget] = useState('Affordable');
     const [selectedPreferences, setSelectedPreferences]  = useState([]);
-    // const [budgetLower,setBudgetLower] = useState(0);
 
-return(
-    <Container className="border center-div">
+    const [showBlack, setShowBlack] = useState(false);
+    // const [budgetLower,setBudgetLower] = useState(0);
+    if(!loading)
+ return(
+    <div>
+                {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
+
+    <Container className="border center-div" onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
             {!submitted? <Heading>{"Get your free travel plan!" }</Heading> : null}
@@ -203,11 +223,23 @@ return(
         >
                            
         </Flickity>
-        {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+        {/* {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
             Continue
             </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
             Submit
-            </Button> }
+            </Button> } */}
+            {
+                slideIndex === 0 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+                Continue
+                </Button>  : null
+            }
+            {
+                slideIndex === 1 ? !props.token ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+                Continue
+                </Button> :  <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
+            Submit
+            </Button> : null
+            }
             <Grid container spacing={2}>
            
  
@@ -228,7 +260,30 @@ return(
             {/* </Modal.Body> */}
       {/* </Modal> */}
       </Container>
+      </div>
 );
+else return(
+    <Container className="border center-div">
+        <Spinner></Spinner>
+    </Container>
+)
 }
 
-export default Enquiry;
+const mapStateToPros = (state) => {
+    return{
+    
+      name: state.auth.name,
+      emailFail: state.auth.emailFail,
+      token: state.auth.token,
+      phone: state.auth.phone,
+      email: state.auth.email,
+      
+    }
+  }
+  const mapDispatchToProps = dispatch => {
+      return{
+   
+      }
+    }
+  
+export default  connect(mapStateToPros,mapDispatchToProps)(Enquiry);

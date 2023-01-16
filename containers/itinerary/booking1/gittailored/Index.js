@@ -192,7 +192,7 @@ const _startRazorpayHandler = (data) => {
           //Payment successfull handler passed to razorpay
           "handler": function (response){
                       setPaymentLoading(true)
-                      axios.post("https://devsuppliers.tarzanway.com/sales/verify/",{...response },{headers: 
+                      axios.post("https://dev.suppliers.tarzanway.com/sales/verify/",{...response },{headers: 
                       {'Authorization': `Bearer ${props.token}`}} )
                       .then( res => {
                            setPaymentLoading(false);
@@ -203,7 +203,7 @@ const _startRazorpayHandler = (data) => {
                       .catch( err => {
                         setPaymentLoading(false);
                         // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-                        window.location.href="https://devthetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=fail"
+                        window.location.href="https://dev.thetarzanway.com/itinerary/physicswallah/"+data.itinerary+"?payment_status=fail"
 
                       });
                   },

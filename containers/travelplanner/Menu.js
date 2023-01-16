@@ -84,10 +84,10 @@ const Menu = (props) => {
         >
         </ImageLoader>
         </div> */}
-
+{/* 
         <DropDown className='font-opensans hover-pointer'>Duration</DropDown>
         <DropDown className='font-opensans hover-pointer'>Budget</DropDown>
-        <DropDown className='font-opensans hover-pointer'>Theme</DropDown>
+        <DropDown className='font-opensans hover-pointer'>Theme</DropDown> */}
         {/* <FilterContainer className='hover-pointer' onClick={props.token ? () => props._deselectBookingHandler() : () => props.setShowLoginModal(true)}  >
                     <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
