@@ -88,8 +88,7 @@ const Enquiry = (props) => {
  
      
      const _submitDataHandler = () => {
-        // ga.event({action: 'C-Andaman-Form-initiate', params: {key : ''}})
-        // console.log(selectedCities);
+        
         setLoading(true);
         const cityids =[];
         const citynames=[];
@@ -97,18 +96,29 @@ const Enquiry = (props) => {
           cityids.push(parseInt(selectedCities[i].id));
           citynames.push(selectedCities[i].name);
         }
-        // console.log(citynames);
-        // console.log(cityids);
-        // console.log(format(valueStart,  "yyyy-MM-dd"));
+        
         const start_date = format(valueStart,  "yyyy-MM-dd");
         const end_date =  format(valueEnd,  "yyyy-MM-dd");
+
+        let number_of_adults = 2, number_of_children=0, number_of_infants=0;
+        if(groupType === 'Solo'){
+            number_of_adults = 1;
+        }
+        else if(groupType === 'Couple'){
+            number_of_adults = 2;
+        }
+        else{
+            number_of_adults=numberOfAdults;
+            number_of_children=numberOfChildren;
+            number_of_infants=numberOfInfants;
+        }
         console.log(selectedPreferences);
         let data = {
             "locations": citynames,
-            "experience_filters_selected": filters,
+            "experience_filters_selected": selectedPreferences,
             "budget": budget_to_send,
              "city_id": cityids,
-            "group_type": grouptype,
+            "group_type": groupType,
             "number_of_adults": number_of_adults,
             "number_of_children": number_of_children,
             "number_of_infants": number_of_infants,
@@ -121,6 +131,7 @@ const Enquiry = (props) => {
             // },
             
           };
+          console.log(data)
   
     //      axiostailoredinstance.post('',
     //    data
@@ -148,7 +159,6 @@ const Enquiry = (props) => {
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {
-        console.log('test')
         if(slideIndex) setSlideIndex(slideIndex-1);
     }
     const [valueStart, setValueStart] =useState((dayjs()));
