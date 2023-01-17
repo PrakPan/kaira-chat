@@ -26,6 +26,8 @@ import styled from 'styled-components';
 const LocationsContainer = (props) => {
 
   const [locationsJSX, setLocationsJSX] = useState([]);
+  const [moreLocationsJSX, setMoreLocationJSX] = useState([]);
+  const [showMore, setShowMore] = useState(false);
 
   let isPageWide = media('(min-width: 768px)');
 
@@ -67,17 +69,27 @@ const LocationsContainer = (props) => {
   }
   useEffect(() => {
     let locations_JSX = [];
+    let more_locations_JSX = [];
     for(var i = 0 ; i< props.CITIES.length; i++){
+      if(i === 6) break;
       // console.log(props.CITIES[i], i)
       locations_JSX.push(
         <Location image={props.CITIES[i].image} text={props.CITIES[i].name} onclick={_handleClick} onclickparam={props.CITIES[i]} is_selected={_isCityAdded(props.CITIES[i])} ></Location>
       )
-
+    }
+    if(props.CITIES.length > 6){
+      for(var j = 6; j < props.CITIES.length; j++){
+          more_locations_JSX.push(
+            <Location image={props.CITIES[j].image} text={props.CITIES[j].name} onclick={_handleClick} onclickparam={props.CITIES[j]} is_selected={_isCityAdded(props.CITIES[j])} ></Location>
+          )
+      }
     }
     setLocationsJSX(locations_JSX.slice());
+    if(more_locations_JSX.length) setMoreLocationJSX(more_locations_JSX.slice());
   },[props.CITIES, props.selectedCities]);
   
   return (
+    <div>
     <LocationContainer className='border-thi' >
                 {/* <Location image="" text="Port Blair" onclick={() => _handleClick(props.CITIES[0])} ></Location>
                 <Location  image="" text="Niel Island"></Location>
@@ -86,7 +98,11 @@ const LocationsContainer = (props) => {
                 <Location  image="" text="Rajasthan"></Location>
                 <Location  image="" text="Sikkim"></Location> */}
                 {locationsJSX}
+                {props.CITIES.length && showMore ? moreLocationsJSX : null}
    </LocationContainer>
+   {props.CITIES.length > 6 && !showMore? <div className='font-opensans text-center' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
+
+   </div>
   );
 }
 
