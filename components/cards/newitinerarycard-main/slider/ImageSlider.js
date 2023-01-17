@@ -66,6 +66,7 @@ import {GoStar} from 'react-icons/go';
     top: 0;
      width: max-content;
     font-size: 0.75rem;
+    
     color: white;
     border-radius: 5px;
     padding: 0.25rem;
@@ -74,7 +75,7 @@ import {GoStar} from 'react-icons/go';
     letter-spacing: 0.1em;
 
     margin: 0.5rem;
-    font-weight: 300;
+    font-weight: 600;
     `;
     const Heading = styled.p`
     text-align: center;
@@ -190,9 +191,9 @@ const ImageSlider = (props) => {
              <DurationContainer className='font-opensans'>
              {!props.duration  ? props.duration_unit && props.duration_number ? props.duration_number+ " " + props.duration_unit.toUpperCase() : null : props.duration ? props.duration.toUpperCase() : null}
              </DurationContainer>
-            {!props.myplan ? <CustomizableContainer className='font-opensans'>
+            {/* {!props.myplan ? <CustomizableContainer className='font-opensans'>
             100% CUSTOMISABLE
-            </CustomizableContainer>: null }
+            </CustomizableContainer>: null } */}
 <HeadingContainer>
   <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>
   <Subheading className='font-opensans'>{LOCATIONS_TO_SHOW}</Subheading>

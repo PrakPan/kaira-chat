@@ -8,6 +8,7 @@ import * as ga from '../../../services/ga/Index'
  import Info from './info/Index';
 const fadeInAnimation = keyframes`${fadeIn}`;
 import { fadeIn } from 'react-animations'
+import Summary from './Summary';
 const Container = styled.div`
 width: 100%;
 animation: 1s ${fadeInAnimation};
@@ -80,7 +81,9 @@ const _handleRedirect = () => {
       <Container className="netflix-ite" onClick={_handleRedirect}>
         <ImageContainer>
               <ImageGallery myplan={props.myplan} budget={props.budget} group_type={props.group_type}   locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
-       </ImageContainer>  
+       </ImageContainer> 
+       {props.data ? props.data.payment_info ? props.data.payment_info.summary ? <Summary summary={props.data.payment_info.summary}></Summary> : null : null : null}
+ 
        <ContentContainer className="text-cente">
         <Info PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
        

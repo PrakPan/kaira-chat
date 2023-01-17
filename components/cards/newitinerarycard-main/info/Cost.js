@@ -45,7 +45,7 @@ position: relative;
     }
 `;
 const Text = styled.p`
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.25rem;
     text-align: right;
     width: max-content;

@@ -80,6 +80,7 @@ const Experiences = [
       for( i = 0; i  < props.columns; i++){
         experiencecards.push(
           <ExperienceCard 
+          data={props.experiences[i]}
           key={props.experiences[i].id}
             slug={props.experiences[i].slug}
             rating={props.experiences[i].rating}
@@ -109,6 +110,7 @@ const Experiences = [
         // if height of text more than maxheight set maxheight to new height
         experiencecards.push(  
           <ExperienceCard 
+          data={props.experiences[j]}
           myplan={props.myplan}
           key={props.experiences[j].short_text}
           hardcoded={props.experiences[j].payment_info ?true : false }
@@ -137,6 +139,7 @@ const Experiences = [
           // if height of text more than maxheight set maxheight to new height
           experiencecards.push(  
             <ItineraryCard 
+            data={props.itineraries[j]}
             myplan={props.myplan}
             key={props.itineraries[j].short_text}
             hardcoded={props.itineraries[j].payment_info ?true : false }
@@ -163,6 +166,7 @@ const Experiences = [
 
         experiencecards.push(  
           <PastItineraryCard 
+          data={props.experiences[j]}
           // filter={props.itineraries[j].experience_filters[0]}
           key={props.experiences[j].short_text}
            filter={props.experiences[j].experience_filters[0]}

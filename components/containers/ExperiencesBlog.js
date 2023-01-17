@@ -46,6 +46,7 @@ const Experiences= (props) => {
      if(props.pastitinerary){
       experiencecards.push(  
         <PastItineraryCard 
+        data={experience}
         // filter={props.itineraries[j].experience_filters[0]}
         key={experience.id}
         starting_cost={experience.payment_info ? experience.payment_info.per_person_total_cost : experience.starting_price}
@@ -68,6 +69,7 @@ const Experiences= (props) => {
     }
     else experiencecards.push(              
         <Card
+        data={experience}
         key={experience.short_text}
         starting_cost={experience.payment_info ? experience.payment_info.per_person_total_cost : experience.starting_price}
         slug={experience.slug}
@@ -98,6 +100,7 @@ const Experiences= (props) => {
             <div className="netflix-containe">
             {props.pastitinerary ? 
              <PastItineraryCard 
+             data={props.experiences[3]}
              filter={props.experiences[3].experience_filters[0]}
              slug={props.experiences[3].slug}
              id={props.experiences[3].id}
@@ -112,6 +115,7 @@ const Experiences= (props) => {
              images={props.experiences[3].images ? props.experiences[3].images : props.experiences[3].main_image}>
        </PastItineraryCard> :
             <Card 
+              data={props.experiences[3]}
               filter={props.experiences[3].experience_filters[0]}
               slug={props.experiences[3].slug}
               id={props.experiences[3].id}
