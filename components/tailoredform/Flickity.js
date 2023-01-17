@@ -49,12 +49,13 @@ const FlickityComp = (props) => {
                             setNumberOfChildren={props.setNumberOfChildren}
                             numberOfInfants={props.numberOfInfants}
                             setNumberOfInfants={props.setNumberOfInfants}
+                            groupType={props.groupType}
                             setGroupType={props.setGroupType}
                             setBudget={props.setBudget}
                             selectedPreferences={props.selectedPreferences} 
                             setSelectedPreferences={props.setSelectedPreferences}
                             ></SlideTwo></Card>: null}
-                            {props.slideIndex === 2 ? <Login nospacing noheading noicons hideloginclose noclose></Login> : null}
+                            {props.slideIndex === 2 && ! props.token ? <Login nospacing noheading noicons hideloginclose noclose></Login> : null}
                             {/* <Card><SlideOne></SlideOne></Card> */}
 
         

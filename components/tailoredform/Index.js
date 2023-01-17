@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useEffect} from "react";
 import dayjs  from 'dayjs';
 
 import styled , {keyframes}from 'styled-components';
@@ -76,7 +76,7 @@ const BlackContainer = styled.div`
 
 `;
 const Enquiry = (props) => {
-       
+ 
     const router = useRouter();
     
     const [loading, setLoading] = useState(false);
@@ -102,7 +102,9 @@ const Enquiry = (props) => {
  
      
      const _submitDataHandler = () => {
-        
+        console.log(new Date(valueStart));
+        const value_start = new Date(valueStart);
+        const value_end = new Date(valueEnd);
         setLoading(true);
         const cityids =[];
         const citynames=[];
@@ -111,8 +113,8 @@ const Enquiry = (props) => {
           citynames.push(selectedCities[i].name);
         }
         
-        const start_date = format(valueStart,  "yyyy-MM-dd");
-        const end_date =  format(valueEnd,  "yyyy-MM-dd");
+        const start_date = format(value_start,  "yyyy-MM-dd");
+        const end_date =  format(value_end,  "yyyy-MM-dd");
 
         let number_of_adults = 2, number_of_children=0, number_of_infants=0;
         if(groupType === 'Solo'){
@@ -153,7 +155,7 @@ const Enquiry = (props) => {
         ).then(response => {
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
-                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+                // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
                  }
              else{
@@ -185,8 +187,13 @@ const Enquiry = (props) => {
     const [selectedPreferences, setSelectedPreferences]  = useState([]);
 
     const [showBlack, setShowBlack] = useState(false);
+
+    useEffect(() => {
+      
+        if(slideIndex === 2 && props.token) _submitDataHandler();
+      }, [slideIndex, props.token]);
     // const [budgetLower,setBudgetLower] = useState(0);
-    if(!loading)
+    if(!loading && !submitted)
  return(
     <div>
                 {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
@@ -201,6 +208,7 @@ const Enquiry = (props) => {
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
 
             <Flickity
+            token={props.token}
             _handlePrev={_prevSlideHandler}
             slideIndex={slideIndex}
             cities={props.cities}
@@ -210,6 +218,7 @@ const Enquiry = (props) => {
             valueEnd={valueEnd}
             setValueStart={setValueStart}
             setValueEnd={setValueEnd}
+            groupType={groupType}
             setGroupType={setGroupType}
             numberOfAdults={numberOfAdults}
          setNumberOfAdults={setNumberOfAdults}

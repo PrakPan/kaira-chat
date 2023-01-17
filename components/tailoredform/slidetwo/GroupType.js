@@ -32,8 +32,9 @@ width: 100%;
     text-align: center;
     border-radius: 10px;
     font-size: 0.8rem;
+    background-color: ${(props) => (props.is_selected ? 'rgba(247,231,0,0.3)' : "transparent")};
     &:hover{
-        background-color: rgba(247,231,0,0.1);
+        background-color:${(props) => (props.is_selected ? 'rgba(247,231,0,0.3)' : "rgba(247,231,0,0.1)")};
   color: black;
     }
  `;
@@ -45,20 +46,20 @@ const GroupType = (props) => {
      return(
         <Container>
             <GridContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer' onClick={() => props._handleShowPax('Solo')}>
+                <OptionContainer className='border-thin font-opensans hover-pointer' is_selected={props.groupType === 'Solo'} onClick={() => props._handleShowPax('Solo')}>
                   {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/solo.png"></ImageLoader> */}
                     Solo
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer' onClick={() => props._handleShowPax('Couple')}>
+                <OptionContainer className='border-thin font-opensans hover-pointer' is_selected={props.groupType === 'Couple'} onClick={() => props._handleShowPax('Couple')}>
                     {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/couple.png"></ImageLoader> */}
 
                     Couple
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'  onClick={() => props._handleShowPax('Friends')}>
+                <OptionContainer className='border-thin font-opensans hover-pointer' is_selected={props.groupType === 'Friends'}  onClick={() => props._handleShowPax('Friends')}>
                     {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/family.png"></ImageLoader> */}
                     Friends
                 </OptionContainer>
-                <OptionContainer className='border-thin font-opensans hover-pointer'  onClick={() => props._handleShowPax('Family')}>
+                <OptionContainer className='border-thin font-opensans hover-pointer' is_selected={props.groupType === 'Family'} onClick={() => props._handleShowPax('Family')}>
                     {/* <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/friends.png"></ImageLoader> */}
                     Family
                 </OptionContainer>

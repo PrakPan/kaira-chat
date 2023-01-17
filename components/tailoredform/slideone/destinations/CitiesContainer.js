@@ -100,7 +100,7 @@ const LocationsContainer = (props) => {
                 {locationsJSX}
                 {props.CITIES.length && showMore ? moreLocationsJSX : null}
    </LocationContainer>
-   {props.CITIES.length > 6 && !showMore? <div className='font-opensans text-center' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
+   {props.CITIES.length > 6 && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
 
    </div>
   );

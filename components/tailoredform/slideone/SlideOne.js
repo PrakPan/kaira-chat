@@ -57,8 +57,7 @@ const SlideOne = (props) =>{
   ]
   // const [selectedCities, setSelectedCities] = useState([]);
   
-  console.log(props.cities)
-  return (
+   return (
    <Container>
     <Section>
         <Question>Where do  you want to go?</Question>

@@ -332,7 +332,7 @@ const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 //     router.push('/travel-experiences')
 // }
 const _handleTailoredRedirect = () => {
-  router.push('/tailored-travel?search_text=Rajasthan')
+  router.push('/tailored-travel?search_text='+props.experienceData.destination)
 }
 const _handleTailoredClick = () => {
   setDesktopBannerLoading(true);
