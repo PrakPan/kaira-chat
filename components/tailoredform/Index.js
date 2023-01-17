@@ -263,9 +263,13 @@ const Enquiry = (props) => {
       </div>
 );
 else return(
+    <div>
+                        {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
+
     <Container className="border center-div">
         <Spinner></Spinner>
     </Container>
+    </div>
 )
 }
 
