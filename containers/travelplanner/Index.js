@@ -25,7 +25,7 @@ import gif from '../../public/assets/loader.gif';
 import Overview from './Overview';
 import Button from '../../components/ui/button/Index';
 import {IoIosArrowBack} from 'react-icons/io'
-
+import urls from '../../services/urls';
 
 // import qs from qs;
 var qs = require('qs');
@@ -368,6 +368,9 @@ const EXPERIENCE = {
       }
     ],
 };
+const openWhatsapp = () => {
+  window.location.href=urls.WHATSAPP+"?text=I need help planning my trip to "+props.experienceData.destination+".";
+}
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
@@ -375,7 +378,7 @@ const EXPERIENCE = {
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>
-<Menu _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
+<Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
 <Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
   {!loading ? <GridContainer>

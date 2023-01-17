@@ -58,6 +58,7 @@ const Dates = (props) => {
                         <DatePicker
                           open={openEnd}
                           disablePast
+                          minDate={props.valueStart}
                           onOpen={() => setOpenEnd(true)}
                           onClose={() => setOpenEnd(false)}
                           label="End Date"

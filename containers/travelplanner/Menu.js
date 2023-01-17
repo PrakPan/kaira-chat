@@ -123,7 +123,7 @@ const Menu = (props) => {
 
         </FiltersContainer>
         <div className='hidden-mobile' style={{color: 'white', display: 'flex', flexGrow: '1',paddingRight: '1rem'}}>
-            <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
+            <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}} onClick={props.openWhatsapp}>Connect on WhatsApp</div>
             <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
 
         </div>
