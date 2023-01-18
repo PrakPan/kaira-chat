@@ -25,8 +25,7 @@ height: max-content;
 color: black;
 z-index :2;
 position: relative;
-padding: 1rem 1rem 1rem 1rem;
- background-color: white;
+  background-color: white;
  width: 100%;marginBottom: slideIndex === 2 ? '0.75rem' : '0.25rem',
  margin: 0.5rem;
 border-radius: 10px !important;
@@ -204,13 +203,13 @@ const Enquiry = (props) => {
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
            
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div style={{paddingBottom: '1rem', width: '100%', marginBottom: slideIndex === 2 ? '2rem' : '1rem', display: 'grid', gridTemplateColumns: 'max-content auto', borderStyle: 'none none solid none' , borderWidth: '1px', borderColor: '#f7e700'}}>
+            <div style={{padding: '0.5rem', width: '100%', marginBottom: slideIndex === 2 ? '2rem' : '1rem', display: 'grid', gridTemplateColumns: 'max-content auto', borderStyle: 'none none solid none' , borderWidth: '1px', borderColor: '#f7e700'}}>
             {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
             <Heading>{"Get your free travel plan!" }</Heading> 
 
             </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
-
+            <div style={{padding: '1rem', width: '100%'}}>
             <Flickity
             token={props.token}
             // _handlePrev={_prevSlideHandler}
@@ -242,16 +241,16 @@ const Enquiry = (props) => {
             Submit
             </Button> } */}
             {
-                slideIndex === 0 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
-                Continue
-                </Button>  : null
+                slideIndex === 0 ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                Next
+                </Button></div>  : null
             }
             {
-                slideIndex === 1 ? !props.token ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
-                Continue
-                </Button> :  <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
+                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                Next
+                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600"  margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={_submitDataHandler}>
             Submit
-            </Button> : null
+            </Button></div> : null
             }
             <Grid container spacing={2}>
            
@@ -272,6 +271,7 @@ const Enquiry = (props) => {
            
             {/* </Modal.Body> */}
       {/* </Modal> */}
+      </div>
       </Container>
       </div>
 );
