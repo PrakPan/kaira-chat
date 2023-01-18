@@ -34,6 +34,10 @@ const LocationsBlog= (props) => {
         localStorage.setItem('search_city_selected_parent', parent);
         router.push('/tailored-travel')
     }
+    const _handlePlannerPage = (id,name,parent) => {
+      router.push('/travel-planner/'+name)
+
+    }
     const [cardsJSX, setCardsJSX] = useState([null, null, null, null , null]);
     useEffect(() => {
       let cardsarr = [];
@@ -46,7 +50,7 @@ const LocationsBlog= (props) => {
           location={location.name}
           heading={location.tagline}
           img={location.image}
-          onclick={() => _handlePlanning(location.id, location.name, location.state.name)}
+          onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id, location.slug, location.state.name)}
           > 
           </Card>
         )

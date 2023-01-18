@@ -26,6 +26,7 @@ import Overview from './Overview';
 import Button from '../../components/ui/button/Index';
 import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
+import Locations from '../../components/containers/Locations';
 
 // import qs from qs;
 var qs = require('qs');
@@ -346,6 +347,64 @@ const _handleTailoredClick = () => {
   })
 
 }
+
+const TOP_LOCATIONS = [
+  {
+      "tagline": "Mountain Paradise",
+      "id": 114,
+      "name": "Ladakh",
+      "slug": 'ladakh-trip-planner',
+      "state": {
+        "name": "Ladakh"
+      },
+      "image": "media/website/ayandrali-dutta-GAWiEPB0uEk-unsplash.jpeg",
+      "url": "",
+  },
+  {
+      "tagline": "Heaven on Earth",
+      "name": "Kashmir",
+      "slug": 'kashmir-trip-planner',
+      "id":152,
+      "state": {
+        "name": "Kashmir",
+      },
+      "image": "media/website/praneet-kumar-H8dcf-v98mA-unsplash.jpeg",
+      "url": "",
+  },
+  {
+      "id": 278,
+      "tagline": "Awe-Inspiring",
+      "name": "Andaman",
+      "slug": 'andaman-trip-planner',
+      "state":{
+        "name": "Andaman And Nicobar Islands",
+      },
+      "image": "media/website/Andaman.jpeg",
+      "url": "",
+  },
+  {
+    "tagline": "Splendid",
+    "name": "Goa",
+    "id": 277,
+    "slug": 'goa-trip-planner',
+    "state": {
+      "name": "Goa"
+    },
+    "image": "media/website/Goa.jpg",
+    "url": "",
+},
+  {
+      "tagline": "Experience Heritage",
+      "name": "Rajasthan",
+      "id": 298,
+      "slug": 'rajasthan-trip-planner',
+      "state": {
+        "name": "Rajasthan",
+      },
+      "image": "media/website/Jodhpur.jpeg",
+      "url": "",
+  }
+];
 const EXPERIENCE = {  
   "id":"ifgPvZyQcBXXPYdJ",
   "slug": "bedazzling-friendcation-in-andaman",
@@ -399,6 +458,10 @@ const openWhatsapp = () => {
 </SetWidthContainer>
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer>
+      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>Trending Destination</Heading>        
+
+      <Locations locations={TOP_LOCATIONS} viewall planner></Locations>
+
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
         <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>What our customers say?</Heading>        
