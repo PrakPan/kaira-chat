@@ -13,6 +13,7 @@ import Spinner from '../Spinner';
 //  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
 import {connect} from 'react-redux';
+import {TbArrowBack} from 'react-icons/tb';
 
 // import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
@@ -26,7 +27,7 @@ z-index :2;
 position: relative;
 padding: 1rem 1rem 1rem 1rem;
  background-color: white;
- width: 100%;
+ width: 100%;marginBottom: slideIndex === 2 ? '0.75rem' : '0.25rem',
  margin: 0.5rem;
 border-radius: 10px !important;
  @media screen and (min-width: 768px){
@@ -36,11 +37,11 @@ border-radius: 10px !important;
 `
  const Heading = styled.p`
     font-size: 1.5rem;
-    margin: 0rem 0 1rem 0;
+    margin: 0rem 0 0rem 0;
     text-align: center;
     font-weight: 800;
     color: black;
-    line-height: 1;
+    line-height: normal;
 
 `;
  
@@ -197,19 +198,22 @@ const Enquiry = (props) => {
  return(
     <div>
                 {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
-
+               
     <Container className="border center-div" onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-            {!submitted? <Heading>{"Get your free travel plan!" }</Heading> : null}
+           
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div>
-            </div>  
+            <div style={{paddingBottom: '1rem', width: '100%', marginBottom: slideIndex === 2 ? '2rem' : '1rem', display: 'grid', gridTemplateColumns: 'max-content auto', borderStyle: 'none none solid none' , borderWidth: '1px', borderColor: '#f7e700'}}>
+            {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
+            <Heading>{"Get your free travel plan!" }</Heading> 
+
+            </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
 
             <Flickity
             token={props.token}
-            _handlePrev={_prevSlideHandler}
+            // _handlePrev={_prevSlideHandler}
             slideIndex={slideIndex}
             cities={props.cities}
             selectedCities={selectedCities}

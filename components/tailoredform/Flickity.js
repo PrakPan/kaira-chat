@@ -7,7 +7,7 @@ import SlideTwo from './slidetwo/SlideTwo';
 import { fadeIn } from 'react-animations'
 import Login from '../userauth/LogInModal';
 // import {IoIosArrowBack} from 'react-icons/io'
-import {TbArrowBack} from 'react-icons/tb';
+// import {TbArrowBack} from 'react-icons/tb';
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -35,7 +35,6 @@ const FlickityComp = (props) => {
   
       return (
         <div style={{width: '100%'}}>
-                      {props.slideIndex ? <TbArrowBack onClick={props._handlePrev} className="hover-pointer" style={{marginBottom: props.slideIndex === 2 ? '0.75rem' : '0.25rem'}}></TbArrowBack> : null}
                             {!props.slideIndex ? <Card><SlideOne 
                             cities={props.cities} 
                             selectedCities={props.selectedCities} 
