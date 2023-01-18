@@ -407,7 +407,7 @@ const openWhatsapp = () => {
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
         {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
         </SetWidthContainer>
-    <WhyUs></WhyUs>
+    {/* <WhyUs></WhyUs> */}
 {/*Add Banner*/}
   
 
