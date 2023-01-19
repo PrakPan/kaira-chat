@@ -154,8 +154,8 @@ const DATA=[
 	}
 ];
 const [loading, setLoading] = useState(true);
-const [itinerariesJSX, setItinerariesJSX] = useState(null);
-const [itinerariesToShowJSX, setItinerariesToShowJSX] = useState(null);
+const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState(null);
+const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState(null);
 const [filters, setFilters] = useState({
   'Trek': true,
   'Road Trip': true,
@@ -199,7 +199,7 @@ const _populateResultsHandelr = (filters) => {
       )
     }
    
-    setItinerariesJSX(itineraries);
+    setItinerariesExclusiveJSX(itineraries);
   }).catch(err => {
     setLoading(false);
 
@@ -283,9 +283,9 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
       )
     }
    
-    setItinerariesJSX(itineraries);
-    setOffset(9);
-    setItinerariesToShowJSX(itineraries.slice(0,9));
+    setItinerariesExclusiveJSX(itineraries);
+    setOffsetExclusive(9);
+    setItinerariesToShowExclusiveJSX(itineraries.slice(0,9));
   }).catch(err => {
     setLoading(false);
 
@@ -297,17 +297,17 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
   
  
  }, [props.experienceData])
- const [offset, setOffset] = useState(0);
-const _showMoreItineraries = () => {
-  if(offset > itinerariesJSX.length) return 0 ;
+ const [offsetExclusive, setOffsetExclusive] = useState(0);
+const _showMoreExclusiveItineraries = () => {
+  if(offsetExclusive > itinerariesExclusiveJSX.length) return 0 ;
   else {
-    let itineraries = itinerariesToShowJSX.slice();
+    let itineraries = itinerariesToShowExclusiveJSX.slice();
     // console.log('itineraries_length' , itineraries.length)
-    for(var i = offset; i < offset + 9 ; i++ ){
-      itineraries.push(itinerariesJSX[i]);
+    for(var i = offsetExclusive; i < offsetExclusive + 9 ; i++ ){
+      itineraries.push(itinerariesExclusiveJSX[i]);
     }
-    setOffset(offset+9);
-    setItinerariesToShowJSX(itineraries)
+    setOffsetExclusive(offsetExclusive+9);
+    setItinerariesToShowExclusiveJSX(itineraries)
   }
 }
 //JSX for How it works 
@@ -441,13 +441,25 @@ const openWhatsapp = () => {
 <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
 <Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
+<Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>        
+
   {!loading ? <GridContainer>
-    { itinerariesToShowJSX}
+    { itinerariesToShowExclusiveJSX}
  
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   }
   {
-    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreItineraries} >View More</Button> 
+    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
+    : null
+  }
+  <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>{'Trips by our users'}</Heading>        
+  {!loading ? <GridContainer>
+    { itinerariesToShowExclusiveJSX}
+ 
+  </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
+  }
+  {
+    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
