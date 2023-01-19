@@ -156,13 +156,17 @@ const DATA=[
 const [loading, setLoading] = useState(true);
 const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState(null);
 const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState(null);
+const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState(null);
+const [itinerariesToShowCustomerJSX, setItinerariesToShowCustomerJSX] = useState(null);
 const [filters, setFilters] = useState({
   'Trek': true,
   'Road Trip': true,
 }
 ) 
 const _populateResultsHandelr = (filters) => {
-  let itineraries = [];
+  let itineraries_exclusive = [];
+  let itineraries_customer = [];
+
   // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
   setLoading(true);
 
@@ -173,7 +177,7 @@ const _populateResultsHandelr = (filters) => {
 
     // console.log(res)
     for(var i =0 ; i<res.data.length; i++){
-      itineraries.push(
+      itineraries_exclusive.push(
       <ExperienceCard 
          key={res.data[i].short_text}
          hardcoded={res.data[i].payment_info ?true : false }
@@ -197,9 +201,13 @@ const _populateResultsHandelr = (filters) => {
          starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
        images={res.data[i].images}></ExperienceCard>
       )
+
+    
     }
    
-    setItinerariesExclusiveJSX(itineraries);
+    setItinerariesExclusiveJSX(itineraries_exclusive);
+    setItinerariesCustomerJSX(itineraries_customer);
+
   }).catch(err => {
     setLoading(false);
 
@@ -246,7 +254,9 @@ const _toggleFilterHandler = (filter_text) => {
 }
 
  useEffect(() => {
-  let itineraries = [];
+  let itineraries_exclusive = [];
+  let itineraries_customer = [];
+
   // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
 let locations = [];
 try{
@@ -261,7 +271,8 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
    }).then(res => {
     setLoading(false);
      for(var i =0 ; i<res.data.length; i++){
-      itineraries.push(
+      if(res.data[i].owner === 'TTW')
+      itineraries_exclusive.push(
       <ExperienceCard 
           data={res.data[i]}
          key={res.data[i].short_text}
@@ -281,11 +292,38 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
          starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
        images={res.data[i].images}></ExperienceCard>
       )
+      else
+      itineraries_customer.push(
+        <ExperienceCard 
+            data={res.data[i]}
+           key={res.data[i].short_text}
+           hardcoded={res.data[i].payment_info ?true : false }
+           filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
+           rating={res.data[i].rating}
+           slug={res.data[i].slug}
+           id={res.data[i].id}
+           number_of_adults={res.data[i].number_of_adults}
+           locations={res.data[i]["itinerary_locations"]}
+           text={res.data[i].short_text} 
+           experience={res.data[i].name}
+           cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
+           duration_number={res.data[i].duration_number}
+           duration_unit={res.data[i].duration_unit}
+          location={res.data[i]["experience_region"]}
+           starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
+         images={res.data[i].images}></ExperienceCard>
+        )
     }
    
-    setItinerariesExclusiveJSX(itineraries);
+    setItinerariesExclusiveJSX(itineraries_exclusive);
+    setItinerariesCustomerJSX(itineraries_customer);
+
     setOffsetExclusive(9);
-    setItinerariesToShowExclusiveJSX(itineraries.slice(0,9));
+    setOffsetCustomer(9);
+
+    setItinerariesToShowExclusiveJSX(itineraries_exclusive.slice(0,9));
+    setItinerariesToShowCustomerJSX(itineraries_customer.slice(0,9));
+
   }).catch(err => {
     setLoading(false);
 
@@ -298,6 +336,8 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
  
  }, [props.experienceData])
  const [offsetExclusive, setOffsetExclusive] = useState(0);
+ const [offsetCustomer, setOffsetCustomer] = useState(0);
+
 const _showMoreExclusiveItineraries = () => {
   if(offsetExclusive > itinerariesExclusiveJSX.length) return 0 ;
   else {
@@ -308,6 +348,19 @@ const _showMoreExclusiveItineraries = () => {
     }
     setOffsetExclusive(offsetExclusive+9);
     setItinerariesToShowExclusiveJSX(itineraries)
+  }
+}
+
+const _showMoreCustomerItineraries = () => {
+  if(offsetCustomer > itinerariesCustomerJSX.length) return 0 ;
+  else {
+    let itineraries = itinerariesToShowCustomerJSX.slice();
+    // console.log('itineraries_length' , itineraries.length)
+    for(var i = offsetCustomer; i < offsetCustomer + 9 ; i++ ){
+      itineraries.push(itinerariesCustomerJSX[i]);
+    }
+    setOffsetCustomer(offsetCustomer+9);
+    setItinerariesToShowCustomerJSX(itineraries)
   }
 }
 //JSX for How it works 
@@ -454,12 +507,12 @@ const openWhatsapp = () => {
   }
   <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>{'Trips by our users'}</Heading>        
   {!loading ? <GridContainer>
-    { itinerariesToShowExclusiveJSX}
+    { itinerariesToShowCustomerJSX}
  
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   }
   {
-    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
+    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
