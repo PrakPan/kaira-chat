@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 // import Heading from '../../../heading/Heading';
-import Heading from '../../../newheading/heading/Index';
+// import Heading from '../../../newheading/heading/Index';
 import ImageLoader from '../../../ImageLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock} from '@fortawesome/free-regular-svg-icons';
@@ -34,14 +34,21 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
     margin-right: 0.5rem;
 `;
 
+const Heading = styled.h1`
+    font-weight: 800;
+    font-size: 2rem;
+    @media screen and (min-width: 768px){
 
+    font-size: 2.5rem;
+    }
+`;
 
 const Overview = (props) => {
  
   
   return(
       <Container>
-        <Heading align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.name}</Heading>
+        <Heading  className="font-opensans text-center" bold noline>{props.name}</Heading>
         {props.duration ? <ApproxTime className="font-opensans">
             <StyledFontAwesomeIcon icon={faClock}/>
             {"Approximate Time: "+props.duration+"h"}</ApproxTime> : null}

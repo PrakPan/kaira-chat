@@ -49,7 +49,7 @@ const Inlcusions = (props) => {
                 newArr.push({...res.data.results[i]});
 
                 newJSXArr.push(
-                    <Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={res.data.results[i]}></Icon>
+                    <Icon data={res.data.results[i]} _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={res.data.results[i]}></Icon>
                 )
             }
             setPois(newArr);
@@ -82,7 +82,7 @@ const Inlcusions = (props) => {
             for(var j = 0 ; j< pois.length ; j++){
                newArr.push({...pois[j]});
               newJSXArr.push(
-                <Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...pois[j]}}></Icon>
+                <Icon data={pois[j]} _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...pois[j]}}></Icon>
             )
 
             }
@@ -99,7 +99,7 @@ const Inlcusions = (props) => {
           for(var i = 0; i<res.data.results.length; i++){
               newArr.push({...res.data.results[i]});
               newJSXArr.push(
-                <Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...res.data.results[i]}}></Icon>
+                <Icon data={res.data.results[i]} _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...res.data.results[i]}}></Icon>
             )
           }
           setPois(newArr); 

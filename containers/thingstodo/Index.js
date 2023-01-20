@@ -14,8 +14,8 @@ import axioscityinstance from '../../services/poi/city'
 
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
-  const [poiData, setPoiData] = useState();
-  const [showPoiModal, setShowPoiModal] = useState(false);
+  // const [poiData, setPoiData] = useState();
+  // const [showPoiModal, setShowPoiModal] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [scroll, setScroll] = useState(0);
   const [cityLoaded, setCityLoaded] = useState(false); //True when expereince data fetched
@@ -42,17 +42,7 @@ const Experience = (props) => {
 
     router.push('/tailored-travel')
   }
-  const _openPoiModal = (poi) => {
-    setPoiData({...poi});
-    setShowPoiModal(true);
 
-
-  }
-  const _closePoiModal = () => {
-     setShowPoiModal(false);
-
-
-  }
 
 
   useEffect(() => {
@@ -109,9 +99,9 @@ const Experience = (props) => {
           <FullImage center url={cityLoaded ? props.cityData.images[0].image  : ''}>
             <FullImageContent city tagline={props.cityData.nicknames.length ? props.cityData.nicknames[0] : ''} text={props.cityData.tagline}/>
           </FullImage>            
-          <Menu slug={props.id}   _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
+          <Menu slug={props.id}    setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
           <ChatBot history={props.history} />
-          <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
+          {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
         </div>
         {/* <Loading hide={experienceLoaded}></Loading> */}
           <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
@@ -148,7 +138,7 @@ const Experience = (props) => {
             <FullImageContent city tagline={props.cityData.nickname} text={props.cityData.tagline}/>
           </FullImage>
           <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={cityData.data.images}></Menu>
-          <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
+          {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
           <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
               { state => 
               <div
