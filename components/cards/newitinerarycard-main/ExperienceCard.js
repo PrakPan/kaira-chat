@@ -89,7 +89,7 @@ const _handleRedirect = () => {
        
        </ContentContainer>
        <div className='font-opensans text-center' style={{background: 'white' , borderWidth: '1px',  fontWeight: '600', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
-        {props.PW ? 'PW EXCLUSIVE - 50% OFF' : !props.myplan ?  'BLACK FRIDAY - 20% OFF' : 'ITINERARY STATUS'}
+        {props.PW ? '50% off for PW Members Only' : !props.myplan ?  'BLACK FRIDAY - 20% OFF' : 'ITINERARY STATUS'}
         </div>
       </Container> 
   ); 

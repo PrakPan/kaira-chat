@@ -106,9 +106,16 @@ const FullImgContent = (props) => {
         <Container className='font-opensans center-di text-center'>
            <PaddingContianer >
             <Heading>Physics Wallah Holidays</Heading>
+            <SubText style={{fontWeight:  '600'}}>
+                 #pwtraveltogether
+            </SubText>
             <SubText>
                 {/* <span style={{marginLeft: '6px', fontWeight: '800'}}>TTWxPW</span> */}
                 50% amount of your holiday will be paid by Physics Wallah
+            </SubText>
+            <SubText style={{fontSize: '1rem'}}>
+                {/* <span style={{marginLeft: '6px', fontWeight: '800'}}>TTWxPW</span> */}
+                Discounts on family packages coming soon...
             </SubText>
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', width: 'max-content', margin: 'auto'}}>

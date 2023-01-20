@@ -38,6 +38,18 @@ const RegistrationModal = (props) => {
               <li>If a trip is customised, then 20% off on the trip.</li>
               <li>If PW members travel together, then 50% discount on the overall trip.</li>
               <li>The above discounts are not applicable, in case of individual bookings for flights, trains & hotels.</li>
+              <li>All amounts are payable to "TARZAN WAY TRAVELS PVT LTD". PAN Number: AAGCT8887K</li>
+              <li>Pricing is inclusive of accommodations, transfers, and activities as mentioned</li>
+              <li>There might be some changes in case the weather conditions are rough, and we'll try our best to find similar activities/transfers/accommodations in the case.</li>
+              <li>In case of non availability of enough rooms in the specified hotels, we'll inform you the same and will give you different options of hotels. In case you are not satisfied with any of the alternate options, the advance paid will be refunded.</li>
+              <li>Early check-in or late check-out is subject to availability and the hotel may charge extra for the same</li>
+              <li>All optional activity cost and entrance fees to the sightseeing places are excluded</li>
+              <li>The Tarzan Way is not liable for any mishaps at the accommodation, transportation or activity. Any disputes must be settled with the partners directly. However we will be providing live customer support for the same.</li>
+             <li>Travelers are requested to take care of their belongings and TTW is not liable for the loss or theft of the belongings.</li>
+             <li>Any cost or cancellation charge arising out of unforeseen circumstances is not included.</li>
+              <li>Full payment is expected in advance.</li>
+              <li>To ensure the best experience possible, we offer a  24/7 live concierge.</li>
+              <li>For any other queries, mail us at info@thetarzanway.com or call / whatsapp on +91-9582125476</li>
              </ol>
               </Body>
       </Modal>
