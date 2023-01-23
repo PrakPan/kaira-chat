@@ -15,7 +15,7 @@ const RegistrationModal = (props) => {
       
     }, []);
   
-  
+    
      
 
   return(

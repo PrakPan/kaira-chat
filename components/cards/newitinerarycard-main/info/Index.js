@@ -35,7 +35,7 @@ const Info = (props) => {
             fontSize="0.75rem"
             onclick={_handleRedirect}
             >
-                {props.PW ? "Get this trip"  :"View Itinerary"}
+                {props.PW ? "View Trip"  :"View Itinerary"}
             </Button>
           </div>
 
