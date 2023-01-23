@@ -1,6 +1,6 @@
 import React, {useState, useEffect } from 'react';
   
-import media from '../../../media';
+import media from '../../../../media';
  
 import styled from 'styled-components';
 //  import ImageLoader from '../../../ImageLoader';

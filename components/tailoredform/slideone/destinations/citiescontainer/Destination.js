@@ -1,11 +1,11 @@
 import React, {useState, useEffect } from 'react';
   
-import media from '../../../media';
+import media from '../../../../media';
  
 import styled from 'styled-components';
- import ImageLoader from '../../../ImageLoader';
+ import ImageLoader from '../../../../ImageLoader';
 
- import BackgroundImageLoader  from '../../../UpdatedBackgroundImageLoader';
+ import BackgroundImageLoader  from '../../../../UpdatedBackgroundImageLoader';
  import {BsCheckCircleFill} from 'react-icons/bs';
  const LocationContainer = styled.div`
   &:hover{

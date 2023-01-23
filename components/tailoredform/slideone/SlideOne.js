@@ -62,7 +62,7 @@ const SlideOne = (props) =>{
     <Section>
         <Question>Where do  you want to go?</Question>
 
-        <Destinations CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
+        <Destinations  destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>
         <Question >What are your dates?</Question>

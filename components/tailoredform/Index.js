@@ -211,6 +211,7 @@ const Enquiry = (props) => {
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
             <div style={{padding: '1rem', width: '100%'}}>
             <Flickity
+            destination={props.destination}
             token={props.token}
             // _handlePrev={_prevSlideHandler}
             slideIndex={slideIndex}

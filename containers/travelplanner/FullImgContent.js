@@ -96,7 +96,7 @@ console.log('c', props.cities)
                 </PaddingContianer>
                {/* <Banner></Banner> */}
                <div className='hidden-mobile' style={{padding: '1rem'}}>
-                <TailoredForm cities={props.cities}></TailoredForm>
+                <TailoredForm destination={props.destination} cities={props.cities}></TailoredForm>
                 </div>
              
         </Container>
