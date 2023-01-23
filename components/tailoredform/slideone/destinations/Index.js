@@ -31,7 +31,8 @@ const Destinations = (props) => {
         <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
         {props.showCities ? <CitiesContainer setShowCities={props.setShowCities} destination={props.destination} CITIES={props.CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}>
 
-        </CitiesContainer>  : null}
+        </CitiesContainer>  : null} 
+        {/* <p className='font-opensans text-center hover-pointer' style={{fontSize: '0.85rem', color: '#1360D3'}}>+ Add More</p> */}
 
     </Container>
   );

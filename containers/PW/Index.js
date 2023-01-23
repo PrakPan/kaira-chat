@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
 import FullImage from '../../components/FullImage';
+import Republic from './FullImgContentRepublic';
    
  import AsSeenIn from '../testimonial/AsSeenIn';
  import Heading from '../../components/newheading/heading/Index';
@@ -352,9 +353,13 @@ const EXPERIENCE = {
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent/>
       </FullImage>
+      
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>
 <Menu _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
+<FullImage heightmobile="max-content" padding="0" height="max-content" url="media/website/travel-min.png" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+          <Republic></Republic>
+      </FullImage>
 <SetWidthContainer>
   {!loading ? <GridContainer>
     { itinerariesJSX}

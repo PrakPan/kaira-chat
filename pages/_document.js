@@ -5,14 +5,21 @@ import Layout from '../components/Layout';
 import { GOOGLE_ANALTICS_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
 
+ 
 // import Script from 'next/script';
 export default class MyDocument extends Document {
+  //   constructor() {
+  
+  // }
+  componentDidMount() {
+    
+      // mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true, ignore_dnt: true}); 
+    // console.log('testong')
+   }
   
   static getInitialProps({ renderPage }) {
 
-    mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true}); 
-
-    mixpanel.track('Sign up');
+    
 
     // Step 1: Create an instance of ServerStyleSheet
     const sheet = new ServerStyleSheet();
@@ -30,8 +37,9 @@ export default class MyDocument extends Document {
   }
 
   render() {
+  
     return (
-      <Html id="html">
+      <Html id="html"  >
         <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"></meta>
  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-738037519"></script>

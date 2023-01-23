@@ -1,17 +1,14 @@
 import React, {useState, useEffect } from 'react';
   
-import media from '../../../../../media';
+import media from '../../../../media';
  
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
+import SearchInput from './Input';
 
-
-const Container = styled.input`
- &:focus{
-    border: none;
-    outline: none;
- }
- border: none;
+const Container = styled.div`
+ 
+width: 100%;
  
   @media screen and (min-width: 768px){
  
@@ -20,18 +17,18 @@ const Container = styled.input`
 `;
 
  
-const SearchInput = (props) => {
+const SearchStarting = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   return (
-   <Container placeholder='Search your location' className='font-opensans' autoFocus>
-    
+   <Container>
+        <SearchInput></SearchInput>
     </Container>
   );
 }
 
 
-export default SearchInput;
+export default SearchStarting;
 

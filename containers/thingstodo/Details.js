@@ -84,12 +84,12 @@ const Details = (props) => {
     let cardsarr=[];
   for(var i = 0 ; i<locations.length ; i++){
     const slug  = locations[i].slug;
+    console.log(locations[i]);
     if(locations[i].image)
     cardsarr.push(
         <Card
-  location={locations[i].nickname}
-  heading={locations[i].tagline}
-  img={locations[i].image}
+  location={locations[i].name}
+   img={locations[i].image}
   onclick={() => _handleRedirect(slug)}
   > 
   </Card>

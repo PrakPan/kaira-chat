@@ -22,14 +22,12 @@ const  Icon= (props) => {
         text-align: center
     `;
     
-    const _handleOpen = (event) => {
-        props._openPoiModal(props.icon);
-    }
+   
          return( 
-            <Container onClick={(event) => _handleOpen(event)}  >
+            <Container onClick={(event) => setShowModal(true)} className="hover-pointer"  >
                     <ImageLoader url={props.icon.image} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} location={props.location} icon={props.icon}></ImageLoader>
                     <IconTagLine className="font-opensans">{props.icon.name}</IconTagLine>
-                    <POIModal show={showModal} onHide={() => setShowModal(false)} />
+                    <POIModal poi={props.data} show={showModal} onHide={() => setShowModal(false)} />
             </Container>
           );
     }

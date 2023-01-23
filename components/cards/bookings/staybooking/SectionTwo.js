@@ -108,7 +108,7 @@ const Section= (props) => {
 
 <div style={{display: 'grid',  gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
     <ImageLoader url="media/icons/bookings/tourist.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-    <div style={{display: 'flex', gap: '1rem'}}> 
+    <div style={{display: 'flex', gap: '1rem',}}> 
         {/* <div className='center-div'>
             <Text className='font-opensans'>2 Adults , 1 Child(s)</Text>
         </div> */}
@@ -137,7 +137,7 @@ const Section= (props) => {
 </div> 
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridColumnGap: '0.5rem', marginBottom: '0.25rem'}}>
                     <ImageLoader url="media/icons/bookings/bed.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                    <div style={{display: 'flex', gap: '1rem'}}> 
+                    <div style={{display: 'flex', gap: '1rem', flexDirection:'column'}}> 
                         {/* <div className='center-div'>
                             <Text className='font-opensans'>2 x Super Deluxe rooms</Text>
                         </div> */}

@@ -1,6 +1,6 @@
 import React, {useState, useEffect } from 'react';
   
-import media from '../../../../../media';
+import media from '../../../../media';
  
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
@@ -17,7 +17,7 @@ width: 100%;
 `;
 
  
-const SearchStarting = (props) => {
+const Search = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
   // const [showCities, setShowCities] = useState(false);
@@ -30,5 +30,5 @@ const SearchStarting = (props) => {
 }
 
 
-export default SearchStarting;
+export default Search;
 

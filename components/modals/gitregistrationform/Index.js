@@ -10,7 +10,7 @@ import { useRouter } from 'next/router';
 import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
 import Cart from './cart/Index';
 import axios from 'axios';
-import TermsModal from '../terms/Index';
+import TermsModal from '../terms/PW';
 import LoadingPage from '../../LoadingPage';
 import dayjs from 'dayjs';
 

@@ -6,7 +6,8 @@ import styled from 'styled-components';
 import {MdOutlineLocationOn} from 'react-icons/md'
 import {FiInfo} from 'react-icons/fi'
 import {GrFormEdit} from 'react-icons/gr';
-import SearchInput from './searchstarting/Input';
+import SearchInputStarting from '../searchstarting/Input';
+import SearchInput from '../search/Input';
 //  import LocationsContainer from './LocationsContainer'
 const Container = styled.div`
  margin-bottom: 0.25rem;
@@ -23,6 +24,8 @@ align-items: center;
 const LeftContent = styled.div`
 line-height: 1;
 font-size: 0.85rem;
+display: flex;
+align-items: center;
 `;
 const RightContainer = styled.div`
 line-height: 1;
@@ -44,7 +47,7 @@ const SelectedDestination = (props) => {
    <Container className='border font-opensans' style={{borderRadius: '10px'}}>
     <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : () => console.log('')}>
         <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
-    {props.selectlocation ? !showSearchStarting ? 'Your Location' : <SearchInput></SearchInput>: props.destination}
+    {props.selectlocation ? !showSearchStarting ? 'Your Location' : <SearchInputStarting></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
 {props.selectlocation && !showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem'}}></GrFormEdit> : null}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >

@@ -23,7 +23,7 @@ import { ITINERARY_STATUSES } from '../../../../services/constants';
 import axios from 'axios';
 import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCreate';
 import Spinner from '../../../../components/Spinner';
-import TermsModal from '../../../../components/modals/terms/Index';
+import TermsModal from '../../../../components/modals/terms/PW';
 import RegisteredUsersModal from '../../../../components/modals/registeredusers/Index';
 const SummaryContainer = styled.div`
 height: max-content;
@@ -250,11 +250,11 @@ const _startRazorpayHandler = (data) => {
     {/* <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? "You're all set!" : 'Book Now'}</Heading> */}
 
         {!oldaccommodation ? <div style={{marginBottom: '1.5rem', display: "grid", gridTemplateColumns: "1fr 1fr", gridColumnGap: "1rem"}}>
-                {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"STARTING DATE "}</p> : <div></div>}
-                {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p>  : <div></div>}
-                {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized? <div style={{display: 'flex', alignItems: 'center', fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.meta_info ? props.payment.meta_info.start_date ?  getHumanDate(props.payment.meta_info.start_date.replaceAll('-','/')) :  null :null}</div> : <SelectDate date={date} setDate={setDate} token={props.token}></SelectDate>}
+                {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized || props.plan.featured  ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"STARTING DATE "}</p> : <div></div>}
+                {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>PAX</p>  : <div></div>}
+                {props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? <div style={{display: 'flex', alignItems: 'center', fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.meta_info ? props.payment.meta_info.start_date ?  getHumanDate(props.payment.meta_info.start_date.replaceAll('-','/')) :  null :null}</div> : <SelectDate date={date} setDate={setDate} token={props.token}></SelectDate>}
                 {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.number_of_people}</p> */}
-                {props.payment.meta_info && props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized? <div>
+                {props.payment.meta_info && (props.payment.itinerary_status === ITINERARY_STATUSES.itinerary_finalized || props.plan.featured )? <div>
                   <FontAwesomeIcon icon={faMale} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
                   <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.payment.meta_info.number_of_adults}</p>
                   <FontAwesomeIcon icon={faChild} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
@@ -268,7 +268,10 @@ const _startRazorpayHandler = (data) => {
         {/* <SelectDetails></SelectDetails> */}
         <div style={{marginBottom: '1.5rem'}}>
             {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>WHAT'S INCLUDED?</p> */}
-            {/* <BookingListCostContainer>
+            {/* <BookingListCostContainer>  initialStateFromGSPorGSSR: undefined }
+Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+4. WrappedApp created new store with withRedux(MyApp) { initialState: undefined,
+  initialStateFromGSPorGSSR: undefined }
            {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
            </BookingListCostContainer> */}
                      <Accordion stayBookings={props.stayBookings} flightBookings={props.flightBookings} activityBookings={props.activityBookings} transferBookings={props.transferBookings} payment={props.payment}></Accordion>

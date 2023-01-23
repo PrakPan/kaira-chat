@@ -46,7 +46,7 @@ const Inlcusions = (props) => {
             for(var i = 0; i<res.data.results.length; i++){
                 newArr.push({...res.data.results[i]});
                 newJSXArr.push(
-                    <Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={res.data.results[i]}></Icon>
+                    <Icon data={res.data.results[i]} _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={res.data.results[i]}></Icon>
                 )
             }
             setPois(newArr);
@@ -75,7 +75,7 @@ const Inlcusions = (props) => {
             for(var j = 0 ; j< pois.length ; j++){
                newArr.push({...pois[j]});
               newJSXArr.push(
-                <Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...pois[j]}}></Icon>
+                <Icon  data={pois[j]}  _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...pois[j]}}></Icon>
             )
 
             }
@@ -85,7 +85,7 @@ const Inlcusions = (props) => {
           for(var i = 0; i<res.data.results.length; i++){
               newArr.push({...res.data.results[i]});
               newJSXArr.push(
-                <Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...res.data.results[i]}}></Icon>
+                <Icon data={res.data.results[i]}  _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={{...res.data.results[i]}}></Icon>
             )
           }
           setPois(newArr); 
@@ -107,19 +107,19 @@ const Inlcusions = (props) => {
     let moremoreicons = [];
     
     for(var i = 0 ; i < 6; i++){
-        if(props.pois[i]) defaulticons.push(<Icon  _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[i]}></Icon>)
+        if(props.pois[i]) defaulticons.push(<Icon data={props.pois[i]}   _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[i]}></Icon>)
     }
 
     //if more than 6 pois, show more 
     if(props.pois.length > 6)
     for(var j = 6 ; j < 9; j++){
-        if(props.pois[j]) moreicons.push(<Icon  _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[j]}></Icon>)
+        if(props.pois[j]) moreicons.push(<Icon data={props.pois[j]}   _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[j]}></Icon>)
     }
 
     //if more than 9, show more more
     if(props.pois.length > 9)
     for(var k = 9 ; k < 12; k++){
-        if(props.pois[k]) moremoreicons.push(<Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={props.pois[k]}></Icon>)
+        if(props.pois[k]) moremoreicons.push(<Icon  data={props.pois[k]}  _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={props.pois[k]}></Icon>)
     }
     const _showMoreHandler = () => {
         setShowMoreStatus(showMoreStatus+1)
