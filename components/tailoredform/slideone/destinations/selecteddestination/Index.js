@@ -5,9 +5,10 @@ import media from '../../../../media';
 import styled from 'styled-components';
 import {MdOutlineLocationOn} from 'react-icons/md'
 import {FiInfo} from 'react-icons/fi'
+import {GrFormEdit} from 'react-icons/gr';
 //  import LocationsContainer from './LocationsContainer'
 const Container = styled.div`
- 
+ margin-bottom: 0.25rem;
 width: 100%;
  display: flex;
 justify-content: space-between;
@@ -35,12 +36,12 @@ const SelectedDestination = (props) => {
   
   return (
    <Container className='border font-opensans' style={{borderRadius: '10px'}}>
-    <LeftContent>
-        <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem'}}></MdOutlineLocationOn>
-    {props.destination}
-
+    <LeftContent className='hover-pointer'>
+        <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
+    {props.selectlocation ? 'Your Location' : props.destination}
+{props.selectlocation ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem'}}></GrFormEdit> : null}
     </LeftContent>
-    <RightContainer className='hover-pointer' >
+    {!props.selectlocation ? <RightContainer className='hover-pointer' >
         {props.selectedCities ? 
         props.selectedCities.length ? 
         <span>{'+ '+ props.selectedCities.length + " Cities Added"}</span>
@@ -56,6 +57,13 @@ const SelectedDestination = (props) => {
     <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px'}}></FiInfo>
 
     </RightContainer>
+     : 
+     <RightContainer className='hover-pointer' >
+     
+ <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px'}}></FiInfo>
+
+ </RightContainer>
+     }
     </Container>
   );
 }

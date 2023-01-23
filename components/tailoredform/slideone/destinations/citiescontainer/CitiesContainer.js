@@ -8,9 +8,9 @@ import styled from 'styled-components';
 // import Animate from '../../../HOC/'
  const AbsoluteContainer = styled.div`
  background-color: white;
- padding: 0.25rem;
+ padding: 0.5rem;
 position: absolute;
-top: 2.75rem;
+top: 5.5rem;
 z-index: 10;
  `
  const LocationContainer = styled.div`
@@ -110,8 +110,8 @@ const LocationsContainer = (props) => {
                 {props.CITIES.length && showMore ? moreLocationsJSX : null}
    </LocationContainer>
    {props.CITIES.length > 6 && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
-   <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => console.log('')}>
-                Next
+   <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0 0 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => props.setShowCities(false)}>
+                {props.selectedCities ? props.selectedCities.length ? 'Continue' : 'Inspire Me' :'Inspire Me'}
                 </Button></div>  
    </AbsoluteContainer>
   );
