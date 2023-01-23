@@ -36,6 +36,7 @@ const Dates = (props) => {
                
                <LocalizationProvider dateAdapter={AdapterDateFns}>
              <DatePicker
+             inputFormat='dd/MM/yyyy'
               open={openStart}
               onOpen={() => setOpenStart(true)}
               onClose={() => setOpenStart(false)}
@@ -56,6 +57,7 @@ const Dates = (props) => {
                           
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
+                          inputFormat='dd/MM/yyyy'
                           open={openEnd}
                           disablePast
                           minDate={props.valueStart}

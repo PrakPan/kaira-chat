@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import {MdOutlineLocationOn} from 'react-icons/md'
 import {FiInfo} from 'react-icons/fi'
 import {GrFormEdit} from 'react-icons/gr';
+import SearchInput from './searchstarting/Input';
 //  import LocationsContainer from './LocationsContainer'
 const Container = styled.div`
  margin-bottom: 0.25rem;
@@ -32,14 +33,19 @@ color: #1360D3;
  
 const SelectedDestination = (props) => {
 
+
   let isPageWide = media('(min-width: 768px)');
-  
+  const [showSearchStarting, setShowSearchStarting] = useState(false);
+  const _handleShowSearchStarting = () => {
+    setShowSearchStarting(true);
+
+  }
   return (
    <Container className='border font-opensans' style={{borderRadius: '10px'}}>
-    <LeftContent className='hover-pointer'>
+    <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : () => console.log('')}>
         <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
-    {props.selectlocation ? 'Your Location' : props.destination}
-{props.selectlocation ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem'}}></GrFormEdit> : null}
+    {props.selectlocation ? !showSearchStarting ? 'Your Location' : <SearchInput></SearchInput>: props.destination}
+{props.selectlocation && !showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem'}}></GrFormEdit> : null}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >
         {props.selectedCities ? 

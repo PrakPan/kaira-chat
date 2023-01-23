@@ -76,7 +76,7 @@ showCities={props.showCities}
 
 </Section>
 <Section style={{marginBottom: '0.5rem'}}>
-<StartingLocation></StartingLocation>
+{/* <StartingLocation></StartingLocation> */}
 
 </Section>
     </Container>
