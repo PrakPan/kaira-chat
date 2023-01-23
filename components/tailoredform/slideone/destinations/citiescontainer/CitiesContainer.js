@@ -1,15 +1,22 @@
 import React, {useState, useEffect } from 'react';
   
 import media from '../../../../media';
- 
+ import Button from '../../../../ui/button/Index';
 import styled from 'styled-components';
 //  import ImageLoader from '../../../ImageLoader';
  import Location from './Destination';
 // import Animate from '../../../HOC/'
- 
+ const AbsoluteContainer = styled.div`
+ background-color: white;
+ padding: 0.25rem;
+position: absolute;
+top: 2.75rem;
+z-index: 10;
+ `
  const LocationContainer = styled.div`
- padding: 0;
- 
+ padding: 0.25rem 0;
+ width: 100%;
+
  max-width: 100%;
  
  display: grid;
@@ -89,8 +96,10 @@ const LocationsContainer = (props) => {
   },[props.CITIES, props.selectedCities]);
   
   return (
-    <div>
-    <LocationContainer className='border-thi' >
+    <AbsoluteContainer className='border'>
+      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{"Cities around " + props.destination}</p>
+    <LocationContainer  >
+        
                 {/* <Location image="" text="Port Blair" onclick={() => _handleClick(props.CITIES[0])} ></Location>
                 <Location  image="" text="Niel Island"></Location>
                 <Location  image="" text="Havelock"></Location>
@@ -101,8 +110,10 @@ const LocationsContainer = (props) => {
                 {props.CITIES.length && showMore ? moreLocationsJSX : null}
    </LocationContainer>
    {props.CITIES.length > 6 && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
-
-   </div>
+   <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => console.log('')}>
+                Next
+                </Button></div>  
+   </AbsoluteContainer>
   );
 }
 

@@ -37,7 +37,8 @@ const FlickityComp = (props) => {
         <div style={{width: '100%'}}>
                             {!props.slideIndex ? <Card><SlideOne 
                                         destination={props.destination}
-
+                                        showCities={props.showCities}
+                                        setShowCities={props.setShowCities}
                             cities={props.cities} 
                             selectedCities={props.selectedCities} 
                             setSelectedCities={props.setSelectedCities} 

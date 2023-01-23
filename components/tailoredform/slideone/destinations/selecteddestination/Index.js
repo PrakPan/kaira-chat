@@ -41,7 +41,18 @@ const SelectedDestination = (props) => {
 
     </LeftContent>
     <RightContainer className='hover-pointer' >
-        {props.CITIES ? props.CITIES.length ? '+  Select Cities (' + props.CITIES.length + ")": ' + Select Cities' : ' + Select Cities'}
+        {props.selectedCities ? 
+        props.selectedCities.length ? 
+        <span>{'+ '+ props.selectedCities.length + " Cities Added"}</span>
+        : 
+        
+        <span onClick={props.openCities}>{props.CITIES ? props.CITIES.length ? '+  Select Cities (' + props.CITIES.length + ")": ' + Select Cities' : ' + Select Cities'}</span>
+        : 
+
+        <span onClick={props.openCities}>{props.CITIES ? props.CITIES.length ? '+  Select Cities (' + props.CITIES.length + ")": ' + Select Cities' : ' + Select Cities'}</span>
+
+    }
+       
     <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px'}}></FiInfo>
 
     </RightContainer>

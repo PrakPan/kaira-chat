@@ -185,6 +185,7 @@ const Enquiry = (props) => {
     const [numberOfInfants, setNumberOfInfants] = useState(0);
     const [budget, setBudget] = useState('Affordable');
     const [selectedPreferences, setSelectedPreferences]  = useState([]);
+    const [showCities, setShowCities] = useState(false);
 
     const [showBlack, setShowBlack] = useState(false);
 
@@ -211,6 +212,8 @@ const Enquiry = (props) => {
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
             <div style={{padding: '1rem', width: '100%'}}>
             <Flickity
+            showCities={showCities}
+            setShowCities={setShowCities}
             destination={props.destination}
             token={props.token}
             // _handlePrev={_prevSlideHandler}
@@ -242,7 +245,7 @@ const Enquiry = (props) => {
             Submit
             </Button> } */}
             {
-                slideIndex === 0 ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
                 </Button></div>  : null
             }

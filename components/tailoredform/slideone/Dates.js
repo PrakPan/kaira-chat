@@ -31,7 +31,7 @@ const Dates = (props) => {
   let isPageWide = media('(min-width: 768px)');
   
   return (
-   <Grid container spacing={2}>
+   <Grid container spacing={2} style={{visibility: props.showCities ? 'hidden' : 'visible'}}>
  <Grid item xs={6}>
                
                <LocalizationProvider dateAdapter={AdapterDateFns}>
