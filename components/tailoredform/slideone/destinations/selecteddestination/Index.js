@@ -45,9 +45,9 @@ const SelectedDestination = (props) => {
   }
   return (
    <Container className='border font-opensans' style={{borderRadius: '10px'}}>
-    <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : () => console.log('')}>
+    <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : props.openCities}>
         <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
-    {props.selectlocation ? !showSearchStarting ? 'Your Location' : <SearchInputStarting _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
+    {props.selectlocation ? !showSearchStarting ? 'Delhi' : <SearchInputStarting _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
 {props.selectlocation && !showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem'}}></GrFormEdit> : null}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >

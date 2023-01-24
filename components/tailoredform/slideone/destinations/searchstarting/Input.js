@@ -4,6 +4,7 @@ import media from '../../../../media';
  
 import styled from 'styled-components';
 import SearchResult from './SearchResult';
+import Spinner from '../../../../Spinner';
 
 //  import LocationsContainer from './LocationsContainer'
 import axiossearchstartinginstance from '../../../../../services/search/startinglocation';
@@ -19,6 +20,7 @@ const ResultsContainer = styled.div`
   z-index: 4;
  `;
 const InputContainer = styled.input`
+width: 9rem;
  &:focus{
     border: none;
     outline: none;
@@ -45,6 +47,7 @@ const SearchInput = (props) => {
     setSelected(text);
   }
   const _getResults = (query) => {
+    setLoading(true);
   axiossearchstartinginstance.get(
         `?q=`+query
       )
@@ -75,10 +78,13 @@ const SearchInput = (props) => {
     }
   return (
     <Container>
-   {!selected ? <InputContainer placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
-    
+   {!selected ? <div style={{display: 'flex'}}><InputContainer placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
+    {/* ed */}
     </InputContainer>
-    : <div className='font-opensans' onClick={_handleClearResults}>{selected}</div>}
+    {loading ? <Spinner size={16} margin="0"></Spinner> : null}
+    </div>
+    : <div className='font-opensans' onClick={_handleClearResults}>
+      {selected}</div>}
     {!selected ? <ResultsContainer>
     {resultsJSX}
     </ResultsContainer> : null}
