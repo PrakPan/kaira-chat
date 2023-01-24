@@ -206,7 +206,7 @@ const Enquiry = (props) => {
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
             <div style={{padding: '0.5rem', width: '100%', marginBottom: slideIndex === 2 ? '2rem' : '1rem', display: 'grid', gridTemplateColumns: 'max-content auto', borderStyle: 'none none solid none' , borderWidth: '1px', borderColor: '#f7e700'}}>
             {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
-            <Heading>{"Get your free travel plan!" }</Heading> 
+            <Heading>{"Trip Planner" }</Heading> 
 
             </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
@@ -245,12 +245,12 @@ const Enquiry = (props) => {
             Submit
             </Button> } */}
             {
-                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
                 </Button></div>  : null
             }
             {
-                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
                 </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600"  margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={_submitDataHandler}>
             Submit

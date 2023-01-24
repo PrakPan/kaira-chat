@@ -56,7 +56,7 @@ const Location = (props) => {
                         height='auto'
                         width="100%"
                         heighttab="100%"
-                        dimensions={{width: 600, height: 400}}
+                        dimensions={{width: 600, height: 500}}
                         dimensionsMobile={{width: 600, height:400}}
                         fit="cover"
                      onclick={props.onclick}

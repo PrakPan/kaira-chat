@@ -13,9 +13,10 @@ const Container = styled.div`
   color:white;
  width: 100%;
  display: grid;
+
   @media screen and (min-width: 768px){
     padding: 0 7.5vh;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: auto 35vw;
  
     }
 `;

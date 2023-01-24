@@ -2,7 +2,7 @@ import LadakhContainer from '../../containers/travelplanner/Index';
 import Head from 'next/head';
 import Layout from '../../components/Layout'
 
-const DATA ={
+const DATA = {
 	"page_type": "Destination",
 	"destination": "Rajasthan",
 	"page_title": "Travel Company | India | The Tarzan Way",
@@ -12,7 +12,7 @@ const DATA ={
 	"banner_text": null,
 	"overview_heading": "Rajasthan",
 	"overview_text": "The Indian state of Rajasthan is popularly known to many as the Land of the Kings, is a beautiful example of India?s age-old opulence and grandeur, traces of which still linger in the air of this state. One of the most colourful and vibrant states in the country, with a strong blend of culture, history, music, cuisine falling in love with Rajasthan doesn't take much time. Rajasthan has more history than the entire country put together- it is the realm of erstwhile Maharajas and their lavish palaces and majestic forts. Golden-sand deserts, traditional handicrafts, authentic cuisine and awe-inspiring palaces all contribute to making Rajasthan an ideal vacation spot. Don't forget to wish everyone with \"Khamma Ghani\" while you're here!",
-	"image": "media/cities/162428369233103537559509277344.jpg",
+	"image": "media/cities/161356932393205499649047851562.jpg",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -324,6 +324,7 @@ const DATA ={
 	"children": [],
 	"image_credit": null,
 	"is_verified": false,
+	"meta_tags": null,
 	"meta_description": "",
 	"social_share_title": "The Tarzan Way | Personalized Travel Experiences",
 	"social_media_description": ""

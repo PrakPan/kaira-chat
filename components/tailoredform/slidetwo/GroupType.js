@@ -23,15 +23,17 @@ grid-template-columns: 1fr 1fr 1fr;
 grid-gap: 1rem;
 width: 100%;
 @media screen and (min-width: 768px){
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
- }
+    display: flex;
+    justify-content: space-between;
+  }
 `;
  const OptionContainer = styled.div`
-    padding: 0.5rem;
-    text-align: center;
+     text-align: center;
     border-radius: 10px;
+    line-height: 1;
     font-size: 0.8rem;
+    width: 4.5rem;
+    height: 4.5rem;
     background-color: ${(props) => (props.is_selected ? 'rgba(247,231,0,0.3)' : "transparent")};
     &:hover{
         background-color:${(props) => (props.is_selected ? 'rgba(247,231,0,0.3)' : "rgba(247,231,0,0.1)")};
@@ -46,20 +48,20 @@ const GroupType = (props) => {
      return(
         <Container>
             <GridContainer>
-                <OptionContainer style={{borderRadius: '10px'}} className='border font-opensans hover-pointer' is_selected={props.groupType === 'Solo'} onClick={() => props._handleShowPax('Solo')}>
+                <OptionContainer style={{borderRadius: '10px'}} className='border center-div font-opensans hover-pointer' is_selected={props.groupType === 'Solo'} onClick={() => props._handleShowPax('Solo')}>
                   <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/001-tourist.png"></ImageLoader>
                     Solo
                 </OptionContainer>
-                <OptionContainer style={{borderRadius: '10px'}} className='border  font-opensans hover-pointer' is_selected={props.groupType === 'Couple'} onClick={() => props._handleShowPax('Couple')}>
+                <OptionContainer style={{borderRadius: '10px'}} className='border center-div   font-opensans hover-pointer' is_selected={props.groupType === 'Couple'} onClick={() => props._handleShowPax('Couple')}>
                     <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/002-traveler.png"></ImageLoader>
 
                     Couple
                 </OptionContainer>
-                <OptionContainer  style={{borderRadius: '10px'}} className='border  font-opensans hover-pointer' is_selected={props.groupType === 'Friends'}  onClick={() => props._handleShowPax('Friends')}>
+                <OptionContainer  style={{borderRadius: '10px'}} className='border center-div  font-opensans hover-pointer' is_selected={props.groupType === 'Friends'}  onClick={() => props._handleShowPax('Friends')}>
                     <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/005-friends.png"></ImageLoader>
                     Friends
                 </OptionContainer>
-                <OptionContainer style={{borderRadius: '10px'}} className='border  font-opensans hover-pointer' is_selected={props.groupType === 'Family'} onClick={() => props._handleShowPax('Family')}>
+                <OptionContainer style={{borderRadius: '10px'}} className='border  center-div  font-opensans hover-pointer' is_selected={props.groupType === 'Family'} onClick={() => props._handleShowPax('Family')}>
                     <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/004-family.png"></ImageLoader>
                     Family
                 </OptionContainer>
