@@ -12,7 +12,7 @@ const DATA ={
 	"banner_text": null,
 	"overview_heading": "Spiti Valley Overview",
 	"overview_text": "Spiti Valley is an incredibly picturesque mountain valley in Himachal Pradesh. With its snow-capped peaks, deep valleys, and spiritual vibes, it's no wonder that Spiti Valley is becoming a more and more popular travel destination. \r\nThe valley itself is an out-of-the-way paradise, with remote villages, colorful Buddhist monasteries, and unique culture. You can explore the challenging terrain by bike, explore spectacular nature trails, or simply relax and take in the stunning scenery. The stunning views of the peaks of the Himalayas will take your breath away. \r\nIn addition to the stunning scenery, there are plenty of activities to explore in Spiti Valley. Go camping, take part in the colorful celebrations of local festivals, trek around the high-altitude lakes, or take part in a plethora of adventure sports. There is also a wide range of cultural activities, such as attending a Puja ceremony at a local monastery. \r\nThe Key Monastery is a millennium-old monastery situated in Spiti. It is home to around 250-300 Lamas, unique wind instruments and Buddha idols. The Tabo Monastery is one of the many historical sites in Spiti, renowned for the priceless paintings, statues and murals that it shelters. Apart from these monasteries, Chandratal Lake is another tourist attraction that draws nature lovers to enjoy its enchanting view.",
-	"image": "https://d31aoa0ehgvjdi.cloudfront.net/media/page/167462671802231431007385253906.jpg",
+	"image": "media/page/167462671802231431007385253906.jpg",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -620,6 +620,7 @@ const DATA ={
 					"type": "City"
 				}
 			],
+			"image": "media/page/167463997722757387161254882812.jpg",
 			"meta_tags": null,
 			"meta_description": "",
 			"social_share_title": "Himachal Trip Planner | India | The Tarzan Way",

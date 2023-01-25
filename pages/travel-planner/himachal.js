@@ -11,9 +11,9 @@ const DATA ={
 	"banner_heading": "Himachal Trip Planner",
 	"banner_text": null,
 	"overview_heading": "Himachal Overview",
-	"overview_text": "",
-	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
-	"image_alt_text": null,
+	"overview_text": "Himachal Pradesh is a beautiful hill state in India located in the Western Himalayas. It is also known as the “Land of Gods” due to its many temples and shrines, making it a popular destination for tourists from all over the world. Himachal Pradesh is a paradise for nature lovers, offering snow-capped mountains, lush green valleys, and pristine rivers. It is home to some of India’s highest mountain peaks, including the Kullu Valley, Rohtang Pass, and Chail Sanctuary. The state is also known for its vibrant culture and rich history. You can experience this by visiting its many temples, forts, and palaces. In addition, Himachal Pradesh has some of the most popular adventure activities, including trekking, paragliding, and skiing. From its stunning mountainscapes to its vibrant culture, the state has something to offer everyone. You can spend your days exploring the breathtaking landscape or simply relax at one of its many resorts. There are also plenty of opportunities for shopping, with the bustling markets of Shimla offering traditional Himachali handicrafts and souvenirs. If you’re looking for a short break from your busy life, there’s no better place than Himachal Pradesh.",
+	"image": "media/page/167463997722757387161254882812.jpg",
+	"image_alt_text": "Beautiful display of camping site at Kufri, Himachal Pradesh.",
 	"itineraries": [],
 	"itinerary_data": {},
 	"locations": [
@@ -620,6 +620,7 @@ const DATA ={
 					"type": "City"
 				}
 			],
+			"image": "media/page/167462671802231431007385253906.jpg",
 			"meta_tags": null,
 			"meta_description": "",
 			"social_share_title": "Spiti Valley Trip Planner | The Tarzan Way",

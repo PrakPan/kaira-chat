@@ -14,30 +14,28 @@ const Words = styled.div`
 `;
 
 const SpinWords = keyframes`
-10%{
-    transform: translateY(-112%)
+2.5%{
+    transform: translateY(-0%)
 }
-25%{
+22.5%{
     transform: translateY(-100%)
 }
 
-35%{
-    transform: translateY(-212%)
-}
-50%{
+42.5%{
     transform: translateY(-200%)
 }
-60%{
-    transform: translateY(-312%)
-}
-75%{
+
+
+62.5%{
     transform: translateY(-300%)
 }
-85%{
-    transform: translateY(-412%)
-}
-100%{
+82.5%{
     transform: translateY(-400%)
+}
+
+
+100%{
+    transform: translateY(-500%)
 }
 
 `;
@@ -51,7 +49,7 @@ margin: 0;
 @media screen and (min-width: 768px){
    font-size: 2rem;
 }
-animation: ${SpinWords} 6s infinite;
+animation: ${SpinWords} 8s infinite;
 
 `;
 const Text = styled.p`
@@ -70,11 +68,16 @@ const Rolodex = (props) => {
       As per your
     </Text>
     <Words>
-        <Word>One</Word>
-        <Word>Two</Word>
-        <Word>Three</Word>
-        <Word>Four</Word>
-        <Word>Five</Word>
+        <Word>Pocket</Word>
+        <Word>Group Type</Word>
+        <Word>Travel Style</Word>
+        <Word>Pocket</Word>
+        <Word>Group Type</Word>
+        <Word>Travel Style</Word>
+        <Word>Pocket</Word>
+        <Word>Group Type</Word>
+        <Word>Travel Style</Word>
+
 
     </Words>
    

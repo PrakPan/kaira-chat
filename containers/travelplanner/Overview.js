@@ -7,10 +7,12 @@ import * as ga from '../../services/ga/Index';
 
 import styled from 'styled-components';
 import ImageLoader from '../../components/ImageLoader';
+
 const Container = styled.div`
  
 @media screen and (min-width: 768px){
-    width: 60%;
+ 
+    width: 90%;
     margin: auto;
     padding: 1rem 0;
 }
@@ -32,13 +34,16 @@ const GridContainer = styled.div`
 const Heading = styled.div`
 font-size: 1.75rem;
 font-weight: 800;
-text-align: center;
-
+ 
 `;
 const Text = styled.div`
 font-size: 1rem;
 font-weight: 300;
 text-align: center;
+@media screen and (min-width: 768px){
+  text-align: left;
+
+}
 `;
 const  Overview = (props) =>{
 
@@ -48,7 +53,11 @@ const  Overview = (props) =>{
    <Container>
       <Heading className='font-opensans'>{props.overview_heading}</Heading>      
       <Text className='font-opensans'>{props.overview_text}</Text>      
-
+      {/* <Row heading={props.overview_heading} top={!isPageWide ? '0' : "12vh"} padding="0 1rem">
+            <InformationTextContainer
+              type='text'
+              text={props.overview_text} ></InformationTextContainer>
+          </Row> */}
     </Container>
   );
 }
