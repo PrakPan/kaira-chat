@@ -12,7 +12,7 @@ const DATA ={
 	"banner_text": null,
 	"overview_heading": "Ladakh Overview",
 	"overview_text": "Ladakh, a picturesque region located in the northernmost part of India, is a dream destination for many. Often referred to as the ‘Land of High Passes’, it is a place of stark beauty and serenity, boasting a rich culture and history. With its snow-capped mountains, high plateaus, and unspoiled landscapes, Ladakh is a paradise for travel enthusiasts.\r\nThe best way to explore Ladakh is to trek through its majestic mountains. Whether you are a beginner or a pro, there are several options for you to choose from. At the same time, you can also visit the many monasteries, such as the Thiksey Monastery and the Hemis Monastery, which are full of spiritual and historical significance. The markets in Leh and the nearby villages are sure to provide you with the best shopping experience, with a variety of items such as carpets, jewelry, traditional clothes, and handicrafts.\r\nApart from the stunning views and activities, Ladakh has something for everyone. Whether you are looking for adventure, leisure, or culture, Ladakh is the perfect destination. So, if you’re looking for a unique travel experience, Ladakh is the place to be!",
-	"image": "https://d31aoa0ehgvjdi.cloudfront.net/media/page/167463234122462153434753417969.jpg",
+	"image": "media/page/167463234122462153434753417969.jpg",
 	"image_alt_text": "Beautiful display of lake in Ladakh.",
 	"itineraries": [],
 	"itinerary_data": {},
