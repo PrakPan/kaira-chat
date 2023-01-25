@@ -74,7 +74,7 @@ grid-gap: 1rem;
 
 
 @media screen and (min-width: 768px){
-  padding: 2rem;
+  padding: 2rem 0;
   grid-gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr;
 }
@@ -490,11 +490,11 @@ const openWhatsapp = () => {
           <FullImgContent destination={props.experienceData.destination} cities={props.experienceData.locations} title={props.experienceData.banner_heading}/>
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
-<BannerOne></BannerOne>
-<Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
+{/* <BannerOne></BannerOne> */}
+{/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
 <Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
-<Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>        
+<Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>        
 
   {!loading ? <GridContainer>
     { itinerariesToShowExclusiveJSX}
@@ -505,7 +505,7 @@ const openWhatsapp = () => {
     !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   }
-  <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>{'Trips by our users'}</Heading>        
+  <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Trips by our users'}</Heading>        
   {!loading ? <GridContainer>
     { itinerariesToShowCustomerJSX}
  
@@ -523,13 +523,13 @@ const openWhatsapp = () => {
 </SetWidthContainer>
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer>
-      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>Trending Destination</Heading>        
+      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Trending Destination</Heading>        
 
       <Locations locations={TOP_LOCATIONS} viewall planner></Locations>
 
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
         <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>What our customers say?</Heading>        
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}

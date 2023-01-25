@@ -18,7 +18,7 @@ const Generalbuttonstyle = styled.div`
   margin: ${(props) => (props.marginMobile? props.marginMobile : props.margin ? props.margin :  "0")};
   line-height: ${(props => props.lineHeight ? props.lineHeight : 'normal')};
 
-  padding: ${(props) => (props.padding ? props.padding : "0.5rem")};
+  padding: ${(props) => (props.padding ? props.padding : "0.5rem 0.75rem")};
 
   width: ${(props) => (props.width ? props.width : "max-content")};
 
@@ -76,6 +76,8 @@ const Generalbutton = (props) => {
       padding={props.padding}
       width={props.width}
       height={props.height}
+      disabled={props.disabled}
+
       fontSize={props.fontSize}
       borderStyle={props.borderStyle}
       borderWidth={props.borderWidth}

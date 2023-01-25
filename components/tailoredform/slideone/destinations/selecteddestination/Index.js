@@ -48,8 +48,8 @@ const SelectedDestination = (props) => {
    <Container className=' font-opensans' style={{borderRadius: '8px', border: !focusLocation ? '1px solid #EFEFEF' : '1px solid black', boxShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.25)'}}>
     <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : props.openCities}>
         <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
-    {props.selectlocation ? !showSearchStarting ? 'Delhi' : <SearchInputStarting onfocus={() => setFocusLocation(true)} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
-{props.selectlocation && !showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem'}}></GrFormEdit> : null}
+    {props.selectlocation ? !showSearchStarting ? 'Delhi, IN' : <SearchInputStarting onfocus={() => setFocusLocation(true)} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
+{props.selectlocation && !showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem', marginLeft: '2px'}}></GrFormEdit> : null}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >
         {props.selectedCities ? 
@@ -64,13 +64,13 @@ const SelectedDestination = (props) => {
 
     }
        
-    <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px'}}></FiInfo>
+    <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo>
 
     </RightContainer>
      : 
      <RightContainer className='hover-pointer' >
      
- <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px'}}></FiInfo>
+ <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px',  marginRight: '4px'}}></FiInfo>
 
  </RightContainer>
      }

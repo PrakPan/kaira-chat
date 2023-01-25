@@ -32,7 +32,7 @@ const Info = (props) => {
             bgColor="#f7e700"
             borderRadius="10px"
             fontWeight="600"
-            fontSize="0.75rem"
+            fontSize="0.65rem"
             onclick={_handleRedirect}
             >
 

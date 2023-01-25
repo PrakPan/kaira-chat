@@ -15,7 +15,9 @@ const Container = styled.div`
  display: grid;
 
   @media screen and (min-width: 768px){
-    padding: 0 7.5vh;
+    padding: 0;
+    width: 90%;
+    margin: auto;
     grid-template-columns: auto 35vw;
  
     }
@@ -49,6 +51,7 @@ padding: 5vh 0 0 0;
 flex-grow: 1;
 @media screen and (min-width: 768px){
     padding: 10vh 0 0 0;
+
 
 }
 `
@@ -96,7 +99,7 @@ console.log('c', props.cities)
                 View Trips</Button> */}
                 </PaddingContianer>
                {/* <Banner></Banner> */}
-               <div className='hidden-mobile' style={{padding: '1rem'}}>
+               <div className='hidden-mobile' style={{}}>
                 <TailoredForm destination={props.destination} cities={props.cities}></TailoredForm>
                 </div>
              
