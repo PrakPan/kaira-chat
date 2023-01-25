@@ -5,14 +5,14 @@ import Layout from '../../components/Layout'
 const DATA ={
 	"page_type": "Destination",
 	"destination": "Himachal",
-	"page_title": "Travel Company | India | The Tarzan Way",
+	"page_title": "Himachal Trip Planner | India | The Tarzan Way",
 	"id": 8,
 	"link": "himachal",
 	"banner_heading": "Himachal Trip Planner",
 	"banner_text": null,
-	"overview_heading": null,
+	"overview_heading": "Himachal Overview",
 	"overview_text": "",
-	"image": "media/cities/163005607325070333480834960938.jpeg",
+	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -250,9 +250,9 @@ const DATA ={
 	"children": [
 		{
 			"page_type": "Destination",
-			"page_title": "Travel Company | India | The Tarzan Way",
+			"page_title": "Spiti Valley Trip Planner | The Tarzan Way",
 			"id": 6,
-			"link": "spiti-trip-planner",
+			"link": "spiti-valley",
 			"locations": [
 				{
 					"id": 904,
@@ -620,15 +620,17 @@ const DATA ={
 					"type": "City"
 				}
 			],
+			"meta_tags": null,
 			"meta_description": "",
-			"social_share_title": "The Tarzan Way | Personalized Travel Experiences",
+			"social_share_title": "Spiti Valley Trip Planner | The Tarzan Way",
 			"social_media_description": ""
 		}
 	],
 	"image_credit": null,
 	"is_verified": false,
+	"meta_tags": null,
 	"meta_description": "",
-	"social_share_title": "The Tarzan Way | Personalized Travel Experiences",
+	"social_share_title": "Himachal Trip Planner | India | The Tarzan Way",
 	"social_media_description": ""
 }
 const TravelPlanner = () => {

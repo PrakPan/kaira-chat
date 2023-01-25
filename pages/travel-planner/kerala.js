@@ -5,14 +5,14 @@ import Layout from '../../components/Layout'
 const DATA ={
 	"page_type": "Destination",
 	"destination": "Kerala",
-	"page_title": "Travel Company | India | The Tarzan Way",
+	"page_title": "Kerala Trip Planner | India | The Tarzan Way",
 	"id": 5,
-	"link": "kerala-trip-planner",
+	"link": "kerala",
 	"banner_heading": "Kerala Trip Planner",
 	"banner_text": null,
-	"overview_heading": null,
+	"overview_heading": "Kerala Overview",
 	"overview_text": "",
-	"image": "media/cities/166244299545956182479858398438.jpg",
+	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -367,8 +367,9 @@ const DATA ={
 	"children": [],
 	"image_credit": null,
 	"is_verified": false,
+	"meta_tags": null,
 	"meta_description": "",
-	"social_share_title": "The Tarzan Way | Personalized Travel Experiences",
+	"social_share_title": "Kerala Trip Planner | India | The Tarzan Way",
 	"social_media_description": ""
 }
 const TravelPlanner = () => {

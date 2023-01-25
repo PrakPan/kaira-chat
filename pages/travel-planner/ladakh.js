@@ -5,14 +5,14 @@ import Layout from '../../components/Layout'
 const DATA ={
 	"page_type": "Destination",
 	"destination": "Ladakh",
-	"page_title": "Travel Company | India | The Tarzan Way",
+	"page_title": "Ladakh Trip Planner | India | The Tarzan Way",
 	"id": 4,
-	"link": "ladkah-trip-planner",
-	"banner_heading": "Ladakh Trip Planner",
+	"link": "ladakh",
+	"banner_heading": "ladakh-trip-planner",
 	"banner_text": null,
-	"overview_heading": null,
+	"overview_heading": "Ladakh Overview",
 	"overview_text": "",
-	"image": "media/cities/162608395527500414848327636719.jpg",
+	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -26,8 +26,8 @@ const DATA ={
 				"Ladakh",
 				"Leh"
 			],
-			"lat": 34.142897,
-			"long": 77.555333,
+			"lat": 34.1525864,
+			"long": 77.57705349999999,
 			"state": {
 				"id": 26,
 				"name": "Ladakh",
@@ -72,8 +72,8 @@ const DATA ={
 			"nicknames": [
 				"nubra"
 			],
-			"lat": 34.6863,
-			"long": 77.5673,
+			"lat": 34.6863146,
+			"long": 77.567288,
 			"state": {
 				"id": 26,
 				"name": "Ladakh",
@@ -120,8 +120,8 @@ const DATA ={
 			"nicknames": [
 				"Pangong Tso"
 			],
-			"lat": 33.78752,
-			"long": 78.66381,
+			"lat": 33.7595131,
+			"long": 78.66744039999999,
 			"state": {
 				"id": 26,
 				"name": "Ladakh",
@@ -157,10 +157,12 @@ const DATA ={
 			"type": "One day tour"
 		}
 	],
+	"children": [],
 	"image_credit": null,
 	"is_verified": false,
+	"meta_tags": null,
 	"meta_description": "",
-	"social_share_title": "The Tarzan Way | Personalized Travel Experiences",
+	"social_share_title": "Ladakh Trip Planner | India | The Tarzan Way",
 	"social_media_description": ""
 }
 const TravelPlanner = () => {

@@ -5,14 +5,14 @@ import Layout from '../../components/Layout'
 const DATA ={
 	"page_type": "Destination",
 	"destination": "Goa",
-	"page_title": "Travel Company | India | The Tarzan Way",
+	"page_title": "Goa Trip Planner | India | The Tarzan Way",
 	"id": 7,
-	"link": "goa-trip-planner",
-	"banner_heading": null,
+	"link": "goa",
+	"banner_heading": "Goa Trip Planner",
 	"banner_text": null,
-	"overview_heading": null,
+	"overview_heading": "Goa Overview",
 	"overview_text": "",
-	"image": "media/cities/158548001626422548294067382812.jpg",
+	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -66,8 +66,9 @@ const DATA ={
 	"children": [],
 	"image_credit": null,
 	"is_verified": false,
+	"meta_tags": null,
 	"meta_description": "",
-	"social_share_title": "The Tarzan Way | Personalized Travel Experiences",
+	"social_share_title": "Goa Trip Planner | India | The Tarzan Way",
 	"social_media_description": ""
 }
 const TravelPlanner = () => {

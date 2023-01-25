@@ -5,14 +5,14 @@ import Layout from '../../components/Layout'
 const DATA ={
 	"page_type": "Destination",
 	"destination": "Andaman",
-	"page_title": "Andaman Trip Planner | The Tarzan Way",
+	"page_title": "Andaman Trip Planner | India | The Tarzan Way",
 	"id": 3,
-	"link": "andaman-trip-planner",
+	"link": "andaman",
 	"banner_heading": "Andaman Trip Planner",
-	"banner_text": "Get 20% discount on all your trips to Anamdan",
-	"overview_heading": null,
+	"banner_text": null,
+	"overview_heading": "Andaman Overview",
 	"overview_text": "",
-	"image": "media/cities/161477233223542022705078125000.jpg",
+	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},
@@ -158,8 +158,9 @@ const DATA ={
 	"children": [],
 	"image_credit": null,
 	"is_verified": false,
+	"meta_tags": null,
 	"meta_description": "",
-	"social_share_title": "Andaman Trip Planner | The Tarzan Way",
+	"social_share_title": "Andaman Trip Planner | India | The Tarzan Way",
 	"social_media_description": ""
 }
 const TravelPlanner = () => {
