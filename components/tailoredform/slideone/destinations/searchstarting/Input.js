@@ -16,7 +16,7 @@ const ResultsContainer = styled.div`
   width: 100%;
   background-color: white;
   left: 0;
-  top: 2.5rem;
+  top: 2.75rem;
   z-index: 4;
  `;
 const InputContainer = styled.input`
@@ -78,7 +78,7 @@ const SearchInput = (props) => {
     }
   return (
     <Container>
-   {!selected ? <div style={{display: 'flex'}}><InputContainer placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
+   {!selected ? <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
     {/* ed */}
     </InputContainer>
     {loading ? <Spinner size={16} margin="0"></Spinner> : null}

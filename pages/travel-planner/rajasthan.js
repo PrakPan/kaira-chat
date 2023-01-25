@@ -12,7 +12,7 @@ const DATA = {
 	"banner_text": null,
 	"overview_heading": "Rajasthan Overview",
 	"overview_text": "The Indian state of Rajasthan is popularly known to many as the Land of the Kings, is a beautiful example of India?s age-old opulence and grandeur, traces of which still linger in the air of this state. One of the most colourful and vibrant states in the country, with a strong blend of culture, history, music, cuisine falling in love with Rajasthan doesn't take much time. Rajasthan has more history than the entire country put together- it is the realm of erstwhile Maharajas and their lavish palaces and majestic forts. Golden-sand deserts, traditional handicrafts, authentic cuisine and awe-inspiring palaces all contribute to making Rajasthan an ideal vacation spot. Don't forget to wish everyone with \"Khamma Ghani\" while you're here!",
-	"image": "https://d31aoa0ehgvjdi.cloudfront.net/",
+	"image": "media/cities/162425717606963467597961425781.jpg",
 	"image_alt_text": null,
 	"itineraries": [],
 	"itinerary_data": {},

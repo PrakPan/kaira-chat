@@ -28,7 +28,7 @@ position: relative;
   background-color: white;
  width: 100%;marginBottom: slideIndex === 2 ? '0.75rem' : '0.25rem',
  margin: 0.5rem;
-border-radius: 10px !important;
+border-radius: 8px !important;
  @media screen and (min-width: 768px){
     margin: 0;
 }
@@ -252,7 +252,7 @@ const Enquiry = (props) => {
             {
                 slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
-                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600"  margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700"  onclick={_submitDataHandler}>
+                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600"  margin="1rem 0" borderRadius="8px" borderWidth="0" bgColor="#f7e700"  onclick={_submitDataHandler}>
             Submit
             </Button></div> : null
             }
