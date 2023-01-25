@@ -93,6 +93,10 @@ const Contact = () => {
             <AddressContainer>
                 <HeadingSmall className="font-opensans" align="center">Address</HeadingSmall>
                 <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">D-14 First Floor, Sector 20,  Noida, Uttar Pradesh 201301</p>
+                <br></br>
+                <HeadingSmall className="font-opensans" align="center" style={{marginTop: '1rem'}}>Call Us</HeadingSmall>
+                <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">+91 9354665989, +91 87872 00342</p>
+           
             </AddressContainer>
             <NumberContainer>
             <HeadingSmall className="font-opensans" align="center">Reach Out</HeadingSmall>
