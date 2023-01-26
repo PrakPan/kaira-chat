@@ -27,7 +27,7 @@ import Button from '../../components/ui/button/Index';
 import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
 import Locations from '../../components/containers/Locations';
-
+import Map from './Map';
 // import qs from qs;
 var qs = require('qs');
 
@@ -87,8 +87,7 @@ min-height: 40vh;
 }
 `;
 const  Homepage = (props) =>{
-
-
+   
 			
 let isPageWide = media('(min-width: 768px)');
 let cards = [];
@@ -254,6 +253,7 @@ const _toggleFilterHandler = (filter_text) => {
 }
 
  useEffect(() => {
+ 
   let itineraries_exclusive = [];
   let itineraries_customer = [];
 
@@ -484,6 +484,7 @@ const EXPERIENCE = {
 const openWhatsapp = () => {
   window.location.href=urls.WHATSAPP+"?text=I need help planning my trip to "+props.experienceData.destination+".";
 }
+console.log(props.experienceData);
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
@@ -521,6 +522,7 @@ const openWhatsapp = () => {
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Customer Tales"]} pastitinerary></Experiences>
  */}
 </SetWidthContainer>
+ <Map locations={props.experienceData.locations}></Map>
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Trending Destination</Heading>        
