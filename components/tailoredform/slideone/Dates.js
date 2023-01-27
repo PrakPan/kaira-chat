@@ -32,7 +32,7 @@ const Dates = (props) => {
   
   return (
    <Grid container spacing={2} style={{visibility: props.showCities ? 'hidden' : 'visible'}}>
- <Grid item xs={6}>
+ <Grid item xs={6} style={{maxWidth: '175px'}}  >
                
                <LocalizationProvider dateAdapter={AdapterDateFns}>
              <DatePicker
@@ -46,14 +46,14 @@ const Dates = (props) => {
                onChange={(newValue) => {
                  props.setValueStart(newValue);
                }}
-               renderInput={(params) => <TextField  onClick={(e) => setOpenStart(true)} {...params} fullWidth />}
+               renderInput={(params) => <TextField  onClick={(e) => setOpenStart(true)} {...params} />}
              />
            </LocalizationProvider>
                             </Grid>
                             {/* <Grid item xs={1} className="font-opensans">
                                     to
                             </Grid> */}
-                            <Grid item xs={6}>
+                            <Grid item xs={6} style={{maxWidth: '175px'}}>
                           
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
@@ -68,7 +68,7 @@ const Dates = (props) => {
                           onChange={(newValue) => {
                             props.setValueEnd(newValue);
                           }}
-                          renderInput={(params) => <TextField onClick={(e) => setOpenEnd(true)} {...params} fullWidth />}
+                          renderInput={(params) => <TextField onClick={(e) => setOpenEnd(true)} {...params}/>}
                         />
                       </LocalizationProvider>
        </Grid>

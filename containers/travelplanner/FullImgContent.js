@@ -18,7 +18,7 @@ const Container = styled.div`
     padding: 0;
     width: 90%;
     margin: auto;
-    grid-template-columns: auto 35vw;
+    grid-template-columns: auto max-content;
  
     }
 `;
