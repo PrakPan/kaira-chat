@@ -456,7 +456,9 @@ const TOP_LOCATIONS = [
       },
       "image": "media/website/Jodhpur.jpeg",
       "url": "",
-  }
+  },
+  
+  
 ];
 const EXPERIENCE = {  
   "id":"ifgPvZyQcBXXPYdJ",
@@ -503,7 +505,7 @@ console.log(props.experienceData);
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   }
   {
-    !loading && itinerariesExclusiveJSX.length? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
+    !loading && itinerariesExclusiveJSX.length && (itinerariesExclusiveJSX.length >=  offsetExclusive)? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   }
   {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
@@ -513,7 +515,7 @@ console.log(props.experienceData);
   </GridContainer> : null
   }
   {
-    !loading  && itinerariesCustomerJSX.length? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
+    !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
