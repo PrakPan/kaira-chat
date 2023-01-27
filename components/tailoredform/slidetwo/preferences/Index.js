@@ -1,7 +1,7 @@
 import React  from 'react';
 import styled, {keyframes} from 'styled-components';
 import { fadeIn } from 'react-animations'
- 
+ import { BsCheck } from 'react-icons/bs';
 const fadeInAnimation = keyframes`${fadeIn}`;
  const Container = styled.div`
     width: 100%;
@@ -86,28 +86,44 @@ const GroupType = (props) => {
      return(
         <Container>
             <GridContainer>
-                <OptionContainer  is_selected={_isPreferenceAdded('>Nature & Retreat')} className=' font-opensans hover-pointer' onClick={() => _handleClick('>Nature & Retreat')}>
-                <div className='center-div'><YellowContainer  is_selected={_isPreferenceAdded('>Nature & Retreat')} ></YellowContainer></div>
+                <OptionContainer  is_selected={_isPreferenceAdded('Nature & Retreat')} className=' font-opensans hover-pointer' onClick={() => _handleClick('Nature & Retreat')}>
+                <div className='center-div' style={{fontSize: '0.75rem', lineHeight: '1'}}><YellowContainer className='center-div' is_selected={_isPreferenceAdded('Nature & Retreat')} >
+                { _isPreferenceAdded('Nature & Retreat') ? <BsCheck></BsCheck> : null}
+                </YellowContainer></div>
                 <div style={{lineHeight: '1.2', alignItems: 'flex-start'}} className='center-div'>Nature & Retreat</div>
                 </OptionContainer>
                 <OptionContainer  is_selected={_isPreferenceAdded('Nightlife & Shopping')} className=' font-opensans hover-pointer ' onClick={() => _handleClick('Nightlife & Shopping')}>
-                <div className='center-div'><YellowContainer  is_selected={_isPreferenceAdded('Nightlife & Shopping')} ></YellowContainer></div>
+                <div  className='center-div' style={{fontSize: '0.75rem', lineHeight: '1'}}><YellowContainer className='center-div'  is_selected={_isPreferenceAdded('Nightlife & Shopping')} >
+                { _isPreferenceAdded('Nightlife & Shopping') ? <BsCheck></BsCheck> : null}
+                </YellowContainer></div>
                 <div  style={{lineHeight: '1.2', alignItems: 'flex-start'}} className='center-div'>Nightlife & Shopping</div> 
                 </OptionContainer>
                 <OptionContainer  is_selected={_isPreferenceAdded('Adventure & Outdoors')} className='font-opensans hover-pointer'  onClick={() => _handleClick('Adventure & Outdoors')}>
-                <div className='center-div'><YellowContainer   is_selected={_isPreferenceAdded('Adventure & Outdoors')} ></YellowContainer></div>
+                <div className='center-div' style={{fontSize: '0.75rem', lineHeight: '1'}}><YellowContainer  className='center-div'  is_selected={_isPreferenceAdded('Adventure & Outdoors')} >
+                { _isPreferenceAdded('Adventure & Outdoors') ? <BsCheck></BsCheck> : null}
+
+                    </YellowContainer></div>
                 <div  style={{lineHeight: '1.2', alignItems: 'flex-start'}} className='center-div'>Adventure & Outdoors</div>
                 </OptionContainer>
                 <OptionContainer  is_selected={_isPreferenceAdded('Heritage & Culture')} className=' font-opensans hover-pointer ' onClick={() => _handleClick('Heritage & Culture')}>
-                <div className='center-div'><YellowContainer   is_selected={_isPreferenceAdded('Heritage & Culture')} ></YellowContainer></div>
+                <div className='center-div' style={{fontSize: '0.75rem', lineHeight: '1'}}><YellowContainer  className='center-div'  is_selected={_isPreferenceAdded('Heritage & Culture')} >
+                { _isPreferenceAdded('Heritage & Culture') ? <BsCheck></BsCheck> : null}
+
+                    </YellowContainer></div>
                 <div  style={{lineHeight: '1.2', alignItems: 'flex-start'}} className='center-div'>Heritage & Culture</div>
                 </OptionContainer>
                 <OptionContainer  is_selected={_isPreferenceAdded('Romantic')} className='font-opensans hover-pointer' onClick={() => _handleClick('Romantic')}>
-                <div className='center-div'><YellowContainer   is_selected={_isPreferenceAdded('Romantic')} ></YellowContainer></div>
+                <div className='center-div' style={{fontSize: '0.75rem', lineHeight: '1'}}><YellowContainer className='center-div'  is_selected={_isPreferenceAdded('Romantic')} >
+                { _isPreferenceAdded('Romantic') ? <BsCheck></BsCheck> : null}
+
+                    </YellowContainer></div>
                 <div  style={{lineHeight: '1.2', alignItems: 'flex-start'}} className='center-div' >Romantic</div>
                 </OptionContainer>
                 <OptionContainer  is_selected={_isPreferenceAdded('Science & Knowledge')} className='font-opensans hover-pointer' onClick={() => _handleClick('Science & Knowledge')}>
-                <div className='center-div' ><YellowContainer   is_selected={_isPreferenceAdded('Science & Knowledge')} ></YellowContainer></div>
+                <div className='center-div'  style={{fontSize: '0.75rem', lineHeight: '1'}} ><YellowContainer  className='center-div'  is_selected={_isPreferenceAdded('Science & Knowledge')} >
+                { _isPreferenceAdded('Science & Knowledge') ? <BsCheck></BsCheck> : null}
+
+                    </YellowContainer></div>
 
                 <div  style={{lineHeight: '1.2', alignItems: 'flex-start'}} className='center-div'>Science & Knowledge</div>
                 </OptionContainer>
