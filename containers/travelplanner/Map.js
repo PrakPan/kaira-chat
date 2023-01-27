@@ -9,7 +9,7 @@ const Map = (props) => {
     defaultCenter={{ lat: props.locations[0].lat, lng: props.locations[0].long }}
   >
     {prop.isMarkerShown}
-    {props.locations.map(location => <Marker icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/pin.png'} position={{ lat: location.lat, lng: location.long }} />)}
+    {props.locations.map(location => <Marker icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/location-yellow.png'} position={{ lat: location.lat, lng: location.long }} />)}
   </GoogleMap>
 ))
     return(
