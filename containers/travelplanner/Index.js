@@ -153,10 +153,10 @@ const DATA=[
 	}
 ];
 const [loading, setLoading] = useState(true);
-const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState(null);
-const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState(null);
-const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState(null);
-const [itinerariesToShowCustomerJSX, setItinerariesToShowCustomerJSX] = useState(null);
+const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
+const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState([]);
+const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState([]);
+const [itinerariesToShowCustomerJSX, setItinerariesToShowCustomerJSX] = useState([]);
 const [filters, setFilters] = useState({
   'Trek': true,
   'Road Trip': true,
@@ -495,7 +495,7 @@ console.log(props.experienceData);
 {/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
 <Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
-<Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>        
+{itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
 
   {!loading ? <GridContainer>
     { itinerariesToShowExclusiveJSX}
@@ -503,17 +503,17 @@ console.log(props.experienceData);
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   }
   {
-    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
+    !loading && itinerariesExclusiveJSX.length? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   }
-  <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Trips by our users'}</Heading>        
+  {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
   {!loading ? <GridContainer>
     { itinerariesToShowCustomerJSX}
  
-  </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
+  </GridContainer> : null
   }
   {
-    !loading ? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
+    !loading  && itinerariesCustomerJSX.length? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        

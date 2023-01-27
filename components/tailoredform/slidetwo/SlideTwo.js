@@ -39,7 +39,7 @@ const SlideTwo = (props) =>{
   return (
    <Container>
     <Section style={{marginBottom: '1.5rem'}}>
-        <Question>How many travelers?</Question>
+        <Question>Please select your group type</Question>
         {showPax ? <Pax
          numberOfAdults={props.numberOfAdults}
          setNumberOfAdults={props.setNumberOfAdults}
@@ -57,7 +57,7 @@ const SlideTwo = (props) =>{
           ></Budget>
          </Section>
          <div style={{display: 'flex'}} onClick={() => setShowPreferences(!showPreferences)}>
-         <Question  hover_pointer>What's kind of activities?</Question>
+         <Question  hover_pointer>Experience Preferences?</Question>
           <div style={{flexGrow: '1', textAlign: 'right'}}>
             <AiFillCaretDown  style={{verticalAlign: 'initial'}} className="hover-pointer"> </AiFillCaretDown>
           </div>
