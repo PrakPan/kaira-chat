@@ -33,6 +33,8 @@ text-align: center;
 background-color: ${(props) => (props.is_selected ?  'rgba(247,231,0,0.3);' : 'rgba(0,0,0,0.4);')};
 color:  ${(props) => (props.is_selected ?  'black' : 'white')};
 font-weight: ${(props) => (props.is_selected ?  '800' : '400')};
+min-width: 108px;
+min-height: 90px;
 width: 100%;
  &:hover{
   background-color: rgba(247,231,0,0.3);
