@@ -10,7 +10,7 @@ import styled from 'styled-components';
  background-color: white;
  padding: 0.5rem;
 position: absolute;
-top: 5.5rem;
+top: 5.75rem;
 z-index: 10;
  `
  const LocationContainer = styled.div`

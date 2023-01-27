@@ -7,6 +7,7 @@ import styled from 'styled-components';
  import Question from '../Question';
 import Dates from './Dates';
 import StartingLocation from './startinglocation/Index';
+import {BsCheck} from 'react-icons/bs'
 const Container = styled.div`
 color: black;
 width: 100%;
@@ -75,7 +76,9 @@ showCities={props.showCities}
  setValueEnd={props.setValueEnd}
 ></Dates>
 <div  className='hover-pointer' style={{display: 'flex', gap: '0.5rem', justifyContent:'flex-end', alignItems: 'center', marginTop: '1rem'}}>
-  <div onClick={() => setFlexible(!flexible)}><div style={{border: '2px solid rgba(0, 0, 0, 1)', borderRadius: '5px', opacity: '0.3', height: '1.25rem', width: '1.25rem', backgroundColor: flexible ? 'rgba(247,231,0,1)' : "white"}}></div></div>
+  <div onClick={() => setFlexible(!flexible)}><div className="center-div" style={{border: '2px solid rgba(0, 0, 0, 1)', color: 'black', lineHeight: '1', fontSize: '0.75rem',borderColor: '#e4e4e4', borderRadius: '5px', opacity: '1', height: '1.25rem', width: '1.25rem', backgroundColor: flexible ? 'rgba(247,231,0,1)' : "white"}}>
+    {flexible ? <BsCheck></BsCheck> : null}
+    </div></div>
   <div onClick={() => setFlexible(!flexible)} className='font-opensans' style={{fontSize: '0.85rem'}}>I'm flexible</div>
 </div>
 
