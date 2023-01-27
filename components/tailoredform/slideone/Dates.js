@@ -32,7 +32,7 @@ const Dates = (props) => {
   
   return (
    <Grid container spacing={2} style={{visibility: props.showCities ? 'hidden' : 'visible'}}>
- <Grid item xs={6} style={{maxWidth: '175px'}}  >
+ <Grid item xs={6}   >
                
                <LocalizationProvider dateAdapter={AdapterDateFns}>
              <DatePicker
@@ -53,7 +53,7 @@ const Dates = (props) => {
                             {/* <Grid item xs={1} className="font-opensans">
                                     to
                             </Grid> */}
-                            <Grid item xs={6} style={{maxWidth: '175px'}}>
+                            <Grid item xs={6}>
                           
                           <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <DatePicker
