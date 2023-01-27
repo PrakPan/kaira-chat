@@ -357,9 +357,9 @@ const EXPERIENCE = {
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>
 <Menu _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
-<FullImage heightmobile="max-content" padding="0" height="max-content" url="media/website/travel-min.png" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+{/* <FullImage heightmobile="max-content" padding="0" height="max-content" url="media/website/travel-min.png" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <Republic></Republic>
-      </FullImage>
+      </FullImage> */}
 <SetWidthContainer>
   {!loading ? <GridContainer>
     { itinerariesJSX}
