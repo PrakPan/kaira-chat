@@ -20,8 +20,8 @@ import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/Locations';
-import FullImgContent from './search/NewYear';
-import FullImgContentChristmas from './search/Christmas';
+import FullImgContent from './search/SearchFullImgContent';
+// import FullImgContentChristmas from './search/Christmas';
 import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
 // import howitworksimg1 from '../../public/assets/arts/whyus/1.webp';
@@ -134,14 +134,12 @@ const _handleExperiencesClick = () => {
   return (
     
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <Snowflakes></Snowflakes>
-      {isPageWide ?<FullImage  fit="contain" center url="media/website/avi-theret-2u6eLolV1JY-unsplash.jpg" height="60vh" heightmobile="30vh" >
-          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Celebrating explorers" text="2022 Edition"/>
-      </FullImage> : <FullImage  fit="contain" center url="media/website/Chrsitmas.png" height="60vh" heightmobile="60vh" >
-          <FullImgContentChristmas _handleTailoredClick={_handleTailoredClick} tagline="Pack your bags and explore!" text="Want to get in Santa's good list for sure?"/>
-      </FullImage>}
-      <div className='hidden-mobile'><Explorers></Explorers></div>
-      <div style={{zIndex: '9999', backgroundColor: 'white', position: 'relative'}}>
+      {/* <Snowflakes></Snowflakes> */}
+      <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/avi-theret-2u6eLolV1JY-unsplash.jpg" height="85vh" heightmobile="60vh" >
+          <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
+      </FullImage>
+      {/* <div className='hidden-mobile'><Explorers></Explorers></div> */}
+      <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
