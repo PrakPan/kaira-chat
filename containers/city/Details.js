@@ -13,6 +13,7 @@ import homepagecontent from '../../public/content/homepage';
 import media from '../../components/media';
 // import Heading from '../../components/heading/Heading';
 import Heading from '../../components/newheading/heading/Index';
+import Accordions from './Accordion';
 
 
 const HeadingContainer = styled.div`
@@ -68,25 +69,24 @@ const Details = (props) => {
 
   const _handleScroll = () => {
      
-    offsets={
-            'Overview': overviewRef.current.offsetTop,
-            'Things to do':  thingsRef.current.offsetTop,
-            'Getting Around': gettingAroundRef.current.offsetTop,
-            'What to Eat' : whattoeatRef.current.offsetTop,
-            'Survival Tips & Tricks': survivalRef.current.offsetTop,
-            'Folklore or Story': folkloreRef.current.offsetTop,
-            'Experiences':  experiencesRef.current.offsetTop
-          }
-      if(typeof window !=='undefined')
-      if(window.pageYOffset > 300 && !offset) setOffset(offsets);
+    // offsets={
+    //         'Overview': overviewRef.current.offsetTop,
+    //         'Things to do':  thingsRef.current.offsetTop,
+    //         'Getting Around': gettingAroundRef.current.offsetTop,
+    //         'What to Eat' : whattoeatRef.current.offsetTop,
+    //         'Survival Tips & Tricks': survivalRef.current.offsetTop,
+    //         'Folklore or Story': folkloreRef.current.offsetTop,
+    //         'Experiences':  experiencesRef.current.offsetTop
+    //       }
+    //   if(typeof window !=='undefined')
+    //   if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   }
+  console.log(props.data)
 
   return (
     <div >
-      {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
-      {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
-      {/* <HeaderExtraPadding></HeaderExtraPadding> */}
-      <DetailsContainer>
+   
+      {/* <DetailsContainer>
         <div ref={overviewRef} >
         <Element id='overview' >
           {props.data.short_description ? <Row heading='Overview' top={!isPageWide ? '0' : "12vh"} padding="0 1rem">
@@ -101,7 +101,7 @@ const Details = (props) => {
          {props.data.pois.length ?<Row heading='Things to do' top={!isPageWide ? '0' : "12vh"} padding="0 1rem">
           <PoisData slug={props.slug} pois={props.data.pois} _openPoiModal={(poi) => props._openPoiModal(poi)} ></PoisData>
           </Row> : null}
-        </Element>
+        </Element> 
           </div>
    
         <div ref={gettingAroundRef} >
@@ -140,19 +140,10 @@ const Details = (props) => {
         </div>
      
         <div ref={experiencesRef}>
-        {/* {props.data.experiences.length ? 
-        <Element id='experiences' >
-          <div className='hidden-desktop'><Row  heading='Experiences' top="0" padding="0 1rem">
-          <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={props.data.experiences} ></ExperiencesBlog>
-          </Row></div>
-          { props.data.experiences.length > 3 ? <div className='hidden-mobile'>
-          <Heading  bold noline aligndesktop="center" align="center">Experiences</Heading>
-          <div  style={{height: '2rem'}}></div>
-          <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={props.data.experiences} ></ExperiencesBlog>
-          </div>: null}
-        </Element> : null} */}
+      
         </div>
-      </DetailsContainer>
+      </DetailsContainer> */}
+      <Accordions folklore={props.data.folklore_or_story} survival_tips_and_tricks={props.data.survival_tips_and_tricks} foods={props.data.foods ? props.data.foods.length  ? props.data.foods : [] : []}conveyance_available={props.data.conveyance_available}  overview={props.data.short_description} pois={props.data.pois ? props.data.pois.length ? props.data.pois : [] : []} slug={props.slug}  _openPoiModal={(poi) => props._openPoiModal(poi)} ></Accordions>
      
       <div className='hidden-desktop'><Banner data={props.data} experienceLoaded={props.experienceLoaded} openBooking={props.openBooking} payment={props.payment} offsets={offset} locations={props.data.locations} heading={menuHeading} text="Some text here" buttontext="Buy Now" color="black" buttonbgcolor="#F7e700" onclick={props.openBooking}></Banner></div>
     </div>
