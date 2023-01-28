@@ -345,7 +345,7 @@ const _addCityHandler = (city_id, city) => {
 
               setTimeout(function(){ 
                  
-                router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 10000);
+                router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 6000);
 
             }
           }).catch( err => {

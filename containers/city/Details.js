@@ -69,24 +69,24 @@ const Details = (props) => {
 
   const _handleScroll = () => {
      
-    // offsets={
-    //         'Overview': overviewRef.current.offsetTop,
-    //         'Things to do':  thingsRef.current.offsetTop,
-    //         'Getting Around': gettingAroundRef.current.offsetTop,
-    //         'What to Eat' : whattoeatRef.current.offsetTop,
-    //         'Survival Tips & Tricks': survivalRef.current.offsetTop,
-    //         'Folklore or Story': folkloreRef.current.offsetTop,
-    //         'Experiences':  experiencesRef.current.offsetTop
-    //       }
-    //   if(typeof window !=='undefined')
-    //   if(window.pageYOffset > 300 && !offset) setOffset(offsets);
+    offsets={
+            'Overview': overviewRef.current.offsetTop,
+            'Things to do':  thingsRef.current.offsetTop,
+            'Getting Around': gettingAroundRef.current.offsetTop,
+            'What to Eat' : whattoeatRef.current.offsetTop,
+            'Survival Tips & Tricks': survivalRef.current.offsetTop,
+            'Folklore or Story': folkloreRef.current.offsetTop,
+            'Experiences':  experiencesRef.current.offsetTop
+          }
+      if(typeof window !=='undefined')
+      if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   }
   console.log(props.data)
 
   return (
     <div >
    
-      {/* <DetailsContainer>
+      <DetailsContainer>
         <div ref={overviewRef} >
         <Element id='overview' >
           {props.data.short_description ? <Row heading='Overview' top={!isPageWide ? '0' : "12vh"} padding="0 1rem">
@@ -142,8 +142,8 @@ const Details = (props) => {
         <div ref={experiencesRef}>
       
         </div>
-      </DetailsContainer> */}
-      <Accordions folklore={props.data.folklore_or_story} survival_tips_and_tricks={props.data.survival_tips_and_tricks} foods={props.data.foods ? props.data.foods.length  ? props.data.foods : [] : []}conveyance_available={props.data.conveyance_available}  overview={props.data.short_description} pois={props.data.pois ? props.data.pois.length ? props.data.pois : [] : []} slug={props.slug}  _openPoiModal={(poi) => props._openPoiModal(poi)} ></Accordions>
+      </DetailsContainer>
+      {/* <Accordions folklore={props.data.folklore_or_story} survival_tips_and_tricks={props.data.survival_tips_and_tricks} foods={props.data.foods ? props.data.foods.length  ? props.data.foods : [] : []}conveyance_available={props.data.conveyance_available}  overview={props.data.short_description} pois={props.data.pois ? props.data.pois.length ? props.data.pois : [] : []} slug={props.slug}  _openPoiModal={(poi) => props._openPoiModal(poi)} ></Accordions> */}
      
       <div className='hidden-desktop'><Banner data={props.data} experienceLoaded={props.experienceLoaded} openBooking={props.openBooking} payment={props.payment} offsets={offset} locations={props.data.locations} heading={menuHeading} text="Some text here" buttontext="Buy Now" color="black" buttonbgcolor="#F7e700" onclick={props.openBooking}></Banner></div>
     </div>
