@@ -68,7 +68,7 @@ position: fixed;
 bottom: 0;
 width: 100%;
 @media screen and (min-width: 768px){
-  background-color: white;
+  background-color: transparent;
   width: 30%;
   left: 35%;
 }

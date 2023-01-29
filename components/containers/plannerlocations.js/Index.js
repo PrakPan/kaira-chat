@@ -1,6 +1,6 @@
 import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
-import Card from '../../cards/Location';
+import Card from './Card';
 import Carousel from '../../FlickityCarousel';
 import media from '../../media';
 import { useRouter } from 'next/router';
@@ -12,12 +12,10 @@ import * as ga from '../../../services/ga/Index';
 */
 const Container = styled.div`
 display: grid;
-height: 60vh;
-  @media screen and (min-width: 768px){
+   @media screen and (min-width: 768px){
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 1rem;
-    height: 50vh;
-    
+      
   }
 `;
 
@@ -38,26 +36,69 @@ const LocationsBlog= (props) => {
       router.push('/travel-planner/'+name)
 
     }
-    const [cardsJSX, setCardsJSX] = useState([null, null, null, null , null]);
+    const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
+    const [offset, setOffset] = useState(0);
+
     useEffect(() => {
       let cardsarr = [];
 
     if(props.locations)
-    props.locations.map( location => {
-       cardsarr.push(              
-          <Card
-          key={location.tagline}
-          location={location.name}
-          heading={location.tagline}
-          img={location.image}
-          onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id, location.slug, location.state.name)}
-          > 
-          </Card>
+    for(var i = 0 ; i < 5; i++){
+        try{
+        cardsarr.push(
+            <Card
+            key={props.locations[i].tagline}
+            location={props.locations[i].name}
+            heading={props.locations[i].tagline}
+            img={props.locations[i].image}
+            onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            > 
+            </Card>
         )
+        }
+        catch{
+
+        }
+    }
+    // setOffset(5);
+    // props.locations.map( location => {
+    //    cardsarr.push(              
+    //       <Card
+    //       key={location.tagline}
+    //       location={location.name}
+    //       heading={location.tagline}
+    //       img={location.image}
+    //       onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id, location.slug, location.state.name)}
+    //       > 
+    //       </Card>
+    //     )
       
-    });
-setCardsJSX(cardsarr);
+    // });
+setCardsToShowJSX(cardsarr);
+setOffset(5);
   }, [props.locations]);
+
+  const _showMoreLocations = () => {
+    let cardsarr = cardsToShowJSX.slice();
+    for(var i = offset; i < offset + 5; i++){
+        try{
+        cardsarr.push(
+            <Card
+            key={props.locations[i].tagline}
+            location={props.locations[i].name}
+            heading={props.locations[i].tagline}
+            img={props.locations[i].image}
+            onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            > 
+            </Card>
+        )
+        }catch{
+            
+        }
+    }
+    setCardsToShowJSX(cardsarr);
+setOffset(offset+5);
+  }
 
 // const router  = useRouter();
     const _handleTailoredRedirect = () => {
@@ -78,16 +119,16 @@ setCardsJSX(cardsarr);
   return(
       <><div className='hidden-mobile'>
         <Container >  
-               {cardsJSX}
+               {cardsToShowJSX}
       </Container>
-       <Button boxShadow link={urls.travel_guide.BASE} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button>
+       {props.locations ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
       </div>
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
-            <Carousel cards={cardsJSX}></Carousel>
+            <Carousel cards={cardsToShowJSX}></Carousel>
     </div>
-    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.5rem 2rem" >View More</Button> : null}
+    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null}
   </div></>
   )
   ;

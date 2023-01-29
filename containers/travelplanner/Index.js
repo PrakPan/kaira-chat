@@ -457,6 +457,77 @@ const TOP_LOCATIONS = [
       "image": "media/website/Jodhpur.jpeg",
       "url": "",
   },
+  {
+    "tagline": "Experience Heritage",
+    "name": "Rajasthan",
+    "id": 298,
+    "slug": 'rajasthan-trip-planner',
+    "state": {
+      "name": "Rajasthan",
+    },
+    "image": "media/website/Jodhpur.jpeg",
+    "url": "",
+}, {
+  "tagline": "Experience Heritage",
+  "name": "Rajasthan",
+  "id": 298,
+  "slug": 'rajasthan-trip-planner',
+  "state": {
+    "name": "Rajasthan",
+  },
+  "image": "media/website/Jodhpur.jpeg",
+  "url": "",
+}, {
+  "tagline": "Experience Heritage",
+  "name": "Rajasthan",
+  "id": 298,
+  "slug": 'rajasthan-trip-planner',
+  "state": {
+    "name": "Rajasthan",
+  },
+  "image": "media/website/Jodhpur.jpeg",
+  "url": "",
+}, {
+  "tagline": "Experience Heritage",
+  "name": "Rajasthan",
+  "id": 298,
+  "slug": 'rajasthan-trip-planner',
+  "state": {
+    "name": "Rajasthan",
+  },
+  "image": "media/website/Jodhpur.jpeg",
+  "url": "",
+}, {
+  "tagline": "Experience Heritage",
+  "name": "Rajasthan",
+  "id": 298,
+  "slug": 'rajasthan-trip-planner',
+  "state": {
+    "name": "Rajasthan",
+  },
+  "image": "media/website/Jodhpur.jpeg",
+  "url": "",
+}, {
+  "tagline": "Experience Heritage",
+  "name": "Rajasthan",
+  "id": 298,
+  "slug": 'rajasthan-trip-planner',
+  "state": {
+    "name": "Rajasthan",
+  },
+  "image": "media/website/Jodhpur.jpeg",
+  "url": "",
+}, {
+  "tagline": "Experience Heritage",
+  "name": "Rajasthan",
+  "id": 298,
+  "slug": 'rajasthan-trip-planner',
+  "state": {
+    "name": "Rajasthan",
+  },
+  "image": "media/website/Jodhpur.jpeg",
+  "url": "",
+},
   
   
 ];
