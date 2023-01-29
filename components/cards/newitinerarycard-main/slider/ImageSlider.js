@@ -65,11 +65,11 @@ import {GoStar} from 'react-icons/go';
     position: absolute;
     top: 0;
      width: max-content;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     
     color: white;
     border-radius: 5px;
-    padding: 0.25rem;
+    padding: 0.35rem;
     right: 0;
     background: rgba(0, 0, 0, 0.6);
     letter-spacing: 0.1em;

@@ -50,10 +50,10 @@ const CardContainer = (props) => {
                 <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft>
                 <CardListItem className='' ><em>{props.text}</em></CardListItem>
                 <GridContainer>
-                        <ButtonContainer className='border' style={{borderRadius: '10px'}}>
+                        <ButtonContainer className='border center-div' style={{borderRadius: '10px'}} >
                             <Button fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => console.log('')} borderWidth="0" borderRadius="2rem">View Plan</Button>
                         </ButtonContainer>
-                        <ButtonContainer className='border' style={{borderRadius: '10px'}}>
+                        <ButtonContainer className='border center-div' style={{borderRadius: '10px'}}>
                         <Button  fontWeight="600" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => console.log('')}>Start Planning</Button>
                         </ButtonContainer>
                 </GridContainer>

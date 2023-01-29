@@ -5,6 +5,7 @@ import media from '../../../../media';
 import styled from 'styled-components';
 //  import ImageLoader from '../../../ImageLoader';
  import Location from './Destination';
+ import { TbArrowBack } from 'react-icons/tb';
 // import Animate from '../../../HOC/'
  const AbsoluteContainer = styled.div`
  background-color: white;
@@ -97,6 +98,7 @@ const LocationsContainer = (props) => {
   
   return (
     <AbsoluteContainer className='border'>
+      <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
       <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{"Cities around " + props.destination}</p>
     <LocationContainer  >
         

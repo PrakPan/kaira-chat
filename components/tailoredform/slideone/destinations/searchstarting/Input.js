@@ -56,6 +56,8 @@ const SearchInput = (props) => {
 
        console.log(res.data);
        let results = [];
+       if(!res.data.length) _handleClearResults();
+       else
        for(var i = 0 ; i < res.data.length; i++){
         results.push(
           <SearchResult selectResult={_selectResult} text={res.data[i].text}></SearchResult>
@@ -68,7 +70,7 @@ const SearchInput = (props) => {
       })
       .catch((error) => {
         setLoading(false);
-
+        _handleClearResults();
         // alert('Page could not be loaded. Please try again.');
       });
     }
