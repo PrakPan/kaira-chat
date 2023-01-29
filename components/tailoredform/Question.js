@@ -7,9 +7,7 @@ import styled from 'styled-components';
  
  const Heading = styled.p`
  font-weight: 600;
- margin: ${(props) =>
-
-  props.margin ? props.margin : "0 0 0.5rem 0"};
+ margin: ${(props) => props.margin ? props.margin : "0 0 0.5rem 0"};
 
  `;
  
