@@ -36,6 +36,8 @@ const FlickityComp = (props) => {
       return (
         <div style={{width: '100%'}}>
                             {!props.slideIndex ? <Card><SlideOne 
+                            showSearchStarting={props.showSearchStarting} 
+                            setShowSearchStarting={props.setShowSearchStarting}
                                         destination={props.destination}
                                         showCities={props.showCities}
                                         setShowCities={props.setShowCities}

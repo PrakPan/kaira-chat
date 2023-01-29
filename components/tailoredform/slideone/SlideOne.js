@@ -64,7 +64,8 @@ const SlideOne = (props) =>{
     <Section>
         <Question>What do you want to explore?</Question>
 
-        <Destinations showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
+        <Destinations showSearchStarting={props.showSearchStarting} 
+            setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>
         <Question style={{visibility: props.showCities ? 'hidden' : 'visible', margin: ' 0 0 1rem 0'}} >When are you planning to travel?</Question>

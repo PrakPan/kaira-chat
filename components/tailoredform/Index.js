@@ -186,6 +186,7 @@ const Enquiry = (props) => {
     const [budget, setBudget] = useState('Affordable');
     const [selectedPreferences, setSelectedPreferences]  = useState([]);
     const [showCities, setShowCities] = useState(false);
+    const [showSearchStarting, setShowSearchStarting] = useState(false);
 
     const [showBlack, setShowBlack] = useState(false);
 
@@ -193,11 +194,16 @@ const Enquiry = (props) => {
       
         if(slideIndex === 2 && props.token) _submitDataHandler();
       }, [slideIndex, props.token]);
+      const _handleHideBlack = () => {
+        setShowBlack(false);
+        setShowCities(false);
+        setShowSearchStarting(false);
+      }
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
  return(
     <div>
-                {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
+                {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
                
     <Container className="border center-div" onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
@@ -212,6 +218,8 @@ const Enquiry = (props) => {
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
             <div style={{padding: '1rem', width: '100%'}}>
             <Flickity
+            showSearchStarting={showSearchStarting} 
+            setShowSearchStarting={setShowSearchStarting}
             showCities={showCities}
             setShowCities={setShowCities}
             destination={props.destination}

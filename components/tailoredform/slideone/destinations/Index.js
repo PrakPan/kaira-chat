@@ -27,7 +27,8 @@ const Destinations = (props) => {
   return (
    <Container>
     {/* <p className="font-opensans">Where do  you want to go?</p> */}
-    <SelectedDestination selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+    <SelectedDestination showSearchStarting={props.showSearchStarting} 
+            setShowSearchStarting={props.setShowSearchStarting}setShowCities={props.setShowCities} selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
         <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
         {props.showCities ? <CitiesContainer setShowCities={props.setShowCities} destination={props.destination} CITIES={props.CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}>
 

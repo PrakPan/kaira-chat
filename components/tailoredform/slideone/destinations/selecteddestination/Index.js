@@ -38,18 +38,18 @@ const SelectedDestination = (props) => {
 
 
   let isPageWide = media('(min-width: 768px)');
-  const [showSearchStarting, setShowSearchStarting] = useState(false);
+  // const [showSearchStarting, setShowSearchStarting] = useState(false);
   const _handleShowSearchStarting = () => {
-    setShowSearchStarting(true);
+    props.setShowSearchStarting(true);
 
   }
   const [focusLocation, setFocusLocation] = useState(false);
   return ( 
-   <Container className=' font-opensans' style={{borderRadius: '8px', border: !focusLocation ? '1px solid #EFEFEF' : '1px solid black', boxShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.25)'}}>
+   <Container onClick={props.selectlocation ? () => props.setShowCities(false) : console.log('')}  className=' font-opensans' style={{borderRadius: '8px', border: !focusLocation ? '1px solid #EFEFEF' : '1px solid black', boxShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.25)'}}>
     <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : props.openCities}>
         <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
-    {props.selectlocation ? !showSearchStarting ? 'Delhi, IN' : <SearchInputStarting onfocus={() => setFocusLocation(true)} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
-{props.selectlocation && !showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem', marginLeft: '2px'}}></GrFormEdit> : null}
+    {props.selectlocation ? !props.showSearchStarting ? 'Delhi, IN' : <SearchInputStarting onfocus={() => setFocusLocation(true)} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
+{props.selectlocation && !props.showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem', marginLeft: '2px'}}></GrFormEdit> : null}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >
         {props.selectedCities ? 

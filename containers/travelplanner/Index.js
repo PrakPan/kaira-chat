@@ -26,7 +26,7 @@ import Overview from './Overview';
 import Button from '../../components/ui/button/Index';
 import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
-import Locations from '../../components/containers/Locations';
+import Locations from '../../components/containers/plannerlocations.js/Index';
 import Map from './Map';
 // import qs from qs;
 var qs = require('qs');
@@ -497,7 +497,7 @@ console.log(props.experienceData);
 {/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
 <Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
-{itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
+{itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 0 0 2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
 
   {!loading ? <GridContainer>
     { itinerariesToShowExclusiveJSX}
@@ -508,14 +508,14 @@ console.log(props.experienceData);
     !loading && itinerariesExclusiveJSX.length && (itinerariesExclusiveJSX.length >=  offsetExclusive)? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   }
-  {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
+  {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
   {!loading ? <GridContainer>
     { itinerariesToShowCustomerJSX}
  
   </GridContainer> : null
   }
   {
-    !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
+    !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
   }
       {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
