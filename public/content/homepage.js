@@ -84,7 +84,21 @@ const experiences = {
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
-                "duration": "4 weeks"
+                "duration": "4 weeks",
+                "summary": {
+                  "Stays": {
+                    "count" : 1.
+                  },
+                  "Transfers": {
+                    "count": 1
+                  },
+                  "Activities": {
+                    "count": 3
+                  },
+                  "Flights": {
+                    "count": 0
+                  }
+                }
               }
             ,
       },
@@ -114,7 +128,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 1.
+                    },
+                    "Transfers": {
+                      "count": 1
+                    },
+                    "Activities": {
+                      "count": 0
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
         },
@@ -141,7 +169,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 2.
+                    },
+                    "Transfers": {
+                      "count": 2
+                    },
+                    "Activities": {
+                      "count": 1
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
         },
@@ -168,7 +210,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 1.
+                    },
+                    "Transfers": {
+                      "count": 0
+                    },
+                    "Activities": {
+                      "count": 0
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
         },
@@ -199,7 +255,21 @@ const experiences = {
               "currency": "USD",
               "total_cost": 185000,
               "service_fee": 15000,
-              "duration": "4 weeks"
+              "duration": "4 weeks",
+              "summary": {
+                "Stays": {
+                  "count" : 1.
+                },
+                "Transfers": {
+                  "count": 0
+                },
+                "Activities": {
+                  "count": 0
+                },
+                "Flights": {
+                  "count": 0
+                }
+              }
             }
           ,
       },  
@@ -226,7 +296,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks" ,
+                  "summary": {
+                    "Stays": {
+                      "count" : 1.
+                    },
+                    "Transfers": {
+                      "count": 0
+                    },
+                    "Activities": {
+                      "count": 0
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
 
@@ -254,7 +338,21 @@ const experiences = {
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
-                "duration": "4 weeks"
+                "duration": "4 weeks",
+                "summary": {
+                  "Stays": {
+                    "count" : 1.
+                  },
+                  "Transfers": {
+                    "count": 0
+                  },
+                  "Activities": {
+                    "count": 0
+                  },
+                  "Flights": {
+                    "count": 0
+                  }
+                }
               }
             ,
       },
@@ -281,7 +379,21 @@ const experiences = {
               "currency": "USD",
               "total_cost": 185000,
               "service_fee": 15000,
-              "duration": "4 weeks"
+              "duration": "4 weeks",
+              "summary": {
+                "Stays": {
+                  "count" : 1.
+                },
+                "Transfers": {
+                  "count": 0
+                },
+                "Activities": {
+                  "count": 0
+                },
+                "Flights": {
+                  "count": 0
+                }
+              }
             }
           ,
     },
@@ -319,7 +431,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 6.
+                    },
+                    "Transfers": {
+                      "count": 5
+                    },
+                    "Activities": {
+                      "count": 4
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
         },
@@ -347,7 +473,21 @@ const experiences = {
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
-                "duration": "4 weeks"
+                "duration": "4 weeks",
+                "summary": {
+                  "Stays": {
+                    "count" : 4.
+                  },
+                  "Transfers": {
+                    "count": 6
+                  },
+                  "Activities": {
+                    "count": 4
+                  },
+                  "Flights": {
+                    "count": 0
+                  }
+                }
               }
             ,
       },
@@ -374,7 +514,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                   "summary": {
+                    "Stays": {
+                      "count" : 2.
+                    },
+                    "Transfers": {
+                      "count": 2
+                    },
+                    "Activities": {
+                      "count": 4
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
 
@@ -404,7 +558,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 1.
+                    },
+                    "Transfers": {
+                      "count": 1
+                    },
+                    "Activities": {
+                      "count": 1
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
 
@@ -443,7 +611,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 2.
+                    },
+                    "Transfers": {
+                      "count": 2
+                    },
+                    "Activities": {
+                      "count": 3
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
 
@@ -471,7 +653,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 1.
+                    },
+                    "Transfers": {
+                      "count": 1
+                    },
+                    "Activities": {
+                      "count": 1
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               
 
@@ -498,7 +694,21 @@ const experiences = {
                   "currency": "USD",
                   "total_cost": 185000,
                   "service_fee": 15000,
-                  "duration": "4 weeks"
+                  "duration": "4 weeks",
+                  "summary": {
+                    "Stays": {
+                      "count" : 1.
+                    },
+                    "Transfers": {
+                      "count": 0
+                    },
+                    "Activities": {
+                      "count": 2
+                    },
+                    "Flights": {
+                      "count": 0
+                    }
+                  }
                 }
               ,
 
@@ -526,7 +736,21 @@ const experiences = {
                 "currency": "USD",
                 "total_cost": 185000,
                 "service_fee": 15000,
-                "duration": "4 weeks"
+                "duration": "4 weeks",
+                "summary": {
+                  "Stays": {
+                    "count" : 1.
+                  },
+                  "Transfers": {
+                    "count": 1
+                  },
+                  "Activities": {
+                    "count": 1
+                  },
+                  "Flights": {
+                    "count": 0
+                  }
+                }
               }
             ,
     
@@ -544,7 +768,7 @@ const experiences = {
         "experience_filters": ["Adventure"],
         "experience_region": "Uttarakhand",
         "rating": 4.8,
-        "duration": "4 weeks",
+        "duration": "1 Month",
         "short_text": "A month long workcation in Uttarakhand to work away from home and go on adventures. Location: Uttarakhand, 1 week, Adventure",
         "images": {
             "main_image": "media/website/Neha.jpeg",
@@ -556,7 +780,21 @@ const experiences = {
               "currency": "USD",
               "total_cost": 185000,
               "service_fee": 15000,
-              "duration": "4 weeks"
+              "duration": "4 weeks",
+              "summary": {
+                "Stays": {
+                  "count" : 4.
+                },
+                "Transfers": {
+                  "count": 4
+                },
+                "Activities": {
+                  "count": 3
+                },
+                "Flights": {
+                  "count": 0
+                }
+              }
             }
           ],
   
@@ -572,7 +810,7 @@ const experiences = {
       "experience_filters": ["Heritage"],
       "experience_region": "Rajasthan",
       "rating": 4.8,
-      "duration": "8 nights",
+      "duration": "7 Days",
       "short_text": "A week in Rajasthan to understand a new culture and have some amazing new cuisine.",
       "images": {
           "main_image": "media/website/Harshitha.jpeg",
@@ -584,7 +822,21 @@ const experiences = {
             "currency": "USD",
             "total_cost": 185000,
             "service_fee": 15000,
-            "duration": "4 weeks"
+            "duration": "4 weeks",
+            "summary": {
+              "Stays": {
+                "count" : 5.
+              },
+              "Transfers": {
+                "count": 6
+              },
+              "Activities": {
+                "count": 4
+              },
+              "Flights": {
+                "count": 0
+              }
+            }
           }
         ],
 
@@ -600,7 +852,7 @@ const experiences = {
     "experience_filters": ["Culture"],
     "experience_region": "North India",
     "rating": 4.8,
-    "duration": "4 weeks+",
+    "duration": "3 Months",
     "short_text": "A 3-month India exploration of a 17-year old all over India. North India, 4 weeks+, Art & culture",
     "images": {
         "main_image": "media/website/Monsterrat.jpeg",
@@ -612,7 +864,21 @@ const experiences = {
           "currency": "USD",
           "total_cost": 185000,
           "service_fee": 15000,
-          "duration": "4 weeks"
+          "duration": "4 weeks",
+          "summary": {
+            "Stays": {
+              "count" : 8.
+            },
+            "Transfers": {
+              "count": 7
+            },
+            "Activities": {
+              "count": 6
+            },
+            "Flights": {
+              "count": 0
+            }
+          }
         }
       ],
 
@@ -639,7 +905,21 @@ const experiences = {
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
-        "duration": "4 weeks"
+        "duration": "4 weeks",
+        "summary": {
+          "Stays": {
+            "count" : 2
+          },
+          "Transfers": {
+            "count": 1
+          },
+          "Activities": {
+            "count": 2
+          },
+          "Flights": {
+            "count": 0
+          }
+        }
       }
     ],
 
@@ -675,7 +955,21 @@ const experiences = {
           "currency": "USD",
           "total_cost": 185000,
           "service_fee": 15000,
-          "duration": "4 weeks"
+          "duration": "4 weeks",
+          "summary": {
+            "Stays": {
+              "count" : 1.
+            },
+            "Transfers": {
+              "count": 1
+            },
+            "Activities": {
+              "count": 1
+            },
+            "Flights": {
+              "count": 0
+            }
+          }
         }
       ,
 
@@ -701,7 +995,21 @@ const experiences = {
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
-        "duration": "4 weeks"
+        "duration": "4 weeks",
+        "summary": {
+          "Stays": {
+            "count" : 1.
+          },
+          "Transfers": {
+            "count": 1
+          },
+          "Activities": {
+            "count": 1
+          },
+          "Flights": {
+            "count": 0
+          }
+        }
       }
     ,
 
@@ -728,7 +1036,21 @@ const experiences = {
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
-        "duration": "4 weeks"
+        "duration": "4 weeks",
+        "summary": {
+          "Stays": {
+            "count" : 1.
+          },
+          "Transfers": {
+            "count": 1
+          },
+          "Activities": {
+            "count": 1
+          },
+          "Flights": {
+            "count": 1
+          }
+        }
       }
     ,
 
@@ -756,7 +1078,21 @@ const experiences = {
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
-        "duration": "4 weeks"
+        "duration": "4 weeks",
+        "summary": {
+          "Stays": {
+            "count" : 1.
+          },
+          "Transfers": {
+            "count": 1
+          },
+          "Activities": {
+            "count": 1
+          },
+          "Flights": {
+            "count": 0
+          }
+        }
       }
     ,
 },
@@ -782,7 +1118,21 @@ const experiences = {
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
-        "duration": "4 weeks"
+        "duration": "4 weeks",
+        "summary": {
+          "Stays": {
+            "count" : 1.
+          },
+          "Transfers": {
+            "count": 1
+          },
+          "Activities": {
+            "count": 1
+          },
+          "Flights": {
+            "count": 0
+          }
+        }
       }
     ,
 
@@ -809,7 +1159,21 @@ const experiences = {
         "currency": "USD",
         "total_cost": 185000,
         "service_fee": 15000,
-        "duration": "4 weeks"
+        "duration": "4 weeks",
+        "summary": {
+          "Stays": {
+            "count" : 1.
+          },
+          "Transfers": {
+            "count": 1
+          },
+          "Activities": {
+            "count": 1
+          },
+          "Flights": {
+            "count": 0
+          }
+        }
       }
     ,
 

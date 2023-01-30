@@ -154,12 +154,7 @@ const _handleExperiencesClick = () => {
       </SetWidthContainer>
 
       {/*Add travel traingle banner with 2 ctas*/}
-    <div className="hidden-mobile">
-      <SetWidthContainer>
-      <BannerOne></BannerOne>
-      </SetWidthContainer>
-      
-      </div>
+   
 
       <SetWidthContainer>
 

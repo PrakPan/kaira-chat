@@ -2,7 +2,7 @@ import React, {useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
-import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
+import PastItineraryCard from '../cards/Testimonial';
 import Carousel from '../FlickityCarousel';
 import media from '../media';
 
@@ -177,9 +177,10 @@ const Experiences = [
           experience={props.experiences[j].name}
           cost={props.experiences[j].payment_info ? props.experiences[j].payment_info[0].cost : null}
           duration={props.experiences[j].duration}
-          location={props.experiences[j]["experience_region"]}
+          heading={props.experiences[j].name}
+          destination={props.experiences[j]["experience_region"]}
           starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price }
-        images={props.experiences[j].images}>
+        image={props.experiences[j].images.main_image}>
         
           
           </PastItineraryCard >

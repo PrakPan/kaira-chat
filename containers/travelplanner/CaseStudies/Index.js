@@ -5,7 +5,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
 import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
-import Card from './Card';
+import Card from '../../../components/cards/Testimonial';
 const Container = styled.div`
       
 @media screen and (min-width: 768px){

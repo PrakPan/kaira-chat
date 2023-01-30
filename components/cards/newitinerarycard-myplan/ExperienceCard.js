@@ -1,17 +1,11 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
-import Button from '../../ui/button/Index';
-import Link from 'next/link';
-import media from '../../media';
+    import media from '../../media';
 import { useRouter } from 'next/router';
-import { getIndianPrice } from '../../../services/getIndianPrice';
-import urls from '../../../services/urls';
+ import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
-import Spinner from '../../Spinner';
-import Info from './info/Index';
+ import Info from './info/Index';
 
 const Container = styled.div`
 width: 100%;

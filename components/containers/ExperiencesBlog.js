@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
  import Card from '../cards/newitinerarycard-main/ExperienceCard';
- import PastItineraryCard from '../cards/pastitinerarycard/ExperienceCard';
+ import PastItineraryCard from '../cards/Testimonial';
  import BlogNew from '../cards/Blog';
 import Carousel from '../FlickityCarousel';
 import ExperiencesContainer from './Experiences';
@@ -60,10 +60,11 @@ const Experiences= (props) => {
         hardcoded={experience.payment_info ? true : false }
         text={experience.short_text} 
         experience={experience.name}
+        heading={experience.name}
         cost={experience.payment_info ? experience.payment_info[0].cost : null}
         duration={experience.duration}
-        location={experience["experience_region"]}
-        images={experience.images ? experience.images : experience.main_image}>
+        destination={experience["experience_region"]}
+        image={experience.images ? experience.images.main_image : experience.main_image}>
         </PastItineraryCard >
         )
     }
@@ -83,6 +84,7 @@ const Experiences= (props) => {
         text={experience.short_text} 
         experience={experience.name}
          duration={experience.duration}
+         
         location={experience["experience_region"]}
         images={experience.images ? experience.images : experience.main_image}>
         </Card>
@@ -109,10 +111,11 @@ const Experiences= (props) => {
              cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : null}
              duration={props.experiences[3].duration}
              rating={props.experiences[3].rating}
+             heading={props.experiences[3].name}
              hardcoded={props.experiences[3].payment_info ?true : false }
-             location={props.experiences[3]["experience_region"]}          
+             destination={props.experiences[3]["experience_region"]}          
              starting_cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : props.experiences[3].starting_price}
-             images={props.experiences[3].images ? props.experiences[3].images : props.experiences[3].main_image}>
+             image={props.experiences[3].images ? props.experiences[3].images.main_image : props.experiences[3].main_image}>
        </PastItineraryCard> :
             <Card 
               data={props.experiences[3]}
