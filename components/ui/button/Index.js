@@ -36,6 +36,7 @@ const Index = (props) => {
             boxShadow={props.boxShadow}
             display={props.display}
             textAlign={props.textAlign}
+            center={props.center}
           >
             {props.children}
           </Generalbutton>

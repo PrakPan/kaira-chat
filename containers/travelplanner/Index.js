@@ -12,10 +12,8 @@ import Experiences from '../../components/containers/Experiences';
 
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
- import BannerOne from './BannerOne';
- import BannerTwo from './BannerTwo';
- import WhyUs from '../testimonial/whyttw/Index';
- import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
+  import BannerTwo from './BannerTwo';
+  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
  import Reviews from './CaseStudies/Index';
  import Menu from './Menu';
@@ -26,7 +24,8 @@ import Overview from './Overview';
 import Button from '../../components/ui/button/Index';
 import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
-import Locations from '../../components/containers/plannerlocations.js/Index';
+import Locations from '../../components/containers/plannerlocations/Index';
+import PLANNER_PAGES from '../../public/content/planner';
 import Map from './Map';
 // import qs from qs;
 var qs = require('qs');
@@ -557,6 +556,7 @@ const EXPERIENCE = {
 const openWhatsapp = () => {
   window.location.href=urls.WHATSAPP+"?text=I need help planning my trip to "+props.experienceData.destination+".";
 }
+
 console.log(props.experienceData);
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
@@ -600,7 +600,7 @@ console.log(props.experienceData);
       <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Trending Destination</Heading>        
 
-      <Locations locations={TOP_LOCATIONS} viewall planner></Locations>
+      <Locations locations={PLANNER_PAGES} viewall planner></Locations>
 
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
         <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
@@ -619,11 +619,11 @@ console.log(props.experienceData);
   
  
       <SetWidthContainer>
-      
-        <AsSeenIn disablelinks></AsSeenIn>
-        <div className='hidden-mobile'><BannerTwo cities={props.experienceData.locations} ></BannerTwo></div>
+       
+        <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn>
+        <div className='hidden-mobile'><BannerTwo  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-        <ChatWithUs></ChatWithUs>
+        <ChatWithUs ></ChatWithUs>
       </SetWidthContainer>
 
  

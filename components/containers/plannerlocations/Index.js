@@ -38,28 +38,36 @@ const LocationsBlog= (props) => {
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
     const [offset, setOffset] = useState(0);
+    let count =  0;
 
     useEffect(() => {
+      console.log(router.pathname)
       let cardsarr = [];
-
-    if(props.locations)
-    for(var i = 0 ; i < 5; i++){
+      var i = 0;
+    if(props.locations){
+    for(i = 0 ; i < props.locations.length; i++){
         try{
+          if(router.pathname!== props.locations[i].slug){
+            count++;
         cardsarr.push(
             <Card
             key={props.locations[i].tagline}
             location={props.locations[i].name}
             heading={props.locations[i].tagline}
             img={props.locations[i].image}
-            onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            slug={props.locations[i].slug}
+            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
             </Card>
         )
+        if(count === 5) break;
+      }
         }
         catch{
 
         }
     }
+  }
     // setOffset(5);
     // props.locations.map( location => {
     //    cardsarr.push(              
@@ -75,20 +83,23 @@ const LocationsBlog= (props) => {
       
     // });
 setCardsToShowJSX(cardsarr);
-setOffset(5);
+setOffset(i+1);
   }, [props.locations]);
 
   const _showMoreLocations = () => {
     let cardsarr = cardsToShowJSX.slice();
     for(var i = offset; i < offset + 5; i++){
         try{
+          if(router.pathname!== props.locations[i].slug)
+
         cardsarr.push(
             <Card
             key={props.locations[i].tagline}
             location={props.locations[i].name}
             heading={props.locations[i].tagline}
             img={props.locations[i].image}
-            onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            slug={props.locations[i].slug}
+            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
             </Card>
         )

@@ -50,12 +50,12 @@ const Testimonial = (props) => {
                 <ImageLoader borderRadius="50%" width="60%" widthMobile="40%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
                 <CardHeading className='font-opensans text-center'>{props.heading}</CardHeading>
                 <CardSubHeading className='font-opensans text-center'>{props.duration + " | " + props.destination}</CardSubHeading>
-                {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
+                {props.review ? <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> : null}
                 <CardListItem className='text-center' ><em>{props.text}</em></CardListItem>
                 <div style={{flexGrow: '1', alignItems: 'flex-end', display: 'flex'}}>
                 <GridContainer>
                         <ButtonContainer className='border center-div' style={{borderRadius: '10px'}} >
-                            <Button fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
+                            <Button display="flex"  height="100%" center fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
                         </ButtonContainer>
                         <ButtonContainer className='border center-div' style={{borderRadius: '10px'}}>
                         <Button  fontWeight="600" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => router.push('/tailored-travel')}>Start Planning</Button>

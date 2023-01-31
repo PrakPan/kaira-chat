@@ -4,6 +4,7 @@ import Button from '../../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
 import Flickity from './Flickity/Index';
+import { useRouter } from 'next/router';
  
 const Card = styled.div`
       padding: 2rem 2rem;
@@ -40,6 +41,7 @@ const CardListItem = styled.p`
      }
  `;
 const CardContainer = (props) => {
+    const router = useRouter();
     return (
 
         
@@ -51,7 +53,7 @@ const CardContainer = (props) => {
                 <CardListItem className='' ><em>{props.text}</em></CardListItem>
                 <GridContainer>
                         <ButtonContainer className='border center-div' style={{borderRadius: '10px'}} >
-                            <Button fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => console.log('')} borderWidth="0" borderRadius="2rem">View Plan</Button>
+                            <Button fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
                         </ButtonContainer>
                         <ButtonContainer className='border center-div' style={{borderRadius: '10px'}}>
                         <Button  fontWeight="600" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => console.log('')}>Start Planning</Button>

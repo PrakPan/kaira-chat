@@ -41,7 +41,7 @@ const  Banner = (props) =>{
           <div className='center-div'>
             <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader>
             </div>       
-            <Enquiry cities={props.cities}></Enquiry>
+            <Enquiry destination={props.destination} cities={props.cities}></Enquiry>
         </GridContainer>
        
     </Container>

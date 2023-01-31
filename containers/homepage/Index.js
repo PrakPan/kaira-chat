@@ -19,7 +19,7 @@ import TravelStyles from '../../components/containers/TravelStyles';
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
-import Locations from '../../components/containers/Locations';
+import Locations from '../../components/containers/plannerlocations/Index';
 import FullImgContent from './search/SearchFullImgContent';
 // import FullImgContentChristmas from './search/Christmas';
 import PersonaliseBox  from '../../components/containers/Personalise';
@@ -29,13 +29,9 @@ import Button from '../../components/ui/button/Index';
 // import howitworksimg3 from '../../public/assets/arts/whyus/3.webp';
 import media from '../../components/media';
 import homepagecontent from '../../public/content/homepage';
-import BannerOne from '../../components/banners/HomepageOne';
-import BackgroundImageLoader from '../../components/BackgroundImageLoader';
-import * as ga from '../../services/ga/Index';
-import Spinner from '../../components/Spinner';
-import urls from '../../services/urls';
-import Snowflakes from '../../components/HOC/Snowflakes';
-import Explorers from './Explorers';
+  import * as ga from '../../services/ga/Index';
+ import urls from '../../services/urls';
+  import PLANNER_PAGES from '../../public/content/planner';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -144,7 +140,7 @@ const _handleExperiencesClick = () => {
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 5rem 0"}  bold>Top Destinations</Heading>        
-      <Locations locations={homepagecontent["Top Locations"]} viewall></Locations>
+      <Locations locations={PLANNER_PAGES} viewall></Locations>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Best Sellers</Heading>        
         <ExperiencesBlog link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></ExperiencesBlog>
         <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>

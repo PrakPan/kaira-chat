@@ -7,6 +7,12 @@ const Container = styled.div`
      padding: 0.5rem;
     display: flex;
     overflow: hidden;
+    justify-content: center;
+    @media screen and (min-width: 768px){
+        justify-content: flex-start;
+
+    
+    }
     
 `;
 const Words = styled.div`

@@ -9,14 +9,15 @@ import {BsWhatsapp} from 'react-icons/bs';
 // import Banner from './BannerOne';
 import TailoredForm from '../../components/tailoredform/Index';
 import Rolodex from './Rolodex';
-const Container = styled.div`
+ const Container = styled.div`
   color:white;
  width: 100%;
  display: grid;
-
+text-align: center;
   @media screen and (min-width: 768px){
     padding: 0;
     width: 90%;
+    text-align: left;
     margin: auto;
     grid-template-columns: auto 400px;
  
@@ -97,6 +98,9 @@ console.log('c', props.cities)
             {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
+                <div className='hidden-desktop'>
+                <Button bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="0" onclick={() => console.log('')} margin="1rem auto">Build Now</Button>
+             </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}
                <div className='hidden-mobile' style={{}}>

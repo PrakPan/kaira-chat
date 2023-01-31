@@ -24,9 +24,10 @@ const HeadingNew = styled.p`
     text-align: center;
     font-size: 2.5rem;
     font-weight: 700;
+    margin: ${(props) => (props.margin ? props.margin : "0 0 1rem 0")};
     @media screen and (min-width: 768px){ 
         font-size: 3rem;
-        margin-bottom: 0;
+        margin: ${(props) => (props.margin ? props.margin : "0")};
 
     }
 `;
@@ -230,7 +231,7 @@ const AsSeenIn = (props) => {
             </MarqueeContainer> */}
             <InnerContainer>
                    <div>
-                        <HeadingNew className="font-opensans">What They Say</HeadingNew>
+                        <HeadingNew className="font-opensans" margin={props.margin} >What They Say</HeadingNew>
                        <HeadingContainer>
                         </HeadingContainer>
                     </div>

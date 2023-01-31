@@ -37,6 +37,9 @@ box-shadow: ${(props) => (props.boxShadow ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 2
 text-align: ${(props)=> (props.textAlign ? props.textAlign : "center")};
 
   @media screen and (min-width: 768px) {
+    align-items:  ${(props) => (props.center ? 'center' : "normal")};
+   
+    justify-content: ${(props) => (props.center ? 'center' : "normal")};
     margin: ${(props) => (props.margin ? props.margin : "0")};
 
     font-size: ${(props) =>
@@ -77,7 +80,7 @@ const Generalbutton = (props) => {
       width={props.width}
       height={props.height}
       disabled={props.disabled}
-
+center={props.center}
       fontSize={props.fontSize}
       borderStyle={props.borderStyle}
       borderWidth={props.borderWidth}
