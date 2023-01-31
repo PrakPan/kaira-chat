@@ -30,7 +30,7 @@ const SearchResult = (props) => {
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   return (
-   <Container className='border font-opensans hover-pointer' onClick={() => props.selectResult(props.text, props.place_id)}>
+   <Container className='border font-opensans hover-pointer' onClick={(event) => props.selectResult(event,props.text, props.place_id)}>
         {props.text}
     </Container>
   );

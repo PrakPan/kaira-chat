@@ -43,7 +43,11 @@ const SearchInput = (props) => {
   // const [showCities, setShowCities] = useState(false);
   // const [props.startingLocationCities, setSelectedCities] = useState([]);
 
-  const _selectResult  =(text, place_id) => {
+  const _selectResult  =(event, text, place_id) => {
+    event.stopPropagation();
+    console.log('t')
+    setResultsJSX([]);
+    props.setShowSearchStarting(false);
     props.setStartingLocation({'name': text, 'place_id': place_id});
   }
   const _getResults = (query) => {
@@ -76,18 +80,25 @@ const SearchInput = (props) => {
     }
     const _handleClearResults = () => {
       setResultsJSX([]);
+      props.onfocus();
       // props.setStartingLocation(false);
     }
+    console.log(props.showSearchStarting)
   return (
     <Container>
-   {!props.startingLocation ? <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
+   {props.showSearchStarting ? 
+   <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
     {/* ed */}
     </InputContainer>
     {loading ? <Spinner size={16} margin="0"></Spinner> : null}
     </div>
-    : <div className='font-opensans' onClick={_handleClearResults}>
-      {props.startingLocation.name}</div>}
-    {!props.startingLocation ? <ResultsContainer>
+    : null}
+    {
+      !props.showSearchStarting && props.startingLocation ? <div className='font-opensans' onClick={_handleClearResults}>
+      {props.startingLocation.name}
+      </div> : null 
+    }
+    {resultsJSX.length && props.showSearchStarting? <ResultsContainer>
     {resultsJSX}
     </ResultsContainer> : null}
 

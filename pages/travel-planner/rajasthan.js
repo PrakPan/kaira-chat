@@ -12,8 +12,8 @@ const DATA = {
 	"banner_text": null,
 	"overview_heading": "Rajasthan Overview",
 	"overview_text": "Rajasthan is one of the most popular tourist destinations in India. From stunning fortresses to mesmerizing sand dunes, the state offers a plethora of attractions for travelers. The state is known for its exquisite palaces and forts, which offer spectacular views of the surrounding landscape. Jaipur, the capital city, is home to the famous Amber Fort, a magnificent structure that stands for the grandeur of the Rajputs. Udaipur, known as the City of Lakes, is renowned for its breathtaking architecture and lakeside views. Jodhpur, the Blue City, is another must-visit destination.\r\nApart from its architectural marvels, Rajasthan is also home to numerous wildlife sanctuaries and national parks. The Ranthambore National Park is known for its tigers and other wildlife. Here, travelers can enjoy desert safaris and camel rides. Rajasthan is also famous for its vibrant culture and colorful festivals. The Pushkar Fair is one of the most popular festivals in the state. Here, travelers can witness traditional folk performances and shop for local handicrafts. Rajasthan is also known for its delicious cuisine. A visit to here would be incomplete without trying the famous Dal Baati Churma, Gatte Ki Sabzi, Laal Maas and other local delicacies.\r\nFrom majestic forts and palaces to wildlife sanctuaries, the state has something for everyone. So get your camera ready and explore the beauty of Rajasthan and don't forget to wish everyone \"Khamma Ghani\" while you're there!",
-	"image": "media/page/167463992491512298583984375000.jpg",
-	"image_alt_text": "View of Thar Desert in Rajasthan",
+	"image": "media/page/167474771649785995483398437500.jfif",
+	"image_alt_text": "View of Hawa Mahal in Jaipur, Rajasthan",
 	"itineraries": [],
 	"itinerary_data": {},
 	"locations": [

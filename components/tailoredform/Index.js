@@ -104,7 +104,7 @@ const Enquiry = (props) => {
  
      
      const _submitDataHandler = () => {
-        console.log(new Date(valueStart));
+        // console.log(new Date(valueStart));
         const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
         setLoading(true);
@@ -195,7 +195,7 @@ const Enquiry = (props) => {
     const [showSearchStarting, setShowSearchStarting] = useState(false);
 
     const [showBlack, setShowBlack] = useState(false);
-    console.log(startingLocation);
+    // console.log(startingLocation);
     useEffect(() => {
 
         if(slideIndex === 2 && props.token) _submitDataHandler();
@@ -205,7 +205,7 @@ const Enquiry = (props) => {
         setShowCities(false);
         setShowSearchStarting(false);
       }
-      console.log(props.experienceData)
+      // console.log(props.experienceData)
 
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
