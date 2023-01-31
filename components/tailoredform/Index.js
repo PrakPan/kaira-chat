@@ -199,6 +199,7 @@ const Enquiry = (props) => {
         setShowCities(false);
         setShowSearchStarting(false);
       }
+      console.log('ca', props.children_cities)
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
  return(
@@ -218,6 +219,8 @@ const Enquiry = (props) => {
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
             <div style={{padding: '1rem', width: '100%'}}>
             <Flickity
+            
+            children_cities={props.children_cities}
             showSearchStarting={showSearchStarting} 
             setShowSearchStarting={setShowSearchStarting}
             showCities={showCities}

@@ -23,7 +23,7 @@ const fullimage = (props) =>{
         return(
         <Container height={props.height} heightmobile={props.heightmobile}>
 
-            {props.img ? <BackgroundImageLoader padding={props.padding} filter={props.filter}  center url={props.url} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 900, height: 600}} className="center-div" >{props.children}</BackgroundImageLoader> : <BackgroundImageLoader filter={props.filter} center className="center-div" url={props.url} dimensions={{width: 1600, height: 900}}  className="center-div">{props.children}</BackgroundImageLoader>}
+            {props.img ? <BackgroundImageLoader padding={props.padding} filter={props.filter}  center url={props.url} dimensions={{width: 1200, height: 675}} dimensionsMobile={{width: 900, height: 600}} className="center-div" >{props.children}</BackgroundImageLoader> : <BackgroundImageLoader filter={props.filter} center className="center-div" url={props.url} dimensions={{width: 1600, height: 900}}  className="center-div">{props.children}</BackgroundImageLoader>}
         </Container>
         
     )

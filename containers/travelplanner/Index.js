@@ -151,6 +151,8 @@ const DATA=[
 		"slug": "8-days-kerala-generic-itinerary"
 	}
 ];
+
+console.log(props.experienceData)
 const [loading, setLoading] = useState(true);
 const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
 const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState([]);
@@ -557,11 +559,11 @@ const openWhatsapp = () => {
   window.location.href=urls.WHATSAPP+"?text=I need help planning my trip to "+props.experienceData.destination+".";
 }
 
-console.log(props.experienceData);
+console.log('ch', props.experienceData.children);
    return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
-          <FullImgContent destination={props.experienceData.destination} cities={props.experienceData.locations} title={props.experienceData.banner_heading}/>
+          <FullImgContent destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
       </FullImage>
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 {/* <BannerOne></BannerOne> */}

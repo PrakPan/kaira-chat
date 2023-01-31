@@ -75,24 +75,40 @@ const LocationsContainer = (props) => {
 
     }
   }
+  console.log('cs', props.children_cities)
   useEffect(() => {
     let locations_JSX = [];
     let more_locations_JSX = [];
     for(var i = 0 ; i< props.CITIES.length; i++){
-      if(i === 6) break;
+      // if(i === 6) break;
       // console.log(props.CITIES[i], i)
       locations_JSX.push(
         <Location image={props.CITIES[i].image} text={props.CITIES[i].name} onclick={_handleClick} onclickparam={props.CITIES[i]} is_selected={_isCityAdded(props.CITIES[i])} ></Location>
       )
     }
-    if(props.CITIES.length > 6){
-      for(var j = 6; j < props.CITIES.length; j++){
-          more_locations_JSX.push(
-            <Location image={props.CITIES[j].image} text={props.CITIES[j].name} onclick={_handleClick} onclickparam={props.CITIES[j]} is_selected={_isCityAdded(props.CITIES[j])} ></Location>
+    if(props.children_cities){
+      for(var k = 0 ; k <props.children_cities.length; k++){
+        for(var l = 0 ; l < props.children_cities[k].locations.length ; l++){
+          locations_JSX.push(
+            <Location image={props.children_cities[k].locations[l].image} text={props.children_cities[k].locations[l].name} onclick={_handleClick} onclickparam={props.children_cities[k].locations[l]} is_selected={_isCityAdded(props.children_cities[k].locations[l])} ></Location>
           )
+        }
       }
     }
-    setLocationsJSX(locations_JSX.slice());
+    // if(props.CITIES.length > 6){
+    //   for(var j = 6; j < props.CITIES.length; j++){
+    //       more_locations_JSX.push(
+    //         <Location image={props.CITIES[j].image} text={props.CITIES[j].name} onclick={_handleClick} onclickparam={props.CITIES[j]} is_selected={_isCityAdded(props.CITIES[j])} ></Location>
+    //       )
+    //   }
+    // }
+    if(locations_JSX.length > 6) {
+      console.log(locations_JSX.slice(5,8))
+      setLocationsJSX(locations_JSX.slice(0,6));
+      setMoreLocationJSX(locations_JSX.slice(6,undefined));
+    }
+    
+    // setLocationsJSX(locations_JSX.slice());
     if(more_locations_JSX.length) setMoreLocationJSX(more_locations_JSX.slice());
   },[props.CITIES, props.selectedCities]);
   
@@ -111,7 +127,7 @@ const LocationsContainer = (props) => {
                 {locationsJSX.length ? locationsJSX : null}
                 {props.CITIES.length && showMore ? moreLocationsJSX : null}
    </LocationContainer>
-   {props.CITIES.length > 6 && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
+   {moreLocationsJSX.length && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
    <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0 0 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => props.setShowCities(false)}>
                 {props.selectedCities ? props.selectedCities.length ? 'Continue' : 'Inspire Me' :'Inspire Me'}
                 </Button></div>  

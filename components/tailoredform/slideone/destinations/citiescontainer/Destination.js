@@ -54,18 +54,19 @@ const Location = (props) => {
                 {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
                 {/* <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" height="4rem"  url={'media/website/Goa.jpg'} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader> */}
 <div style={{position: 'relative'}}>
-                    <div style={{minWidth:  '108px', minHeight: '90px'}}><ImageLoader
+                    <div style={{minWidth:  '108px', minHeight: '90px'}}>{
+                      props.image ? <ImageLoader
                         url={props.image}
                         borderRadius='5px'
                         height='auto'
                         width="100%"
                         heighttab="100%"
-                        dimensions={{width: 600, height: 500}}
+                        dimensions={{width: 300, height: 250}}
                         dimensionsMobile={{width: 600, height:400}}
                         fit="cover"
                      onclick={props.onclick}
                      onload={() => setLoaded(true)}
-                        hoverpointer/></div>
+                        hoverpointer/>:null}</div>
                         <HoverContainer  is_selected={props.is_selected} onClick={() => props.onclick(props.onclickparam)} className='center-div' style={{ borderRadius: '5px',position: 'absolute', top: '0',width: '100%', height: '100%', fontSize: '0.85rem'}}>{props.text}
                         {props.is_selected ? <BsCheckCircleFill/> : null}
                         </HoverContainer>

@@ -107,8 +107,8 @@ return(
         <ImageFade><ImageLoader
 
             url={props.img}
-            dimensions={{width: 1200, height: 1200}}
-            dimensionsMobile={{width: 900, height: 900}}
+            dimensions={{width: 200, height: 200}}
+            dimensionsMobile={{width: 200, height: 200}}
             height="30vh"
             ></ImageLoader></ImageFade>
             <BlackContainer className='font-opensans'>

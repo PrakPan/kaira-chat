@@ -58,13 +58,13 @@ const SlideOne = (props) =>{
   ]
   // const [selectedCities, setSelectedCities] = useState([]);
   const [flexible, setFlexible] = useState(false);
-  console.log(flexible)
+  // console.log('cs', props.children_cities)
    return (
    <Container>
     <Section>
         <Question>What do you want to explore?</Question>
 
-        <Destinations showSearchStarting={props.showSearchStarting} 
+        <Destinations showSearchStarting={props.showSearchStarting} children_cities={props.children_cities}
             setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>

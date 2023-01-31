@@ -83,7 +83,7 @@ display : flex;
 `;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
-console.log('c', props.cities)
+// console.log('', props.children_cities)
     return (
 
         <Container className='font-opensans center-di text-cente'>
@@ -104,7 +104,7 @@ console.log('c', props.cities)
                 </PaddingContianer>
                {/* <Banner></Banner> */}
                <div className='hidden-mobile' style={{}}>
-                <TailoredForm destination={props.destination} cities={props.cities}></TailoredForm>
+                <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                 </div>
              
         </Container>
