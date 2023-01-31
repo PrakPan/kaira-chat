@@ -31,11 +31,14 @@ const flickityOptions = {
 const FlickityComp = (props) => {
  
    
-  
+  // props.setStartingLocation(true)
+
   
       return (
         <div style={{width: '100%'}}>
                             {!props.slideIndex ? <Card><SlideOne 
+                             startingLocation={props.startingLocation} 
+                             setStartingLocation={props.setStartingLocation}
                             children_cities={props.children_cities}
                             showSearchStarting={props.showSearchStarting} 
                             setShowSearchStarting={props.setShowSearchStarting}

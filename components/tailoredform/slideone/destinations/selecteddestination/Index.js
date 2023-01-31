@@ -48,7 +48,7 @@ const SelectedDestination = (props) => {
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : _handleShowSearchStarting : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation ? '1px solid #EFEFEF' : '1px solid black', boxShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.25)'}}>
     <LeftContent className='hover-pointer' onClick={props.selectlocation ? _handleShowSearchStarting : props.openCities}>
         <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
-    {props.selectlocation ? !props.showSearchStarting ? 'Delhi, IN' : <SearchInputStarting onfocus={() => setFocusLocation(true)} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput></SearchInput>}
+    {props.selectlocation ? !props.showSearchStarting ? 'Delhi, IN' : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={() => setFocusLocation(true)} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput ></SearchInput>}
 {props.selectlocation && !props.showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem', marginLeft: '2px'}}></GrFormEdit> : null}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >

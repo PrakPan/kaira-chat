@@ -39,12 +39,12 @@ const SearchInput = (props) => {
   let isPageWide = media('(min-width: 768px)');
   const [loading, setLoading] = useState(false);
   const [resultsJSX, setResultsJSX] = useState([]);
-  const [selected, setSelected] = useState(false);
+  // const [selected, setSelected] = useState(false);
   // const [showCities, setShowCities] = useState(false);
-  // const [selectedCities, setSelectedCities] = useState([]);
+  // const [props.startingLocationCities, setSelectedCities] = useState([]);
 
-  const _selectResult  =(text) => {
-    setSelected(text);
+  const _selectResult  =(text, place_id) => {
+    props.setStartingLocation({'name': text, 'place_id': place_id});
   }
   const _getResults = (query) => {
     setLoading(true);
@@ -60,7 +60,7 @@ const SearchInput = (props) => {
        else
        for(var i = 0 ; i < res.data.length; i++){
         results.push(
-          <SearchResult selectResult={_selectResult} text={res.data[i].text}></SearchResult>
+          <SearchResult selectResult={_selectResult} text={res.data[i].text} place_id={res.data[i].place_id}></SearchResult>
         );
        }
        setResultsJSX(results)
@@ -76,18 +76,18 @@ const SearchInput = (props) => {
     }
     const _handleClearResults = () => {
       setResultsJSX([]);
-      setSelected(false);
+      // props.setStartingLocation(false);
     }
   return (
     <Container>
-   {!selected ? <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
+   {!props.startingLocation ? <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
     {/* ed */}
     </InputContainer>
     {loading ? <Spinner size={16} margin="0"></Spinner> : null}
     </div>
     : <div className='font-opensans' onClick={_handleClearResults}>
-      {selected}</div>}
-    {!selected ? <ResultsContainer>
+      {props.startingLocation.name}</div>}
+    {!props.startingLocation ? <ResultsContainer>
     {resultsJSX}
     </ResultsContainer> : null}
 

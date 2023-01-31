@@ -20,15 +20,14 @@ position: relative;;
 
  
 const Destinations = (props) => {
-
   let isPageWide = media('(min-width: 768px)');
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   return (
    <Container>
     {/* <p className="font-opensans">Where do  you want to go?</p> */}
-    <SelectedDestination showSearchStarting={props.showSearchStarting} 
-            setShowSearchStarting={props.setShowSearchStarting}setShowCities={props.setShowCities} selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+    <SelectedDestination  startingLocation={props.startingLocation} setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting} 
+            setShowSearchStarting={props.setShowSearchStarting} setShowCities={props.setShowCities} selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
         <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
         {props.showCities ? <CitiesContainer children_cities={props.children_cities} setShowCities={props.setShowCities} destination={props.destination} CITIES={props.CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}>
 

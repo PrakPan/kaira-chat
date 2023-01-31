@@ -107,6 +107,10 @@ const LocationsContainer = (props) => {
       setLocationsJSX(locations_JSX.slice(0,6));
       setMoreLocationJSX(locations_JSX.slice(6,undefined));
     }
+    else{
+      setLocationsJSX(locations_JSX.slice());
+ 
+    }
     
     // setLocationsJSX(locations_JSX.slice());
     if(more_locations_JSX.length) setMoreLocationJSX(more_locations_JSX.slice());

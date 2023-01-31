@@ -26,11 +26,12 @@ color: black;
 z-index :2;
 position: relative;
   background-color: white;
- width: 100%;marginBottom: slideIndex === 2 ? '0.75rem' : '0.25rem',
+ width: 100%;
  margin: 0.5rem;
 border-radius: 8px !important;
  @media screen and (min-width: 768px){
     margin: 0;
+    min-height: 400px;
 }
 
 `
@@ -83,6 +84,7 @@ const Enquiry = (props) => {
     const [submitted, setSubmitted] = useState(false);
     const [selectedCities, setSelectedCities] = useState([]);
     const [groupType, setGroupType] = useState(null);
+    const [startingLocation, setStartingLocation ] = useState(false);
     
     // const [firstNameError, setFirstNameError] = useState(false);
     // const [lastNameError, setLastNameError] = useState(false);
@@ -106,8 +108,11 @@ const Enquiry = (props) => {
         const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
         setLoading(true);
-        const cityids =[];
-        const citynames=[];
+        let cityids =[];
+        let citynames=[];
+        // let starting_location = null;
+        
+
         for(var i =0 ; i < selectedCities.length; i++){
           cityids.push(parseInt(selectedCities[i].id));
           citynames.push(selectedCities[i].name);
@@ -128,7 +133,7 @@ const Enquiry = (props) => {
             number_of_children=numberOfChildren;
             number_of_infants=numberOfInfants;
         }
-        console.log(selectedPreferences);
+        // console.log(selectedPreferences);
         let data = {
             "locations": citynames,
             "experience_filters_selected": selectedPreferences,
@@ -142,10 +147,11 @@ const Enquiry = (props) => {
             "end_date": end_date,
           
             "user_location": {
-                "place_id": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
+                "place_id": startingLocation ? startingLocation.place_id  :  "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
             }
             
           };
+          // if(startingLocation)
         //   console.log(data)
           setLoading(true);
          axiostailoredinstance.post('',
@@ -189,9 +195,9 @@ const Enquiry = (props) => {
     const [showSearchStarting, setShowSearchStarting] = useState(false);
 
     const [showBlack, setShowBlack] = useState(false);
-
+    console.log(startingLocation);
     useEffect(() => {
-      
+
         if(slideIndex === 2 && props.token) _submitDataHandler();
       }, [slideIndex, props.token]);
       const _handleHideBlack = () => {
@@ -199,7 +205,8 @@ const Enquiry = (props) => {
         setShowCities(false);
         setShowSearchStarting(false);
       }
-      console.log('ca', props.children_cities)
+      console.log(props.experienceData)
+
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
  return(
@@ -219,7 +226,8 @@ const Enquiry = (props) => {
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
             <div style={{padding: '1rem', width: '100%'}}>
             <Flickity
-            
+            startingLocation={startingLocation}
+            setStartingLocation={setStartingLocation}
             children_cities={props.children_cities}
             showSearchStarting={showSearchStarting} 
             setShowSearchStarting={setShowSearchStarting}
