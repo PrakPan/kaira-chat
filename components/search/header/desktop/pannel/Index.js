@@ -9,10 +9,10 @@ import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 const Container = styled.div`
     background-color: white;
-    border-radius: 2rem !important;
+    border-radius: 1rem !important;
     text-align: left;
     position: absolute;
-width: 30%;
+width: 600px;
 margin: -6vh  auto;
 z-index: 2;
     `;
