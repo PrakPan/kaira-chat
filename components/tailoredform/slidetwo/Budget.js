@@ -75,7 +75,7 @@ const  DiscreteSliderValues = (props) =>  {
   }
   return (
     <Box>
-      <div className='font-opensans text-center' style={{margin: '0.5rem 0', fontSize: '0.85rem'}}><span style={{fontWeight: '600'}}>Estimated Cost:</span> ₹1,23,00 /-</div>
+      {/* <div className='font-opensans text-center' style={{margin: '0.5rem 0', fontSize: '0.85rem'}}><span style={{fontWeight: '600'}}>Estimated Cost:</span> ₹1,23,00 /-</div> */}
       <Slider
         aria-label="Budget per day"
         defaultValue={0}
