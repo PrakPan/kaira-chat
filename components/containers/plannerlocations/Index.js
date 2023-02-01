@@ -41,8 +41,7 @@ const LocationsBlog= (props) => {
     let count =  0;
 
     useEffect(() => {
-      console.log(router.pathname)
-      let cardsarr = [];
+       let cardsarr = [];
       var i = 0;
     if(props.locations){
     for(i = 0 ; i < props.locations.length; i++){

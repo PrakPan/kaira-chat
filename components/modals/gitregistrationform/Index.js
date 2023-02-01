@@ -112,8 +112,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
     
     const _cloneHandler = (data) => {
         setFormFailedError(false)
-        console.log('vc', verificationCount)
-         if(verificationCount == props.pax){
+          if(verificationCount == props.pax){
         setFormNotFilledError(false);
         setPaymentLoading(true);
         axiospurchaseinstance.post("/",  
@@ -134,8 +133,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
         }).catch(err => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id 
           // router.push('/itinerary/'+res.data.itinerary.id)
-            console.log(err.response)
-            setFormFailedError(err.response.data.message);
+             setFormFailedError(err.response.data.message);
 
             setPaymentLoading(false);
         })

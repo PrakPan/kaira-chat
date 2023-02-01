@@ -75,8 +75,7 @@ const LocationsContainer = (props) => {
 
     }
   }
-  console.log('cs', props.children_cities)
-  useEffect(() => {
+   useEffect(() => {
     let locations_JSX = [];
     let more_locations_JSX = [];
     for(var i = 0 ; i< props.CITIES.length; i++){
@@ -103,8 +102,7 @@ const LocationsContainer = (props) => {
     //   }
     // }
     if(locations_JSX.length > 6) {
-      console.log(locations_JSX.slice(5,8))
-      setLocationsJSX(locations_JSX.slice(0,6));
+       setLocationsJSX(locations_JSX.slice(0,6));
       setMoreLocationJSX(locations_JSX.slice(6,undefined));
     }
     else{

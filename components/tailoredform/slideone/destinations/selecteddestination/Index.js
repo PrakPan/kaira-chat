@@ -40,8 +40,7 @@ const SelectedDestination = (props) => {
   let isPageWide = media('(min-width: 768px)');
   // const [showSearchStarting, setShowSearchStarting] = useState(false);
   const _handleShowSearchStarting = () => {
-    console.log('test')
-    props.setShowSearchStarting(true);
+     props.setShowSearchStarting(true);
 
   }
   const [focusLocation, setFocusLocation] = useState(false);

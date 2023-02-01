@@ -79,8 +79,7 @@ const Person = (props) => {
         axiosgitregisterinstance.post('/', data, {headers: {
             'Authorization': `Bearer ${props.token}`
             }}).then(res => {
-              console.log(res);
-              setVerificationLoading(false);
+               setVerificationLoading(false);
               props.setVerificationCount(props.verificationCount + 1)
             // if(!res.data.verified) 
             setVerificationFailed(false);
@@ -92,15 +91,12 @@ const Person = (props) => {
                 employee_id: res.data.registered_users[0].employee_id,
             })
           }catch{
-            
+
           }
             // console.log(res.data)
      }).catch(err => {
-      console.log({...err})
-      console.log(err.response.data)
-      try{
-        console.log(err.response.data.registered_users[0].invalid_field)
-        setVerificationFailed(err.response.data.registered_users[0].invalid_field);
+       try{
+         setVerificationFailed(err.response.data.registered_users[0].invalid_field);
         setVerificationFailedMessage(err.response.data.registered_users[0][err.response.data.registered_users[0].invalid_field])
       }catch{
 
@@ -144,7 +140,7 @@ const Person = (props) => {
                  <Email verified={verified} setVerified={setVerified} token={props.token} email={email} setEmail={setEmail} verificationfailed={verificationfailed} setVerificationFailed={setVerificationFailed} id={props.id}></Email>
                </Grid>
                <Grid style={{width: !isPageWide ? '100%' : 'auto'}}  item md={6} xs={12}>
-                    <Id  verificationfailedmessage={verificationfailedmessage} verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
+                  <Id  verificationfailedmessage={verificationfailedmessage} verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
                </Grid>
         </StyledGridContainer> 
             <div className='hidden-desktop'><Button onclick={verified ? _handleChange : _handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">

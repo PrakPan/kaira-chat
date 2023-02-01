@@ -63,8 +63,7 @@ const GroupType = (props) => {
     const _handleClick = (preference) => {
         // console.log(preference)
         let is_preference_added = _isPreferenceAdded(preference);
-        console.log(is_preference_added)
-        if(!is_preference_added){
+         if(!is_preference_added){
             let selected_preferences = props.selectedPreferences.slice();
             selected_preferences.push(preference)
             props.setSelectedPreferences(selected_preferences)

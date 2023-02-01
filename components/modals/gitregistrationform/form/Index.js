@@ -66,8 +66,7 @@ const Enquiry = (props) => {
         </Grid> 
         )
     }
-    console.log(paxList)
-    // setPaxJSX(pax);
+     // setPaxJSX(pax);
 return(
     <Container className="borer center-div">
               <div>

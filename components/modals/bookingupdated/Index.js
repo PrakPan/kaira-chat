@@ -526,11 +526,9 @@ setUpdateLoadingState(true);
   
             }).catch(err => {
                 // setUpdateLoadingState(false);
-                console.log(err)
-                setUpdateBookingState(false);
+                 setUpdateBookingState(false);
                 setUnauthorized(true);
-                console.log(err)
-
+ 
                 // window.alert("There seems to be a problem, please try again!")
             })
     }

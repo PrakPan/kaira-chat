@@ -45,8 +45,7 @@ const SearchInput = (props) => {
 
   const _selectResult  =(event, text, place_id) => {
     event.stopPropagation();
-    console.log('t')
-    setResultsJSX([]);
+     setResultsJSX([]);
     props.setShowSearchStarting(false);
     props.setStartingLocation({'name': text, 'place_id': place_id});
   }
@@ -58,8 +57,7 @@ const SearchInput = (props) => {
       .then((res) => {
         setLoading(false);
 
-       console.log(res.data);
-       let results = [];
+        let results = [];
        if(!res.data.length) _handleClearResults();
        else
        for(var i = 0 ; i < res.data.length; i++){
@@ -83,8 +81,7 @@ const SearchInput = (props) => {
       props.onfocus();
       // props.setStartingLocation(false);
     }
-    console.log(props.showSearchStarting)
-  return (
+   return (
     <Container>
    {props.showSearchStarting ? 
    <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Search your location' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>

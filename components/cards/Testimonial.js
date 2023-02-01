@@ -35,6 +35,8 @@ const CardListItem = styled.p`
      display: grid;
      grid-template-columns: 1fr 1fr; 
      grid-gap: 1rem;
+     width: max-content;
+     margin: 0 auto;
  `;
  const ButtonContainer = styled.div`
       &:hover{

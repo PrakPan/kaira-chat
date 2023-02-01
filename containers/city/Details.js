@@ -81,8 +81,7 @@ const Details = (props) => {
       if(typeof window !=='undefined')
       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   }
-  console.log(props.data)
-
+ 
   return (
     <div >
    

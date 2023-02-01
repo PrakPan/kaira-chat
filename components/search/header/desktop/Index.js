@@ -12,7 +12,7 @@ const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
 width: 600px;
 margin: auto;
-animation: 0.5s ${fadeInAnimation};
+animation: 0.3s ${fadeInAnimation};
 
 `;
 

@@ -86,26 +86,10 @@ const Enquiry = (props) => {
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     
-    // const [firstNameError, setFirstNameError] = useState(false);
-    // const [lastNameError, setLastNameError] = useState(false);
-
-    // const [phoneError, setPhoneError] = useState(false);
-    // const [companyError, setCompanyError] = useState(false);
-    // const [emailError, setEmailError] = useState(false);
-    // let ExtensionOptions = [];
-    // for(const country in extensions){
-    //     ExtensionOptions.push(
-    //       <CountryCodeOption key={country} value={country} onClick={() => handleExtensionChangeOption(country)}>
-    //               <CountryImg src={extensions[country].img}  onClick={() => handleExtensionChangeOption(country)}></CountryImg>
-    //       </CountryCodeOption>
-    //     )
-    //   }
-
- 
+  
      
      const _submitDataHandler = () => {
-        // console.log(new Date(valueStart));
-        const value_start = new Date(valueStart);
+         const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
         setLoading(true);
         let cityids =[];
@@ -161,7 +145,7 @@ const Enquiry = (props) => {
         ).then(response => {
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
-                // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
                  }
              else{

@@ -20,14 +20,12 @@ const Text = styled.div`
  `;
  
 const Enquiry = (props) => {
-    console.log(props.registered_users.payment_status)
-    let emails = [];
+     let emails = [];
     let status = [];
   
     
      let pax = []
-     console.log('r',props.registered_users)
-     try{
+      try{
     for(var i = 0 ; i < props.registered_users.length ; i++){
         emails.push(
             <Text className="text-center borde" style={{borderStyle: i ?  'solid none solid solid' : 'solid none solid solid', borderWidth: '1px', padding: '1rem', borderRadius: '10px 0 0 10px'}}>{props.registered_users[i].name}</Text>
