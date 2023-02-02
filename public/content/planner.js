@@ -6,7 +6,7 @@ const PLANNER_PAGES = [
         "image": "media/page/167474771649785995483398437500.jfif",
       },
       {
-        "tagline": "Mountain Paradise",
+        "tagline": "Hillside Haven",
         "name": "Himachal",
         "slug": '/travel-planner/himachal',
         "image": "media/page/167463997722757387161254882812.jpg",
@@ -36,7 +36,7 @@ const PLANNER_PAGES = [
         "image": "media/page/167463234122462153434753417969.jpg",
       },
       {
-        "tagline": "Mountain Paradise",
+        "tagline": "Alpine Wonderland",
         "name": "Spiti",
         "slug": '/travel-planner/spiti',
         "image": "media/page/167462671802231431007385253906.jpg",
