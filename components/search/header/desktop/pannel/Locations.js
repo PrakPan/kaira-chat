@@ -119,7 +119,7 @@ const Locations= (props) => {
                         // onclick={_handlePersonaliseRedirect}
                         // onclickparams={{id, name, parent}}
                         hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{''}</ImageText>
+                        <ImageText className='center-di text-center font-opensans' style={{backgroundColor: "#e4e4e4", color: '#e4e4e4', height: 'max-content', lineHeight: '1'}}>{'Lorem'}</ImageText>
            </LocationContainer>
             )
         }

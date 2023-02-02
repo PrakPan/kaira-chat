@@ -96,7 +96,7 @@ const SearchField = (props) => {
     const _fetchResults = (value) => {
         let resultsarr = [];
 
-        axios.get(CONTENT_SERVER_HOST+"/search/?q="+value+"&type=Location").then((res) => {
+        axios.get(CONTENT_SERVER_HOST+"/search/?q="+value).then((res) => {
             // props._setOptionsHandler(res);
             setResultsData(res.data);
 
