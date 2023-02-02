@@ -75,6 +75,14 @@ const SearchResult = (props) => {
             <Location selectedCities={props.selectedCities}  _removeCityHandler={props._removeCityHandler} id={id} name={name} parent={parent} location={props.hotlocations[i]} _addCityHandler={props._addCityHandler}></Location>
         )
     }
+    else
+    for(var i=0; i<8; i++){
+      
+        locations.push(
+   
+            <Location selectedCities={props.selectedCities}  _removeCityHandler={props._removeCityHandler}  location={null}  _addCityHandler={props._addCityHandler}></Location>
+        )
+    }
      return(
         <Container>
            

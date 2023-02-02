@@ -62,7 +62,7 @@ const Location = (props) => {
      return(
         <Container className="border-thin" onClick={ isSelected ?  () => props._removeCityHandler(props.id, {"name": props.name, "parent": props.parent, "city_id": props.id}) : () => props._addCityHandler(props.id, {"name": props.name, "parent": props.parent, "city_id": props.id})} style={{backgroundColor : isSelected ? 'rgba(247,231,0,0.3)' : 'transparent'}}>
             <div className='center-div' style={{backgroundColor: '#e4e4e4', borderRadius: '50%', height: '55px' , width: '55px'}} ><ImageLoader
-                    url={props.location.image ? props.location.image : 'media/website/grey.png'}
+                    url={props.location ? props.location.image ? props.location.image : 'media/website/grey.png' :  'media/website/grey.png'}
                     borderRadius='50%'
                     height="55px"
                     width="55px"
@@ -74,7 +74,7 @@ const Location = (props) => {
                     hoveropacity="0.6"
                     hoverpointer/>
                     </div>
-                <div className='center-div font-nunito text-center'><Name>{props.location.name}</Name></div>
+                <div className='center-div font-nunito text-center'><Name>{props.location ? props.location.name : ''}</Name></div>
         </Container>
     );
    

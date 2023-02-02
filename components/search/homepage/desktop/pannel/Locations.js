@@ -104,6 +104,28 @@ const Locations= (props) => {
             )
         }
     }
+    else {
+        for(var i=0; i<6; i++){
+          
+            locations.push(
+                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+               <ImageLoader
+                        url={'media/website/grey.png'}
+                        borderRadius='50%'
+                        height='100%'
+                        width="100%"
+                        heighttab="100%"
+                        dimensions={{width: 100, height: 100}}
+                        dimensionsMobile={{width: 100, height: 100}}
+                        fit="cover"
+                        // onclick={_handlePersonaliseRedirect}
+                        // onclickparams={{id, name, parent}}
+                        hoverpointer/>
+                        <ImageText className='center-div text-center font-opensans'>{''}</ImageText>
+           </LocationContainer>
+            )
+        }
+    }
     return(
         <div>
         <Heading className="font-opensans">Top Locations</Heading>

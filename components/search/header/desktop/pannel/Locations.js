@@ -2,9 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import { useRouter } from 'next/router'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
+ 
 import ImageLoader from '../../../../ImageLoader';
 const Container = styled.div`
     display: grid;
@@ -100,6 +98,28 @@ const Locations= (props) => {
                         <ImageText className='center-div text-center font-opensans'>{props.hotlocations[i].name}</ImageText>
                 {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}
            {/* </ImageContainer> */}
+           </LocationContainer>
+            )
+        }
+    }
+    else {
+        for(var i=0; i<6; i++){
+          
+            locations.push(
+                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+               <ImageLoader
+                        url={'media/website/grey.png'}
+                        borderRadius='50%'
+                        height='100%'
+                        width="100%"
+                        heighttab="100%"
+                        dimensions={{width: 100, height: 100}}
+                        dimensionsMobile={{width: 100, height: 100}}
+                        fit="cover"
+                        // onclick={_handlePersonaliseRedirect}
+                        // onclickparams={{id, name, parent}}
+                        hoverpointer/>
+                        <ImageText className='center-div text-center font-opensans'>{''}</ImageText>
            </LocationContainer>
             )
         }
