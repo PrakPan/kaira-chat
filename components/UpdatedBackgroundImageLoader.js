@@ -1,6 +1,8 @@
 // import build from '@date-io/date-fns';
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
+import media from './media';
+
 const SmallContainer = styled.div`
  position: relative;
 margin: 0 auto;
@@ -52,6 +54,8 @@ padding: ${props => props.padding ? props.padding : '20vw 0 0 0'};
 
 `;
 const SaifBackgroundImageLoader = (props) => {
+  let isPageWide = media('(min-width: 768px)')
+
     const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
     let imageRequest;
     const [fullLoaded, setFullLoaded] = useState(false);
@@ -84,6 +88,7 @@ useEffect(() => {
           },
         },
       });
+      if(isPageWide){
     if(props.dimensions){
       imageRequest = JSON.stringify({
       bucket: "thetarzanway-web",
@@ -108,7 +113,34 @@ useEffect(() => {
       }
     });
   }
-    else if(props.dimensionsMobile){
+  else {
+    imageRequest = JSON.stringify({
+    bucket: "thetarzanway-web",
+    key: props.url,
+    edits: {
+      resize: {
+        width: 400,
+        height: 300,
+        fit: "cover"
+      }
+    }
+  });
+  smallImageRequest = JSON.stringify({
+    bucket: "thetarzanway-web",
+    key: props.url,
+    edits: {
+      resize: {
+        width: 40,
+        height: 30,
+        fit: "cover"
+      }
+    }
+  });
+
+}
+}
+    else {
+      if(props.dimensionsMobile){
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
         key: props.url,
@@ -157,6 +189,9 @@ useEffect(() => {
     });
 
   }
+  }
+
+   
    
     const img = new Image();
     img.src = `${imgUrlEndPoint}/${Buffer.from(imageRequest).toString('base64')}`;
@@ -168,9 +203,9 @@ useEffect(() => {
         <>
         <SmallContainer
         className={props.center ? "center-div" : ""}
-        style={{display: !fullLoaded ? "flex" : "none",width: props.width ? props.width : '100%',  maxWidth: '100%',height:props.height ? props.height : "100%", padding: props.padding ? props.padding : '10vh 0 0 0', }}
+        style={{display: !fullLoaded ? "flex" : "none",width: props.width ? props.width : '100%',  maxWidth: '100%',height:props.height ? props.height : "max-content", padding: props.padding ? props.padding : '10vh 0 0 0', }}
         >
-          <BackgroundImageContainer  style={{backgroundImage : props.filter ?props.filter+ `,url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`:(props.position? `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequestSlider).toString('base64')}`})`:`linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`),width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",backgroundRepeat: 'no-repeat',backgroundSize:'cover',zIndex:props.position ? "0":"-1"}}></BackgroundImageContainer>
+          <BackgroundImageContainer  style={{backgroundImage : props.filter ?props.filter+ `,url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`:(props.position? `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`:`linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`),width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",backgroundRepeat: 'no-repeat',backgroundSize:'cover',zIndex:props.position ? "0":"-1"}}></BackgroundImageContainer>
           <ContentContainer padding={props.padding} style={{width: props.width ? props.width : '100%', maxWidth: '100%',height:props.height ? props.height : "max-content", visibility: 'hidden'}}  >
 
            {props.children}
