@@ -329,7 +329,7 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
 
   });
 
-  axiossearchinstance.post(`?search_type=itinerary&owner=Customer`, { 
+  axiossearchinstance.post(`?search_type=itinerary&owner=USER`, { 
     "city_list": locations
    }).then(res => {
     setLoading(false);
