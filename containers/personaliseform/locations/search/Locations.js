@@ -70,9 +70,10 @@ const SearchResult = (props) => {
         let id = props.hotlocations[i].id;
         let name=props.hotlocations[i].name;
         let parent = props.hotlocations[i].state.name;
+        let type= props.hotlocations[i].type
         locations.push(
    
-            <Location selectedCities={props.selectedCities}  _removeCityHandler={props._removeCityHandler} id={id} name={name} parent={parent} location={props.hotlocations[i]} _addCityHandler={props._addCityHandler}></Location>
+            <Location selectedCities={props.selectedCities}  _removeCityHandler={props._removeCityHandler} id={id} name={name} parent={parent} location={props.hotlocations[i]} _addCityHandler={props._addCityHandler} type={type}></Location>
         )
     }
     else

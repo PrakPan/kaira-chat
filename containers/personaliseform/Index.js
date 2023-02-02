@@ -303,9 +303,15 @@ const _addCityHandler = (city_id, city) => {
         }
         const cityids =[];
         const citynames=[];
+        let state_ids = [];
+        console.log('sc', selectedCities);
         for(var i =0 ; i < selectedCities.length; i++){
+          if(selectedCities[i].type === 'State') state_ids.push(selectedCities[i].city_id)
+
+          else{
           cityids.push(parseInt(selectedCities[i].city_id));
           citynames.push(selectedCities[i].name);
+          }
         }
          
         data = {
@@ -314,6 +320,7 @@ const _addCityHandler = (city_id, city) => {
           "budget": budget_to_send,
           "extra_data": extra_data,
           "city_id": cityids,
+          "state_ids": state_ids,
           "group_type": grouptype,
           "number_of_adults": number_of_adults,
           "number_of_children": number_of_children,
@@ -345,7 +352,8 @@ const _addCityHandler = (city_id, city) => {
 
               setTimeout(function(){ 
                  
-                router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 6000);
+                router.push('/itinerary/'+response.data.itinerary.itinerary_id);
+               }, 6000);
 
             }
           }).catch( err => {

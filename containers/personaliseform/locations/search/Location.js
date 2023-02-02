@@ -60,7 +60,7 @@ const Location = (props) => {
       
       },[props.selectedCities, props.id]);
      return(
-        <Container className="border-thin" onClick={ isSelected ?  () => props._removeCityHandler(props.id, {"name": props.name, "parent": props.parent, "city_id": props.id}) : () => props._addCityHandler(props.id, {"name": props.name, "parent": props.parent, "city_id": props.id})} style={{backgroundColor : isSelected ? 'rgba(247,231,0,0.3)' : 'transparent'}}>
+        <Container className="border-thin" onClick={ isSelected ?  () => props._removeCityHandler(props.id, {"name": props.name, "parent": props.parent, "city_id": props.id, "type": props.type}) : () => props._addCityHandler(props.id, {"name": props.name, "parent": props.parent, "city_id": props.id, "type": props.type})} style={{backgroundColor : isSelected ? 'rgba(247,231,0,0.3)' : 'transparent'}}>
             <div className='center-div' style={{backgroundColor: '#e4e4e4', borderRadius: '50%', height: '55px' , width: '55px'}} ><ImageLoader
                     url={props.location ? props.location.image ? props.location.image : 'media/website/grey.png' :  'media/website/grey.png'}
                     borderRadius='50%'

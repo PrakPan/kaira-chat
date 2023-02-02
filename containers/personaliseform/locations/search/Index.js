@@ -102,7 +102,7 @@ const SearchField = (props) => {
 
             for(var i = 0 ; i < res.data.length ; i++){
                 resultsarr.push(
-                    <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={res.data[i]["_source"]} key={i} image={res.data[i].image} _addCityHandler={props._addCityHandler} name={res.data[i]["_source"].name} parent={res.data[i]["_source"].parent} id={res.data[i]["_source"].resource_id}></Location>
+                    <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={res.data[i]["_source"]} key={i} image={res.data[i].image} _addCityHandler={props._addCityHandler} name={res.data[i]["_source"].name} parent={res.data[i]["_source"].parent} id={res.data[i]["_source"].resource_id} type={res.data[i]["_source"].type}></Location>
                 )
             }
             setResults([...resultsarr]);
@@ -131,7 +131,7 @@ const SearchField = (props) => {
         let resultsarr = [];
         for(var i = 0 ; i < results.length ; i++){
             resultsarr.push(
-                <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={results[i]["_source"]} key={i} image={results[i].image} _addCityHandler={props._addCityHandler} name={results[i]["_source"].name} parent={results[i]["_source"].parent} id={results[i]["_source"].resource_id}></Location>
+                <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={results[i]["_source"]} key={i} image={results[i].image} _addCityHandler={props._addCityHandler} name={results[i]["_source"].name} parent={results[i]["_source"].parent} id={results[i]["_source"].resource_id} type={results[i]["_source"].type}></Location>
             )
         }
         setResults([...resultsarr]);
