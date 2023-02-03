@@ -55,14 +55,14 @@ const Experiences= (props) => {
         group_type={experience.group_type}
         number_of_adults={experience.number_of_adults}
         id={experience.id}
-        filter={experience.experience_filters[0]}
+        filter={experience.experience_filters ? experience.experience_filters[0] : null}
         rating={experience.rating}
         hardcoded={experience.payment_info ? true : false }
         text={experience.short_text} 
         experience={experience.name}
         heading={experience.name}
         cost={experience.payment_info ? experience.payment_info[0].cost : null}
-        duration={experience.duration}
+        duration={experience.duration ? experience.duration : experience.duration_number && experience.duration_unit ? experience.duration_number +" " +experience.duration_unit  : null}
         destination={experience["experience_region"]}
         image={experience.images ? experience.images.main_image : experience.main_image}>
         </PastItineraryCard >
@@ -75,7 +75,7 @@ const Experiences= (props) => {
         starting_cost={experience.payment_info ? experience.payment_info.per_person_total_cost : experience.starting_price}
         slug={experience.slug}
         id={experience.id}
-        filter={experience.experience_filters[0]}
+        filter={experience.experience_filters ? experience.experience_filters[0] : null}
         rating={experience.rating}
         budget={experience.budget}
         group_type={experience.group_type}
@@ -83,7 +83,7 @@ const Experiences= (props) => {
         hardcoded={experience.payment_info ? true : false }
         text={experience.short_text} 
         experience={experience.name}
-         duration={experience.duration}
+        duration={experience.duration ? experience.duration : experience.duration_number && experience.duration_unit ? experience.duration_number +" " +experience.duration_unit  : null}
          
         location={experience["experience_region"]}
         images={experience.images ? experience.images : experience.main_image}>
@@ -109,7 +109,7 @@ const Experiences= (props) => {
              text={props.experiences[3].short_text} 
              experience={props.experiences[3].name}
              cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : null}
-             duration={props.experiences[3].duration}
+             duration={props.experiences[3].duration ? props.experiences[3].duration : props.experiences[3].duration_number && props.experiences[3].duration_unit ? props.experiences[3].duration_number + " " + props.experiences[3].duration_unit : null  }
              rating={props.experiences[3].rating}
              heading={props.experiences[3].name}
              hardcoded={props.experiences[3].payment_info ?true : false }
@@ -119,7 +119,7 @@ const Experiences= (props) => {
        </PastItineraryCard> :
             <Card 
               data={props.experiences[3]}
-              filter={props.experiences[3].experience_filters[0]}
+              filter={props.experiences[3].experience_filters ? props.experiences[3].experience_filters[0]: null}
               slug={props.experiences[3].slug}
               id={props.experiences[3].id}
               text={props.experiences[3].short_text} 
@@ -127,7 +127,7 @@ const Experiences= (props) => {
               group_type={props.experiences[3].group_type}
               number_of_adults={props.experiences[3].number_of_adults}
               experience={props.experiences[3].name}
-               duration={props.experiences[3].duration}
+              duration={props.experiences[3].duration ? props.experiences[3].duration : props.experiences[3].duration_number && props.experiences[3].duration_unit ? props.experiences[3].duration_number + " " + props.experiences[3].duration_unit : null  }
               rating={props.experiences[3].rating}
               hardcoded={props.experiences[3].payment_info ?true : false }
               location={props.experiences[3]["experience_region"]}          
