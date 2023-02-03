@@ -117,14 +117,14 @@ const _handleExperiencesRedirect = () => {
   router.push(urls.travel_experiences.BASE)
 }
 const _handleExperiencesClick = () => {
-  // setLoading(true);
-  setTimeout(_handleExperiencesRedirect, 1000);
+  //  setTimeout(_handleExperiencesRedirect, 1000);
 
-  ga.callback_event({
-    action: 'TE-Travelstyles',
+  // ga.callback_event({
+  //   action: 'TE-Travelstyles',
     
-    callback: _handleTailoredRedirect,
-  })
+  //   callback: _handleTailoredRedirect,
+  // })
+  _handleExperiencesRedirect();
 
 }
   return (
