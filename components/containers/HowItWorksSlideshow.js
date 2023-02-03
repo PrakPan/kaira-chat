@@ -29,6 +29,7 @@ const Arrow = styled.img`
 `;
 
 const TextContainer = styled.div`
+font-size: 16px;
 
 `;
  

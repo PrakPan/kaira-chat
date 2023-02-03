@@ -14,7 +14,7 @@ margin: 0;
 font-size: 1.25rem;
 line-height: 1;
 @media screen and (min-width: 768px){
-    font-size: 1rem;
+    font-size: 14px;
 }
 `;
 const PaxSubtext = styled.p`
@@ -23,7 +23,7 @@ const PaxSubtext = styled.p`
     margin: 0;
     font-size: 0.75rem;
     @media screen and (min-width: 768px){
-        font-size: 0.85rem;
+        font-size: 12px;
 
     }
 

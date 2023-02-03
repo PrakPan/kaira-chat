@@ -11,7 +11,7 @@ const Container = styled.div`
   border-color: #e4e4e4;
 `;
  const IconContainer = styled.div`
-    font-size: 0.7rem;
+    font-size: 12px;
     padding: 0.5rem 0;
     color: ${(props) => (props.color)};
     line-height: 1;

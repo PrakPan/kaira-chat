@@ -46,7 +46,7 @@ position: relative;
 `;
 const Text = styled.p`
     font-weight: 700;
-    font-size: 1.25rem;
+    font-size: 1rem;
     text-align: right;
     width: max-content;
     line-height: 1;
@@ -64,7 +64,7 @@ const Text = styled.p`
     
     @media screen and (min-width: 768px){
         &:after{
-            font-size: 0.85rem !important;
+            font-size: 12px !important;
             text-decoration: none !important;
 
         }
@@ -103,7 +103,9 @@ const Cost = (props) => {
     
     return(
         <Container className='center-di' >
-           {props.starting_cost ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
+           {props.starting_cost 
+           ?
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
             {props.PW ? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : null}
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                {!props.PW ?  <Text className='font-opensans'>
@@ -111,7 +113,11 @@ const Cost = (props) => {
             </Text> : <GITText className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
             </GITText>}
-            </div></div></div>: <div style={{display: 'flex', justifyContent: 'flex-end', visibility: 'hidden'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
+            </div></div></div>
+            
+            : 
+
+            <div style={{display: 'flex', justifyContent: 'flex-end', visibility: 'hidden'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
             {props.PW ? <StrikedCost> {"₹ 0"}</StrikedCost> : null}
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                {!props.PW ?  <Text className='font-opensans'>

@@ -620,8 +620,8 @@ font-size: 0.85rem !important;
     letter-spacing: 1px;
   }
   .font-opensans{
-    font-family: 'Open Sans', sans-serif !important;
-  }
+    font-family: 'Poppins', sans-serif !important;
+    }
   .font-montserrat{
     font-family: 'Montserrat', sans-serif;
   }
@@ -1131,9 +1131,7 @@ body.modal-open {
       font-family: 'Nunito Sans', sans-serif !important;
       letter-spacing: 1px;
     }
-    .font-opensans{
-      font-family: 'Open Sans', sans-serif !important;
-    }
+   
     .font-montserrat{
       font-family: 'Montserrat', sans-serif;
     }

@@ -29,10 +29,10 @@ const Name = styled.p`
      font-size:1.25rem;
     margin: 1rem;
     @media screen and (min-width: 768px){
-        font-size:1.5rem;
+        font-size:16px;
         font-weight: 600;
         width: 80%;
-        margin: 2rem auto;
+        margin: 2rem auto 1rem auto;
         text-align: center;
     }
     overflow: hidden;
@@ -52,9 +52,9 @@ const Experiences= (props) => {
     padding: 0; 
     position: relative;
 
-    font-size:1rem;
+    font-size 14.4px;
     @media screen and (min-width: 768px){
-        font-size:1.1rem;
+        font-size: 14.4px;
     }
     color: #212529;
     font-weight: 300;
@@ -116,7 +116,7 @@ display: -webkit-box;
             fontWeight="300"
             hoverBgColor="black"
             hoverColor="white"
-            fontSize="1rem"
+            fontSize="12px"
             onclick={props.page || props.link? _onClickHandler : null}
             >
                 Read More

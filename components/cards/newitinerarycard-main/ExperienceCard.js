@@ -88,7 +88,7 @@ const _handleRedirect = () => {
         <Info PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
        
        </ContentContainer>
-       <div className='font-opensans text-center' style={{background: 'white' , borderWidth: '1px',  fontWeight: '600', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
+       <div className='font-opensans text-center' style={{background: 'white' , borderWidth: '1px',  fontWeight: '400', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontSize: '12px', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
         {props.PW ? 'PW EXCLUSIVE - 50% OFF' : !props.myplan ? props.data ? props.data.user_name && props.data.user_name !== 'Physics wallah' && props.data.user_name!=='TTW' && props.data.user_name!=="TTW Exclusive" ? 'Created by ' + props.data.user_name :  'TTW EXCLUSIVE' : 'TTW EXCLUSIVE' : 'ITINERARY STATUS'}
 
         </div>

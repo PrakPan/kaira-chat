@@ -26,7 +26,7 @@ const HeadingNew = styled.p`
     font-weight: 700;
     margin: ${(props) => (props.margin ? props.margin : "0 0 1rem 0")};
     @media screen and (min-width: 768px){ 
-        font-size: 3rem;
+        font-size: 32px;
         margin: ${(props) => (props.margin ? props.margin : "0")};
 
     }
@@ -117,29 +117,24 @@ const ContentContainer = styled.div`
 `;
 const ReviewHeading = styled.h3`
       font-size: 1rem;
-      /* font-size: ${props => props.theme.fontsizes.mobile.text.default ? props.theme.fontsizes.mobile.text.default : props.theme.fontsizes.mobile.text.default}; */
-        text-align: center;
-        font-weight: 500;
+         text-align: center;
+        font-weight: 400;
     line-height: 1.5;
         &:before{
             content: open-quote;
             font-family: "Font Awesome 5 Free";
             font-size:2.5rem ;
-            /* font-size: ${props => props.theme.fontsizes.mobile.headings.one ? props.theme.fontsizes.mobile.headings.one : props.theme.fontsizes.mobile.headings.one }; */
-            padding: 0;
+             padding: 0;
             display: inline-block;
             line-height: 1;
         }
         margin: 2rem;
         @media screen and (min-width: 768px){
-           font-size: 1.5rem;
-            /* font-size: ${props => props.theme.fontsizes.desktop.text.two ? props.theme.fontsizes.desktop.text.two : props.theme.fontsizes.desktop.text.two}; */
-             &:before{
+           font-size: 16px;
+              &:before{
             content: open-quote;
             font-family: "Font Awesome 5 Free";
-            font-size: 2.5rem;
-            /* font-size: ${props => props.theme.fontsizes.desktop.headings.four ? props.theme.fontsizes.desktop.headings.four : props.theme.fontsizes.desktop.headings.four}; */
-            padding: 0;
+              padding: 0;
             margin-right: 0.5rem;            
             display: inline-block;
             text-align: left;
@@ -237,8 +232,8 @@ const AsSeenIn = (props) => {
                     </div>
                     <GridContainer>
                         <LogoOuterContainer className="center-div" onMouseEnter={() => setSelected(0)} style={{borderColor: selected === 0 ? '#F7e700' : 'transparent'}} ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9vdXRsb29rLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjE1MCwiZml0IjoiY292ZXIifX19'} /></LogoContainer></LogoOuterContainer>
-                        <LogoOuterContainer className="center-div" onMouseEnter={() => setSelected(1)} style={{borderColor: selected === 1 ? '#F7e700' : 'transparent'}}  ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/indianexpress.png'} /></LogoContainer></LogoOuterContainer>
-                         <LogoOuterContainer  className="center-div" onMouseEnter={() => setSelected(2)} style={{borderColor: selected === 2 ? '#F7e700' : 'transparent'}} ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/phocuswire.png'}/></LogoContainer></LogoOuterContainer>
+                        <LogoOuterContainer className="center-div" onMouseEnter={() => setSelected(1)} style={{borderColor: selected === 1 ? '#F7e700' : 'transparent'}}  ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9pbmRpYW5leHByZXNzLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjQxLCJmaXQiOiJjb250YWluIn19fQ=='} /></LogoContainer></LogoOuterContainer>
+                         <LogoOuterContainer  className="center-div" onMouseEnter={() => setSelected(2)} style={{borderColor: selected === 2 ? '#F7e700' : 'transparent'}} ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9waG9jdXN3aXJlLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjI5LCJmaXQiOiJjb3ZlciJ9fX0='}/></LogoContainer></LogoOuterContainer>
                         {isPageWide ? <LogoOuterContainer className="center-div" onMouseEnter={() => setSelected(3)} style={{borderColor: selected === 3 ? '#F7e700' : 'transparent'}} ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/brilliant.png'}/></LogoContainer></LogoOuterContainer> : null}
                         {isPageWide ? <LogoOuterContainer className="center-div" onMouseEnter={() => setSelected(4)} style={{borderColor: selected === 4 ? '#F7e700' : 'transparent'}} ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/yourstory.png'}/></LogoContainer></LogoOuterContainer> : null}
                     </GridContainer>
@@ -246,7 +241,7 @@ const AsSeenIn = (props) => {
                         <ReviewHeading className="font-opensans">
                             {Quotes[selected]}
                         </ReviewHeading>
-                        {!props.disablelinks ? <ReadFull href={Urls[selected]} target="_blank" className="font-nunito">Full Article</ReadFull> : null}
+                        {!props.disablelinks ? <ReadFull href={Urls[selected]} target="_blank" className="font-opensans">Full Article</ReadFull> : null}
                     </ContentContainer>
             </InnerContainer>
         </Container>
