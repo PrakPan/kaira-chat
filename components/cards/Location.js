@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import BackroundImageLoader from '../UpdatedBackgroundImageLoader';
 import media from '../media';
-
+import ImageLoader from '../ImageLoader';
 
 const Container = styled.div`
 width: 100%;
@@ -48,6 +48,7 @@ const Experiences= (props) => {
               <Name className="font-opensans">{props.heading}</Name>
               <Name className="font-opensans" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
           </BackroundImageLoader>
+          {/* <ImageLoader borderRadius="10px" url={props.img} dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}></ImageLoader> */}
       </Container>
   ); 
 }

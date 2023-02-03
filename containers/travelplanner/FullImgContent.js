@@ -9,6 +9,7 @@ import {BsWhatsapp} from 'react-icons/bs';
 // import Banner from './BannerOne';
 import TailoredForm from '../../components/tailoredform/Index';
 import Rolodex from './Rolodex';
+import TailoredModal from '../../components/modals/TailoredForm';
  const Container = styled.div`
   color:white;
  width: 100%;
@@ -105,7 +106,14 @@ const FullImgContent = (props) => {
                {/* <Banner></Banner> */}
                <div className='hidden-mobile' style={{}}>
                 <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+                
                 </div>
+                {!isPageWide ? <div className='hidden-desktop'>
+                    <TailoredModal show={true}>
+                    <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+
+                    </TailoredModal>
+                </div> : null}
                 {/* <div className='hidden-desktpo'>
                     <div style={{backgroundColor: 'white', zIndex:'2', height: '100vh', width: '100vw', position: 'fixed', top: '0'}}>
                         <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>

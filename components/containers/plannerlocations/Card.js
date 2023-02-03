@@ -24,69 +24,48 @@ height: 60vh;
 
 
 const Name = styled.p`
-    text-align: center;
+    
     padding: 0rem 0;
-    color: white;
-    font-weight: 500;
-    margin: 0;
+    color: black;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0 ;
     line-height: 1;
-    font-weight: 300;
-    font-size: 22px;
+    
+    
     width: 100%;
-    letter-spacing: 1px;
+    
     @media screen and (min-width: 768px){
 
     }
 `;
-const ImageFade = styled.div`
-width: 100%;
-height: auto;
-transition: 0.2s all ease-in-out;
-`;
- const ImageContainer = styled.div`
-    position: relative;
-    overflow: hidden;
-    &:hover{
-        ${ImageFade}{
-          transition: 0.2s all ease-in-out;
-          transform: scale(1.1);
-         }
-    }
-    @media screen and (min-width: 768px){
-    height: 30vh;
-    }
+// const ImageFade = styled.div`
+// width: 100%;
+// height: auto;
+// border-radius: 10px;
+// transition: 0.2s all ease-in-out;
+// `;
+//  const ImageContainer = styled.div`
+//     position: relative;
+//     overflow: hidden;
+//     border-radius: 10px;
 
+//     &:hover{
+//         ${ImageFade}{
+//           transition: 0.2s all ease-in-out;
+//           transform: scale(1.1);
+//          }
+//     }
+//     @media screen and (min-width: 768px){
+    
+//     }
+
+//  `;
+
+ const Subtext = styled.p`
+    font-weight: 400;
+     font-size: 12px;
  `;
-
-
- const BlackContainer = styled.div`
- background-color: rgba(0,0,0,0.4);
- width: 100%;
- height: 100%;
- position: absolute; 
- color: white;
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 0.5rem;
- top: 0;
- flex-direction: column;
  
- `;
- const Heading = styled.p`
-    font-size: 1.5rem;
-    font-weight: 600;
-    line-height: 1;
-    text-align: center;
-    margin-bottom: 0.5rem;
- `;
- const Subheading = styled.p`
- font-size: 1.25rem;
- line-height: 1;
- text-align: center;
-
-    font-weight: 300;
- `;
 
 const Experiences= (props) => {
     let isPageWide = media('(min-width: 768px)');
@@ -103,19 +82,30 @@ const Experiences= (props) => {
 //       </Container>
 //   ); 
 return(
-    <ImageContainer className='hover-pointer' onClick={(e) => router.push(props.slug)}>
-        <ImageFade><ImageLoader
+    <div className='hover-pointer' onClick={(e) => router.push(props.slug)}>
+  {/* <ImageLoader
 
+url={'media'}
+dimensions={{width: 800, height: 800}}
+borderRadius="10px"
+dimensionsMobile={{width: 200, height: 200}}
+
+></ImageLoader> */}
+            <ImageLoader
+            hoverpointer
             url={props.img}
-            dimensions={{width: 200, height: 200}}
-            dimensionsMobile={{width: 200, height: 200}}
-            height="30vh"
-            ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
-            <Subheading>{props.heading}</Subheading>
-                <Heading>{props.location}</Heading>
-            </BlackContainer>
-        </ImageContainer>
+            dimensions={{width: 800, height: 800}}
+            borderRadius="10px"
+            dimensionsMobile={{width: 800, height: 800}}
+          
+            ></ImageLoader>
+    <div style={{padding: '0.5rem 0'}} className='hover-pointer'>
+              {/* <Name className="font-opensans">{props.heading}</Name> */}
+               <Name className="font-opensans">{props.location}</Name>
+               <Subtext className="font-opensans">Adventure, Nature & Outdoor</Subtext>
+               </div>
+
+        </div>
 )
 }
 
