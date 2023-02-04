@@ -145,7 +145,7 @@ const Enquiry = (props) => {
         ).then(response => {
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
-                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+                // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
                  }
              else{
@@ -153,7 +153,8 @@ const Enquiry = (props) => {
   
                 setTimeout(function(){ 
                    
-                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); }, 3000);
+                  // router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
+                }, 3000);
                   setLoading(false);
 
               }
