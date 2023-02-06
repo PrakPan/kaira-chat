@@ -622,6 +622,9 @@ font-size: 0.85rem !important;
   .font-opensans{
     font-family: 'Open Sans', sans-serif !important;
   }
+  .font-poppins{
+    font-family: 'Poppins', sans-serif !important;  
+   }
   .font-montserrat{
     font-family: 'Montserrat', sans-serif;
   }
