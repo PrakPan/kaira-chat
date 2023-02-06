@@ -38,7 +38,7 @@ const PLANNER_PAGES = [
       {
         "tagline": "Mountain Paradise",
         "name": "Spiti",
-        "slug": '/travel-planner/spiti',
+        "slug": '/travel-planner/spiti-valley',
         "image": "media/page/167462671802231431007385253906.jpg",
       },
 ];
