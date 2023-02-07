@@ -3,6 +3,11 @@ import { useState, useEffect } from 'react';
    const Container = styled.div`
     margin-top: 1rem;
     display: grid;
+    position: sticky;
+    top: 0;
+    padding-top: 0.5rem;
+    background-color: white;
+    z-index: 2;
     max-width: 100vw;
     overflow-x: hidden;
     grid-template-columns: max-content max-content max-content max-content max-content max-content;
@@ -30,22 +35,30 @@ const NotSelectedMenu = styled.div`
 `;
 
 const Menu = (props) => {
+    const MENU = ['Brief', 'Itinerary', 'Stays', 'Flights', 'Transfers', 'Activities'];
+    const [menuJSX, setMenuJSX] = useState([]);
    
-    useEffect(() => {
-      
-    },[]);
+    useEffect(() => {   
+        let menu = [];
+        for(var i = 0 ; i < MENU.length ; i++){
+            if(props.currentMenu !== MENU[i]) 
+            menu.push(
+                <NotSelectedMenu>{MENU[i]}</NotSelectedMenu>
+            )
+            else menu.push(
+                <SelectedMenu>{MENU[i]}</SelectedMenu>
+ 
+            )
+        }
+        setMenuJSX(menu);
+    },[props.currentMenu]);
     
     return(
 
-        <Container className='font-poppins'>
-            <SelectedMenu>Breif</SelectedMenu>
-            <NotSelectedMenu>Itinerary</NotSelectedMenu>
-            <NotSelectedMenu>Stays</NotSelectedMenu>
-            <NotSelectedMenu>Flights</NotSelectedMenu>
-            <NotSelectedMenu>Transfers</NotSelectedMenu>
-            <NotSelectedMenu>Activities</NotSelectedMenu>
-
-
+        <Container
+     
+        className='font-poppins'>
+{menuJSX}
 
 
          </Container>
