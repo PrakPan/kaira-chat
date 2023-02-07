@@ -47,8 +47,7 @@ const LocationsBlog= (props) => {
     for(i = 0 ; i < props.locations.length; i++){
 
         try{
-          console.log('l', props.locations[i].link)
-          if(router.query.link!== props.locations[i].link){
+           if(router.query.link!== props.locations[i].link){
             count++;
         cardsarr.push(
             <Card

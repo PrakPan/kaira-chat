@@ -27,14 +27,12 @@ padding: 0.5rem;
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
-  console.log(props.locations)
-   const router = useRouter();
+    const router = useRouter();
 
 
     
       const _handleTailored = (location) => {
-        console.log(location)
-        localStorage.setItem('search_city_selected_id', location.id);
+         localStorage.setItem('search_city_selected_id', location.id);
         localStorage.setItem('search_city_selected_name', location.name);
         localStorage.setItem('search_city_selected_parent', '');
         router.push('/tailored-travel')
@@ -140,8 +138,7 @@ setOffset(offset+6);
     
     }
   // if(isPageWide) 
-  console.log(props.planner)
-  return(
+   return(
       <><div className='hidden-mobil'>
         <Container >  
                {cardsToShowJSX}

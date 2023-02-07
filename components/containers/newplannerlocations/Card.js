@@ -71,8 +71,7 @@ const Experiences= (props) => {
     let isPageWide = media('(min-width: 768px)');
     let filters_to_show = "";
     const router = useRouter();
-    console.log(props.filters);
-    try{
+     try{
     for(var i = 0 ; i < props.filters.length; i++){
         if(i === props.filters.length-1)
         filters_to_show=filters_to_show+props.filters[i];
