@@ -401,7 +401,8 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
  const [itinerariesToIndex, setItinerariesToIndex] = useState([]);
  useEffect(() => {
   let iti =[];
-  console.log(props.experienceData)
+  // console.log(props.experienceData)
+  try{
   for(var i =0; i< props.experienceData.itinerary_data.length; i++){
     iti.push(
       <ExperienceCard 
@@ -426,6 +427,9 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
 
   }
   setItinerariesToIndex(iti.slice());
+} catch{
+  
+}
 }, [])
 
 
@@ -660,7 +664,7 @@ const openWhatsapp = () => {
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 {/* <BannerOne></BannerOne> */}
 {/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
-<Overview overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
+<Overview  locations={props.experienceData.locations} overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
 {itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
 
@@ -689,7 +693,7 @@ const openWhatsapp = () => {
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Customer Tales"]} pastitinerary></Experiences>
  */}
 </SetWidthContainer>
- <Map locations={props.experienceData.locations}></Map>
+ {/* <Map locations={props.experienceData.locations}></Map> */}
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer>
       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Trending Destination</Heading>        

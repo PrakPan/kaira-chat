@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import ImageLoader from '../../components/ImageLoader';
 import Heading from '../../components/newheading/heading/Index';
 import {BiChevronDown} from 'react-icons/bi'
+import Map from './Map'
 const Container = styled.div`
  
 @media screen and (min-width: 768px){
@@ -22,12 +23,12 @@ const Container = styled.div`
 const GridContainer = styled.div`
     
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-row-gap: 2rem;
+    grid-gap: 30px;
 
     @media screen and (min-width: 768px){
         width: 100%;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: auto 400px;
+        grid-gap: 30px;
         margin: auto;
     }
 `;
@@ -52,7 +53,7 @@ display: -webkit-box;
 -webkit-box-orient: vertical;
    @media screen and (min-width: 768px){
     text-align: justify;
-    -webkit-line-clamp:  ${(props) => (props.more ? 'none' : "4")};
+    -webkit-line-clamp:  ${(props) => (props.more ? 'none' : "6")};
 
 
 }
@@ -64,18 +65,19 @@ const  Overview = (props) =>{
   
   return (
    <Container>
-      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>{props.overview_heading}</Heading>        
+    <GridContainer>
+      <div>
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>{props.overview_heading}</Heading>        
       <Text more={more} className='font-opensans'>
         <p>{props.overview_text}</p>
         {!more ? <div className='hover-pointer' onClick={()=> setMore(true)} style={{position: 'absolute', right: '0', bottom: '0', backgroundColor: 'white', zIndex: '2', paddingLeft: '0.25rem', fontWeight: '600'}}>more
         <BiChevronDown style={{fontSize: '1rem'}}></BiChevronDown>
         </div>  : null}
       </Text>      
-      {/* <Row heading={props.overview_heading} top={!isPageWide ? '0' : "12vh"} padding="0 1rem">
-            <InformationTextContainer
-              type='text'
-              text={props.overview_text} ></InformationTextContainer>
-          </Row> */}
+     
+        </div>
+        {props.locations ? props.locations.length ? <div style={{padding: !isPageWide ?  '0 0.5rem' : '2.5rem 0 0 0'}}><Map locations={props.locations}></Map></div> : null : null}
+      </GridContainer>
     </Container>
   );
 }

@@ -24,8 +24,8 @@ const router = useRouter();
   isMarkerShown
   googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E"
   loadingElement={<div style={{ height: `100%` }} />}
-  containerElement={<div style={{ height: `400px` }} />}
-  mapElement={<div style={{ height: `100%` }} />}
+  containerElement={<div style={{ height: `300px`, maxWidth: '400px' , borderRadius: '12px', margin: '2.5rem 0.25rem 0 o.25rem'}} />}
+  mapElement={<div style={{ height: `100%`,  borderRadius: '12px', }} />}
 />);
 }
 
