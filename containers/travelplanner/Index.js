@@ -24,7 +24,9 @@ import Overview from './Overview';
 import Button from '../../components/ui/button/Index';
 import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
-import Locations from '../../components/containers/plannerlocations/Index';
+import Locations from '../../components/containers/newplannerlocations/Index';
+import OldLocations from '../../components/containers/plannerlocations/Index';
+
 import PLANNER_PAGES from '../../public/content/planner';
 import Map from './Map';
 // import qs from qs;
@@ -257,8 +259,7 @@ const _toggleFilterHandler = (filter_text) => {
   let itineraries_exclusive = [];
   let itineraries_customer = [];
 
-  // axios.get(`/myController/myAction?${[1,2,3].map((n, index) => `storeIds[${index}]=${n}`).join('&')}`);
-let locations = [];
+ let locations = [];
 try{
 for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
   locations.push(props.experienceData.locations[i].name);
@@ -329,7 +330,7 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
 
   });
 
-  axiossearchinstance.post(`?search_type=itinerary&owner=Customer`, { 
+  axiossearchinstance.post(`?search_type=itinerary&owner=User`, { 
     "city_list": locations
    }).then(res => {
     setLoading(false);
@@ -428,7 +429,7 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
   }
   setItinerariesToIndex(iti.slice());
 } catch{
-  
+
 }
 }, [])
 
@@ -666,6 +667,7 @@ const openWhatsapp = () => {
 {/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
 <Overview  locations={props.experienceData.locations} overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
+
 {itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
 
   {!loading ? <GridContainer>
@@ -692,13 +694,15 @@ const openWhatsapp = () => {
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Customer Tales</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Customer Tales"]} pastitinerary></Experiences>
  */}
+       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Trending Destinations</Heading>        
+ <Locations locations={props.experienceData.locations} viewall></Locations>
+
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
-      <SetWidthContainer>
-      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Trending Destination</Heading>        
-
-      <Locations locations={PLANNER_PAGES} viewall planner></Locations>
+      <SetWidthContainer >
+      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>Other Destinations</Heading>        
+      <OldLocations locations={PLANNER_PAGES} viewall planner></OldLocations>
 
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
         <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>

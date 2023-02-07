@@ -12,9 +12,14 @@ import * as ga from '../../../services/ga/Index';
 */
 const Container = styled.div`
 display: grid;
+grid-template-columns: 1fr 1fr ;
+grid-gap: 1rem;
+padding: 0.5rem;
+
    @media screen and (min-width: 768px){
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 1rem;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 2rem;
+    padding: 0rem;
       
   }
 `;
@@ -22,14 +27,16 @@ display: grid;
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
+  console.log(props.locations)
    const router = useRouter();
 
 
     
-      const _handlePlanning = (id, name, parent) => {
-        localStorage.setItem('search_city_selected_id', id);
-        localStorage.setItem('search_city_selected_name', name);
-        localStorage.setItem('search_city_selected_parent', parent);
+      const _handleTailored = (location) => {
+        console.log(location)
+        localStorage.setItem('search_city_selected_id', location.id);
+        localStorage.setItem('search_city_selected_name', location.name);
+        localStorage.setItem('search_city_selected_parent', '');
         router.push('/tailored-travel')
     }
     const _handlePlannerPage = (id,name,parent) => {
@@ -45,25 +52,25 @@ const LocationsBlog= (props) => {
       var i = 0;
     if(props.locations){
     for(i = 0 ; i < props.locations.length; i++){
-
         try{
-          console.log('l', props.locations[i].link)
-          if(router.query.link!== props.locations[i].link){
+          if(router.pathname!== props.locations[i].slug){
             count++;
         cardsarr.push(
             <Card
+            data={props.locations[i]}
             key={props.locations[i].tagline}
             location={props.locations[i].name}
             heading={props.locations[i].tagline}
             img={props.locations[i].image}
             slug={props.locations[i].slug}
-            link={props.locations[i].link}
+            filters={props.locations[i].most_popular_for}
+            _handleTailored={_handleTailored}
 
             // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
             </Card>
         )
-        if(count === 5) break;
+        if(count === 6) break;
       }
         }
         catch{
@@ -91,9 +98,10 @@ setOffset(i+1);
 
   const _showMoreLocations = () => {
     let cardsarr = cardsToShowJSX.slice();
-    for(var i = offset; i < offset + 5; i++){
+    for(var i = offset; i < offset + 6; i++){
         try{
-          if(router.pathname!== props.locations[i].link)
+          if(router.pathname!== props.locations[i].slug)
+
         cardsarr.push(
             <Card
             key={props.locations[i].tagline}
@@ -101,7 +109,8 @@ setOffset(i+1);
             heading={props.locations[i].tagline}
             img={props.locations[i].image}
             slug={props.locations[i].slug}
-            link={props.locations[i].link}
+            filters={props.locations[i].most_popular_for}
+            _handleTailored={_handleTailored}
 
             // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
@@ -112,7 +121,7 @@ setOffset(i+1);
         }
     }
     setCardsToShowJSX(cardsarr);
-setOffset(offset+5);
+setOffset(offset+6);
   }
 
 // const router  = useRouter();
@@ -131,20 +140,22 @@ setOffset(offset+5);
     
     }
   // if(isPageWide) 
+  console.log(props.planner)
   return(
-      <><div className='hidden-mobile'>
+      <><div className='hidden-mobil'>
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
+       {props.locations && !props.planner ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
       </div>
  
-    <div className='hidden-desktop'>       
+    {/* <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
             <Carousel cards={cardsToShowJSX}></Carousel>
     </div>
     {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null}
-  </div></>
+  </div> */}
+  </>
   )
   ;
 }

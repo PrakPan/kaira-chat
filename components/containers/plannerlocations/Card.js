@@ -103,7 +103,7 @@ const Experiences= (props) => {
 //       </Container>
 //   ); 
 return(
-    <ImageContainer className='hover-pointer' onClick={(e) => router.push(props.slug)}>
+    <ImageContainer className='hover-pointer' onClick={(e) => router.push("/travel-planner/"+props.link)}>
         <ImageFade><ImageLoader
 
             url={props.img}
