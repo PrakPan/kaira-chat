@@ -486,7 +486,10 @@ const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 //     router.push('/travel-experiences')
 // }
 const _handleTailoredRedirect = () => {
+  if(props.experienceData.destination)
   router.push('/tailored-travel?search_text='+props.experienceData.destination)
+  else   router.push('/tailored-travel')
+
 }
 const _handleTailoredClick = () => {
   setDesktopBannerLoading(true);
@@ -669,7 +672,7 @@ const openWhatsapp = () => {
 <SetWidthContainer>
 
 {itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
-
+            {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
   {!loading ? <GridContainer>
     { itinerariesToShowExclusiveJSX}
  

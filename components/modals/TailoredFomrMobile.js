@@ -1,0 +1,52 @@
+import React, {useEffect, useState} from 'react';
+import {Modal} from 'react-bootstrap';
+// import Overview from './Overview/Overview';
+import styled from 'styled-components';
+// import About from './aboutus/About';
+// import GettingAround from './GettingAround';
+// import Recommendations from './Recommendations';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import {  faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+// import Tabs from './tabs/Index';
+// import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodation';
+// import {connect} from 'react-redux';
+import {TbArrowBack} from 'react-icons/tb';
+// import Spinner from '../../Spinner';
+import media from '../media';
+// import gif from '../../../public/assets/loader.gif';
+// const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
+//   &:hover{
+//     cursor: pointer;
+//   }
+// `;
+import TailoredForm from '../tailoredform/Index';
+
+
+const TailoredFormMobileModal = (props) => {
+ 
+  useEffect(() => {
+   
+  }, [props.id, props.show]);
+  let isPageWide = media('(min-width: 768px)')
+
+  return(
+      <div>
+        <Modal show={props.show}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} style={{}}>
+            <Modal.Header style={{ float: 'right', height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-end', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
+            <TbArrowBack onClick={props.onHide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
+
+              {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
+            </Modal.Header>
+            <Modal.Body style={{   padding:'0' }}>
+                <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+             
+            </Modal.Body>
+      </Modal>
+      </div>
+  );
+
+}
+ 
+
+
+export default TailoredFormMobileModal;
