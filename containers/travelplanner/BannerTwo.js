@@ -19,7 +19,7 @@ const Container = styled.div`
 const GridContainer = styled.div`
     
     display: grid;
-    grid-template-columns: 1.25fr 1fr;
+    grid-template-columns: auto 400px;
     grid-row-gap: 2rem;
 
     @media screen and (min-width: 768px){

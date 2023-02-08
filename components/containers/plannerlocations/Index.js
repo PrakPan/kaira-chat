@@ -51,17 +51,16 @@ const LocationsBlog= (props) => {
            if(router.query.link!== props.locations[i].link){
             count++;
         cardsarr.push(
-            <Card
-            key={props.locations[i].tagline}
-            location={props.locations[i].name}
-            heading={props.locations[i].tagline}
-            img={props.locations[i].image}
-            slug={props.locations[i].slug}
-            link={props.locations[i].link}
+            // <Card
+            // key={props.locations[i].tagline}
+            // location={props.locations[i].name}
+            // heading={props.locations[i].tagline}
+            // img={props.locations[i].image}
+            // slug={props.locations[i].slug}
+            // link={props.locations[i].link}
 
-            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
-            > 
-            </Card>
+            //  > 
+            // </Card>
         )
         if(count === 5) break;
       }
@@ -89,21 +88,20 @@ setOffset(i+1);
       .then((res) => {
 
 for(var i = 0 ; i < res.data.length; i++){
-  if(res.data[i].id !== 1)
+  if(res.data[i].page_type === "Destination")
   if(router.query.link!== res.data[i].link){
 // count++;
-console.log('d', res.data[i])
+// console.log('d', res.data[i])
   cards.push(
     <Card
     key={res.data[i].id}
-    location={res.data[i].name}
-    heading={res.data[i].name}
+    location={res.data[i].destination}
+    heading={res.data[i].tagline}
     img={res.data[i].image}
     slug={res.data[i].link}
     link={res.data[i].link}
 
-    // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
-    > 
+     > 
     </Card>
   
   )

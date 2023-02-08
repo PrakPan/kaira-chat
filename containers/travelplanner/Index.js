@@ -56,6 +56,25 @@ font-weight: 300;
 }
 `;
 
+const MapGridContainer = styled.div`
+    
+    display: grid;
+    grid-gap: 30px;
+
+    @media screen and (min-width: 768px){
+        width: 100%;
+
+        grid-template-columns: auto 400px;
+        grid-gap: 40px;
+        margin: 3.5rem auto 0 auto;
+    }
+`;
+const MapContainer = styled.div`
+
+@media screen and (min-width: 768px){
+  padding-top: 125px;
+}
+`;
 
 const HowItWorksHeading = styled.p`
     text-align: center;
@@ -359,10 +378,12 @@ useEffect(() => {
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
       </FullImage>
-      {/* <div className='hidden-desktfop'><Enquiry></Enquiry></div> */}
-{/* <BannerOne></BannerOne> */}
-{/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
-<Overview  locations={props.experienceData.locations} overview_heading={overviewHeading} overview_text={props.experienceData.overview_text}></Overview>
+      <SetWidthContainer>
+<MapGridContainer>
+  <Overview  locations={props.experienceData.locations} overview_heading={overviewHeading} overview_text={props.experienceData.overview_text}></Overview>
+  <MapContainer><Map locations={props.experienceData.locations}></Map></MapContainer>
+  </MapGridContainer>
+  </SetWidthContainer>
 <SetWidthContainer>
 
 {itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}     
@@ -422,7 +443,7 @@ useEffect(() => {
         <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn>
         <div className='hidden-mobile'><BannerTwo  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-        <ChatWithUs ></ChatWithUs>
+        <ChatWithUs planner></ChatWithUs>
         {/* <div style={{display: 'none'}}>
            {itinerariesToIndex}
         </div> */}

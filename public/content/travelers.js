@@ -1,6 +1,6 @@
 const TRAVELERS = [
 {
-    'review': "The Tarzan way team I can’t thank you enough for helping me plan my trip. You guys are amazing. Janhavi & Devyani and the entire team kept checking on me. The entire team was so responsive & planned everything really well. I will definitely recommend TTW for any trip. Kudos to you guys. Lots of Love:heart::heart:",
+    'review': "The Tarzan way team I can’t thank you enough for helping me plan my trip. You guys are amazing. Janhavi & Devyani and the entire team kept checking on me. The entire team was so responsive & planned everything really well. I will definitely recommend TTW for any trip. Kudos to you guys. Lots of Love❤️❤️",
     'image': 'media/website/explorers/nisagra.jpeg',
     'name': 'Nisagra',
     'duration': '5 Days',

@@ -14,24 +14,12 @@ const Container = styled.div`
  
 @media screen and (min-width: 768px){
  
-    width: 90%;
-    margin: auto;
-    padding: 1rem 0;
+   
+   
 }
 
 `;
-const GridContainer = styled.div`
-    
-    display: grid;
-    grid-gap: 30px;
 
-    @media screen and (min-width: 768px){
-        width: 100%;
-        grid-template-columns: auto 400px;
-        grid-gap: 30px;
-        margin: auto;
-    }
-`;
  
 // const Heading = styled.div`
 // font-size: 1.75rem;
@@ -42,7 +30,7 @@ const Text = styled.div`
 font-size: 1rem;
 position: relative;
 font-weight: 300;
-margin: 0 0.5rem;
+margin: 0;
 text-align: justify;
 overflow: hidden;
 line-height: 1.5;
@@ -65,9 +53,9 @@ const  Overview = (props) =>{
   
   return (
    <Container>
-    <GridContainer>
+    {/* <GridContainer> */}
       <div>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"}  bold>{props.overview_heading}</Heading>        
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 2.5rem 0"}  bold>{props.overview_heading}</Heading>        
       <Text more={more} className='font-opensans'>
         <p>{props.overview_text}</p>
         {!more ? <div className='hover-pointer' onClick={()=> setMore(true)} style={{position: 'absolute', right: '0', bottom: '0', backgroundColor: 'white', zIndex: '2', paddingLeft: '0.25rem', fontWeight: '600'}}>more
@@ -76,8 +64,8 @@ const  Overview = (props) =>{
       </Text>      
      
         </div>
-        {props.locations ? props.locations.length ? <div style={{padding: !isPageWide ?  '0 0.5rem' : '2.5rem 0 0 0'}}><Map locations={props.locations}></Map></div> : null : null}
-      </GridContainer>
+        {/* <div style={{padding: !isPageWide ?  '0 0.5rem' : '2.5rem 0 0 0'}}><Map locations={props.locations}></Map></div> */}
+      {/* </GridContainer> */}
     </Container>
   );
 }
