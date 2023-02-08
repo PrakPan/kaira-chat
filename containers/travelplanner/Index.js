@@ -158,7 +158,7 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
 
   });
 
-  axiossearchinstance.post(`?search_type=itinerary&owner=User`, { 
+  axiossearchinstance.post(`?search_type=itinerary&owner=USER`, { 
     "city_list": locations
    }).then(res => {
     setLoading(false);
@@ -348,20 +348,24 @@ const _handleTailoredClick = () => {
   })
 
 }
-
+const [overviewHeading, setOverviewHeading] = useState(null);
+useEffect(() => {
+  // The counter changed!
+  setOverviewHeading(props.experienceData.overview_heading)
+}, [router.query.link, props.experienceData])
 
     return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
       </FullImage>
-      {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
+      {/* <div className='hidden-desktfop'><Enquiry></Enquiry></div> */}
 {/* <BannerOne></BannerOne> */}
 {/* <Menu openWhatsapp={openWhatsapp} _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu> */}
-<Overview  locations={props.experienceData.locations} overview_heading={props.experienceData.overview_heading} overview_text={props.experienceData.overview_text}></Overview>
+<Overview  locations={props.experienceData.locations} overview_heading={overviewHeading} overview_text={props.experienceData.overview_text}></Overview>
 <SetWidthContainer>
 
-{itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'Exclusives across '+props.experienceData.destination}</Heading>    : null}     
+{itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}     
             {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
   {itinerariesExclusiveJSX.length? <GridContainer>
     { itinerariesExclusiveJSX}
