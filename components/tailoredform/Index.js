@@ -7,6 +7,7 @@ import Button from '../ui/button/Index';
  
   import * as ga from '../../services/ga/Index';
   import {format } from  "date-fns";
+import media from '../media';
 
  import axiostailoredinstance from '../../services/leads/tailored';
 import Spinner from '../Spinner';
@@ -27,10 +28,12 @@ z-index :2;
 position: relative;
   background-color: white;
  width: 100%;
- margin: 0.5rem;
-border-radius: 8px !important;
+ border: none !important;
+
  @media screen and (min-width: 768px){
     margin: 0;
+    border-radius: 8px !important;
+
     min-height: 400px;
 }
 
@@ -72,8 +75,12 @@ const BlackContainer = styled.div`
   left: 0;
   z-index: 0;
   width: 100vw;
+  display: none;
   height: 100vh;
   animation: 0.5s ${fadeInAnimation};
+  @media screen and (min-width: 768px){
+    display: initial;
+  }
 
 `;
 const Enquiry = (props) => {
@@ -191,6 +198,7 @@ const Enquiry = (props) => {
         setShowSearchStarting(false);
       }
       // console.log(props.experienceData)
+  let isPageWide = media('(min-width: 768px)');
 
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
@@ -198,7 +206,7 @@ const Enquiry = (props) => {
     <div>
                 {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
                
-    <Container className="border center-div" onClick={() => setShowBlack(true)}>
+    <Container className={isPageWide ? "border center-div"  : "center-div"} onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
            

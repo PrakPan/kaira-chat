@@ -2,31 +2,31 @@ const PLANNER_PAGES = [
     {
         "tagline": "Experience Heritage",
         "name": "Rajasthan",
-        "slug": '/travel-planner/rajasthan',
+        "link": 'rajasthan',
         "image": "media/page/167474771649785995483398437500.jfif",
       },
       {
         "tagline": "Hillside Haven",
         "name": "Himachal",
-        "slug": '/travel-planner/himachal',
+        "link": 'himachal',
         "image": "media/page/167463997722757387161254882812.jpg",
       },
       {
         "tagline": "Awe-Inspiring",
         "name": "Andaman",
-        "slug": '/travel-planner/andaman',
+        "link": 'andaman',
         "image": "media/page/167463864604858756065368652344.jpg",
       },
       {
         "tagline": "Splendid",
         "name": "Goa",
-        "slug": '/travel-planner/goa',
+        "link": 'goa',
         "image": "media/page/167463676413568735122680664062.jpg",
       },
       {
         "tagline": "Serene",
         "name": "Kerala",
-        "slug": '/travel-planner/kerala',
+        "link": 'kerala',
         "image": "media/page/167463623873071241378784179688.jpg",
       },
       {
@@ -38,7 +38,7 @@ const PLANNER_PAGES = [
       {
         "tagline": "Alpine Wonderland",
         "name": "Spiti",
-        "slug": '/travel-planner/spiti',
+        "link": 'spiti-valley',
         "image": "media/page/167462671802231431007385253906.jpg",
       },
 ];

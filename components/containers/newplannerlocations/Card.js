@@ -69,7 +69,20 @@ const Name = styled.p`
 
 const Experiences= (props) => {
     let isPageWide = media('(min-width: 768px)');
+    let filters_to_show = "";
     const router = useRouter();
+     try{
+    for(var i = 0 ; i < props.filters.length; i++){
+        if(i === props.filters.length-1)
+        filters_to_show=filters_to_show+props.filters[i];
+
+        else 
+        filters_to_show=filters_to_show+props.filters[i] + ", ";
+
+    }
+    }catch{
+
+    }
     /*Require props: imgWidth*/
   
 
@@ -81,7 +94,10 @@ const Experiences= (props) => {
 //           </BackroundImageLoader>
 //       </Container>
 //   ); 
- 
+return(
+    <div className='hover-pointer' onClick={() => props._handleTailored(props.data)}>
+  {/* <ImageLoader
+
 url={'media'}
 dimensions={{width: 800, height: 800}}
 borderRadius="10px"
@@ -99,7 +115,7 @@ dimensionsMobile={{width: 200, height: 200}}
     <div style={{padding: '0.5rem 0'}} className='hover-pointer'>
               {/* <Name className="font-opensans">{props.heading}</Name> */}
                <Name className="font-opensans">{props.location}</Name>
-               <Subtext className="font-opensans">Adventure, Nature & Outdoor</Subtext>
+               <Subtext className="font-opensans">{filters_to_show}</Subtext>
                </div>
 
         </div>

@@ -74,8 +74,8 @@ const SearchField = (props) => {
     const [results, setResults] = useState([]);
     const [results_data, setResultsData] = useState(false);
     useEffect(() => {
-
-    if(router.query.search_text){
+    
+    if(router.query.search_text && router.query.search_text!=='null'){
         setValue(router.query.search_text);
         _fetchResults(router.query.search_text)
     }

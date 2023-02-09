@@ -33,16 +33,28 @@ text-align: center;
 background-color: ${(props) => (props.is_selected ?  'rgba(247,231,0,0.3);' : 'rgba(0,0,0,0.4);')};
 color:  ${(props) => (props.is_selected ?  'black' : 'white')};
 font-weight: ${(props) => (props.is_selected ?  '800' : '400')};
-min-width: 108px;
-min-height: 90px;
+min-width: 90px;
+min-height: 70px;
 width: 100%;
+@media screen and (min-width: 768px){
+  min-width: 108px;
+  min-height: 90px;
  &:hover{
   background-color: rgba(247,231,0,0.3);
   color: black;
   font-weight: 800;
  }
+}
 `;
+ const DimensionContainer  = styled.div`
+ min-width: 90px;
+min-height: 70px;
+ @media screen and (min-width: 768px){
+  min-width: 108px;
+  min-height: 90px;
  
+}
+ `;
 const Location = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
@@ -54,7 +66,7 @@ const Location = (props) => {
                 {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
                 {/* <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" height="4rem"  url={'media/website/Goa.jpg'} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader> */}
 <div style={{position: 'relative'}}>
-                    <div style={{minWidth:  '108px', minHeight: '90px'}}>{
+                    <DimensionContainer>{
                       props.image ? <ImageLoader
                         url={props.image}
                         borderRadius='5px'
@@ -62,11 +74,11 @@ const Location = (props) => {
                         width="100%"
                         heighttab="100%"
                         dimensions={{width: 300, height: 250}}
-                        dimensionsMobile={{width: 600, height:400}}
+                        dimensionsMobile={{width: 540, height: 420}}
                         fit="cover"
                      onclick={props.onclick}
                      onload={() => setLoaded(true)}
-                        hoverpointer/>:null}</div>
+                        hoverpointer/>:null}</DimensionContainer>
                         <HoverContainer  is_selected={props.is_selected} onClick={() => props.onclick(props.onclickparam)} className='center-div' style={{ borderRadius: '5px',position: 'absolute', top: '0',width: '100%', height: '100%', fontSize: '0.85rem'}}>{props.text}
                         {props.is_selected ? <BsCheckCircleFill/> : null}
                         </HoverContainer>

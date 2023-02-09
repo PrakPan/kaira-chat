@@ -7,7 +7,6 @@ import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index';
-import axiospagelistinstance from '../../../services/pages/list';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -28,15 +27,15 @@ padding: 0.5rem;
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
-   const router = useRouter();
+    const router = useRouter();
 
 
     
-      const _handlePlanning = (id, name, parent) => {
-        localStorage.setItem('search_city_selected_id', id);
-        localStorage.setItem('search_city_selected_name', name);
-        localStorage.setItem('search_city_selected_parent', parent);
-        router.push('/tailored-travel')
+      const _handleTailored = (location) => {
+        //  localStorage.setItem('search_city_selected_id', location.id);
+        // localStorage.setItem('search_city_selected_name', location.name);
+        // localStorage.setItem('search_city_selected_parent', '');
+        router.push('/tailored-travel?search_text='+location.name)
     }
     const _handlePlannerPage = (id,name,parent) => {
       router.push('/travel-planner/'+name)
@@ -51,21 +50,23 @@ const LocationsBlog= (props) => {
       var i = 0;
     if(props.locations){
     for(i = 0 ; i < props.locations.length; i++){
-
         try{
-           if(router.query.link!== props.locations[i].link){
+          if(router.pathname!== props.locations[i].slug){
             count++;
         cardsarr.push(
-            // <Card
-            // key={props.locations[i].tagline}
-            // location={props.locations[i].name}
-            // heading={props.locations[i].tagline}
-            // img={props.locations[i].image}
-            // slug={props.locations[i].slug}
-            // link={props.locations[i].link}
+            <Card
+            data={props.locations[i]}
+            key={props.locations[i].tagline}
+            location={props.locations[i].name}
+            heading={props.locations[i].tagline}
+            img={props.locations[i].image}
+            slug={props.locations[i].slug}
+            filters={props.locations[i].most_popular_for}
+            _handleTailored={_handleTailored}
 
-            //  > 
-            // </Card>
+            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            > 
+            </Card>
         )
         if(count === 6) break;
       }
@@ -75,108 +76,58 @@ const LocationsBlog= (props) => {
         }
     }
   }
-   
-// setCardsToShowJSX(cardsarr);
+    // setOffset(5);
+    // props.locations.map( location => {
+    //    cardsarr.push(              
+    //       <Card
+    //       key={location.tagline}
+    //       location={location.name}
+    //       heading={location.tagline}
+    //       img={location.image}
+    //       onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id, location.slug, location.state.name)}
+    //       > 
+    //       </Card>
+    //     )
+      
+    // });
+setCardsToShowJSX(cardsarr);
 setOffset(i+1);
   }, [props.locations]);
 
-  const [cardsJSX, setCardsJSX] = useState([]);
-
-  useEffect(() => {
-    let cards=[];
-    // let count = 0;
-    
-    axiospagelistinstance
-      .get(
-        `/`
-      )
-      .then((res) => {
-
-for(var i = 0 ; i < res.data.length; i++){
-  if(res.data[i].page_type === "Destination")
-  if(router.query.link!== res.data[i].link){
-// count++;
-// console.log('d', res.data[i])
-  cards.push(
-    <Card
-    key={res.data[i].id}
-    location={res.data[i].destination}
-    heading={res.data[i].tagline}
-    img={res.data[i].image}
-    slug={res.data[i].link}
-    link={res.data[i].link}
-
-     > 
-    </Card>
-  
-  )
-  // if(count === 5) break;
-
-  }
-
-}
-setCardsJSX(cards.slice());
-setCardsToShowJSX(cards.slice(0,5));
-setOffset(5);
-
-
-      })
-      .catch((error) => {
-        // alert('Page could not be loaded. Please try again.');
-      });
-
-  }, []);
-
   const _showMoreLocations = () => {
     let cardsarr = cardsToShowJSX.slice();
-<<<<<<< HEAD
     for(var i = offset; i < offset + 6; i++){
         try{
           if(router.pathname!== props.locations[i].slug)
-=======
-    let c = cardsJSX.slice();
-    // console.log(c)
-    for(var i = offset; i < offset + 5; i++){
-      // console.log(c[i])
->>>>>>> main
 
-        try{
-          // if(router.pathname!== cardsJ[i].link)
         cardsarr.push(
-            c[i]
+            <Card
+            key={props.locations[i].tagline}
+            location={props.locations[i].name}
+            heading={props.locations[i].tagline}
+            img={props.locations[i].image}
+            slug={props.locations[i].slug}
+            filters={props.locations[i].most_popular_for}
+            _handleTailored={_handleTailored}
+
+            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            > 
+            </Card>
         )
-       
         }catch{
             
         }
     }
-<<<<<<< HEAD
     setCardsToShowJSX(cardsarr);
 setOffset(offset+6);
-=======
-    console.log(cardsarr)
-    setCardsToShowJSX(cardsarr.slice());
- setOffset(offset+6);
->>>>>>> main
   }
 
 // const router  = useRouter();
     const _handleTailoredRedirect = () => {
       router.push('/tailored-travel')
     }
-    const _handleTailoredClick = () => {
-      setLoading(true);
-      setTimeout(_handleTailoredRedirect, 1000);
-    
-      ga.callback_event({
-        action: 'TG-Locations',
-        
-        callback: _handleTailoredRedirect,
-      })
-    
-    }
   // if(isPageWide) 
-  return(
+   return(
       <><div className='hidden-mobil'>
         <Container >  
                {cardsToShowJSX}
