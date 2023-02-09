@@ -13,14 +13,9 @@ import axiospagelistinstance from '../../../services/pages/list';
 */
 const Container = styled.div`
 display: grid;
-grid-template-columns: 1fr 1fr ;
-grid-gap: 1rem;
-padding: 0.5rem;
-
    @media screen and (min-width: 768px){
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 2rem;
-    padding: 0rem;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: 1rem;
       
   }
 `;
@@ -67,7 +62,7 @@ const LocationsBlog= (props) => {
             //  > 
             // </Card>
         )
-        if(count === 6) break;
+        if(count === 5) break;
       }
         }
         catch{
@@ -129,16 +124,10 @@ setOffset(5);
 
   const _showMoreLocations = () => {
     let cardsarr = cardsToShowJSX.slice();
-<<<<<<< HEAD
-    for(var i = offset; i < offset + 6; i++){
-        try{
-          if(router.pathname!== props.locations[i].slug)
-=======
     let c = cardsJSX.slice();
     // console.log(c)
     for(var i = offset; i < offset + 5; i++){
       // console.log(c[i])
->>>>>>> main
 
         try{
           // if(router.pathname!== cardsJ[i].link)
@@ -150,14 +139,9 @@ setOffset(5);
             
         }
     }
-<<<<<<< HEAD
-    setCardsToShowJSX(cardsarr);
-setOffset(offset+6);
-=======
     console.log(cardsarr)
     setCardsToShowJSX(cardsarr.slice());
  setOffset(offset+6);
->>>>>>> main
   }
 
 // const router  = useRouter();
@@ -177,20 +161,19 @@ setOffset(offset+6);
     }
   // if(isPageWide) 
   return(
-      <><div className='hidden-mobil'>
+      <><div className='hidden-mobile'>
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations && !props.planner ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
+       {props.locations ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
       </div>
  
-    {/* <div className='hidden-desktop'>       
+    <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
             <Carousel cards={cardsToShowJSX}></Carousel>
     </div>
     {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null}
-  </div> */}
-  </>
+  </div></>
   )
   ;
 }

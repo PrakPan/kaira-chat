@@ -110,12 +110,7 @@ const FullImgContent = (props) => {
                 <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                 
                 </div>
-                {!isPageWide ? <div className='hidden-desktop'>
-                    <TailoredModal show={true}>
-                    <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
-
-                    </TailoredModal>
-                </div> : null}
+              
                 {/* <div className='hidden-desktpo'>
                     <div style={{backgroundColor: 'white', zIndex:'2', height: '100vh', width: '100vw', position: 'fixed', top: '0'}}>
                         <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
