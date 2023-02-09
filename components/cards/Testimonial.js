@@ -20,7 +20,7 @@ const CardHeading = styled.p`
     margin : 0.5rem 0.6rem 0rem 0.6rem;
  `;
 const CardSubHeading = styled.p`
-font-size: 0.85rem;
+font-size: 12px;
 font-weight: 400;
 margin : 0 0 0.5rem 0;
 `;
@@ -35,6 +35,8 @@ const CardListItem = styled.p`
      display: grid;
      grid-template-columns: 1fr 1fr; 
      grid-gap: 1rem;
+     height: max-content;
+     width: 100%;
     
  `;
  const ButtonContainer = styled.div`
@@ -53,13 +55,13 @@ const Testimonial = (props) => {
                 <CardSubHeading className='font-opensans text-center'>{props.duration + " | " + props.destination}</CardSubHeading>
                 {props.review ? <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> : null}
                 <CardListItem className='text-center' ><em>{props.text}</em></CardListItem>
-                <div style={{flexGrow: '1', alignItems: 'flex-end', display: 'flex'}}>
+                <div style={{display: 'flex', height: '100%', alignItems: 'flex-end'}}>
                 <GridContainer>
                         <ButtonContainer className='border center-div' style={{borderRadius: '10px'}} >
-                            <Button display="flex"  height="100%" center fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
+                            <Button display="flex"  height="100%" center fontWeight="500" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
                         </ButtonContainer>
                         <ButtonContainer className='border center-div' style={{borderRadius: '10px'}}>
-                        <Button  fontWeight="600" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => router.push('/tailored-travel')}>Start Planning</Button>
+                        <Button  fontWeight="500" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => router.push('/tailored-travel')}>Start Planning</Button>
                         </ButtonContainer>
                 </GridContainer>
                 </div>

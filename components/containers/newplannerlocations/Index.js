@@ -32,10 +32,10 @@ const LocationsBlog= (props) => {
 
     
       const _handleTailored = (location) => {
-         localStorage.setItem('search_city_selected_id', location.id);
-        localStorage.setItem('search_city_selected_name', location.name);
-        localStorage.setItem('search_city_selected_parent', '');
-        router.push('/tailored-travel')
+        //  localStorage.setItem('search_city_selected_id', location.id);
+        // localStorage.setItem('search_city_selected_name', location.name);
+        // localStorage.setItem('search_city_selected_parent', '');
+        router.push('/tailored-travel?search_text='+location.name)
     }
     const _handlePlannerPage = (id,name,parent) => {
       router.push('/travel-planner/'+name)
@@ -125,17 +125,6 @@ setOffset(offset+6);
 // const router  = useRouter();
     const _handleTailoredRedirect = () => {
       router.push('/tailored-travel')
-    }
-    const _handleTailoredClick = () => {
-      setLoading(true);
-      setTimeout(_handleTailoredRedirect, 1000);
-    
-      ga.callback_event({
-        action: 'TG-Locations',
-        
-        callback: _handleTailoredRedirect,
-      })
-    
     }
   // if(isPageWide) 
    return(
