@@ -11,7 +11,10 @@ import { useState, useEffect } from 'react';
     max-width: 100vw;
     overflow-x: hidden;
     grid-template-columns: max-content max-content max-content max-content max-content max-content;
+    @media screen and (min-width: 768px){
+        top: 10vh;
 
+    }
 `;
 const SelectedMenu = styled.div`
     font-size: 14px;

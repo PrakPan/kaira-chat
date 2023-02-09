@@ -103,7 +103,7 @@ const Experiences= (props) => {
 //       </Container>
 //   ); 
 return(
-    <ImageContainer className='hover-pointer' onClick={(e) => window.location.href="https://thetarzanway.com/travel-planner/"+props.link}>
+    <ImageContainer className='hover-pointer' onClick={(e) => window.location.href="https://dev.thetarzanway.com/travel-planner/"+props.link}>
         <ImageFade><ImageLoader
 
             url={props.img}

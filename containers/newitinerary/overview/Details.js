@@ -7,6 +7,11 @@ import Button from '../../../components/ui/button/Index';
     max-width: 100vw;
     overflow-x: hidden;
     grid-gap: 1rem;
+    @media screen and (min-width: 768px){
+        grid-template-columns: max-content max-content max-content max-content max-content max-content;
+        grid-column-gap: 2.5rem; 
+
+    }
 `;
 
 const Heading = styled.p`
@@ -51,6 +56,10 @@ const Details = (props) => {
                 <Heading>Destination</Heading>
                 <Text>Rajasthan</Text>
                </div>
+               <div className='hidden-mobile'><Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
+                        Trip Settings
+                    </Button>
+                    </div>
         </Container>
         
     );

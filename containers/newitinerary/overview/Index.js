@@ -17,6 +17,17 @@ const Heading = styled.h1`
     font-weight: 600;
     line-height: 34px;
 `;
+const Line = styled.div`
+border: 1px solid #F0F0F0;
+ width: 100vw;
+  margin-left: -1rem;
+   margin-bottom:1rem;
+   @media screen and (min-width: 768px){
+   visibility: hidden;
+
+}
+
+`;
 const Overview = (props) => {
    
     useEffect(() => {
@@ -28,14 +39,15 @@ const Overview = (props) => {
                 <GridContainer>
                     <Heading className='font-poppins'>Gateway to Rajasthan</Heading>
                     <div className='center-div'>
-                    <Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
+                    <div className='hidden-desktop'><Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
                         Trip Settings
-                    </Button>
+                    </Button></div>
                     </div>
                 </GridContainer>
                 <Details></Details>
-                <div style={{border: '1px solid #F0F0F0', width: '100vw', marginLeft: '-1rem', marginTop: '1rem', marginBottom: '1rem'}}></div>
-                <ImagesMobile></ImagesMobile>
+                <Line  ></Line>
+
+                 <ImagesMobile></ImagesMobile>
         </Container>
         
     );

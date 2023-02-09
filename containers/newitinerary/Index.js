@@ -6,9 +6,24 @@ import Brief from './breif/Index';
 import NewFooter from '../../components/newfooter/Index';
   const Container = styled.div`
     padding: 24vw 1rem 1rem 1rem;
+    @media screen and (min-width: 768px){
+        padding: 15vh 5rem 0 5rem;
+
+    }
 
 `;
+const Line = styled.div`
+border: 1px solid #F0F0F0;
+ width: 100vw;
+  margin-left: -1rem;
+   margin-bottom:1rem;
+   @media screen and (min-width: 768px){
+    margin-left: -5rem;
+    width: 100vw;
 
+}
+
+`;
 
 const NewItinerary = (props) => {
    const [offsets, setOffsets] = useState({
@@ -54,7 +69,7 @@ const NewItinerary = (props) => {
         <Container>
             <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} ></Overview>
             <Menu currentMenu={currentMenu} ></Menu>
-            <div style={{border: '1px solid #F0F0F0', width: '100vw', marginLeft: '-1rem', marginBottom: '1rem'}}></div>
+            <Line  ></Line>
             <div
             ref={el => {
                 // el can be null - see https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
