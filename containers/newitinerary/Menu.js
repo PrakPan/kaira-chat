@@ -57,7 +57,7 @@ const Menu = (props) => {
 
         <Container
      
-        className='font-poppins'>
+        className='font-opensans'>
 {menuJSX}
 
 

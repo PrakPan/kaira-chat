@@ -41,7 +41,7 @@ const MobileSearch= (props) => {
         <Container>
              <BlackContainer onClick={props.onclose}></BlackContainer> 
              <Bar setPannelOpen={() => setPannelOpen(true)} hidden={ pannelOpen ? true : false} ></Bar>
-           {true ? <Pannel hotlocations={hotLocationsData} setPannelClose={() => setPannelOpen(false)}></Pannel> :      null      } 
+           {true ? <Pannel hotlocations={hotLocationsData} setPannelClose={props.onclose}></Pannel> :      null      } 
         </Container>
     );
 }

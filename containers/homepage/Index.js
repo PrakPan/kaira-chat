@@ -139,13 +139,13 @@ const _handleExperiencesClick = () => {
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
-      <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 1rem 0"}  bold>Top Destinations</Heading>        
+      <Heading   align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 5rem 0"}  bold>Top Destinations</Heading>        
       <Locations locations={PLANNER_PAGES} viewall></Locations>
-      <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Unique</Heading>        
+      <Heading  align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Unique</Heading>        
         <Experiences link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></Experiences>
-        <Heading fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} bold noline >How it works?</Heading>
+        <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps  >HOW IT WORKS?</Heading>
         <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
-        <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Travel Tales</Heading>        
+        <Heading    align="center" aligndesktop="center" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem"}  bold>Travel Tales</Heading>        
       <ExperiencesBlog link="https://www.blog.thetarzanway.com/post/14-must-do-tips-for-every-solo-woman-traveler-in-india" pastitinerary   heading={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].heading} text={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].text} img={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].image} margin="2.5rem 0" experiences={homepagecontent["Women's Day Specials"]} ></ExperiencesBlog>
       </SetWidthContainer>
 
@@ -154,7 +154,7 @@ const _handleExperiencesClick = () => {
 
       <SetWidthContainer>
 
-        <Heading noline fontSize="32px"  align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Work from home redefined</Heading>        
+        <Heading   align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Work from home redefined</Heading>        
           <ExperiencesBlog link={homepagecontent["An Introduction to Workcation"].link} heading={homepagecontent["An Introduction to Workcation"].heading} text={homepagecontent["An Introduction to Workcation"].text} img={homepagecontent["An Introduction to Workcation"].image}   margin="1.5rem 0" experiences={homepagecontent["Work from home redefined"]}></ExperiencesBlog>
  
       
@@ -174,13 +174,13 @@ const _handleExperiencesClick = () => {
 
 
       <SetWidthContainer>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Travel with a purpose</Heading>        
+      <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={homepagecontent["Travel with a purpose"]} ></Experiences>
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
         {/* <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={homepagecontent["Live a different lifestyle"]} ></ExperiencesBlog> */}
       </SetWidthContainer>
     
-      <Heading noline fontSize="32px" margin={!isPageWide? "1.5rem" : '3rem'} align="center" aligndesktop="center" bold>Why Us</Heading>
+      <Heading   margin={!isPageWide? "1.5rem" : '5rem'} align="center" aligndesktop="center" bold>Why Us</Heading>
       <div style={{width: "90%", margin: "auto"}}><WhyUs></WhyUs></div>
 
       {/* <Testimonials margin="1.5rem 0"></Testimonials> */}

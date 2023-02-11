@@ -65,7 +65,7 @@ import {GoStar} from 'react-icons/go';
     position: absolute;
     top: 0;
      width: max-content;
-    font-size: 12px;
+    font-size: 0.85rem;
     
     color: white;
     border-radius: 5px;
@@ -79,7 +79,7 @@ import {GoStar} from 'react-icons/go';
     `;
     const Heading = styled.p`
     text-align: center;
-        font-size: 20px;
+        font-size: 1.75rem;
         font-weight: 700;
         letter-spacing: 0.02em;
         margin: 0;

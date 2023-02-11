@@ -46,7 +46,7 @@ position: relative;
 `;
 const Text = styled.p`
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.25rem;
     text-align: right;
     width: max-content;
     line-height: 1;
@@ -59,7 +59,6 @@ const Text = styled.p`
         display: block;
         color: rgba(91, 89, 89, 1);
         text-decoration: none !important;
-
     }
     
     @media screen and (min-width: 768px){
