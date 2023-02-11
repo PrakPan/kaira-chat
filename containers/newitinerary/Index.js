@@ -4,14 +4,16 @@ import Overview from './overview/Index';
 import Menu from './Menu';
 import Brief from './breif/Index';
 import NewFooter from '../../components/newfooter/Index';
-  const Container = styled.div`
-    padding: 24vw 1rem 1rem 1rem;
+
+const Container = styled.div`
+    margin-top: 24vw;
     @media screen and (min-width: 768px){
-        padding: 15vh 5rem 0 5rem;
-
+         width: 85%;
+         margin: 15vh auto 0 auto;
     }
-
 `;
+
+
 const Line = styled.div`
 border: 1px solid #F0F0F0;
  width: 100vw;
@@ -65,7 +67,7 @@ const NewItinerary = (props) => {
         text: [],
     }
     return(
-        <div>
+        <div style={{}}>
         <Container>
             <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} ></Overview>
             <Menu currentMenu={currentMenu} ></Menu>

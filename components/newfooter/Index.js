@@ -11,6 +11,10 @@ min-height: 10vw;
 background-color: rgb(35, 35, 35);
 padding: 1.5rem 1rem;
 color: white;
+@media screen and (min-width: 768px){
+    padding: 1.5rem 5rem;
+
+}
 
 `;
  const LogoContainer=styled.div`
