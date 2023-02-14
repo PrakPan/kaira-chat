@@ -13,14 +13,11 @@ import ImageLoader from '../ImageLoader';
 */
 
 const Container = styled.div`
-    display: grid !important;
-
-    grid-template-columns: max-content auto max-content;
+   
     @media screen and (min-width: 768px){
         width: 100%;
         margin: auto;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-gap: 2rem;
+      
     }
 `;
 const Arrow = styled.img`
@@ -38,8 +35,12 @@ const ImageContainer = styled.div`
 `;
 
 const GridContainer = styled.div`
+display: grid;
+grid-gap: 1rem;
+grid-template-columns: 1fr 3fr;
     @media screen and (min-width: 768px){
-
+        grid-gap: 1rem;
+        margin-bottom: 1rem;
     }
     `;
     
@@ -90,7 +91,7 @@ const HowItWorksSlideshow = (props) =>{
         </GridContainer>,
         <GridContainer style={{}}>
             <ImageContainer className="center-div">
-                <ImageLoader url={props.images[1]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
+                <ImageLoader url={props.images[1]} width="50%" margin="auto" dimensions={{width: 400, height: 400}} widthmobile={props.vertical ? '40%' : '60%'} />
             </ImageContainer>
             <TextContainer className="center-div">
             {props.headings[1]}
@@ -101,7 +102,7 @@ const HowItWorksSlideshow = (props) =>{
         </GridContainer>,
         <GridContainer style={{}}>
             <ImageContainer className="center-div">
-                <ImageLoader url={props.images[2]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
+                <ImageLoader url={props.images[2]} width="50%" margin="auto"  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
             </ImageContainer>
             <TextContainer className="center-div">
             {props.headings[2]}
@@ -111,36 +112,36 @@ const HowItWorksSlideshow = (props) =>{
         </GridContainer>
     ]
     const slidesdesktop = [
-        <div key={0} style={{}} >
-                <ImageContainer className="center-div">
-                <ImageLoader url={props.images[0]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
+        <GridContainer key={0} style={{}} >
+                <ImageContainer>
+                <ImageLoader url={props.images[0]} width="100%" margin="auto" dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
-        <TextContainer className="center-div">
+        <TextContainer>
         {props.headings[0]}
             {props.content[0]}
         </TextContainer>
     
-    </div>,
-    <div  key={1} style={{}}>
-            <ImageContainer className="center-div">
-            <ImageLoader url={props.images[1]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
+    </GridContainer>,
+    <GridContainer  key={1} style={{}}>
+            <ImageContainer>
+            <ImageLoader url={props.images[1]} width="100%" margin="auto"  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
-        <TextContainer className="center-div">
+        <TextContainer>
         {props.headings[1]}
             {props.content[1]}
         </TextContainer>
     
-    </div>,
-    <div  key={2} style={{}}>
-         <ImageContainer className="center-div">
-         <ImageLoader url={props.images[2]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
+    </GridContainer>,
+    <GridContainer  key={2} style={{}}>
+         <ImageContainer >
+         <ImageLoader url={props.images[2]} width="100%" margin="auto" dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
-        <TextContainer className="center-div">
+        <TextContainer>
         {props.headings[2]}
             {props.content[2]}
         </TextContainer>
        
-    </div>
+    </GridContainer>
     ]
     // if(!isPageWide )
     const [loading, setLoading] = useState(false);
@@ -161,7 +162,7 @@ const HowItWorksSlideshow = (props) =>{
       }
     return(
     <div>
-    <Container className='hidden-desktop' draggable="true"  onDragStart={_handleDragStart} onDragEnd={_handleDragEnd}>
+    {/* <Container className='hidden-desktop' draggable="true"  onDragStart={_handleDragStart} onDragEnd={_handleDragEnd}>
         <div className="center-div">
             <Arrow src={left} onClick={_prevSlideHandler}/>
         </div>
@@ -169,14 +170,14 @@ const HowItWorksSlideshow = (props) =>{
         <div className="center-div">
             <Arrow src={right} onClick={_nextSlideHandler}/>
         </div>
-    </Container>
-        <Container className='hidden-mobile'>
+    </Container> */}
+        <Container className='hidden-mobil'>
             {slidesdesktop}
         </Container>
-        <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}   boxShadow borderRadius="2rem" margin="1rem auto"  padding="0.5rem 2rem" borderWidth="1px">
+        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}   boxShadow borderRadius="2rem" margin="1rem auto"  padding="0.5rem 2rem" borderWidth="1px">
             Start Now
             {/* {loading ? <Spinner size={16}></Spinner> : null} */}
-        </Button>
+        </Button> : null}
         </div>
     );
     

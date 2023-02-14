@@ -19,14 +19,16 @@ position: relative;
     position: absolute;
     content: '';
     left: 0;
-    top: 23%;
+    top: 45%;
     right: 0;
-    border-top: 2px solid;
-    border-color: inherit;
-    -webkit-transform: skewY(-12deg);
-    -moz-transform: skewY(-12deg);
-    transform: skewY(-12deg);
+    border-top: 1px solid;
+    color: rgb(122, 122, 122);
+
+    -webkit-transform: skewY(-0deg);
+    -moz-transform: skewY(-0deg);
+    transform: skewY(-0deg);
   }
+  color: rgb(122, 122, 122);
 
   @media screen and (min-width: 768px){
         font-size: 1rem;
@@ -34,37 +36,40 @@ position: relative;
             position: absolute;
             content: '';
             left: 0;
-            top: 16%;
+            top: 45%;
             right: 0;
-            border-top: 2px solid;
+            color: rgb(122, 122, 122);
+
+            border-top: 1px solid;
             border-color: inherit;
-            -webkit-transform: skewY(-12deg);
-            -moz-transform: skewY(-12deg);
-            transform: skewY(-12deg);
+            -webkit-transform: skewY(-0deg);
+            -moz-transform: skewY(-0deg);
+            transform: skewY(-0deg);
           }
     }
 `;
 const Text = styled.p`
     font-weight: 700;
-    font-size: 1rem;
-    text-align: right;
+    font-size: 20px;
+    text-align: left;
     width: max-content;
     line-height: 1;
  
      &:after{
-        content: 'per person';
+        content: 'per person*';
         margin-top: 0.25rem;
-        font-size: 0.75rem !important;
+        margin-left: 0.25rem;
+        font-size: 14px !important;
         font-weight: 400;
-        display: block;
-        color: rgba(91, 89, 89, 1);
+        display: inline;
+        color: black;
         text-decoration: none !important;
 
     }
     
     @media screen and (min-width: 768px){
         &:after{
-            font-size: 12px !important;
+            font-size: 14px !important;
             text-decoration: none !important;
 
         }
@@ -105,8 +110,8 @@ const Cost = (props) => {
         <Container className='center-di' >
            {props.starting_cost 
            ?
-            <div style={{display: 'flex', justifyContent: 'flex-end'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
-            {props.PW ? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : null}
+            <div style={{display: 'flex'}}><div style={{ width: 'max-content'}}>
+            {true? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : null}
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                {!props.PW ?  <Text className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}

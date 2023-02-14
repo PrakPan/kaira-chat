@@ -9,30 +9,31 @@ import { useRouter } from 'next/router';
 const Card = styled.div`
       padding: 2rem 2rem;
     @media screen and (min-width: 768px){
-        min-height: 40vh;
      }
 `;
 
 const CardHeading = styled.p`
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    margin : 0.5rem 0.6rem 0rem 0.6rem;
+    margin : 0;
  `;
 const CardSubHeading = styled.p`
-font-size: 0.85rem;
+font-size: 0.8rem;
 font-weight: 400;
-margin : 0 0 0.5rem 0;
+margin : 0 0 0.5rem 0 ;
+color: rgb(122, 122, 122);
+
 `;
 const CardListItem = styled.p`
     font-size: 0.9rem;
-    font-weight: 100;
+    font-weight: 300;
     
-    margin : 0 0.6rem 1rem 0.6rem;
+    margin : 0  ;
     line-height: 1.5;
  `;
  const GridContainer = styled.div`
      display: grid;
-     grid-template-columns: 1fr 1fr; 
+     grid-template-columns: 1fr 2fr; 
      grid-gap: 1rem;
  `;
  const ButtonContainer = styled.div`
@@ -45,20 +46,21 @@ const CardContainer = (props) => {
     return (
 
         
-            <Card className='border center-v text-cener'>
-                <ImageLoader borderRadius="50%" width="60%" widthMobile="40%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
-                <CardHeading className='font-opensans text-center'>{props.heading}</CardHeading>
-                <CardSubHeading className='font-opensans text-center'>{props.duration + " | " + props.destination}</CardSubHeading>
-                <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft>
-                <CardListItem className='' ><em>{props.text}</em></CardListItem>
+            <Card className=''>
                 <GridContainer>
-                        <ButtonContainer className='border center-div' style={{borderRadius: '10px'}} >
-                            <Button fontWeight="600" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
-                        </ButtonContainer>
-                        <ButtonContainer className='border center-div' style={{borderRadius: '10px'}}>
-                        <Button  fontWeight="600" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => console.log('')}>Start Planning</Button>
-                        </ButtonContainer>
+                <div>
+                <ImageLoader borderRadius="8px" width="100%" widthMobile="100%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
+                <Button borderRadius="6px" onclick={() => console.log('')} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700" margin="0.5rem 0">View Details</Button>
+
+                </div>
+                <div>
+                <CardHeading className='font-opensans'>{props.heading}</CardHeading>
+                <CardSubHeading className='font-opensans'>{props.duration + " • " + props.destination}</CardSubHeading>
+                {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
+                <CardListItem className='' >{props.text}</CardListItem>
+                </div>
                 </GridContainer>
+               
             </Card>
         
     );

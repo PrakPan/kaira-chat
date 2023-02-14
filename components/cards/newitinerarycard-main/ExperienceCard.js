@@ -9,13 +9,16 @@ import * as ga from '../../../services/ga/Index'
 const fadeInAnimation = keyframes`${fadeIn}`;
 import { fadeIn } from 'react-animations'
 import Summary from './Summary';
+import Cost from './info/Cost';
+import Button from '../../ui/button/Index';
 const Container = styled.div`
 width: 100%;
 animation: 1s ${fadeInAnimation};
 
 background-color: white;
-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+box-shadow: 0px 3px 0px 0px rgba(240, 240, 240, 1);
 border-radius: 10px;
+border: 1.5px solid rgba(236, 234, 234, 1);
   @media screen and (min-width: 768px){
     &:hover{
       cursor: pointer;
@@ -34,7 +37,7 @@ color: white;
 const ContentContainer = styled.div`
 width: 100%;
 
-padding: 1rem 1.5rem; 
+padding: 0.75rem 0.75rem; 
 box-sizing: border-box;
 @media screen and (min-width: 768px){
 }
@@ -76,22 +79,28 @@ const _handleRedirect = () => {
   if(props.PW) router.push('/itinerary/physicswallah/'+props.id);
   else router.push('/itinerary/'+props.id)
  }
-    
+ const FONT_SIZES_DESKTOP = ['20px'];
+    console.log(props)
     return(
       <Container className="netflix-ite" onClick={_handleRedirect}>
         <ImageContainer>
-              <ImageGallery myplan={props.myplan} budget={props.budget} group_type={props.group_type}   locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
+              <ImageGallery  images={props.images} ></ImageGallery>
        </ImageContainer> 
+       <ContentContainer className="text-cente">
+        <Info locations={props.locations} FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP} name={props.data.name} PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
+
+       </ContentContainer>
        {props.data ? props.data.payment_info ? props.data.payment_info.summary ? <Summary summary={props.data.payment_info.summary}></Summary> : null : null : null}
  
-       <ContentContainer className="text-cente">
-        <Info PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
-       
-       </ContentContainer>
+{/*       
        <div className='font-opensans text-center' style={{background: 'white' , borderWidth: '1px',  fontWeight: '400', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontSize: '12px', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
         {props.PW ? 'PW EXCLUSIVE - 50% OFF' : !props.myplan ? props.data ? props.data.user_name && props.data.user_name !== 'Physics wallah' && props.data.user_name!=='TTW' && props.data.user_name!=="TTW Exclusive" ? 'Created by ' + props.data.user_name :  'TTW EXCLUSIVE' : 'TTW EXCLUSIVE' : 'ITINERARY STATUS'}
 
-        </div>
+        </div> */}
+        <ContentContainer>
+        <Cost starting_cost={props.starting_cost}></Cost>
+        <Button borderRadius="6px" onclick={_handleRedirect} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700">View Details</Button>
+        </ContentContainer>
       </Container> 
   ); 
 }

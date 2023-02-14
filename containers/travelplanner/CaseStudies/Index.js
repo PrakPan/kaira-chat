@@ -5,14 +5,14 @@ import ImageLoader from '../../../components/ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
 import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
-import Card from '../../../components/cards/Testimonial';
+import Card from './Card';
 import TRAVELERS from '../../../public/content/travelers';
 const Container = styled.div`
       
 @media screen and (min-width: 768px){
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-gap: 2rem;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 0.5rem;
     }
 `;
 
@@ -22,7 +22,7 @@ const FullImgContent = (props) => {
 
     
    
-    if(!isPageWide)
+    if(false)
     return (
 
         <Container className='font-opensans'> 

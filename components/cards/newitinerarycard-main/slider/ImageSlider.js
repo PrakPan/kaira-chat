@@ -7,60 +7,16 @@ import {GoStar} from 'react-icons/go';
 
 
  
-    const IconsContainer = styled.div`
-        color: white;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-         display: grid;
-        grid-template-columns: 1fr max-content 1fr max-content 1fr;
-        font-size: 0.85rem;
-        border-style: none;
-        border-width: 1px;
-         background-color: rgba(255, 255, 255, 0.7);;
-          color: black;
-          padding: 2px 0;
-
-         @media screen and (min-width: 768px){
-          padding: 5px 0;
-
-        }
-
-      `;
+  
       
-      const IconHoverContainer = styled.div`
-    
-      &:hover{
-
-        }
-        margin: 0 0.25rem;
-        padding: 4px;
-
-        @media screen and (min-width: 768px){
-          padding: 0.5rem;
-
-        }
-      `;
+     
 
       const Container = styled.div`
         width: 100%;
         height: ${(props) => props.height ? props.height+"px" : '100%'};
         position: relative;
     `;
-    const RatingContainer = styled.div`
-        position: absolute;
-        top: 0;
-        background-color: #126904;
-        width: max-content;
-        font-size: 0.75rem;
-        color: white;
-        border-radius: 5px;
-        padding: 0.25rem;
-        right: 0;
-        margin: 0.5rem;
-        font-weight: 300;
-
-    `;
+    
     const DurationContainer = styled.div`
     position: absolute;
     top: 0;
@@ -68,10 +24,10 @@ import {GoStar} from 'react-icons/go';
     font-size: 12px;
     
     color: white;
-    border-radius: 5px;
-    padding: 0.35rem;
+    border-radius: 20px;
+    padding: 0.25rem 0.35rem;
     right: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: #01202B;
     letter-spacing: 0.1em;
 
     margin: 0.5rem;
@@ -149,7 +105,7 @@ const ImageSlider = (props) => {
   const [height, setHeight] = useState(0);
    
   useEffect(()=> {
-    setHeight((Component.current.offsetWidth * 3)/5);
+    setHeight((Component.current.offsetWidth * 2.5)/5);
   },[])
    
       var isArr = Object.prototype.toString.call(props.images) == '[object Array]';
@@ -176,28 +132,14 @@ const ImageSlider = (props) => {
     return(
         <Container  props={props} ref={Component} >
             {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
-            <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
-            {!props.PW ? 
-        
-            null
-             : 
-            <PWContainer style={{display: 'none'}}>
-
-            </PWContainer> }
-            {/* <RatingContainer className='font-opensans'>
-            <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
-            {props.rating + '/5'}
-             </RatingContainer> */}
-             <DurationContainer className='font-opensans'>
-             {!props.duration  ? props.duration_unit && props.duration_number ? props.duration_number+ " " + props.duration_unit.toUpperCase() : null : props.duration ? props.duration.toUpperCase() : null}
-             </DurationContainer>
-            {/* {!props.myplan ? <CustomizableContainer className='font-opensans'>
-            100% CUSTOMISABLE
-            </CustomizableContainer>: null } */}
-<HeadingContainer>
-  <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>
-  <Subheading className='font-opensans'>{LOCATIONS_TO_SHOW}</Subheading>
-</HeadingContainer>
+            <BackgroundImageLoader filter="none"  height={height+"px"}  url={image}  borderRadius="10px 10px 0 0"></BackgroundImageLoader>
+          
+            
+           
+         <DurationContainer>
+          4N/5D
+         </DurationContainer>
+ 
         </Container>
     );
 }

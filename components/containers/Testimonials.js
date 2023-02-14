@@ -19,7 +19,7 @@ grid-gap: 2rem;
   @media screen and (min-width: 768px){
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
-    grid-gap: 1rem;
+    grid-gap: 0.5rem;
   }
 `;
 

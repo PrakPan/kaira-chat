@@ -43,8 +43,7 @@ margin: auto;
 
 const HowItWorksText = styled.p`
 font-size: 1rem;
-text-align: center;
-width: 100%;
+ width: 100%;
 margin: 0 0;
 font-weight: 300;
 
@@ -77,12 +76,11 @@ const MapContainer = styled.div`
 `;
 
 const HowItWorksHeading = styled.p`
-    text-align: center;
-    font-weight: 600;
+     font-weight: 600;
     margin: 1rem 0 0.5rem 0;
     @media screen and (min-width: 768px){
       font-size: 1.25rem;
-      margin: 1rem 0 0.5rem 0;
+      margin: 2rem 0 0.5rem 0;
 
     }
 `;
@@ -423,7 +421,7 @@ useEffect(() => {
       <OldLocations locations={PLANNER_PAGES} viewall planner></OldLocations>
 
          <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
-        <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
+        {/* <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>What our customers say?</Heading>        
        <Reviews></Reviews>
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
@@ -441,7 +439,7 @@ useEffect(() => {
       <SetWidthContainer>
        
         <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn>
-        <div className='hidden-mobile'><BannerTwo  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
+        <div className='hidden-mobil'><BannerTwo _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
         <ChatWithUs planner></ChatWithUs>
         {/* <div style={{display: 'none'}}>

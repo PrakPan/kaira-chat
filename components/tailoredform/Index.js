@@ -40,9 +40,9 @@ position: relative;
 `
  const Heading = styled.p`
     font-size: 1.5rem;
-    margin: 0rem 0 0rem 0;
-    text-align: center;
-    font-weight: 800;
+    margin: 0.25rem 0 0.25rem 0;
+    text-align: left;
+    font-weight: 700;
     color: black;
     line-height: normal;
 
@@ -211,13 +211,15 @@ const Enquiry = (props) => {
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
            
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div style={{padding: '0.5rem', width: '100%', marginBottom: slideIndex === 2 ? '2rem' : '1rem', display: 'grid', gridTemplateColumns: 'max-content auto', borderStyle: 'none none solid none' , borderWidth: '1px', borderColor: '#f7e700'}}>
+            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '1rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
             {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
             <Heading>{"Trip Planner" }</Heading> 
 
             </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
-            <div style={{padding: '1rem', width: '100%'}}>
+            <div style={{padding: '0 1rem 1rem 1rem', width: '100%'}}>
+            <div style={{borderStyle: 'solid none none none', borderWidth: '1px', color: '#D3D3D3', height: '1px', width: '100%',marginBottom: '1rem'}}></div>
+
             <Flickity
             startingLocation={startingLocation}
             setStartingLocation={setStartingLocation}

@@ -7,9 +7,35 @@ import styled from 'styled-components';
     import urls from '../../../../services/urls';
 import { useRouter } from 'next/router';
 const Container = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-row-gap: 0.5rem;
+ 
+
+`;
+
+const Heading = styled.p`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+
+`;
+const Locations = styled.p`
+   line-height: 1;
+  margin: 0.5rem 0 0.75rem 0;
+  color: rgb(122, 122, 122);
+  font-weight: 300;
+  font-size: 14px;
+  overflow: hidden;
+ text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 1;
+-webkit-box-orient: vertical;
+
+`;
+const TourType = styled.p`
+   line-height: 1;
+  margin: 0.75rem 0 0.5rem 0;
+   font-weight: 300;
+  font-size: 14px;
 
 `;
 const Info = (props) => {
@@ -18,28 +44,23 @@ const Info = (props) => {
   if(props.PW) router.push('/itinerary/physicswallah/'+props.id);
   else router.push('/itinerary/'+props.id)
  }
+
+ let LOCATIONS_TO_SHOW = "";
+      if(props.locations){
+        for(var i = 0 ; i < props.locations.length ; i++){
+          LOCATIONS_TO_SHOW = LOCATIONS_TO_SHOW + props.locations[i] + " " + "   •   ";
+        }
+      
+
+      }
+       
+
     
     return(
-        <Container  >
-          <Pax number_of_adults={props.number_of_adults}></Pax>
-          <Cost PW={props.PW} starting_cost={props.starting_cost}></Cost>
-          <div>
-            {/* <ImageLoader url={"media/icons/bookings/bookmark-white.png" } leftalign  width="2rem" widthmobile="1.5rem" height="auto" ></ImageLoader> */}
-          </div>
-          <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-            <Button
-            borderWidth="0"
-            bgColor="#f7e700"
-            borderRadius="10px"
-            fontWeight="500"
-            fontSize="0.65rem"
-            onclick={_handleRedirect}
-            >
-
-                {props.PW ? "View Trip"  :"View Itinerary"}
-            </Button>
-          </div>
-
+        <Container className='font-opensans'>
+         <Heading className='font-opensans'>{props.name}</Heading>
+          <Locations>{LOCATIONS_TO_SHOW}</Locations>
+          <TourType>Tour Type: <b style={{fontWeight: '500'}}>Customisable</b></TourType>
         </Container>
     );
 }
