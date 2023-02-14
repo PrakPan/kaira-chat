@@ -132,7 +132,7 @@ setOffset(offset+6);
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations && !props.planner ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
+       {props.locations && !props.planner ? props.locations.length > offset ? <Button  onclick={_showMoreLocations} fontSizeDesktop="12px" fontWeight="600" hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="0rem auto" padding="0.5rem 2rem" >View More</Button> : null : null}
       </div>
  
     {/* <div className='hidden-desktop'>       

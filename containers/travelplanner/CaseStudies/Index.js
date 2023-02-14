@@ -8,11 +8,12 @@ import media from '../../../components/media';
 import Card from './Card';
 import TRAVELERS from '../../../public/content/travelers';
 const Container = styled.div`
-      
+      padding: 0 0.5rem ;
 @media screen and (min-width: 768px){
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-gap: 0.5rem;
+      grid-gap: 1rem;
+      padding: 0;
     }
 `;
 

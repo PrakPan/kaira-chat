@@ -137,7 +137,7 @@ const ImageSlider = (props) => {
             
            
          <DurationContainer>
-          4N/5D
+          {props.duration_number + "N/"+(parseInt(props.duration_number)+1)+"D"}
          </DurationContainer>
  
         </Container>

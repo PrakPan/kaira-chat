@@ -111,7 +111,7 @@ const Cost = (props) => {
            {props.starting_cost 
            ?
             <div style={{display: 'flex'}}><div style={{ width: 'max-content'}}>
-            {true? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : null}
+            {props.PW? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : <StrikedCost> {"₹ "+getIndianPrice(Math.round((props.starting_cost/100)*1.2))}</StrikedCost> }
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                {!props.PW ?  <Text className='font-opensans'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}

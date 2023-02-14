@@ -64,6 +64,7 @@ const Name = styled.p`
  const Subtext = styled.p`
     font-weight: 400;
      font-size: 12px;
+     margin: 0;
  `;
  
 

@@ -7,7 +7,7 @@ import FullImage from '../../components/FullImage';
 import Experiences from '../../components/containers/Experiences';
   
  import AsSeenIn from '../testimonial/AsSeenIn';
- import Heading from '../../components/newheading/heading/Index';
+//  import Heading from '../../components/newheading/heading/Index';
   import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 
 import media from '../../components/media';
@@ -36,7 +36,7 @@ const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
 @media screen and (min-width: 768px){
-  width: 90%;
+  width: 85%;
 }
 `;
 
@@ -63,15 +63,15 @@ const MapGridContainer = styled.div`
     @media screen and (min-width: 768px){
         width: 100%;
 
-        grid-template-columns: auto 400px;
+        grid-template-columns: auto 300px;
         grid-gap: 40px;
-        margin: 3.5rem auto 0 auto;
+        margin: 0 auto 0 auto;
     }
 `;
 const MapContainer = styled.div`
 
 @media screen and (min-width: 768px){
-  padding-top: 125px;
+  padding-top: 108px;
 }
 `;
 
@@ -92,8 +92,8 @@ grid-gap: 1rem;
 
 
 @media screen and (min-width: 768px){
-  padding: 2rem 0;
-  grid-gap: 2rem;
+  padding:  1rem 0;
+  grid-gap: 1.5rem;
   grid-template-columns: 1fr 1fr 1fr;
 }
 `;
@@ -102,6 +102,18 @@ min-height: 40vh;
 
 @media screen and (min-width: 768px){
   min-height: 40vh;
+}
+`;
+const Heading = styled.h2`
+font-size: 32px;
+font-weight: 700;
+margin: 1.5rem 0.5rem;
+text-align: center;
+
+@media screen and (min-width: 768px){
+  text-align: left;
+  margin: 1.5rem 0rem;
+
 }
 `;
 const  Homepage = (props) =>{
@@ -384,7 +396,10 @@ useEffect(() => {
   </SetWidthContainer>
 <SetWidthContainer>
 
-{itinerariesExclusiveJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : " 2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}     
+{itinerariesExclusiveJSX.length ?
+  <Heading className='font-opensans'>TTW Exclusives</Heading>
+
+  : null}     
             {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
   {itinerariesExclusiveJSX.length? <GridContainer>
     { itinerariesExclusiveJSX}
@@ -396,7 +411,7 @@ useEffect(() => {
      </MinHeightContainer> : null
   }
   {
-    !loading && itinerariesExclusiveJSX.length && offsetExclusive!== -1? <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
+    !loading && itinerariesExclusiveJSX.length && offsetExclusive!== -1? <Button margin="auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600" padding="0.5rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   }
   {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
@@ -406,7 +421,7 @@ useEffect(() => {
   </GridContainer> : null
   }
   {
-    !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
+    !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600"padding="0.5rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
   }
      
@@ -417,13 +432,15 @@ useEffect(() => {
  {/* <Map locations={props.experienceData.locations}></Map> */}
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer >
-      <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>Other Destinations</Heading>        
+      <Heading >Other Destinations</Heading>        
       <OldLocations locations={PLANNER_PAGES} viewall planner></OldLocations>
 
-         <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
+         {/* <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading> */}
         {/* <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>What our customers say?</Heading>        
+        <Heading style={{textAlign: 'center', margin:"3rem 0 1.5rem 0"}}>What our customers say?</Heading>        
        <Reviews></Reviews>
+       <Heading style={{textAlign: 'center', margin:"1.5rem 0 2.5rem 0"}}>How it works?</Heading>        
+
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
         {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
@@ -438,7 +455,7 @@ useEffect(() => {
  
       <SetWidthContainer>
        
-        <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn>
+        {/* <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn> */}
         <div className='hidden-mobil'><BannerTwo _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
         <ChatWithUs planner></ChatWithUs>

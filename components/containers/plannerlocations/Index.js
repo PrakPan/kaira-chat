@@ -165,14 +165,14 @@ setOffset(5);
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations ? props.locations.length > offset ? <Button boxShadow onclick={_showMoreLocations} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.25rem 2rem" >View More</Button> : null : null}
+       {props.locations ? props.locations.length > offset ? <Button  onclick={_showMoreLocations} hoverBgColor="black" fontSizeDesktop="12px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button> : null : null}
       </div>
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
             <Carousel cards={cardsToShowJSX}></Carousel>
     </div>
-    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null}
+    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null}
   </div></>
   )
   ;

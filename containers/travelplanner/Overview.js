@@ -7,8 +7,7 @@ import * as ga from '../../services/ga/Index';
 
 import styled from 'styled-components';
 import ImageLoader from '../../components/ImageLoader';
-import Heading from '../../components/newheading/heading/Index';
-import {BiChevronDown} from 'react-icons/bi'
+ import {BiChevronDown} from 'react-icons/bi'
 import Map from './Map'
 const Container = styled.div`
  
@@ -44,6 +43,15 @@ display: -webkit-box;
     -webkit-line-clamp:  ${(props) => (props.more ? 'none' : "6")};
 
 
+}
+`;
+const Heading = styled.h2`
+font-size: 32px;
+font-weight: 700;
+margin: 2.5rem 0 1.5rem 0;
+text-align: center;
+@media screen and (min-width: 768px){
+  text-align: left;
 }
 `;
 const  Overview = (props) =>{

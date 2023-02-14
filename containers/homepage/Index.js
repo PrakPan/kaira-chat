@@ -32,6 +32,7 @@ import homepagecontent from '../../public/content/homepage';
   import * as ga from '../../services/ga/Index';
  import urls from '../../services/urls';
   import PLANNER_PAGES from '../../public/content/planner';
+  import CaseStudies from '../travelplanner/CaseStudies/Index';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -43,8 +44,7 @@ margin: auto;
 
 const HowItWorksText = styled.p`
 font-size: 1rem;
-text-align: center;
-width: 100%;
+ width: 100%;
 margin: 0 0;
 font-weight: 300;
 
@@ -58,14 +58,19 @@ font-weight: 300;
 
 
 const HowItWorksHeading = styled.p`
-    text-align: center;
-    font-weight: 600;
+     font-weight: 600;
     margin: 1rem 0 0.5rem 0;
     @media screen and (min-width: 768px){
       font-size: 1.25rem;
       margin: 1rem 0 0.5rem 0;
 
     }
+`;
+const HowItWorksContainer = styled.div`
+@media screen and (min-width: 768px){
+  width: 60%;
+  margin: auto;
+}
 `;
 
 const  Homepage = (props) =>{
@@ -144,9 +149,10 @@ const _handleExperiencesClick = () => {
       <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Unique</Heading>        
         <Experiences link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></Experiences>
         <Heading fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} bold noline >How it works?</Heading>
-        <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
+        <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>
         <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Travel Tales</Heading>        
-      <ExperiencesBlog link="https://www.blog.thetarzanway.com/post/14-must-do-tips-for-every-solo-woman-traveler-in-india" pastitinerary   heading={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].heading} text={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].text} img={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].image} margin="2.5rem 0" experiences={homepagecontent["Women's Day Specials"]} ></ExperiencesBlog>
+      {/* <ExperiencesBlog link="https://www.blog.thetarzanway.com/post/14-must-do-tips-for-every-solo-woman-traveler-in-india" pastitinerary   heading={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].heading} text={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].text} img={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].image} margin="2.5rem 0" experiences={homepagecontent["Women's Day Specials"]} ></ExperiencesBlog> */}
+        <CaseStudies></CaseStudies>
       </SetWidthContainer>
 
       {/*Add travel traingle banner with 2 ctas*/}
