@@ -391,7 +391,9 @@ useEffect(() => {
       <SetWidthContainer>
 <MapGridContainer>
   <Overview  locations={props.experienceData.locations} overview_heading={overviewHeading} overview_text={props.experienceData.overview_text}></Overview>
-  <MapContainer><Map locations={props.experienceData.locations}></Map></MapContainer>
+  <MapContainer>
+    {/* <Map locations={props.experienceData.locations}></Map> */}
+    </MapContainer>
   </MapGridContainer>
   </SetWidthContainer>
 <SetWidthContainer>

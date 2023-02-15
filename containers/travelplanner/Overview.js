@@ -10,9 +10,9 @@ import ImageLoader from '../../components/ImageLoader';
  import {BiChevronDown} from 'react-icons/bi'
 import Map from './Map'
 const Container = styled.div`
- 
+ padding: 0 1rem;
 @media screen and (min-width: 768px){
- 
+ padding: 0;
    
    
 }

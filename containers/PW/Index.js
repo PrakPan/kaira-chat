@@ -173,6 +173,7 @@ const _populateResultsHandelr = (filters) => {
     for(var i =0 ; i<res.data.length; i++){
       itineraries.push(
       <ExperienceCard 
+      data={res.data[i]}
          key={res.data[i].short_text}
          hardcoded={res.data[i].payment_info ?true : false }
          filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
@@ -254,6 +255,8 @@ const _toggleFilterHandler = (filter_text) => {
      for(var i =0 ; i<res.data.length; i++){
       itineraries.push(
       <ExperienceCard 
+      data={res.data[i]}
+
          key={res.data[i].short_text}
          hardcoded={res.data[i].payment_info ?true : false }
          filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}

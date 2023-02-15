@@ -26,7 +26,7 @@ const HeadingNew = styled.p`
     font-weight: 700;
     margin: ${(props) => (props.margin ? props.margin : "0 0 1rem 0")};
     @media screen and (min-width: 768px){ 
-        font-size: 32px;
+        font-size: 3rem;
         margin: ${(props) => (props.margin ? props.margin : "0")};
 
     }
@@ -130,7 +130,7 @@ const ReviewHeading = styled.h3`
         }
         margin: 2rem;
         @media screen and (min-width: 768px){
-           font-size: 16px;
+           font-size: 1.5rem;
               &:before{
             content: open-quote;
             font-family: "Font Awesome 5 Free";

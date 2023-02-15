@@ -50,8 +50,9 @@ position: relative;
 `;
 const Text = styled.p`
     font-weight: 700;
-    font-size: 20px;
+     font-size: 20px;
     text-align: left;
+
     width: max-content;
     line-height: 1;
  
@@ -64,7 +65,6 @@ const Text = styled.p`
         display: inline;
         color: black;
         text-decoration: none !important;
-
     }
     
     @media screen and (min-width: 768px){
@@ -87,7 +87,7 @@ const GITText = styled.p`
         margin-top: 0.25rem;
         font-size: 0.75rem !important;
         font-weight: 400;
-        display: block;
+        display: inline;
         color: rgba(91, 89, 89, 1);
         text-decoration: none !important;
 

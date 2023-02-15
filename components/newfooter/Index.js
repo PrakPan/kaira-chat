@@ -50,7 +50,7 @@ const NewFooter = (props) => {
     },[]);
 
     return(
-        <Container className='font-poppins'>
+        <Container className='font-opensans'>
             <LogoContainer>
                 <ImageLoader
                 dimensions={{width: 100, height: 100}}

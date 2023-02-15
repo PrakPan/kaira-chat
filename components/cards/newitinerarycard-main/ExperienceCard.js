@@ -85,10 +85,10 @@ const _handleRedirect = () => {
     return(
       <Container className="netflix-ite" onClick={_handleRedirect}>
         <ImageContainer>
-              <ImageGallery duration_number={props.duration_number}  images={props.images} ></ImageGallery>
+              <ImageGallery duration_number={props.duration_number ? props.duration_number : null} duration={props.duration}  images={props.images} ></ImageGallery>
        </ImageContainer> 
        <ContentContainer className="text-cente">
-        <Info locations={props.locations} FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP} name={props.data.name} PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
+        <Info locations={props.locations} FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP} name={props.data ? props.data.name : props.name} PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
 
        </ContentContainer>
        {props.data ? props.data.payment_info ? props.data.payment_info.summary ? <Summary summary={props.data.payment_info.summary}></Summary> : null : null : null}
@@ -99,7 +99,7 @@ const _handleRedirect = () => {
 
         </div> */}
         <ContentContainer style={{display: 'flex', flexGrow: '1', flexDirection: 'column', justifyContent: 'flex-end'}}>
-        <Cost starting_cost={props.starting_cost}></Cost>
+        <Cost PW={props.PW} starting_cost={props.starting_cost}></Cost>
         <Button borderRadius="6px" onclick={_handleRedirect} fontSizeDesktop="12px" borderWidth="1.25px" width="100%" fontWeight="600" bgColor="#f7e700">View Details</Button>
         </ContentContainer>
       </Container> 

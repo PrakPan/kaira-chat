@@ -19,7 +19,7 @@ const Heading = styled.p`
 
 `;
 const Locations = styled.p`
-   line-height: 1;
+   line-height: 1.2;
   margin: 0.5rem 0 0.75rem 0;
   color: rgb(122, 122, 122);
   font-weight: 300;
@@ -32,7 +32,7 @@ display: -webkit-box;
 
 `;
 const TourType = styled.p`
-   line-height: 1;
+   line-height: 1.2;
   margin: 0.75rem 0 0.5rem 0;
    font-weight: 300;
   font-size: 14px;
@@ -61,6 +61,7 @@ const Info = (props) => {
          <Heading className='font-opensans'>{props.name}</Heading>
           <Locations>{LOCATIONS_TO_SHOW}</Locations>
           <TourType>Tour Type: <b style={{fontWeight: '500'}}>Customisable</b></TourType>
+
         </Container>
     );
 }

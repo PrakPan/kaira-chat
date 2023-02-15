@@ -44,6 +44,7 @@ const CardListItem = styled.p`
  `;
  const RatingContainer = styled.div`
  display: flex;
+ margin-bottom: 0.75rem;
  @media screen and (min-width: 768px){
     flex-direction: row;
     gap: 0.75rem;
