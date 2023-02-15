@@ -40,7 +40,7 @@ const LocationsBlog= (props) => {
     cardsarr.push(
         <Card
         key={i}
-  location={props.locations[i].nicknames.length ? props.locations[i].nicknames[0] : ''}
+  location={props.locations[i].nicknames ? props.locations[i].nicknames.length ? props.locations[i].nicknames[0] : '' :  ''}
   heading={props.locations[i].tagline}
   img={props.locations[i].image}
   onclick={() => _handleRedirect(slug)}
