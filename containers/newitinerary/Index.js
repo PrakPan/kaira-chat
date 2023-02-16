@@ -4,9 +4,13 @@ import Overview from './overview/Index';
 import Menu from './Menu';
 import Brief from './breif/Index';
 import NewFooter from '../../components/newfooter/Index';
+import ItineraryElement from './itineraryelements/Index';
+import { ITINERARY_ELEMENT_TYPES } from '../../services/constants';
 
 const Container = styled.div`
     margin-top: 24vw;
+    width: 90%;
+    margin: 24vw auto 0 auto;
     @media screen and (min-width: 768px){
          width: 85%;
          margin: 15vh auto 0 auto;
@@ -22,7 +26,6 @@ border: 1px solid #F0F0F0;
    @media screen and (min-width: 768px){
     margin-left: -5rem;
     width: 100vw;
-
 }
 
 `;
@@ -91,7 +94,14 @@ const NewItinerary = (props) => {
                else return ;
               }}
             >
-                Itinerary
+               <div className='border-thin' style={{borderRadius: '10px'}}>
+               <ItineraryElement time="9:00AM - 12:00PM"  heading="Check in to your stay" type={ITINERARY_ELEMENT_TYPES.transfer}></ItineraryElement>
+
+                <ItineraryElement time="9:00AM - 12:00PM" image={'media/website/grey.png'} type={ITINERARY_ELEMENT_TYPES.activity} booking heading="Baapu Bazaar"
+                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
+                ></ItineraryElement>
+
+               </div>
             </div>
             <div style={{height: '70vh'}}
              ref={el => {
