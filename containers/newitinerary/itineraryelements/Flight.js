@@ -4,6 +4,7 @@ import {AiFillCar} from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import {MdOutlineFlightTakeoff} from 'react-icons/md';
    const Container = styled.div`
    padding: 0.5rem;
    
@@ -18,7 +19,7 @@ import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
  const GridContainer = styled.div`
     display: grid;
     margin-top: 1rem;
-    grid-template-columns: ${(props) => (props.image ? '1fr 2fr' : '1fr')};
+    grid-template-columns: 1fr 5fr;
     grid-column-gap: 0.5rem;
  `;
  const Text = styled.p`
@@ -34,6 +35,7 @@ font-size: 14px;
  `
  const Heading = styled.p`
     margin-bottom: 0.35rem;
+    margin-top: 1rem;
     font-weight: 500;
     line-height: 1;
  `;
@@ -42,7 +44,7 @@ font-size: 14px;
    border-color: #e4e4e4;
    border-width: 1px;
  `;
-const ItineraryElement = (props) => {
+const ItineraryFlightElement = (props) => {
     
    
     useEffect(() => {   
@@ -56,9 +58,7 @@ const ItineraryElement = (props) => {
         className='font-poppins'>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
-                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
-                {
-                    props.booking ? 
+                 
                     <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>
                          
                         <Button
@@ -69,25 +69,31 @@ const ItineraryElement = (props) => {
                         padding="0.5rem 0.5rem"
                         onclick={() => console.log('')}
                         >
-                        View Booking
+                        Flights from ₹ 3,456
                         </Button>
                         </div>
-                    : null
-                }
+                 
             </div>
-            <GridContainer image={props.image}>
-                {props.image ? 
-                   <ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="100%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
-                : 
-                null
-                }
+            <Heading>{props.heading}</Heading>
+
+            <GridContainer>
+                <div className='text-center'>
+                <MdOutlineFlightTakeoff style={{fontSize: '2.5rem', textAlign: 'center'}}></MdOutlineFlightTakeoff>
+
+                </div>
+             
                 <div>
-                    <Heading>{props.heading}</Heading>
-                <Text>{props.text? 
-                props.text : null
-                }</Text>
+                <div style={{marginBottom: '0.25rem'}}>
+                    Delhi - Goa 
+                </div>
+                <div style={{marginBottom: '0.5rem'}}>
+                    Duration: 1 h 5 min non-stop 
+                </div>
                 </div>
             </GridContainer>
+            <Text>
+                {props.text}
+                </Text>
 
 <Line></Line>
          </Container>
@@ -95,4 +101,4 @@ const ItineraryElement = (props) => {
     );
  }
 
-export default ItineraryElement;
+export default ItineraryFlightElement;

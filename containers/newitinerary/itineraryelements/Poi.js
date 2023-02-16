@@ -4,6 +4,9 @@ import {AiFillCar} from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import {HiPencil} from 'react-icons/hi';
+import Rating from './Rating';
+
    const Container = styled.div`
    padding: 0.5rem;
    
@@ -32,8 +35,9 @@ display: -webkit-box;
 font-size: 14px;
  
  `
- const Heading = styled.p`
-    margin-bottom: 0.35rem;
+ const Heading = styled.span`
+    margin-bottom: 0rem;
+    margin-right: 0.25rem;
     font-weight: 500;
     line-height: 1;
  `;
@@ -42,7 +46,24 @@ font-size: 14px;
    border-color: #e4e4e4;
    border-width: 1px;
  `;
-const ItineraryElement = (props) => {
+ const BoldTags = styled.p`
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 0.25rem;
+ `;
+
+ const ColorTags = styled.span`
+    border-style: solid;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 1px;
+    
+    font-weight: 400;
+    padding: 0.25rem 0.5rem;
+
+ `
+const ItineraryPoiElement = (props) => {
     
    
     useEffect(() => {   
@@ -82,12 +103,23 @@ const ItineraryElement = (props) => {
                 null
                 }
                 <div>
+                    <div className="display-flex">
                     <Heading>{props.heading}</Heading>
-                <Text>{props.text? 
-                props.text : null
-                }</Text>
+                    <HiPencil></HiPencil>
+                    </div>
+                    <Rating margin="0.25rem 0"></Rating>
+                    <BoldTags>Heritage • Culture</BoldTags>
+                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
+                    <ColorTags style={{color:'#9C54F6'}}>HIDDEN GEM</ColorTags>
+                    <ColorTags style={{color: '#5363F5'}}>ATTRACTION</ColorTags>
+
+                    </div>
+
                 </div>
             </GridContainer>
+            <Text>{props.type === ITINERARY_ELEMENT_TYPES.activity ? 
+                props.text : null
+                }</Text>
 
 <Line></Line>
          </Container>
@@ -95,4 +127,4 @@ const ItineraryElement = (props) => {
     );
  }
 
-export default ItineraryElement;
+export default ItineraryPoiElement;

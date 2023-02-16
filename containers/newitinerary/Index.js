@@ -6,10 +6,14 @@ import Brief from './breif/Index';
 import NewFooter from '../../components/newfooter/Index';
 import ItineraryElement from './itineraryelements/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../services/constants';
+import ItineraryPoiElement from './itineraryelements/Poi';
+import ItineraryFlightElement from './itineraryelements/Flight';
+import ItineraryFoodElement from './itineraryelements/Food';
+import DayContainer from './itinerary/DayContainer';
+import Itinerary from './itinerary/Index';
 
 const Container = styled.div`
-    margin-top: 24vw;
-    width: 90%;
+     width: 90%;
     margin: 24vw auto 0 auto;
     @media screen and (min-width: 768px){
          width: 85%;
@@ -85,7 +89,7 @@ const NewItinerary = (props) => {
             >
             <Brief></Brief>
             </div>
-            <div style={{height: '50vh'}}
+            <div style={{}}
              ref={el => {
                 // el can be null - see https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
                 if (!el) return;
@@ -94,14 +98,8 @@ const NewItinerary = (props) => {
                else return ;
               }}
             >
-               <div className='border-thin' style={{borderRadius: '10px'}}>
-               <ItineraryElement time="9:00AM - 12:00PM"  heading="Check in to your stay" type={ITINERARY_ELEMENT_TYPES.transfer}></ItineraryElement>
-
-                <ItineraryElement time="9:00AM - 12:00PM" image={'media/website/grey.png'} type={ITINERARY_ELEMENT_TYPES.activity} booking heading="Baapu Bazaar"
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></ItineraryElement>
-
-               </div>
+             
+            <Itinerary></Itinerary>
             </div>
             <div style={{height: '70vh'}}
              ref={el => {
