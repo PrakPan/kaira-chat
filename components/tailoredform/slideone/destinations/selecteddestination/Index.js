@@ -71,13 +71,13 @@ const SelectedDestination = (props) => {
 
     }
        
-    <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo>
+    {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo> */}
 
     </RightContainer>
      : 
      <RightContainer className='hover-pointer' >
      
- <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px',  marginRight: '4px'}}></FiInfo>
+ {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px',  marginRight: '4px'}}></FiInfo> */}
 
  </RightContainer>
      }

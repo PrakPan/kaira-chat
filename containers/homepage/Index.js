@@ -136,7 +136,7 @@ const _handleExperiencesClick = () => {
     
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       {/* <Snowflakes></Snowflakes> */}
-      <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/avi-theret-2u6eLolV1JY-unsplash.jpg" height="85vh" heightmobile="60vh" >
+      <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
           <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
       </FullImage>
       {/* <div className='hidden-mobile'><Explorers></Explorers></div> */}

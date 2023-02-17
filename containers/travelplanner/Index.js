@@ -427,8 +427,8 @@ useEffect(() => {
     : null
   }
      
-       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>Trending Destinations</Heading>        
- <Locations locations={props.experienceData.locations} viewall></Locations>
+       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{"Top locations across "+props.experienceData.destination}</Heading>        
+ <Locations locations={props.experienceData.locations} viewall ></Locations>
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
