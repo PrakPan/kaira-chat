@@ -231,26 +231,26 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
   let iti =[];
   // console.log(props.experienceData)
   try{
-  for(var i =0; i< props.experienceData.itinerary_data.length; i++){
+  for(var i =0; i< props.experienceData.itinerary_data.results.length; i++){
     iti.push(
       <ExperienceCard 
-            data={props.experienceData.itinerary_data[i]}
-           key={props.experienceData.itinerary_data[i].short_text}
-           hardcoded={props.experienceData.itinerary_data[i].payment_info ?true : false }
-           filter={props.experienceData.itinerary_data[i].experience_filters ? props.experienceData.itinerary_data[i].experience_filters[0] : null}
-           rating={props.experienceData.itinerary_data[i].rating}
-           slug={props.experienceData.itinerary_data[i].slug}
-           id={props.experienceData.itinerary_data[i].id}
-           number_of_adults={props.experienceData.itinerary_data[i].number_of_adults}
-           locations={props.experienceData.itinerary_data[i]["itinerary_locations"]}
-           text={props.experienceData.itinerary_data[i].short_text} 
-           experience={props.experienceData.itinerary_data[i].name}
-           cost={props.experienceData.itinerary_data[i].payment_info ? props.experienceData.itinerary_data[i].payment_info.length ? props.experienceData.itinerary_data[i].payment_info[0].cost : null: null}
-           duration_number={props.experienceData.itinerary_data[i].duration_number}
-           duration_unit={props.experienceData.itinerary_data[i].duration_unit}
-          location={props.experienceData.itinerary_data[i]["experience_region"]}
-           starting_cost={props.experienceData.itinerary_data[i].payment_info?   props.experienceData.itinerary_data[i].payment_info.per_person_total_cost : props.experienceData.itinerary_data[i].starting_price }
-         images={props.experienceData.itinerary_data[i].images}></ExperienceCard>
+            data={props.experienceData.itinerary_data.results[i]}
+           key={props.experienceData.itinerary_data.results[i].short_text}
+           hardcoded={props.experienceData.itinerary_data.results[i].payment_info ?true : false }
+           filter={props.experienceData.itinerary_data.results[i].experience_filters ? props.experienceData.itinerary_data[i].experience_filters[0] : null}
+           rating={props.experienceData.itinerary_data.results[i].rating}
+           slug={props.experienceData.itinerary_data.results[i].slug}
+           id={props.experienceData.itinerary_data.results[i].id}
+           number_of_adults={props.experienceData.itinerary_data.results[i].number_of_adults}
+           locations={props.experienceData.itinerary_data.results[i]["itinerary_locations"]}
+           text={props.experienceData.itinerary_data.results[i].short_text} 
+           experience={props.experienceData.itinerary_data.results[i].name}
+           cost={props.experienceData.itinerary_data.results[i].payment_info ? props.experienceData.itinerary_data.results[i].payment_info.length ? props.experienceData.itinerary_data.results[i].payment_info[0].cost : null: null}
+           duration_number={props.experienceData.itinerary_data.results[i].duration_number}
+           duration_unit={props.experienceData.itinerary_data.results[i].duration_unit}
+          location={props.experienceData.itinerary_data.results[i]["experience_region"]}
+           starting_cost={props.experienceData.itinerary_data.results[i].payment_info?   props.experienceData.itinerary_data.results[i].payment_info.per_person_total_cost : props.experienceData.itinerary_data.results[i].starting_price }
+         images={props.experienceData.itinerary_data.results[i].images}></ExperienceCard>
     )
 
   }
@@ -399,7 +399,7 @@ useEffect(() => {
 <SetWidthContainer>
 
 {itinerariesExclusiveJSX.length ?
-  <Heading className='font-opensans'>TTW Exclusives</Heading>
+  <Heading className='font-opensans'>Handcrafted trips by us</Heading>
 
   : null}     
             {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
@@ -427,8 +427,8 @@ useEffect(() => {
     : null
   }
      
-       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>Trending Destinations</Heading>        
- <Locations locations={props.experienceData.locations} viewall></Locations>
+       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{props.experienceData.destination ? "Top locations across "+props.experienceData.destination : "Top Locations"}</Heading>        
+ <Locations locations={props.experienceData.locations} viewall ></Locations>
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}

@@ -35,7 +35,8 @@ const FullImgContent = (props) => {
             <Card review id={TRAVELERS[0].id} duration={TRAVELERS[0].duration} destination={TRAVELERS[0].destination}  heading={TRAVELERS[0].name} text={TRAVELERS[0].review} image={TRAVELERS[0].image}>  </Card>
             <Card review id={TRAVELERS[1].id}  duration={TRAVELERS[1].duration} destination={TRAVELERS[1].destination} heading={TRAVELERS[1].name} text={TRAVELERS[1].review}  image={TRAVELERS[1].image}> </Card>
             <Card review id={TRAVELERS[2].id}  duration={TRAVELERS[2].duration} destination={TRAVELERS[2].destination} heading={TRAVELERS[2].name} text={TRAVELERS[2].review}  image={TRAVELERS[2].image}> </Card>
- 
+            <Card review id={TRAVELERS[3].id}  duration={TRAVELERS[3].duration} destination={TRAVELERS[3].destination} heading={TRAVELERS[3].name} text={TRAVELERS[3].review}  image={TRAVELERS[3].image}> </Card>
+
         </Container>
     );
 }

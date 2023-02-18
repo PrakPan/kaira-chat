@@ -35,24 +35,32 @@ const LocationsBlog= (props) => {
  
   }, []);
   for(var i = 0 ; i<props.locations.length ; i++){
+    console.log(props.locations[i])
      const slug  = props.locations[i].slug;
+     let name = '';
+     if(props.locations[i].name) name=props.locations[i].name;
+
     if(props.locations[i].image)
     cardsarr.push(
         <Card
         key={i}
 
-  location={props.locations[i].nicknames ? props.locations[i].nicknames.length ? props.locations[i].nicknames[0] : '' : ''}
-  heading={props.locations[i].tagline}
+  location={ props.locations[i].name ? props.locations[i].name : ''}
+  heading={props.locations[i].tagline ?  props.locations[i].tagline : ''}
   img={props.locations[i].image}
-  onclick={() => _handleRedirect(slug)}
+  onclick={() => _handleRedirect(name)}
   > 
   </Card>
     )
 }
-      const _handleRedirect = (slug) => {
-        router.push('/travel-guide/city/'+slug)
-      }
+      // const _handleRedirect = (slug) => {
+      //   router.push('/travel-guide/city/'+slug)
+      // }
     
+      const _handleRedirect = (location) => {
+  
+        router.push('/tailored-travel?search_text='+location)
+    }
   if(isPageWide) {
   if(props.locations.length)
   return(

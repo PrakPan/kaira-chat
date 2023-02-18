@@ -139,8 +139,7 @@ setOffset(5);
             
         }
     }
-    console.log(cardsarr)
-    setCardsToShowJSX(cardsarr.slice());
+     setCardsToShowJSX(cardsarr.slice());
  setOffset(offset+6);
   }
 
