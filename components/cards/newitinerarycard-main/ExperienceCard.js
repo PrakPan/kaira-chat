@@ -81,8 +81,7 @@ const _handleRedirect = () => {
   else router.push('/itinerary/'+props.id)
  }
  const FONT_SIZES_DESKTOP = ['20px'];
-    console.log(props.data.owner)
-    return(
+     return(
       <Container className="netflix-ite" onClick={_handleRedirect}>
         <ImageContainer>
               <ImageGallery duration_number={props.duration_number ? props.duration_number : null} duration={props.duration}  images={props.images} ></ImageGallery>
