@@ -16,8 +16,17 @@ const TRAVELERS = [
     'id': '0ec9c580-92aa-4dd6-8681-7e6eb18cca0c'
 },
 {
+    'review': "Thank you for the trip plan TTW. We had a lot of fun. Please convey our gratitude for the cab driver. He was very humble, polite and helpfu",
+    'image': 'media/website/IMG-20221220-WA0025.jpg',
+    'name': 'Hema',
+    'duration': '8 Days',
+    'destination': 'North East',
+    'id': '70b98d5c-7595-40bb-8182-61e0230241e0'
+}
+,
+{
     'review': "Devayani and her team have been amazing from their meticulous attention to detail, to answering all my queries and their unwavering support via chat and call throughout our journey. Our trip was memorable thanks to the team at The Tarzan Way. I cannot recommend them enough!",
-    'image': 'media/website/explorers/eric.jpeg',
+    'image': 'media/website/IMG-20221231-WA0027.jpg',
     'name': 'Eric',
     'duration': '10 Days',
     'destination': 'Meghalaya',
