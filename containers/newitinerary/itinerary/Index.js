@@ -10,10 +10,11 @@ import DayContainer from './DayContainer';
 `;
  
 const CitiesContainer = styled.div`
-    width: 100vw;
+    width: calc(100vw-32px);
     overflow: hidden;
-    display: flex;
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: max-content max-content max-content;
+    grid-gap: 0.75rem;
     height: max-content;
     position: sticky;
     top: 15vw;
@@ -38,12 +39,12 @@ const Itinerary = (props) => {
         <Container
      
         className='font-poppins'>
-                {/* <CitiesContainer>
+                <CitiesContainer>
         <City className='border-thin' style={{backgroundColor: 'black', color: 'white'}}>Jaipur (2N)</City>
         <City className='border-thin' >Jodhpur (2N)</City>
         <City className='border-thin'>Jaisalmer (2N)</City>
 
-        </CitiesContainer>     */}
+        </CitiesContainer>    
             <DayContainer></DayContainer>
             <DayContainer></DayContainer>
             <DayContainer></DayContainer>

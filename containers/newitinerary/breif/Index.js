@@ -18,9 +18,10 @@ const Brief = (props) => {
 
     return(
         <Container>
-                         <Cities></Cities>
 
              <Route></Route>
+             <Cities></Cities>
+
         </Container>
         
     );

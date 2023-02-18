@@ -6,6 +6,7 @@ import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import {HiPencil} from 'react-icons/hi';
 import Rating from './Rating';
+import Tips from './Tips';
 
    const Container = styled.div`
    padding: 0.5rem;
@@ -103,7 +104,7 @@ const ItineraryPoiElement = (props) => {
                 null
                 }
                 <div>
-                    <div className="display-flex">
+                    <div className="display-flex" style={{lineHeight: '1'}}>
                     <Heading>{props.heading}</Heading>
                     <HiPencil></HiPencil>
                     </div>
@@ -117,9 +118,9 @@ const ItineraryPoiElement = (props) => {
 
                 </div>
             </GridContainer>
-            <Text>{props.type === ITINERARY_ELEMENT_TYPES.activity ? 
-                props.text : null
-                }</Text>
+            { props.type === ITINERARY_ELEMENT_TYPES.activity && props.text?<Text>{props.text}</Text>
+             : null}
+                <Tips></Tips>
 
 <Line></Line>
          </Container>
