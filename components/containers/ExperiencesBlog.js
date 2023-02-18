@@ -84,7 +84,7 @@ const Experiences= (props) => {
         text={experience.short_text} 
         experience={experience.name}
         duration={experience.duration ? experience.duration : experience.duration_number && experience.duration_unit ? experience.duration_number +" " +experience.duration_unit  : null}
-         
+        locations={experience.itinerary_locations}
         location={experience["experience_region"]}
         images={experience.images ? experience.images : experience.main_image}>
         </Card>
@@ -112,6 +112,8 @@ const Experiences= (props) => {
              duration={props.experiences[3].duration ? props.experiences[3].duration : props.experiences[3].duration_number && props.experiences[3].duration_unit ? props.experiences[3].duration_number + " " + props.experiences[3].duration_unit : null  }
              rating={props.experiences[3].rating}
              heading={props.experiences[3].name}
+             locations={props.experiences[3].itinerary_locations}
+
              hardcoded={props.experiences[3].payment_info ?true : false }
              destination={props.experiences[3]["experience_region"]}          
              starting_cost={props.experiences[3].payment_info ? props.experiences[3].payment_info[0].cost : props.experiences[3].starting_price}
@@ -129,6 +131,8 @@ const Experiences= (props) => {
               experience={props.experiences[3].name}
               duration={props.experiences[3].duration ? props.experiences[3].duration : props.experiences[3].duration_number && props.experiences[3].duration_unit ? props.experiences[3].duration_number + " " + props.experiences[3].duration_unit : null  }
               rating={props.experiences[3].rating}
+              locations={props.experiences[3].itinerary_locations}
+
               hardcoded={props.experiences[3].payment_info ?true : false }
               location={props.experiences[3]["experience_region"]}          
               starting_cost={props.experiences[3].payment_info ? props.experiences[3].payment_info.per_person_total_cost : props.experiences[3].starting_price}

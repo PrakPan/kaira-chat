@@ -48,7 +48,10 @@ const Info = (props) => {
  let LOCATIONS_TO_SHOW = "";
       if(props.locations){
         for(var i = 0 ; i < props.locations.length ; i++){
+          if(i!==props.locations.length - 1)
           LOCATIONS_TO_SHOW = LOCATIONS_TO_SHOW + props.locations[i] + " " + "   •   ";
+          else           LOCATIONS_TO_SHOW = LOCATIONS_TO_SHOW + props.locations[i];
+
         }
       
 

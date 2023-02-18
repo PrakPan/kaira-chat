@@ -95,7 +95,8 @@ const Experiences = [
             starting_cost={props.experiences[i].payment_info ? props.experiences[i].payment_info.per_person_total_cost : null}
             duration={props.experiences[i].duration ? props.experiences[i].duration : props.experiences[i].duration_number && props.experiences[i].duration_unit ?  props.experiences[i].duration_number + " "+ props.experiences[i].duration_unit : null }
             location={props.experiences[i].locations[0].name}
-            hardcoded={props.experiences[j].payment_info ?true : false }
+            locations={props.experiences[i].itinerary_locations}
+            hardcoded={props.experiences[i].payment_info ?true : false }
             >
             </ExperienceCard>
         );
@@ -126,7 +127,10 @@ const Experiences = [
           duration={props.experiences[j].duration ? props.experiences[j].duration : props.experiences[j].duration_number && props.experiences[j].duration_unit ?  props.experiences[j].duration_number + " "+ props.experiences[j].duration_unit : null }
           location={props.experiences[j]["experience_region"]}
           starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost ?  props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price : props.experiences[j].starting_price }
-        images={props.experiences[j].images}>
+        images={props.experiences[j].images}
+        locations={props.experiences[j].itinerary_locations}
+        >
+          
           
           </ExperienceCard>
           )
@@ -155,7 +159,9 @@ const Experiences = [
              duration={props.itineraries[j].duration}
             location={props.itineraries[j]["experience_region"]}
             starting_cost={props.itineraries[j].payment_info? props.itineraries[j].payment_info.per_person_total_cost ?  props.itineraries[j].payment_info.per_person_total_cost : props.itineraries[j].starting_price : props.itineraries[j].starting_price }
-          images={props.itineraries[j].images}>
+          images={props.itineraries[j].images}
+          locations={props.itineraries[j].itinerary_locations}
+          >
             
             </ItineraryCard >
             )
@@ -180,7 +186,10 @@ const Experiences = [
           heading={props.experiences[j].name}
           destination={props.experiences[j]["experience_region"]}
           starting_cost={props.experiences[j].payment_info? props.experiences[j].payment_info.per_person_total_cost : props.experiences[j].starting_price }
-        image={props.experiences[j].images.main_image}>
+        image={props.experiences[j].images.main_image}
+        locations={props.experiences[j].itinerary_locations}
+
+        >
         
           
           </PastItineraryCard >
