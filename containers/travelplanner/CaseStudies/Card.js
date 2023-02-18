@@ -59,7 +59,7 @@ const CardContainer = (props) => {
                 <GridContainer>
                 <div>
                 <ImageLoader borderRadius="8px" width="100%" widthMobile="100%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
-                <Button borderRadius="6px" onclick={() => console.log('')} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700" margin="0.5rem 0">View Details</Button>
+                <Button fontWeight="600" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700" margin="0.5rem 0">View Details</Button>
 
                 </div>
                 <div>

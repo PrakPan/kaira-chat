@@ -121,7 +121,7 @@ const  Homepage = (props) =>{
 			
 let isPageWide = media('(min-width: 768px)');
 
-const [loading, setLoading] = useState(true);
+// const [loading, setLoading] = useState(true);
 const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
 const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState([]);
 const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState([]);
@@ -133,99 +133,99 @@ const [filters, setFilters] = useState({
 ) 
 
 
- useEffect(() => {
+//  useEffect(() => {
  
-  let itineraries_exclusive = [];
-  let itineraries_customer = [];
+//   let itineraries_exclusive = [];
+//   let itineraries_customer = [];
 
- let locations = [];
-try{
-for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
-  locations.push(props.experienceData.locations[i].name);
-}
-}catch{
+//  let locations = [];
+// try{
+// for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
+//   locations.push(props.experienceData.locations[i].name);
+// }
+// }catch{
 
-}
-  axiossearchinstance.post(`?search_type=itinerary&owner=TTW&limit=9&offset=`+offsetExclusive, { 
-    "city_list": locations
-   }).then(res => {
-    setLoading(false);
-    console.log(res.data)
-     for(var i =0 ; i<res.data.results.length; i++){
-       itineraries_exclusive.push(
-      <ExperienceCard 
-          data={res.data.results[i]}
-         key={res.data.results[i].short_text}
-         hardcoded={res.data.results[i].payment_info ?true : false }
-         filter={res.data.results[i].experience_filters ? res.data.results[i].experience_filters[0] : null}
-         rating={res.data.results[i].rating}
-         slug={res.data.results[i].slug}
-         id={res.data.results[i].id}
-         number_of_adults={res.data.results[i].number_of_adults}
-         locations={res.data.results[i]["itinerary_locations"]}
-         text={res.data.results[i].short_text} 
-         experience={res.data.results[i].name}
-         cost={res.data.results[i].payment_info ? res.data.results[i].payment_info.length ? res.data.results[i].payment_info[0].cost : null: null}
-         duration_number={res.data.results[i].duration_number}
-         duration_unit={res.data.results[i].duration_unit}
-        location={res.data.results[i]["experience_region"]}
-         starting_cost={res.data.results[i].payment_info?   res.data.results[i].payment_info.per_person_total_cost : res.data.results[i].starting_price }
-       images={res.data.results[i].images}></ExperienceCard>
-      )
+// }
+//   axiossearchinstance.post(`?search_type=itinerary&owner=TTW&limit=9&offset=`+offsetExclusive, { 
+//     "city_list": locations
+//    }).then(res => {
+//     setLoading(false);
+//     console.log(res.data)
+//      for(var i =0 ; i<res.data.results.length; i++){
+//        itineraries_exclusive.push(
+//       <ExperienceCard 
+//           data={res.data.results[i]}
+//          key={res.data.results[i].short_text}
+//          hardcoded={res.data.results[i].payment_info ?true : false }
+//          filter={res.data.results[i].experience_filters ? res.data.results[i].experience_filters[0] : null}
+//          rating={res.data.results[i].rating}
+//          slug={res.data.results[i].slug}
+//          id={res.data.results[i].id}
+//          number_of_adults={res.data.results[i].number_of_adults}
+//          locations={res.data.results[i]["itinerary_locations"]}
+//          text={res.data.results[i].short_text} 
+//          experience={res.data.results[i].name}
+//          cost={res.data.results[i].payment_info ? res.data.results[i].payment_info.length ? res.data.results[i].payment_info[0].cost : null: null}
+//          duration_number={res.data.results[i].duration_number}
+//          duration_unit={res.data.results[i].duration_unit}
+//         location={res.data.results[i]["experience_region"]}
+//          starting_cost={res.data.results[i].payment_info?   res.data.results[i].payment_info.per_person_total_cost : res.data.results[i].starting_price }
+//        images={res.data.results[i].images}></ExperienceCard>
+//       )
  
-    }
+//     }
    
-    setItinerariesExclusiveJSX(itineraries_exclusive.slice());
+//     setItinerariesExclusiveJSX(itineraries_exclusive.slice());
  
-    setOffsetExclusive(offsetExclusive+res.data.results.length);
-    if(!res.data.next) setOffsetExclusive(-1);
+//     setOffsetExclusive(offsetExclusive+res.data.results.length);
+//     if(!res.data.next) setOffsetExclusive(-1);
  
-    // setItinerariesToShowExclusiveJSX(itineraries_exclusive.slice(0,9));
+//     // setItinerariesToShowExclusiveJSX(itineraries_exclusive.slice(0,9));
  
-  }).catch(err => {
-    setLoading(false);
+//   }).catch(err => {
+//     setLoading(false);
 
-  });
+//   });
 
-  axiossearchinstance.post(`?search_type=itinerary&owner=USER`, { 
-    "city_list": locations
-   }).then(res => {
-    setLoading(false);
-     for(var i =0 ; i<res.data.length; i++){
+//   axiossearchinstance.post(`?search_type=itinerary&owner=USER`, { 
+//     "city_list": locations
+//    }).then(res => {
+//     setLoading(false);
+//      for(var i =0 ; i<res.data.length; i++){
   
-      itineraries_customer.push(
-        <ExperienceCard 
-            data={res.data[i]}
-           key={res.data[i].short_text}
-           hardcoded={res.data[i].payment_info ?true : false }
-           filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
-           rating={res.data[i].rating}
-           slug={res.data[i].slug}
-           id={res.data[i].id}
-           number_of_adults={res.data[i].number_of_adults}
-           locations={res.data[i]["itinerary_locations"]}
-           text={res.data[i].short_text} 
-           experience={res.data[i].name}
-           cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
-           duration_number={res.data[i].duration_number}
-           duration_unit={res.data[i].duration_unit}
-          location={res.data[i]["experience_region"]}
-           starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
-         images={res.data[i].images}></ExperienceCard>
-        )
-    }
+//       itineraries_customer.push(
+//         <ExperienceCard 
+//             data={res.data[i]}
+//            key={res.data[i].short_text}
+//            hardcoded={res.data[i].payment_info ?true : false }
+//            filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
+//            rating={res.data[i].rating}
+//            slug={res.data[i].slug}
+//            id={res.data[i].id}
+//            number_of_adults={res.data[i].number_of_adults}
+//            locations={res.data[i]["itinerary_locations"]}
+//            text={res.data[i].short_text} 
+//            experience={res.data[i].name}
+//            cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
+//            duration_number={res.data[i].duration_number}
+//            duration_unit={res.data[i].duration_unit}
+//           location={res.data[i]["experience_region"]}
+//            starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
+//          images={res.data[i].images}></ExperienceCard>
+//         )
+//     }
    
-     setItinerariesCustomerJSX(itineraries_customer);
+//      setItinerariesCustomerJSX(itineraries_customer);
 
-     setOffsetCustomer(9);
+//      setOffsetCustomer(9);
 
-     setItinerariesToShowCustomerJSX(itineraries_customer.slice(0,9));
+//      setItinerariesToShowCustomerJSX(itineraries_customer.slice(0,9));
 
-  }).catch(() => {
-    setLoading(false);
+//   }).catch(() => {
+//     setLoading(false);
 
-  });
- }, [props.experienceData])
+//   });
+//  }, [props.experienceData])
  const [itinerariesToIndex, setItinerariesToIndex] = useState([]);
  useEffect(() => {
   let iti =[];
@@ -403,29 +403,29 @@ useEffect(() => {
 
   : null}     
             {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
-  {itinerariesExclusiveJSX.length? <GridContainer>
+  {/* {itinerariesExclusiveJSX.length? <GridContainer>
     { itinerariesExclusiveJSX}
  
-  </GridContainer> : null}
-  {loading?  <MinHeightContainer className='center-div'>
+  </GridContainer> : null} */}
+  {/* {loading?  <MinHeightContainer className='center-div'>
     <img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/>
 
      </MinHeightContainer> : null
-  }
-  {
+  } */}
+  {/* {
     !loading && itinerariesExclusiveJSX.length && offsetExclusive!== -1? <Button margin="auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600" padding="0.5rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
-  }
+  } */}
   {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
-  {!loading ? <GridContainer>
+  {/* {!loading ? <GridContainer>
     { itinerariesToShowCustomerJSX}
  
   </GridContainer> : null
-  }
-  {
+  } */}
+  {/* {
     !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600"padding="0.5rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
-  }
+  } */}
      
        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{props.experienceData.destination ? "Top locations across "+props.experienceData.destination : "Top Locations"}</Heading>        
  <Locations locations={props.experienceData.locations} viewall ></Locations>
