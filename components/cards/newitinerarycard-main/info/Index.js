@@ -60,8 +60,13 @@ const Info = (props) => {
         <Container className='font-opensans'>
          <Heading className='font-opensans'>{props.name}</Heading>
           <Locations>{LOCATIONS_TO_SHOW}</Locations>
-          <TourType>Tour Type: <b style={{fontWeight: '500'}}>Customisable</b></TourType>
-
+          {props.PW  ? <TourType>Tour Type: <b style={{fontWeight: '500'}}>Customisable</b></TourType>
+  : 
+  props.owner === "TTW" ? 
+  <TourType><b style={{fontWeight: '500'}}>Handcrafted by us</b></TourType>
+  : 
+  <TourType><b style={{fontWeight: '500'}}>{props.user_name ? "Curated by "  + props.user_name : ""}</b></TourType>
+    }
         </Container>
     );
 }

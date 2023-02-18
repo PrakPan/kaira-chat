@@ -399,7 +399,7 @@ useEffect(() => {
 <SetWidthContainer>
 
 {itinerariesExclusiveJSX.length ?
-  <Heading className='font-opensans'>TTW Exclusives</Heading>
+  <Heading className='font-opensans'>Handcrafted trips by us</Heading>
 
   : null}     
             {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
@@ -427,7 +427,7 @@ useEffect(() => {
     : null
   }
      
-       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{"Top locations across "+props.experienceData.destination}</Heading>        
+       <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{props.experienceData.destination ? "Top locations across "+props.experienceData.destination : "Top Locations"}</Heading>        
  <Locations locations={props.experienceData.locations} viewall ></Locations>
 
 </SetWidthContainer>

@@ -117,7 +117,7 @@ const LocationsContainer = (props) => {
   return (
     <AbsoluteContainer className='border'>
       <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
-      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{"Cities around " + props.destination}</p>
+      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p>
     <LocationContainer  >
         
                 {/* <Location image="" text="Port Blair" onclick={() => _handleClick(props.CITIES[0])} ></Location>

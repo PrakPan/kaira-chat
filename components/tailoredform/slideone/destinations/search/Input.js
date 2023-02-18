@@ -26,7 +26,7 @@ const SearchInput = (props) => {
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   return (
-   <Container placeholder='Search destination' className='font-opensans' autoFocus>
+   <Container placeholder='Search destination' className='font-opensans' >
     
     </Container>
   );
