@@ -35,14 +35,15 @@ const LocationsBlog= (props) => {
  
   }, []);
   for(var i = 0 ; i<props.locations.length ; i++){
+    console.log(props.locations[i])
      const slug  = props.locations[i].slug;
     if(props.locations[i].image)
     cardsarr.push(
         <Card
         key={i}
 
-  location={props.locations[i].nicknames ? props.locations[i].nicknames.length ? props.locations[i].nicknames[0] : '' : ''}
-  heading={props.locations[i].tagline}
+  location={props.locations[i].nicknames ? props.locations[i].nicknames.length ? props.locations[i].nicknames[0]   : '' :   props.locations[i].name ? props.locations[i].name : ''}
+  heading={props.locations[i].tagline ?  props.locations[i].tagline : ''}
   img={props.locations[i].image}
   onclick={() => _handleRedirect(slug)}
   > 
