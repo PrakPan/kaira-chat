@@ -43,12 +43,12 @@ const ResultsContainer= (props) => {
   }
     return(
         <Container>
-            <SearchTypeContainer>
+            {/* <SearchTypeContainer>
                 <SearchType className="border-thin text-center font-opensans" style={{backgroundColor: filters.all ?  "#f7e700" : 'transparent'}} onClick={_handleAllResults}>All</SearchType>
                 <SearchType className="border-thin text-center font-opensans" style={{backgroundColor: filters.locations ?  "#f7e700" : 'transparent'}}onClick={() => _handleFilterChange('locations')}>Locations</SearchType>
                 <SearchType className="border-thin text-center font-opensans" style={{backgroundColor: filters.experiences ?  "#f7e700" : 'transparent'}} onClick={() => _handleFilterChange('experiences')}>Experiences</SearchType>
                 <SearchType className="border-thin text-center font-opensans" style={{backgroundColor: filters.blogs ?  "#f7e700" : 'transparent'}} onClick={() => _handleFilterChange('blogs')}>Blogs</SearchType>
-            </SearchTypeContainer>
+            </SearchTypeContainer> */}
             <Results results={props.results} filters={filters}></Results>
         </Container>
     );

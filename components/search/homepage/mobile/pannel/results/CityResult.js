@@ -37,10 +37,10 @@ const Result= (props) => {
 
 }
 const _handlePlanning = () => {
-    localStorage.setItem('search_city_selected_id', props.id);
-    localStorage.setItem('search_city_selected_name', props.title);
-    localStorage.setItem('search_city_selected_parent', props.parent);
-    router.push('/tailored-travel')
+    // localStorage.setItem('search_city_selected_id', props.id);
+    // localStorage.setItem('search_city_selected_name', props.title);
+    // localStorage.setItem('search_city_selected_parent', props.parent);
+    router.push('/tailored-travel?search_text='+props.title)
 
 }
     return(
