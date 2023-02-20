@@ -70,7 +70,7 @@ const SlideOne = (props) =>{
             setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>
-        <Question style={{visibility: props.showCities ? 'hidden' : 'visible'}} margin="0 0 1rem 0" >When are you planning to travel?</Question>
+        <Question style={{visibility: props.showCities ? 'hidden' : 'visible'}} margin="0 0 1rem 0" >Your travel dates?</Question>
 <Dates 
 showCities={props.showCities}
  valueStart={props.valueStart}
@@ -82,7 +82,7 @@ showCities={props.showCities}
   <div onClick={() => setFlexible(!flexible)}><div className="center-div" style={{border: '2px solid rgba(0, 0, 0, 1)', color: 'black', lineHeight: '1', fontSize: '0.75rem',borderColor: '#e4e4e4', borderRadius: '5px', opacity: '1', height: '1.25rem', width: '1.25rem', backgroundColor: flexible ? 'rgba(247,231,0,1)' : "white"}}>
     {flexible ? <BsCheck></BsCheck> : null}
     </div></div>
-  <div onClick={() => setFlexible(!flexible)} className='font-opensans' style={{fontSize: '0.85rem'}}>I'm flexible</div>
+  <div onClick={() => setFlexible(!flexible)} className='font-opensans' style={{fontSize: '0.85rem'}}>Flexible dates</div>
 </div>
 
 </Section>

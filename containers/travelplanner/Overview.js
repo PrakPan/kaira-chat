@@ -48,7 +48,7 @@ display: -webkit-box;
 const Heading = styled.h2`
 font-size: 32px;
 font-weight: 700;
-margin: 2.5rem 0 1.5rem 0;
+margin: 2.5rem 0 2.5rem 0;
 text-align: center;
 @media screen and (min-width: 768px){
   text-align: left;
@@ -63,7 +63,7 @@ const  Overview = (props) =>{
    <Container>
     {/* <GridContainer> */}
       <div>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 2.5rem 0"}  bold>{props.overview_heading}</Heading>        
+        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 3.5rem 0"}  bold>{props.overview_heading}</Heading>        
       <Text more={more} className='font-opensans'>
         <p>{props.overview_text}</p>
         {!more ? <div className='hover-pointer' onClick={()=> setMore(true)} style={{position: 'absolute', right: '0', bottom: '0', backgroundColor: 'white', zIndex: '2', paddingLeft: '0.25rem', fontWeight: '600'}}>more

@@ -18,6 +18,7 @@ import {TbArrowBack} from 'react-icons/tb';
 
 // import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
+import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
 
 const fadeInAnimation = keyframes`${fadeIn}`;
@@ -102,7 +103,18 @@ const Enquiry = (props) => {
         let cityids =[];
         let citynames=[];
         // let starting_location = null;
-        
+        console.log(selectedPreferences);
+        let preferences = [];
+        for(var i =  0 ; i < selectedPreferences.length; i++){
+          for(var j = 0 ; j < EXPERIENCE_FILTERS_BOX.length; j++){
+            if(selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display){
+              for(var k = 0 ; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++){
+                preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
+              }
+              break;
+            }
+          }
+        }
 
         for(var i =0 ; i < selectedCities.length; i++){
           cityids.push(parseInt(selectedCities[i].id));
@@ -127,7 +139,7 @@ const Enquiry = (props) => {
         // console.log(selectedPreferences);
         let data = {
             "locations": citynames,
-            "experience_filters_selected": selectedPreferences,
+            "experience_filters_selected": preferences,
             "budget": budget,
              "city_id": cityids,
             "group_type": groupType,
@@ -176,8 +188,8 @@ const Enquiry = (props) => {
     const _prevSlideHandler = () => {
         if(slideIndex) setSlideIndex(slideIndex-1);
     }
-    const [valueStart, setValueStart] =useState((dayjs()));
-    const [valueEnd, setValueEnd] =useState((dayjs()));
+    const [valueStart, setValueStart] =useState((dayjs().add(5, 'day')));
+    const [valueEnd, setValueEnd] =useState((dayjs().add(10,'day')));
     const [numberOfAdults, setNumberOfAdults] = useState(2);
     const [numberOfChildren, setNumberOfChildren] = useState(0);
     const [numberOfInfants, setNumberOfInfants] = useState(0);

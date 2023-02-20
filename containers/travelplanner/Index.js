@@ -112,7 +112,7 @@ text-align: center;
 
 @media screen and (min-width: 768px){
   text-align: left;
-  margin: 1.5rem 0rem;
+  margin: 3.5rem 0rem;
 
 }
 `;
@@ -123,8 +123,7 @@ let isPageWide = media('(min-width: 768px)');
 
 // const [loading, setLoading] = useState(true);
 const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
-const [itinerariesToShowExclusiveJSX, setItinerariesToShowExclusiveJSX] = useState([]);
-const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState([]);
+ const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState([]);
 const [itinerariesToShowCustomerJSX, setItinerariesToShowCustomerJSX] = useState([]);
 const [filters, setFilters] = useState({
   'Trek': true,
@@ -226,13 +225,38 @@ const [filters, setFilters] = useState({
 
 //   });
 //  }, [props.experienceData])
- const [itinerariesToIndex, setItinerariesToIndex] = useState([]);
+ const [itinerariesToIndexExclusive, setItinerariesToIndexExclusive] = useState([]);
+ const [itinerariesToIndexCustomer, setItinerariesToIndexCusstomer] = useState([]);
+
  useEffect(() => {
-  let iti =[];
-  // console.log(props.experienceData)
+  let iti_exclusive =[];
+  let iti_customer  = [];
+  console.log(props.experienceData)
   try{
   for(var i =0; i< props.experienceData.itinerary_data.length; i++){
-    iti.push(
+    if(props.experienceData.itinerary_data[i].owner==='TTW')
+    iti_exclusive.push(
+      <ExperienceCard 
+            data={props.experienceData.itinerary_data[i]}
+           key={props.experienceData.itinerary_data[i].short_text}
+           hardcoded={props.experienceData.itinerary_data[i].payment_info ?true : false }
+           filter={props.experienceData.itinerary_data[i].experience_filters ? props.experienceData.itinerary_data[i].experience_filters[0] : null}
+           rating={props.experienceData.itinerary_data[i].rating}
+           slug={props.experienceData.itinerary_data[i].slug}
+           id={props.experienceData.itinerary_data[i].id}
+           number_of_adults={props.experienceData.itinerary_data[i].number_of_adults}
+           locations={props.experienceData.itinerary_data[i]["itinerary_locations"]}
+           text={props.experienceData.itinerary_data[i].short_text} 
+           experience={props.experienceData.itinerary_data[i].name}
+           cost={props.experienceData.itinerary_data[i].payment_info ? props.experienceData.itinerary_data[i].payment_info.length ? props.experienceData.itinerary_data[i].payment_info[0].cost : null: null}
+           duration_number={props.experienceData.itinerary_data[i].duration_number}
+           duration_unit={props.experienceData.itinerary_data[i].duration_unit}
+          location={props.experienceData.itinerary_data[i]["experience_region"]}
+           starting_cost={props.experienceData.itinerary_data[i].payment_info?   props.experienceData.itinerary_data[i].payment_info.per_person_total_cost : props.experienceData.itinerary_data[i].starting_price }
+         images={props.experienceData.itinerary_data[i].images}></ExperienceCard>
+    )
+    else 
+    iti_customer.push(
       <ExperienceCard 
             data={props.experienceData.itinerary_data[i]}
            key={props.experienceData.itinerary_data[i].short_text}
@@ -254,8 +278,10 @@ const [filters, setFilters] = useState({
     )
 
   }
-  setItinerariesToIndex(iti.slice());
-  setOffsetExclusive(iti.length);
+  setItinerariesToIndexExclusive(iti_exclusive.slice());
+  setItinerariesToIndexCusstomer(iti_customer.slice());
+
+  // setOffsetExclusive(iti.length);
 } catch{
 
 }
@@ -398,11 +424,11 @@ useEffect(() => {
   </SetWidthContainer>
 <SetWidthContainer>
 
-{itinerariesExclusiveJSX.length ?
+{itinerariesToIndexExclusive.length ?
   <Heading className='font-opensans'>Handcrafted trips by us</Heading>
 
   : null}     
-            {itinerariesToIndex.length ? <GridContainer>{itinerariesToIndex}</GridContainer> : null}
+            {itinerariesToIndexExclusive.length ? <GridContainer>{itinerariesToIndexExclusive}</GridContainer> : null}
   {/* {itinerariesExclusiveJSX.length? <GridContainer>
     { itinerariesExclusiveJSX}
  
@@ -416,12 +442,12 @@ useEffect(() => {
     !loading && itinerariesExclusiveJSX.length && offsetExclusive!== -1? <Button margin="auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600" padding="0.5rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
     : null
   } */}
-  {itinerariesCustomerJSX.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
-  {/* {!loading ? <GridContainer>
-    { itinerariesToShowCustomerJSX}
+  {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
+  {itinerariesToIndexCustomer.length ? <GridContainer>
+    { itinerariesToIndexCustomer}
  
   </GridContainer> : null
-  } */}
+  }
   {/* {
     !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600"padding="0.5rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
@@ -439,9 +465,9 @@ useEffect(() => {
 
          {/* <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading> */}
         {/* <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
-        <Heading style={{textAlign: 'center', margin:"3rem 0 1.5rem 0"}}>What our customers say?</Heading>        
+        <Heading style={{ margin:"4rem 0 2.5rem 0"}}>What our customers say?</Heading>        
        <Reviews></Reviews>
-       <Heading style={{textAlign: 'center', margin:"1.5rem 0 2.5rem 0"}}>How it works?</Heading>        
+       <Heading style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>        
 
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
