@@ -8,7 +8,7 @@ import * as ga from '../../services/ga/Index';
 import styled from 'styled-components';
 import ImageLoader from '../../components/ImageLoader';
  import {BiChevronDown} from 'react-icons/bi'
-import Map from './Map'
+import Map from './NewMap'
 const Container = styled.div`
  padding: 0 1rem;
 @media screen and (min-width: 768px){
@@ -45,6 +45,7 @@ display: -webkit-box;
 
 }
 `;
+ 
 const Heading = styled.h2`
 font-size: 32px;
 font-weight: 700;
@@ -58,7 +59,7 @@ const  Overview = (props) =>{
 
   let isPageWide = media('(min-width: 768px)');
   const [more, setMore] = useState(false);
-  
+  console.log(props.locations)
   return (
    <Container>
     {/* <GridContainer> */}
@@ -72,7 +73,7 @@ const  Overview = (props) =>{
       </Text>      
      
         </div>
-        {/* <div style={{padding: !isPageWide ?  '0 0.5rem' : '2.5rem 0 0 0'}}><Map locations={props.locations}></Map></div> */}
+        {/* <div style={{}}><Map locations={props.locations}></Map></div> */}
       {/* </GridContainer> */}
     </Container>
   );

@@ -28,7 +28,7 @@ import Locations from '../../components/containers/newplannerlocations/Index';
 import OldLocations from '../../components/containers/plannerlocations/Index';
 
 import PLANNER_PAGES from '../../public/content/planner';
-import Map from './Map';
+import Map from './NewMap';
 // import qs from qs;
 var qs = require('qs');
 
@@ -418,7 +418,7 @@ useEffect(() => {
 <MapGridContainer>
   <Overview  locations={props.experienceData.locations} overview_heading={overviewHeading} overview_text={props.experienceData.overview_text}></Overview>
   <MapContainer>
-    {/* <Map locations={props.experienceData.locations}></Map> */}
+    <Map locations={props.experienceData.locations}></Map>
     </MapContainer>
   </MapGridContainer>
   </SetWidthContainer>
