@@ -227,12 +227,11 @@ const [filters, setFilters] = useState({
 //  }, [props.experienceData])
  const [itinerariesToIndexExclusive, setItinerariesToIndexExclusive] = useState([]);
  const [itinerariesToIndexCustomer, setItinerariesToIndexCusstomer] = useState([]);
-
+// console.log(props.experienceData);
  useEffect(() => {
   let iti_exclusive =[];
   let iti_customer  = [];
-  console.log(props.experienceData)
-  try{
+   try{
   for(var i =0; i< props.experienceData.itinerary_data.length; i++){
     if(props.experienceData.itinerary_data[i].owner==='TTW')
     iti_exclusive.push(
@@ -412,7 +411,7 @@ useEffect(() => {
     return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
-          <FullImgContent destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
+          <FullImgContent page_id={props.experienceData.id} destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
       </FullImage>
       <SetWidthContainer>
 <MapGridContainer>
@@ -484,9 +483,9 @@ useEffect(() => {
       <SetWidthContainer>
        
         {/* <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn> */}
-        <div className='hidden-mobil'><BannerTwo _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
+        <div className='hidden-mobil'><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-        <ChatWithUs planner></ChatWithUs>
+        <ChatWithUs planner page_id={props.experienceData.id} ></ChatWithUs>
         {/* <div style={{display: 'none'}}>
            {itinerariesToIndex}
         </div> */}

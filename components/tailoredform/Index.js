@@ -137,7 +137,10 @@ const Enquiry = (props) => {
             number_of_infants=numberOfInfants;
         }
         // console.log(selectedPreferences);
-        let data = {
+        let data=null;
+        if(citynames.length){
+
+        data = {
             "locations": citynames,
             "experience_filters_selected": preferences,
             "budget": budget,
@@ -154,6 +157,25 @@ const Enquiry = (props) => {
             }
             
           };
+        }
+          else 
+
+         data = {
+           "experience_filters_selected": preferences,
+          "budget": budget,
+           "destination_id": [props.page_id],
+          "group_type": groupType,
+          "number_of_adults": number_of_adults,
+          "number_of_children": number_of_children,
+          "number_of_infants": number_of_infants,
+          "start_date": start_date,
+          "end_date": end_date,
+        
+          "user_location": {
+              "place_id": startingLocation ? startingLocation.place_id  :  "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
+          }
+          
+        };
           // if(startingLocation)
         //   console.log(data)
           setLoading(true);
@@ -164,7 +186,7 @@ const Enquiry = (props) => {
         ).then(response => {
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
-                // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
                  }
              else{
@@ -172,13 +194,14 @@ const Enquiry = (props) => {
   
                 setTimeout(function(){ 
                    
-                  // router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
+                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
                 }, 3000);
                   setLoading(false);
 
               }
         }).catch(err => {
             setLoading(false);
+            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
              if(err.response.data.email){
              }

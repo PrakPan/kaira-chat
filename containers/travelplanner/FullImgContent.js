@@ -107,7 +107,7 @@ const FullImgContent = (props) => {
                 </PaddingContianer>
                {/* <Banner></Banner> */}
                <div className='hidden-mobile' style={{ }}>
-                <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+                <TailoredForm page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                 
                 </div>
               
@@ -116,7 +116,7 @@ const FullImgContent = (props) => {
                         <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                     </div>
                 </div> */}
-                <TailoredFormMobileModal children_cities={props.children_cities} destination={props.destination} onHide={() => setShowMobilePlanner(false)}    cities={props.cities} show={showMoiblePlanner} ></TailoredFormMobileModal>
+                <TailoredFormMobileModal page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} onHide={() => setShowMobilePlanner(false)}    cities={props.cities} show={showMoiblePlanner} ></TailoredFormMobileModal>
              
         </Container>
     );
