@@ -40,9 +40,19 @@ const Itinerary = (props) => {
      
         className='font-poppins'>
                 <CitiesContainer>
-        <City className='border-thin' style={{backgroundColor: 'black', color: 'white'}}>Jaipur (2N)</City>
+                    {  props.city_slabs ?  props.city_slabs.length ?
+                        props.city_slabs.map( (city, index) => {
+
+                            return(
+                                <City className='border-thin' style={{backgroundColor: !index ?  'black' : 'white', color: !index ? 'white' : 'black'}}>{city.city_name +( city.duration ?  " ("+city.duration+"N)" : '')}</City> 
+                            )
+                        })
+                        : null : null
+                     
+                    }
+        {/* <City className='border-thin' style={{backgroundColor: 'black', color: 'white'}}>Jaipur (2N)</City>
         <City className='border-thin' >Jodhpur (2N)</City>
-        <City className='border-thin'>Jaisalmer (2N)</City>
+        <City className='border-thin'>Jaisalmer (2N)</City> */}
 
         </CitiesContainer>    
             <DayContainer></DayContainer>

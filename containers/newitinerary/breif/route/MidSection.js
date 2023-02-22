@@ -42,7 +42,7 @@ const MidSection = (props) => {
            </div>
            <Text>
             <MdOutlineFlightTakeoff style={{fontSize: '1.75rem', marginRight: '0.5rem'}}/>
-            Fly: 2h 30m
+            Fly: 0h 00m
             </Text>
             {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
         </Container>

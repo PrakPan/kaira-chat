@@ -1,9 +1,9 @@
-import ItineraryContainer from '../containers/newitinerary/Index';
+import ItineraryContainer from '../../containers/newitinerary/Index';
 import { useRouter } from 'next/router';
-import Layout from '../components/Layout';
+import Layout from '../../components/Layout';
 import Head  from 'next/head';
 import { connect } from 'react-redux';
-import * as authaction from '../store/actions/auth';
+import * as authaction from '../../store/actions/auth';
 
 import { useEffect } from 'react';
 // import Script from "next/script";
@@ -43,6 +43,7 @@ const Itinerary = (props) => {
               }}
             />
         </Head>
+        <ItineraryContainer id={router.query.id}></ItineraryContainer>
       
     </Layout>);
 }

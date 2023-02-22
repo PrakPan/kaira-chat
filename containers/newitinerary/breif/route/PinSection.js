@@ -23,7 +23,7 @@ const PinSection = (props) => {
     return(
         <Container>
             <Pin duration={props.duration}></Pin>
-            <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading>
+            <Heading>{props.duration ? props.location +  " ("+ props.duration+" Nights)": props.location }</Heading>
         </Container>
         
     );

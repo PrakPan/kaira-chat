@@ -15,12 +15,13 @@ const Brief = (props) => {
     useEffect(() => {
       
     },[]);
+    console.log(props.brief)
 
     return(
         <Container>
 
-             <Route></Route>
-             <Cities></Cities>
+             <Route  city_slabs={props.brief ? props.brief.city_slabs ? props.brief.city_slabs : null : null}></Route>
+             <Cities city_slabs={props.brief ? props.brief.city_slabs ? props.brief.city_slabs : null : null}></Cities>
 
         </Container>
         

@@ -50,16 +50,20 @@ const ImagesMobile = (props) => {
 
     return(
         <Container>
-              <ImageLoader borderRadius="12px"  dimensions={{width: 912, height: 331}} url="media/website/grey.png" height="auto" heightMobile="auto" dimensionsMobile={{width: 328, height: 141}}></ImageLoader>
+             <ImageLoader
+                    borderRadius="12px"  url={props.images ? props.images.length ? props.images[0] :'media/website/grey.png' : 'media/website/grey.png' } dimensions={{width: 456, height: 150}} height="100%" heightMobile="auto" dimensionsMobile={{width: 320, height: 180}}
+                    ></ImageLoader>
+              {/* <ImageLoader borderRadius="12px"  dimensions={{width: 912, height: 331}} url="media/website/grey.png" height="auto" heightMobile="auto" dimensionsMobile={{width: 328, height: 141}}></ImageLoader> */}
                 <GridContainer>
+                  
                     <ImageLoader
-                    borderRadius="12px"  url="media/website/grey.png" dimensions={{width: 456, height: 150}} height="100%" heightMobile="auto" dimensionsMobile={{width: 160, height: 90}}
+                    borderRadius="12px"  url={props.images ? props.images.length > 1 ? props.images[1] :'media/website/grey.png' : 'media/website/grey.png' } dimensions={{width: 456, height: 150}} height="100%" heightMobile="auto" dimensionsMobile={{width: 320, height: 180}}
                     ></ImageLoader>
                     <MoreContainer className='center-div' >
                     <ImageLoader
-                    borderRadius="12px" url="media/website/grey.png" dimensions={{width: 456, height: 150}} height="100%" heightMobile="auto" dimensionsMobile={{width: 160, height: 90}}
+                    borderRadius="12px" url={props.images ? props.images.length > 2 ? props.images[2] :'media/website/grey.png' : 'media/website/grey.png' } dimensions={{width: 456, height: 150}} height="100%" heightMobile="auto" dimensionsMobile={{width: 320, height: 180}}
                     ></ImageLoader>
-                    <div className='center-div' style={{position: 'absolute', height: '100%', color: 'white'}}>View 10+ photos</div>
+                    <div className='center-div' style={{position: 'absolute', height: '100%', color: 'white', background: 'rgba(0,0,0,0.5)', width: '100%', borderRadius: '12px'}}>View 10+ photos</div>
                     {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
                     </MoreContainer>
                 </GridContainer>

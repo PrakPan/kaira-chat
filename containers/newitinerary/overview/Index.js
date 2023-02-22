@@ -37,7 +37,7 @@ const Overview = (props) => {
     return(
         <Container>
                 <GridContainer>
-                    <Heading className='font-poppins'>Gateway to Rajasthan</Heading>
+                    <Heading className='font-poppins'>{props.name}</Heading>
                     <div className='center-div'>
                     <div className='hidden-desktop'><Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
                         Trip Settings
@@ -47,7 +47,7 @@ const Overview = (props) => {
                 <Details></Details>
                 <Line  ></Line>
 
-                 <ImagesMobile></ImagesMobile>
+                 <ImagesMobile images={props.plan ? props.plan.images : null}></ImagesMobile>
         </Container>
         
     );

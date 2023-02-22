@@ -10,12 +10,22 @@ const Cities = (props) => {
     useEffect(() => {
       
     },[]);
-
+    console.log(props.city_slabs)
     return(
         <Container>
-             <City city="Jaipur" duration="2 Nights"></City>
+          {
+            props.city_slabs ? props.city_slabs.length ? props.city_slabs.map(city => {
+              if(city.duration)
+              return (
+              <City data={city}></City>
+              )
+            })
+            : null
+            : null
+          }
+             {/* <City city="Jaipur" duration="2 Nights"></City>
              <City city="Jaisalnmer" duration="4 Nights"></City>
-             <City city="Jodhpur" duration="3 Nights"></City>
+             <City city="Jodhpur" duration="3 Nights"></City> */}
 
         </Container>
         
