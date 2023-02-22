@@ -304,8 +304,7 @@ const _addCityHandler = (city_id, city) => {
         const cityids =[];
         const citynames=[];
         let state_ids = [];
-        console.log('sc', selectedCities);
-        for(var i =0 ; i < selectedCities.length; i++){
+         for(var i =0 ; i < selectedCities.length; i++){
           if(selectedCities[i].type === 'State') state_ids.push(selectedCities[i].city_id)
 
           else{

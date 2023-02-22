@@ -49,8 +49,7 @@ const NewItinerary = (props) => {
         let prevScroll = window.pageYOffset;
         let scrollhandler = () => {
           try{
-            console.log(window.pageYOffset, offsets.Itinerary);
-            if(window.pageYOffset >  offsets.Brief && window.pageYOffset <  offsets.Itinerary) setCurrentMenu("Brief");
+             if(window.pageYOffset >  offsets.Brief && window.pageYOffset <  offsets.Itinerary) setCurrentMenu("Brief");
 
             if(window.pageYOffset >  offsets.Itinerary && window.pageYOffset <  offsets.Stays ) setCurrentMenu("Itinerary");
             if(window.pageYOffset >  offsets.Stays  && window.pageYOffset <  offsets.Flights) setCurrentMenu("Stays");

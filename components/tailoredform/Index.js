@@ -104,8 +104,7 @@ const Enquiry = (props) => {
         let cityids =[];
         let citynames=[];
         // let starting_location = null;
-        console.log(selectedPreferences);
-        let preferences = [];
+         let preferences = [];
         for(var i =  0 ; i < selectedPreferences.length; i++){
           for(var j = 0 ; j < EXPERIENCE_FILTERS_BOX.length; j++){
             if(selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display){

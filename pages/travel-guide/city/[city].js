@@ -34,8 +34,7 @@ export async function getStaticPaths(){
       const res = await fetch(`https://apis.tarzanway.com/search/all/?type=Location`)
 
       const data = await res.json();
-      console.log('city lengths', data.length);
-      let paths = [];
+       let paths = [];
       for(var i = 0 ; i<data.length ; i++){
             if(data[i].cta){
                   paths.push({
