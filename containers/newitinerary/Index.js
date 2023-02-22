@@ -21,6 +21,7 @@ const Container = styled.div`
     @media screen and (min-width: 768px){
          width: 85%;
          margin: 15vh auto 0 auto;
+         visibility: hidden;
     }
 `;
 
@@ -148,7 +149,7 @@ const NewItinerary = (props) => {
     
 
 }, []);
-
+console.log('p',plan)
 
     const FONT_SIZES_MOBILE = {
         heading : [],
@@ -157,7 +158,7 @@ const NewItinerary = (props) => {
     return(
         <div style={{}}>
         <Container>
-            <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} plan={plan} name={brief ? brief.name : null} ></Overview>
+            <Overview group_type={plan ? plan.group_type : null} FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} plan={plan} name={brief ? brief.name : null}  duration={plan ? plan.duration_unit && plan.duration_unit ? plan.duration_number + " "+ plan.duration_unit : null : null} filters={plan ? plan.experience_filters_selected : []}></Overview>
             <Menu currentMenu={currentMenu} ></Menu>
             <Line  ></Line>
             <div
@@ -180,7 +181,7 @@ const NewItinerary = (props) => {
               }}
             >
              
-            <Itinerary  city_slabs={brief ? brief.city_slabs ? brief.city_slabs.length ? brief.city_slabs: null: null: null}></Itinerary>
+            <Itinerary  day_slabs={itinerary ? itinerary.day_slabs ? itinerary.day_slabs.length ? itinerary.day_slabs: null: null: null} city_slabs={brief ? brief.city_slabs ? brief.city_slabs.length ? brief.city_slabs: null: null: null}></Itinerary>
             </div>
             <div style={{height: '70vh'}}
              ref={el => {

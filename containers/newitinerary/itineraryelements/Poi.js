@@ -70,7 +70,7 @@ const ItineraryPoiElement = (props) => {
     useEffect(() => {   
       
     },[]);
-    
+    // console.log('poi', props.)
     return(
 
         <Container
@@ -109,18 +109,18 @@ const ItineraryPoiElement = (props) => {
                     <HiPencil></HiPencil>
                     </div>
                     <Rating margin="0.25rem 0"></Rating>
-                    <BoldTags>Heritage • Culture</BoldTags>
+                    <BoldTags>Lorem • Lorem</BoldTags>
                     <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
-                    <ColorTags style={{color:'#9C54F6'}}>HIDDEN GEM</ColorTags>
+                    <ColorTags style={{color:'#9C54F6'}}>LOREM</ColorTags>
                     <ColorTags style={{color: '#5363F5'}}>ATTRACTION</ColorTags>
 
                     </div>
 
                 </div>
             </GridContainer>
-            { props.type === ITINERARY_ELEMENT_TYPES.activity && props.text?<Text>{props.text}</Text>
+            { props.text?<Text>{props.text}</Text>
              : null}
-                <Tips></Tips>
+                {props.tips ? <Tips tips={props.tips}></Tips> : null}
 
 <Line></Line>
          </Container>

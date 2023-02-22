@@ -78,15 +78,21 @@ const ItineraryFoodElement = (props) => {
             <Text>
                 {props.text}
                 </Text>
-                <FoodItem heading="Lassi" 
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></FoodItem>
-                 <FoodItem heading="Onion Kachodi" 
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></FoodItem>
-                <FoodItem heading="Maalpua" 
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></FoodItem>
+                {
+                    props.food_items ? 
+                    props.food_items.map(food => {
+                        return (
+<FoodItem heading="Lassi" 
+image={food.image}
+name={food.name}
+                text={food.description}
+                                ></FoodItem>
+                        )
+                    })
+                    : null
+                }
+                
+                
               
 
 <Line></Line>

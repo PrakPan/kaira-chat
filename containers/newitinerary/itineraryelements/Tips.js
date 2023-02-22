@@ -13,6 +13,7 @@ margin-bottom: 2px;
 `;
 const Text = styled.p`
     font-size: 14px;
+    margin: 0;
 `;
  
 const Tips = (props) => {
@@ -26,10 +27,18 @@ const Tips = (props) => {
 
         <Container>
                      <Heading>Tips</Heading>
-                     <Text>
-                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.
-
-                     </Text>
+                     
+                     {
+                        props.tips ? 
+                        props.tips.map(tip => {
+                            return (
+                                <Text>
+                                        {tip}
+                                </Text> 
+                            )
+                        })
+                        : null
+                     }
         </Container>
         
     );

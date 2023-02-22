@@ -159,19 +159,20 @@ setOffset(5);
     
     }
   // if(isPageWide) 
+  console.log(props.locations.length, offset)
   return(
       <><div className='hidden-mobile'>
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations ? props.locations.length > offset ? <Button  onclick={_showMoreLocations} hoverBgColor="black" fontSizeDesktop="12px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button> : null : null}
+       { cardsJSX.length ? cardsJSX.length > offset ?  <Button  onclick={_showMoreLocations} hoverBgColor="black" fontSizeDesktop="12px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button> :  null: null}
       </div>
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
             <Carousel cards={cardsToShowJSX}></Carousel>
     </div>
-    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null}
+    {props.viewall ? <Button  onclick={_showMoreLocations}  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null}
   </div></>
   )
   ;

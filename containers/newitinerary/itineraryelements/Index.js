@@ -56,7 +56,7 @@ const ItineraryElement = (props) => {
         className='font-poppins'>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
-                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
+                {/* <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar> */}
                 {
                     props.booking ? 
                     <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>

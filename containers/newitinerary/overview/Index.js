@@ -44,7 +44,7 @@ const Overview = (props) => {
                     </Button></div>
                     </div>
                 </GridContainer>
-                <Details></Details>
+                <Details group_type={props.group_type} duration={props.duration} filters={props.filters}></Details>
                 <Line  ></Line>
 
                  <ImagesMobile images={props.plan ? props.plan.images : null}></ImagesMobile>

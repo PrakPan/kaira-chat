@@ -33,29 +33,30 @@ const Details = (props) => {
     useEffect(() => {
       
     },[]);
-
+console.log('f', props.filters)
     return(
         <Container className='font-poppins'>
                <div style={{width: 'max-content'}} >
                 <Heading>Destination</Heading>
-                <Text>Rajasthan</Text>
+                <Text>Lorem</Text>
                </div>
                <div style={{width: 'max-content'}} >
                 <Heading>Type of Travel</Heading>
-                <Text>Adventure</Text>
+                <Text>{
+                    props.filters.length > 1 ? 
+                    (props.filters[0] + " +" + (props.filters.length-1))
+                    : props.filters[0]
+                    }</Text>
                </div>
                <div style={{width: 'max-content'}} >
                 <Heading>Group Type</Heading>
-                <Text>Friends</Text>
+                <Text>{props.group_type}</Text>
                </div>
                <div style={{width: 'max-content'}} >
                 <Heading>Duration</Heading>
-                <Text>5 Nights</Text>
+                <Text>{props.duration ? props.duration : ''}</Text>
                </div>
-               <div style={{width: 'max-content'}} >
-                <Heading>Destination</Heading>
-                <Text>Rajasthan</Text>
-               </div>
+              
                <div className='hidden-mobile'><Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
                         Trip Settings
                     </Button>
