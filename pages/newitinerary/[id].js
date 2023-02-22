@@ -43,7 +43,7 @@ const Itinerary = (props) => {
               }}
             />
         </Head>
-        <ItineraryContainer id={router.query.id}></ItineraryContainer>
+        {/* <ItineraryContainer id={router.query.id}></ItineraryContainer> */}
       
     </Layout>);
 }
