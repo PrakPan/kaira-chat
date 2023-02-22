@@ -31,7 +31,7 @@ const TravelPlanner = (props) => {
 
 export async function getStaticPaths(){
 
-    const res = await fetch(`https://dev.apis.tarzanway.com/page/list`)
+    const res = await fetch(`https://apis.tarzanway.com/page/list`)
     const data = await res.json();
     let paths = [];
     for(var i = 0 ; i<data.length ; i++){
@@ -51,7 +51,7 @@ export async function getStaticPaths(){
 }
 export async function getStaticProps(context){
 
-    const res = await fetch(`https://dev.apis.tarzanway.com/page/?link=`+context.params.link)
+    const res = await fetch(`https://apis.tarzanway.com/page/?link=`+context.params.link)
     const data = await res.json()
     if (!data) {
           return {

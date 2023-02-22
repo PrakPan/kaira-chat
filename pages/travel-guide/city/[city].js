@@ -31,8 +31,10 @@ const Experience = (props) => {
 
 export async function getStaticPaths(){
 
-      const res = await fetch(`https://dev.apis.tarzanway.com/search/all/?type=Location`)
+      const res = await fetch(`https://apis.tarzanway.com/search/all/?type=Location`)
+
       const data = await res.json();
+      console.log('city lengths', data.length);
       let paths = [];
       for(var i = 0 ; i<data.length ; i++){
             if(data[i].cta){
@@ -58,7 +60,7 @@ export async function getStaticPaths(){
 }
 export async function getStaticProps(context){
 
-      const res = await fetch(`https://dev.apis.tarzanway.com/poi/city/?slug=`+context.params.city)
+      const res = await fetch(`https://apis.tarzanway.com/poi/city/?slug=`+context.params.city)
       const data = await res.json()
       if (!data) {
             return {
