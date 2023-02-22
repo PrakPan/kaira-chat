@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Button from '../../components/ui/button/Index';
-import media from '../../components/media';
-import {BsWhatsapp} from 'react-icons/bs';
+import Button from '../../../components/ui/button/Index';
+import media from '../../../components/media';
+// import {BsWhatsapp} from 'react-icons/bs';
 // import urls from '../../services/urls';
 // import Enquiry from './newenquiry/Index';
 // import ImageLoader from '../../components/ImageLoader';
 // import Banner from './BannerOne';
-import TailoredForm from '../../components/tailoredform/Index';
-import Rolodex from './Rolodex';
+import TailoredForm from '../../../components/tailoredform/Index';
+import Rolodex from '../../travelplanner/Rolodex';
  
-import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
+import TailoredFormMobileModal from '../../../components/modals/TailoredFomrMobile';
   const Container = styled.div`
   color:white;
  width: 100%;
@@ -91,22 +91,16 @@ const FullImgContent = (props) => {
 
         <Container className='font-opensans center-di text-cente'>
            <PaddingContianer >
-            <Heading>{props.title}</Heading>
-            {/* <SubText>As per your 
-                <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
-            </SubText> */}
+            <Heading>{props.tagline}</Heading>
+             
             <Rolodex></Rolodex>
-           {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
-           
-            {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
-                <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
-                View Trips</Button> */}
+          
                 <div className='hidden-desktop'>
                 <Button bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="0" onclick={() => setShowMobilePlanner(true)} margin="1rem auto">Build Now</Button>
              </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}
-               <div className='hidden-mobile' style={{ }}>
+               <div className='hidden-mobile' style={{}}>
                 <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                 
                 </div>

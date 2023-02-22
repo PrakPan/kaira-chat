@@ -26,13 +26,14 @@ const Container = styled.div`
 height: max-content;
 color: black;
 z-index :2;
+
 position: relative;
-  background-color: white;
+  background-color: rgba(255,255,255,1);
  width: 100%;
  border: none !important;
 
  @media screen and (min-width: 768px){
-    margin: 0;
+    margin: auto 0;
     border-radius: 8px !important;
 
     min-height: 400px;
@@ -215,7 +216,7 @@ const Enquiry = (props) => {
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
  return(
-    <div>
+    <div style={{}}>
                 {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
                
     <Container className={isPageWide ? "border center-div"  : "center-div"} onClick={() => setShowBlack(true)}>
