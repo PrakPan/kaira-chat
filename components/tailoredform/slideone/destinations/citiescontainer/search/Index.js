@@ -38,7 +38,7 @@ const Search = (props) => {
             <AiOutlineSearch></AiOutlineSearch>
             Filter Cities
         </ClosedContainer>    
-        : <SearchInput></SearchInput>
+        : <SearchInput _showSearchedLocations={props._showSearchedLocations}></SearchInput>
     }
            </Container>
   );

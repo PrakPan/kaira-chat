@@ -58,7 +58,7 @@ const SearchPannel= (props) => {
             }
           });
         setInputValue(event.target.value);
-        axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
+        axios.get(`https://dev.apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
             if(res.data.length){
                 setResults(res.data);
                 setShowResults(true);
