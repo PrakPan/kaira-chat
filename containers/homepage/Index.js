@@ -111,8 +111,9 @@ useEffect(() => {
                   res.data.results[i]
               );
           }
-          setMyPlansArr(plansarr.slice())
-          setPlansCount(res.data.count)
+          setMyPlansArr(plansarr.slice());
+          console.log('d', res.data.count)
+          setPlansCount(res.data.count);
           setPlansLoading(false);
       }).catch(err => {
           setPlansLoading(false);
@@ -171,7 +172,7 @@ const _handleExperiencesClick = () => {
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
-        {props.token && myPlansArr.length? 
+        {props.token && myPlansArr.length && plansCount? 
               <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>{"My Trips ("+plansCount+")"}</Heading>        
 : null
             }

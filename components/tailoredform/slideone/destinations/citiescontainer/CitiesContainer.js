@@ -6,12 +6,14 @@ import styled from 'styled-components';
 //  import ImageLoader from '../../../ImageLoader';
  import Location from './Destination';
  import { TbArrowBack } from 'react-icons/tb';
+import Search from './search/Index';
 // import Animate from '../../../HOC/'
  const AbsoluteContainer = styled.div`
  background-color: white;
  padding: 0.5rem;
 position: absolute;
 top: ${props => props.top};
+width: 100%;
 z-index: 10;
  `
  const LocationContainer = styled.div`
@@ -76,6 +78,7 @@ const LocationsContainer = (props) => {
     }
   }
    useEffect(() => {
+    try{
     let locations_JSX = [];
     let more_locations_JSX = [];
     for(var i = 0 ; i< props.CITIES.length; i++){
@@ -94,6 +97,7 @@ const LocationsContainer = (props) => {
         }
       }
     }
+
     // if(props.CITIES.length > 6){
     //   for(var j = 6; j < props.CITIES.length; j++){
     //       more_locations_JSX.push(
@@ -112,12 +116,17 @@ const LocationsContainer = (props) => {
     
     // setLocationsJSX(locations_JSX.slice());
     if(more_locations_JSX.length) setMoreLocationJSX(more_locations_JSX.slice());
+  }
+  catch{
+
+  }
   },[props.CITIES, props.selectedCities]);
   
   return (
     <AbsoluteContainer className='border' top={props.top}>
       <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
       <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p>
+   <Search></Search>
     <LocationContainer  >
         
                 {/* <Location image="" text="Port Blair" onclick={() => _handleClick(props.CITIES[0])} ></Location>
@@ -127,7 +136,7 @@ const LocationsContainer = (props) => {
                 <Location  image="" text="Rajasthan"></Location>
                 <Location  image="" text="Sikkim"></Location> */}
                 {locationsJSX.length ? locationsJSX : null}
-                {props.CITIES.length && showMore ? moreLocationsJSX : null}
+                { props.CITIES? props.CITIES.length && showMore ? moreLocationsJSX : null : null}
    </LocationContainer>
    {moreLocationsJSX.length && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
    <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0 0 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => props.setShowCities(false)}>

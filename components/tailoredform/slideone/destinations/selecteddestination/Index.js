@@ -73,11 +73,13 @@ const SelectedDestination = (props) => {
         props.selectedCities.length ? 
         <span>{'+ '+ props.selectedCities.length + " Cities Added"}</span>
         : 
-        
-        <span onClick={props.openCities}>{' + Select Cities'}</span>
+        props.CITIES ? 
+        <span onClick={props.openCities}>{' + Select Cities'}</span> : null
         : 
+        props.CITIES ? 
 
         <span onClick={props.openCities}>{' + Select Cities'}</span>
+        : null
 
     }
        

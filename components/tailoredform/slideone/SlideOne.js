@@ -23,39 +23,7 @@ margin-bottom: 1.5rem;
 const SlideOne = (props) =>{
 
   let isPageWide = media('(min-width: 768px)');
-  const CITIES = [
-    {
-      'name': 'Port Blair',
-      'id': 1,
-      'image': ''
-    },
-    {
-      'name': 'Por Blair',
-      'id': 2,
-      'image': ''
-    },
-    {
-      'name': 'Prt Blair',
-      'id': 3,
-      'image': ''
-    },
-    {
-      'name': 'Pot Blair',
-      'id': 4,
-      'image': ''
-    },
-    {
-      'name': 'Port Blair',
-      'id': 5,
-      'image': ''
-    },
-    {
-      'name': 'Port Blair',
-      'id': 6,
-      'image': ''
-    }
-
-  ]
+  const CITIES = null;
   // const [selectedCities, setSelectedCities] = useState([]);
   const [flexible, setFlexible] = useState(false);
   // console.log('cs', props.children_cities)
