@@ -241,12 +241,12 @@ const Enquiry = (props) => {
     <div style={{}}>
                 {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
                
-    <Container slideIndex={slideIndex} className={isPageWide ? "border center-div"  : "center-div"} onClick={() => setShowBlack(true)}>
+    <Container slideIndex={slideIndex} className={isPageWide ? "border center-di"  : "center-div"} onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
            
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '1rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '0rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
             {slideIndex ? <div className="center-div"><BiArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '2px', fontSize: '1.5rem'}}></BiArrowBack></div> : <div></div>}
             <Heading style={{textAlign: !slideIndex ? 'left' : 'center'}}>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
 

@@ -538,7 +538,7 @@ font-size: 0.85rem !important;
 
 }
 .MuiFormLabel-root {
-  background-color: inherit;
+  background-color: transparent;
 }
 .border-thin{
     border-style: solid;
