@@ -78,7 +78,7 @@ const NewItinerary = (props) => {
 
     // useEffect(() => {
      
-    //      let scrollhandler = () => {
+     //      let scrollhandler = () => {
     //       try{
     //         console.log(window.pageYOffset, offsets.Itinerary);
     //         if(window.pageYOffset >  offsets.Brief && window.pageYOffset <  offsets.Itinerary) setCurrentMenu("Brief");
@@ -88,8 +88,7 @@ const NewItinerary = (props) => {
     //         if(window.pageYOffset >  offsets.Flights && window.pageYOffset <  offsets.Transfers) setCurrentMenu("Flights");
     //         if(window.pageYOffset >  offsets.Transfers && window.pageYOffset <  offsets.Activities) setCurrentMenu("Transfers");
     //         if(window.pageYOffset >  offsets.Activities) setCurrentMenu("Activities");
-
-
+ 
     //       }catch{
 
     //       }

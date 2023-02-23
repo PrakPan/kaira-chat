@@ -192,7 +192,7 @@ const LogIn = (props) => {
     const authData = {
       "username": mobile
     }
-    axios.post("https://apis.tarzanway.com/user/resend/otp/", authData)
+    axios.post("https://dev.apis.tarzanway.com/user/resend/otp/", authData)
         .then(response => {
         });
         setOtpResent(true);

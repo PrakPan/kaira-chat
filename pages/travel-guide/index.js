@@ -19,7 +19,7 @@ const Guide = (props) => {
  
 export async function getStaticProps(context){
 
-      const res = await fetch(`https://apis.tarzanway.com/city_guide`)
+      const res = await fetch(`https://dev.apis.tarzanway.com/city_guide`)
       const data = await res.json()
       if (!data) {
             return {

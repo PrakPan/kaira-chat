@@ -145,9 +145,9 @@ const LocationsContainer = (props) => {
   else{
     let searched_locations = [];
     for(var i = 0 ; i < searchedLocationsJSX.length; i++){
-      // console.log(searchedLocationsJSX[i])
+      console.log(searchedLocationsJSX[i])
         searched_locations.push(
-          <Location image={searchedLocationsJSX[i].props.image} text={searchedLocationsJSX[i].props.name} onclick={_handleClick} onclickparam={searchedLocationsJSX[i].props} is_selected={_isCityAdded(searchedLocationsJSX[i].props)} ></Location>
+          <Location image={searchedLocationsJSX[i].props.image} text={searchedLocationsJSX[i].props.text} onclick={_handleClick} onclickparam={searchedLocationsJSX[i].props} is_selected={_isCityAdded(searchedLocationsJSX[i].props)} ></Location>
         )
     }
     setSearchedLocationJSX(searched_locations.slice())

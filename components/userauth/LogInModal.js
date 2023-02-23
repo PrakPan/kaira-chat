@@ -224,7 +224,7 @@ else if(props.otpSent &&  !props.email){
     const authData = {
       "username": extensions[extension].label+mobile
     }
-    axios.post("https://apis.tarzanway.com/user/resend/otp/", authData)
+    axios.post("https://dev.apis.tarzanway.com/user/resend/otp/", authData)
         .then(response => {
         });
         setOtpResent(true);

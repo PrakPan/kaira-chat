@@ -17,10 +17,9 @@ const Itinerary = (props) => {
       // document.body.appendChild(script);
 
   
-
       props.checkAuthState();
 
-     
+
 }, []);
      return (
     <Layout itinerary>
@@ -30,10 +29,7 @@ const Itinerary = (props) => {
             <meta property="og:title" content="Tailored Travel | The Tarzan Way" />
             <meta property="og:description" content="We envision to simplify travel and build immersive travel experiences." />
             <meta property="og:image" content="/logoblack.svg" />
-            {/* <script
-              src='https://thetarzanway-web.s3.us-west-2.amazonaws.com/scripts/itinerarybot.js'
-         
-          /> */}
+           
              <script
               
               dangerouslySetInnerHTML={{

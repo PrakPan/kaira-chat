@@ -111,9 +111,7 @@ const Yellow = (props) => {
                                 <IconText className="font-opensans">Transparency</IconText>
                             </IconContainer>
                         </IconsContainer>
-                        {/*<Link to="https://thetarzanway.com/testimonials" style={{textDecoration: "none", color: "black"}}>*/}
-                        {/*    {window.innerWidth > 768 ? */}
-                                
+                       
                                 <Button
                                 link={urls.TESTIMONIALS}
                             borderWidth="2px"
@@ -138,16 +136,4 @@ const Yellow = (props) => {
 
 export default Yellow;
 
-{/* <a href="https://thetarzanway.com/testimonials">
-<Button
-link={"https://thetarzanway.com/testimonials"}
-borderWidth="2px"
-hoverColor="#F7e700"
-// borderWidth="1px"
-fontSizeMobile="0.75rem"
-padding="0.5rem"
-//onclick={null}
->
-Read More
-</Button>
-</a> */}
+ 

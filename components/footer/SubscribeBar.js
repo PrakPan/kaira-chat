@@ -62,7 +62,7 @@ const Subscribe = (props) => {
     const _submitHandler = () => {
         if(checkEmail(email)){
         setLoading(true);
-        axios.post("https://apis.tarzanway.com/mail/subscribe/", {
+        axios.post("https://dev.apis.tarzanway.com/mail/subscribe/", {
             "email": email,
         })
           .then(res => {

@@ -87,7 +87,7 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
 
             {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}
             </div>       
-            <div className='center-div hidden-mobile'><Enquiry destination={props.destination} cities={props.cities}></Enquiry></div>
+            <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div>
         </GridContainer>
        
     </Container>

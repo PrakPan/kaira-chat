@@ -35,8 +35,7 @@ const LocationsBlog= (props) => {
  
   }, []);
   for(var i = 0 ; i<props.locations.length ; i++){
-    console.log(props.locations[i])
-     const slug  = props.locations[i].slug;
+      const slug  = props.locations[i].slug;
      let name = '';
      if(props.locations[i].name) name=props.locations[i].name;
 
