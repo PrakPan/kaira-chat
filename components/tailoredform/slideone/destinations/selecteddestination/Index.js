@@ -8,6 +8,8 @@ import {FiInfo} from 'react-icons/fi'
 import {GrFormEdit} from 'react-icons/gr';
 import SearchInputStarting from '../searchstarting/Input';
 import SearchInput from '../search/Input';
+import {BiTargetLock} from 'react-icons/bi';
+
 //  import LocationsContainer from './LocationsContainer'
 const Container = styled.div`
  margin-bottom: 0.25rem;
@@ -16,9 +18,10 @@ width: 100%;
 justify-content: space-between;
 align-items: center;    
 padding: 0.55rem  0.35rem;
+background-color: white;
 
  @media screen and (min-width: 768px){
-    padding: 0.55rem  0.35rem;
+    padding: 0.55rem  0.55rem;
 }
 
 `;
@@ -52,9 +55,16 @@ const SelectedDestination = (props) => {
     props.setShowCities(false)
   }
   return ( 
-   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation ? '1px solid #EFEFEF' : '1px solid black', boxShadow: '0px 3px 3px 0px rgba(0, 0, 0, 0.25)'}}>
+   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation ? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer'>
-        <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn>
+          {!props.selectlocation  ? 
+                  <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', marginRight: '10px'}}></MdOutlineLocationOn>
+                  :
+                  <BiTargetLock style={{lineHeight: '1', fontSize: '1.25rem' , marginRight: '13px'}}></BiTargetLock>
+
+
+          }
+        {/* <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn> */}
     {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocus} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput ></SearchInput>}
 {props.selectlocation && !props.showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem', marginLeft: '2px'}}></GrFormEdit> : null}
     </LeftContent>

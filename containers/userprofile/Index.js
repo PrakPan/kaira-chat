@@ -23,7 +23,7 @@ const Container = styled.div`
     margin: 12vh auto;
 
     @media screen and (min-width: 768px){
-        width: 70%;
+        width: 85%;
         padding-top: 10vh;
         margin:  auto;
 
@@ -130,7 +130,7 @@ return(
                          }</div>
                         {isPageWide && !myPlansArr.length  && !loading? <NoPlans className="font-opensans" >You don't have any plans yet. <Link href="/tailored-travel" passHref={true} ><a style={{color: 'black', textDecoration: 'none !important'}}>Start Planning</a></Link></NoPlans> : null}
                        
-                        {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null}
+                        {myPlansArr.length ? <Experiences margin="1rem" experiences={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null}
                         {!isPageWide && !myPlansArr.length && !loading ? <NoPlans className="font-opensans" >You don't have any plans yet. </NoPlans> : null}
                         {!isPageWide && !myPlansArr.length  && !loading? <Link href="/tailored-travel" passHref={true} ><a className="font-nunito" style={{color: 'black', fontWeight: '300', display: 'block', margin: '0.5rem auto', textDecoration: 'none !important', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '1px'}}>Start Planning</a></Link> : null}
                     </ContentContainer>

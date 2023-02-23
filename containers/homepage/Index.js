@@ -32,6 +32,7 @@ import homepagecontent from '../../public/content/homepage';
   import * as ga from '../../services/ga/Index';
  import urls from '../../services/urls';
   import PLANNER_PAGES from '../../public/content/planner';
+  import axiomyplansinstance from '../../services/sales/MyPlans';
   import CaseStudies from '../travelplanner/CaseStudies/Index';
 const SetWidthContainer = styled.div`
 width: 100%;
@@ -93,7 +94,31 @@ const HowitWorksContentsArr = [
 ];
 const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
 
+const [myPlansArr, setMyPlansArr] = useState([]);
+const [plansLoading, setPlansLoading ] = useState(false);
+useEffect(() => {
+   if(props.token){
+  axiomyplansinstance.get("", {headers: {
+      'Authorization': `Bearer ${props.token}`
+      }}).then(res => {
+          
 
+          let plansarr = [];
+
+          for(var i=0 ; i<res.data.length; i++){
+               plansarr.push(
+                  res.data[i]
+              );
+          }
+          setMyPlansArr(plansarr.slice())
+          setPlansLoading(false);
+      }).catch(err => {
+          setPlansLoading(false);
+
+      })
+    }
+  
+},[props.token]);
 const router = useRouter()
 
 const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
@@ -144,6 +169,15 @@ const _handleExperiencesClick = () => {
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
       <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
+        {props.token && myPlansArr.length? 
+              <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>My Plans</Heading>        
+: null
+            }
+            {
+              props.token && myPlansArr.length ? 
+              <Experiences  margin="2.5rem 0" experiences={myPlansArr} ></Experiences>
+: null
+            }
       <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Top Destinations</Heading>        
 
       {/* <Heading   align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 5rem 0"}  bold>Top Destinations</Heading>         */}

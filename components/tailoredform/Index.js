@@ -28,7 +28,7 @@ color: black;
 z-index :2;
 
 position: relative;
-  background-color: rgba(255,255,255,1);
+  background-color: ${props => props.slideIndex  ? 'white' : 'rgba(255,255,255,0.9)'};
  width: 100%;
  border: none !important;
 
@@ -173,7 +173,7 @@ const Enquiry = (props) => {
   
                 setTimeout(function(){ 
                    
-                  // router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
+                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
                 }, 3000);
                   setLoading(false);
 
@@ -219,14 +219,14 @@ const Enquiry = (props) => {
     <div style={{}}>
                 {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
                
-    <Container className={isPageWide ? "border center-div"  : "center-div"} onClick={() => setShowBlack(true)}>
+    <Container slideIndex={slideIndex} className={isPageWide ? "border center-div"  : "center-div"} onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
            
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
             <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '1rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
             {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
-            <Heading>{"Trip Planner" }</Heading> 
+            <Heading>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
 
             </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
@@ -272,14 +272,14 @@ const Enquiry = (props) => {
             Submit
             </Button> } */}
             {
-                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
                 </Button></div>  : null
             }
             {
-                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button fontSize="12px" width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"   onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
-                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600"  margin="1rem 0" borderRadius="8px" borderWidth="0" bgColor="#f7e700"  onclick={_submitDataHandler}>
+                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button width="100%" padding="0.5rem 2rem" fontSize="12px" fontWeight="600"  margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={_submitDataHandler}>
             Submit
             </Button></div> : null
             }
