@@ -11,7 +11,7 @@ import styled from 'styled-components';
  background-color: white;
  padding: 0.5rem;
 position: absolute;
-top: 5.75rem;
+top: ${props => props.top};
 z-index: 10;
  `
  const LocationContainer = styled.div`
@@ -115,7 +115,7 @@ const LocationsContainer = (props) => {
   },[props.CITIES, props.selectedCities]);
   
   return (
-    <AbsoluteContainer className='border'>
+    <AbsoluteContainer className='border' top={props.top}>
       <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
       <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p>
     <LocationContainer  >
