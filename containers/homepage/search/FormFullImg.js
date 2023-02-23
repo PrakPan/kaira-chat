@@ -33,7 +33,7 @@ font-weight: 700;
 margin-bottom: 1rem;
 font-size: 2rem;
 @media screen and (min-width: 768px){
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 700;
 
 }

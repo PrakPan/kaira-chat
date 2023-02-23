@@ -20,7 +20,7 @@ import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/plannerlocations/Index';
-import FullImgContent from './search/SearchFullImgContent';
+import FullImgContent from './search/FormFullImg';
 // import FullImgContentChristmas from './search/Christmas';
 import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
@@ -167,7 +167,7 @@ const _handleExperiencesClick = () => {
       <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
 
       {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   url="media/website/Home (1).png" > */}
-      <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
+      <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="AI-Powered Travel Planner" text="Find an immersive experience or craft one yourself."/>
       </FullImage>
       {/* <div className='hidden-mobile'><Explorers></Explorers></div> */}
       <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>

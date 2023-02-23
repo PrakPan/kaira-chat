@@ -15,7 +15,7 @@ import Spinner from '../Spinner';
 import { useRouter } from "next/router";
 import {connect} from 'react-redux';
 import {TbArrowBack} from 'react-icons/tb';
-
+import {BiArrowBack} from 'react-icons/bi';
 // import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
@@ -247,8 +247,8 @@ const Enquiry = (props) => {
            
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
             <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '1rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
-            {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
-            <Heading>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
+            {slideIndex ? <div className="center-div"><BiArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '2px', fontSize: '1.5rem'}}></BiArrowBack></div> : <div></div>}
+            <Heading style={{textAlign: !slideIndex ? 'left' : 'center'}}>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
 
             </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
@@ -294,7 +294,7 @@ const Enquiry = (props) => {
             Submit
             </Button> } */}
             {
-                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities && props.cities ? 'hidden' : 'visible'}}><Button width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
                 </Button></div>  : null
             }
