@@ -1,7 +1,6 @@
 import React from 'react'
 import Lottie from 'react-lottie';
-import * as animationData from './animation.json'
- 
+  
 const  LottieAnimation = (props) =>  {
  
  

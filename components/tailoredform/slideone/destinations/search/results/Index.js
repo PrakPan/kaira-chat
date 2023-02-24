@@ -71,7 +71,7 @@ const SearchResults = (props) => {
       props.results.length ?
       props.results.map(result => {
         return(
-          <Result name={result["_source"].name} type={result["_source"].type}></Result>
+          <Result name={result["_source"].name} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized}></Result>
 
         )
       })

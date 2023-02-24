@@ -21,12 +21,29 @@ const Container = styled.input`
 
  
 const SearchInput = (props) => {
+const [value, setValue] = useState();
 
+const _handleKey = (e) => {
+  setValue(e.target.value)
+  props._handleKey(e);
+
+}
+
+useEffect(() => {
+  if(props.searchFinalized) setValue(props.searchFinalized.name)
+}, [props.searchFinalized]);
   let isPageWide = media('(min-width: 768px)');
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
+  const _handleReset = () => {
+    setValue('');
+    props.setSearchFinalized(false);
+    props.setResults([]);
+    props.setShowResults(false);
+
+  }
   return (
-   <Container placeholder='Search destination' className='font-opensans' onChange={(e) => props._handleKey(e)}>
+   <Container onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} onChange={(e) => _handleKey(e)}>
     
     </Container>
   );

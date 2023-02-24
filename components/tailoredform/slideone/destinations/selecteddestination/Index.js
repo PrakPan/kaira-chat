@@ -5,7 +5,7 @@ import media from '../../../../media';
 import styled from 'styled-components';
 import {MdOutlineLocationOn} from 'react-icons/md'
 import {FiInfo} from 'react-icons/fi'
-import {GrFormEdit} from 'react-icons/gr';
+import {BsPencilFill} from 'react-icons/bs';
 import SearchInputStarting from '../searchstarting/Input';
 import SearchInput from '../search/Index';
 import {BiTargetLock} from 'react-icons/bi';
@@ -41,6 +41,7 @@ color: #1360D3;
  
 const SelectedDestination = (props) => {
 
+  const [searchFinalized, setSearchFinalized] = useState(false); 
 
   let isPageWide = media('(min-width: 768px)');
   // const [showSearchStarting, setShowSearchStarting] = useState(false);
@@ -49,10 +50,16 @@ const SelectedDestination = (props) => {
 
   }
   const [focusLocation, setFocusLocation] = useState(false);
-  const _handleFocus = () => {
+  const [focusSearch, setFocusSearch] = useState(null);
+  const _handleFocusStarting = () => {
     setFocusLocation(true);
     props.setShowSearchStarting(true);
     props.setShowCities(false)
+  }
+  const _handleFocusSearch = () => {
+    setFocusSearch(true);
+    // props.setShowSearchStarting(true);
+    // props.setShowCities(false)
   }
   return ( 
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation ? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
@@ -65,8 +72,7 @@ const SelectedDestination = (props) => {
 
           }
         {/* <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn> */}
-    {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocus} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput ></SearchInput>}
-{props.selectlocation && !props.showSearchStarting ? <GrFormEdit className='hover-pointer' style={{fontSize: '1.25rem', marginLeft: '2px'}}></GrFormEdit> : null}
+    {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized}></SearchInput>}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >
         {props.selectedCities ? 
@@ -82,13 +88,17 @@ const SelectedDestination = (props) => {
         : null
 
     }
+      {searchFinalized ? <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> : null}
+
+
        
     {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo> */}
 
     </RightContainer>
      : 
      <RightContainer className='hover-pointer' >
-     
+         <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> 
+
  {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px',  marginRight: '4px'}}></FiInfo> */}
 
  </RightContainer>

@@ -40,8 +40,8 @@ const Search = (props) => {
   }
   return (
    <Container>
-        <SearchInput _handleKey={_handleKey}></SearchInput>
-        {showResults ? <SearchResults top="5.75rem" results={results}></SearchResults> : null}
+        <SearchInput searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
+        {showResults && !props.searchFinalized? <SearchResults top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized}></SearchResults> : null}
     </Container>
   );
 }
