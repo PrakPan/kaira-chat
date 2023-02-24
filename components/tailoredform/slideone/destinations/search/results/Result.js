@@ -6,7 +6,7 @@ import styled from 'styled-components';
  
 const Container = styled.div`
     display: flex;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
 
 `;
 const Result = (props) => {

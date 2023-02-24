@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import Result from './Result';
  const AbsoluteContainer = styled.div`
  background-color: white;
- padding: 0.5rem;
+ padding: 0 0.5rem;
 position: absolute;
 top: ${props => props.top};
 width: 100%;
@@ -67,10 +67,17 @@ const SearchResults = (props) => {
   }
 
   return (
-    <AbsoluteContainer className='border' top={props.top}>
-       <Result name="Rajasthan" type="STATE"></Result>
-       <Result name="Spiti" type="DESTINATION"></Result>
-       <Result name="Manali" type="CITY"></Result>
+    <AbsoluteContainer className='border' top={props.top}>{
+      props.results.length ?
+      props.results.map(result => {
+        return(
+          <Result name={result["_source"].name} type={result["_source"].type}></Result>
+
+        )
+      })
+      : null
+    }
+     
 
 
    </AbsoluteContainer>
