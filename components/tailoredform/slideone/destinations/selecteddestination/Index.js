@@ -62,7 +62,7 @@ const SelectedDestination = (props) => {
     // props.setShowCities(false)
   }
   return ( 
-   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation ? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
+   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer'>
           {!props.selectlocation  ? 
                   <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', marginRight: '10px'}}></MdOutlineLocationOn>
@@ -72,7 +72,7 @@ const SelectedDestination = (props) => {
 
           }
         {/* <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn> */}
-    {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized}></SearchInput>}
+    {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)}></SearchInput>}
     </LeftContent>
     {!props.selectlocation ? <RightContainer className='hover-pointer' >
         {props.selectedCities ? 

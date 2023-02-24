@@ -17,10 +17,10 @@ import TailoredFormMobileModal from '../../../components/modals/TailoredFomrMobi
  display: grid;
 text-align: center;
   @media screen and (min-width: 768px){
-    padding: 0;
-    width: 90%;
+     width: 90%;
     text-align: left;
-    margin:  auto;
+    margin: auto;
+    
     grid-template-columns: auto 400px;
  
     }
@@ -53,7 +53,7 @@ const PaddingContianer = styled.div`
 padding: 5vh 0 0 0;
 flex-grow: 1;
 @media screen and (min-width: 768px){
-    padding: 10vh 0 0 0;
+    padding: 0 0 0 0;
 
 
 }

@@ -43,7 +43,7 @@ useEffect(() => {
 
   }
   return (
-   <Container onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} onChange={(e) => _handleKey(e)}>
+   <Container onFocus={props.onfocus} onBlur={props.onblur} onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} onChange={(e) => _handleKey(e)}>
     
     </Container>
   );

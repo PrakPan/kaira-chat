@@ -25,6 +25,8 @@ const Search = (props) => {
   const [results, setResults] = useState([]);
   // const [selectedCities, setSelectedCities] = useState([]);
   const _handleKey = (e) => {
+    if(e.target.value)
+    if(e.target.value.length > 1)
     axios.get(`https://dev.apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
         if(res.data.length){
           setShowResults(true);
@@ -40,7 +42,7 @@ const Search = (props) => {
   }
   return (
    <Container>
-        <SearchInput searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
+        <SearchInput onfocus={props.onfocus} onblur={props.onblur} searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
         {showResults && !props.searchFinalized? <SearchResults top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized}></SearchResults> : null}
     </Container>
   );
