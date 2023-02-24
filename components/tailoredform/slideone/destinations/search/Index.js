@@ -20,12 +20,12 @@ width: 100%;
 const Search = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
-  // const [showCities, setShowCities] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   return (
-   <Container>
+   <Container onClick={() => setShowResults(true)}>
         <SearchInput></SearchInput>
-        <SearchResults top="5.75rem"></SearchResults>
+        {showResults ? <SearchResults top="5.75rem"></SearchResults> : null}
     </Container>
   );
 }
