@@ -7,7 +7,7 @@ import {MdOutlineLocationOn} from 'react-icons/md'
 import {FiInfo} from 'react-icons/fi'
 import {GrFormEdit} from 'react-icons/gr';
 import SearchInputStarting from '../searchstarting/Input';
-import SearchInput from '../search/Input';
+import SearchInput from '../search/Index';
 import {BiTargetLock} from 'react-icons/bi';
 
 //  import LocationsContainer from './LocationsContainer'

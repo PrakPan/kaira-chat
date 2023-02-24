@@ -5,7 +5,7 @@ import media from '../../../../media';
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
 import SearchInput from './Input';
-
+import SearchResults from './results/Index';
 const Container = styled.div`
  
 width: 100%;
@@ -25,6 +25,7 @@ const Search = (props) => {
   return (
    <Container>
         <SearchInput></SearchInput>
+        <SearchResults top="5.75rem"></SearchResults>
     </Container>
   );
 }
