@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import img1 from '../../public/assets/logoblack.svg';
 import content from '../../public/content/loaderbar';
 import Linecirclecontainer from "./linecirclecontainer";
-
+import LottieAnimation from "./Lottie";
 
 
 const COLORS = {
@@ -120,8 +120,8 @@ const Index = () => {
 
     <Container1 className='center-div'>
       {/* <Heading1 className='center-div'> Ready to make memories!</Heading1> */}
-
-      <Logo style={{ margin: '1rem 0 4rem 0' }} className='center-div' src={img1} ></Logo>
+<LottieAnimation></LottieAnimation>
+      {/* <Logo style={{ margin: '1rem 0 4rem 0' }} className='center-div' src={img1} ></Logo> */}
      <Linecirclecontainer/>
 
       <Heading2 className='center-di font-opensans' > {content[currentStep - 1].heading} </Heading2>
