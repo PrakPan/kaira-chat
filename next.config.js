@@ -15,6 +15,9 @@ const sentryWebpackPluginOptions = {
   // https://github.com/getsentry/sentry-webpack-plugin#options.
 };
 
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const moduleExports =  withImages({
   compiler: {
@@ -36,4 +39,4 @@ const moduleExports =  withImages({
     },
 })
 
-module.exports = withSentryConfig(moduleExports, sentryWebpackPluginOptions);
+module.exports = withSentryConfig(withBundleAnalyzer(moduleExports, sentryWebpackPluginOptions));

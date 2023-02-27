@@ -25,6 +25,7 @@
     "@mui/lab": "^5.0.0-alpha.55",
     "@mui/material": "^5.1.1",
     "@mui/x-date-pickers": "^5.0.2",
+    "@next/bundle-analyzer": "^13.2.1",
     "@sentry/cli": "^2.5.2",
     "@sentry/nextjs": "^7.9.0",
     "axios": "^0.21.4",
