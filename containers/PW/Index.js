@@ -21,6 +21,7 @@ import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
 import gif from '../../public/assets/loader.gif';
 import FooterBannerMobile from './FooterBannerMobile';
+import Holi from './FullImgContentRepublic';
 // import qs from qs;
  
 const SetWidthContainer = styled.div`
@@ -65,7 +66,7 @@ padding: 1rem;
 grid-gap: 1rem;
 
 @media screen and (min-width: 768px){
-  padding: 2rem;
+  padding: 2rem 0;
   grid-gap: 2rem;
   grid-template-columns: 1fr 1fr 1fr;
 }
@@ -356,6 +357,10 @@ const EXPERIENCE = {
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent/>
       </FullImage>
+      <FullImage padding="0" height="max-content" heightMobile="max-content" url="media/website/debashis-rc-biswas-dyPFnxxUhYk-unsplash.jpg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+          <Holi/>
+      </FullImage>
+      
       
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
 <BannerOne></BannerOne>
@@ -364,8 +369,19 @@ const EXPERIENCE = {
           <Republic></Republic>
       </FullImage> */}
 <SetWidthContainer>
-  {!loading ? <GridContainer>
+  <div id="holi"></div>
+<Heading align="center" aligndesktop="left" margin={!isPageWide  ? "2.5rem 0.5rem" : "2.5rem 0rem"} bold noline>Holi Specials</Heading>
+{!loading ? <GridContainer>
+    
     { itinerariesJSX}
+    
+ 
+  </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
+  }
+  {!loading ? <GridContainer>
+    
+    { itinerariesJSX}
+
  
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   }

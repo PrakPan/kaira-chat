@@ -7,8 +7,9 @@ import urls from '../../services/urls';
 import Enquiry from './newenquiry/Index';
 import ImageLoader from '../../components/ImageLoader';
 import Banner from './BannerOne';
-import {BsFillCalendarFill} from 'react-icons/bs';
-import {BsYoutube} from 'react-icons/bs';BsYoutube
+import {BsFillCalendarFill} from 'react-icons/bs'
+import {BsYoutube} from 'react-icons/bs';
+import { Link } from 'react-scroll';
 const Container = styled.div`
   color:white;
  width: 100%;
@@ -17,7 +18,7 @@ const Container = styled.div`
  padding: 0 1rem;
 
  @media screen and (min-width: 768px){
-    padding: 0 7.5vh;
+    padding: 12.5vh 7.5vh;
  
     }
 `;
@@ -42,7 +43,7 @@ color: white;
     font-weight: 100;
     width: 99%;
     letter-spacing: 3px;
-    line-height: 1;
+    line-height: 1.5;
 
     margin: 0 0 0 -1px;
     font-size: 1.2rem;
@@ -53,10 +54,10 @@ color: white;
 `;
 
 const PaddingContianer = styled.div`
-padding: 5vh 0 0 0;
+padding: 0 0 0 0;
 flex-grow: 1;
 @media screen and (min-width: 768px){
-    padding: 10vh 0 0 0;
+    padding: 0 0 0 0;
 
 }
 `
@@ -113,11 +114,12 @@ const FullImgContent = (props) => {
 
         <Container className='font-opensans center-di '>
            <PaddingContianer >
-           <SubText style={{fontWeight:  '800'}}>
-                 REPUBLIC DAY SPECIAL
-            </SubText>
-            <Heading>MANALI</Heading>
-            <Heading>GETAWAY</Heading>
+           <Heading style={{fontWeight:  '800'}}>
+                 HOLI SPECIALS
+            </Heading>
+            <SubText>Avail 50% discount for Holi Dates.</SubText>
+            <SubText>#PWTravelTogether</SubText>
+            {/* <Heading>GETAWAY</Heading> */}
 
             {/* <SubText>
                 50% amount of your holiday will be paid by Physics Wallah
@@ -137,7 +139,7 @@ const FullImgContent = (props) => {
                 <BsYoutube style={{marginLeft: '0.5rem', marginTop: '-0px'}}></BsYoutube>
                  </StyledA>
             </div> */}
-                            <Button borderWidth="0" bgColor="#f7e700" hoverBgColor="black" fontWeight="700" borderRadius="5px" padding="0.5rem 1.5rem" hoverColor="white" margin={isPageWide ? "2.5rem 0" : '4rem 0'} link='/itinerary/physicswallah/943fbccf-8136-435a-9dd5-d5a32eeda4f1'>Book Now</Button>
+                            <Link to='holi'><Button borderWidth="0" bgColor="#f7e700" hoverBgColor="black" fontWeight="700" borderRadius="5px" padding="0.5rem 1.5rem" hoverColor="white" margin={isPageWide ? "2.5rem 0 0 0 " : '4rem 0 0 0'} onclick={() => console.log('')}>View Now</Button></Link>
 
                 </PaddingContianer>
                {/* <Banner></Banner> */}
