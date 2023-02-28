@@ -9,7 +9,7 @@ import {BsPencilFill} from 'react-icons/bs';
 import SearchInputStarting from '../searchstarting/Input';
 import SearchInput from '../search/Index';
 import {BiTargetLock} from 'react-icons/bi';
-
+import {AiFillDelete} from 'react-icons/ai';
 //  import LocationsContainer from './LocationsContainer'
 const Container = styled.div`
  margin-bottom: 0.25rem;
@@ -79,16 +79,17 @@ const SelectedDestination = (props) => {
         props.selectedCities.length ? 
         <span>{'+ '+ props.selectedCities.length + " Cities Added"}</span>
         : 
-        props.CITIES ? 
-        <span onClick={props.openCities}>{' + Select Cities'}</span> : null
-        : 
-        props.CITIES ? 
-
+        props.CITIES || (searchFinalized) ? 
+        <span onClick={props.openCities}>{' + Select Cities'}</span> 
+        :
+        null :
+        props.CITIES || (searchFinalized) ? 
+     
         <span onClick={props.openCities}>{' + Select Cities'}</span>
         : null
-
+       
     }
-      {searchFinalized ? <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> : null}
+      {searchFinalized ? <AiFillDelete className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null}
 
 
        

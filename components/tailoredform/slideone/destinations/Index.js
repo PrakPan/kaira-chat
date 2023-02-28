@@ -23,11 +23,23 @@ const Destinations = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
   const [destinations, setDestinations] = useState(null);
+  const _removeDestinationHandler= (dest) => {
 
+    let dests = [];
+    console.log(dest);
+    for(var i = 0 ; i < destinations.length; i++){
+
+    }
+    // dest.push(
+    //   <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+    // )
+    setDestinations(dest.slice());
+
+   }
   useEffect(() => {
     setDestinations(
       [
-        <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+        <SelectedDestination _removeDestinationHandler={_removeDestinationHandler} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
 
       ]
     )
@@ -36,11 +48,12 @@ const Destinations = (props) => {
    const _addDestinationHandler= () => {
     let dest = destinations.slice();
     dest.push(
-      <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+      <SelectedDestination  _removeDestinationHandler={_removeDestinationHandler}  selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
     )
     setDestinations(dest.slice());
 
    }
+  
   return (
    <Container>
     {/* <p className="font-opensans">Where do  you want to go?</p> */}
