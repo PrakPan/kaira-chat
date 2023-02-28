@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import S3Icon from '../S3Icon'
 import ImageLoader from '../../../ImageLoader';
 import POIModal from '../../../modals/poi/Index';
-
+import POIDetailsDrawer from '../../../drawers/PoiDetailsDrawer';
+import {Drawer} from '@material-ui/core'
 
 const Container = styled.div`
 width: 100%;
@@ -20,6 +21,7 @@ text-align: center
 
 const  Icon= (props) => {
     const [showModal, setShowModal] = useState(false);
+    const [showDrawer, setShowDrawer] = useState(false);
 
 
 
@@ -27,15 +29,33 @@ const  Icon= (props) => {
 
     
     const _handleOpen = (event) => {
-        props._openPoiModal(props.icon);
+        if (props.drawer) {
+            setShowDrawer(true)
+        }
+        else props._openPoiModal(props.icon);
+        
     }
-         return( 
-            <Container onClick={(event) => _handleOpen(event)}  >
-                    <ImageLoader url={props.icon.image} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} location={props.location} icon={props.icon}></ImageLoader>
-                    <IconTagLine className="font-opensans">{props.icon.name}</IconTagLine>
-                    <POIModal show={showModal} onHide={() => setShowModal(false)} />
-            </Container>
-          );
+        console.log(showDrawer);
+
+         return (
+           <Container onClick={(event) => _handleOpen(event)}>
+             <ImageLoader
+               url={props.icon.image}
+               dimensions={{ width: 900, height: 900 }}
+               dimensionsMobile={{ width: 900, height: 900 }}
+               location={props.location}
+               icon={props.icon}
+             ></ImageLoader>
+             <IconTagLine className="font-opensans">
+               {props.icon.name}
+             </IconTagLine>
+             <POIModal show={showModal} onHide={() => setShowModal(false)} />
+             <POIDetailsDrawer
+               show={showDrawer}
+               onClose={() => setShowDrawer(false)}
+             />
+           </Container>
+         );
     }
    
 
