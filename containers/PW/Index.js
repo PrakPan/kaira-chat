@@ -357,9 +357,9 @@ const EXPERIENCE = {
       <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent/>
       </FullImage>
-      <FullImage padding="0" height="max-content" heightMobile="max-content" url="media/website/debashis-rc-biswas-dyPFnxxUhYk-unsplash.jpg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+      {/* <FullImage padding="0" height="max-content" heightMobile="max-content" url="media/website/debashis-rc-biswas-dyPFnxxUhYk-unsplash.jpg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <Holi/>
-      </FullImage>
+      </FullImage> */}
       
       
       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
