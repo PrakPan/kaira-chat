@@ -83,7 +83,7 @@ setOffset(i+1);
     
     axiospagelistinstance
       .get(
-        `/?country=India`
+        ``
       )
       .then((res) => {
 
