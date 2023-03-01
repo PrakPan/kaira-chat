@@ -344,7 +344,7 @@ const _addCityHandler = (city_id, city) => {
             // _nextQuestionHandler();
             window.scrollTo(0,0);
             if(!response.data.auto_itinerary_created) {
-              // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+              window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
             
                }
            else{
@@ -352,12 +352,12 @@ const _addCityHandler = (city_id, city) => {
 
               setTimeout(function(){ 
                  
-                // router.push('/itinerary/'+response.data.itinerary.itinerary_id);
+                router.push('/itinerary/'+response.data.itinerary.itinerary_id);
                }, 6000);
 
             }
           }).catch( err => {
-            // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
           }
           );
       }
