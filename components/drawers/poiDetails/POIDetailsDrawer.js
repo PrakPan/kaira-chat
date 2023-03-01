@@ -6,10 +6,9 @@ import POIDetails from "./POIDetails";
 
 const POIDetailsDrawer = (props) => {
   const [poiDetailsData, setPoiDetailsData] = useState({});
-console.log(props)
   useEffect(() => {
     axiosPOIdetailsInstance
-      .get("/?id=14")
+      .get(`/?id=${props.iconId}`)
       .then((res) => setPoiDetailsData(res.data));
   }, []);
   return (
@@ -18,8 +17,8 @@ console.log(props)
       anchor={"right"}
       onClose={props.handleCloseDrawer}
     >
-      {!poiDetailsData ? (
-        <POIDetails />
+      {poiDetailsData.name ? (
+        <POIDetails data={poiDetailsData} />
       ) : (
         <POIDetailsSkeleton handleCloseDrawer={props.handleCloseDrawer} />
       )}

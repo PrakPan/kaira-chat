@@ -26,7 +26,6 @@ const Icon = (props) => {
   const handleCloseDrawer = () => {
     setShowDrawer(false);
   };
-
   const _handleOpen = (event) => {
     if (props.drawer) {
       setShowDrawer(!showDrawer);
@@ -46,6 +45,7 @@ const Icon = (props) => {
       <POIModal show={showModal} onHide={() => setShowModal(false)} />
       <POIDetailsDrawer
         show={showDrawer}
+        iconId={props.icon.id}
         handleCloseDrawer={() => setShowDrawer(false)}
       />
     </Container>

@@ -7,7 +7,7 @@ import { Box } from '@material-ui/core';
 
 const POIDetailsSkeleton = (props) => {
     return (
-      <Stack spacing={1} padding="16px">
+      <Stack spacing={1} padding="16px" width="500px">
         <CloseIcon height={23} cursor={"pointer"} onClick={props.handleCloseDrawer} />
         <Skeleton variant="rounded" width={468} height={188} />
 
