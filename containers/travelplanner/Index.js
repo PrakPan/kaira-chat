@@ -420,6 +420,8 @@ useEffect(() => {
     <Map locations={props.experienceData.locations}></Map>
     </MapContainer>
   </MapGridContainer>
+  <Button  link={'/tailored-travel'} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Create your travel plan now!</Button> 
+
   </SetWidthContainer>
 <SetWidthContainer>
 
@@ -428,6 +430,8 @@ useEffect(() => {
 
   : null}     
             {itinerariesToIndexExclusive.length ? <GridContainer>{itinerariesToIndexExclusive}</GridContainer> : null}
+            <Button  link={'/tailored-travel'} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Craft your free itinerary</Button> 
+
   {/* {itinerariesExclusiveJSX.length? <GridContainer>
     { itinerariesExclusiveJSX}
  
@@ -451,6 +455,8 @@ useEffect(() => {
     !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600"padding="0.5rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
   } */}
+              <Button  link={'/tailored-travel'} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your adventure</Button> 
+
      
        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{props.experienceData.destination ? "Top locations across "+props.experienceData.destination : "Top Locations"}</Heading>        
  <Locations locations={props.experienceData.locations} viewall ></Locations>
