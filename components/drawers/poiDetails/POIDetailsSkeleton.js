@@ -4,6 +4,9 @@ import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import { Box } from '@material-ui/core';
 
+import Lottie from 'react-lottie'
+import animationData from '../../../public/assets/skeleton_square.json'
+import SkeletonCard from '../../ui/button/SkeletonCard';
 
 const POIDetailsSkeleton = (props) => {
   const LoadingBox = styled.div`
@@ -20,52 +23,51 @@ const POIDetailsSkeleton = (props) => {
         <div onClick={props.handleCloseDrawer}>
           <CloseIcon height={23} cursor={"pointer"} />
         </div>
+        
 
-        <LoadingBox variant="rounded" width="468px" height="188px"></LoadingBox>
+        <SkeletonCard width={"468px"} height={"188px"} />
+    
+      <SkeletonCard height={'100px'} width={'325px'} />
 
-        <LoadingBox variant="rounded" width="468px" height="100px"></LoadingBox>
 
         <Box>
-          <LoadingBox
-            variant="rounded"
-            width="140px"
-            height="20px"
-            mb="10px"
-          ></LoadingBox>
-          <LoadingBox
-            variant="rounded"
-            width="468px"
-            height="84px"
-          ></LoadingBox>
+          <SkeletonCard
+            width={"140px"}
+            height={"20px"}
+            mb={"10px"}
+          />
+          <SkeletonCard
+            width={"468px"}
+            height={"84px"}
+          />
         </Box>
 
         <Box>
-          <LoadingBox
-            variant="rounded"
-            width="140px"
-            height="20px"
-            mb="10px"
-          ></LoadingBox>
-          <LoadingBox
-            variant="rounded"
-            width="468px"
-            height="84px"
-          ></LoadingBox>
+          <SkeletonCard
+            width={"200px"}
+            height={"20px"}
+            mb={"10px"}
+          />
+          <SkeletonCard
+            width={"468px"}
+            height={"120px"}
+          />
         </Box>
 
         <Box>
-          <LoadingBox
-            variant="rounded"
-            width="140px"
-            height="20px"
-            mb="10px"
-          ></LoadingBox>
-          <LoadingBox
-            variant="rounded"
-            width="468px"
-            height="100px"
-          ></LoadingBox>
+          <SkeletonCard
+            width={"140px"}
+            height={"20px"}
+            mb={"10px"}
+          />
+          <SkeletonCard
+            width={"468px"}
+            height={"100px"}
+          />
         </Box>
+
+
+        <SkeletonCard width={'468px'} height={'150px'} />
       </Stack>
     );
 }

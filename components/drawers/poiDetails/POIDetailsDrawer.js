@@ -17,7 +17,7 @@ const POIDetailsDrawer = (props) => {
       anchor={"right"}
       variant="persistent"
     >
-      {poiDetailsData.name ? (
+      {!poiDetailsData.name ? (
         <POIDetails
           data={poiDetailsData}
           handleCloseDrawer={props.handleCloseDrawer}
