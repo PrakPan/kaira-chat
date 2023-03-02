@@ -15,10 +15,13 @@ const POIDetailsDrawer = (props) => {
     <Drawer
       open={props.show}
       anchor={"right"}
-      onClose={props.handleCloseDrawer}
+      variant="persistent"
     >
       {poiDetailsData.name ? (
-        <POIDetails data={poiDetailsData} />
+        <POIDetails
+          data={poiDetailsData}
+          handleCloseDrawer={props.handleCloseDrawer}
+        />
       ) : (
         <POIDetailsSkeleton handleCloseDrawer={props.handleCloseDrawer} />
       )}

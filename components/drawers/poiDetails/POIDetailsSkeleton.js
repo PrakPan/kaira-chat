@@ -6,26 +6,65 @@ import { Box } from '@material-ui/core';
 
 
 const POIDetailsSkeleton = (props) => {
+  const LoadingBox = styled.div`
+    background-color: #eeede7;
+    border-radius: 10px;
+    width: ${(props) => props.width};
+    height: ${(props) => props.height};
+    margin-top : ${(props) => props.mt};
+    margin-bottom : ${(props) => props.mb};
+  `;
+
     return (
       <Stack spacing={1} padding="16px" width="500px">
-        <CloseIcon height={23} cursor={"pointer"} onClick={props.handleCloseDrawer} />
-        <Skeleton variant="rounded" width={468} height={188} />
+        <div onClick={props.handleCloseDrawer}>
+          <CloseIcon height={23} cursor={"pointer"} />
+        </div>
 
-        <Skeleton variant="rounded" width={468} height={100} />
+        <LoadingBox variant="rounded" width="468px" height="188px"></LoadingBox>
+
+        <LoadingBox variant="rounded" width="468px" height="100px"></LoadingBox>
 
         <Box>
-          <Skeleton variant="text" width={140} sx={{ fontSize: "18px" }} />
-          <Skeleton variant="rounded" width={468} height={84} />
+          <LoadingBox
+            variant="rounded"
+            width="140px"
+            height="20px"
+            mb="10px"
+          ></LoadingBox>
+          <LoadingBox
+            variant="rounded"
+            width="468px"
+            height="84px"
+          ></LoadingBox>
         </Box>
 
         <Box>
-          <Skeleton variant="text" width={140} sx={{ fontSize: "18px" }} />
-          <Skeleton variant="rounded" width={468} height={84} />
+          <LoadingBox
+            variant="rounded"
+            width="140px"
+            height="20px"
+            mb="10px"
+          ></LoadingBox>
+          <LoadingBox
+            variant="rounded"
+            width="468px"
+            height="84px"
+          ></LoadingBox>
         </Box>
 
         <Box>
-          <Skeleton variant="text" width={140} sx={{ fontSize: "25px" }} />
-          <Skeleton variant="rounded" width={468} height={100} />
+          <LoadingBox
+            variant="rounded"
+            width="140px"
+            height="20px"
+            mb="10px"
+          ></LoadingBox>
+          <LoadingBox
+            variant="rounded"
+            width="468px"
+            height="100px"
+          ></LoadingBox>
         </Box>
       </Stack>
     );

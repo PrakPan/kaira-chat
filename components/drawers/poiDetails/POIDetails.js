@@ -3,31 +3,124 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Box } from "@material-ui/core";
 import Stack from "@mui/material/Stack";
 import styled from 'styled-components'
+import { Rating } from '@mui/material';
+import { useState } from 'react';
+import ImageLoader from '../../ImageLoader'
 const POIDetails = (props) => {
-    const Image = styled.img`
-        width : 468px;
-        height : 188px;
-        border-radius : 12px
-    `
+  const about = (
+    <p>
+      {props.data.short_description?.substr(0, 250)} <b>...more</b>
+    </p>
+  );
+  const [aboutText,setAboutText] = useState(about)
+ 
     const Title = styled.p`
-       font-weight : 600;
+       font-weight : 800;
        font-size : 20px;
-       height : 30px
+    `
+    const Reviews = styled.div`
+      display : flex;
+
+      &>p ,&>u {
+        font-size : 12px;
+        color : #7A7A7A
+      }
+      &>u{
+        margin-left : 3px
+      }
+    `
+    const Text = styled.p`
+    font-size : 14px
     `
 
+  const Heading = styled.p`
+    font-size: 18px;
+    font-weight: 800;
+  `;
+
+    const experience_filters = <div>
+      {
+        props.data.experience_filters?.map((e,i)=><span>{e} {props.data.experience_filters.length-1 == i ? '' : <b>·</b>} </span>)
+      }
+  </div>
+
+  const tips = <ul>
+    {
+      props.data.tips?.map((e) => <li>{e}</li>)
+}
+  </ul>
 
   return (
-    <Stack padding="16px" width="500px">
-      <CloseIcon
-              height={23}
-              mb={23}
-        cursor={"pointer"}
-        onClick={props.handleCloseDrawer}
-      />
-          <Image src={props.data.image} />
-          <Title>{props.data.name}</Title>
+    <Stack spacing={2} padding="16px" width="500px">
+      <div style={{ marginBottom: "10px" }} onClick={props.handleCloseDrawer}>
+        <CloseIcon height={23} cursor={"pointer"} />
+      </div>
+      <ImageLoader
+        borderRadius="8px"
+        marginTop="23px"
+        width="468px"
+        height="188px"
+        widthMobile="100%"
+        url={props.data.image}
+        dimensionsMobile={{ width: 600, height: 600 }}
+        dimensions={{ width: 900, height: 900 }}
+      ></ImageLoader>
 
-      </Stack>
+      <Box>
+        <Title>{props.data.name}</Title>
+        <Reviews>
+          {props.data.rating && (
+            <Rating
+              size="small"
+              name="read-only"
+              value={props.data.rating}
+              readOnly
+            />
+          )}
+
+          {props.data.rating && <p>{props.data.rating} ·</p>}
+
+          {props.data.user_ratings_total && (
+            <u>{props.data.user_ratings_total} Google reviews</u>
+          )}
+        </Reviews>
+        <Text>{experience_filters}</Text>
+      </Box>
+
+      <Box>
+        <Heading>About</Heading>
+        <Text onClick={() => setAboutText(props.data.short_description)}>
+          {aboutText}
+        </Text>
+      </Box>
+
+      <Box>
+        <Heading>Getting Around</Heading>
+        <Text>{props.data.getting_around}</Text>
+      </Box>
+
+      {props.data.timings && (
+        <Box>
+          <Heading>Timings</Heading>
+          <Text>
+            {
+              <ul>
+                {props.data.timings.weekday_text?.map((e) => (
+                  <li>{e}</li>
+                ))}
+              </ul>
+            }
+          </Text>
+        </Box>
+      )}
+
+      {tips && (
+        <Box>
+          <Heading>Tips</Heading>
+          <Text>{tips}</Text>
+        </Box>
+      )}
+    </Stack>
   );
 }
 

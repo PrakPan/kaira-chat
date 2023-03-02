@@ -28,7 +28,7 @@ const Icon = (props) => {
   };
   const _handleOpen = (event) => {
     if (props.drawer) {
-      setShowDrawer(!showDrawer);
+      setShowDrawer(true);
     } else props._openPoiModal(props.icon);
   };
 
@@ -46,7 +46,7 @@ const Icon = (props) => {
       <POIDetailsDrawer
         show={showDrawer}
         iconId={props.icon.id}
-        handleCloseDrawer={() => setShowDrawer(false)}
+        handleCloseDrawer={handleCloseDrawer}
       />
     </Container>
   );
