@@ -10,7 +10,7 @@ import {BsWhatsapp} from 'react-icons/bs';
 import TailoredForm from '../../components/tailoredform/Index';
 import Rolodex from './Rolodex';
  
-import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
+// import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
   const Container = styled.div`
   color:white;
  width: 100%;
@@ -29,9 +29,9 @@ const Heading = styled.h1`
 color: white;
 
 width: 99%;
-font-weight: 700;
+font-weight: 800;
 margin-bottom: 1rem;
-font-size: 2rem;
+font-size: 3rem;
 @media screen and (min-width: 768px){
   font-size: 4rem;
   font-weight: 700;
@@ -85,7 +85,7 @@ display : flex;
 `;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
-    const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+    // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 // console.log('', props.children_cities)
     return (
 
@@ -102,7 +102,7 @@ const FullImgContent = (props) => {
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
                 <div className='hidden-desktop'>
-                <Button bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="0" onclick={() => setShowMobilePlanner(true)} margin="1rem auto">Build Now</Button>
+                <Button padding="0.75rem 1rem" fontSize="1.2rem" fontWeight="800" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="0" onclick={() => props.setShowMobilePlanner(true)} margin="1rem auto">Build your trip</Button>
              </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}
@@ -116,7 +116,6 @@ const FullImgContent = (props) => {
                         <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                     </div>
                 </div> */}
-                <TailoredFormMobileModal page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} onHide={() => setShowMobilePlanner(false)}    cities={props.cities} show={showMoiblePlanner} ></TailoredFormMobileModal>
              
         </Container>
     );
