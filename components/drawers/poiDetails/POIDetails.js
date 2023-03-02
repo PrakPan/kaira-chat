@@ -38,6 +38,20 @@ const POIDetails = (props) => {
     font-weight: 800;
   `;
 
+  const TimeStamp = styled.p`
+    width : 160px;
+    height : 31px;
+    padding : 4px 0px 4px 8px;
+    background-color : #01202B;
+    border-radius : 20px;
+    color : white;
+    font-size : 14px;
+    font-weight : 600;
+    position : absolute;
+    top : 185px;
+    left : 300px;
+  `
+
     const experience_filters = <div>
       {
         props.data.experience_filters?.map((e,i)=><span>{e} {props.data.experience_filters.length-1 == i ? '' : <b>·</b>} </span>)
@@ -65,7 +79,8 @@ const POIDetails = (props) => {
         dimensionsMobile={{ width: 600, height: 600 }}
         dimensions={{ width: 900, height: 900 }}
       ></ImageLoader>
-
+      {props.data.ideal_duration_hours && <TimeStamp>Approx Time : {props.data.ideal_duration_hours} hrs</TimeStamp>}
+      
       <Box>
         <Title>{props.data.name}</Title>
         <Reviews>
