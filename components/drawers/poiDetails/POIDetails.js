@@ -39,9 +39,8 @@ const POIDetails = (props) => {
   `;
 
   const TimeStamp = styled.p`
-    width : 160px;
     height : 31px;
-    padding : 4px 0px 4px 8px;
+    padding : 4px 8px;
     background-color : #01202B;
     border-radius : 20px;
     color : white;
@@ -99,20 +98,20 @@ const POIDetails = (props) => {
             <u>{props.data.user_ratings_total} Google reviews</u>
           )}
         </Reviews>
-        <Text>{experience_filters}</Text>
+        {experience_filters && <Text>{experience_filters}</Text>}
       </Box>
 
-      <Box>
+      {props.data.short_description && <Box>
         <Heading>About</Heading>
         <Text onClick={() => setAboutText(props.data.short_description)}>
           {aboutText}
         </Text>
-      </Box>
+      </Box>}
 
-      <Box>
+      {props.data.getting_around &&<Box>
         <Heading>Getting Around</Heading>
         <Text>{props.data.getting_around}</Text>
-      </Box>
+      </Box>}
 
       {props.data.timings && (
         <Box>

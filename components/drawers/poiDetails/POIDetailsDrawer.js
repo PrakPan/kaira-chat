@@ -1,25 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { Drawer, Box } from "@material-ui/core";
+import React, { useState } from "react";
+import { Drawer } from "@material-ui/core";
 import POIDetailsSkeleton from "./POIDetailsSkeleton";
-import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
 import POIDetails from "./POIDetails";
 
 const POIDetailsDrawer = (props) => {
-  const [poiDetailsData, setPoiDetailsData] = useState({});
-  useEffect(() => {
-    axiosPOIdetailsInstance
-      .get(`/?id=${props.iconId}`)
-      .then((res) => setPoiDetailsData(res.data));
-  }, []);
+
   return (
     <Drawer
       open={props.show}
       anchor={"right"}
       variant="persistent"
     >
-      {poiDetailsData.name ? (
+      {props.poiDetailsData.name ? (
         <POIDetails
-          data={poiDetailsData}
+          data={props.poiDetailsData}
           handleCloseDrawer={props.handleCloseDrawer}
         />
       ) : (

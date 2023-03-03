@@ -4,7 +4,7 @@ import S3Icon from "../S3Icon";
 import ImageLoader from "../../../ImageLoader";
 import POIModal from "../../../modals/poi/Index";
 import POIDetailsDrawer from "../../../drawers/poiDetails/POIDetailsDrawer";
-import { Drawer } from "@material-ui/core";
+import axiosPOIdetailsInstance from '../../../../services/poi/poidetails'
 
 const Container = styled.div`
   width: 100%;
@@ -22,6 +22,7 @@ const IconTagLine = styled.p`
 const Icon = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [poiDetailsData, setPoiDetailsData] = useState({});
 
   const handleCloseDrawer = () => {
     setShowDrawer(false);
@@ -29,6 +30,10 @@ const Icon = (props) => {
   const _handleOpen = (event) => {
     if (props.drawer) {
       setShowDrawer(true);
+      console.log('opened')
+      axiosPOIdetailsInstance
+      .get(`/?id=${props.icon.id}`)
+      .then((res) => setPoiDetailsData(res.data));
     } else props._openPoiModal(props.icon);
   };
 
@@ -47,6 +52,7 @@ const Icon = (props) => {
         show={showDrawer}
         iconId={props.icon.id}
         handleCloseDrawer={handleCloseDrawer}
+        poiDetailsData={poiDetailsData}
       />
     </Container>
   );
