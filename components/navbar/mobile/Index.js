@@ -126,17 +126,17 @@ const Mobile = (props) => {
              {/* <TTWLogo src={TTWlogowhite}></TTWLogo> */}
              {props.headerColor === 'black' ? <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="15vw" leftalign widthmobile="15vw" url={'media/website/logowhite.svg'} ></ImageLoader></Link> : <Link href='/'><ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} leftalign width="15vw" widthmobile="15vw"  url={'media/website/logoblack.svg'}></ImageLoader></Link>}
             </div>
-            <div style={{display : 'flex' ,justifyContent : 'space-between', width : 'fit-content', alignItems : 'center' , gap : '15px'}}>
+            <div style={{display : 'flex' ,justifyContent : 'space-between', width : '100%', alignItems : 'center' , gap : '15px'}}>
             {  !props.hidecta  ?
             <div style={{}} className="center-div" onClick={() => setToggleSearch(true)}>
             <FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black'}}></FaSearch> 
             </div>
           : null}
 
-            <LocalPhoneIcon style={{hieght : '100%',margin : 'auto' , color : 'white'}} />
-            {  !props.hidecta  ? 
+            <LocalPhoneIcon style={{hieght : '100%',margin : 'auto 0' , color : 'white'}} />
+            {/* {  !props.hidecta  ? 
                         <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" padding="0.75rem 0.75rem" link={'/tailored-travel'}>Create a Trip</Button> 
-          : null}
+          : null} */}
             </div>
             
         <Drawer
