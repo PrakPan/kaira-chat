@@ -1,3 +1,4 @@
+ 
 import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from './Card';
@@ -83,7 +84,7 @@ setOffset(i+1);
     
     axiospagelistinstance
       .get(
-        `/?country=India`
+        ``
       )
       .then((res) => {
 
@@ -164,14 +165,18 @@ setOffset(5);
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations ? props.locations.length > offset ? <Button  onclick={_showMoreLocations} hoverBgColor="black" fontSizeDesktop="12px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button> : null : null}
+       {props.locations ? props.locations.length > offset ?
+        <Button  onclick={_showMoreLocations} hoverBgColor="black" fontSizeDesktop="16px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button> :
+        <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Craft Now!</Button> 
+
+        : null}
       </div>
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
             <Carousel cards={cardsToShowJSX}></Carousel>
     </div>
-    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null}
+    {/* {props.viewall ? <Button  onclick={_handleTailoredClick} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null} */}
   </div></>
   )
   ;
@@ -179,3 +184,4 @@ setOffset(5);
 
 export default LocationsBlog;
 
+ 

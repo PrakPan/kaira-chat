@@ -96,7 +96,7 @@ const FullImgContent = (props) => {
             <Heading>{props.tagline}</Heading>
              
             <Rolodex></Rolodex>
-          
+ 
                 <div className='hidden-desktop'>
                 <Button bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="0" onclick={() => setShowMobilePlanner(true)} margin="1rem auto">Build Now</Button>
              </div>

@@ -1,14 +1,14 @@
 import React, {useState, useRef, useEffect, createRef} from 'react';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
-import * as ga from '../../services/ga/Index';
+// import * as ga from '../../services/ga/Index';
 
 import styled from 'styled-components';
-import ImageLoader from '../../components/ImageLoader';
+// import ImageLoader from '../../components/ImageLoader';
  import {BiChevronDown} from 'react-icons/bi'
-import Map from './NewMap'
+// import Map from './NewMap'
 const Container = styled.div`
  padding: 0 1rem;
 @media screen and (min-width: 768px){
@@ -75,10 +75,10 @@ const  Overview = (props) =>{
         </div>
         {/* <div style={{}}><Map locations={props.locations}></Map></div> */}
       {/* </GridContainer> */}
+
     </Container>
   );
 }
 
 
 export default Overview;
-

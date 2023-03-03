@@ -31,7 +31,7 @@ const TravelPlanner = (props) => {
 
 export async function getStaticPaths(){
 
-    const res = await fetch(`https://dev.apis.tarzanway.com/page/list?country=India`)
+    const res = await fetch(`https://dev.apis.tarzanway.com/page/list?country=india`)
     const data = await res.json();
     let paths = [];
     for(var i = 0 ; i<data.length ; i++){

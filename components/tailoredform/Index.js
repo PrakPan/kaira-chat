@@ -1,3 +1,4 @@
+ 
 import React, {useState, useEffect} from "react";
 import dayjs  from 'dayjs';
 
@@ -15,7 +16,7 @@ import Spinner from '../Spinner';
 import { useRouter } from "next/router";
 import {connect} from 'react-redux';
 import {TbArrowBack} from 'react-icons/tb';
-
+import {BiArrowBack} from 'react-icons/bi';
 // import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
@@ -28,7 +29,7 @@ color: black;
 z-index :2;
 
 position: relative;
-  background-color: rgba(255,255,255,1);
+  background-color: ${props => props.slideIndex  ? 'white' : 'rgba(255,255,255,0.9)'};
  width: 100%;
  border: none !important;
 
@@ -241,14 +242,14 @@ const Enquiry = (props) => {
     <div style={{}}>
                 {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
                
-    <Container className={isPageWide ? "border center-div"  : "center-div"} onClick={() => setShowBlack(true)}>
+    <Container slideIndex={slideIndex} className={isPageWide ? "border center-di"  : "center-div"} onClick={() => setShowBlack(true)}>
         {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
             {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
            
             {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '1rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
-            {slideIndex ? <div className="center-div"><TbArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1.5rem'}}></TbArrowBack></div> : <div></div>}
-            <Heading>{"Trip Planner" }</Heading> 
+            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '0rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+            {slideIndex ? <div className="center-div"><BiArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '2px', fontSize: '1.5rem'}}></BiArrowBack></div> : <div></div>}
+            <Heading style={{textAlign: !slideIndex ? 'left' : 'center'}}>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
 
             </div>
             {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
@@ -294,14 +295,14 @@ const Enquiry = (props) => {
             Submit
             </Button> } */}
             {
-                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities ? 'hidden' : 'visible'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities && props.cities ? 'hidden' : 'visible'}}><Button width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
                 </Button></div>  : null
             }
             {
-                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
+                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button fontSize="12px" width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"   onclick={() => setSlideIndex(slideIndex+1)}>
                 Next
-                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button padding="0.5rem 2rem" fontWeight="600"  margin="1rem 0" borderRadius="8px" borderWidth="0" bgColor="#f7e700"  onclick={_submitDataHandler}>
+                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button width="100%" padding="0.5rem 2rem" fontSize="12px" fontWeight="600"  margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={_submitDataHandler}>
             Submit
             </Button></div> : null
             }
@@ -356,4 +357,4 @@ const mapStateToPros = (state) => {
       }
     }
   
-export default  connect(mapStateToPros,mapDispatchToProps)(Enquiry);
+ export default  connect(mapStateToPros,mapDispatchToProps)(Enquiry);

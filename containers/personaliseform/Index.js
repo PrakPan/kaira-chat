@@ -303,6 +303,7 @@ const _addCityHandler = (city_id, city) => {
         }
         const cityids =[];
         const citynames=[];
+        console.log(selectedCities)
         let state_ids = [];
          for(var i =0 ; i < selectedCities.length; i++){
           if(selectedCities[i].type === 'State') state_ids.push(selectedCities[i].city_id)
@@ -319,7 +320,7 @@ const _addCityHandler = (city_id, city) => {
           "budget": budget_to_send,
           "extra_data": extra_data,
           "city_id": cityids,
-          "state_ids": state_ids,
+          "state_id": state_ids,
           "group_type": grouptype,
           "number_of_adults": number_of_adults,
           "number_of_children": number_of_children,

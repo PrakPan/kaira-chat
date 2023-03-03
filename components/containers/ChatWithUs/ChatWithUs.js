@@ -20,7 +20,7 @@ const Text = styled.p`
     
     @media screen and (min-width: 768px){
         width: 100%;
-        font-size: 24px;
+        font-size: 20px;
         margin: 0;
     }
 `;
@@ -72,8 +72,7 @@ const ChatWithUs = (props) => {
       ];
 
 
-const router = useRouter();
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
+ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
 
     if(!props.link)
     return(
@@ -82,11 +81,11 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
 : 
             <ImageLoader url={props.img? props.img : 'media/website/talktous.svg'} width="90%" margin="auto"></ImageLoader>}
             <div className="center-div">
-                <Heading   margin="1rem" align="center" bold noline>{props.heading? props.heading : 'Come On! Talk to Us.'}</Heading>
+                <Heading fontSize="32px" margin="1rem" align="center" bold noline>{props.heading? props.heading : 'Come On! Talk to Us.'}</Heading>
                 <Text className="font-nunito">{props.text? props.text : "We’ve a large community of bloggers, influencers, travelers and of course travel experts to help you out."}</Text>
                 <Button
                boxShadow
-                fontSizeDesktop={'1.25rem'}
+                fontSizeDesktop={'16px'}
                 margin="1rem auto"
                 padding="0.5rem 2rem"
                 borderStyle="solid"
@@ -108,11 +107,11 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
     <div className={classes.ChatContainer+" center-div"}>
             <ImageLoader url={props.img? props.img : 'media/website/talktous.svg'} width="90%" margin="auto"></ImageLoader>
     <div className="center-div">
-        <Heading    margin="1rem" align="center" bold noline>{props.heading? props.heading : 'Come On! Talk to Us.'}</Heading>
+        <Heading  fontSize="32px" margin="1rem" align="center" bold noline>{props.heading? props.heading : 'Come On! Talk to Us.'}</Heading>
         <Text className="font-nunito">{props.text? props.text : "We’ve a large community of bloggers, influencers, travelers and of course travel experts to help you out."}</Text>
     <Button
         boxShadow
-        fontSizeDesktop={'1.25rem'}
+        fontSizeDesktop={'16px'}
         margin="1rem auto"
         padding="0.5rem 2rem"
         borderStyle="solid"

@@ -1,3 +1,4 @@
+ 
 import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from './Card';
@@ -132,7 +133,11 @@ setOffset(offset+6);
         <Container >  
                {cardsToShowJSX}
       </Container>
-       {props.locations && !props.planner ? props.locations.length > offset ? <Button  onclick={_showMoreLocations} fontSizeDesktop="12px" fontWeight="600" hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="0rem auto" padding="0.5rem 2rem" >View More</Button> : null : null}
+       {props.locations && !props.planner ? props.locations.length > offset ?
+        <Button   onclick={_showMoreLocations} fontSizeDesktop="16px" fontWeight="600" hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="0rem auto" padding="0.5rem 2rem" >View More</Button> : 
+        <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null}  borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Build adventure!</Button> 
+
+        : null}
       </div>
  
     {/* <div className='hidden-desktop'>       
@@ -148,3 +153,4 @@ setOffset(offset+6);
 
 export default LocationsBlog;
 
+ 
