@@ -1,7 +1,7 @@
 import react from 'react'
 import styled from 'styled-components';
 import Lottie from 'react-lottie'
-import animationData from '../../../public/assets/skeleton_square.json'
+import animationData from '../../public/assets/skeleton_square.json'
 
 export default function SkeletonCard({width,height,mt,mb,ml,mr}){
     const LoadingBox = styled.div`

@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import { faBars, faTimes, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 import Drawer from '@material-ui/core/Drawer';
 import  Link  from 'next/link';
+import Button from '../../ui/button/Index';
 
 import { useRouter } from 'next/router'
 import LoggedInMenu from './LoggedIn';
@@ -25,7 +27,8 @@ width: 100vw;
 height: 20vw;
 z-index: 998;
 display: grid;
-grid-template-columns: 1fr max-content 1fr;
+grid-template-columns: ${props=> props.hidecta? '0.1fr 1fr 0.1fr' : '0.3fr 1fr 1.5fr'} ;
+
 box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
 `;
 
@@ -108,19 +111,34 @@ const Mobile = (props) => {
        }
        return(
       <div key={props.notOpenCount}>
-    <Container style={{display: props.hideNav? 'none' : 'grid', backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white'}}>
-         <div style={{display:'flex', alignItems: 'center' }}>
+    <Container hidecta={props.hidecta} style={{display: props.hideNav? 'none' : 'grid', backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white'}}>
+    <div style={{display:'flex', alignItems: 'center' , marginRight : '7px'}}>
+        {props.notifications.length && props.notOpenCount ? <RedDot className="center-div font-opensans">{props.notOpenCount}</RedDot> : null}
+            {/* {props.token?<ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}} url={props.image!==null && props.image!=='null' ? props.image : "media/website/user.svg"} onclick={() => setToggleMenu(true)} width="3rem" leftalign height="3rem" widthmobile="3rem" borderRadius="50%"></ImageLoader>:null} */}
+            {typeof window !=='undefined' ? <div>
+                {/* {props.token  ? <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faEllipsisV} onClick={() => setToggleMenu(true)}></FontAwesomeIcon> : <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faBars} onClick={() => setToggleMenu(true)}></FontAwesomeIcon>} */}
+                <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faBars} onClick={() => setToggleMenu(true)}></FontAwesomeIcon>
+                </div> : null}
+                
+        </div>
+
+         <div style={{display:'flex', alignItems: 'center'  }}>
              {/* <TTWLogo src={TTWlogowhite}></TTWLogo> */}
              {props.headerColor === 'black' ? <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="15vw" leftalign widthmobile="15vw" url={'media/website/logowhite.svg'} ></ImageLoader></Link> : <Link href='/'><ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} leftalign width="15vw" widthmobile="15vw"  url={'media/website/logoblack.svg'}></ImageLoader></Link>}
             </div>
-            <div style={{}}className="center-div" onClick={() => setToggleSearch(true)}><FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black'}}></FaSearch></div>
-        <div style={{display:'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
-        {props.notifications.length && props.notOpenCount ? <RedDot className="center-div font-opensans">{props.notOpenCount}</RedDot> : null}
-            {props.token?<ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}} url={props.image!==null && props.image!=='null' ? props.image : "media/website/user.svg"} onclick={() => setToggleMenu(true)} width="3rem" leftalign height="3rem" widthmobile="3rem" borderRadius="50%"></ImageLoader>:null}
-            {typeof window !=='undefined' ? <div>
-                {props.token  ? <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faEllipsisV} onClick={() => setToggleMenu(true)}></FontAwesomeIcon> : <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faBars} onClick={() => setToggleMenu(true)}></FontAwesomeIcon>}
-                </div> : null}
-        </div>
+            <div style={{display : 'flex' ,justifyContent : 'space-between', width : 'fit-content', alignItems : 'center' , gap : '15px'}}>
+            {  !props.hidecta  ?
+            <div style={{}} className="center-div" onClick={() => setToggleSearch(true)}>
+            <FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black'}}></FaSearch> 
+            </div>
+          : null}
+
+            <LocalPhoneIcon style={{hieght : '100%',margin : 'auto' , color : 'white'}} />
+            {  !props.hidecta  ? 
+                        <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" padding="0.75rem 0.75rem" link={'/tailored-travel'}>Create a Trip</Button> 
+          : null}
+            </div>
+            
         <Drawer
       anchor='right'
       open={toggleMenu}
@@ -194,7 +212,6 @@ const Mobile = (props) => {
     {toggleSearch ? <div className='hidden-desktop' style={{width: '100%'}}><SearchMobile onclose={() => setToggleSearch(false)} open={true}></SearchMobile></div> : null}
 
     <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} _deleteNotificationHandler={props._deleteNotificationHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)}></Notifications>
-
     </div>
   );
 }
