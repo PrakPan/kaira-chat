@@ -26,7 +26,7 @@ import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
 import Locations from '../../components/containers/newplannerlocations/Index';
 import OldLocations from '../../components/containers/plannerlocations/Index';
-
+import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
 import Map from './NewMap';
 // import qs from qs;
@@ -457,7 +457,8 @@ useEffect(() => {
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Get your free trip plan to ${props.experienceData.destination}`}></DesktopBanner>
+    <div className='hidden-desktop'><MobileBanner city={props.experienceData.destination} /></div>
       <SetWidthContainer >
       <Heading >Other Destinations</Heading>        
       <OldLocations locations={PLANNER_PAGES} viewall planner></OldLocations>

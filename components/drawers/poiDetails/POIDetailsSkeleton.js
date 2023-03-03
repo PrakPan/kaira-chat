@@ -1,12 +1,11 @@
 import CloseIcon from '@mui/icons-material/Close';
 import styled from "styled-components";
-import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import { Box } from '@material-ui/core';
 
 import Lottie from 'react-lottie'
 import animationData from '../../../public/assets/skeleton_square.json'
-import SkeletonCard from '../../ui/button/SkeletonCard';
+import SkeletonCard from '../../ui/SkeletonCard';
 
 const POIDetailsSkeleton = (props) => {
   const LoadingBox = styled.div`
