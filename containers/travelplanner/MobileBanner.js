@@ -10,7 +10,7 @@ position: fixed;
 bottom: 0;
 width: 100vw;
 padding: 1rem;
-background-color: white;
+// background-color: white;
 z-index: 1000;
 left: 0;
 `;
@@ -22,11 +22,11 @@ const BannerMobile = (props) => {
       router.push(`/tailored-travel?search_text=${props.city}`)
     }
   return(
-    <Container className="border" style={{borderRadius: '0'}}>
+    <Container className="" style={{borderRadius: '0'}}>
         {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
-        <Button boxShadow onclick={_handleRedirect} onclickparam={null} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" >
-        Get your free trip plan to {props.city}
-          <FaLongArrowAltRight style={{fontSize: '1.75rem', marginLeft: '0.25rem', lineHeight: '1'}}></FaLongArrowAltRight>
+        <Button fontWeight="600" onclick={_handleRedirect} hoverColor="black" onclickparam={null} hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="5px" margin="0" width="100%" >
+        Craft a trip to {props.city} now!
+          {/* <FaLongArrowAltRight style={{fontSize: '1.75rem', marginLeft: '0.25rem', lineHeight: '1'}}></FaLongArrowAltRight> */}
           </Button>
    </Container>
   );

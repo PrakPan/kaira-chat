@@ -10,7 +10,7 @@ position: fixed;
 bottom: 0;
 width: 100vw;
 padding: 1rem;
-background-color: white;
+// background-color: white;
 z-index: 1000;
 left: 0;
 `;
@@ -23,9 +23,10 @@ const BannerMobile = (props) => {
        else  router.push(urls.TAILORED_TRAVEL);
     }
   return(
-    <Container className="border" style={{borderRadius: '0'}}>
+    <Container className="" style={{borderRadius: '0'}}>
         {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
-        <Button boxShadow link={urls.TAILORED_TRAVEL} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0', fontWeight: '400'}}>Try our free trip planner</p></Button>
+        <Button fontWeight="600" link={urls.TAILORED_TRAVEL} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="5px" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0',fontWeight : '600'}}>Try our free trip planner now!</p></Button>
+      
    </Container>
   );
 }

@@ -25,7 +25,7 @@ const BannerMobile = (props) => {
     <Container className="border" style={{borderRadius: '0'}}>
         {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
         <Button boxShadow onclick={_handleRedirect} onclickparam={null} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" >
-        Try our free trip planner
+        
           <FaLongArrowAltRight style={{fontSize: '1.75rem', marginLeft: '0.25rem', lineHeight: '1'}}></FaLongArrowAltRight>
           </Button>
    </Container>

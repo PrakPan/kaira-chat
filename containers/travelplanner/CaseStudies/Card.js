@@ -17,6 +17,7 @@ const CardHeading = styled.p`
     font-size: 0.9rem;
     font-weight: 700;
     margin : 0;
+    margin-top : 5px;
  `;
 const CardSubHeading = styled.p`
 font-size: 0.9rem;
@@ -43,7 +44,6 @@ const CardListItem = styled.p`
      }
  `;
  const RatingContainer = styled.div`
-//  display: flex;
  margin-bottom: 0.75rem;
  @media screen and (min-width: 768px){
     flex-direction: row;
@@ -57,7 +57,7 @@ const CardContainer = (props) => {
         
             <Card className=''>
                 <GridContainer>
-                <div>
+                <div style={{display : 'flex' , flexDirection : 'column' , justifyContent : 'space-between' }}>
                 <ImageLoader borderRadius="8px" width="100%" widthMobile="100%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
                 <CardHeading className='font-opensans'>{props.heading}</CardHeading>
                 
@@ -75,8 +75,8 @@ const CardContainer = (props) => {
 
                     </div>
                 </RatingContainer>
+                <Button fontWeight="600" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700">View Details</Button>
 
-                <Button fontWeight="600" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700" margin="0.5rem 0">View Details</Button>
 
                 </div>
                 <div>
@@ -86,7 +86,7 @@ const CardContainer = (props) => {
                 
 
                 {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
-                <CardListItem className='' >{props.text}</CardListItem>
+                <CardListItem className='font-opensans' >{props.text}</CardListItem>
                 </div>
                 </GridContainer>
                

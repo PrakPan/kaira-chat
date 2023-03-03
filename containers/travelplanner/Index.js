@@ -457,7 +457,7 @@ useEffect(() => {
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Get your free trip plan to ${props.experienceData.destination}`}></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a trip to ${props.experienceData.destination} now!`}></DesktopBanner>
     <div className='hidden-desktop'><MobileBanner city={props.experienceData.destination} /></div>
       <SetWidthContainer >
       <Heading >Other Destinations</Heading>        
