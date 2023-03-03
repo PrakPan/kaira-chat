@@ -38,7 +38,7 @@ const TailoredFormMobileModal = (props) => {
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>
             <Modal.Body style={{   padding:'0' }}>
-                <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+                <TailoredForm  page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
              
             </Modal.Body>
       </Modal>
