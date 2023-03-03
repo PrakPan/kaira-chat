@@ -6,12 +6,14 @@ import styled from 'styled-components';
 //  import ImageLoader from '../../../ImageLoader';
  import Location from './Destination';
  import { TbArrowBack } from 'react-icons/tb';
+import Search from './search/Index';
 // import Animate from '../../../HOC/'
  const AbsoluteContainer = styled.div`
  background-color: white;
  padding: 0.5rem;
 position: absolute;
-top: 5.75rem;
+top: ${props => props.top};
+width: 100%;
 z-index: 10;
  `
  const LocationContainer = styled.div`
@@ -28,8 +30,6 @@ z-index: 10;
  }
  
  `;
-
-
  
 const LocationsContainer = (props) => {
 
@@ -37,29 +37,52 @@ const LocationsContainer = (props) => {
   const [moreLocationsJSX, setMoreLocationJSX] = useState([]);
   const [showMore, setShowMore] = useState(false);
 
+  const [searchedLocationsJSX, setSearchedLocationJSX] = useState([]);
+
   let isPageWide = media('(min-width: 768px)');
 
   const _isCityAdded =  (city) => {
     // console.log('1', city);
     // var i;
     // console.log(props.selectedCities);
+    if(city.id)
     for (var i = 0; i < props.selectedCities.length; i++) {
+        if(props.selectedCities[i].id){
         if (props.selectedCities[i].id === city.id) {
             return true;
         }
+        }
+        else if(props.selectedCities[i].resource_id)
+        if (props.selectedCities[i].resource_id=== city.id) {
+          return true;
+      }
     }
+    else if(city.resource_id)
+    for (var i = 0; i < props.selectedCities.length; i++) {
+      if(props.selectedCities[i].id)
+      {
+      if (props.selectedCities[i].id === city.resource_id) {
+          return true;
+      }
+    }
+    else if(props.selectedCities[i].resource_id)
+    if (props.selectedCities[i].resource_id === city.resource_id) {
+      return true;
+  }
+  }
   
     return false;
   }
 
   const _handleClick = (city) => {
-    // console.log(city)
+    // console.log(props.selectedCities)
     let is_city_added = _isCityAdded(city);
     // console.log(is_city_added)
     if(!is_city_added){
+      console.log(city)
     let selected_cities = props.selectedCities.slice();
     selected_cities.push(city)
-    props.setSelectedCities(selected_cities)
+    props.setSelectedCities(selected_cities.slice())
     }
     else {
       // console.log(props.selectedCities, city)
@@ -76,6 +99,9 @@ const LocationsContainer = (props) => {
     }
   }
    useEffect(() => {
+    // console.log(props.selectedCities)
+    try{
+      if(!searchedLocationsJSX.length){
     let locations_JSX = [];
     let more_locations_JSX = [];
     for(var i = 0 ; i< props.CITIES.length; i++){
@@ -94,6 +120,9 @@ const LocationsContainer = (props) => {
         }
       }
     }
+
+  
+
     // if(props.CITIES.length > 6){
     //   for(var j = 6; j < props.CITIES.length; j++){
     //       more_locations_JSX.push(
@@ -112,12 +141,39 @@ const LocationsContainer = (props) => {
     
     // setLocationsJSX(locations_JSX.slice());
     if(more_locations_JSX.length) setMoreLocationJSX(more_locations_JSX.slice());
+  }
+  else{
+    let searched_locations = [];
+    for(var i = 0 ; i < searchedLocationsJSX.length; i++){
+      console.log(searchedLocationsJSX[i])
+        searched_locations.push(
+          <Location image={searchedLocationsJSX[i].props.image} text={searchedLocationsJSX[i].props.text} onclick={_handleClick} onclickparam={searchedLocationsJSX[i].props} is_selected={_isCityAdded(searchedLocationsJSX[i].props)} ></Location>
+        )
+    }
+    setSearchedLocationJSX(searched_locations.slice())
+  }
+  }
+  catch{
+
+  }
   },[props.CITIES, props.selectedCities]);
-  
+
+  const _showSearchedLocations = (results) => {
+    let seaarchedlocationsarr = [];
+    for(var i = 0 ; i < results.length; i++) {
+      seaarchedlocationsarr.push(
+        <Location image={results[i]["_source"].image} text={results[i]["_source"].name} onclick={_handleClick} onclickparam={results[i]["_source"]} is_selected={_isCityAdded(results[i]["_source"])} ></Location>
+
+      )
+    }
+    setSearchedLocationJSX(seaarchedlocationsarr.slice())
+  }
+
   return (
-    <AbsoluteContainer className='border'>
+    <AbsoluteContainer className='border' top={props.top}>
       <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
       <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p>
+   <Search _showSearchedLocations={_showSearchedLocations}></Search>
     <LocationContainer  >
         
                 {/* <Location image="" text="Port Blair" onclick={() => _handleClick(props.CITIES[0])} ></Location>
@@ -126,8 +182,8 @@ const LocationsContainer = (props) => {
                 <Location image="" text="Ross Island"></Location>
                 <Location  image="" text="Rajasthan"></Location>
                 <Location  image="" text="Sikkim"></Location> */}
-                {locationsJSX.length ? locationsJSX : null}
-                {props.CITIES.length && showMore ? moreLocationsJSX : null}
+                { !searchedLocationsJSX.length ?  locationsJSX.length ? locationsJSX : null : searchedLocationsJSX}
+                { !searchedLocationsJSX.length ?  props.CITIES? props.CITIES.length && showMore ? moreLocationsJSX : null : null : null}
    </LocationContainer>
    {moreLocationsJSX.length && !showMore? <div className='font-opensans text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
    <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0 0 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => props.setShowCities(false)}>
@@ -138,5 +194,5 @@ const LocationsContainer = (props) => {
 }
 
 
-export default LocationsContainer;
+export default (LocationsContainer);
 

@@ -1,6 +1,45 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
+import { styled } from '@mui/material/styles';
+
+
+
+const IOSSlider = styled(Slider)(({ theme }) => ({
+   
+ 
+  '& .MuiSlider-thumb': {
+     
+    backgroundColor: '#f7e700',
+     border: '1px solid black',
+  },
+  '& .MuiSlider-valueLabel': {
+    fontSize: 12,
+    fontWeight: 'normal',
+    top: -6,
+      '&:before': {
+      display: 'none',
+    },
+   
+  },
+  '& .MuiSlider-track': {
+
+   },
+  '& .MuiSlider-rail': {
+    opacity: 1,
+    backgroundColor: 	'hsl(0, 0%, 85%)',
+    height: '6px'
+   
+  },
+  '& .MuiSlider-mark': {
+    
+    '&.MuiSlider-markActive': {
+      opacity: 1,
+     },
+  },
+}));
+
+
  const marks = [
   {
     value: 0,
@@ -76,7 +115,7 @@ const  DiscreteSliderValues = (props) =>  {
   return (
     <Box>
       {/* <div className='font-opensans text-center' style={{margin: '0.5rem 0', fontSize: '0.85rem'}}><span style={{fontWeight: '600'}}>Estimated Cost:</span> ₹1,23,00 /-</div> */}
-      <Slider
+      <IOSSlider
         aria-label="Budget per day"
         defaultValue={0}
         style={{color:'#f7e700'}}

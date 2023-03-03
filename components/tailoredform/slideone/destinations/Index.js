@@ -20,16 +20,51 @@ position: relative;;
 
  
 const Destinations = (props) => {
+
   let isPageWide = media('(min-width: 768px)');
-  // const [showCities, setShowCities] = useState(false);
-  // const [selectedCities, setSelectedCities] = useState([]);
+  const [destinations, setDestinations] = useState(null);
+  const _removeDestinationHandler= (dest) => {
+
+    let dests = [];
+    console.log(dest);
+    for(var i = 0 ; i < destinations.length; i++){
+
+    }
+    // dest.push(
+    //   <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+    // )
+    setDestinations(dest.slice());
+
+   }
+  useEffect(() => {
+    setDestinations(
+      [
+        <SelectedDestination _removeDestinationHandler={_removeDestinationHandler} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+
+      ]
+    )
+   },[]);
+  
+   const _addDestinationHandler= () => {
+    let dest = destinations.slice();
+    dest.push(
+      <SelectedDestination  _removeDestinationHandler={_removeDestinationHandler}  selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
+    )
+    setDestinations(dest.slice());
+
+   }
+  
   return (
    <Container>
     {/* <p className="font-opensans">Where do  you want to go?</p> */}
     <SelectedDestination  startingLocation={props.startingLocation} setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting} 
             setShowSearchStarting={props.setShowSearchStarting} setShowCities={props.setShowCities} selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
-        <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination>
-        {props.showCities ? <CitiesContainer children_cities={props.children_cities} setShowCities={props.setShowCities} destination={props.destination} CITIES={props.CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}>
+        {
+          destinations
+        }
+        {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */} 
+        {!props.CITIES  ? <p onClick={_addDestinationHandler} className='text-center font-opensans hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p> :null}
+        {props.showCities && props.CITIES ? <CitiesContainer top={destinations ? destinations.length === 1 ? '5.75rem' : (5.75+(3*(destinations.length-1)))+"rem" : '5.75rem'} children_cities={props.children_cities} setShowCities={props.setShowCities} destination={props.destination} CITIES={props.CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}>
 
         </CitiesContainer>  : null} 
         {/* <p className='font-opensans text-center hover-pointer' style={{fontSize: '0.85rem', color: '#1360D3'}}>+ Add More</p> */}

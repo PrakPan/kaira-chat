@@ -51,6 +51,9 @@ const SearchInput = (props) => {
   }
   const _getResults = (query) => {
     setLoading(true);
+    if(query)
+    if(query.length > 1)
+
   axiossearchstartinginstance.get(
         `?q=`+query
       )
