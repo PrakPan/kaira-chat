@@ -27,7 +27,7 @@ const Search = (props) => {
   const _handleKey = (e) => {
     if(e.target.value)
     if(e.target.value.length > 1)
-    axios.get(`https://dev.apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
+    axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
         if(res.data.length){
           setShowResults(true);
             console.log('res', res.data);
