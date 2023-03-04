@@ -33,6 +33,7 @@ import homepagecontent from '../../public/content/homepage';
  import urls from '../../services/urls';
   import PLANNER_PAGES from '../../public/content/planner';
   import CaseStudies from '../travelplanner/CaseStudies/Index';
+import WhatsappFloating from '../../components/WhatsappFloating';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -218,6 +219,7 @@ const _handleExperiencesClick = () => {
       <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
       {/* <Chatbot history={props.history}/>     */}
       </div>
+      <WhatsappFloating />
     </div>
   );
 }

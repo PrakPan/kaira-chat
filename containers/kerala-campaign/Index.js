@@ -139,8 +139,6 @@ const _handleTailoredClick = () => {
 
         <ChatWithUs></ChatWithUs>
       </SetWidthContainer>
-
- 
     </div>
   );
 }

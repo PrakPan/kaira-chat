@@ -30,6 +30,7 @@ import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
 import Map from './NewMap';
 import WhyPlanWithUs from './PlanWithUs';
+import WhatsappFloating from '../../components/WhatsappFloating'
 // import qs from qs;
 var qs = require('qs');
 
@@ -502,7 +503,7 @@ useEffect(() => {
         </div> */}
       </SetWidthContainer>
 
- 
+        <WhatsappFloating />
     </div>
   );
 }
