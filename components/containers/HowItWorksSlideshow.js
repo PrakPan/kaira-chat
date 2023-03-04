@@ -29,7 +29,7 @@ const Arrow = styled.img`
 
 const TextContainer = styled.div`
 font-size: 16px;
-padding : 10px;
+// margin-inline : 10px;
 @media screen and (min-width: 768px){
     text-align : center;
     }

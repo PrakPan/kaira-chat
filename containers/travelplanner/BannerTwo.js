@@ -17,11 +17,8 @@ const Container = styled.div`
 
 `;
 const GridContainer = styled.div`
-    
     display: grid;
-
     grid-row-gap: 2rem;
-
     @media screen and (min-width: 768px){
         width: 100%;
     }
