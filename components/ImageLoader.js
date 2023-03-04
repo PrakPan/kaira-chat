@@ -149,7 +149,7 @@ const ImageLoader = (props) => {
   `;
   const FullImage = styled.img`
     width: 100%;
-    object-fit: cover;
+    object-fit: ${props.resizeMode ? props.resizeMode : 'cover'};
     z-index: 0 !important;
 
     &:hover{

@@ -13,11 +13,13 @@ import ImageLoader from '../ImageLoader';
 */
 
 const Container = styled.div`
-   
+margin-top : -50px;
     @media screen and (min-width: 768px){
         width: 100%;
         margin: auto;
-      
+      display : flex;
+      justify-content : space-between;
+      gap : 5rem;
     }
 `;
 const Arrow = styled.img`
@@ -27,20 +29,30 @@ const Arrow = styled.img`
 
 const TextContainer = styled.div`
 font-size: 16px;
+padding : 10px;
+@media screen and (min-width: 768px){
+    text-align : center;
+    }
 
 `;
  
 const ImageContainer = styled.div`
     padding: auto 1rem;
-`;
+    @media screen and (min-width: 768px){
+    width : 250px;
+    margin : auto;
+    }
+    `;
 
 const GridContainer = styled.div`
 display: grid;
-grid-gap: 1rem;
-grid-template-columns: 1fr 3fr;
+grid-gap: 0.2rem;
+grid-template-columns: 2fr 3fr;
+margin-block : 15px;
     @media screen and (min-width: 768px){
-        grid-gap: 1rem;
-        margin-bottom: 1rem;
+        display : flex;
+        gap : 25px;
+        flex-direction : column;
     }
     `;
     
@@ -81,7 +93,9 @@ const HowItWorksSlideshow = (props) =>{
     const slidesmobile = [
         <GridContainer style={{}} >
              <ImageContainer className="center-div">
+                
                 <ImageLoader url ={props.images[0]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
+               
             </ImageContainer>
             <TextContainer className="center-div">
                 {props.headings[0]}
@@ -114,7 +128,7 @@ const HowItWorksSlideshow = (props) =>{
     const slidesdesktop = [
         <GridContainer key={0} style={{}} >
                 <ImageContainer>
-                <ImageLoader url={props.images[0]} width="100%" margin="auto" dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
+                <ImageLoader url={props.images[0]} width="100%" margin="auto" height='100%' dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '100%'} />
         </ImageContainer>
         <TextContainer>
         {props.headings[0]}
@@ -124,7 +138,7 @@ const HowItWorksSlideshow = (props) =>{
     </GridContainer>,
     <GridContainer  key={1} style={{}}>
             <ImageContainer>
-            <ImageLoader url={props.images[1]} width="100%" margin="auto"  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
+            <ImageLoader url={props.images[1]} resizeMode='contain' width="100%" margin="auto"  height='100%' dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '100%'} />
         </ImageContainer>
         <TextContainer>
         {props.headings[1]}
@@ -134,14 +148,27 @@ const HowItWorksSlideshow = (props) =>{
     </GridContainer>,
     <GridContainer  key={2} style={{}}>
          <ImageContainer >
-         <ImageLoader url={props.images[2]} width="100%" margin="auto" dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '60%'} />
+         <ImageLoader url={props.images[2]} width="100%" resizeMode='contain' margin="auto" height='100%' dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '100%'} />
         </ImageContainer>
         <TextContainer>
         {props.headings[2]}
             {props.content[2]}
         </TextContainer>
        
-    </GridContainer>
+    </GridContainer>,
+
+<GridContainer  key={3} style={{}}>
+<ImageContainer >
+<ImageLoader url={props.images[3]} width="100%" margin="auto" resizeMode='contain'  height='100%'  dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '100%'} />
+</ImageContainer>
+<TextContainer>
+{props.headings[3]}
+   {props.content[3]}
+</TextContainer>
+
+</GridContainer>
+
+    
     ]
     // if(!isPageWide )
     const [loading, setLoading] = useState(false);

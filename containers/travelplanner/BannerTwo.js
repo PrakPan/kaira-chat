@@ -10,9 +10,9 @@ import ImageLoader from '../../components/ImageLoader';
 import Enquiry from '../../components/tailoredform/Index';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 const Container = styled.div`
- @media screen and (min-width: 768px){
-    padding: 0;
 
+@media screen and (min-width: 768px){
+    padding: 0;
 }
 
 `;
@@ -24,10 +24,6 @@ const GridContainer = styled.div`
 
     @media screen and (min-width: 768px){
         width: 100%;
-         margin: auto;
-         grid-template-columns: auto 400px;
-
-         grid-column-gap: 2rem;
     }
 `;
 const Text = styled.p`
@@ -62,19 +58,21 @@ font-weight: 300;
 const  Banner = (props) =>{
 
   const HowitWorksHeadingsArr=[
-    <HowItWorksHeading className="font-opensans">You select</HowItWorksHeading>,
-    <HowItWorksHeading className="font-opensans">We prepare</HowItWorksHeading>,
-    <HowItWorksHeading className="font-opensans">You make memories</HowItWorksHeading>,
+    <HowItWorksHeading className="font-opensans">Select your preferences</HowItWorksHeading>,
+    <HowItWorksHeading className="font-opensans">Let our AI plan your itinery</HowItWorksHeading>,
+    <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
+    <HowItWorksHeading className="font-opensans">No Commissions - Pay for what you get</HowItWorksHeading>,
   ];
   const HowitWorksContentsArr = [
-    <HowItWorksText className="font-opensans">A short trek, a long honeymoon, a workcation, or personalize your own</HowItWorksText>,
-      <HowItWorksText  className="font-opensans">A completely personalized plan by our travel experts and software</HowItWorksText>,
-    <HowItWorksText  className="font-opensans">Enough planning, time to travel and make unforgettable memories</HowItWorksText>
+    <HowItWorksText className="font-opensans">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
+      <HowItWorksText  className="font-opensans">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
+    <HowItWorksText  className="font-opensans">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
+    <HowItWorksText  className="font-opensans">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
   
   ];
 
 
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
+const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/grey.png']
 
 
   let isPageWide = media('(min-width: 768px)');
@@ -87,7 +85,7 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
 
             {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}
             </div>       
-            <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div>
+            {/* <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div> */}
         </GridContainer>
        
     </Container>

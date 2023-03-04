@@ -29,6 +29,7 @@ import OldLocations from '../../components/containers/plannerlocations/Index';
 import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
 import Map from './NewMap';
+import WhyPlanWithUs from './WhyPlanWithUs';
 // import qs from qs;
 var qs = require('qs');
 
@@ -423,6 +424,9 @@ useEffect(() => {
   </SetWidthContainer>
 <SetWidthContainer>
 
+<Heading style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>       
+<div className='hidden-mobil'><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
+
 {itinerariesToIndexExclusive.length ?
   <Heading className='font-opensans'>Handcrafted trips by us</Heading>
 
@@ -465,9 +469,13 @@ useEffect(() => {
 
          {/* <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading> */}
         {/* <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
+        
+        <Heading style={{ margin:"3.5rem 0 3.5rem 0"}}>Why plan with us?</Heading>        
+        <WhyPlanWithUs page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} />
+
+
         <Heading style={{ margin:"4rem 0 2.5rem 0"}}>What our customers say?</Heading>        
        <Reviews></Reviews>
-       <Heading style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>        
 
         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
@@ -484,7 +492,9 @@ useEffect(() => {
       <SetWidthContainer>
        
         {/* <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn> */}
-        <div className='hidden-mobil'><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
+        {/* <div className='hidden-mobil'><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div> */}
+
+      
 
         <ChatWithUs planner page_id={props.experienceData.id} ></ChatWithUs>
         {/* <div style={{display: 'none'}}>
