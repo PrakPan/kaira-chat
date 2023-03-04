@@ -29,7 +29,7 @@ import OldLocations from '../../components/containers/plannerlocations/Index';
 import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
 import Map from './NewMap';
-import WhyPlanWithUs from './WhyPlanWithUs';
+import WhyPlanWithUs from './PlanWithUs';
 // import qs from qs;
 var qs = require('qs');
 

@@ -1,10 +1,7 @@
 import styled from "styled-components"
-import ImageLoader from "../../components/ImageLoader"
-import Enquiry from '../../components/tailoredform/Index';
+import ImageLoader from "../ImageLoader"
 
-const WhyPlanWithUs = (props)=>{
-    
-    const Heading = styled.p`
+const Heading = styled.p`
 font-weight: 600;
 font-size: 14px;
 margin-bottom : 5px;
@@ -29,31 +26,15 @@ padding-right : 5px;
     column-gap : 20px;
 }
     `
-    const Container = styled.div`
-        margin-inline : 5px;
 
-        @media screen and (min-width: 768px){
-            // display : grid;
-            // grid-template-columns : 2fr 2fr;
-            // // width : 50%;
-            margin-inline : 0px;
-            // column-gap : 10%;
-            display : flex;
-            justify-content : space-between;
-        }
-    `
     const Items = styled.div`
 
     @media screen and (min-width: 768px){
         display : grid;
         grid-template-columns : 2fr 2fr;
         margin-inline : 0px;
-        // column-gap : 1rem;
         column-gap : 10%;
         width : 55%
-
-
-
     }
     `
     const ImagesArr = [
@@ -94,15 +75,13 @@ padding-right : 5px;
         )
     }
 
+
+const WhyPlanWithUs = (props)=>{
     
     return (
-        <Container>
         <Items>
         {newArr.map(e=>e)}
-        </Items>
-        <div className='hidden-mobile' style={{width : '25%'}}><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div>
-        
-        </Container>
+        </Items> 
     )
 }
 

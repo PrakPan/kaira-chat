@@ -1,0 +1,26 @@
+import styled from "styled-components"
+import Enquiry from '../../components/tailoredform/Index';
+import WhyPlanWithUs from "../../components/WhyPlanWithUs/Index";
+
+    const Container = styled.div`
+    margin-inline : 5px;
+
+    @media screen and (min-width: 768px){
+        margin-inline : 0px;
+        display : flex;
+        justify-content : space-between;
+    }
+`
+
+
+const PlanWithUs = (props)=>{
+    
+    return (
+        <Container>
+        <WhyPlanWithUs />
+        <div className='hidden-mobile' style={{width : '400px'}}><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div>
+        </Container>
+    )
+}
+
+export default PlanWithUs
