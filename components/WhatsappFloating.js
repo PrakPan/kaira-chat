@@ -16,6 +16,7 @@ cursor : pointer;
 `
 
 const WhatsappFloating = (pops)=>{
+    
     return <Icon onClick={()=>window.location.href=urls.WHATSAPP+"?text="+props.message}>
         <ImageLoader url='media/icons/bookings/whatsapp.svg' />
     </Icon>

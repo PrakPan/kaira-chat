@@ -77,7 +77,7 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
   return (
    <Container>
         <GridContainer>
-          <div className='center-div'>
+          <div className=''>
                     <HowItWorks nostart onclick={props._handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
 
             {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}

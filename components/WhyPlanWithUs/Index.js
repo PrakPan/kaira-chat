@@ -62,6 +62,9 @@ padding-right : 5px;
         'Transparent pricing with no hidden fees - pay only a small service fee!'
     ]
 
+   
+
+const WhyPlanWithUs = (props)=>{
     const newArr = []
     for(let i = 0;i<ImagesArr.length;i++){
         newArr.push(
@@ -75,9 +78,6 @@ padding-right : 5px;
         )
     }
 
-
-const WhyPlanWithUs = (props)=>{
-    
     return (
         <Items>
         {newArr.map(e=>e)}
