@@ -22,6 +22,7 @@ import ExperienceCard from '../../components/cards/newitinerarycard-main/Experie
 import gif from '../../public/assets/loader.gif';
 import Overview from './Overview';
 import Button from '../../components/ui/button/Index';
+import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
 import {IoIosArrowBack} from 'react-icons/io'
 import urls from '../../services/urls';
 import Locations from '../../components/containers/newplannerlocations/Index';
@@ -405,6 +406,8 @@ const _handleTailoredClick = () => {
 
 }
 const [overviewHeading, setOverviewHeading] = useState(null);
+const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+
 useEffect(() => {
   // The counter changed!
   setOverviewHeading(props.experienceData.overview_heading)
@@ -413,7 +416,7 @@ useEffect(() => {
     return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
-          <FullImgContent page_id={props.experienceData.id} destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
+          <FullImgContent setShowMobilePlanner={setShowMobilePlanner}  page_id={props.experienceData.id} destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
       </FullImage>
       <SetWidthContainer>
 <MapGridContainer>
@@ -422,36 +425,23 @@ useEffect(() => {
     <Map locations={props.experienceData.locations}></Map>
     </MapContainer>
   </MapGridContainer>
+  <Button  link={isPageWide? '/tailored-travel' : null} onclick={ !isPageWide? () => setShowMobilePlanner(true) : null}   borderWidth="1px"  fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Create your travel plan now!</Button> 
+
   </SetWidthContainer>
 <SetWidthContainer>
 
 <Heading style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>       
 <div className='hidden-mobil'><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-{itinerariesToIndexExclusive.length ?
-  <Heading className='font-opensans'>Handcrafted trips by us</Heading>
 
-  : null}     
-            {itinerariesToIndexExclusive.length ? <GridContainer>{itinerariesToIndexExclusive}</GridContainer> : null}
-  {/* {itinerariesExclusiveJSX.length? <GridContainer>
-    { itinerariesExclusiveJSX}
- 
-  </GridContainer> : null} */}
-  {/* {loading?  <MinHeightContainer className='center-div'>
-    <img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/>
-
-     </MinHeightContainer> : null
-  } */}
-  {/* {
-    !loading && itinerariesExclusiveJSX.length && offsetExclusive!== -1? <Button margin="auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600" padding="0.5rem 2rem" onclick={_showMoreExclusiveItineraries} >View More</Button> 
-    : null
-  } */}
   {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
   {itinerariesToIndexCustomer.length ? <GridContainer>
     { itinerariesToIndexCustomer}
  
   </GridContainer> : null
   }
+                <Button  link={isPageWide? '/tailored-travel' : null} onclick={ !isPageWide? () => setShowMobilePlanner(true) : null} borderWidth="1px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your adventure</Button> 
+
   {/* {
     !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600"padding="0.5rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
     : null
@@ -463,7 +453,7 @@ useEffect(() => {
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a trip to ${props.experienceData.destination} now!`}></DesktopBanner>
-    <div className='hidden-desktop'><MobileBanner city={props.experienceData.destination} /></div>
+    <div className='hidden-desktop'><MobileBanner handleClick={() => setShowMobilePlanner(true)} city={props.experienceData.destination} /></div>
       <SetWidthContainer >
       <Heading >Other Destinations</Heading>        
       <OldLocations locations={PLANNER_PAGES} viewall planner></OldLocations>
@@ -502,6 +492,7 @@ useEffect(() => {
            {itinerariesToIndex}
         </div> */}
       </SetWidthContainer>
+      <TailoredFormMobileModal page_id={props.experienceData.id} destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children}  onHide={() => setShowMobilePlanner(false)}    show={showMoiblePlanner} ></TailoredFormMobileModal>
 
         <WhatsappFloating />
     </div>
