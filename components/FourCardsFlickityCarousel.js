@@ -8,14 +8,12 @@ const FlickityCarousel = (props) => {
         initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
         prevNextButtons: false,
         wrapAround: false,
-        pageDots: true,
 
     };
     const flickityOptionsLocations = {
       initialIndex: 2,
       prevNextButtons: false,
       wrapAround: false,
-      pageDots: true,
 
     }
      let cards=[];

@@ -1,5 +1,4 @@
 import styled from "styled-components"
-import ImageLoader from "../ImageLoader"
 
 const Heading = styled.p`
 font-weight: 600;
@@ -25,7 +24,11 @@ padding-right : 5px;
 @media screen and (min-width: 768px){
     column-gap : 20px;
 }
-    `
+`
+const Icon = styled.div`
+    font-size : 55px;
+    margin-top : -15px
+`
 
     const Items = styled.div`
 
@@ -38,12 +41,12 @@ padding-right : 5px;
     }
     `
     const ImagesArr = [
-        'media/website/grey.png',
-        'media/website/grey.png',
-        'media/website/grey.png',
-        'media/website/grey.png',
-        'media/website/grey.png',
-        'media/website/grey.png',
+        '🌴',
+        '🌍',
+        '📱',
+        '🕰️',
+        '🦜',
+        '💰',
     ]
     const HeadingArr  =[
         'Personalization in seconds',
@@ -69,7 +72,8 @@ const WhyPlanWithUs = (props)=>{
     for(let i = 0;i<ImagesArr.length;i++){
         newArr.push(
             <Flex>
-            <ImageLoader widthmobile='55px' width='55px' height='55px' url={ImagesArr[0]}></ImageLoader>
+            {/* <ImageLoader widthmobile='55px' width='55px' height='55px' url={ImagesArr[0]}></ImageLoader> */}
+            <Icon>{ImagesArr[i]}</Icon>
             <div>
                 <Heading>{HeadingArr[i]}</Heading>
                 <Text>{TextArr[i]}</Text>
