@@ -3,7 +3,7 @@ import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 import Carousel from '../../FlickityCarousel';
-import FourCardsCarousel from '../../FourCardsFlickityCarousel';
+import PageDotsFlickity from '../../PageDotsFlickity';
 import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
@@ -224,7 +224,7 @@ console.log(cardsToShowJSXmobile)
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
-            <FourCardsCarousel initialIndex cards={cardsToShowJSXmobile}></FourCardsCarousel>
+            <PageDotsFlickity initialIndex cards={cardsToShowJSXmobile}></PageDotsFlickity>
     </div>
     {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
   </div>

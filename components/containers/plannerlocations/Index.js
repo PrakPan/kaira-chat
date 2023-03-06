@@ -7,7 +7,7 @@ import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
 import urls from '../../../services/urls';
-import FourCardsCarousel from '../../FourCardsFlickityCarousel';
+import PageDotsFlickity from '../../PageDotsFlickity';
 import * as ga from '../../../services/ga/Index';
 import axiospagelistinstance from '../../../services/pages/list';
 /* Used to display grid (desktop) / carousel of location images 
@@ -227,7 +227,7 @@ setMobileCardsToShowJSX(MobileArr)
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
-            <FourCardsCarousel initialIndex cards={MobilecardsToShowJSX}></FourCardsCarousel>
+            <PageDotsFlickity initialIndex cards={MobilecardsToShowJSX}></PageDotsFlickity>
     </div>
     {/* {props.viewall ? <Button  onclick={_handleTailoredClick} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null} */}
   </div></>
