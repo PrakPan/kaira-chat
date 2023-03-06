@@ -76,7 +76,6 @@ top: 7.5vh;
 `;
 
 const SimpleTabs = (props) => {
-
   let isPageWide = media('(min-width: 768px)')
 
 

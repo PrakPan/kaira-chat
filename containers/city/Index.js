@@ -8,6 +8,7 @@ import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import media from '../../components/media';
 import { useRouter } from 'next/router';
 import POIModal from '../../components/modals/poi/Index';
+import NewMenu from '../newcityplanner/Menu'
 
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
@@ -67,6 +68,7 @@ const Experience = (props) => {
           <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
           <div>
           <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
+            
             <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
           <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
         </div>
@@ -100,6 +102,19 @@ const Experience = (props) => {
 
         <div style={{}}>
           <ExperienceGallery   filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" }  setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
+          
+
+{/* New city */}
+          
+          <NewMenu />
+        
+        
+        
+        
+
+{/* Old city */}
+
+        
           <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images}></Menu>
           <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
           <Transition in={props.cityData ? false : true} timeout={1000} unmountOnExit>

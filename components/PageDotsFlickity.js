@@ -5,7 +5,8 @@ const FlickityCarousel = (props) => {
 
 
     const flickityOptions = {
-        initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
+        // initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
+        initialIndex: 0,
         prevNextButtons: false,
         wrapAround: false,
 
@@ -20,7 +21,7 @@ const FlickityCarousel = (props) => {
         <Flickity
           className={'carousel'}
           elementType={'div'}
-          options={props.locations ? flickityOptionsLocations : flickityOptions }
+          options={ flickityOptions }
           reloadOnUpdate
           static
 
