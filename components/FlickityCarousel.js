@@ -2,6 +2,8 @@ import React from 'react';
 import Flickity from 'react-flickity-component';
 
 const FlickityCarousel = (props) => {
+
+
     const flickityOptions = {
         initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
         prevNextButtons: false,
@@ -15,7 +17,6 @@ const FlickityCarousel = (props) => {
       prevNextButtons: false,
       wrapAround: false,
       pageDots: false,
-      
 
     }
     const flickityOptionsIpad = {
@@ -24,7 +25,6 @@ const FlickityCarousel = (props) => {
       wrapAround: false,
       pageDots: false,
       
-
     } 
      let cards=[];
     if(props.twocards){

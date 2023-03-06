@@ -3,6 +3,7 @@ import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 import Carousel from '../../FlickityCarousel';
+import FourCardsCarousel from '../../FourCardsFlickityCarousel';
 import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
@@ -25,6 +26,13 @@ padding: 0.5rem;
   }
 `;
 
+const MobileCardsContainer = styled.div`
+  display : grid;
+grid-template-columns: 1fr 1fr ;
+  gap: 0.5rem;
+`
+
+
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
@@ -43,6 +51,7 @@ const LocationsBlog= (props) => {
 
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
+    const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
     const [offset, setOffset] = useState(0);
     let count =  0;
 
@@ -55,6 +64,7 @@ const LocationsBlog= (props) => {
           if(router.pathname!== props.locations[i].slug){
             count++;
         cardsarr.push(
+          <>
             <Card
             data={props.locations[i]}
             key={props.locations[i].tagline}
@@ -68,7 +78,8 @@ const LocationsBlog= (props) => {
             // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
             </Card>
-        )
+          </>
+          )
         if(count === 6) break;
       }
         }
@@ -114,7 +125,8 @@ setOffset(i+1);
             // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
             </Card>
-        )
+        
+          )
         }catch{
             
         }
@@ -128,8 +140,78 @@ setOffset(offset+6);
       router.push('/tailored-travel')
     }
   // if(isPageWide) 
+  
+
+  useEffect(()=>{
+    if(!isPageWide && props.locations){
+    
+  
+  
+      // for(let i = 0;i<props.locations.length;i++){
+  
+      // }
+    
+      let i = 0;
+  let cardsArrMobile =  []
+      while(i<props.locations.length){
+        let elem = <MobileCardsContainer>
+         <Card
+              key={props.locations[i].tagline}
+              location={props.locations[i].name}
+              heading={props.locations[i].tagline}
+              img={props.locations[i].image}
+              slug={props.locations[i].slug}
+              filters={props.locations[i].most_popular_for}
+              _handleTailored={_handleTailored}
+  
+              > 
+              </Card>
+             {(props.locations[i+1]) && <Card
+              key={props.locations[i+1].tagline}
+              location={props.locations[i+1].name}
+              heading={props.locations[i+1].tagline}
+              img={props.locations[i+1].image}
+              slug={props.locations[i+1].slug}
+              filters={props.locations[i+1].most_popular_for}
+              _handleTailored={_handleTailored}
+  
+              > 
+              </Card>}
+              {(props.locations[i+2]) && <Card
+              key={props.locations[i+2].tagline}
+              location={props.locations[i+2].name}
+              heading={props.locations[i+2].tagline}
+              img={props.locations[i+2].image}
+              slug={props.locations[i+2].slug}
+              filters={props.locations[i+2].most_popular_for}
+              _handleTailored={_handleTailored}
+              > 
+              </Card>}
+              {(props.locations[i+3]) && <Card
+              key={props.locations[i+3].tagline}
+              location={props.locations[i+3].name}
+              heading={props.locations[i+3].tagline}
+              img={props.locations[i+3].image}
+              slug={props.locations[i+3].slug}
+              filters={props.locations[i+3].most_popular_for}
+              _handleTailored={_handleTailored}
+                > 
+              </Card>}
+        </MobileCardsContainer>
+
+
+        i = i+4   
+        cardsArrMobile.push(elem)
+    }
+    setCardsToShowJSXmobile(cardsArrMobile)
+    }
+  },[props.locations])
+
+console.log(cardsToShowJSXmobile)
+
+
    return(
-      <><div className='hidden-mobil'>
+      <><div className='hidden-mobile'>
         <Container >  
                {cardsToShowJSX}
       </Container>
@@ -140,12 +222,12 @@ setOffset(offset+6);
         : null}
       </div>
  
-    {/* <div className='hidden-desktop'>       
+    <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
-            <Carousel cards={cardsToShowJSX}></Carousel>
+            <FourCardsCarousel initialIndex cards={cardsToShowJSXmobile}></FourCardsCarousel>
     </div>
-    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null}
-  </div> */}
+    {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
+  </div>
   </>
   )
   ;

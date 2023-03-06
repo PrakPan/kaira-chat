@@ -7,6 +7,7 @@ import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
 import urls from '../../../services/urls';
+import FourCardsCarousel from '../../FourCardsFlickityCarousel';
 import * as ga from '../../../services/ga/Index';
 import axiospagelistinstance from '../../../services/pages/list';
 /* Used to display grid (desktop) / carousel of location images 
@@ -17,9 +18,13 @@ display: grid;
    @media screen and (min-width: 768px){
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 1rem;
-      
   }
 `;
+const MobileCardsContainer = styled.div`
+  display : grid;
+grid-template-columns: 1fr 1fr ;
+  gap: 0.5rem;
+`
 
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
@@ -39,6 +44,7 @@ const LocationsBlog= (props) => {
 
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
+    const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
     const [offset, setOffset] = useState(0);
     let count =  0;
 
@@ -115,6 +121,54 @@ setCardsJSX(cards.slice());
 setCardsToShowJSX(cards.slice(0,5));
 setOffset(5);
 
+let z = 0
+let MobileArr = []
+while(z < res.data.length){
+  let elem = <MobileCardsContainer>
+     <Card
+    key={res.data[z].id}
+    location={res.data[z].destination}
+    heading={res.data[z].tagline}
+    img={res.data[z].image}
+    slug={res.data[z].link}
+    link={res.data[z].link}
+     > 
+    </Card>
+    {res.data[z+1] &&<Card
+    key={res.data[z+1].id}
+    location={res.data[z+1].destination}
+    heading={res.data[z+1].tagline}
+    img={res.data[z+1].image}
+    slug={res.data[z+1].link}
+    link={res.data[z+1].link}
+     > 
+    </Card>}
+    {res.data[z+2] &&<Card
+    key={res.data[z+2].id}
+    location={res.data[z+2].destination}
+    heading={res.data[z+2].tagline}
+    img={res.data[z+2].image}
+    slug={res.data[z+2].link}
+    link={res.data[z+2].link}
+
+     > 
+    </Card>}
+   {res.data[z+3] && <Card
+    key={res.data[z+3].id}
+    location={res.data[z+3].destination}
+    heading={res.data[z+3].tagline}
+    img={res.data[z+3].image}
+    slug={res.data[z+3].link}
+    link={res.data[z+3].link}
+     > 
+    </Card>}
+  </MobileCardsContainer>
+  MobileArr.push(elem)
+  z=z+4
+
+}
+setMobileCardsToShowJSX(MobileArr)
+
 
       })
       .catch((error) => {
@@ -122,7 +176,6 @@ setOffset(5);
       });
 
   }, []);
-
   const _showMoreLocations = () => {
     let cardsarr = cardsToShowJSX.slice();
     let c = cardsJSX.slice();
@@ -174,7 +227,7 @@ setOffset(5);
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
-            <Carousel cards={cardsToShowJSX}></Carousel>
+            <FourCardsCarousel initialIndex cards={MobilecardsToShowJSX}></FourCardsCarousel>
     </div>
     {/* {props.viewall ? <Button  onclick={_handleTailoredClick} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View More</Button> : null} */}
   </div></>

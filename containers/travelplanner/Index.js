@@ -32,6 +32,8 @@ import PLANNER_PAGES from '../../public/content/planner';
 import Map from './NewMap';
 import WhyPlanWithUs from './PlanWithUs';
 import WhatsappFloating from '../../components/WhatsappFloating'
+import Carousel from '../../components/FlickityCarousel'
+
 // import qs from qs;
 var qs = require('qs');
 
@@ -413,6 +415,9 @@ useEffect(() => {
   setOverviewHeading(props.experienceData.overview_heading)
 }, [router.query.link, props.experienceData])
 
+console.log('pppp',props)
+
+
     return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
@@ -449,6 +454,7 @@ useEffect(() => {
      
        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"}  bold>{props.experienceData.destination ? "Top locations across "+props.experienceData.destination : "Top Locations"}</Heading>        
  <Locations locations={props.experienceData.locations} viewall ></Locations>
+ {/* <Carousel cards={props.experienceData.locations} /> */}
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
