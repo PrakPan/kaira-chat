@@ -1023,7 +1023,17 @@ body.modal-open {
   .flickity-viewport{
   
   }
-
+  .carousel>ol{
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    flex-direction: row-reverse;
+  }
+  .carousel>ol>li{
+    display: inline;
+    /* color: #000; */
+margin-left: -25px;
+  }
   .flickity-enabled {
   
     overflow: hidden;
@@ -1043,7 +1053,20 @@ body.modal-open {
     }
    
     .flickity-page-dots {
-      display:none;
+      /* display:none; */
+      }
+
+      .flickity-page-dots .dot {
+        width: 9px;
+        height: 9px;
+        /* opacity: 1; */
+        background: transparent;
+        border-radius: 100%;
+        background : rgba(1, 32, 43, 0.2);
+      }
+      .flickity-page-dots .dot.is-selected {
+        background: #F7E700;
+        border : 2px solid black
       }
     
     /* button */
