@@ -56,7 +56,7 @@ const  Banner = (props) =>{
 
   const HowitWorksHeadingsArr=[
     <HowItWorksHeading className="font-opensans">Select your preferences</HowItWorksHeading>,
-    <HowItWorksHeading className="font-opensans">Let our AI plan your itinery</HowItWorksHeading>,
+    <HowItWorksHeading className="font-opensans">Let our AI plan your itinerary</HowItWorksHeading>,
     <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
     <HowItWorksHeading className="font-opensans">No Commissions - Pay for what you get</HowItWorksHeading>,
   ];
