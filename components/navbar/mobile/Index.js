@@ -133,7 +133,7 @@ const Mobile = (props) => {
             </div>
           : null}
 
-            <LocalPhoneIcon style={{hieght : '100%',margin : 'auto 0' , color : 'white'}} />
+            <LocalPhoneIcon style={{hieght : '100%',margin : 'auto 0' , color : props.headerColor === 'black' ? 'white' : 'black'}} onClick={() => router.push('/contact')} />
             {/* {  !props.hidecta  ? 
                         <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" padding="0.75rem 0.75rem" link={'/tailored-travel'}>Create a Trip</Button> 
           : null} */}
