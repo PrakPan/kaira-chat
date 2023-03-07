@@ -2,6 +2,7 @@ import styled from "styled-components"
 import Navigator from "./Navigator"
 import Brief from './MenuItems/Brief'
 import TopRecommendations from "./MenuItems/TopRecommendation"
+import Poi  from "./pois/Index"
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
@@ -10,6 +11,7 @@ margin : auto;
           }
 `
 const MenuItem = styled.div`
+
 `
 const Heading = styled.p`
 font-weight: 600;
@@ -19,7 +21,6 @@ margin-block : 30px;
 `
 
 const Menu = (props)=>{
-    console.log(props)
     return (
         <MenuContainer>
             <Navigator {...props} />
@@ -34,7 +35,7 @@ const Menu = (props)=>{
 
             <MenuItem>
             <Heading>Things to do</Heading>
-
+             <Poi pois={props.data.pois} />
             </MenuItem>
 
         </MenuContainer>
