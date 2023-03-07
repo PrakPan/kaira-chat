@@ -152,7 +152,7 @@ const _handleExperiencesClick = () => {
 }
 const [escapeState, setEscapeState]=useState(false)
 useEffect(() => {
-//  setEscapeState(true)
+ setEscapeState(true)
 },[]);
   return (
     
@@ -176,7 +176,7 @@ useEffect(() => {
 
       {/* <Heading  align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Unique</Heading>         */}
         <Experiences link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></Experiences>
-        <Heading bold noline  fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem"} >How it works?</Heading>        
+        <Heading bold noline  fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem"} >How it works?</Heading>        
 
         {/* <Heading fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} bold noline >How it works?</Heading> */}
         <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>

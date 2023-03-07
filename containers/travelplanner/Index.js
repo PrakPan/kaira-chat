@@ -33,7 +33,7 @@ import Map from './NewMap';
 import WhyPlanWithUs from './PlanWithUs';
 import WhatsappFloating from '../../components/WhatsappFloating'
 import Carousel from '../../components/FlickityCarousel'
-
+// import Experiences from '../../components/containers/Experiences';
 // import qs from qs;
 var qs = require('qs');
 
@@ -437,11 +437,16 @@ useEffect(() => {
 
 
   {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
-  {itinerariesToIndexCustomer.length ? <GridContainer>
+  {/* {itinerariesToIndexCustomer.length ? 
+  <GridContainer>
     { itinerariesToIndexCustomer}
  
   </GridContainer> : null
   }
+   */}
+   {
+    itinerariesToIndexCustomer.length ? <Experiences experiences={props.experienceData.itinerary_data}></Experiences>:null
+   }
                 <Button  link={isPageWide? '/tailored-travel' : null} onclick={ !isPageWide? () => setShowMobilePlanner(true) : null} borderWidth="1px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your adventure</Button> 
 
   {/* {

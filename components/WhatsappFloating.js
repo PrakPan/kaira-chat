@@ -11,6 +11,7 @@ bottom: 72px;
 @media screen and (min-width: 768px){
     padding: 0;
     bottom: 10vh;
+    right: 7.5vw;
 cursor : pointer;
 }
 `
