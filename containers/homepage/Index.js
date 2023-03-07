@@ -79,19 +79,37 @@ const  Homepage = (props) =>{
  
 
 //JSX for How it works 
-
 const HowitWorksHeadingsArr=[
-  <HowItWorksHeading className="font-opensans">You select</HowItWorksHeading>,
-  <HowItWorksHeading className="font-opensans">We prepare</HowItWorksHeading>,
-  <HowItWorksHeading className="font-opensans">You make memories</HowItWorksHeading>,
-];
-const HowitWorksContentsArr = [
-  <HowItWorksText className="font-opensans">A short trek, a long honeymoon, a workcation, or personalize your own</HowItWorksText>,
-    <HowItWorksText  className="font-opensans">A completely personalized plan by our travel experts and software</HowItWorksText>,
-  <HowItWorksText  className="font-opensans">Enough planning, time to travel and make unforgettable memories</HowItWorksText>
+
+  <HowItWorksHeading className="font-opensans">Select your preferences</HowItWorksHeading>,
+
+  <HowItWorksHeading className="font-opensans">Let our AI plan your itinerary</HowItWorksHeading>,
+
+  <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
+
+  <HowItWorksHeading className="font-opensans">No Commissions - Pay for what you get</HowItWorksHeading>,
 
 ];
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
+
+const HowitWorksContentsArr = [
+
+  <HowItWorksText className="font-opensans">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
+
+    <HowItWorksText  className="font-opensans">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
+
+  <HowItWorksText  className="font-opensans">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
+
+  <HowItWorksText  className="font-opensans">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
+
+
+
+];
+
+
+
+
+
+const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/how4.png']
 
 
 const router = useRouter()
@@ -132,6 +150,10 @@ const _handleExperiencesClick = () => {
   _handleExperiencesRedirect();
 
 }
+const [escapeState, setEscapeState]=useState(false)
+useEffect(() => {
+//  setEscapeState(true)
+},[]);
   return (
     
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>

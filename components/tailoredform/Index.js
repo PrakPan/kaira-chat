@@ -196,7 +196,7 @@ const Enquiry = (props) => {
                 setTimeout(function(){ 
                    
                   router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
-                }, 3000);
+                }, 10000);
                   setLoading(false);
 
               }
