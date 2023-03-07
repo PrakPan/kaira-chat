@@ -10,12 +10,12 @@ bottom: 72px;
 
 @media screen and (min-width: 768px){
     padding: 0;
-    bottom: 15px;
+    bottom: 10vh;
 cursor : pointer;
 }
 `
 
-const WhatsappFloating = (pops)=>{
+const WhatsappFloating = (props)=>{
     
     return <Icon onClick={()=>window.location.href=urls.WHATSAPP+"?text="+props.message}>
         <ImageLoader url='media/icons/bookings/whatsapp.svg' />

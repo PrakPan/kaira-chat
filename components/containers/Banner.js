@@ -80,7 +80,7 @@ const Banner = (props) => {
                     </div>
               {/* <div className="center-div"> */}
                 <Button display="inline-block" boxShadow onclick={props.onclick}  hoverColor="white" hoverBgColor="black" bgColor="#F7e700"  borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem">
-                  {props.cta ? props.cta : 'Start Now'}
+                  {props.cta ? props.cta : 'Start Planning'}
                   {/* {props.loading ? <Spinner size={16}></Spinner> : null} */}
                 </Button>
               {/* </div> */}

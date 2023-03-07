@@ -69,7 +69,7 @@ const  Banner = (props) =>{
   ];
 
 
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/grey.png']
+const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/how4.png']
 
 
   let isPageWide = media('(min-width: 768px)');

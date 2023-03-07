@@ -455,7 +455,7 @@ useEffect(() => {
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a trip to ${props.experienceData.destination} now!`}></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a personalized itinerary to ${props.experienceData.destination} now!`}></DesktopBanner>
     <div className='hidden-desktop'><MobileBanner handleClick={() => setShowMobilePlanner(true)} city={props.experienceData.destination} /></div>
       <SetWidthContainer >
       <Heading >Other Destinations</Heading>        
@@ -497,7 +497,7 @@ useEffect(() => {
       </SetWidthContainer>
       <TailoredFormMobileModal page_id={props.experienceData.id} destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children}  onHide={() => setShowMobilePlanner(false)}    show={showMoiblePlanner} ></TailoredFormMobileModal>
 
-        <WhatsappFloating />
+        <WhatsappFloating message={"Hey, I need help planning my trip to "+props.experienceData.destination} />
     </div>
   );
 }

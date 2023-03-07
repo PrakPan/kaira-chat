@@ -69,8 +69,7 @@ const HowItWorksHeading = styled.p`
 `;
 const HowItWorksContainer = styled.div`
 @media screen and (min-width: 768px){
-  width: 60%;
-  margin: auto;
+   margin: auto;
 }
 `;
 
@@ -219,7 +218,7 @@ const _handleExperiencesClick = () => {
       <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
       {/* <Chatbot history={props.history}/>     */}
       </div>
-      <WhatsappFloating />
+      <WhatsappFloating message="Hey, I need help planning my trip." />
     </div>
   );
 }
