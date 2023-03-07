@@ -1,16 +1,27 @@
 import React, {useRef, useEffect} from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
-import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
-import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
-import PastItineraryCard from '../cards/Testimonial';
-import Carousel from '../FlickityCarousel';
-import media from '../media';
+import ExperienceCard from '../../../components/cards/newitinerarycard-main/ExperienceCard';
+import ItineraryCard from '../../../components/cards/newitinerarycard-myplan/ExperienceCard';
+import PastItineraryCard from '../../../components/cards/Testimonial';
 
 const Container = styled.div`
 @media screen and (min-width: 768px){
 
 }
 `;
+
+const Button = styled.button`
+background : white;
+color : #01202B;
+border : 1.5px solid #01202B;
+font-size : 16px;
+padding : 13px 68px;
+display: block;
+margin : 15px auto;
+border-radius : 8px;
+
+`
 
 const GridContainer = styled.div`
   @media screen and (min-width: 768px){
@@ -20,60 +31,15 @@ const GridContainer = styled.div`
     grid-gap: 2.5rem;
   }
 `;
-
-const TextContainer = styled.div`
-line-height: 120%;
-overflow: hidden;
-padding-top: 1rem;
-position: absolute;
-visibility: hidden;
-z-index: -1;
-`;
-const ShortText = styled.p`
-font-size:1rem;
-font-weight: 300;
-@media screen and (min-width: 768px){
-font-size: 0.85rem;
-  /* font-size: ${(props)=>( props.theme.fontsizes.desktop.text.five ?props.theme.fontsizes.desktop.text.five:props.theme.fontsizes.desktop.text.five )}; */
-font-weight: 300;
-line-height: 1.5;
-
-}
-`; 
-// const ShortText = styled.p`
-// font-size: ${props => props.theme.fontsizes.mobile.text.default};
-// font-weight: 300;
-// @media screen and (min-width: 768px){
-// font-size: ${props => props.theme.fontsizes.desktop.text.five};
-// font-weight: 300;
-// line-height: 1.5;
-
-// }
-// `; 
-
 var i;
 
 const Experiences= (props) => {
-  let isPageWide = media('(min-width: 768px)')
 
+  const [more,setMore] = useState(false)
   const TextRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null) ];
   useEffect(() => {
    }, [TextRefs])
-  const text = [
-    "With this immersive experiential travel program, the focus is providing insight, to the travelers, into the lifestyle, culture and local traditions of a Pahadi Village. Travelers are encouraged to interact with the local community, and, celebrate wearing the fabric of diversity and pluralism.",
-    "In this week-long experiential travel program, take a break from the rapacious world and uplift your spirits by living in the remotest corner of Ladakh with the <em>Changpa</em> Tribe.",
-    "In this 4-day learning travel program, edify yourself to channelize ideas through actions. Learn the most majestic form of art: theatre, and, broaden your horizons by expanding your purview.",
-    "A 4+ weeks, immersive travel experience covering 16+ locations all across North India while participating in volunteer work along with a lot of adventurous activities. With meaningful insight into the Indian culture and traditions and celebration of the cultural diversity and vibrancy of this land this experience is a must for every traveler."
-];
-const Experiences = [
-  "Life in a Pahadi Village",
-  "Social Travel: North India",
-  "Volunteer in Rishikesh",
-  "Life of a Nomad",
-  ]
 
-   
- 
     let experiencecards=[];
 
      if(props.columns){
@@ -106,10 +72,7 @@ const Experiences = [
       if(props.experiences && !props.pastitinerary)
       for(var j = 0; j<props.experiences.length; j++){
     
-       
-        //get height of text 
-        // if height of text more than maxheight set maxheight to new height
-        experiencecards.push(  
+           experiencecards.push(  
           <ExperienceCard 
           data={props.experiences[j]}
           myplan={props.myplan}
@@ -119,7 +82,7 @@ const Experiences = [
           rating={props.experiences[j].rating}
           slug={props.experiences[j].slug}
           id={props.experiences[j].id}
-          budget={props.experiences[j].budget}
+          budge14pxt={props.experiences[j].budget}
           group_type={props.experiences[j].group_type}
           number_of_adults={props.experiences[j].number_of_adults}
           text={props.experiences[j].short_text} 
@@ -130,18 +93,13 @@ const Experiences = [
         images={props.experiences[j].images}
         locations={props.experiences[j].itinerary_locations}
         >
-          
-          
           </ExperienceCard>
           )
       }
       else if(props.itineraries){
         for(var j = 0; j<props.itineraries.length; j++){
     
-         
-          //get height of text 
-          // if height of text more than maxheight set maxheight to new height
-          experiencecards.push(  
+             experiencecards.push(  
             <ItineraryCard 
             data={props.itineraries[j]}
             myplan={props.myplan}
@@ -173,7 +131,6 @@ const Experiences = [
         experiencecards.push(  
           <PastItineraryCard 
           data={props.experiences[j]}
-          // filter={props.itineraries[j].experience_filters[0]}
           key={props.experiences[j].short_text}
            filter={props.experiences[j].experience_filters[0]}
           rating={props.experiences[j].rating}
@@ -196,25 +153,19 @@ const Experiences = [
           )
         }
       }
-      //loop through experiences again, push to experiencecards with min height set to maxheight
     }
-
-
-      // if(isPageWide)
     return(
       <>
-      <Container className='hidden-mobile'>        
+      <Container>        
           <GridContainer columns={props.cols} className="netflix-containe">
-             {props.three ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
-
+             {!more ? [experiencecards[0], experiencecards[1]] : experiencecards}
           </GridContainer>
-      </Container>
+          <div style={{width:'100%', marginInline : 'auto'}}>
+          <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
+          </div>
 
-    <div className='hidden-desktop'>       
-           <div style={{ padding: "1rem 0"}}>
-            {typeof window !=='undefined' ? <Carousel experience cards={experiencecards}></Carousel> :null }
-    </div>
-  </div></>
+      </Container>
+  </>
   );
   
 }

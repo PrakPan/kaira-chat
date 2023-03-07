@@ -69,6 +69,14 @@ const Experience = (props) => {
           <div>
           <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
             
+            {/* New city */}
+
+<NewMenu data={props.cityData} />
+            
+            {/* old city */}
+
+
+
             <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
           <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
         </div>
@@ -106,7 +114,7 @@ const Experience = (props) => {
 
 {/* New city */}
           
-          <NewMenu />
+          <NewMenu data={props.cityData} />
         
         
         
