@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import media from '../../../media';
 import Bar from './Bar';
 import Pannel from './pannel/Index';
-import axioslocationsinstance from '../../../../services/poi/hotlocations';
 const Container = styled.div`
 width: 100%;
 

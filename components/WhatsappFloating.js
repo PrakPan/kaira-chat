@@ -9,9 +9,10 @@ right: 12px;
 bottom: 72px;
 
 @media screen and (min-width: 768px){
+    width: 65px;
     padding: 0;
-    bottom: 10vh;
-    right: 7.5vw;
+    bottom: 16px;
+    right: 16px;
 cursor : pointer;
 }
 `

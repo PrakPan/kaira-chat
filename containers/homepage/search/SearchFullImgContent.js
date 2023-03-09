@@ -4,7 +4,6 @@ import styled from 'styled-components';
  import NewSearchMobile from '../../../components/search/homepage/mobile/Index';
 import NewSearchDesktop from '../../../components/search/homepage/desktop/Index';
 import media from '../../../components/media';
-import axioslocationsinstance from '../../../services/poi/hotlocations'
 const Container = styled.div`
 width: 100%;
  
