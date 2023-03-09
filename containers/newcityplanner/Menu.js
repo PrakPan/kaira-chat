@@ -4,6 +4,8 @@ import Brief from './MenuItems/Brief'
 import TopRecommendations from "./MenuItems/TopRecommendation"
 import Poi  from "./pois/Index"
 import FoodToEat from "./MenuItems/FoodToEat"
+import HowToReach from "./MenuItems/HowToReach"
+import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer'
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
@@ -22,6 +24,9 @@ margin-block : 30px;
 `
 
 const Menu = (props)=>{
+ console.log(props.data)
+ console.log(props)
+
     return (
         <MenuContainer>
             <Navigator {...props} />
@@ -41,8 +46,26 @@ const Menu = (props)=>{
 
             <MenuItem>
             <Heading>Food to eat</Heading>
-             {/* <FoodToEat foods={props.data.foods} /> */}
+             <FoodToEat foods={props.data.foods} />
             </MenuItem>
+
+            <MenuItem>
+            <Heading>How to reach</Heading>
+            <HowToReach />
+            </MenuItem>
+
+            <MenuItem>
+            <Heading>Survival Tips & Tricks</Heading>
+            <InformationTextContainer
+              type='text'
+              text={props.data.survival_tips_and_tricks}></InformationTextContainer>
+            </MenuItem>
+
+            <MenuItem>
+            <Heading>Folklore or Story</Heading>
+            <InformationTextContainer type='text' text={props.data.folklore_or_story}></InformationTextContainer>
+            </MenuItem>
+
 
         </MenuContainer>
     )

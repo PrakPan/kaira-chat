@@ -1,5 +1,5 @@
 import styled from "styled-components"
-
+import InformationTextContainer from '../../../components/experiencecity/info/InformationTextContainer'
 const Container = styled.div`
 margin-top : 30px;
 
@@ -18,7 +18,11 @@ const Typography = styled.p`
 
 const Brief = (props)=>{
     return <Container>
-    {props.short_description &&<Typography className="font-nunito">{props.short_description}</Typography>}
+    {/* {props.short_description &&<Typography className="font-nunito">{props.short_description}</Typography>} */}
+    
+     <InformationTextContainer
+              type='text'
+              text={props.short_description}></InformationTextContainer>
     <div style={{border: '1px solid red'}} className='hidden-mobile'>MAP COMPONENT</div>
     </Container>
 }

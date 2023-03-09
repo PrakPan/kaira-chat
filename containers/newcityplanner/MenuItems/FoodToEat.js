@@ -6,7 +6,7 @@ const Container = styled.div`
     max-width: 100%;
     display: grid;
     padding: 0;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
     grid-gap: 1rem;
     @media screen and (min-width: 768px){
@@ -22,11 +22,10 @@ const Container = styled.div`
     width: 100%;
     `;
     const IconTagLine = styled.p`
-        font-weight: 400;
-       margin: 1rem auto 0.5rem auto;
-        font-size: 0.75rem;
-        text-align: center
-    `;
+        font-weight: 600;
+        font-size: 16px;
+        margin-block : 5px;
+        `;
 
 const FoodToEat = (props) => {
   return (
@@ -35,7 +34,7 @@ const FoodToEat = (props) => {
         props.foods?.map((icon,index) => 
              <IconContainer>
                 <ImageLoader url={icon.image ? icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
-                <IconTagLine className="font-opensans">{props.icon.name}</IconTagLine>
+                <IconTagLine className="font-opensans">{icon.name}</IconTagLine>
              </IconContainer>)
         }
     </Container>

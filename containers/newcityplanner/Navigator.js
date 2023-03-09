@@ -39,7 +39,6 @@ margin-block : auto;
 
 
 const Navigator = (props)=>{
-console.log(props)
 const [selectedPoint,setSelectedPoint] = useState('Brief')
 
 const changeData = (e)=>{
