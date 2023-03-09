@@ -56,7 +56,7 @@ const  Banner = (props) =>{
 
   const HowitWorksHeadingsArr=[
     <HowItWorksHeading className="font-opensans">Select your preferences</HowItWorksHeading>,
-    <HowItWorksHeading className="font-opensans">Let our AI plan your itinery</HowItWorksHeading>,
+    <HowItWorksHeading className="font-opensans">Let our AI plan your itinerary</HowItWorksHeading>,
     <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
     <HowItWorksHeading className="font-opensans">No Commissions - Pay for what you get</HowItWorksHeading>,
   ];
@@ -69,7 +69,7 @@ const  Banner = (props) =>{
   ];
 
 
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/grey.png']
+const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/how4.png']
 
 
   let isPageWide = media('(min-width: 768px)');

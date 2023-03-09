@@ -38,7 +38,7 @@ const Icon = (props) => {
   };
 
   return (
-    <Container onClick={(event) => _handleOpen(event)}>
+    <Container>
       <ImageLoader
         url={props.icon.image}
         dimensions={{ width: 900, height: 900 }}
