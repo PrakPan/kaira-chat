@@ -1,7 +1,7 @@
 import ExperiencesContainer from '../../containers/guides/Index';
 import Layout from '../../components/Layout';
 import Head  from 'next/head';
-
+import travelGuideInstance from '../../services/pages/travel-guide'
 const Guide = (props) => {
       
     return <Layout>
@@ -19,8 +19,8 @@ const Guide = (props) => {
  
 export async function getStaticProps(context){
 
-      const res = await fetch(`https://apis.tarzanway.com/city_guide`)
-      const data = await res.json()
+      const res = await travelGuideInstance.get('')
+      const data = res.data
       if (!data) {
             return {
               notFound: true,

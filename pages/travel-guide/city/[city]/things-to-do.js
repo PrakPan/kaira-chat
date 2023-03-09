@@ -3,6 +3,8 @@ import Layout from '../../../../components/Layout';
 import { useRouter } from 'next/router';
 import Head  from 'next/head';
 import axios from 'axios';
+import {axiosallCityInstance} from '../../../../services/pages/travel-guide'
+
 const Experience = (props) => {
 
     const router = useRouter();
@@ -20,8 +22,12 @@ const Experience = (props) => {
 
 export async function getStaticPaths(){
 
-      const res = await fetch(`https://apis.tarzanway.com/search/all/?type=Location`)
-      const data = await res.json();
+      // const res = await fetch(`https://apis.tarzanway.com/search/all/?type=Location`)
+      // const data = await res.json();
+
+      const res = await axiosallCityInstance.get('')
+      const data = res.data
+
       let paths = [];
       for(var i = 0 ; i<data.length ; i++){
             if(data[i].cta){

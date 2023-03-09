@@ -7,6 +7,7 @@ import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
 import Results from './results/Index';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
+import axioslocationsinstance from '../../../../../services/poi/hotlocations'
 const Container = styled.div`
     background-color: white;
     border-radius: 2rem !important;
@@ -43,6 +44,8 @@ const SearchPannel= (props) => {
     const [showResults, setShowResults] = useState(false);
     let [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);
+const [hotLocationsData, setHotLocationsData] = useState();
+
 
     const _onChangeHandler = (event) => {
         if(event.target.value.length %3 === 0)
@@ -79,6 +82,14 @@ const SearchPannel= (props) => {
 
     };
 },[]);
+
+
+    useEffect(() => {
+      axioslocationsinstance.get("").then(response => {
+        setHotLocationsData(response.data);
+   });
+       },[]);
+
     return(
         <Container className="border"  ref={ref}>
 
@@ -88,7 +99,7 @@ const SearchPannel= (props) => {
                     <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-opensans" placeholder="Search Locations" ></Search>
             </SearchContainer>
         </TopContainer>
-        {!showResults ? <Locations hotlocations={props.hotlocations}></Locations> : <Results results={results}></Results>}
+        {!showResults ? <Locations hotlocations={hotLocationsData}></Locations> : <Results results={results}></Results>}
         </Container>
     );
 }

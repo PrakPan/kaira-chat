@@ -2,7 +2,7 @@ import LadakhContainer from '../../containers/travelplanner/Index';
 import Head from 'next/head';
 import Layout from '../../components/Layout'
 import { useState, useEffect } from 'react';
-
+import axiosTravelPlannerInstance from '../../services/pages/travel-planner'
 const TravelPlanner = (props) => {
 	const [data, setData] = useState({
 		page_title: null,
@@ -31,9 +31,11 @@ const TravelPlanner = (props) => {
 
 export async function getStaticPaths(){
 
-    const res = await fetch(`https://apis.tarzanway.com/page/list?country=india`)
-    const data = await res.json();
-    let paths = [];
+//     const res = await fetch(`https://apis.tarzanway.com/page/list?country=india`)
+//     const data = await res.json();
+      const res = await axiosTravelPlannerInstance.get('/list?country=India')
+      const data = res.data
+      let paths = [];
     for(var i = 0 ; i<data.length ; i++){
           if(data[i].id!==1){
                 paths.push({
@@ -51,8 +53,10 @@ export async function getStaticPaths(){
 }
 export async function getStaticProps(context){
 
-    const res = await fetch(`https://apis.tarzanway.com/page/?link=`+context.params.link)
-    const data = await res.json()
+//     const res = await fetch(`https://apis.tarzanway.com/page/?link=`+context.params.link)
+//     const data = await res.json()
+const res = await axiosTravelPlannerInstance.get(`/?link=${context.params.link}`)
+const data = res.data
     if (!data) {
           return {
             notFound: true,

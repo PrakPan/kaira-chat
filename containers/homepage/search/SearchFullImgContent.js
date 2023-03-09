@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import styled from 'styled-components';
 
  import NewSearchMobile from '../../../components/search/homepage/mobile/Index';
 import NewSearchDesktop from '../../../components/search/homepage/desktop/Index';
 import media from '../../../components/media';
+import axioslocationsinstance from '../../../services/poi/hotlocations'
 const Container = styled.div`
 width: 100%;
  
@@ -51,6 +52,7 @@ const SearchFullImg= (props) => {
     const [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);
    
+
    
   
     return(

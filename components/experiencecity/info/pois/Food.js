@@ -30,7 +30,6 @@ const Icon = (props) => {
   const _handleOpen = (event) => {
     if (props.drawer) {
       setShowDrawer(true);
-      console.log('opened')
       axiosPOIdetailsInstance
       .get(`/?id=${props.icon.id}`)
       .then((res) => setPoiDetailsData(res.data));
