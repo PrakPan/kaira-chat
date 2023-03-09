@@ -23,6 +23,7 @@ const Inlcusions = (props) => {
         grid-template-columns: 33% 33% 33%;
     }
     `;
+    
 
     let icons=[];
     props.foods.map((icon,index) => {

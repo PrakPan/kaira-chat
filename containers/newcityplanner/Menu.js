@@ -3,6 +3,7 @@ import Navigator from "./Navigator"
 import Brief from './MenuItems/Brief'
 import TopRecommendations from "./MenuItems/TopRecommendation"
 import Poi  from "./pois/Index"
+import FoodToEat from "./MenuItems/FoodToEat"
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
@@ -36,6 +37,11 @@ const Menu = (props)=>{
             <MenuItem>
             <Heading>Things to do</Heading>
              <Poi pois={props.data.pois} />
+            </MenuItem>
+
+            <MenuItem>
+            <Heading>Food to eat</Heading>
+             {/* <FoodToEat foods={props.data.foods} /> */}
             </MenuItem>
 
         </MenuContainer>
