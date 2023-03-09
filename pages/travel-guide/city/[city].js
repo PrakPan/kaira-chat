@@ -1,7 +1,8 @@
 import ExperienceContainer from '../../../containers/city/Index';
 import Layout from '../../../components/Layout';
 import { useRouter } from 'next/router';
-import {axiosallCityInstance} from '../../../services/pages/travel-guide'
+import axiosallCityInstance from '../../../services/travel-guide/SearchAllLocation'
+import axiosPoiCityInstance from '../../../services/poi/city'
 import Head  from 'next/head';
 const Experience = (props) => {
      const schemaData = {
@@ -64,8 +65,11 @@ export async function getStaticPaths(){
 }
 export async function getStaticProps(context){
 
-      const res = await fetch(`https://apis.tarzanway.com/poi/city/?slug=`+context.params.city)
-      const data = await res.json()
+      // const res = await fetch(`https://apis.tarzanway.com/poi/city/?slug=`+context.params.city)
+      // const data = await res.json()
+
+      const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`)
+      const data = res.data
       if (!data) {
             return {
               notFound: true,

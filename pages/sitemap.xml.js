@@ -10,6 +10,7 @@ export const getServerSideProps = async ({ res }) => {
     //Fetch city list 
     const cities = await fetch(`https://apis.tarzanway.com/search/all/?type=Location`)
     const citiesdata = await cities.json();
+    
     let citypaths = citiesdata.map((object) => {
                 return BASE_URL+"/travel-guide/city/"+object.cta
     })

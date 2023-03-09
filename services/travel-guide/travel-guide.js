@@ -6,9 +6,4 @@ const instance = axios.create({
     baseURL: API_SERVER_HOST+"/city_guide"
 })
 
-export const axiosallCityInstance = axios.create({
-    baseURL : API_SERVER_HOST + '/search/all/?type=Location'
-})
-
-
 export default instance;

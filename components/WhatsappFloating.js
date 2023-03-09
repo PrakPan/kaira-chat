@@ -12,7 +12,7 @@ bottom: 72px;
     width: 65px;
     padding: 0;
     bottom: 16px;
-    right: 16px;
+    right: 7.5vw;
 cursor : pointer;
 }
 `

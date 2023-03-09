@@ -1,7 +1,7 @@
 import ExperiencesContainer from '../../containers/guides/Index';
 import Layout from '../../components/Layout';
 import Head  from 'next/head';
-import travelGuideInstance from '../../services/pages/travel-guide'
+import travelGuideInstance from '../../services/travel-guide/travel-guide'
 const Guide = (props) => {
       
     return <Layout>
