@@ -14,7 +14,9 @@ margin : auto;
           }
 `
 const MenuItem = styled.div`
-
+@media screen and (min-width: 768px){
+margin-right : ${props=>props.single?'29%' : '0'}
+}
 `
 const Heading = styled.p`
 font-weight: 600;
@@ -39,29 +41,29 @@ const Menu = (props)=>{
                 <TopRecommendations />
             </MenuItem>
 
-            <MenuItem>
+            <MenuItem single>
             <Heading>Things to do</Heading>
              <Poi pois={props.data.pois} />
             </MenuItem>
 
-            <MenuItem>
+            <MenuItem single>
             <Heading>Food to eat</Heading>
              <FoodToEat foods={props.data.foods} />
             </MenuItem>
 
-            <MenuItem>
+            <MenuItem single>
             <Heading>How to reach</Heading>
             <HowToReach />
             </MenuItem>
 
-            <MenuItem>
+            <MenuItem single>
             <Heading>Survival Tips & Tricks</Heading>
             <InformationTextContainer
               type='text'
               text={props.data.survival_tips_and_tricks}></InformationTextContainer>
             </MenuItem>
 
-            <MenuItem>
+            <MenuItem single>
             <Heading>Folklore or Story</Heading>
             <InformationTextContainer type='text' text={props.data.folklore_or_story}></InformationTextContainer>
             </MenuItem>

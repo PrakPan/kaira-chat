@@ -5,8 +5,10 @@ import media from '../../../components/media'
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
-    display : grid;
-    grid-template-columns : 3fr 1fr;    
+    // display : grid;
+    // grid-template-columns : 3fr 1fr;    
+    // gap : 5rem;
+
 }
 `
 const Items = styled.div`
@@ -46,9 +48,7 @@ const Poi = props=>{
             </Items>
        
         </GridContainer>
-        <div style={{width:'75%'}}>
           <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
-          </div>
         </div>
         )
 }

@@ -1,5 +1,6 @@
 import { useState } from "react"
 import styled from "styled-components"
+import Button from '../../components/ui/button/Index'
 const Title = styled.p`
 cursor : pointer;
 color : #7A7A7A;
@@ -19,23 +20,24 @@ const Container = styled.div`
 margin-top : 50px;
 display : flex;
 justify-content : space-between;
-
 `
 const TitleContainer = styled.div`
 display : flex;
 justify-content : space-between;
-overflow : scroll;
+overflow: auto;
+  white-space: nowrap;
+  width : 85%;
 `
-const Button = styled.button`
-background : #F7E700;
-border-radius : 8px;
-border : 1px solid black;
-font-weight : 600;
-font-size : 14px;
-height : 44px;
-width : 210px;
-margin-block : auto;
-`
+// const Button = styled.button`
+// background : #F7E700;
+// border-radius : 8px;
+// border : 1px solid black;
+// font-weight : 600;
+// font-size : 14px;
+// height : 44px;
+// width : 210px;
+// margin-top : 10px;
+// `
 
 
 const Navigator = (props)=>{
@@ -52,9 +54,30 @@ const points = ['Brief','Itinerary','Things to do','How to reach','Food to eat',
         <TitleContainer>
         {points.map((e)=>(<Title style={selectedPoint==e ? selectedStyle : null}  onClick={()=>changeData(e)}>{e}</Title>))}
         </TitleContainer>
-        <Button className="hidden-mobile">Get Customised Package</Button>
+        <div className="hidden-mobile">
+        <Button onclick={()=>console.log('clicked')}
+        fontWeight="600" hoverBgColor="white" fontSize='14px' hoverColor="black" bgColor="#F7e700" borderRadius="8px" borderWidth='1px'  borderColor='black' width = '210px' height='44px' padding='10px 0px' margin='10px 0px'
+        >Get Customised Package</Button>
+        </div>
+        
     </Container>
     )
 }
 
 export default Navigator
+
+{/* <Button
+               boxShadow
+            borderRadius="2rem"
+            margin="1rem auto"
+            borderWidth="1px"
+            padding="0.5rem 1rem"
+            color="#212529"
+            fontWeight="300"
+            hoverBgColor="black"
+            hoverColor="white"
+            fontSize="12px"
+            onclick={props.page || props.link? _onClickHandler : null}
+            >
+                Read More
+            </Button> */}

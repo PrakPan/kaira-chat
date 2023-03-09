@@ -10,7 +10,7 @@ const Container = styled.div`
     grid-template-rows: auto;
     grid-gap: 1rem;
     @media screen and (min-width: 768px){
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        grid-template-columns: ${props=>'repeat('+props.total+',1fr)'};
         grid-template-rows: auto;
 
     }
@@ -29,11 +29,11 @@ const Container = styled.div`
 
 const FoodToEat = (props) => {
   return (
-    <Container>
+    <Container total={props.foods.length}>
         {
         props.foods?.map((icon,index) => 
              <IconContainer>
-                <ImageLoader url={icon.image ? icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
+                <ImageLoader borderRadius='12px' url={icon.image ? icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
                 <IconTagLine className="font-opensans">{icon.name}</IconTagLine>
              </IconContainer>)
         }

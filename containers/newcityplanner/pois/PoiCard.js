@@ -1,6 +1,10 @@
 import styled from "styled-components"
 import ImageLoader from "../../../components/ImageLoader"
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useState } from "react";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import axiosPOIdetailsInstance from '../../../services/poi/poidetails'
+
 const Container = styled.div`
 position: relative;
 `
@@ -22,12 +26,32 @@ border-radius: 15px;
 `
 export default function PoiCard(props){
 
+    const [showDrawer, setShowDrawer] = useState(false);
+    const [poiDetailsData, setPoiDetailsData] = useState({});
+  
+    const _handleOpen = (id) => {
+          setShowDrawer(true);
+          axiosPOIdetailsInstance
+          .get(`/?id=${id}`)
+          .then((res) => setPoiDetailsData(res.data));
+        }
+        const handleCloseDrawer = (e) => {
+            e.stopPropagation()
+            setShowDrawer(false);            
+          };
+
     return (
-        <Container>
+        <Container onClick={()=>_handleOpen(props.data.id)}>
             <ImageContainer>
             <ImageLoader url={props.data.image} />
             </ImageContainer>
             {props.data.name && <Typography><p>{props.data.name}</p> <div><NavigateNextIcon /></div></Typography>}
+            <POIDetailsDrawer
+        show={showDrawer}
+        iconId={props.data.id}
+        handleCloseDrawer={handleCloseDrawer}
+        poiDetailsData={poiDetailsData}
+      />
         </Container>
     )
 
