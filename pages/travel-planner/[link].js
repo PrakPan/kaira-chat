@@ -57,6 +57,7 @@ export async function getStaticProps(context){
 //     const data = await res.json()
 const res = await axiosTravelPlannerInstance.get(`/?link=${context.params.link}`)
 const data = res.data
+console.log('ddd',data)
     if (!data) {
           return {
             notFound: true,

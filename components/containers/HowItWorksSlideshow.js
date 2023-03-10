@@ -199,8 +199,8 @@ const HowItWorksSlideshow = (props) =>{
         <Container className='hidden-mobil'>
             {slidesdesktop}
         </Container>
-        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}   boxShadow borderRadius="2rem" margin="1rem auto"  padding="0.5rem 2rem" borderWidth="1px">
-            Start Now
+        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='600' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem' padding="0.5rem 2rem" borderWidth="1px">
+            {isPageWide? 'Create your free itinerary' :'Start Now'}
             {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button> : null}
         </div>

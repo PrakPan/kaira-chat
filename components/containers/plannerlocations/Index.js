@@ -45,6 +45,7 @@ const LocationsBlog= (props) => {
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
     const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
+    const [c,setC] = useState([])
     const [offset, setOffset] = useState(0);
     let count =  0;
 
@@ -80,6 +81,9 @@ const LocationsBlog= (props) => {
    
 // setCardsToShowJSX(cardsarr);
 setOffset(i+1);
+
+
+
   }, [props.locations]);
 
   const [cardsJSX, setCardsJSX] = useState([]);
@@ -169,6 +173,21 @@ while(z < res.data.length){
 }
 setMobileCardsToShowJSX(MobileArr)
 
+let n = []
+for(let i = 0;i<res.data.length;i++){
+  n.push(
+    <Card
+    key={res.data[i].id}
+    location={res.data[i].destination}
+    heading={res.data[i].tagline}
+    img={res.data[i].image}
+    slug={res.data[i].link}
+    link={res.data[i].link}
+     > 
+    </Card>
+  )
+}
+setC(n)
 
       })
       .catch((error) => {
@@ -215,14 +234,18 @@ setMobileCardsToShowJSX(MobileArr)
   // if(isPageWide) 
   return(
       <><div className='hidden-mobile'>
-        <Container >  
+        {/* <Container >  
                {cardsToShowJSX}
       </Container>
        {props.locations ? props.locations.length > offset ?
         <Button  onclick={_showMoreLocations} hoverBgColor="black" fontSizeDesktop="16px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View More</Button> :
         <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Craft Now!</Button> 
 
-        : null}
+        : null} */}
+
+               <Carousel initialIndex={3} numberOfCards={6} cards={c}></Carousel>
+              <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
+
       </div>
  
     <div className='hidden-desktop'>       

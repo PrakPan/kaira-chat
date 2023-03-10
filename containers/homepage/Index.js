@@ -34,6 +34,8 @@ import homepagecontent from '../../public/content/homepage';
   import PLANNER_PAGES from '../../public/content/planner';
   import CaseStudies from '../travelplanner/CaseStudies/Index';
 import WhatsappFloating from '../../components/WhatsappFloating';
+import PlanAsPerTheme from './PlanAsPerTheme';
+import PlanWithUs from '../travelplanner/PlanWithUs';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -115,6 +117,7 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
 const router = useRouter()
 
 const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
+const [experienceMore,setExperieceMore] = useState(false)
 
 // const _handleExperiencesRedirect = (e) => {
 //     router.push('/travel-experiences')
@@ -167,22 +170,43 @@ useEffect(() => {
       <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
-      <SetWidthContainer style={{paddingTop: !isPageWide? '2.5rem' : '5rem'}}>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Top Destinations</Heading>        
+
+    <SetWidthContainer>
+    <Heading textAlign='left' bold noline  fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        
+    <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>
+    
+    <Heading textAlign='left'  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Your Travel Plans {`(${homepagecontent["Recommended experiences"].length})`}</Heading>        
+
+{/* <Heading  align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Unique</Heading>         */}
+  <Experiences three={!experienceMore} link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></Experiences>
+    {isPageWide? <Button onclick={()=>setExperieceMore(!experienceMore)} hoverBgColor="black" fontSizeDesktop="16px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem">{!experienceMore?'View all' : 'View less'}</Button>: null  }
+    
+    </SetWidthContainer>
+   
+
+      <SetWidthContainer style={{}}>
+      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>        
+
+    
 
       {/* <Heading   align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 5rem 0"}  bold>Top Destinations</Heading>         */}
       <Locations locations={PLANNER_PAGES} viewall></Locations>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Unique</Heading>        
 
-      {/* <Heading  align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Unique</Heading>         */}
-        <Experiences link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></Experiences>
-        <Heading bold noline  fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem"} >How it works?</Heading>        
+      <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
+      <PlanAsPerTheme />
+      
+      <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
+      <PlanWithUs />
 
-        {/* <Heading fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} bold noline >How it works?</Heading> */}
-        <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>
-        <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Travel Tales</Heading>        
+
+
+
+         <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Our happy customers say about us </Heading>        
       {/* <ExperiencesBlog link="https://www.blog.thetarzanway.com/post/14-must-do-tips-for-every-solo-woman-traveler-in-india" pastitinerary   heading={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].heading} text={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].text} img={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].image} margin="2.5rem 0" experiences={homepagecontent["Women's Day Specials"]} ></ExperiencesBlog> */}
         <CaseStudies></CaseStudies>
+
+
+      
 
       </SetWidthContainer>
 

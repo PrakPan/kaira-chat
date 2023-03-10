@@ -1,3 +1,4 @@
+import { MarginTwoTone } from '@mui/icons-material';
 import React from 'react';
 import Flickity from 'react-flickity-component';
 
@@ -8,7 +9,6 @@ const FlickityCarousel = (props) => {
         initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
         prevNextButtons: false,
         wrapAround: false,
-      
         pageDots: false,
 
     };
@@ -62,7 +62,7 @@ const FlickityCarousel = (props) => {
     else 
     props.cards.map( (card,index) => {
       cards.push(
-        <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div>
+        <div key={index}  style={{width: props.numberOfCards? `${Math.floor(100/+props.numberOfCards)}%` :'80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div>
       )
   });
       return(
