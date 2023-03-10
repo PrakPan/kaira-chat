@@ -26,44 +26,47 @@ margin-block : 30px;
 `
 
 const Menu = (props)=>{
- console.log(props.data)
- console.log(props)
 
-    return (
+  function handleClick(e){
+    let el = document.getElementById(e)
+    if(el) el.scrollIntoView({behavior : 'smooth'})
+  }
+
+  return (
         <MenuContainer>
-            <Navigator {...props} />
-            <MenuItem>
+            <Navigator handleClick={handleClick} {...props} />
+            <MenuItem id='Brief'>
               <Brief short_description={props.data.short_description} />
             </MenuItem>
             
-            <MenuItem>
-                <Heading>TTW’s Top Recommendation</Heading>
+            <MenuItem id='Itinerary'>
+                <Heading >TTW’s Top Recommendation</Heading>
                 <TopRecommendations />
             </MenuItem>
 
-            <MenuItem single>
+            <MenuItem id='Things to do' single>
             <Heading>Things to do</Heading>
              <Poi pois={props.data.pois} />
             </MenuItem>
 
-            <MenuItem single>
+            <MenuItem id='Food to eat' single>
             <Heading>Food to eat</Heading>
              <FoodToEat foods={props.data.foods} />
             </MenuItem>
 
-            <MenuItem single>
+            <MenuItem id='How to reach' single>
             <Heading>How to reach</Heading>
             <HowToReach />
             </MenuItem>
 
-            <MenuItem single>
+            <MenuItem id='Survival Tips & Tricks' single>
             <Heading>Survival Tips & Tricks</Heading>
             <InformationTextContainer
               type='text'
               text={props.data.survival_tips_and_tricks}></InformationTextContainer>
             </MenuItem>
 
-            <MenuItem single>
+            <MenuItem id='Folklore or Story' single>
             <Heading>Folklore or Story</Heading>
             <InformationTextContainer type='text' text={props.data.folklore_or_story}></InformationTextContainer>
             </MenuItem>

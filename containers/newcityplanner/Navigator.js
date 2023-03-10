@@ -28,23 +28,12 @@ overflow: auto;
   white-space: nowrap;
   width : 85%;
 `
-// const Button = styled.button`
-// background : #F7E700;
-// border-radius : 8px;
-// border : 1px solid black;
-// font-weight : 600;
-// font-size : 14px;
-// height : 44px;
-// width : 210px;
-// margin-top : 10px;
-// `
-
-
 const Navigator = (props)=>{
 const [selectedPoint,setSelectedPoint] = useState('Brief')
 
 const changeData = (e)=>{
     setSelectedPoint(e)
+    props.handleClick(e)
 }
 
 const points = ['Brief','Itinerary','Things to do','How to reach','Food to eat','Survival Tips & Tricks','Folklore or Story']
@@ -65,19 +54,3 @@ const points = ['Brief','Itinerary','Things to do','How to reach','Food to eat',
 }
 
 export default Navigator
-
-{/* <Button
-               boxShadow
-            borderRadius="2rem"
-            margin="1rem auto"
-            borderWidth="1px"
-            padding="0.5rem 1rem"
-            color="#212529"
-            fontWeight="300"
-            hoverBgColor="black"
-            hoverColor="white"
-            fontSize="12px"
-            onclick={props.page || props.link? _onClickHandler : null}
-            >
-                Read More
-            </Button> */}
