@@ -13,7 +13,7 @@ import Howtoreach from '../../components/experiencecity/info/Howtoreach';
 import { useRef } from 'react'
 import PoisData from '../../components/experiencecity/info/pois/Index';
 import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
-import homepagecontent from '../../public/content/homepage';
+// import homepagecontent from '../../public/content/homepage';
 const Details = (props) => {
   const [menuHeading, setMenuHeading] = useState('overview');
   let offsets = {
@@ -128,7 +128,7 @@ const Details = (props) => {
         </div>
         <Element id='howtoreach' >
           <Row  heading='Experiences' top="0" padding="0 1rem">
-          <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={homepagecontent["Live a different lifestyle"]} ></ExperiencesBlog>
+          {/* <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={homepagecontent["Live a different lifestyle"]} ></ExperiencesBlog> */}
           </Row>
         </Element>
       </DetailsContainer>

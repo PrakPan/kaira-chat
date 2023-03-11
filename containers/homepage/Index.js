@@ -8,6 +8,7 @@ import DesktopBanner from '../../components/containers/Banner';
 import Experiences from '../../components/containers/Experiences';
 // import Testimonials from '../../components/containers/Testimonials';
 import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
+import axiomyplansinstance from '../../services/sales/MyPlans';
 
 //  import Chatbot from '../../components/chatbot/Homepage';
 // import ImageLoader from '../../components/ImageLoader';
@@ -28,8 +29,7 @@ import Button from '../../components/ui/button/Index';
 // import howitworksimg2 from '../../public/assets/arts/whyus/2.webp';
 // import howitworksimg3 from '../../public/assets/arts/whyus/3.webp';
 import media from '../../components/media';
-import homepagecontent from '../../public/content/homepage';
-  import * as ga from '../../services/ga/Index';
+   import * as ga from '../../services/ga/Index';
  import urls from '../../services/urls';
   import PLANNER_PAGES from '../../public/content/planner';
   import CaseStudies from '../travelplanner/CaseStudies/Index';
@@ -76,9 +76,35 @@ const HowItWorksContainer = styled.div`
 `;
 
 const  Homepage = (props) =>{
-
+  const [myPlansArr, setMyPlansArr] = useState([]);
+  const [plansLoading, setPlansLoading ] = useState(false);
+  const [plansCount, setPlansCount] = useState(null);
   let isPageWide = media('(min-width: 768px)');
+  useEffect(() => {
+    if(props.token){
+   axiomyplansinstance.get("?limit=3&offset=0", {headers: {
+       'Authorization': `Bearer ${props.token}`
+       }}).then(res => {
+           
  
+           let plansarr = [];
+ 
+           for(var i=0 ; i<res.data.results.length; i++){
+                plansarr.push(
+                   res.data.results[i]
+               );
+           }
+           setMyPlansArr(plansarr.slice());
+           console.log('d', res.data.count)
+           setPlansCount(res.data.count);
+           setPlansLoading(false);
+       }).catch(err => {
+           setPlansLoading(false);
+ 
+       })
+     }
+   
+ },[props.token]);
 
 //JSX for How it works 
 const HowitWorksHeadingsArr=[
@@ -163,11 +189,9 @@ useEffect(() => {
       {/* <Snowflakes></Snowflakes> */}
       <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
 
-      {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   url="media/website/Home (1).png" > */}
-      <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
+       <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
       </FullImage>
-      {/* <div className='hidden-mobile'><Explorers></Explorers></div> */}
-      <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
+       <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
 
@@ -175,12 +199,20 @@ useEffect(() => {
     <Heading textAlign='left' bold noline  fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        
     <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>
     
-    <Heading textAlign='left'  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Your Travel Plans {`(${homepagecontent["Recommended experiences"].length})`}</Heading>        
+    {props.token && myPlansArr.length && plansCount? 
+              <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>{"My Trips ("+plansCount+")"}</Heading>        
+: null
+            }
+            {
+              props.token && myPlansArr.length ? 
+              <>
+              <Experiences  margin="2.5rem 0" experiences={myPlansArr} ></Experiences>
+             <Button  link='/dashboard'  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button>
+              
+              </>
+: null
+            }
 
-{/* <Heading  align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Unique</Heading>         */}
-  <Experiences three={!experienceMore} link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={homepagecontent["Recommended experiences"]} ></Experiences>
-    {isPageWide? <Button onclick={()=>setExperieceMore(!experienceMore)} hoverBgColor="black" fontSizeDesktop="16px" fontWeight="600" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem">{!experienceMore?'View all' : 'View less'}</Button>: null  }
-    
     </SetWidthContainer>
    
 
@@ -188,9 +220,7 @@ useEffect(() => {
       <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>        
 
     
-
-      {/* <Heading   align="center" aligndesktop="left" margin={!isPageWide ? "0 0.5rem 1.5rem 0.5rem" : "0 0 5rem 0"}  bold>Top Destinations</Heading>         */}
-      <Locations locations={PLANNER_PAGES} viewall></Locations>
+       <Locations locations={PLANNER_PAGES} viewall></Locations>
 
       <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
       <PlanAsPerTheme />
@@ -202,62 +232,28 @@ useEffect(() => {
 
 
          <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Our happy customers say about us </Heading>        
-      {/* <ExperiencesBlog link="https://www.blog.thetarzanway.com/post/14-must-do-tips-for-every-solo-woman-traveler-in-india" pastitinerary   heading={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].heading} text={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].text} img={homepagecontent["14 MUST-DO Tips for every Solo Woman Traveler in India"].image} margin="2.5rem 0" experiences={homepagecontent["Women's Day Specials"]} ></ExperiencesBlog> */}
-        <CaseStudies></CaseStudies>
+         <CaseStudies></CaseStudies>
 
 
       
 
       </SetWidthContainer>
 
-      {/*Add travel traingle banner with 2 ctas*/}
-   
-
-      <SetWidthContainer>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Work from home redefined</Heading>        
-
-        {/* <Heading   align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Work from home redefined</Heading>         */}
-          <ExperiencesBlog link={homepagecontent["An Introduction to Workcation"].link} heading={homepagecontent["An Introduction to Workcation"].heading} text={homepagecontent["An Introduction to Workcation"].text} img={homepagecontent["An Introduction to Workcation"].image}   margin="1.5rem 0" experiences={homepagecontent["Work from home redefined"]}></ExperiencesBlog>
+    
  
-      
-      </SetWidthContainer>
 
-{/*Add Banner*/}
-<div className='hidden-desktop'><PersonaliseBox ></PersonaliseBox ></div> 
+ <div className='hidden-desktop'><PersonaliseBox ></PersonaliseBox ></div> 
 
-      {/* <div style={{marginTop: '5rem', position: 'relative !important'}} className='hidden-mbile'>
-        <ImageLoader width="100%" height="auto" url="media/website/banner without text@2x.png"></ImageLoader>
-
-        <div style={{position: 'absolute', top: '0', left: '5%', height: '100%', maxWidth: '45%', display: 'flex', flexDirection: 'column', justifyContent: 'center'}} >
-          <div style={{fontSize: '2.5rem', fontWeight: '800', marginBottom: '5vh'}} className='font-opensans'>Make your own travel cart</div>
-          <Button link='/tailored-travel' borderRadius="2rem" borderWidth="2px" padding="0.5rem 2rem">Start Planning</Button>
-        </div>
-        </div> */}
-
+    
 
       <SetWidthContainer>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Travel with a purpose</Heading>        
 
       {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
-        <Experiences  three margin="2.5rem 0" experiences={homepagecontent["Travel with a purpose"]} ></Experiences>
-        {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
-        {/* <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={homepagecontent["Live a different lifestyle"]} ></ExperiencesBlog> */}
-      </SetWidthContainer>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="center" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem"}  bold>Why Us</Heading>        
-
-      {/* <Heading   margin={!isPageWide? "1.5rem" : '5rem'} align="center" aligndesktop="center" bold>Why Us</Heading> */}
-      <div style={{width: "90%", margin: "auto"}}><WhyUs></WhyUs></div>
-
+         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
+       </SetWidthContainer>
+     
       {/* <Testimonials margin="1.5rem 0"></Testimonials> */}
 
-      <SetWidthContainer>
-        <TravelStyles width={1200} height={900}/>
-        <Button  onclick={_handleExperiencesClick} boxShadow hoverColor="white" hoverBgColor="black" borderWidth="2px"  margin="2.5rem auto 2.5rem auto" fontSizeDesktop="16px" fontSizeMobile="1.25rem" padding="0.5rem 2rem">All Experiences</Button>    
-       
-
-        <AsSeenIn></AsSeenIn>
-        <ChatWithUs></ChatWithUs>
-      </SetWidthContainer>
 
 
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}

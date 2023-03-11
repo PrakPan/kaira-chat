@@ -8,13 +8,9 @@ import { Element } from 'react-scroll';
 import Banner from './Banner/Index';
 import { useRef } from 'react'
 import PoisData from '../../components/experiencecity/info/pois/Index';
-import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
-import homepagecontent from '../../public/content/homepage';
-import media from '../../components/media';
+  import media from '../../components/media';
 // import Heading from '../../components/heading/Heading';
-import Heading from '../../components/newheading/heading/Index';
-import Accordions from './Accordion';
-
+ 
 
 const HeadingContainer = styled.div`
 height: max-content;

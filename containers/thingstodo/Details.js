@@ -2,23 +2,20 @@ import React, {useState, useEffect} from 'react';
 import Row from '../../components/experiencecity/info/Row';
 
 import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
-// import YellowNavbar from './YellowNavbar';
+
 import styled from 'styled-components';
 import { Element } from 'react-scroll';
 import Banner from './Banner/Index';
 import { useRef } from 'react'
 import { useRouter } from 'next/router';
 import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
-import homepagecontent from '../../public/content/homepage';
-import media from '../../components/media';
-// import Heading from '../../components/heading/Heading';
+ import media from '../../components/media';
 import Heading from '../../components/newheading/heading/Index';
 import Locations  from '../../components/experiencecity/info/RecommendedCities';
 import PaginatedPoiMobile from '../../components/experiencecity/info/paginatedpoi/mobile/Index';
 import PaginatedPoiDesktop from '../../components/experiencecity/info/paginatedpoi/desktop/Index';
-
 import Blogs from '../../components/containers/Blogs';
-import experiencepagecontent from '../../public/content/experiencepage';
+// import experiencepagecontent from '../../public/content/experiencepage';
 import axiosrecommendedinstance from '../../services/poi/reccommededcities';
 import Card from '../../components/cards/Location';
 
@@ -82,14 +79,15 @@ const Details = (props) => {
     router.push('/travel-guide/city/'+slug)
   }
     let cardsarr=[];
-  for(var i = 0 ; i<locations.length ; i++){
+  for(var i = 0 ; i<locations.length ; i++){ 
+
     const slug  = locations[i].slug;
-    console.log(locations[i]);
     if(locations[i].image)
     cardsarr.push(
         <Card
-  location={locations[i].name}
-   img={locations[i].image}
+  location={locations[i].nickname}
+  heading={locations[i].tagline}
+  img={locations[i].image}
   onclick={() => _handleRedirect(slug)}
   > 
   </Card>
@@ -130,7 +128,7 @@ const Details = (props) => {
 
       
 
-        {props.data.experiences.length ? 
+        {/* {props.data.experiences.length ? 
         <Element id='experiences' >
           {!isPageWide  ? <Row  heading='Experiences' top="0" padding="0 1rem">
           <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={props.data.experiences} ></ExperiencesBlog>
@@ -141,18 +139,18 @@ const Details = (props) => {
           <div  style={{height: '2rem'}}></div>
           <ExperiencesBlog  page="testimonials" review heading={homepagecontent["Inidan Review"].name} text={homepagecontent["Inidan Review"].summary} img={homepagecontent["Inidan Review"].image} margin="2.5rem 0" experiences={props.data.experiences} ></ExperiencesBlog>
           </div>: null}
-        </Element> : null}
+        </Element> : null} */}
 
       {locations.length ? <Element id="nearby-places">
         {isPageWide ? <div>
         <Heading bold noline aligndesktop="center" align="center" margin="0 0 2rem 0">Nearby Places</Heading>
-          <Locations cards={cardsarr}   slug={props.slug} locations={homepagecontent["Top Locations"]}></Locations>
+          <Locations cards={cardsarr}   slug={props.slug} ></Locations>
         </div> : null}
         {!isPageWide ? <Row  heading='Nearby Places' top="0" padding="0 1rem">
-          <Locations  cards={cardsarr} slug={props.slug} locations={homepagecontent["Top Locations"]}></Locations>
+          <Locations  cards={cardsarr} slug={props.slug}></Locations>
         </Row> : null}
         </Element> : null}
-        <Blogs cityblogs={props.data.blogs} blogs={experiencepagecontent["Kasol Blogs"]} margin={isPageWide  ? "5rem 0" : "1.5rem 0"}></Blogs>
+        {/* <Blogs cityblogs={props.data.blogs} blogs={experiencepagecontent["Kasol Blogs"]} margin={isPageWide  ? "5rem 0" : "1.5rem 0"}></Blogs> */}
 
       </DetailsContainer>
      
