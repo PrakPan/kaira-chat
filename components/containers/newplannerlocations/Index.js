@@ -41,6 +41,7 @@ const LocationsBlog= (props) => {
 
     
       const _handleTailored = (location) => {
+        console.log('test')
         //  localStorage.setItem('search_city_selected_id', location.id);
         // localStorage.setItem('search_city_selected_name', location.name);
         // localStorage.setItem('search_city_selected_parent', '');
@@ -156,6 +157,7 @@ setOffset(offset+6);
       while(i<props.locations.length){
         let elem = <MobileCardsContainer>
          <Card
+                     data={props.locations[i]}
               key={props.locations[i].tagline}
               location={props.locations[i].name}
               heading={props.locations[i].tagline}
@@ -167,6 +169,8 @@ setOffset(offset+6);
               > 
               </Card>
              {(props.locations[i+1]) && <Card
+                         data={props.locations[i+1]}
+
               key={props.locations[i+1].tagline}
               location={props.locations[i+1].name}
               heading={props.locations[i+1].tagline}
@@ -178,6 +182,8 @@ setOffset(offset+6);
               > 
               </Card>}
               {(props.locations[i+2]) && <Card
+                          data={props.locations[i+2]}
+
               key={props.locations[i+2].tagline}
               location={props.locations[i+2].name}
               heading={props.locations[i+2].tagline}
@@ -188,6 +194,8 @@ setOffset(offset+6);
               > 
               </Card>}
               {(props.locations[i+3]) && <Card
+                          data={props.locations[i+3]}
+
               key={props.locations[i+3].tagline}
               location={props.locations[i+3].name}
               heading={props.locations[i+3].tagline}
@@ -203,7 +211,7 @@ setOffset(offset+6);
         i = i+4   
         cardsArrMobile.push(elem)
     }
-    setCardsToShowJSXmobile(cardsArrMobile)
+    setCardsToShowJSXmobile(cardsArrMobile.slice())
     }
   },[props.locations])
 
