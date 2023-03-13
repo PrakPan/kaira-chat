@@ -52,6 +52,8 @@ dangerouslySetInnerHTML={{
   gtag('config', 'AW-738037519');
   `}}
   />
+
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"></link>
   <script type="text/javascript" dangerouslySetInnerHTML={{
   __html: ` (function(c,l,a,r,i,t,y){
     c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
