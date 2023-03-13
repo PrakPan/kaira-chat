@@ -41,12 +41,35 @@
 
 
 const withImages = require('next-images')
+<<<<<<< HEAD
 const moduleExports =  withImages({  async redirects() {
   return [
     {
       source: '/sitemap',
       destination: '/sitemap.xml',
       permanent: true,
+=======
+ 
+
+ 
+
+
+const moduleExports =  withImages({
+ 
+  async redirects() {
+      return [
+        {
+          source: '/sitemap',
+          destination: '/sitemap.xml',
+          permanent: true,
+        },
+        {
+          source: '/itinerary/preview/:id',
+          destination: '/itinerary/:id',
+          permanent: true,
+        },
+      ]
+>>>>>>> 4db23b0667e46e616ddb7577713bc4c26030da57
     },
     {
       source: '/itinerary/preview/:id',
@@ -56,4 +79,8 @@ const moduleExports =  withImages({  async redirects() {
   ]
 },
 })
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4db23b0667e46e616ddb7577713bc4c26030da57
 module.exports =  (moduleExports);
