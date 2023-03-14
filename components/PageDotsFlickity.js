@@ -24,7 +24,6 @@ const FlickityCarousel = (props) => {
           options={ flickityOptions }
           reloadOnUpdate
           static
-
         >
         {cards}
         </Flickity>

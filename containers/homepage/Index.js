@@ -196,11 +196,11 @@ useEffect(() => {
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
 
     <SetWidthContainer>
-    <Heading textAlign='left' bold noline  fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        
+    <Heading textAlign='left' bold noline  fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        
     <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>
     
     {props.token && myPlansArr.length && plansCount? 
-              <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>{"My Trips ("+plansCount+")"}</Heading>        
+              <Heading  noline fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>{"My Trips ("+plansCount+")"}</Heading>        
 : null
             }
             {
@@ -217,21 +217,21 @@ useEffect(() => {
    
 
       <SetWidthContainer style={{}}>
-      <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>        
+      <Heading  noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>        
 
     
        <Locations locations={PLANNER_PAGES} viewall></Locations>
 
-      <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
+      <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
       <PlanAsPerTheme />
       
-      <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
+      <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
       <PlanWithUs />
 
 
 
 
-         <Heading  noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Our happy customers say about us </Heading>        
+         <Heading  noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Our happy customers say about us </Heading>        
          <CaseStudies></CaseStudies>
 
 
