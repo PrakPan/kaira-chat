@@ -4,27 +4,28 @@ import styled, { keyframes } from 'styled-components'
 import media from '../../components/media'
    import * as ga from '../../services/ga/Index';
    import Button from '../../components/ui/button/Index'
+import ImageLoader from '../../components/ImageLoader';
    
 const Container = styled.div`
-height : 320px;
+height : 430px;
   display : grid;
   gap : 0.2rem;
   grid-template-areas: 
-  'a a b b b b b b'
-  'a a b b b b b b'
-  'a a b b b b b b'
-  'a a b b b b b b'
-  'd e e e e e e e'
+  'a a a b b b b b'
+  'a a a b b b b b'
+  'a a a b b b b b'
+  'a a a b b b b b'
+  'a a a b b b b b'
+  'a a a b b b b b'
+  'd d e e e e e e'
+  'd d e e e e e e'
   'c c c c c c c c'
-  'c c c c c c c c'
-  'c c c c c c c c'
-  'c c c c c c c c';
   'c c c c c c c c';
 
   padding : 10px;
 
  @media screen and (min-width: 768px){
-    height : 550px;
+    height : 600px;
     gap : 0.5rem;
     grid-template-areas: 
     'a a a a b b b b b'
@@ -39,6 +40,7 @@ height : 320px;
 & >.d{
     border : null;
     background : rgba(247, 231, 0, 0.2);
+  padding : 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -46,6 +48,7 @@ height : 320px;
     padding-left : 5px;
     margin-bottom : 0px;
  @media screen and (min-width: 768px){
+  padding : 25px;
     font-size : 20px;
     text-align : center;
     align-items : center;
@@ -77,6 +80,7 @@ const TopSlideOut = keyframes`
 
 const TextContainer = styled.div`
 position : absolute;
+z-index : 2;
 top : 9px;
 right : ${props=>props.right? '9px' : null};
 left : ${props=>props.right? null : '9px'};
@@ -118,9 +122,6 @@ width : 100%;
 `
 const ImageContainer = styled.div`
 cursor : pointer;
-background-repeat: no-repeat;
-background :  url('https://d31aoa0ehgvjdi.cloudfront.net/media/website/${props=>props.bg}');
-background-repeat : round;
 height : 100%;
 width : 100%;
 .StartNow{
@@ -179,7 +180,9 @@ const PlanAsPerTheme = (props) => {
                 <Heading>Road Trip</Heading>
                 <p>Planner</p>
             </TextContainer>
-            <TextContainer className='StartNow'>Start now!</TextContainer> 
+            {isPageWide && <TextContainer className='StartNow'>Start now!</TextContainer> }
+            <ImageLoader fit='cover' height='100%'  url='media/website/road-trip.png'></ImageLoader> 
+
             </ImageContainer>
 
         </GridItem >
@@ -190,7 +193,8 @@ const PlanAsPerTheme = (props) => {
                 <Heading>Volunteer Travel</Heading>
                 <p>Planner</p>
             </TextContainer>
-            <TextContainer className='StartNow'>Start now!</TextContainer> 
+            {isPageWide &&<TextContainer className='StartNow'>Start now!</TextContainer> }
+            <ImageLoader fit='cover' height='100%' url='media/website/volunteer-travel.png'></ImageLoader> 
 
         </ImageContainer>
         </GridItem >
@@ -201,7 +205,8 @@ const PlanAsPerTheme = (props) => {
                 <Heading>Workcation</Heading>
                 <p>Planner</p>
             </TextContainer>
-            <TextContainer className='StartNow'>Start now!</TextContainer> 
+           {isPageWide&& <TextContainer className='StartNow'>Start now!</TextContainer> }
+            <ImageLoader fit='cover' height='100%'  url='media/website/worcation.png'></ImageLoader> 
 
         </ImageContainer>
         </GridItem >
@@ -216,7 +221,8 @@ const PlanAsPerTheme = (props) => {
                 <Heading>Offbeat</Heading>
                 <p>Planner</p>
             </TextContainer>
-            <TextContainer className='StartNow'>Start now!</TextContainer> 
+            {isPageWide&& <TextContainer className='StartNow'>Start now!</TextContainer> }
+            <ImageLoader fit='cover' height='100%'  url='media/website/offbeat-travel.png'></ImageLoader> 
 
         </ImageContainer>
         </GridItem >
