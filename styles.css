@@ -1206,7 +1206,7 @@ margin-left: -25px;
         .flickity-button {
             display: initial;
             position: absolute;
-            background: rgba(0,0,0,0.6);
+            background: rgba(1, 32, 43, 1);
             border: none;
             color: white;
           }
@@ -1223,6 +1223,7 @@ margin-left: -25px;
           .flickity-button:disabled {
             cursor: auto;    
             pointer-events: none;
+            display: none;
           }
           
           .flickity-button-icon {
@@ -1231,9 +1232,9 @@ margin-left: -25px;
         
           .flickity-prev-next-button {
             top: 50%;
-            width: 2rem;
-            height: 4rem;
-
+            width: 40px;
+            height: 40px;
+            border-radius: 100%;
             transform: translateY(-50%);
           }
         
@@ -1247,10 +1248,10 @@ margin-left: -25px;
           
           .flickity-prev-next-button .flickity-button-icon {
             position: absolute;
-            left: 20%;
-            top: 20%;
-            width: 60%;
-            height: 60%;
+            left: 30%;
+            top: 30%;
+            width: 40%;
+            height: 40%;
           }
     }
     #experience-modal-body{

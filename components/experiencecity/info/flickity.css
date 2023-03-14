@@ -23,7 +23,7 @@
   
   /* button */
 .flickity-button {
-display: none;
+/* display: none; */
   }
   
   @media screen and (min-width: 768px){
@@ -64,6 +64,7 @@ display: none;
 
   .flickity-prev-next-button.previous {
     left: 0px;
+    
   }
   .flickity-prev-next-button.next {
     right: 0px;

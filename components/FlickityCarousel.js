@@ -7,9 +7,11 @@ const FlickityCarousel = (props) => {
 
     const flickityOptions = {
         initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
-        prevNextButtons: false,
+        prevNextButtons: true,
         wrapAround: false,
         pageDots: false,
+        contain : props.hideSides === true ? true : false,
+      groupCells :  props.groupCells ? props.groupCells : false,
 
     };
     const flickityOptionsLocations = {
@@ -17,14 +19,12 @@ const FlickityCarousel = (props) => {
       prevNextButtons: false,
       wrapAround: false,
       pageDots: false,
-
     }
     const flickityOptionsIpad = {
       initialIndex: 1,
       prevNextButtons: false,
       wrapAround: false,
       pageDots: false,
-      
     } 
      let cards=[];
     if(props.twocards){
@@ -62,7 +62,7 @@ const FlickityCarousel = (props) => {
     else 
     props.cards.map( (card,index) => {
       cards.push(
-        <div key={index}  style={{width: props.numberOfCards? `${Math.floor(100/+props.numberOfCards)}%` :'80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div>
+        <div key={index}  style={{ width: props.numberOfCards? `${100/+props.numberOfCards -1}%` :'80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}}><div>{card}</div></div>
       )
   });
       return(

@@ -215,9 +215,6 @@ setOffset(offset+6);
     }
   },[props.locations])
 
-console.log(cardsToShowJSXmobile)
-
-
    return(
       <><div className='hidden-mobile'>
         <Container >  
