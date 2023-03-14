@@ -255,7 +255,7 @@ useEffect(() => {
       {/* <Testimonials margin="1.5rem 0"></Testimonials> */}
 
 
-
+            <br></br>
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
       <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
       {/* <Chatbot history={props.history}/>     */}
