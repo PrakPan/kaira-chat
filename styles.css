@@ -1223,6 +1223,7 @@ margin-left: -25px;
           .flickity-button:disabled {
             cursor: auto;    
             pointer-events: none;
+            display: none;
           }
           
           .flickity-button-icon {
@@ -1231,9 +1232,9 @@ margin-left: -25px;
         
           .flickity-prev-next-button {
             top: 50%;
-            width: 2rem;
-            height: 4rem;
-
+            width: 3rem;
+            height: 3rem;
+            border-radius: 100%;
             transform: translateY(-50%);
           }
         
