@@ -35,7 +35,7 @@ import media from '../../components/media';
   import CaseStudies from '../travelplanner/CaseStudies/Index';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
-import PlanWithUs from '../travelplanner/PlanWithUs';
+import PlanWithUs from '../../components/WhyPlanWithUs/Index';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -226,7 +226,7 @@ useEffect(() => {
       <PlanAsPerTheme />
       
       <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
-      <PlanWithUs />
+      <PlanWithUs  />
 
 
 
