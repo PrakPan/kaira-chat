@@ -1,8 +1,9 @@
 import React from 'react'
 
-const HowToReach = () => {
+const HowToReach = (props) => {
   return (
     <div>HowToReach</div>
+    
   )
 }
 

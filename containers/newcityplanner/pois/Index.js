@@ -28,7 +28,6 @@ padding : 13px 68px;
 display: block;
 margin : 15px auto;
 border-radius : 8px;
-
 `
 const Poi = props=>{
   const [more,setMore] = useState(false)

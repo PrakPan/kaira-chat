@@ -26,17 +26,18 @@ margin-block : 30px;
 `
 
 const Menu = (props)=>{
-
+console.log('0000.',props)
   function handleClick(e){
     let el = document.getElementById(e)
-    if(el) el.scrollIntoView({behavior : 'smooth'})
+    if(el){ 
+    el.scrollIntoView({behavior : 'smooth', block: 'center' }) 
   }
-
+  }
   return (
         <MenuContainer>
-            <Navigator handleClick={handleClick} {...props} />
+            {/* <Navigator handleClick={handleClick} {...props} /> */}
             <MenuItem id='Brief'>
-              <Brief short_description={props.data.short_description} />
+              <Brief short_description={props.data.short_description} lat={props.data.lat} long={props.data.long} />
             </MenuItem>
             
             <MenuItem id='Itinerary'>
@@ -56,7 +57,9 @@ const Menu = (props)=>{
 
             <MenuItem id='How to reach' single>
             <Heading>How to reach</Heading>
-            <HowToReach />
+            <InformationTextContainer
+              type='text'
+              text={props.data.conveyance_available}></InformationTextContainer>
             </MenuItem>
 
             <MenuItem id='Survival Tips & Tricks' single>

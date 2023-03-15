@@ -10,6 +10,7 @@ const POIDetailsDrawer = (props) => {
       open={props.show}
       anchor={"right"}
       variant="persistent"
+      style={{ zIndex: 1250 }}
     >
       {props.poiDetailsData.name ? (
         <POIDetails

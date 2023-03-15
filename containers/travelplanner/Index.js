@@ -291,7 +291,6 @@ const [filters, setFilters] = useState({
 }
 }, [])
 
-
  const [offsetExclusive, setOffsetExclusive] = useState(0);
  const [offsetCustomer, setOffsetCustomer] = useState(0);
 

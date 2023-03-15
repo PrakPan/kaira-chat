@@ -77,10 +77,10 @@ const Experience = (props) => {
 
 
 
-            <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
+            {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
           <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
-        </div>
-           <Transition in={!props.cityData} timeout={1000} unmountOnExit>
+
+          <Transition in={!props.cityData} timeout={1000} unmountOnExit>
               { state => 
               <div
               className="center-div"
@@ -99,7 +99,8 @@ const Experience = (props) => {
 
 
               }
-               </Transition>
+               </Transition> */}
+            </div>
         </div>
       );
       }
@@ -123,7 +124,7 @@ const Experience = (props) => {
 {/* Old city */}
 
         
-          <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images}></Menu>
+          {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images}></Menu>
           <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
           <Transition in={props.cityData ? false : true} timeout={1000} unmountOnExit>
               { state => 
@@ -144,7 +145,7 @@ const Experience = (props) => {
 
 
               }
-               </Transition>
+               </Transition> */}
 
         </div>
       );

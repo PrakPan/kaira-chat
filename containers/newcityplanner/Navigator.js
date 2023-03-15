@@ -9,6 +9,7 @@ font-size : 16px;
 padding : 18px 28px;
 border-top-left-radius : 15px;
 border-top-right-radius : 15px;
+margin-bottom : 0rem;
 `
 
 const selectedStyle = {
@@ -20,6 +21,13 @@ const Container = styled.div`
 margin-top : 50px;
 display : flex;
 justify-content : space-between;
+
+@media screen and (min-width: 768px){
+    position : sticky;
+    z-index : 2;
+    top : 6rem;
+    background : white;    
+}
 `
 const TitleContainer = styled.div`
 display : flex;
