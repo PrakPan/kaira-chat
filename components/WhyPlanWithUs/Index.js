@@ -19,10 +19,9 @@ padding-right : 5px;
     `
     const Flex = styled.div`
     display : grid;
-    grid-template-columns : auto auto;
-    margin-block : 25px;
-    grid-column-gap : 10px;
-
+    grid-template-columns : max-content auto;
+     grid-column-gap : 20px;
+ 
 @media screen and (min-width: 768px){
 }
 `
@@ -32,6 +31,8 @@ const Icon = styled.div`
 `
 
     const Items = styled.div`
+    display : grid;
+    grid-row-gap: 1rem;
 
     @media screen and (min-width: 768px){
         display : grid;
