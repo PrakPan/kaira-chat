@@ -114,7 +114,7 @@ const Experience = (props) => {
 
 {/* New city */}
           
-          <NewMenu data={props.cityData} />
+          {/* <NewMenu data={props.cityData} /> */}
         
         
         
