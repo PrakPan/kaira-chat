@@ -35,7 +35,7 @@ import media from '../../components/media';
   import CaseStudies from '../travelplanner/CaseStudies/Index';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
-import PlanWithUs from '../travelplanner/PlanWithUs';
+import PlanWithUs from '../../components/WhyPlanWithUs/Index';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -255,7 +255,7 @@ useEffect(() => {
       {/* <Testimonials margin="1.5rem 0"></Testimonials> */}
 
 
-
+            <br></br>
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
       <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
       {/* <Chatbot history={props.history}/>     */}

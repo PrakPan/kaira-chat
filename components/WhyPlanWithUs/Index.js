@@ -19,10 +19,11 @@ padding-right : 5px;
     `
     const Flex = styled.div`
     display : grid;
-    grid-template-columns : 1fr 3fr;
+    grid-template-columns : auto auto;
     margin-block : 25px;
+    grid-column-gap : 10px;
+
 @media screen and (min-width: 768px){
-    column-gap : 20px;
 }
 `
 const Icon = styled.div`
@@ -36,8 +37,8 @@ const Icon = styled.div`
         display : grid;
         grid-template-columns : 2fr 2fr;
         margin-inline : 0px;
-        column-gap : 10%;
-        width : 55%
+        grid-column-gap: 2rem;
+        
     }
     `
     const ImagesArr = [

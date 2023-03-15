@@ -181,7 +181,7 @@ const PlanAsPerTheme = (props) => {
                 <p>Planner</p>
             </TextContainer>
             {isPageWide && <TextContainer className='StartNow'>Start now!</TextContainer> }
-            <ImageLoader fit='cover' height='100%'  url='media/website/road-trip.png'></ImageLoader> 
+            <ImageLoader fit='cover' width="100%" height='100%'  url='media/website/road-trip.png'></ImageLoader> 
 
             </ImageContainer>
 
