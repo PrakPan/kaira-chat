@@ -9,7 +9,8 @@ import media from '../../components/media';
 import { useRouter } from 'next/router';
 import POIModal from '../../components/modals/poi/Index';
 import NewMenu from '../newcityplanner/Menu'
-
+import MobileBanner from './Banner/Mobile'
+import WhatsappFloating from '../../components/WhatsappFloating';
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
   const [poiData, setPoiData] = useState();
@@ -58,20 +59,17 @@ const Experience = (props) => {
     }    setGalleryImages(images);
     setGalleryOpen(false);
   }
-   //If experience data fetched
-    if (isPageWide){
-      //Open Gallery
       if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages} ></FullScreenGallery >);
-      //Open experience page
       else return (
-        <div style={{minHeight: '100vh'}}>
-          <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
+        <div style={isPageWide?{minHeight: '100vh'}:{}}>
+          {isPageWide ? <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>:<MobileBanner/>}
+      <WhatsappFloating message="Hey, I need help planning my trip." />
           <div>
           <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
             
             {/* New city */}
 
-{/* <NewMenu data={props.cityData} /> */}
+<NewMenu data={props.cityData} />
             
             {/* old city */}
 
@@ -88,7 +86,7 @@ const Experience = (props) => {
                 backgroundColor: "#F7e700",
                  width: '100vw',
                  transition: 'all 1s ease-out',
-                 zIndex: '1000',
+                 zIndex: '2500',
                   height: '100vh',
                  position: 'fixed',
                  left: state=='exiting' ? '-100vw' : 0,
@@ -96,60 +94,11 @@ const Experience = (props) => {
                  }}>
                  <Loading/>
                  </div>
-
-
               }
                </Transition> */}
             </div>
         </div>
       );
-      }
-    else{
-      if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages}  ></FullScreenGallery>);
-      else
-      return (
-
-        <div style={{}}>
-          <ExperienceGallery   filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" }  setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
-          
-
-{/* New city */}
-          
-          <NewMenu data={props.cityData} />
-        
-        
-        
-        
-
-{/* Old city */}
-
-        
-          {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images}></Menu>
-          <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
-          <Transition in={props.cityData ? false : true} timeout={1000} unmountOnExit>
-              { state => 
-              <div
-              className="center-div"
-              style={{
-                width: '100vw',
-                backgroundColor: "#F7e700",
-                 transition: 'all 1s linear',
-                 zIndex: '2500',
-                  height: '100vh',
-                 position: 'fixed',
-                 top: '0',
-                 left: state=='exiting' ? '-100vw' : 0,
-                 }}>
-                 <Loading/>
-                 </div>
-
-
-              }
-               </Transition> */}
-
-        </div>
-      );
-    }
   }
 
 export default Experience;

@@ -65,7 +65,7 @@ const Typography = styled.div`
 display : flex;
 justify-content : space-between;
 font-weight : 600;
-font-size : 24px;
+font-size : 16px;
 position: absolute;
 bottom: 10px;
 left : 16px;
