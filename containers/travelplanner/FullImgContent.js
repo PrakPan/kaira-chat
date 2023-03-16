@@ -139,7 +139,7 @@ const FullImgContent = (props) => {
 Craft AI-personalized itineraries.</SubHeading> : <SubHeading>Say goodbye to packages.<br />
 Craft AI-personalized itineraries.</SubHeading>}
             <div className='hidden-mobile'>
-            <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="rgba(255, 255, 255, 0.8)" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button>
+            {/* <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button> */}
 
             </div>
             {/* <SubText>As per your 
