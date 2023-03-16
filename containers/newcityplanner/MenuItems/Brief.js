@@ -15,7 +15,7 @@ margin-top : 30px;
 const P = styled.p`
       font-weight: 300;
       text-align: left;
-      line-height: 28px;
+      line-height: 32px;
       @media screen and (min-width: 768px) {
        font-size:18px ;
       }

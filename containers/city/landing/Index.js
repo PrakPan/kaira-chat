@@ -189,7 +189,6 @@ const IconText = styled.span`
 const BlackContainer = (props) => {
 
 
-
   const imageClickHandler = () => {
     props.setGalleryOpen(true)
   }
@@ -208,19 +207,19 @@ const BlackContainer = (props) => {
        <Gallery setGalleryOpen={props.setGalleryOpen} images={props.images} ></Gallery>
         <IconListContainer>
         <DetailsContainer>
-            <ExperienceName className='font-opensans' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
+            <ExperienceName className='font-lexend' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
             <TagsContainer>
             <TagContainer>
             {typeof window !=='undefined' ? <FontAwesomeIcon icon={faMapMarker} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
-              <p className="font-nunito" style={{margin: "0.5rem"}}>{props.region}</p>
+              <p className="font-lexend" style={{margin: "0.5rem"}}>{props.region}</p>
             </TagContainer>
             <TagContainer>
               {typeof window !=='undefined' ? <FontAwesomeIcon icon={faCalendar} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
-              <p className="font-nunito" style={{margin: "0.5rem"}}>{!props.duration === 'null Days' ? props.duration: '4 Days'}</p>
+              <p className="font-lexend" style={{margin: "0.5rem"}}>{!props.duration === 'null Days' ?  '4 Days' : props.duration}</p>
             </TagContainer>            
             <TagContainer>
               {typeof window !=='undefined' ? <FontAwesomeIcon icon={faMountain} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
-              <p className="font-nunito" style={{margin: "0.5rem"}}>{props.filter}</p>
+              <p className="font-lexend" style={{margin: "0.5rem"}}>{props.filter}</p>
             </TagContainer>
             </TagsContainer>
 

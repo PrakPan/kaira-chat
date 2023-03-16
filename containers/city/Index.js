@@ -51,7 +51,6 @@ const Experience = (props) => {
 
   
 
-
   const closeGalleryHandler = () => {
     let images = [];
     for(var i = 0 ; i<props.cityData.images.length; i++){
@@ -61,11 +60,11 @@ const Experience = (props) => {
   }
       if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages} ></FullScreenGallery >);
       else return (
-        <div style={isPageWide?{minHeight: '100vh'}:{}}>
+        <div className='font-lexend' style={isPageWide?{minHeight: '100vh'}:{}}>
           {isPageWide ? <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>:<MobileBanner/>}
       <WhatsappFloating message="Hey, I need help planning my trip." />
           <div>
-          <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
+          <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state.region } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
             
             {/* New city */}
 

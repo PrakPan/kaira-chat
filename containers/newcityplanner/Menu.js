@@ -7,7 +7,7 @@ import FoodToEat from "./MenuItems/FoodToEat"
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
-font-family: 'Poppins';
+// font-family: 'Poppins';
     @media screen and (min-width: 768px){
         width : 80%;
           }
@@ -26,12 +26,11 @@ margin-block : 30px;
 const P = styled.p`
       font-weight: 300;
       text-align: left;
-      line-height: 28px;
+      line-height: 32px;
       @media screen and (min-width: 768px) {
        font-size: 18px;
       }
     `;
-
 const Menu = (props)=>{
   function handleClick(e){
     let el = document.getElementById(e)
@@ -39,6 +38,9 @@ const Menu = (props)=>{
     el.scrollIntoView({behavior : 'smooth', block: 'center' }) 
   }
   }
+  // console.log(props,'trtrtrt')
+  console.log(props.data.itinerary_data)
+
   return (
         <MenuContainer>
             {/* <Navigator handleClick={handleClick} {...props} /> */}
@@ -46,10 +48,10 @@ const Menu = (props)=>{
               <Brief short_description={props.data.short_description} lat={props.data.lat} long={props.data.long} />
             </MenuItem>}
             
-            {/* <MenuItem id='Itinerary'>
+            <MenuItem id='Itinerary'>
                 <Heading >TTW’s Top Recommendation</Heading>
-                <TopRecommendations />
-            </MenuItem> */}
+                <TopRecommendations itinerary_data={props.data.itinerary_data} />
+            </MenuItem>
 
             {props.data.pois &&<MenuItem id='Things to do' single>
             <Heading>Things to do</Heading>

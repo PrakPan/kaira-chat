@@ -28,7 +28,7 @@ const GridContainer = styled.div`
     display: grid;
     grid-template-columns: ${(props)=>(props.columns ? "repeat("+props.columns+",1fr)" : "repeat(3,1fr)")};
     grid-template-rows: auto;
-    grid-gap: 2.5rem;
+    grid-gap: 2rem;
     heigth : 500px;
   }
 `;

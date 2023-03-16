@@ -106,7 +106,6 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endCo
 `
 export default function PoiCard(props){
 
-    // const [showDrawer, setShowDrawer] = useState(false);
     const [poiDetailsData, setPoiDetailsData] = useState({});
   
     const fetchData = (id) => {
@@ -119,7 +118,6 @@ export default function PoiCard(props){
             e.stopPropagation()
             props.setShowDrawer(false);            
           };
-          console.log(props)
 
     return (
         <Container onClick={()=>{ fetchData(props.data.id)
