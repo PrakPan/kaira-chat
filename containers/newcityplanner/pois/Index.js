@@ -2,6 +2,7 @@ import styled from "styled-components"
 import PoiCard from "./PoiCard"
 import {useState} from 'react'
 import media from '../../../components/media'
+
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
@@ -31,9 +32,25 @@ border-radius : 8px;
 `
 const Poi = props=>{
   const [more,setMore] = useState(false)
+  const drawerShowArr = props.pois?.map((e)=>{return{...e,isOpen:false}})
+  const [showDrawer, setShowDrawer] = useState(drawerShowArr);
+
+
   let isPageWide = media('(min-width: 768px)')
 
-  let lessItems = !isPageWide? props.pois?.slice(0,2).map((e,i)=> ( <PoiCard key={e.id} data={e} />)) : props.pois?.slice(0,4).map((e,i)=> ( <PoiCard key={e.id} data={e} />))
+  const _handleOpen = (id)=>{
+    setShowDrawer(drawerShowArr.map((e)=>{
+      if(e.id == id) return{...e,isOpen:true}
+      return e
+    }
+  ))
+  }
+  const handleCloseDrawer = (e) => {
+    e.stopPropagation()
+    setShowDrawer(drawerShowArr);            
+  };
+
+  let lessItems = !isPageWide? props.pois?.slice(0,2).map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer} />)) : props.pois?.slice(0,4).map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer} />))
 
     return (
         <div>
@@ -41,7 +58,7 @@ const Poi = props=>{
             
             <Items>
             {
-                more ? props.pois?.map((e,i)=> ( <PoiCard key={e.id} data={e} />))
+                more ? props.pois?.map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer}/>))
                 : lessItems
             }
             </Items>

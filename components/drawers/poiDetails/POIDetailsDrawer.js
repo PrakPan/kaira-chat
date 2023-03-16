@@ -12,7 +12,7 @@ const POIDetailsDrawer = (props) => {
       variant="persistent"
       style={{ zIndex: 1250 }}
     >
-      {props.poiDetailsData.name ? (
+      {!!props.poiDetailsData.name ? (
         <POIDetails
           data={props.poiDetailsData}
           handleCloseDrawer={props.handleCloseDrawer}

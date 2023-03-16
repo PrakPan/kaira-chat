@@ -106,31 +106,33 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endCo
 `
 export default function PoiCard(props){
 
-    const [showDrawer, setShowDrawer] = useState(false);
+    // const [showDrawer, setShowDrawer] = useState(false);
     const [poiDetailsData, setPoiDetailsData] = useState({});
   
-    const _handleOpen = (id) => {
-          setShowDrawer(true);
+    const fetchData = (id) => {
+          props.setShowDrawer(true);
           axiosPOIdetailsInstance
           .get(`/?id=${id}`)
           .then((res) => setPoiDetailsData(res.data));
         }
         const handleCloseDrawer = (e) => {
             e.stopPropagation()
-            setShowDrawer(false);            
+            props.setShowDrawer(false);            
           };
+          console.log(props)
 
     return (
-        <Container onClick={()=>_handleOpen(props.data.id)}>
+        <Container onClick={()=>{ fetchData(props.data.id)
+        props._handleOpen(props.data.id)}}>
             <ImageContainer>
             <ImageLoader height='100%' url={props.data.image} />
             </ImageContainer>
             <Overlay />
             {props.data.name && <Typography><p className='AnimateLeft'>{props.data.name}</p> <div><NavigateNextIcon className='AnimateRight' /></div></Typography>}
             <POIDetailsDrawer
-        show={showDrawer}
+        show={props.showDrawer.isOpen}
         iconId={props.data.id}
-        handleCloseDrawer={handleCloseDrawer}
+        handleCloseDrawer={props.handleCloseDrawer}
         poiDetailsData={poiDetailsData}
       />
         </Container>
