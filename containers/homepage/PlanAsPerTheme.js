@@ -1,10 +1,12 @@
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import media from '../../components/media'
    import * as ga from '../../services/ga/Index';
    import Button from '../../components/ui/button/Index'
 import ImageLoader from '../../components/ImageLoader';
+import axiosCountInstance from '../../services/itinerary/count';
+
    
 const Container = styled.div`
 height : 430px;
@@ -149,9 +151,13 @@ transition: 0.5s all ease-in-out ;
 const PlanAsPerTheme = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
-
-
     const [loading, setLoading] = useState(false);
+    const [count,setCount] = useState(null)
+
+useEffect(()=>{
+  axiosCountInstance.get('').then(res=>setCount(res.data.user))
+},[])
+
 
     const _handleTailoredRedirect = () => {
         router.push('/tailored-travel')
@@ -211,7 +217,7 @@ const PlanAsPerTheme = (props) => {
         </ImageContainer>
         </GridItem >
         <GridItem className='d' >
-        <h2 style={isPageWide?{fontSize : '50px', fontWeight : 700}:{fontSize : '18px', fontWeight : 700}}>3490</h2>
+        <h2 style={isPageWide?{fontSize : '50px', fontWeight : 700}:{fontSize : '18px', fontWeight : 700}}>{count}</h2>
         <p style={isPageWide?{}:{marginTop : '-10px' , marginBottom:'0px'}}>Trips Planned</p>
         <p style={isPageWide?{marginTop : "-15px"}:{marginTop : '-5px' , marginBottom:'0px'}}>so far.</p>
         </GridItem >
