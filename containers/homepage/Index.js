@@ -116,7 +116,7 @@ const HowitWorksHeadingsArr=[
 
   <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">No Commissions - Pay for what you get</HowItWorksHeading>,
+  <HowItWorksHeading className="font-opensans">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
 
 ];
 
@@ -186,7 +186,7 @@ useEffect(() => {
 },[]);
   return (
     
-    <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
+    <div className={  "Homepage font-poppins" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       {/* <Snowflakes></Snowflakes> */}
       <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
 
