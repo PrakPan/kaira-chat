@@ -103,8 +103,9 @@ const  Homepage = (props) =>{
  
        })
      }
-   
  },[props.token]);
+
+
 
 //JSX for How it works 
 const HowitWorksHeadingsArr=[
