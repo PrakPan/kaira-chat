@@ -9,13 +9,16 @@ import {BsWhatsapp} from 'react-icons/bs';
 // import Banner from './BannerOne';
 import TailoredForm from '../../components/tailoredform/Index';
 import Rolodex from './Rolodex';
- 
+import ImageLoader from '../../components/ImageLoader';
+ import {IoLogoWhatsapp} from 'react-icons/io'
+import urls from '../../services/urls';
 // import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
   const Container = styled.div`
   color:white;
  width: 100%;
  display: grid;
 text-align: center;
+position : relative;
   @media screen and (min-width: 768px){
     padding: 0;
     width: 90%;
@@ -31,9 +34,9 @@ color: white;
 width: 99%;
 font-weight: 800;
 margin-bottom: 1rem;
-font-size: 3rem;
+font-size: 24px;
 @media screen and (min-width: 768px){
-  font-size: 4rem;
+  font-size: 55px;
   font-weight: 700;
 
 }
@@ -53,7 +56,7 @@ const PaddingContianer = styled.div`
 padding: 5vh 0 0 0;
 flex-grow: 1;
 @media screen and (min-width: 768px){
-    padding: 10vh 0 0 0;
+    padding: 1vh 0 0 0;
 
 
 }
@@ -83,6 +86,46 @@ display : flex;
 
 }
 `;
+
+const IconText = styled.div`
+font-size: 12px;
+display : flex;
+ align-items: center;
+ text-align : center;
+color : black;
+    font-weight: 600;
+    margin-top : 7px;
+@media screen and (min-width: 768px){
+    font-size: 16px;
+
+}
+`
+
+
+const SubHeading = styled.div`
+    font-size : 16px;
+    line-height : 20px;
+    font-weight : 400;
+    @media screen and (min-width: 768px){
+    font-size: 28px;
+    line-height : 35px;
+
+}
+`
+const IconsContainer = styled.div`
+display : flex;
+filter: invert(100%);
+justify-content : space-between;
+position : absolute;
+bottom : 10px;
+width : 100%;
+padding-inline : 10px;
+@media screen and (min-width: 768px){
+width : 40%;
+// bottom : -20%;
+}
+
+`
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
     // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
@@ -92,17 +135,24 @@ const FullImgContent = (props) => {
         <Container className='font-opensans center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.title}</Heading>
+           {isPageWide?<SubHeading>Bid farewell to generic holiday packages.<br/>
+Craft AI-personalized itineraries.</SubHeading> : <SubHeading>Say goodbye to packages.<br />
+Craft AI-personalized itineraries.</SubHeading>}
+            <div className='hidden-mobile'>
+            <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="rgba(255, 255, 255, 0.8)" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button>
+
+            </div>
             {/* <SubText>As per your 
                 <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
             </SubText> */}
-            <Rolodex></Rolodex>
+            {/* <Rolodex></Rolodex> */}
            {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
            
             {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
                 <div className='hidden-desktop'>
-                <Button padding="0.75rem 1rem" fontSize="1.2rem" fontWeight="800" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="0" onclick={() => props.setShowMobilePlanner(true)} margin="1rem auto">Build your trip</Button>
+                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props.setShowMobilePlanner(true)} margin="3rem auto 1rem auto">Start Planning</Button>
              </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}
@@ -117,6 +167,24 @@ const FullImgContent = (props) => {
                     </div>
                 </div> */}
              
+             <IconsContainer>
+                <div>
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/finish-path.png' />
+                <IconText>Free Personalized <br/> Itineraries</IconText>
+                </div>
+                <div>
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/calendar.png' />
+                <IconText>Fast, Flexible <br/> Bookings</IconText>
+              
+                </div>
+                <div>
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/customer-service.png' />
+                <IconText>No hidden <br />commissions</IconText>
+              
+                </div>
+                
+             </IconsContainer>
+
         </Container>
     );
 }
