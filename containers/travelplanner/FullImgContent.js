@@ -34,7 +34,7 @@ color: white;
 width: 99%;
 font-weight: 800;
 margin-bottom: 1rem;
-font-size: 24px;
+font-size: 35px;
 @media screen and (min-width: 768px){
   font-size: 55px;
   font-weight: 700;
@@ -152,7 +152,7 @@ Craft AI-personalized itineraries.</SubHeading>}
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
                 <div className='hidden-desktop'>
-                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props.setShowMobilePlanner(true)} margin="3rem auto 1rem auto">Start Planning</Button>
+                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props.setShowMobilePlanner(true)} margin="1rem auto 1rem auto">Start Planning</Button>
              </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}
@@ -173,7 +173,7 @@ Craft AI-personalized itineraries.</SubHeading>}
                 <IconText>Free Personalized <br/> Itineraries</IconText>
                 </div>
                 <div>
-                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/calendar.png' />
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/filled-calendar.png' />
                 <IconText>Fast, Flexible <br/> Bookings</IconText>
               
                 </div>
