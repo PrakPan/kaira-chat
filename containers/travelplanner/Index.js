@@ -417,7 +417,7 @@ useEffect(() => {
 
     return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage height='38rem' url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+      <FullImage heightmobile='30rem' height='38rem' url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <FullImgContent setShowMobilePlanner={setShowMobilePlanner}  page_id={props.experienceData.id} destination={props.experienceData.destination} cities={props.experienceData.locations} children_cities={props.experienceData.children} title={props.experienceData.banner_heading}/>
       </FullImage>
       <SetWidthContainer>
