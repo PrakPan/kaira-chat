@@ -413,11 +413,11 @@ useEffect(() => {
 <Heading align="left" style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>       
 <div><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-{itinerariesToIndexExclusive.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}     
+{/* {itinerariesToIndexExclusive.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}      */}
    
-   {
+   {/* {
     itinerariesToIndexExclusive.length ? <Experiences experiences={props.experienceData.itinerary_data}></Experiences>:null
-   }
+   } */}
   {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
    
    
