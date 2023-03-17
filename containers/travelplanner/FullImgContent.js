@@ -169,16 +169,16 @@ Craft AI-personalized itineraries.</SubHeading>}
              
              <IconsContainer>
                 <div>
-                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/finish-path.png' />
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/travel.png' />
                 <IconText>Free Personalized <br/> Itineraries</IconText>
                 </div>
                 <div>
-                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/filled-calendar.png' />
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/booking.png' />
                 <IconText>Fast, Flexible <br/> Bookings</IconText>
               
                 </div>
                 <div>
-                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/customer-service.png' />
+                <ImageLoader height="2.5rem" width="2.5rem" widthmobile="2.5rem" url='media/icons/general/money.png' />
                 <IconText>No hidden <br />commissions</IconText>
               
                 </div>
