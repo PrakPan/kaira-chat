@@ -53,8 +53,6 @@ const LocationsBlog= (props) => {
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
     const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
-    const [offset, setOffset] = useState(0);
-    let count =  0;
 
     useEffect(() => {
        let cardsarr = [];
@@ -63,7 +61,6 @@ const LocationsBlog= (props) => {
     for(i = 0 ; i < props.locations.length; i++){
         try{
           if(router.pathname!== props.locations[i].slug){
-            count++;
         cardsarr.push(
           <>
             <Card
@@ -81,7 +78,6 @@ const LocationsBlog= (props) => {
             </Card>
           </>
           )
-        if(count === 6) break;
       }
         }
         catch{
@@ -89,58 +85,12 @@ const LocationsBlog= (props) => {
         }
     }
   }
-    // setOffset(5);
-    // props.locations.map( location => {
-    //    cardsarr.push(              
-    //       <Card
-    //       key={location.tagline}
-    //       location={location.name}
-    //       heading={location.tagline}
-    //       img={location.image}
-    //       onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id, location.slug, location.state.name)}
-    //       > 
-    //       </Card>
-    //     )
-      
-    // });
 setCardsToShowJSX(cardsarr);
-setOffset(i+1);
-  }, [props.locations]);
+  }, [props.locations])
 
-  const _showMoreLocations = () => {
-    let cardsarr = cardsToShowJSX.slice();
-    for(var i = offset; i < offset + 6; i++){
-        try{
-          if(router.pathname!== props.locations[i].slug)
-
-        cardsarr.push(
-            <Card
-            key={props.locations[i].tagline}
-            location={props.locations[i].name}
-            heading={props.locations[i].tagline}
-            img={props.locations[i].image}
-            slug={props.locations[i].slug}
-            filters={props.locations[i].most_popular_for}
-            _handleTailored={_handleTailored}
-
-            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
-            > 
-            </Card>
-        
-          )
-        }catch{
-            
-        }
-    }
-    setCardsToShowJSX(cardsarr);
-setOffset(offset+6);
-  }
-
-// const router  = useRouter();
     const _handleTailoredRedirect = () => {
       router.push('/tailored-travel')
     }
-  // if(isPageWide) 
   
 
   useEffect(()=>{
@@ -148,9 +98,6 @@ setOffset(offset+6);
     
   
   
-      // for(let i = 0;i<props.locations.length;i++){
-  
-      // }
     
       let i = 0;
   let cardsArrMobile =  []
@@ -216,15 +163,17 @@ setOffset(offset+6);
   },[props.locations])
 
    return(
-      <><div className='hidden-mobile'>
-        <Container >  
+      <><div className='hidden-mobile new-planner-location'>
+        {/* <Container >  
                {cardsToShowJSX}
-      </Container>
-       {props.locations && !props.planner ? props.locations.length > offset ?
+      </Container> */}
+      <Carousel initialIndex hideSides groupCells={6} numberOfCards={6} cards={cardsToShowJSX}></Carousel>
+
+       {/* {props.locations && !props.planner ? props.locations.length > offset ?
         <Button   onclick={_showMoreLocations} fontSizeDesktop="16px" fontWeight="600" hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="0rem auto" padding="0.5rem 2rem" >View More</Button> : 
         <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null}  borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Build adventure!</Button> 
 
-        : null}
+        : null} */}
       </div>
  
     <div className='hidden-desktop'>       
