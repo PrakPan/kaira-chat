@@ -357,33 +357,11 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
   // }
 }
 
-const _showMoreCustomerItineraries = () => {
-  if(offsetCustomer > itinerariesCustomerJSX.length) return 0 ;
-  else {
-    let itineraries = itinerariesToShowCustomerJSX.slice();
-    // console.log('itineraries_length' , itineraries.length)
-    for(var i = offsetCustomer; i < offsetCustomer + 9 ; i++ ){
-      itineraries.push(itinerariesCustomerJSX[i]);
-    }
-    setOffsetCustomer(offsetCustomer+9);
-    setItinerariesToShowCustomerJSX(itineraries)
-  }
-}
+ 
 //JSX for How it works 
 
-const HowitWorksHeadingsArr=[
-  <HowItWorksHeading className="font-opensans">You select</HowItWorksHeading>,
-  <HowItWorksHeading className="font-opensans">We prepare</HowItWorksHeading>,
-  <HowItWorksHeading className="font-opensans">You make memories</HowItWorksHeading>,
-];
-const HowitWorksContentsArr = [
-  <HowItWorksText className="font-opensans">A short trek, a long honeymoon, a workcation, or personalize your own</HowItWorksText>,
-    <HowItWorksText  className="font-opensans">A completely personalized plan by our travel experts and software</HowItWorksText>,
-  <HowItWorksText  className="font-opensans">Enough planning, time to travel and make unforgettable memories</HowItWorksText>
-
-];
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
-
+ 
+ 
 
 const router = useRouter()
 
@@ -435,15 +413,14 @@ useEffect(() => {
 <Heading align="left" style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>       
 <div><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-
+{itinerariesToIndexExclusive.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}     
+   
+   {
+    itinerariesToIndexExclusive.length ? <Experiences experiences={props.experienceData.itinerary_data}></Experiences>:null
+   }
   {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
-  {/* {itinerariesToIndexCustomer.length ? 
-  <GridContainer>
-    { itinerariesToIndexCustomer}
- 
-  </GridContainer> : null
-  }
-   */}
+   
+   
    {
     itinerariesToIndexCustomer.length ? <Experiences experiences={props.experienceData.itinerary_data}></Experiences>:null
    }
