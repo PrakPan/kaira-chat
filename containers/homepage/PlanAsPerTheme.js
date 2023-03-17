@@ -180,12 +180,12 @@ useEffect(()=>{
     }
     
     const _handleTripRedirect = (link)=>{
-      router.push(`/travel-planner/${link}-in-india`)
+      router.push(`/travel-planner/${link}`)
     }
 
     const order = ['a','c','e','b']
     const ThemeContainer = 
-      props.ThemeData.map((e,i)=>(
+    props.ThemeData?.map((e,i)=>(
         (i != 0) &&<GridItem className={order[i-1]} onClick={()=>_handleTripRedirect(e.link)}>
             <ImageContainer bg='road-trip.png'>
             <TextContainer className='AnimateTop'>
