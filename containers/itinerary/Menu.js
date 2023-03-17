@@ -22,7 +22,6 @@ import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
 import * as ga from '../../services/ga/Index';
 import Spinner from '../../components/Spinner';
 import { useRouter } from 'next/router';
-import CustomMenu from './CustomMenu';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -357,7 +356,6 @@ const SimpleTabs = (props) => {
   };
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
-      <CustomMenu/>
       <AppBar position="sticky" className={classes.appbar}>
         <Tabs
           id="itinerary-tabs"

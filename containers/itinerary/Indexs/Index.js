@@ -1,32 +1,38 @@
-import React, { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import React, { useRef, useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-import styled from "styled-components";
-import FullImg from "../fullimg/FullImg";
-import FullImgContainer from "../fullimg/FullImgContent";
+import styled from 'styled-components';
+import FullImg from '../fullimg/FullImg';
+import FullImgContainer from '../fullimg/FullImgContent';
 
-import Menu from "../Menu";
-import axios from "axios";
-import Spinner from "../../../containers/loaderbar/Index";
-import OldSpinner from "../../../components/LoadingPage";
-import defaultbreif from "../defaultbrief";
-import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
-import axiosbreifinstance from "../../../services/itinerary/brief/preview";
-import { MIS_SERVER_HOST } from "../../../services/constants";
+import Menu from '../Menu';
+import axios from 'axios';
+import Spinner from '../../../containers/loaderbar/Index';
+import OldSpinner from '../../../components/LoadingPage';
+import defaultbreif from '../defaultbrief';
+import axiosdaybydayinstance from '../../../services/itinerary/daybyday/preview';
+import axiosbreifinstance from '../../../services/itinerary/brief/preview';
+import { MIS_SERVER_HOST } from '../../../services/constants';
 
-import * as authaction from "../../../store/actions/auth";
-import { connect } from "react-redux";
-import { ITINERARY_STATUSES } from "../../../services/constants";
-import { TRAVELER_ITINERARIES } from "../../../services/constants";
-import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import Landing from "../landing/Index";
+import * as authaction from '../../../store/actions/auth';
+import { connect } from 'react-redux';
+import { ITINERARY_STATUSES } from '../../../services/constants';
+import { TRAVELER_ITINERARIES } from '../../../services/constants';
+import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
+import Landing from '../landing/Index';
+import Overview from '../../newitinerary/overview/Index';
 
 const Container = styled.div`
-  width: 100%;
+  width: 90%;
+  margin: 24vw auto 0 auto;
+  @media screen and (min-width: 768px) {
+    width: 85%;
+    margin: 15vh auto 0 auto;
+  }
 `;
 
 const btoa = (text) => {
-  return Buffer.from(text, "binary").toString("base64");
+  return Buffer.from(text, 'binary').toString('base64');
 };
 const Itinerary = (props) => {
   const router = useRouter();
@@ -37,13 +43,13 @@ const Itinerary = (props) => {
   const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
   //states required for timer
   const [itineraryReleased, setItineraryReleased] = useState(false);
-  const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
+  const [itineraryDate, setItineraryDate] = useState('2021-09-20 18:05:48');
   const [timeRequired, setTimeRequired] = useState();
 
   //for itinerary and bookings
   const [itinerary, setItinerary] = useState({
-    name: "Loading Itinerary",
-    images: ["null"],
+    name: 'Loading Itinerary',
+    images: ['null'],
   });
   const [breif, setBreif] = useState(defaultbreif);
   const [booking, setBooking] = useState(null);
@@ -120,13 +126,13 @@ const Itinerary = (props) => {
               }
             else
               window.location.href =
-                "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+                'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
           } else
             window.location.href =
-              "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+              'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         } else
           window.location.href =
-            "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+            'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         if (res.data.city_slabs)
           if (!res.data.city_slabs.length)
             if (!breif.city_slabs)
@@ -136,7 +142,7 @@ const Itinerary = (props) => {
         setBreifLoading(false);
 
         window.location.href =
-          "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+          'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
       });
   };
 
@@ -146,9 +152,9 @@ const Itinerary = (props) => {
 
     axios
       .post(
-        MIS_SERVER_HOST + "/payment/info/",
+        MIS_SERVER_HOST + '/payment/info/',
         {
-          itinerary_type: "Tailored",
+          itinerary_type: 'Tailored',
           itinerary_id: props.id,
         },
         {
@@ -164,7 +170,7 @@ const Itinerary = (props) => {
 
         //check if user has already paid
         // try{
-        let email = localStorage.getItem("email");
+        let email = localStorage.getItem('email');
         if (props.token)
           for (var i = 0; i < res.data.registered_users.length; i++) {
             // console.log(props.email)
@@ -172,7 +178,7 @@ const Itinerary = (props) => {
             // console.log(res.data.registered_users[i])
             if (res.data.registered_users[i].email === email) {
               if (res.data.registered_users[i].payment_status)
-                if (res.data.registered_users[i].payment_status === "captured")
+                if (res.data.registered_users[i].payment_status === 'captured')
                   setHasUserPaid(true);
               break;
             }
@@ -192,13 +198,13 @@ const Itinerary = (props) => {
     let transfer_bookings = [];
     let flight_bookings = [];
 
-    var username = "administrator@thetarzanway.com";
-    var password = "AKY6282&#bc(*!L)6w8";
-    fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
+    var username = 'administrator@thetarzanway.com';
+    var password = 'AKY6282&#bc(*!L)6w8';
+    fetch(MIS_SERVER_HOST + '/sales/bookings/?itinerary_id=' + props.id, {
       params: { itinerary_id: props.id },
       headers: {
-        Authorization: "Basic " + btoa(username + ":" + password),
-        "Content-Type": "application/json",
+        Authorization: 'Basic ' + btoa(username + ':' + password),
+        'Content-Type': 'application/json',
       },
     })
       .then((response) => {
@@ -208,11 +214,11 @@ const Itinerary = (props) => {
             // getPaymentHandler();
 
             for (var i = 0; i < json.bookings.length; i++) {
-              if (json.bookings[i].booking_type === "Accommodation")
+              if (json.bookings[i].booking_type === 'Accommodation')
                 stay_bookings.push(json.bookings[i]);
-              else if (json.bookings[i].booking_type === "Activity")
+              else if (json.bookings[i].booking_type === 'Activity')
                 activity_bookings.push(json.bookings[i]);
-              else if (json.bookings[i].booking_type === "Flight")
+              else if (json.bookings[i].booking_type === 'Flight')
                 flight_bookings.push(json.bookings[i]);
               else transfer_bookings.push(json.bookings[i]);
             }
@@ -260,18 +266,18 @@ const Itinerary = (props) => {
           setItineraryLoading(false);
         } else {
           window.location.href =
-            "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+            'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         }
       })
       .catch((error) => {
         setItineraryLoading(false);
         window.location.href =
-          "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+          'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
       });
     getBreifHandler();
 
     axios
-      .get(MIS_SERVER_HOST + "/sales/plan/?itinerary_id=" + props.id)
+      .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
       .then((res) => {
         setPlan(res.data);
         if (
@@ -279,7 +285,7 @@ const Itinerary = (props) => {
         ) {
           setItineraryNotCreated(false);
           alert(
-            "Looks like the response took too long, please refresh and try again."
+            'Looks like the response took too long, please refresh and try again.'
           );
         } else {
           setUserEmail(res.data.user_email);
@@ -347,7 +353,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking_id,
       booking_type: booking_type,
-      itinerary_type: "Tailored",
+      itinerary_type: 'Tailored',
       user_selected: true,
       itinerary_id: itinerary_id,
       tailored_itinerary: tailored_id,
@@ -365,7 +371,7 @@ const Itinerary = (props) => {
 
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
-      .post("/?booking_type=Taxi,Bus,Ferry", data, {
+      .post('/?booking_type=Taxi,Bus,Ferry', data, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -412,7 +418,7 @@ const Itinerary = (props) => {
     let data = [];
     data.push({
       id: booking.id,
-      booking_type: "Accommodation",
+      booking_type: 'Accommodation',
       city: booking.city,
       user_selected: user_selected,
       accommodation: booking.accommodation,
@@ -422,7 +428,7 @@ const Itinerary = (props) => {
       itinerary_name: booking.itinerary_name,
       itinerary_db_id: null,
       is_estimated_price: booking.is_estimated_price,
-      itinerary_type: "Tailored",
+      itinerary_type: 'Tailored',
     });
     // else data.push(bookings[i]);
     // }
@@ -430,7 +436,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        "/?booking_type=Accommodation&itinerary_id=" + booking.itinerary_id,
+        '/?booking_type=Accommodation&itinerary_id=' + booking.itinerary_id,
         data,
         {
           headers: {
@@ -472,7 +478,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking.id,
       booking_type: booking.booking_type,
-      itinerary_type: "Tailored",
+      itinerary_type: 'Tailored',
       user_selected: user_selected,
       itinerary_id: booking.itinerary_id,
     });
@@ -482,7 +488,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        "/?booking_type=Flight&itinerary_id=" + booking.itinerary_id,
+        '/?booking_type=Flight&itinerary_id=' + booking.itinerary_id,
         data,
         {
           headers: {
@@ -523,7 +529,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking.id,
       booking_type: booking.booking_type,
-      itinerary_type: "Tailored",
+      itinerary_type: 'Tailored',
       user_selected: user_selected,
       taxi_type: booking.taxi_type,
       transfer_type: booking.transfer_type,
@@ -537,7 +543,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        "/?booking_type=Taxi,Bus,Ferry&itinerary_id=" + booking.itinerary_id,
+        '/?booking_type=Taxi,Bus,Ferry&itinerary_id=' + booking.itinerary_id,
         data,
         {
           headers: {
@@ -558,7 +564,7 @@ const Itinerary = (props) => {
 
         setCardUpdateLoading(null);
 
-        window.alert("There seems to be a problem, please try again!");
+        window.alert('There seems to be a problem, please try again!');
       });
   };
   const _deselectActivityBookingHandler = (booking, user_selected) => {
@@ -577,7 +583,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking.id,
       booking_type: booking.booking_type,
-      itinerary_type: "Tailored",
+      itinerary_type: 'Tailored',
       user_selected: user_selected,
       itinerary_id: booking.itinerary_id,
       tailored_itinerary: booking.tailored_itinerary,
@@ -596,7 +602,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        "/?booking_type=Activity&itinerary_id=" + booking.itinerary_id,
+        '/?booking_type=Activity&itinerary_id=' + booking.itinerary_id,
         data,
         {
           headers: {
@@ -632,6 +638,10 @@ const Itinerary = (props) => {
   const setHidePoiModal = () => {
     setShowPoiModal(false);
   };
+  const FONT_SIZES_MOBILE = {
+    heading: [],
+    text: [],
+  };
   if (breif && !itineraryLoading)
     return (
       // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>
@@ -641,13 +651,21 @@ const Itinerary = (props) => {
         {/* <FullImg url={itinerary.images ? itinerary.images.length ? itinerary.images[0] : 'media/website/grey.png': 'media/website/grey.png'} title={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}  >
                  <FullImgContainer heading={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null} plan={plan}></FullImgContainer>
            </FullImg>  */}
-        <Landing
+        <Overview
+          FONT_SIZES_MOBILE={FONT_SIZES_MOBILE}
           title={itinerary.name}
           images={itinerary.images}
           duration={
-            plan ? plan.duration_number + " " + plan.duration_unit : null
+            plan ? plan.duration_number + ' ' + plan.duration_unit : null
           }
-        ></Landing>
+        ></Overview>
+        {/* <Landing
+          title={itinerary.name}
+          images={itinerary.images}
+          duration={
+            plan ? plan.duration_number + ' ' + plan.duration_unit : null
+          }
+        ></Landing> */}
         <div id="itinerary-anchor">
           <Menu
             hasUserPaid={hasUserPaid}
@@ -696,6 +714,7 @@ const Itinerary = (props) => {
             showPoiModal={showPoiModal}
             showBookingModal={showBookingModal}
             _updateBookingHandler={_updateBookingHandler}
+            
             timeRequired={timeRequired}
             itineraryReleased={itineraryReleased}
             itineraryDate={itineraryDate}

@@ -2,19 +2,32 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import PinSection from './PinSection';
 import MidSection from './MidSection';
-  const Container = styled.div`
-    margin-bottom: 1.5rem;
+const Container = styled.div`
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 `;
 const Heading = styled.p`
-    font-size: 18px;
-    font-weight: 600;
+  font-size: 20px;
+  font-weight: 600;
 `;
 
 const Route = (props) => {
-   
-    useEffect(() => {
-      
-    },[]);
+  //Stores initial order of locations
+  const initialorder = {
+    0: {
+      location: 'Jodhpur',
+      duration: '1 Night',
+    },
+    1: {
+      location: 'Jaisalmer',
+      duration: '2 Nights',
+    },
+    2: {
+      location: 'Jodhpur',
+      duration: '1 Night',
+    },
+  };
+  let locationsArr = [];
 
   const [order, setOrder] = useState(initialorder);
   const _moveDownHandler = (index) => {
@@ -71,8 +84,7 @@ const Route = (props) => {
           );
           locationsArr.push(
             <MidSection
-              GColour={[props.breif.city_slabs[i].color,props.breif.city_slabs[i+1].color]}
-              
+              pinColour={[props.breif.city_slabs[i].color,props.breif.city_slabs[i].color]}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
             ></MidSection>
@@ -89,11 +101,11 @@ const Route = (props) => {
       <Heading className="font-poppins">Route</Heading>
 
       <PinSection
-        // pinColour={'black'}
+        
         city={props.nostartinglocation ? 'Your Location' : startingcity}
       ></PinSection>
       <MidSection
-        GColour={['#f7e700','#359EBF']}
+        pinColour={'#f7e700'}
         transportMode={'taxi'}
         duration={'2'}
       ></MidSection>
@@ -105,16 +117,11 @@ const Route = (props) => {
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
              <MidSection></MidSection> */}
       <PinSection
-        // pinColour={'black'}
+        
         city={props.nostartinglocation ? 'Your Location' : endingcity}
       ></PinSection>
     </Container>
   );
 };
-
-        
-        
-  
- 
 
 export default Route;
