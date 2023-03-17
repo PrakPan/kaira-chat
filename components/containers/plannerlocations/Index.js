@@ -35,57 +35,14 @@ const LocationsBlog= (props) => {
         ``
       )
       .then((res) => {
-
-let z = 0
-let MobileArr = []
-while(z < res.data.length){
-  let elem = <MobileCardsContainer>
-     <Card
-    key={res.data[z].id}
-    location={res.data[z].destination}
-    heading={res.data[z].tagline}
-    img={res.data[z].image}
-    slug={res.data[z].link}
-    link={res.data[z].link}
-     > 
-    </Card>
-    {res.data[z+1] &&<Card
-    key={res.data[z+1].id}
-    location={res.data[z+1].destination}
-    heading={res.data[z+1].tagline}
-    img={res.data[z+1].image}
-    slug={res.data[z+1].link}
-    link={res.data[z+1].link}
-     > 
-    </Card>}
-    {res.data[z+2] &&<Card
-    key={res.data[z+2].id}
-    location={res.data[z+2].destination}
-    heading={res.data[z+2].tagline}
-    img={res.data[z+2].image}
-    slug={res.data[z+2].link}
-    link={res.data[z+2].link}
-
-     > 
-    </Card>}
-   {res.data[z+3] && <Card
-    key={res.data[z+3].id}
-    location={res.data[z+3].destination}
-    heading={res.data[z+3].tagline}
-    img={res.data[z+3].image}
-    slug={res.data[z+3].link}
-    link={res.data[z+3].link}
-     > 
-    </Card>}
-  </MobileCardsContainer>
-  MobileArr.push(elem)
-  z=z+4
-
-}
-setMobileCardsToShowJSX(MobileArr)
-
 let cardsArr = []
+let MobileCardsArr = []
 for(let i = 0;i<res.data.length;i++){
+  if(i%4==0 && i!=0){
+      let n = cardsArr.length;
+      const el = cardsArr.slice(n-4,n)
+      MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+  }
   cardsArr.push(
     <Card
     key={res.data[i].id}
@@ -99,6 +56,7 @@ for(let i = 0;i<res.data.length;i++){
   )
 }
 setCards(cardsArr)
+setMobileCardsToShowJSX(MobileCardsArr)
 
       })
       .catch((error) => {
@@ -125,7 +83,7 @@ setCards(cardsArr)
   return(
       <><div className='hidden-mobile'>
 
-{cards.length?<Carousel hideSides groupCells={6} numberOfCards={6} cards={cards}></Carousel> : <DesktopSkeleton />}
+{cards.length?<Carousel initialIndex hideSides groupCells={6} numberOfCards={6} cards={cards}></Carousel> : <DesktopSkeleton />}
               <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
 
       </div>
