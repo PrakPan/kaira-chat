@@ -4,6 +4,11 @@ import PinSection from './PinSection';
 import MidSection from './MidSection';
 const Container = styled.div`
   margin-top: 1.5rem;
+  
+  @media screen and (min-width: 768px) {
+    width:30vw;
+  
+  }
   margin-bottom: 1.5rem;
 `;
 const Heading = styled.p`

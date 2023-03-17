@@ -155,6 +155,7 @@ _generateDaySlabs();
    
     
     return(
+      
     <Container id="kochi-anchor" style={{marginTop : props.showTimer && !props.hideTimer ? '-50vh' : '0' }}>
         {props.showTimer? <Timer hours={props.hours} minutes={props.minutes} seconds={props.seconds} startingTimer={props.startingTimer} timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Tabs id="day-tab" value={value}  onChange={handleChange} indicatorColor="false" disableRippled  variant={'scrollable'}

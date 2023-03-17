@@ -23,15 +23,26 @@ import Banner from '../../homepage/banner/Mobile';
 import Route from '../../newitinerary/breif/route/Index';
 const DetailsContainer = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;  
   margin: 0 auto 10vh auto;
   padding: 0 1rem;
   @media screen and (min-width: 768px) {
-    width: 80%;
-    padding: 0;
+
+flex-direction: row-reverse;  
+padding: 0;
     margin: 10vh auto 10vh auto;
   }
 `;
+const RouteComponent = styled.div`
+width: 100%;
+  display: flex;
 
+  @media screen and (min-width: 768px) {
+    width: 100%;
+  
+  }
+`
 const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
@@ -75,16 +86,16 @@ const Details = (props) => {
       {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
       <DetailsContainer>
-        <div>
+        <RouteComponent>
           <div id="route">
             <Route breif={props.breif}></Route>
           </div>
-        </div>
+        </RouteComponent>
         <div>
-          <div id="route">
-            <Row class="experience-headings" heading={'Locations'}>
+          <div >
+            
               {true ? <Overview breif={props.breif}></Overview> : null}
-            </Row>
+            
           </div>
         </div>
       </DetailsContainer>

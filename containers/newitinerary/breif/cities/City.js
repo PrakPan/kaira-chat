@@ -57,18 +57,23 @@ const City = ({ cityData }) => {
             viewMoreText="more v"
             viewLessText="less ^"
           />
-        </CityText>
-      </GridContainer>
-      <TextLight>Things to do</TextLight>
-      <TextBold>Tours · Wildlife · Museums</TextBold>
+          <div>
+      {/* <TextLight>Things to do</TextLight>
+      <TextBold>Tours · Wildlife · Museums</TextBold> */}
 
       <TextLight style={{ marginTop: '0.75rem' }}>
         Weather (03 Feb - 05 Feb 2023)
       </TextLight>
       <WeatherWidget date={'2023-03-17 06:00:00'} city={cityData.city_name} />
 
-      <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
-      <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold>
+      {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
+      <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}
+      </div>
+        </CityText>
+        
+      </GridContainer>
+      
+      
       <div
         style={{
           border: '1px solid #F0F0F0',

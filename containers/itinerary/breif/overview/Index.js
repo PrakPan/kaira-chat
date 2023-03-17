@@ -11,10 +11,10 @@ const Container = styled.div`
   }
 `;
 const SingleCardContainer = styled.div`
-  width: 90%;
+  
   margin: auto;
   @media screen and (min-width: 768px) {
-    width: 50%;
+    width: 90%
   }
 `;
 

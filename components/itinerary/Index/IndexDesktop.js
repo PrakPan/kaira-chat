@@ -314,7 +314,7 @@ const Itinerary = (props) => {
     );
   else
     return (
-      <div>
+      <div id="Itenary">
         {/*If timer not expired*/}
         {/* {props.showTimer? <Timer timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
 

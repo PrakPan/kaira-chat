@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled , { keyframes } from 'styled-components';
 import { Link } from 'react-scroll';
 import { makeStyles, Theme } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -22,6 +22,9 @@ import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
 import * as ga from '../../services/ga/Index';
 import Spinner from '../../components/Spinner';
 import { useRouter } from 'next/router';
+import CustomMenu from './CustomMenu';
+import { useSticky } from '../../hooks/useSticky';
+import StackedComponents from './StackedComponents';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -318,7 +321,35 @@ const SimpleTabs = (props) => {
     }
     return () => {};
   }, [props.itineraryDate, props.itineraryReleased, props.timeRequired]);
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentPos = window.scrollY;
+      items.forEach((item) => {
+        const element = document.getElementById(item.link);
+        if (element.offsetTop - 100 <= currentPos && (element.offsetTop + element.offsetHeight) > currentPos) {
+          setActiveItem(item.id);
+        }
+      });
+    };
 
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [items]);
+  const [activeItem, setActiveItem] = useState(1);
+  const items = [
+    { id: 1, label: 'Brief', link: 'Brief' },
+    { id: 2, label: 'Itenary',link: 'Itenary'  }
+    // { id: 3, label: 'Hotels',link: 'Hotels' },
+    // { id: 4, label: 'Flights',link: 'Flights' },
+  ];
+
+  const { ref, isSticky } = useSticky(90);
+  const handleSelect = (itemId) => {
+    setActiveItem(itemId);
+  };
   const _previewItineraryHandler = () => {
     setBlurItinerary(false);
     setValue(1);
@@ -354,147 +385,23 @@ const SimpleTabs = (props) => {
   const _handleFlightModalClose = () => {
     props.setShowFlightModal(false);
   };
+  const Navbar = styled.div`
+  position: sticky;
+  top:  90px;
+  display: flex;
+  
+  align-items: center;
+  z-index: 1;
+  background-color: white;
+`;
+
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
-      <AppBar position="sticky" className={classes.appbar}>
-        <Tabs
-          id="itinerary-tabs"
-          value={value}
-          onChange={handleChange}
-          aria-label="simple tabs example"
-          centered
-          style={{
-            zIndex: '2',
-          }}
-          indicatorColor=""
-        >
-          <Link to={'Brief'} id={i} smooth={true} offset={90} duration={500}>
-            <Tab
-              style={{
-                zIndex: '2',
-                color: '#F7E700 !important',
-                borderRadius: '25% !important',
-              }}
-              label="Brief"
-              className="font-opensans experience-tab"
-            />
-          </Link>
-          <Link
-            to={'Itinerary'}
-            id={i}
-            smooth={true}
-            offset={90}
-            duration={500}
-          >
-            <Tab label="Itinerary" className="font-opensans experience-tab" />
-          </Link>
-
-          {!isGroup ? (
-            <Link
-              to={'Booking'}
-              id={i}
-              smooth={true}
-              offset={90}
-              duration={500}
-            >
-              <Tab
-                style={{
-                  zIndex: '2',
-                  color: '#F7E700 !important',
-                  borderRadius: '25%',
-                }}
-                label="Booking"
-                className="font-opensans experience-tab"
-              />
-            </Link>
-          ) : (
-            <Link
-              to={'Register'}
-              id={i}
-              smooth={true}
-              offset={90}
-              duration={500}
-            >
-              <Tab
-                style={{
-                  zIndex: '2',
-                  color: '#F7E700 !important',
-                  borderRadius: '25%',
-                }}
-                label="Register"
-                className="font-opensans experience-tab"
-              />
-            </Link>
-          )}
-        </Tabs>
-
-        {/* {value !== 2 && props.payment ? (
-          <CostContainer>
-            {true ? (
-              <DiscountContainer>
-                <div style={{ display: 'flex' }}>
-                  {props.payment ? (
-                    props.payment.is_registration_needed ? (
-                      <StrikedCost>
-                        {'₹ ' +
-                          getIndianPrice(
-                            Math.round(
-                              Math.round(
-                                props.payment.per_person_total_cost / 100
-                              ) * 2
-                            )
-                          )}
-                      </StrikedCost>
-                    ) : null
-                  ) : null}
-
-                  {props.payment ? (
-                    !props.payment.is_registration_needed ? (
-                      <Cost className="font-opensans">
-                        {'₹ ' +
-                          getIndianPrice(
-                            Math.round(
-                              props.payment.per_person_total_cost / 100
-                            )
-                          ) +
-                          ' /-'}
-                      </Cost>
-                    ) : (
-                      <GITCost className="font-opensans">
-                        {'₹ ' +
-                          getIndianPrice(
-                            Math.round(
-                              props.payment.per_person_total_cost / 100
-                            )
-                          ) +
-                          ' /-'}
-                      </GITCost>
-                    )
-                  ) : null}
-                </div>
-              </DiscountContainer>
-            ) : null}
-            <Button
-              onclick={openBookingDesktop}
-              hoverBgColor="white"
-              hoverColor="black"
-              bgColor="#F7e700"
-              borderStyle="none"
-              borderRadius="5px"
-              margin="0 2rem 0 0"
-              padding="0.25rem 1rem"
-            >
-              {props.payment
-                ? props.payment.paid_user
-                  ? 'Details'
-                  : props.payment.bookings_count
-                  ? 'View ' + props.payment.bookings_count + ' bookings'
-                  : 'Book Now'
-                : 'Book Now'}
-            </Button>
-          </CostContainer>
-        ) : null} */}
-      </AppBar>
+      {/* <StackedComponents></StackedComponents> */}
+      <Navbar ref={ref} style={{ boxShadow: isSticky ? '0 8px 6px -6px rgba(0, 0, 0, 0.1)' : 'none' }} sticky={isSticky}>
+      <CustomMenu items={items} activeItem={activeItem} onSelect={handleSelect} />
+    </Navbar>
+      
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile
           hasUserPaid={props.payment ? props.payment.paid_user : false}
@@ -545,7 +452,7 @@ const SimpleTabs = (props) => {
           demoitinerary={props.demoitinerary}
         ></ItineraryContainer>
       ) : (
-        <div>
+        <div id="Itenary">
           <ItineraryContainerMobile
             is_registration_needed={
               props.payment ? props.payment.is_registration_needed : false
