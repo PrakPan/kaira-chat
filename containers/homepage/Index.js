@@ -224,7 +224,7 @@ useEffect(() => {
        <Locations locations={PLANNER_PAGES} viewall></Locations>
 
       <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
-      <PlanAsPerTheme />
+      <PlanAsPerTheme ThemeData={props.ThemeData} />
       
       <Heading noline fontSize="32px" align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
       <PlanWithUs  />

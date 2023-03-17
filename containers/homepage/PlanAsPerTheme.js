@@ -6,7 +6,6 @@ import media from '../../components/media'
    import Button from '../../components/ui/button/Index'
 import ImageLoader from '../../components/ImageLoader';
 import axiosCountInstance from '../../services/itinerary/count';
-
    
 const Container = styled.div`
 height : 430px;
@@ -15,11 +14,6 @@ height : 430px;
   grid-template-areas: 
   'a a a b b b b b'
   'a a a b b b b b'
-  'a a a b b b b b'
-  'a a a b b b b b'
-  'a a a b b b b b'
-  'a a a b b b b b'
-  'd d e e e e e e'
   'd d e e e e e e'
   'c c c c c c c c'
   'c c c c c c c c';
@@ -148,6 +142,18 @@ transition: 0.5s all ease-in-out ;
 }
 `
 
+const BlackContainer = styled.div`
+background-color: rgba(0,0,0,0.2);
+width: 100%;
+height: 100%;
+position: absolute; 
+top: 0;
+&:hover{
+  background-color: rgba(0,0,0,0.3);
+
+}
+`;
+
 const PlanAsPerTheme = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
@@ -177,61 +183,34 @@ useEffect(()=>{
       router.push(`/travel-planner/${link}-in-india`)
     }
 
-  return (
-    <>
-     <Container>
-        <GridItem className='a' onClick={()=>_handleTripRedirect('road-trips')}>
+    const order = ['a','c','e','b']
+    const ThemeContainer = 
+      props.ThemeData.map((e,i)=>(
+        (i != 0) &&<GridItem className={order[i-1]} onClick={()=>_handleTripRedirect(e.link)}>
             <ImageContainer bg='road-trip.png'>
             <TextContainer className='AnimateTop'>
-                <Heading>Road Trip</Heading>
+                <Heading>{e.heading=='Travel'? 'Offbeat' : e.heading}</Heading>
                 <p>Planner</p>
             </TextContainer>
             {isPageWide && <TextContainer className='StartNow'>Start now!</TextContainer> }
-            <ImageLoader fit='cover' width="100%" height='100%'  url='media/website/road-trip.png'></ImageLoader> 
+            <ImageLoader fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
+            <BlackContainer/>
 
             </ImageContainer>
-
         </GridItem >
-        
-        <GridItem className='b' onClick={()=>_handleTripRedirect('volunteer')}>
-        <ImageContainer  bg='volunteer-travel.png'>
-        <TextContainer right={isPageWide?false:true} className='AnimateTop'>
-                <Heading>Volunteer Travel</Heading>
-                <p>Planner</p>
-            </TextContainer>
-            {isPageWide &&<TextContainer className='StartNow'>Start now!</TextContainer> }
-            <ImageLoader fit='cover' height='100%' url='media/website/volunteer-travel.png'></ImageLoader> 
+      ))
+    
 
-        </ImageContainer>
-        </GridItem >
-
-        <GridItem className='c' onClick={()=>_handleTripRedirect('workcation')}>
-        <ImageContainer bg='worcation.png' >
-        <TextContainer className='AnimateTop'>
-                <Heading>Workcation</Heading>
-                <p>Planner</p>
-            </TextContainer>
-           {isPageWide&& <TextContainer className='StartNow'>Start now!</TextContainer> }
-            <ImageLoader fit='cover' height='100%'  url='media/website/worcation.png'></ImageLoader> 
-
-        </ImageContainer>
-        </GridItem >
+  return (
+    <>
+     <Container>
+        {ThemeContainer}
         <GridItem className='d' >
         <h2 style={isPageWide?{fontSize : '50px', fontWeight : 700}:{fontSize : '18px', fontWeight : 700}}>{count}</h2>
         <p style={isPageWide?{}:{marginTop : '-10px' , marginBottom:'0px'}}>Trips Planned</p>
         <p style={isPageWide?{marginTop : "-15px"}:{marginTop : '-5px' , marginBottom:'0px'}}>so far.</p>
         </GridItem >
-        <GridItem className='e' onClick={()=>_handleTripRedirect('offbeat-trips')}>
-        <ImageContainer bg='offbeat-travel.png' >
-        <TextContainer right={isPageWide?false:true} className='AnimateTop' >
-                <Heading>Offbeat</Heading>
-                <p>Planner</p>
-            </TextContainer>
-            {isPageWide&& <TextContainer className='StartNow'>Start now!</TextContainer> }
-            <ImageLoader fit='cover' height='100%'  url='media/website/offbeat-travel.png'></ImageLoader> 
-
-        </ImageContainer>
-        </GridItem >
+        
     </Container>
 
     {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='600' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
@@ -242,5 +221,6 @@ useEffect(()=>{
    
   )
 }
+
 
 export default PlanAsPerTheme

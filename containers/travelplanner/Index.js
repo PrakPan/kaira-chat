@@ -436,7 +436,7 @@ useEffect(() => {
 <div><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
 
-  {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
+  {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{`${(props.experienceData.page_type=='Theme')?"TTW's Top Recommendations":'Trips by our users'}`}</Heading>    : null}     
   {/* {itinerariesToIndexCustomer.length ? 
   <GridContainer>
     { itinerariesToIndexCustomer}
@@ -460,7 +460,7 @@ useEffect(() => {
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a personalized itinerary to ${props.experienceData.destination} now!`}></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a personalized itinerary${props.experienceData.destination? (" to " +props.experienceData.destination +" now") : ''}!`}></DesktopBanner>
     <div className='hidden-desktop'><MobileBanner handleClick={() => setShowMobilePlanner(true)} city={props.experienceData.destination} /></div>
       <SetWidthContainer >
       <Heading >Other Destinations</Heading>        
