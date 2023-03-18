@@ -56,9 +56,16 @@ const LocationsBlog= (props) => {
 
     useEffect(() => {
        let cardsarr = [];
+let MobileCardsArr = []
+
       var i = 0;
     if(props.locations){
     for(i = 0 ; i < props.locations.length; i++){
+      if(i%4==0 && i!=0){
+        let n = cardsarr.length;
+        const el = cardsarr.slice(n-4,n)
+        MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+      }
         try{
           if(router.pathname!== props.locations[i].slug){
         cardsarr.push(
@@ -86,82 +93,14 @@ const LocationsBlog= (props) => {
     }
   }
 setCardsToShowJSX(cardsarr);
+setCardsToShowJSXmobile(MobileCardsArr)
+
   }, [props.locations])
 
     const _handleTailoredRedirect = () => {
       router.push('/tailored-travel')
     }
   
-
-  useEffect(()=>{
-    if(!isPageWide && props.locations){
-    
-  
-  
-    
-      let i = 0;
-  let cardsArrMobile =  []
-      while(i<props.locations.length){
-        let elem = <MobileCardsContainer>
-         <Card
-                     data={props.locations[i]}
-              key={props.locations[i].tagline}
-              location={props.locations[i].name}
-              heading={props.locations[i].tagline}
-              img={props.locations[i].image}
-              slug={props.locations[i].slug}
-              filters={props.locations[i].most_popular_for}
-              _handleTailored={_handleTailored}
-  
-              > 
-              </Card>
-             {(props.locations[i+1]) && <Card
-                         data={props.locations[i+1]}
-
-              key={props.locations[i+1].tagline}
-              location={props.locations[i+1].name}
-              heading={props.locations[i+1].tagline}
-              img={props.locations[i+1].image}
-              slug={props.locations[i+1].slug}
-              filters={props.locations[i+1].most_popular_for}
-              _handleTailored={_handleTailored}
-  
-              > 
-              </Card>}
-              {(props.locations[i+2]) && <Card
-                          data={props.locations[i+2]}
-
-              key={props.locations[i+2].tagline}
-              location={props.locations[i+2].name}
-              heading={props.locations[i+2].tagline}
-              img={props.locations[i+2].image}
-              slug={props.locations[i+2].slug}
-              filters={props.locations[i+2].most_popular_for}
-              _handleTailored={_handleTailored}
-              > 
-              </Card>}
-              {(props.locations[i+3]) && <Card
-                          data={props.locations[i+3]}
-
-              key={props.locations[i+3].tagline}
-              location={props.locations[i+3].name}
-              heading={props.locations[i+3].tagline}
-              img={props.locations[i+3].image}
-              slug={props.locations[i+3].slug}
-              filters={props.locations[i+3].most_popular_for}
-              _handleTailored={_handleTailored}
-                > 
-              </Card>}
-        </MobileCardsContainer>
-
-
-        i = i+4   
-        cardsArrMobile.push(elem)
-    }
-    setCardsToShowJSXmobile(cardsArrMobile.slice())
-    }
-  },[props.locations])
-
    return(
       <><div className='hidden-mobile new-planner-location'>
         {/* <Container >  

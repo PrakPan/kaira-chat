@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useRef, useEffect,useState} from 'react';
 import styled from 'styled-components';
 import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
@@ -55,7 +55,7 @@ var i;
 
 const Experiences= (props) => {
   let isPageWide = media('(min-width: 768px)')
-
+const [cards,setCards] = useState([])
   const TextRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null) ];
   useEffect(() => {
    }, [TextRefs])
@@ -135,6 +135,7 @@ const Experiences = [
           </ExperienceCard>
           )
       }
+      
       else if(props.itineraries){
         for(var j = 0; j<props.itineraries.length; j++){
     
@@ -198,21 +199,28 @@ const Experiences = [
       }
       //loop through experiences again, push to experiencecards with min height set to maxheight
     }
+    useEffect(()=>{
+    setCards(experiencecards)
 
+    },[])
+console.log(cards)
 
       // if(isPageWide)
     return(
       <>
       <Container className='hidden-mobile'>        
-          <GridContainer columns={props.cols} className="netflix-containe">
+          {/* <GridContainer columns={props.cols} className="netflix-containe">
              {props.three ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
+          </GridContainer> */}
+          <div>
+          <Carousel initialIndex hideSides numberOfCards={3} cards={experiencecards}></Carousel>
+          </div>
 
-          </GridContainer>
       </Container>
 
     <div className='hidden-desktop'>       
            <div style={{ padding: "1rem 0"}}>
-            {typeof window !=='undefined' ? <Carousel experience cards={experiencecards}></Carousel> :null }
+            {typeof window !=='undefined' ? <Carousel initialIndex experience cards={experiencecards}></Carousel> :null }
     </div>
   </div></>
   );
