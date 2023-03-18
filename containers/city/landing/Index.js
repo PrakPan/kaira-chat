@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faMapMarker, faCalendar, faStarHalf, faMountain} from '@fortawesome/free-solid-svg-icons';
@@ -188,7 +188,12 @@ const IconText = styled.span`
 
 const BlackContainer = (props) => {
 
+  const [escapeState, setEscapeState] = useState(false);
 
+  useEffect(() => {
+    //Escape hatch for mobile images, do not remove
+    setEscapeState(true)
+   }, []);
 
   const imageClickHandler = () => {
     props.setGalleryOpen(true)

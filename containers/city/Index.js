@@ -11,6 +11,12 @@ import POIModal from '../../components/modals/poi/Index';
 import NewMenu from '../newcityplanner/Menu'
 
 const Experience = (props) => {
+  const [escapeState, setEscapeState] = useState(false);
+
+  useEffect(() => {
+    //Escape hatch for mobile images, do not remove
+    setEscapeState(true)
+   }, []);
    let isPageWide = media('(min-width: 768px)')
   const [poiData, setPoiData] = useState();
   const [showPoiModal, setShowPoiModal] = useState(false);
