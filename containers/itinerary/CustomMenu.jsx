@@ -41,7 +41,7 @@ const CustomMenu = ({ items, activeItem, onSelect }) => (
         spy={true}
         smooth={true}
         duration={500}
-        offset={70}
+        offset={-110}
         onSetActive={() => onSelect(item.id)}
       >
         <MenuItem

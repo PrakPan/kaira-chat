@@ -7,36 +7,16 @@ const TruncatedText = ({
   viewMoreText = 'View more',
   viewLessText = 'View less',
 }) => {
-  const [truncatedText, setTruncatedText] = useState(
-    text.substr(0, Math.min(text.length, text.lastIndexOf(' ')))
-  );
+  const [truncatedText, setTruncatedText] = useState(text.substr(0, maxLength));
   const [isTruncated, setIsTruncated] = useState(text.length > maxLength);
   const textRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (isTruncated && wordsOnly) {
-  //     setTruncatedText(
-  //       truncatedText.substr(
-  //         0,
-  //         Math.min(truncatedText.length, truncatedText.lastIndexOf(' '))
-  //       )
-  //     );
-  //   }
-  // }, [isTruncated, wordsOnly, truncatedText]);
-
   const handleViewMoreClick = () => {
     if (isTruncated) {
-      setTruncatedText(text);
-    } else {
       setTruncatedText(text.substr(0, maxLength));
-      if (wordsOnly) {
-        setTruncatedText(
-          truncatedText.substr(
-            0,
-            Math.min(truncatedText.length, truncatedText.lastIndexOf(' '))
-          )
-        );
-      }
+    } else {
+      const words = text.split(' ');
+      setTruncatedText(words.slice(0, maxLength).join(' '));
     }
     setIsTruncated(!isTruncated);
   };
@@ -53,7 +33,8 @@ const TruncatedText = ({
       }
 
       if (newMaxLength !== maxLength) {
-        setTruncatedText(text.substr(0, newMaxLength));
+        const words = text.split(' ');
+        setTruncatedText(words.slice(0, newMaxLength).join(' '));
         setIsTruncated(text.length > newMaxLength);
       }
     };
@@ -87,6 +68,9 @@ const TruncatedText = ({
 };
 
 export default TruncatedText;
+
+
+
 
 // Example usage:
 //   const textEl = document.getElementById('text');

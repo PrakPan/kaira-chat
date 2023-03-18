@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled , { keyframes } from 'styled-components';
 import { Link } from 'react-scroll';
 import { makeStyles, Theme } from '@material-ui/styles';
@@ -321,7 +321,7 @@ const SimpleTabs = (props) => {
     }
     return () => {};
   }, [props.itineraryDate, props.itineraryReleased, props.timeRequired]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleScroll = () => {
       const currentPos = window.scrollY;
       items.forEach((item) => {
@@ -387,7 +387,7 @@ const SimpleTabs = (props) => {
   };
   const Navbar = styled.div`
   position: sticky;
-  top:  90px;
+  top:  100px;
   display: flex;
   
   align-items: center;
@@ -429,6 +429,7 @@ const SimpleTabs = (props) => {
       ></Breif>
 
       {isPageWide ? (
+        <div id="Itenary">
         <ItineraryContainer
           is_registration_needed={
             props.payment ? props.payment.is_registration_needed : false
@@ -451,6 +452,8 @@ const SimpleTabs = (props) => {
           newData={props.newData}
           demoitinerary={props.demoitinerary}
         ></ItineraryContainer>
+          </div>
+        
       ) : (
         <div id="Itenary">
           <ItineraryContainerMobile

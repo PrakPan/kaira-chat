@@ -58,6 +58,7 @@ const WeatherWidget = ({
   }
   return (
     <WeatherGrid>
+      {WeatherICon(item.weather.description)}
       {/* <img
         src={WeatherICon(item.weather.description)}
         alt="Weather Icon"
