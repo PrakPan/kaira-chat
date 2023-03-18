@@ -12,13 +12,13 @@ const Heading = styled.p`
 const CityText = styled.p`
   font-size: 18px;
   font-weight: 400;
-  margin: 0;
+  margin: 0 0 0 8px;
   line-height: 24px;
   color: rgba(1, 32, 43, 1);
 `;
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 0.5rem;
   margin-bottom: 0.75rem;
 `;
@@ -46,7 +46,7 @@ const City = ({ cityData }) => {
         <ImageLoader
           borderRadius="8px"
           url={cityData.image}
-          height="auto"
+          height={180}
           heightMobile="auto"
           dimensionsMobile={{ width: 118, height: 80 }}
         ></ImageLoader>

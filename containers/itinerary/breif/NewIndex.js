@@ -24,6 +24,7 @@ import Route from '../../newitinerary/breif/route/Index';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
+  gap: 10;
   flex-direction: column;  
   margin: 0 auto 10vh auto;
   padding: 0 1rem;
@@ -40,7 +41,7 @@ width: 100%;
 
   @media screen and (min-width: 768px) {
     width: 100%;
-  
+    margin-left: 20px;  
   }
 `
 const Details = (props) => {

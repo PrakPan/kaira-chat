@@ -7,7 +7,7 @@ const Container = styled.div`
   display: grid;
   grid-gap: 1rem;
   @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 `;
 const SingleCardContainer = styled.div`
