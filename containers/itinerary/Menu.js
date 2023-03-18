@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import styled , { keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { Link } from 'react-scroll';
 import { makeStyles, Theme } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -326,7 +326,10 @@ const SimpleTabs = (props) => {
       const currentPos = window.scrollY;
       items.forEach((item) => {
         const element = document.getElementById(item.link);
-        if (element.offsetTop - 100 <= currentPos && (element.offsetTop + element.offsetHeight) > currentPos) {
+        if (
+          element.offsetTop - 100 <= currentPos &&
+          element.offsetTop + element.offsetHeight > currentPos
+        ) {
           setActiveItem(item.id);
         }
       });
@@ -341,7 +344,7 @@ const SimpleTabs = (props) => {
   const [activeItem, setActiveItem] = useState(1);
   const items = [
     { id: 1, label: 'Brief', link: 'Brief' },
-    { id: 2, label: 'Itenary',link: 'Itenary'  }
+    { id: 2, label: 'Itinerary', link: 'Itenary' },
     // { id: 3, label: 'Hotels',link: 'Hotels' },
     // { id: 4, label: 'Flights',link: 'Flights' },
   ];
@@ -386,22 +389,32 @@ const SimpleTabs = (props) => {
     props.setShowFlightModal(false);
   };
   const Navbar = styled.div`
-  position: sticky;
-  top:  100px;
-  display: flex;
-  
-  align-items: center;
-  z-index: 1;
-  background-color: white;
-`;
+    position: sticky;
+    top: 100px;
+    display: flex;
+
+    align-items: center;
+    z-index: 1;
+    background-color: white;
+  `;
 
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       {/* <StackedComponents></StackedComponents> */}
-      <Navbar ref={ref} style={{ boxShadow: isSticky ? '0 8px 6px -6px rgba(0, 0, 0, 0.1)' : 'none' }} sticky={isSticky}>
-      <CustomMenu items={items} activeItem={activeItem} onSelect={handleSelect} />
-    </Navbar>
-      
+      <Navbar
+        ref={ref}
+        style={{
+          boxShadow: isSticky ? '0 8px 6px -6px rgba(0, 0, 0, 0.1)' : 'none',
+        }}
+        sticky={isSticky}
+      >
+        <CustomMenu
+          items={items}
+          activeItem={activeItem}
+          onSelect={handleSelect}
+        />
+      </Navbar>
+
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile
           hasUserPaid={props.payment ? props.payment.paid_user : false}
@@ -430,30 +443,29 @@ const SimpleTabs = (props) => {
 
       {isPageWide ? (
         <div id="Itenary">
-        <ItineraryContainer
-          is_registration_needed={
-            props.payment ? props.payment.is_registration_needed : false
-          }
-          selectedPoi={selectedPoi}
-          user_email={props.user_email}
-          is_preview={props.preview}
-          is_stock={props.is_stock}
-          setShowPoiModal={_handlePoiEditModalOpen}
-          traveleritinerary={props.traveleritinerary}
-          hideTimer={minimiseTimer}
-          timeRequired={props.timeRequired}
-          itineraryReleased={props.itineraryReleased}
-          itineraryDate={props.itineraryDate}
-          showTimer={false}
-          _hideTimerHandler={_minimiseTimerHandler}
-          blur={false}
-          city_slabs={props.breif.city_slabs}
-          itinerary={props.itinerary}
-          newData={props.newData}
-          demoitinerary={props.demoitinerary}
-        ></ItineraryContainer>
-          </div>
-        
+          <ItineraryContainer
+            is_registration_needed={
+              props.payment ? props.payment.is_registration_needed : false
+            }
+            selectedPoi={selectedPoi}
+            user_email={props.user_email}
+            is_preview={props.preview}
+            is_stock={props.is_stock}
+            setShowPoiModal={_handlePoiEditModalOpen}
+            traveleritinerary={props.traveleritinerary}
+            hideTimer={minimiseTimer}
+            timeRequired={props.timeRequired}
+            itineraryReleased={props.itineraryReleased}
+            itineraryDate={props.itineraryDate}
+            showTimer={false}
+            _hideTimerHandler={_minimiseTimerHandler}
+            blur={false}
+            city_slabs={props.breif.city_slabs}
+            itinerary={props.itinerary}
+            newData={props.newData}
+            demoitinerary={props.demoitinerary}
+          ></ItineraryContainer>
+        </div>
       ) : (
         <div id="Itenary">
           <ItineraryContainerMobile

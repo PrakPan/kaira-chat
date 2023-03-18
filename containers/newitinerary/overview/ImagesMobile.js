@@ -67,12 +67,12 @@ const ImagesMobile = (props) => {
             heightMobile="auto"
             dimensionsMobile={{ width: 160, height: 90 }}
           ></ImageLoader>
-          <div
+          {/* <div
             className="center-div"
             style={{ position: 'absolute', height: '100%', color: 'white' }}
           >
             View 10+ photos
-          </div>
+          </div> */}
           {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
         </MoreContainer>
       </GridContainer>

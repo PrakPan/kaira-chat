@@ -29,8 +29,8 @@ const Overview = (props) => {
   return (
     <Container>
       <GridContainer>
-        <Heading className="font-poppins">Gateway to Rajasthan</Heading>
-        <div className="center-div">
+        <Heading className="font-poppins">{props.title}</Heading>
+        {/* <div className="center-div">
           <div className="hidden-desktop">
             <Button
               borderRadius="6px"
@@ -40,9 +40,12 @@ const Overview = (props) => {
               Trip Settings
             </Button>
           </div>
-        </div>
+        </div> */}
       </GridContainer>
-      <Details></Details>
+      <Details
+        group_type={props.group_type}
+        duration_time={props.duration_time}
+      ></Details>
       <Line></Line>
 
       <ImagesMobile images={props.images}></ImagesMobile>

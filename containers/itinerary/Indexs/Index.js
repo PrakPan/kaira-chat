@@ -95,6 +95,8 @@ const Itinerary = (props) => {
 
   const [showPoiModal, setShowPoiModal] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
+  const [group_type, setgroup_type] = useState(null);
+  const [duration_time, setduration_time] = useState(null);
 
   const [hasUserPaid, setHasUserPaid] = useState(false);
 
@@ -289,7 +291,10 @@ const Itinerary = (props) => {
           );
         } else {
           setUserEmail(res.data.user_email);
+
           if (res.data.start_date) setIsDatePresent(true);
+          setgroup_type(res.data.group_type);
+          setduration_time(res.data.duration_number);
           setItineraryReleased(res.data.is_visible_to_customer);
           setItineraryDate(res.data.created_at);
           setTimeRequired(res.data.time_needed_for_itinerary_completion);
@@ -642,6 +647,7 @@ const Itinerary = (props) => {
     heading: [],
     text: [],
   };
+  console.log('itenaryyyyyyyy' + JSON.stringify(itinerary));
   if (breif && !itineraryLoading)
     return (
       // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>
@@ -651,9 +657,12 @@ const Itinerary = (props) => {
         {/* <FullImg url={itinerary.images ? itinerary.images.length ? itinerary.images[0] : 'media/website/grey.png': 'media/website/grey.png'} title={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}  >
                  <FullImgContainer heading={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null} plan={plan}></FullImgContainer>
            </FullImg>  */}
+
         <Overview
           FONT_SIZES_MOBILE={FONT_SIZES_MOBILE}
           title={itinerary.name}
+          group_type={group_type}
+          duration_time={duration_time}
           images={itinerary.images}
           duration={
             plan ? plan.duration_number + ' ' + plan.duration_unit : null
@@ -714,7 +723,6 @@ const Itinerary = (props) => {
             showPoiModal={showPoiModal}
             showBookingModal={showBookingModal}
             _updateBookingHandler={_updateBookingHandler}
-            
             timeRequired={timeRequired}
             itineraryReleased={itineraryReleased}
             itineraryDate={itineraryDate}

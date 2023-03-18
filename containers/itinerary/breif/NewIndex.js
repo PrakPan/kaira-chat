@@ -25,25 +25,24 @@ const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
   gap: 10;
-  flex-direction: column;  
+  flex-direction: column;
   margin: 0 auto 10vh auto;
   padding: 0 1rem;
   @media screen and (min-width: 768px) {
-
-flex-direction: row-reverse;  
-padding: 0;
+    flex-direction: row-reverse;
+    padding: 0;
     margin: 10vh auto 10vh auto;
   }
 `;
 const RouteComponent = styled.div`
-width: 100%;
+  width: 100%;
   display: flex;
 
   @media screen and (min-width: 768px) {
     width: 100%;
-    margin-left: 20px;  
+    margin-left: 20px;
   }
-`
+`;
 const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
@@ -92,13 +91,13 @@ const Details = (props) => {
             <Route breif={props.breif}></Route>
           </div>
         </RouteComponent>
-        <div>
+        {/* <div>
           <div >
             
               {true ? <Overview breif={props.breif}></Overview> : null}
             
           </div>
-        </div>
+        </div> */}
       </DetailsContainer>
       {props.traveleritinerary ? (
         <DesktopBanner
