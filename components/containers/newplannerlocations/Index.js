@@ -59,12 +59,16 @@ const LocationsBlog= (props) => {
 let MobileCardsArr = []
 
       var i = 0;
+      let count = 0
+
     if(props.locations){
     for(i = 0 ; i < props.locations.length; i++){
       if(i%4==0 && i!=0){
         let n = cardsarr.length;
         const el = cardsarr.slice(n-4,n)
         MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+        count++
+
       }
         try{
           if(router.pathname!== props.locations[i].slug){
@@ -91,6 +95,11 @@ let MobileCardsArr = []
 
         }
     }
+  }
+  if(count%4 !=0){
+    const el = cardsarr.slice(count*4,cardsarr.length)
+    MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+    
   }
 setCardsToShowJSX(cardsarr);
 setCardsToShowJSXmobile(MobileCardsArr)

@@ -37,12 +37,14 @@ const LocationsBlog= (props) => {
       .then((res) => {
 let cardsArr = []
 let MobileCardsArr = []
+let count = 0
 for(let i = 0;i<res.data.length;i++){
   if(i%4==0 && i!=0){
       let n = cardsArr.length;
       const el = cardsArr.slice(n-4,n)
       MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
-  }
+    count++
+    }
   cardsArr.push(
     <Card
     key={res.data[i].id}
@@ -51,9 +53,14 @@ for(let i = 0;i<res.data.length;i++){
     img={res.data[i].image}
     slug={res.data[i].link}
     link={res.data[i].link}
-     > 
+     >
     </Card>
   )
+}
+if(count%4 !=0){
+  const el = cardsArr.slice(count*4,cardsArr.length)
+  MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+  
 }
 setCards(cardsArr)
 setMobileCardsToShowJSX(MobileCardsArr)
