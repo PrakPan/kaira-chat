@@ -2,13 +2,13 @@ import styled from "styled-components"
 import PoiCard from "./PoiCard"
 import {useState} from 'react'
 import media from '../../../components/media'
-
+import Map from '../../../components/NewMap'
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
-    // display : grid;
-    // grid-template-columns : 3fr 1fr;    
-    // gap : 5rem;
+    display : grid;
+    grid-template-columns : 3fr 1.2fr;    
+    gap : 1rem;
 
 }
 `
@@ -29,6 +29,11 @@ padding : 13px 68px;
 display: block;
 margin : 15px auto;
 border-radius : 8px;
+`
+const MapInfo = styled.div`
+b{
+  font-weight : 600;
+}
 `
 const Poi = props=>{
   const [more,setMore] = useState(false)
@@ -52,7 +57,15 @@ const Poi = props=>{
 
   let lessItems = !isPageWide? props.pois?.slice(0,2).map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer} />)) : props.pois?.slice(0,4).map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer} />))
 
+  const InfoWindowContainer = (location)=><MapInfo>
+    <b>{location.name}</b>
+    <div>{location.experience_filters.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
+    <p>Ideal duration : {location.ideal_duration_hours} hrs</p>
+
+  </MapInfo>
+
     return (
+      <>
         <div>
         <GridContainer>
             
@@ -62,10 +75,13 @@ const Poi = props=>{
                 : lessItems
             }
             </Items>
+            <div className='hidden-mobile'><Map locations={props.pois} defaultZoom={12} InfoWindowContainer={InfoWindowContainer} /></div>
        
         </GridContainer>
           <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
         </div>
+    </>
+
         )
 }
 

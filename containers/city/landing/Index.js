@@ -190,14 +190,11 @@ const BlackContainer = (props) => {
 
   const [escapeState, setEscapeState] = useState(false);
 
-<<<<<<< HEAD
-=======
   useEffect(() => {
     //Escape hatch for mobile images, do not remove
     setEscapeState(true)
    }, []);
 
->>>>>>> 2549b88a40fc5b0624b68cdd47c59852c39bb538
   const imageClickHandler = () => {
     props.setGalleryOpen(true)
   }

@@ -44,7 +44,11 @@ margin: auto;
   width: 85%;
 }
 `;
-
+const MapInfo = styled.div`
+b{
+  font-weight : 600;
+}
+`
 
 const HowItWorksText = styled.p`
 font-size: 1rem;
@@ -392,6 +396,14 @@ useEffect(() => {
   setOverviewHeading(props.experienceData.overview_heading)
 }, [router.query.link, props.experienceData])
 
+console.log(props.experienceData.locations,'////')
+
+const InfoWindowContainer = (location)=><MapInfo>
+<b>{location.name}</b>
+<div>{location.most_popular_for.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
+</MapInfo>
+
+
     return (
     <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       <FullImage heightmobile='30rem' height='38rem' url={props.experienceData.image} filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
@@ -401,7 +413,7 @@ useEffect(() => {
 <MapGridContainer>
   <Overview  locations={props.experienceData.locations} overview_heading={overviewHeading} overview_text={props.experienceData.overview_text}></Overview>
   <MapContainer>
-    <Map locations={props.experienceData.locations}></Map>
+    <Map locations={props.experienceData.locations} InfoWindowContainer={InfoWindowContainer}></Map>
     </MapContainer>
   </MapGridContainer>
   <Button  link={isPageWide? '/tailored-travel' : null} onclick={ !isPageWide? () => setShowMobilePlanner(true) : null}   borderWidth="1px"  fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Create your travel plan now!</Button> 

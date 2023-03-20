@@ -159,7 +159,7 @@ const Experiences= (props) => {
       <>
       <Container>        
           <GridContainer columns={props.cols} className="netflix-containe">
-             {!more ? [experiencecards[0], experiencecards[1]] : experiencecards}
+             {!more ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
           </GridContainer>
           <div style={{width:'100%', marginInline : 'auto'}}>
           <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>

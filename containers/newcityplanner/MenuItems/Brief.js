@@ -26,13 +26,12 @@ const Brief = (props)=>{
     const [moreText,setMoreText] = useState(false)
     const textLength = isPageWide?1000:500
     
-
 return <Container>
     
      <P>{moreText?props.short_description:props.short_description.substr(0, textLength)}
      {props.short_description.length>textLength&&<span style={{fontWeight : '700',cursor : 'pointer'}} onClick={()=>setMoreText(!moreText)}>{moreText?' ...less' : ' ...more'}</span>}
      </P>
-    <div className='hidden-mobile'><Map lat={props.lat} long={props.long} /></div>
+    {/* <div className='hidden-mobile'><Map lat={props.lat} long={props.long} /></div> */}
     </Container>
 }
 

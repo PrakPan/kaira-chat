@@ -1,6 +1,6 @@
 import React from "react"
 import { compose, withProps } from "recompose"
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
+import { withScriptjs, withGoogleMap, GoogleMap, Marker,InfoWindow } from "react-google-maps"
 
 const MyMapComponent = compose(
   withProps({
@@ -14,10 +14,22 @@ const MyMapComponent = compose(
 )((props) => 
   <GoogleMap
     options={{disableDefaultUI : true}}
-    defaultZoom={6}
+    defaultZoom={props.defaultZoom?props.defaultZoom:6}
     defaultCenter={{ lat: props.locations[0].lat, lng: props.locations[0].long}}
   > 
-   {props.locations.map(location => <Marker onClick={() =>props. _handleMapRedirect(location.name)}  icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/location-yellow.png'} position={{ lat: location.lat, lng: location.long }} />)} 
+   {props.locations.map(location => (
+   <Marker onClick={() =>props.handleActiveMarker(location.id)}  icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png'} position={{ lat: location.lat, lng: location.long }}>
+   {props.activeMarker === location.id ? (
+   <InfoWindow onCloseClick={() => props.handleInfoClose()}>
+      {/* <div>{name}</div> */}
+      {props.InfoWindowContainer? props.InfoWindowContainer(location) : <b>{location.name}</b>}
+    </InfoWindow>
+    ) : null}
+
+</Marker>
+  
+   
+   ))} 
 
     {/* {props.isMarkerShown && <Marker position={{ lat: -34.397, lng: 150.644 }} onClick={props.onMarkerClick} />} */}
   </GoogleMap>
@@ -26,11 +38,26 @@ const MyMapComponent = compose(
 class MyFancyComponent extends React.Component {
   state = {
     isMarkerShown: false,
+    activeMarker : null
   }
 
   componentDidMount() {
     this.delayedShowMarker()
+
   }
+
+   handleActiveMarker = (marker) => {
+    if (marker === this.state.activeMarker) {
+      return;
+    }
+    this.setState({activeMarker : marker})
+  };
+
+    handleInfoClose = ()=>{
+    this.setState({activeMarker : null})
+    }
+
+
 
   delayedShowMarker = () => {
     setTimeout(() => {
@@ -42,13 +69,17 @@ class MyFancyComponent extends React.Component {
     this.setState({ isMarkerShown: false })
     this.delayedShowMarker()
   }
-
   render() {
     return (
       <MyMapComponent
-      locations={this.props.locations}
+        locations={this.props.locations}
+        activeMarker={this.state.activeMarker}
         isMarkerShown={this.state.isMarkerShown}
         onMarkerClick={this.handleMarkerClick}
+        defaultZoom={this.props.defaultZoom}
+        handleActiveMarker={this.handleActiveMarker}
+        handleInfoClose={this.handleInfoClose}
+        InfoWindowContainer={this.props.InfoWindowContainer}
       />
     )
   }

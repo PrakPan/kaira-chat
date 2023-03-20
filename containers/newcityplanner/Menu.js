@@ -4,6 +4,7 @@ import Brief from './MenuItems/Brief'
 import TopRecommendations from "./MenuItems/TopRecommendation"
 import Poi  from "./pois/Index"
 import FoodToEat from "./MenuItems/FoodToEat"
+import { AiOutlineConsoleSql } from "react-icons/ai"
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
@@ -38,8 +39,8 @@ const Menu = (props)=>{
     el.scrollIntoView({behavior : 'smooth', block: 'center' }) 
   }
   }
-  // console.log(props,'trtrtrt')
-  console.log(props.data.itinerary_data)
+
+  console.log('peops',props)
 
   return (
         <MenuContainer>
@@ -53,7 +54,7 @@ const Menu = (props)=>{
                 <TopRecommendations itinerary_data={props.data.itinerary_data} />
             </MenuItem>
 
-            {props.data.pois &&<MenuItem id='Things to do' single>
+            {props.data.pois &&<MenuItem id='Things to do'>
             <Heading>Things to do</Heading>
              <Poi pois={props.data.pois} />
             </MenuItem>}
