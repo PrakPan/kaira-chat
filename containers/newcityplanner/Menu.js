@@ -40,7 +40,6 @@ const Menu = (props)=>{
   }
   }
 
-  console.log('peops',props)
 
   return (
         <MenuContainer>
@@ -49,10 +48,10 @@ const Menu = (props)=>{
               <Brief short_description={props.data.short_description} lat={props.data.lat} long={props.data.long} />
             </MenuItem>}
             
-            <MenuItem id='Itinerary'>
+            {props.data.itinerary_data && <MenuItem id='Itinerary'>
                 <Heading >TTW’s Top Recommendation</Heading>
                 <TopRecommendations itinerary_data={props.data.itinerary_data} />
-            </MenuItem>
+            </MenuItem>}
 
             {props.data.pois &&<MenuItem id='Things to do'>
             <Heading>Things to do</Heading>

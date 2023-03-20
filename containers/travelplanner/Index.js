@@ -396,7 +396,6 @@ useEffect(() => {
   setOverviewHeading(props.experienceData.overview_heading)
 }, [router.query.link, props.experienceData])
 
-console.log(props.experienceData.locations,'////')
 
 const InfoWindowContainer = (location)=><MapInfo>
 <b>{location.name}</b>
