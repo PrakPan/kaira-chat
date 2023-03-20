@@ -125,7 +125,7 @@ width : 100%;
     top : 45px;
     animation: 0.5s ${TopSlideIn};
 @media screen and (min-width: 768px){
-  top : 90px;
+  top : 65px;
   left : 30px;
 }
 }
@@ -143,14 +143,14 @@ transition: 0.5s all ease-in-out ;
 `
 
 const BlackContainer = styled.div`
-background-color: rgba(0,0,0,0.2);
+background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(0,0,0,1) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
 width: 100%;
 height: 100%;
 position: absolute; 
 top: 0;
 &:hover{
-  background-color: rgba(0,0,0,0.3);
-
+  background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(255,255,255,0) 58%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#ffffff",GradientType=1);
 }
 `;
 
@@ -190,9 +190,8 @@ useEffect(()=>{
             <ImageContainer bg='road-trip.png'>
             <TextContainer className='AnimateTop'>
                 <Heading>{e.heading=='Travel'? 'Offbeat' : e.heading}</Heading>
-                <p>Planner</p>
             </TextContainer>
-            {isPageWide && <TextContainer className='StartNow'>Start now!</TextContainer> }
+            {isPageWide && <TextContainer className='StartNow'>Explore!</TextContainer> }
             <ImageLoader fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
             <BlackContainer/>
 
