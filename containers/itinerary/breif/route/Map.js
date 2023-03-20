@@ -31,6 +31,8 @@ import { withGoogleMap, GoogleMap, Marker, Polygon } from 'react-google-maps';
       googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E"
         defaultCenter = {{lat: latcenter, lng: longcenter}}
         defaultZoom = {6}
+    options={{disableDefaultUI : true}}
+        
       >
          {Markers}
       </GoogleMap>

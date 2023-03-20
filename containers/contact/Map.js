@@ -16,6 +16,8 @@ class Map extends Component {
       <GoogleMap
         defaultCenter = { {lat: 28.5779959, lng: 77.343917} }
         defaultZoom = { 14 }
+    options={{disableDefaultUI : true}}
+        
       >
           <Marker position={ {lat: 28.5779959, lng: 77.343917}} />
       </GoogleMap>

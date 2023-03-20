@@ -7,12 +7,13 @@ import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth';
 import Router from 'next/router'
 import { useEffect } from 'react';
+import axiosTravelPlannerInstance from '../services/pages/travel-planner'
 const  Home = (props) =>  {
   useEffect(() => {
     props.checkAuthState();
  
   }, []);
-  
+  console.log(props,'ppppopop')
   return (
     <Layout>
        <Head>
@@ -24,7 +25,7 @@ const  Home = (props) =>  {
           <meta property='keywords' content='travel in india, tour in india, india travel, travel agents near me, plan a trip, travel and experience culture, local travel experience, customized trip planner india, customized holiday packages, customized packages in computer, customized travel, honeymoon travel packages, personalized travel package'></meta>
       </Head>
        
-     <HomepageContainer></HomepageContainer>
+     <HomepageContainer ThemeData={props.ThemeData}></HomepageContainer>
     </Layout>
   )
  
@@ -43,5 +44,23 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
+export async function getStaticProps(){
+
+  const res = await axiosTravelPlannerInstance.get(`/list?country=India&page_type=Theme`)
+  const data = res.data
+
+  const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,heading : e.meta_keywords.split(',')[0]}})
+console.log(ThemeData)
+      if (!data) {
+            return {
+              notFound: true,
+            }
+          }
+      return{
+            props: {
+                  ThemeData: ThemeData
+            }
+      }
+  }
 
 export default  connect(mapStateToPros, mapDispatchToProps)(Home);

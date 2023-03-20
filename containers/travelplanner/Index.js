@@ -29,7 +29,7 @@ import Locations from '../../components/containers/newplannerlocations/Index';
 import OldLocations from '../../components/containers/plannerlocations/Index';
 import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
-import Map from './NewMap';
+import Map from '../../components/NewMap';
 import WhyPlanWithUs from './PlanWithUs';
 import WhatsappFloating from '../../components/WhatsappFloating'
 import Carousel from '../../components/FlickityCarousel'
@@ -412,14 +412,15 @@ useEffect(() => {
 <Heading align="left" style={{ margin:"3.5rem 0 3.5rem 0"}}>How it works?</Heading>       
 <div><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div>
 
-{/* {itinerariesToIndexExclusive.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'TTW Exclusives'}</Heading>    : null}      */}
-   
-   {/* {
-    itinerariesToIndexExclusive.length ? <Experiences experiences={props.experienceData.itinerary_data}></Experiences>:null
-   } */}
-  {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{'Trips by our users'}</Heading>    : null}     
-   
-   
+
+  {itinerariesToIndexCustomer.length ? <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"}  bold>{`${(props.experienceData.page_type=='Theme')?"TTW's Top Recommendations":'Trips by our users'}`}</Heading>    : null}     
+  {/* {itinerariesToIndexCustomer.length ? 
+  <GridContainer>
+    { itinerariesToIndexCustomer}
+ 
+  </GridContainer> : null
+  }
+   */}
    {
     itinerariesToIndexCustomer.length ? <Experiences experiences={props.experienceData.itinerary_data}></Experiences>:null
    }
@@ -436,7 +437,7 @@ useEffect(() => {
 
 </SetWidthContainer>
  {/* <Map locations={props.experienceData.locations}></Map> */}
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={props.experienceData? props.experienceData.destination ? `Craft a personalized itinerary to ${props.experienceData.destination} now!` : `Craft a personalized itinerary now!` : `Craft a personalized itinerary now!` }></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text={`Craft a personalized itinerary${props.experienceData.destination? (" to " +props.experienceData.destination +" now") : ''}!`}></DesktopBanner>
     <div className='hidden-desktop'><MobileBanner handleClick={() => setShowMobilePlanner(true)} city={props.experienceData.destination} /></div>
       <SetWidthContainer >
       <Heading >Other Destinations</Heading>        

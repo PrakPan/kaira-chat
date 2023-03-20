@@ -1213,6 +1213,9 @@ margin-left: -25px;
             border: none;
             color: white;
           }
+        .new-planner-location .flickity-button{
+            top : 40%;
+        } 
           
           .flickity-button:hover {
             cursor: pointer;
@@ -1243,7 +1246,7 @@ margin-left: -25px;
         
           .flickity-prev-next-button.previous {
             left: 0;
-            z-index: 1000;
+            z-index: 2000;
           }
           .flickity-prev-next-button.next {
             right: 0;

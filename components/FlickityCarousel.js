@@ -49,7 +49,7 @@ const FlickityCarousel = (props) => {
     if(props.experience)
     props.cards.map( (card,index) => {
           cards.push(
-            <div key={index}  style={{width: "75%" , margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div>
+            <div key={index}  style={{width: "95%" , margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div>
           )
       });
       else if(props.locations)
