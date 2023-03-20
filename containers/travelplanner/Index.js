@@ -29,7 +29,7 @@ import Locations from '../../components/containers/newplannerlocations/Index';
 import OldLocations from '../../components/containers/plannerlocations/Index';
 import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
-import Map from './NewMap';
+import Map from '../../components/NewMap';
 import WhyPlanWithUs from './PlanWithUs';
 import WhatsappFloating from '../../components/WhatsappFloating'
 import Carousel from '../../components/FlickityCarousel'
