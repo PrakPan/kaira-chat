@@ -12,6 +12,12 @@ import NewMenu from '../newcityplanner/Menu'
 import MobileBanner from './Banner/Mobile'
 import WhatsappFloating from '../../components/WhatsappFloating';
 const Experience = (props) => {
+  const [escapeState, setEscapeState] = useState(false);
+
+  useEffect(() => {
+    //Escape hatch for mobile images, do not remove
+    setEscapeState(true)
+   }, []);
    let isPageWide = media('(min-width: 768px)')
   const [poiData, setPoiData] = useState();
   const [showPoiModal, setShowPoiModal] = useState(false);
