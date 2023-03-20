@@ -21,6 +21,8 @@ import { useRouter } from 'next/router';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 import Route from '../../newitinerary/breif/route/Index';
+import ButtonYellow from '../../../components/ButtonYellow';
+import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -31,7 +33,7 @@ const DetailsContainer = styled.div`
   @media screen and (min-width: 768px) {
     flex-direction: row-reverse;
     padding: 0;
-    margin: 10vh auto 10vh auto;
+    margin: 10vh auto 2vh auto;
   }
 `;
 const RouteComponent = styled.div`
@@ -42,6 +44,11 @@ const RouteComponent = styled.div`
     width: 100%;
     margin-left: 20px;
   }
+`;
+const ContainerBt = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
 `;
 const Details = (props) => {
   let offsets = {};
@@ -99,6 +106,13 @@ const Details = (props) => {
           </div>
         </div> */}
       </DetailsContainer>
+      <ContainerBt style={{ padding: '30px 0px' }}>
+        <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
+      </ContainerBt>
+      <InclusionExclusion payment={props.payment} />
+      <ContainerBt style={{ padding: '30px 0px' }}>
+        <ButtonYellow>View All Bookings</ButtonYellow>
+      </ContainerBt>
       {props.traveleritinerary ? (
         <DesktopBanner
           onclick={_handleTailoredRedirect}

@@ -427,6 +427,7 @@ const SimpleTabs = (props) => {
       ) : null} */}
 
       <Breif
+        payment={props.payment}
         traveleritinerary={props.traveleritinerary}
         hours={hours}
         minutes={minutes}

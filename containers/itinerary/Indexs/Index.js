@@ -92,7 +92,7 @@ const Itinerary = (props) => {
   const [isDatePresent, setIsDatePresent] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
-
+  const [travellerType, settravellerType] = useState(false);
   const [showPoiModal, setShowPoiModal] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
   const [group_type, setgroup_type] = useState(null);
@@ -291,7 +291,7 @@ const Itinerary = (props) => {
           );
         } else {
           setUserEmail(res.data.user_email);
-
+          settravellerType(res.data.experience_filters_selected);
           if (res.data.start_date) setIsDatePresent(true);
           setgroup_type(res.data.group_type);
           setduration_time(res.data.duration_number);
@@ -664,6 +664,7 @@ const Itinerary = (props) => {
           group_type={group_type}
           duration_time={duration_time}
           images={itinerary.images}
+          travellerType={travellerType}
           duration={
             plan ? plan.duration_number + ' ' + plan.duration_unit : null
           }
