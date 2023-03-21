@@ -18,7 +18,7 @@ const StyledButton = styled.button`
   transition: background-color 0.2s;
   @media screen and (min-width: 768px) {
     width: 40%;
-    width: 100%;
+    
     
   }
   &:hover {

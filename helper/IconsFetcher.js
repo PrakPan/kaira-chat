@@ -1,11 +1,11 @@
-import {TiWeatherSunny as clearsky} from 'react-icons/im'
-import {TiWeatherWindyCloudy as brokenclouds} from 'react-icons/im';
-import {TiWeatherPartlySunny as fewClouds} from 'react-icons/im';
-import {TiWeatherWindy as mist} from 'react-icons/im';
-import {TiWeatherStormy as rain} from 'react-icons/im';
-import {TiWeatherCloudy as scatteredclouds} from 'react-icons/im';
-import {TiWeatherShowerr as showerrain} from 'react-icons/im';
-import {TiWeatherSnow as snow} from 'react-icons/im';
+import {TiWeatherSunny as clearsky} from 'react-icons/ti'
+import {TiWeatherWindyCloudy as brokenclouds} from 'react-icons/ti';
+import {TiWeatherPartlySunny as fewClouds} from 'react-icons/ti';
+import {TiWeatherWindy as mist} from 'react-icons/ti';
+import {TiWeatherStormy as rain} from 'react-icons/ti';
+import {TiWeatherCloudy as scatteredclouds} from 'react-icons/ti';
+import {TiWeatherShower as showerrain} from 'react-icons/ti';
+import {TiWeatherSnow as snow} from 'react-icons/ti';
 
 
 function weatherIconFetcher(weather){

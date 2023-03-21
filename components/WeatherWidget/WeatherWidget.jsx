@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import ImageLoader from '../ImageLoader';
+import { WeatherICon } from '../../helper/IconsFetcher';
 
 
 const WeatherGrid = styled.div`
@@ -59,11 +60,10 @@ const WeatherWidget = ({
   return (
     <WeatherGrid>
       {WeatherICon(item.weather.description)}
-      {/* <img
-        src={WeatherICon(item.weather.description)}
-        alt="Weather Icon"
-        width={48}
-      ></img> */}
+
+        
+        
+      
       <ImageLoader
         borderRadius="50%"
         url="media/website/grey.png"

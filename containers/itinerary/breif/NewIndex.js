@@ -98,13 +98,13 @@ const Details = (props) => {
             <Route breif={props.breif}></Route>
           </div>
         </RouteComponent>
-        {/* <div>
+        <div>
           <div >
             
               {true ? <Overview breif={props.breif}></Overview> : null}
             
           </div>
-        </div> */}
+        </div>
       </DetailsContainer>
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
