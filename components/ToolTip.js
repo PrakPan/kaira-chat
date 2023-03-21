@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 // import Zoom from '../FramerAnimations/Zoom';
-import { useHover } from '../Hooks/Hover';
-import Image from 'next/image';
-import { useComponentPosition } from '../Hooks/useComponentPostion';
+import { useHover } from '../hooks/useHover';
+
+
 import { useIntersectionObserver } from '../Hooks/useIntersection';
-import { useWindowSize } from '../Hooks/WindowSize';
+import { useWindowSize } from '../Hooks/useWindowSize';
 const ToolTip = ({ children, data }) => {
   const [hoverRef, isHovered] = useHover();
   const { width, height } = useWindowSize();
@@ -28,7 +28,7 @@ const ToolTip = ({ children, data }) => {
         {true && (
           // <Slide isActive={isHovered} direction={-1} xdistance={60}>
 
-          <Zoom isActive={isHovered}>
+          // <Zoom isActive={isHovered}>
             <div className="absolute z-30" ref={setRef}>
               <div
                 className={`bg-white w-96 ${position.y > height - 180 &&
@@ -36,11 +36,11 @@ const ToolTip = ({ children, data }) => {
               >
                 {/* <Image src={data.image} /> */}
                 <div className="">
-                  <div className="text-lg">{data.description}</div>
+                  <div className="text-lg">{data}</div>
                 </div>
               </div>
             </div>
-          </Zoom>
+          // </Zoom>
         )
 
         // </Slide>

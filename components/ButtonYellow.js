@@ -9,13 +9,18 @@ const StyledButton = styled.button`
   font-family: poppins;
   box-shadow: 0px 1px 0px #f0f0f0;
   border-radius: 6px;
+  width: 70%;
   align-self: center;
   font-size: 12px;
-  padding: 10px 20px;
+  padding: 10px 0px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
-
+  @media screen and (min-width: 768px) {
+    width: 40%;
+    width: 100%;
+    
+  }
   &:hover {
     background-color: #f8e000;
     transform: scale(2);
