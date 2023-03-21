@@ -6,7 +6,7 @@ import { Box } from '@material-ui/core';
 import Lottie from 'react-lottie'
 import animationData from '../../../public/assets/skeleton_square.json'
 import SkeletonCard from '../../ui/SkeletonCard';
-
+import {TbArrowBack} from 'react-icons/tb'
 const POIDetailsSkeleton = (props) => {
   const LoadingBox = styled.div`
     background-color: #eeede7;
@@ -20,7 +20,7 @@ const POIDetailsSkeleton = (props) => {
     return (
       <Stack spacing={1} padding="16px" width="500px">
         <div onClick={props.handleCloseDrawer}>
-          <CloseIcon height={23} cursor={"pointer"} />
+          <TbArrowBack style={{height : '32px' , width : '32px'}} cursor={"pointer"} />
         </div>
         
 

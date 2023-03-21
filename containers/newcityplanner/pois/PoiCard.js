@@ -118,7 +118,7 @@ export default function PoiCard(props){
             e.stopPropagation()
             props.setShowDrawer(false);            
           };
-
+          
     return (
         <Container onClick={()=>{ fetchData(props.data.id)
         props._handleOpen(props.data.id)}}>

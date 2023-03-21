@@ -7,6 +7,7 @@ import { Rating } from '@mui/material';
 import { useState } from 'react';
 import ImageLoader from '../../ImageLoader'
 import media from '../../media'
+import {TbArrowBack} from 'react-icons/tb'
 const Title = styled.p`
 font-weight : 800;
 font-size : 20px;
@@ -46,7 +47,6 @@ left : 300px;
 
 const POIDetails = (props) => {
   let isPageWide = media('(min-width: 768px)')
-
   const about = (
     <p>
       {props.data.short_description?.substr(0, 250)} <b>...more</b>
@@ -71,7 +71,7 @@ const POIDetails = (props) => {
   return (
     <Stack spacing={2} padding="16px" width={isPageWide?"500px" : '360px'}>
       <div style={{ marginBottom: "10px" }} onClick={(e)=>props.handleCloseDrawer(e)}>
-        <CloseIcon height={23} cursor={"pointer"} />
+        <TbArrowBack style={{height : '32px' , width : '32px'}} cursor={"pointer"} />
       </div>
       <ImageLoader
         borderRadius="8px"

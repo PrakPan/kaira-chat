@@ -40,7 +40,6 @@ const Menu = (props)=>{
   }
   }
 
-
   return (
         <MenuContainer>
             {/* <Navigator handleClick={handleClick} {...props} /> */}
@@ -55,7 +54,7 @@ const Menu = (props)=>{
 
             {props.data.pois &&<MenuItem id='Things to do'>
             <Heading>Things to do</Heading>
-             <Poi pois={props.data.pois} />
+             <Poi pois={props.data.pois} city={props.data.name} />
             </MenuItem>}
 
             {props.data.foods &&<MenuItem id='Food to eat' single>
