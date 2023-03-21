@@ -19,7 +19,7 @@ export const SubHeading = styled.div`
 
   color: #01202b;
   @media screen and (min-width: 768px) {
-    padding: 1rem;
+    padding: 0rem;
   }
 `;
 
