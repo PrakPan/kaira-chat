@@ -46,9 +46,7 @@ const Itinerary = (props) => {
 
         </CitiesContainer>    
             <DayContainer></DayContainer>
-            <DayContainer></DayContainer>
-            <DayContainer></DayContainer>
-            <DayContainer></DayContainer>
+            
 
            
          </Container>

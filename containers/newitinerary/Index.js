@@ -77,7 +77,7 @@ const NewItinerary = (props) => {
     return(
         <div style={{}}>
         <Container>
-            <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} ></Overview>
+            {/* <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} ></Overview> */}
             <Menu currentMenu={currentMenu} ></Menu>
             <Line  ></Line>
             <div

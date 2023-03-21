@@ -345,8 +345,10 @@ const SimpleTabs = (props) => {
   const items = [
     { id: 1, label: 'Brief', link: 'Brief' },
     { id: 2, label: 'Itinerary', link: 'Itenary' },
-    // { id: 3, label: 'Hotels',link: 'Hotels' },
-    // { id: 4, label: 'Flights',link: 'Flights' },
+    // { id: 3, label: 'Flights',link: 'Flights' },
+    { id: 3, label: 'Hotels',link: 'Hotels' },
+    { id: 4, label: 'Transportation',link: 'transportation' },
+    
   ];
 
   const { ref, isSticky } = useSticky(90);
@@ -392,7 +394,12 @@ const SimpleTabs = (props) => {
     position: sticky;
     top: 100px;
     display: flex;
-
+    ::-webkit-scrollbar{
+      display: none;
+    }
+    scrollbar-width: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
     align-items: center;
     z-index: 1;
     background-color: white;
@@ -425,8 +432,8 @@ const SimpleTabs = (props) => {
           payment={props.payment}
         ></PriceBannerMobile>
       ) : null} */}
-
-      <Breif
+<div id={items[0].link}>
+<Breif
         payment={props.payment}
         traveleritinerary={props.traveleritinerary}
         hours={hours}
@@ -441,9 +448,11 @@ const SimpleTabs = (props) => {
         _hideTimerHandler={_minimiseTimerHandler}
         blur={blurItinerary}
       ></Breif>
+</div>
+     
 
       {isPageWide ? (
-        <div id="Itenary">
+        <div id={items[1].link}>
           <ItineraryContainer
             is_registration_needed={
               props.payment ? props.payment.is_registration_needed : false
@@ -468,7 +477,7 @@ const SimpleTabs = (props) => {
           ></ItineraryContainer>
         </div>
       ) : (
-        <div id="Itenary">
+        <div id={items[1].link}>
           <ItineraryContainerMobile
             is_registration_needed={
               props.payment ? props.payment.is_registration_needed : false
@@ -504,8 +513,12 @@ const SimpleTabs = (props) => {
       }
 
       {isGroup ? (
+        <div id={items[2].link}>
         <Register></Register>
+          </div>
+
       ) : (
+        <div id={items[2].link}>
         <Booking
           itinerary={props.itinerary}
           _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -570,8 +583,12 @@ const SimpleTabs = (props) => {
           payment={props.payment}
           booking={props.booking}
         ></Booking>
+          </div>
+       
       )}
+<div id={items[3].link}>
 
+</div>
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}

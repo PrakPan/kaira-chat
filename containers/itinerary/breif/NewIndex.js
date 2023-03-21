@@ -88,7 +88,7 @@ const Details = (props) => {
   };
 
   return (
-    <div id="Brief">
+    <div >
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
       {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
