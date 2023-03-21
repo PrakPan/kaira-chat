@@ -1,58 +1,67 @@
-import {TiWeatherSunny as clearsky} from 'react-icons/ti'
-import {TiWeatherWindyCloudy as brokenclouds} from 'react-icons/ti';
-import {TiWeatherPartlySunny as fewClouds} from 'react-icons/ti';
-import {TiWeatherWindy as mist} from 'react-icons/ti';
-import {TiWeatherStormy as rain} from 'react-icons/ti';
-import {TiWeatherCloudy as scatteredclouds} from 'react-icons/ti';
-import {TiWeatherShower as showerrain} from 'react-icons/ti';
-import {TiWeatherSnow as snow} from 'react-icons/ti';
+import {TiWeatherSunny } from 'react-icons/ti'
+import {TiWeatherWindyCloudy } from 'react-icons/ti';
+import {TiWeatherPartlySunny } from 'react-icons/ti';
+import {TiWeatherWindy } from 'react-icons/ti';
+import {TiWeatherStormy } from 'react-icons/ti';
+import {TiWeatherCloudy } from 'react-icons/ti';
+import {TiWeatherShower } from 'react-icons/ti';
+import {TiWeatherSnow } from 'react-icons/ti';
 
 
-function weatherIconFetcher(weather){
-  const Icons = {
-    "clear sky": clearsky,
-    "few clouds": fewClouds,
-    "scattered clouds": scatteredclouds,
-    "broken clouds": brokenclouds,
-    "shower rain": showerrain,
-    "rain": rain,
-    "snow": snow,
-    "mist": mist,
-  };
+
+ function WeatherICon(weather, style, ...props) {
+  // const Icons = {
+  //   "clear sky": clearsky,
+  //   "few clouds": fewclouds,
+  //   "scattered clouds": scatteredclouds,
+  //   "broken clouds": brokenclouds,
+  //   "shower rain": showerrain,
+  //   "rain": rain,
+  //   "snow": snow,
+  //   "mist": mist,
+  // };
   switch (weather) {
     case 'clear sky':
-      return clearsky;
+      return <TiWeatherSunny style={style} {...props} />;
 
     case 'few clouds':
-      return fewClouds;
+      return <TiWeatherPartlySunny style={style} {...props}/>;
 
     case 'scattered clouds' || 'Clouds':
-      return scatteredclouds;
+      return <TiWeatherCloudy style={style} {...props}/>;
     case 'overcast clouds':
-      return scatteredclouds;
+      return <TiWeatherCloudy style={style} {...props}/>;
     case 'broken clouds' || 'overcast clouds':
-      return brokenclouds;
+      return <TiWeatherWindyCloudy style={style} {...props}/>;
 
     case 'shower rain':
-      return showerrain;
+      return <TiWeatherShower style={style} {...props}/>;
 
     case 'rain':
-      return rain;
+      return <TiWeatherStormy style={style} {...props}/>;
 
     case 'thunderstorm':
-      return thunderstorm;
+      return <TiWeatherSnow style={style} {...props}/>;
 
     case 'snow':
-      return snow;
+      return <TiWeatherSnow style={style} {...props}/>;
 
     case 'mist':
-      return mist;
+      return <TiWeatherWindy style={style} {...props}/>;
 
     default:
-      return clearsky;
-  }
+      return <TiWeatherSunny style={style} {...props}/>;
+  } 
 }
 
-export function WeatherICon(weather) {
- return weatherIconFetcher(weather)
+import React from 'react'
+
+const IconsFetcher = ({weather,style,...props}) => {
+  return (
+    
+      WeatherICon(weather,style)
+  
+  )
 }
+
+export default IconsFetcher

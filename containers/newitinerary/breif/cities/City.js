@@ -64,7 +64,7 @@ const City = ({ cityData }) => {
       <TextLight style={{ marginTop: '0.75rem' }}>
         Weather (03 Feb - 05 Feb 2023)
       </TextLight>
-      <WeatherWidget date={'2023-03-17 06:00:00'} city={cityData.city_name} />
+      <WeatherWidget date={'2023-03-23 06:00:00'} city={cityData.city_name} />
 
       {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
       <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}

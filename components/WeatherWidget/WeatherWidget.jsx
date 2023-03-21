@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import ImageLoader from '../ImageLoader';
-import { WeatherICon } from '../../helper/IconsFetcher';
+import IconsFetcher from '../../helper/IconsFetcher';
 
 
 const WeatherGrid = styled.div`
@@ -59,11 +59,11 @@ const WeatherWidget = ({
   }
   return (
     <WeatherGrid>
-      {WeatherICon(item.weather.description)}
-
-        
-        
       
+
+      <IconsFetcher weather={weather.description} style={{color: '#FF9900', fontSize: '50px', fontWeight: '600',}}/>
+        
+{/*       
       <ImageLoader
         borderRadius="50%"
         url="media/website/grey.png"
@@ -71,7 +71,7 @@ const WeatherWidget = ({
         heightMobile="2rem"
         width="2rem"
         dimensionsMobile={{ width: 10, height: 10 }}
-      ></ImageLoader>
+      ></ImageLoader> */}
       <div className="center-div">
         <TextBold>{weather.temperature} °C</TextBold>
         <TextBold>{weather.description}</TextBold>
