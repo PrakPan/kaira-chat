@@ -20,6 +20,7 @@ const Navbar = (props) => {
   let notopencount = 0;
 
   let [notifications, setNotifications] = useState([]);
+  const router = useRouter();
   useEffect(() => {
     if (router.basePath == 'itinerary') {
       setIsItenary(true);
