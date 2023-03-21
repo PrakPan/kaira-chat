@@ -1,6 +1,6 @@
 import styled from "styled-components"
-import Enquiry from '../../components/tailoredform/Index';
-import WhyPlanWithUs from "../../components/WhyPlanWithUs/Index";
+import Enquiry from '../tailoredform/Index';
+import WhyPlanWithUs from "./Index";
 
     const Container = styled.div`
     margin-inline : 5px;

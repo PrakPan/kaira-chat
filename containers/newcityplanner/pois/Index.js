@@ -70,7 +70,7 @@ const router = useRouter()
   const InfoWindowContainer = (location)=><MapInfo>
     <b>{location.name}</b>
     <div>{location.experience_filters.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
-    {ideal_duration_hours && <p>Ideal duration : {location.ideal_duration_hours} hrs</p>}
+    {location.ideal_duration_hours && <p>Ideal duration : {location.ideal_duration_hours} hrs</p>}
 
   </MapInfo>
 

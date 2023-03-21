@@ -5,6 +5,10 @@ import TopRecommendations from "./MenuItems/TopRecommendation"
 import Poi  from "./pois/Index"
 import FoodToEat from "./MenuItems/FoodToEat"
 import { AiOutlineConsoleSql } from "react-icons/ai"
+import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry';
+ import Reviews from '../travelplanner/CaseStudies/Index';
+  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
+
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
@@ -77,6 +81,19 @@ const Menu = (props)=>{
             <P>{props.data.folklore_or_story}</P>
             </MenuItem>}
 
+      <MenuItem>
+        <Heading>Why plan with us?</Heading>
+        <WhyPlanWithUs />
+      </MenuItem>
+      
+      <MenuItem single>
+        <Heading>What our customers say?</Heading>
+      <Reviews />
+      </MenuItem>
+
+      <MenuItem single>
+        <ChatWithUs />
+      </MenuItem>
 
         </MenuContainer>
     )

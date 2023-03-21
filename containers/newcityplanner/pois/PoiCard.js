@@ -104,23 +104,9 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endCo
 }
 
 `
-export default function PoiCard(props){
-
-    const [poiDetailsData, setPoiDetailsData] = useState({});
-  
-    const fetchData = (id) => {
-          props.setShowDrawer(true);
-          axiosPOIdetailsInstance
-          .get(`/?id=${id}`)
-          .then((res) => setPoiDetailsData(res.data));
-        }
-        const handleCloseDrawer = (e) => {
-            e.stopPropagation()
-            props.setShowDrawer(false);            
-          };
-          
+export default function PoiCard(props){          
     return (
-        <Container onClick={()=>{ fetchData(props.data.id)
+        <Container onClick={()=>{ 
         props._handleOpen(props.data.id)}}>
             <ImageContainer>
             <ImageLoader height='100%' url={props.data.image} />
@@ -131,7 +117,6 @@ export default function PoiCard(props){
         show={props.showDrawer.isOpen}
         iconId={props.data.id}
         handleCloseDrawer={props.handleCloseDrawer}
-        poiDetailsData={poiDetailsData}
       />
         </Container>
     )

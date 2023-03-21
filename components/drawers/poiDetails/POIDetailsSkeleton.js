@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import styled from "styled-components";
 import Stack from "@mui/material/Stack";
 import { Box } from '@material-ui/core';
-
+import media from '../../../components/media'
 import Lottie from 'react-lottie'
 import animationData from '../../../public/assets/skeleton_square.json'
 import SkeletonCard from '../../ui/SkeletonCard';
@@ -16,9 +16,10 @@ const POIDetailsSkeleton = (props) => {
     margin-top : ${(props) => props.mt};
     margin-bottom : ${(props) => props.mb};
   `;
+  let isPageWide = media('(min-width: 768px)')
 
     return (
-      <Stack spacing={1} padding="16px" width="500px">
+      <Stack spacing={1} padding="16px" width={isPageWide?"500px" : '360px'}>
         <div onClick={props.handleCloseDrawer}>
           <TbArrowBack style={{height : '32px' , width : '32px'}} cursor={"pointer"} />
         </div>

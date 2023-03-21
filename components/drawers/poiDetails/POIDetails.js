@@ -42,7 +42,13 @@ font-size : 14px;
 font-weight : 600;
 position : absolute;
 top : 185px;
+left : 20px;
+
+
+    @media screen and (min-width: 768px){
+    top : 185px;
 left : 300px;
+    }
 `
 
 const POIDetails = (props) => {
