@@ -229,7 +229,7 @@ const Mobile = (props) => {
             style={{
               width: 'auto',
               padding: '8px 10px',
-              display: `${props.hidecta ? 'hidden' : 'block'}`,
+              display: `${props.hidecta ? 'none' : 'block'}`,
             }}
             onclick={() => router.push('/tailored-travel')}
           >
