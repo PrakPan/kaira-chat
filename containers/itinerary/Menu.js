@@ -454,7 +454,7 @@ const SimpleTabs = (props) => {
         blur={blurItinerary}
       ></Breif>
 </div>
-     {/* <NewItenaryDBD itinerary={props.itinerary}></NewItenaryDBD> */}
+     <NewItenaryDBD itinerary={props.itinerary}></NewItenaryDBD>
 
       {isPageWide ? (
         <div id={items[1].link}>

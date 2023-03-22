@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import Day_I_Container from './Day_I_Container';
 import HorizontalBar from './Menubar';
-const NewItenaryDBD = ({itinerary}) => {
+const NewItenaryDBD = (props) => {
   const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -24,7 +24,8 @@ const City = styled.div`
   border-radius: 8px;
   padding: 0.5rem;
 `;
-const dates = itinerary.day_slabs.map((element,index)=>(
+console.log('itenary...' + JSON.stringify(props.itinerary))
+const dates = props.itinerary.day_slabs.map((element,index)=>(
   <div>{element.slab}</div>
   
 ))
@@ -35,8 +36,19 @@ const dates = itinerary.day_slabs.map((element,index)=>(
         <City className='border-thin' style={{backgroundColor: 'black', color: 'white'}}>Jaipur (2N)</City>
         <City className='border-thin' >Jodhpur (2N)</City>
         <City className='border-thin'>Jaisalmer (2N)</City>
-        <Day_I_Container></Day_I_Container>
+        
         </CitiesContainer>  
+        <div className='itenaryContainer'>
+        {props.itinerary.day_slabs.map((element,index)=>(
+ 
+            
+          <Day_I_Container Days={element} key={element.slab_id}></Day_I_Container>
+            
+          
+        ))}
+        </div>
+        
+        
     </Wrapper>
   )
 }
