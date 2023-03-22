@@ -12,9 +12,9 @@ const FlickityCarousel = (props) => {
 
 };
 let cards=[];
-    props.cards.map( card => {
+    props.cards.map( (card,i) => {
           cards.push(
-            <div  style={{width: "25%" , marginRight: '1rem'}} ><div>{card}</div></div>
+            <div key={i} style={{width: "25%" , marginRight: '1rem'}} ><div>{card}</div></div>
           )
       });
     

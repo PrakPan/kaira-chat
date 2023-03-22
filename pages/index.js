@@ -13,7 +13,6 @@ const  Home = (props) =>  {
     props.checkAuthState();
  
   }, []);
-  console.log(props,'ppppopop')
   return (
     <Layout>
        <Head>
@@ -50,7 +49,6 @@ export async function getStaticProps(){
   const data = res.data
 
   const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,heading : e.meta_keywords.split(',')[0]}})
-console.log(ThemeData)
       if (!data) {
             return {
               notFound: true,

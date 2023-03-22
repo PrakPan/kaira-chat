@@ -64,13 +64,13 @@ const POIDetails = (props) => {
 
     const experience_filters = <div>
       {
-        props.data.experience_filters?.map((e,i)=><span>{e} {props.data.experience_filters.length-1 == i ? '' : <b>·</b>} </span>)
+        props.data.experience_filters?.map((e,i)=><span key={i}>{e} {props.data.experience_filters.length-1 == i ? '' : <b>·</b>} </span>)
       }
   </div>
 
   const tips = <ul>
     {
-      props.data.tips?.map((e) => <li>{e}</li>)
+      props.data.tips?.map((e,i) => <li key={i}>{e}</li>)
 }
   </ul>
 
@@ -130,8 +130,8 @@ const POIDetails = (props) => {
           <Text>
             {
               <ul>
-                {props.data.timings.weekday_text?.map((e) => (
-                  <li>{e}</li>
+                {props.data.timings.weekday_text?.map((e,i) => (
+                  <li key={i}>{e}</li>
                 ))}
               </ul>
             }

@@ -41,7 +41,7 @@ const Pannel = (props) =>{
            
             <FormGroup>
           { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
+          props.filters[filter].map((currentfilter,i) =>         <FormControlLabel  key={i} control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
           }
       </FormGroup>   
       

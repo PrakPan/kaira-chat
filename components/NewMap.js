@@ -18,7 +18,7 @@ const MyMapComponent = compose(
     defaultCenter={{ lat: props.locations[0].lat, lng: props.locations[0].long}}
   > 
    {props.locations.map(location => (
-   <Marker onClick={() =>props.handleActiveMarker(location.id)}  icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png'} position={{ lat: location.lat, lng: location.long }}>
+   <Marker key={location.id} onClick={() =>props.handleActiveMarker(location.id)}  icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png'} position={{ lat: location.lat, lng: location.long }}>
    {props.activeMarker === location.id ? (
    <InfoWindow onCloseClick={() => props.handleInfoClose()}>
       {/* <div>{name}</div> */}
