@@ -647,7 +647,7 @@ const Itinerary = (props) => {
     heading: [],
     text: [],
   };
-  console.log('itenaryyyyyyyy' + JSON.stringify(itinerary));
+
   if (breif && !itineraryLoading)
     return (
       // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>

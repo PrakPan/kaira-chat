@@ -40,7 +40,7 @@ const Details = (props) => {
       <div style={{ width: 'max-content' }}>
         <Heading>Type of Travel</Heading>
         <Text>
-          {props.travellerType[0]} +{props.travellerType.length - 2}
+          {props.travellerType[0]} {(props.travellerType.length - 1 <= 0)? null : `+${props.travellerType.length - 1}`}
         </Text>
       </div>
 

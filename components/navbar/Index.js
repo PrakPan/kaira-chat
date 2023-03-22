@@ -22,7 +22,7 @@ const Navbar = (props) => {
   let [notifications, setNotifications] = useState([]);
   const router = useRouter();
   const path = router.route.split('/')
-  console.log('router base'+  path[1])
+
   useEffect(() => {
     if ( path[1] == 'itinerary') {
       setIsitenary(true);

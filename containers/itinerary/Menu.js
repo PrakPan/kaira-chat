@@ -25,6 +25,8 @@ import { useRouter } from 'next/router';
 import CustomMenu from './CustomMenu';
 import { useSticky } from '../../hooks/useSticky';
 import StackedComponents from './StackedComponents';
+import NewItenary from './New_Itenary_DBD/Index';
+import NewItenaryDBD from './New_Itenary_DBD/Index';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -392,14 +394,14 @@ const SimpleTabs = (props) => {
   };
   const Navbar = styled.div`
     position: sticky;
-    top: 100px;
+    top: 80px;
     display: flex;
     ::-webkit-scrollbar{
       display: none;
     }
-    scrollbar-width: none;
-    overflow-y: scroll;
-    overflow-x: hidden;
+
+    
+    overflow-x: scroll;
     align-items: center;
     z-index: 1;
     background-color: white;
@@ -408,6 +410,7 @@ const SimpleTabs = (props) => {
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       {/* <StackedComponents></StackedComponents> */}
+      
       <Navbar
         ref={ref}
         style={{
@@ -421,6 +424,8 @@ const SimpleTabs = (props) => {
           onSelect={handleSelect}
         />
       </Navbar>
+      
+      
 
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile
@@ -449,7 +454,7 @@ const SimpleTabs = (props) => {
         blur={blurItinerary}
       ></Breif>
 </div>
-     
+     {/* <NewItenaryDBD itinerary={props.itinerary}></NewItenaryDBD> */}
 
       {isPageWide ? (
         <div id={items[1].link}>
