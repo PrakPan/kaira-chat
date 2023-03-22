@@ -109,7 +109,7 @@ const POIDetails = (props) => {
             <u>{props.data.user_ratings_total} Google reviews</u>
           )}
         </Reviews>
-        {experience_filters && <Text>{experience_filters}</Text>}
+        {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </Box>
 
       {props.data.short_description && <Box>
@@ -139,7 +139,7 @@ const POIDetails = (props) => {
         </Box>
       )}
 
-      {tips && (
+      {props.data.tips && (
         <Box>
           <Heading>Tips</Heading>
           <Text>{tips}</Text>
