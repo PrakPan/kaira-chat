@@ -47,7 +47,8 @@ font-size: 14px;
  `;
 const ItineraryFoodElement = (props) => {
     
-   
+    
+   const recomendation = JSON.parse(props.recomendation)
     useEffect(() => {   
       
     },[]);

@@ -18,13 +18,15 @@ const MenuItem = styled.div`
   padding: 10px;
   cursor: pointer;
   padding: 8px 24px 8px 24px;
+  margin-left: 4px;
   background-color: ${({ isActive }) => isActive ? '#262626' : 'none'};
   color: ${({ isActive }) => isActive ? '#F7E700' : '#7A7A7A'};
-  border-radius: ${({ isActive }) => isActive ? '20% 20% 0 0' : 'none'};
+  border-radius: ${({ isActive }) => isActive ? '20% 20% 0 0' : '20% 20% 0 0'};
   transition: border-color 0.3s ease;
+  
   border-bottom: ${({ isActive }) => isActive ? '4px solid #F7E700' : 'none'};
   &:hover {
-    background-color: ${({ isActive }) => isActive ? '#262626' : 'gray'};
+    background-color: ${({ isActive }) => isActive ? '#262626' : '#262626c7'};
     color: white;
   }
 `;
