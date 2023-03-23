@@ -8,6 +8,7 @@ import { useState } from 'react';
 import ImageLoader from '../../ImageLoader'
 import media from '../../media'
 import {TbArrowBack} from 'react-icons/tb'
+import SkeletonCard from '../../ui/SkeletonCard';
 const Title = styled.p`
 font-weight : 800;
 font-size : 20px;
@@ -53,6 +54,7 @@ left : 300px;
 
 const POIDetails = (props) => {
   let isPageWide = media('(min-width: 768px)')
+  const [imageLoading,setImageLoading] = useState(true)
   const about = (
     <p>
       {props.data.short_description?.substr(0, 250)} <b>...more</b>
@@ -75,22 +77,38 @@ const POIDetails = (props) => {
   </ul>
 
   return (
-    <Stack spacing={2} padding="16px" width={isPageWide?"500px" : '360px'}>
-      <div style={{ marginBottom: "10px" }} onClick={(e)=>props.handleCloseDrawer(e)}>
-        <TbArrowBack style={{height : '32px' , width : '32px'}} cursor={"pointer"} />
+    <Stack spacing={2} padding="16px" width={isPageWide ? "500px" : "360px"}>
+      <div
+        onClick={(e) => props.handleCloseDrawer(e)}
+      >
+        <TbArrowBack
+          style={{ height: "32px", width: "32px" }}
+          cursor={"pointer"}
+        />
       </div>
-      <ImageLoader
-        borderRadius="8px"
-        marginTop="23px"
-        width="468px"
-        height="188px"
-        widthMobile="100%"
-        url={props.data.image}
-        dimensionsMobile={{ width: 600, height: 600 }}
-        dimensions={{ width: 900, height: 900 }}
-      ></ImageLoader>
-      {props.data.ideal_duration_hours && <TimeStamp>Approx Time : {props.data.ideal_duration_hours} hrs</TimeStamp>}
-      
+      <div style={imageLoading?{display : 'none'} : {display : 'initial'}}>
+        <ImageLoader
+          borderRadius="8px"
+          marginTop="23px"
+          width="468px"
+          height="188px"
+          widthMobile="100%"
+          url={props.data.image}
+          dimensionsMobile={{ width: 600, height: 600 }}
+          dimensions={{ width: 900, height: 900 }}
+          onload={() => {
+            console.log("loaded"), setImageLoading(false);
+          }}
+        ></ImageLoader>
+      </div>
+      {imageLoading && <SkeletonCard width={"468px"} height={"188px"} />}
+
+      {props.data.ideal_duration_hours && (
+        <TimeStamp>
+          Approx Time : {props.data.ideal_duration_hours} hrs
+        </TimeStamp>
+      )}
+
       <Box>
         <Title>{props.data.name}</Title>
         <Reviews>
@@ -112,17 +130,21 @@ const POIDetails = (props) => {
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </Box>
 
-      {props.data.short_description && <Box>
-        <Heading>About</Heading>
-        <Text onClick={() => setAboutText(props.data.short_description)}>
-          {aboutText}
-        </Text>
-      </Box>}
+      {props.data.short_description && (
+        <Box>
+          <Heading>About</Heading>
+          <Text onClick={() => setAboutText(props.data.short_description)}>
+            {aboutText}
+          </Text>
+        </Box>
+      )}
 
-      {props.data.getting_around &&<Box>
-        <Heading>Getting Around</Heading>
-        <Text>{props.data.getting_around}</Text>
-      </Box>}
+      {props.data.getting_around && (
+        <Box>
+          <Heading>Getting Around</Heading>
+          <Text>{props.data.getting_around}</Text>
+        </Box>
+      )}
 
       {props.data.timings && (
         <Box>
@@ -130,7 +152,7 @@ const POIDetails = (props) => {
           <Text>
             {
               <ul>
-                {props.data.timings.weekday_text?.map((e,i) => (
+                {props.data.timings.weekday_text?.map((e, i) => (
                   <li key={i}>{e}</li>
                 ))}
               </ul>

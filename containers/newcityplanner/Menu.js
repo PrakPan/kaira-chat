@@ -14,7 +14,7 @@ width : 95%;
 margin : auto;
 // font-family: 'Poppins';
     @media screen and (min-width: 768px){
-        width : 80%;
+        width : 85%;
           }
 `
 const MenuItem = styled.div`
@@ -86,12 +86,12 @@ const Menu = (props)=>{
         <WhyPlanWithUs />
       </MenuItem>
       
-      <MenuItem single>
+      <MenuItem>
         <Heading>What our customers say?</Heading>
       <Reviews />
       </MenuItem>
 
-      <MenuItem single>
+      <MenuItem>
         <ChatWithUs />
       </MenuItem>
 

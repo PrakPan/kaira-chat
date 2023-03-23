@@ -12,12 +12,10 @@ import { useState, useEffect } from 'react';
  const Container = styled.div`
    display: flex;
    justify-content: space-between;
-   width: 80%;
+   width: 16rem;
+
    svg {
      font-size: 1.5rem;
-   }
-   @media screen and (min-width: 768px) {
-     width: 70%;
    }
  `;
 const IconContainer = styled.div`
@@ -78,7 +76,7 @@ const Socials = (props) => {
         <IconContainer
           hoverBg={"#E60023"}
           onClick={() =>
-            (window.location.href = "https://in.pinterest.com/thetarzanway/")
+            (window.location.href = "https://www.pinterest.com/thetarzanway/")
           }
         >
           <FaPinterestP />

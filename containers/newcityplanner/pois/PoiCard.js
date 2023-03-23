@@ -75,16 +75,14 @@ animation: 0.5s ${LeftSlideOut};
 animation: 0.5s ${RightSlideOut};
 `
 const ImageContainer = styled.div`
-height : 250px;
-overflow : hidden;
-color : grey;
-transition: 0.5s all ease-in-out ;
-
-&:hover{
-  transform: scale(1.1); 
-
-}
-`
+  overflow: hidden;
+  color: grey;
+  transition: 0.5s all ease-in-out;
+  height: auto;
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
 
 const Overlay = styled.div`
 position: absolute;
@@ -106,19 +104,35 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endCo
 `
 export default function PoiCard(props){          
     return (
-        <Container onClick={()=>{ 
-        props._handleOpen(props.data.id)}}>
-            <ImageContainer>
-            <ImageLoader height='100%' url={props.data.image} />
-            </ImageContainer>
-            <Overlay />
-            {props.data.name && <Typography><p className='AnimateLeft'>{props.data.name}</p> <div><NavigateNextIcon className='AnimateRight' /></div></Typography>}
-            <POIDetailsDrawer
-        show={props.showDrawer.isOpen}
-        iconId={props.data.id}
-        handleCloseDrawer={props.handleCloseDrawer}
-      />
-        </Container>
-    )
+      <Container
+        onClick={() => {
+          props._handleOpen(props.data.id);
+        }}
+      >
+        <ImageContainer>
+          <ImageLoader
+            // height="100%"
+            url={props.data.image}
+            dimensions={{ height: 250, width: 500 }}
+            dimensionsMobile={{ width: 500, height: 350 }}
+          />
+        </ImageContainer>
+        <Overlay />
+        {props.data.name && (
+          <Typography>
+            <p className="AnimateLeft">{props.data.name}</p>{" "}
+            <div>
+              <NavigateNextIcon className="AnimateRight" />
+            </div>
+          </Typography>
+        )}
+        <POIDetailsDrawer
+          show={props.showDrawer.isOpen}
+          iconId={props.data.id}
+          handleCloseDrawer={props.handleCloseDrawer}
+          name={props.data.name}
+        />
+      </Container>
+    );
 
 }

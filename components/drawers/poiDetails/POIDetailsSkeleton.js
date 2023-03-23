@@ -16,58 +16,41 @@ const POIDetailsSkeleton = (props) => {
     margin-top : ${(props) => props.mt};
     margin-bottom : ${(props) => props.mb};
   `;
+  const Title = styled.p`
+    font-weight: 800;
+    font-size: 20px;
+  `;
   let isPageWide = media('(min-width: 768px)')
 
     return (
-      <Stack spacing={1} padding="16px" width={isPageWide?"500px" : '360px'}>
+      <Stack spacing={1} padding="16px" width={isPageWide ? "500px" : "360px"}>
         <div onClick={props.handleCloseDrawer}>
-          <TbArrowBack style={{height : '32px' , width : '32px'}} cursor={"pointer"} />
+          <TbArrowBack
+            style={{ height: "32px", width: "32px" }}
+            cursor={"pointer"}
+          />
         </div>
-        
 
         <SkeletonCard width={"468px"} height={"188px"} />
-    
-      <SkeletonCard height={'100px'} width={'325px'} />
-
+        <Title>{props.name}</Title>
+        <SkeletonCard height={"100px"} width={"325px"} />
 
         <Box>
-          <SkeletonCard
-            width={"140px"}
-            height={"20px"}
-            mb={"10px"}
-          />
-          <SkeletonCard
-            width={"468px"}
-            height={"84px"}
-          />
+          <SkeletonCard width={"140px"} height={"20px"} mb={"10px"} />
+          <SkeletonCard width={"468px"} height={"84px"} />
         </Box>
 
         <Box>
-          <SkeletonCard
-            width={"200px"}
-            height={"20px"}
-            mb={"10px"}
-          />
-          <SkeletonCard
-            width={"468px"}
-            height={"120px"}
-          />
+          <SkeletonCard width={"200px"} height={"20px"} mb={"10px"} />
+          <SkeletonCard width={"468px"} height={"120px"} />
         </Box>
 
         <Box>
-          <SkeletonCard
-            width={"140px"}
-            height={"20px"}
-            mb={"10px"}
-          />
-          <SkeletonCard
-            width={"468px"}
-            height={"100px"}
-          />
+          <SkeletonCard width={"140px"} height={"20px"} mb={"10px"} />
+          <SkeletonCard width={"468px"} height={"100px"} />
         </Box>
 
-
-        <SkeletonCard width={'468px'} height={'150px'} />
+        <SkeletonCard width={"468px"} height={"150px"} />
       </Stack>
     );
 }

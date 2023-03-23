@@ -32,7 +32,7 @@ const POIDetailsDrawer = (props) => {
           handleCloseDrawer={props.handleCloseDrawer}
         />
       ) : (
-        <POIDetailsSkeleton handleCloseDrawer={props.handleCloseDrawer} />
+        <POIDetailsSkeleton name={props.name} handleCloseDrawer={props.handleCloseDrawer} />
       )}
     </Drawer>
   );

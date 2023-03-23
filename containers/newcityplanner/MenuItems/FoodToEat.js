@@ -55,14 +55,20 @@ const FoodToEat = (props) => {
 
   return (
     <>
-    <div className='hidden-mobile'>
-    <Carousel initialIndex hideSides numberOfCards={4} cards={cards} />
-    </div>
-    <div className='hidden-desktop'>
-        <PageDotsFlickity padding={'1rem 0.2rem'} cards={MobileCardsArr} />
-    </div>
+      <div className="hidden-mobile">
+        <Carousel
+          initialIndex
+          hideSides
+          numberOfCards={4}
+          groupCells={2}
+          cards={cards}
+        />
+      </div>
+      <div className="hidden-desktop">
+        <PageDotsFlickity padding={"1rem 0.2rem"} cards={MobileCardsArr} />
+      </div>
     </>
-  )
+  );
 }
 
 export default FoodToEat

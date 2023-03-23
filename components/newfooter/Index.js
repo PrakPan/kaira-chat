@@ -55,8 +55,8 @@ const Box = styled.div`
 
  const LinksContainer = styled.div`
    display: grid;
-   grid-template-columns: 1fr 1fr;
-   margin: 1.5rem 0 0 0;
+   grid-template-columns: 1.2fr 1fr;
+   margin: 0;
 @media screen and (min-width: 768px){
    display: grid;
    grid-template-columns: 1fr 1fr 1fr 1fr;
