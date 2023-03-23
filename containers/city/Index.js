@@ -74,7 +74,7 @@ const Experience = (props) => {
                    text="Want to personalize your own experience?"
                  ></DesktopPersonaliseBanner>
                ) : (
-                 <MobileBanner />
+                 <MobileBanner cityName={props.cityData.name} />
                )}
                <WhatsappFloating message="Hey, I need help planning my trip." />
                <div>
@@ -84,14 +84,18 @@ const Experience = (props) => {
                    image={props.cityData.images[0].image}
                    page_id={props.cityData.id}
                    destination={props.cityData.name}
-                  //  cities={props.experienceData.locations}
-                  //  children_cities={props.experienceData.children}
+                   cities={props.reccomendedCitiesData}
+                   //  children_cities={props.experienceData.children}
                    title={props.cityData.name}
                  />
 
                  {/* New city */}
 
-                 <NewMenu data={props.cityData} />
+                 <NewMenu
+                   data={props.cityData}
+                   destination={props.cityData.name}
+                   cities={props.reccomendedCitiesData}
+                 />
 
                  {/* old city */}
 

@@ -3,7 +3,7 @@ const linksArr = [
   {
     heading: "Travel Destinations",
     data: [
-      { title: "Andaman", link: urls.travel_planner.ANDAMAN },
+      { title: "Andaman & Nicobar", link: urls.travel_planner.ANDAMAN },
       { title: "Himachal Pradesh", link: urls.travel_planner.HIMACHAL },
       { title: "Goa", link: urls.travel_planner.GOA },
       { title: "Jammu & Kashmir", link: urls.travel_planner.KASHMIR },

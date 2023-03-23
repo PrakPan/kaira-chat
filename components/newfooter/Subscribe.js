@@ -35,7 +35,7 @@ const Heading = styled.h1`
   position: relative;
   @media screen and (min-width: 768px) {
     font-size: 36px;
-    margin-block: 6rem 2rem;
+    margin-block: 6rem 3.5rem;
   }
 `;
 const Form = styled.form`
@@ -56,7 +56,9 @@ const Input = styled.input`
   border: 1px solid #333333;
   background: #f7e700;
   color: #01202b;
-  width : 100%;
+  width: 100%;
+  font-weight: 400;
+  font-size: 16px;
   &:placeholder {
     color: #01202b;
   }

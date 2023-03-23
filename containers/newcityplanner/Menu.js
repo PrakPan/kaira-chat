@@ -39,58 +39,79 @@ const Menu = (props)=>{
 
 console.log('cityplanner-data',props.data)
   return (
-        <MenuContainer>
-            {/* <Navigator handleClick={handleClick} {...props} /> */}
-            {props.data.short_description &&<MenuItem id='Brief'>
-              <Brief short_description={props.data.short_description} lat={props.data.lat} long={props.data.long} />
-            </MenuItem>}
-            
-            {props.data.itinerary_data && <MenuItem id='Itinerary'>
-                <Heading >TTW’s Top Recommendation</Heading>
-                <TopRecommendations itinerary_data={props.data.itinerary_data} />
-            </MenuItem>}
+    <MenuContainer>
+      {/* <Navigator handleClick={handleClick} {...props} /> */}
+      {props.data.short_description && (
+        <MenuItem id="Brief">
+          <Brief
+            short_description={props.data.short_description}
+            lat={props.data.lat}
+            long={props.data.long}
+          />
+        </MenuItem>
+      )}
 
-            {props.data.pois &&<MenuItem id='Things to do'>
-            <Heading>Things to do</Heading>
-             <Poi pois={props.data.pois} city={props.data.name} />
-            </MenuItem>}
+      {props.data.itinerary_data && (
+        <MenuItem id="Itinerary">
+          <Heading>TTW’s Top Recommendation</Heading>
+          <TopRecommendations itinerary_data={props.data.itinerary_data} />
+        </MenuItem>
+      )}
 
-            {props.data.foods &&<MenuItem id='Food to eat' single>
-            <Heading>Food to eat</Heading>
-             <FoodToEat foods={props.data.foods} />
-            </MenuItem>}
+      {props.data.pois && (
+        <MenuItem id="Things to do">
+          <Heading>Things to do</Heading>
+          <Poi pois={props.data.pois} city={props.data.name} />
+        </MenuItem>
+      )}
 
-            {props.data.conveyance_available &&<MenuItem id='How to reach' single>
-            <Heading>How to reach</Heading>
-            <P>{props.data.conveyance_available}</P>
-            </MenuItem>}
+      {props.data.foods && (
+        <MenuItem id="Food to eat" single>
+          <Heading>Food to eat</Heading>
+          <FoodToEat foods={props.data.foods} />
+        </MenuItem>
+      )}
 
-            {props.data.survival_tips_and_tricks &&<MenuItem id='Survival Tips & Tricks' single>
-            <Heading>Survival Tips & Tricks</Heading>
-            <P>{props.data.survival_tips_and_tricks}</P>
-            </MenuItem>}
+      {props.data.conveyance_available && (
+        <MenuItem id="How to reach" single>
+          <Heading>How to reach</Heading>
+          <P>{props.data.conveyance_available}</P>
+        </MenuItem>
+      )}
 
-            {props.data.folklore_or_story &&<MenuItem id='Folklore or Story' single>
-            <Heading>Folklore or Story</Heading>
-            <P>{props.data.folklore_or_story}</P>
-            </MenuItem>}
+      {props.data.survival_tips_and_tricks && (
+        <MenuItem id="Survival Tips & Tricks" single>
+          <Heading>Survival Tips & Tricks</Heading>
+          <P>{props.data.survival_tips_and_tricks}</P>
+        </MenuItem>
+      )}
+
+      {props.data.folklore_or_story && (
+        <MenuItem id="Folklore or Story" single>
+          <Heading>Folklore or Story</Heading>
+          <P>{props.data.folklore_or_story}</P>
+        </MenuItem>
+      )}
 
       <MenuItem>
         <Heading>Why plan with us?</Heading>
-        <WhyPlanWithUs />
+        <WhyPlanWithUs
+          page_id={props.data.id}
+          destination={props.destination}
+          cities={props.cities}
+        />
       </MenuItem>
-      
+
       <MenuItem>
         <Heading>What our customers say?</Heading>
-      <Reviews />
+        <Reviews />
       </MenuItem>
 
       <MenuItem>
         <ChatWithUs />
       </MenuItem>
-
-        </MenuContainer>
-    )
+    </MenuContainer>
+  );
 }
 
 export default Menu

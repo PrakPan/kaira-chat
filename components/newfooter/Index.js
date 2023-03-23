@@ -21,12 +21,12 @@ import linksArr from './Links';
    }
  `;
 const SubContainer = styled.div`
-@media screen and (min-width: 768px){
-display : grid;
-grid-template-columns : 1fr 3fr;
-column-gap : 10%;
-margin-bottom : 4%;
-}
+  @media screen and (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    column-gap: 6%;
+    margin: 2% 7%;
+  }
 `;
 const Box = styled.div`
   &.linkContainer {
@@ -60,6 +60,7 @@ const Box = styled.div`
 @media screen and (min-width: 768px){
    display: grid;
    grid-template-columns: 1fr 1fr 1fr 1fr;
+   margin-top : 1.5rem;
 }
  `;
 
@@ -123,7 +124,7 @@ const NewFooter = (props) => {
  ));
   return (
     <>
-      <SubscribeBox className="font-lexend" onClick={()=>setShadow(false)}>
+      <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
         <Subscribe shadow={shadow} />
       </SubscribeBox>
 
@@ -180,7 +181,8 @@ const NewFooter = (props) => {
           }}
         ></div>
         <CopyWrite className="text-center">
-          © Copyright 2022, All Rights Reserved by thetarzanway
+          Copyright © 2018 - {new Date().getFullYear()} Tarzan Way Travels
+          Private Limited ® - All Rights Reserved
         </CopyWrite>
       </Container>
     </>

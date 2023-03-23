@@ -47,7 +47,7 @@ export default {
   },
   HOMEPAGE: "/",
   travel_planner: {
-    ANDAMAN: "/travel-planner/andaman",
+    ANDAMAN: "/travel-planner/andaman_and_nicobar",
     GOA: "/travel-planner/goa",
     HIMACHAL: "/travel-planner/himachal_pradesh",
     KASHMIR: "/travel-planner/jammu_and_kashmir",

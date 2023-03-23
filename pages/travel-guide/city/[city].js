@@ -3,6 +3,7 @@ import Layout from '../../../components/Layout';
 import { useRouter } from 'next/router';
 import axiosallCityInstance from '../../../services/travel-guide/SearchAllLocation'
 import axiosPoiCityInstance from '../../../services/poi/city'
+import axiosReccommendedCityInstance from '../../../services/poi/reccommededcities'
 import Head  from 'next/head';
 const Experience = (props) => {
      const schemaData = {
@@ -13,22 +14,38 @@ const Experience = (props) => {
     
     };
      const router = useRouter();
-    return <Layout>
-          <script 
+    return (
+      <Layout>
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
-
-          >
-          
-          </script>
-         <Head>
-         <meta name="description" content={props.cityData.short_description}    />
-    <meta property="og:title" content={props.cityData.name +" | Travel Guide |  The Tarzan Way"} />
-    <meta property="og:description" content={props.cityData.short_description} />
-    <meta property="og:image" content="/logoblack.svg" />
-      <title>{props.cityData.name +" | Travel Guide |  The Tarzan Way"}</title>
-      <meta property='keywords' content='best places to visit in india, best places to visit in kasol, best places to visit in ladakh, best places to visit in andaman, best places to visit in manali, best places to visit in delhi, best places to visit in rajasthan, package for ladakh, package for manali, package for delhi, package for andaman, package for kashmir'></meta>
-      </Head><ExperienceContainer  cityData={props.cityData}  id={router.query.city}></ExperienceContainer></Layout>
+        ></script>
+        <Head>
+          <meta name="description" content={props.cityData.short_description} />
+          <meta
+            property="og:title"
+            content={props.cityData.name + " | Travel Guide |  The Tarzan Way"}
+          />
+          <meta
+            property="og:description"
+            content={props.cityData.short_description}
+          />
+          <meta property="og:image" content="/logoblack.svg" />
+          <title>
+            {props.cityData.name + " | Travel Guide |  The Tarzan Way"}
+          </title>
+          <meta
+            property="keywords"
+            content="best places to visit in india, best places to visit in kasol, best places to visit in ladakh, best places to visit in andaman, best places to visit in manali, best places to visit in delhi, best places to visit in rajasthan, package for ladakh, package for manali, package for delhi, package for andaman, package for kashmir"
+          ></meta>
+        </Head>
+        <ExperienceContainer
+          reccomendedCitiesData={props.reccomendedCitiesData}
+          cityData={props.cityData}
+          id={router.query.city}
+        ></ExperienceContainer>
+      </Layout>
+    );
 }
 
 export async function getStaticPaths(){
@@ -70,16 +87,33 @@ export async function getStaticProps(context){
 
       const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`)
       const data = res.data
+
+       const resp = await axiosReccommendedCityInstance.get(
+         `/?slug=${context.params.city}`
+       );
+       const reccoData = resp.data;
+// id: 293;
+// image: "media/cities/162428369233103537559509277344.jpg";
+// is_hot_location: true;
+// lat: 26.9157487;
+// long: 70.9083443;
+// most_popular_for: (2)[("Heritage & Culture", "Nightlife & Shopping")];
+// name: "Jaisalmer";
+
+  const reccomendedCitiesData = reccoData.map(e=>({id : e.id , image : e.image , lat : e.lat , long : e.long , most_popular_for : e.most_popular_for , name : e.name}))
+  
+
       if (!data) {
             return {
               notFound: true,
             }
           }
-      return{
-            props: {
-                  cityData: data
-            }
-      }
+      return {
+        props: {
+          cityData: data,
+          reccomendedCitiesData
+        },
+      };
 }
 
 
