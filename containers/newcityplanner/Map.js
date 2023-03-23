@@ -1,7 +1,6 @@
 import React from "react"
 import { compose, withProps } from "recompose"
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 const MyMapComponent = compose(
   withProps({
     googleMapURL:"https://maps.googleapis.com/maps/api/js?key=AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E",

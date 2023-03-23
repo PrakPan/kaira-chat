@@ -127,8 +127,8 @@ const Enquiry = (props) => {
 
         let number_of_adults = 2, number_of_children=0, number_of_infants=0;
         if(groupType === 'Solo'){
-            number_of_adults = 1;
-        }
+         number_of_adults = 1;
+       }
         else if(groupType === 'Couple'){
             number_of_adults = 2;
         }

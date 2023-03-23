@@ -11,6 +11,7 @@ import POIModal from '../../components/modals/poi/Index';
 import NewMenu from '../newcityplanner/Menu'
 import MobileBanner from './Banner/Mobile'
 import WhatsappFloating from '../../components/WhatsappFloating';
+import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 const Experience = (props) => {
   const [escapeState, setEscapeState] = useState(false);
 
@@ -54,9 +55,6 @@ const Experience = (props) => {
     setShowPoiModal(false);
   }
  
-
-  
-
   const closeGalleryHandler = () => {
     let images = [];
     for(var i = 0 ; i<props.cityData.images.length; i++){
@@ -66,21 +64,38 @@ const Experience = (props) => {
   }
       if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages} ></FullScreenGallery >);
       else return (
-        <div className='font-lexend' style={isPageWide?{minHeight: '100vh'}:{}}>
-          {isPageWide ? <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>:<MobileBanner/>}
-      <WhatsappFloating message="Hey, I need help planning my trip." />
-          <div>
-          <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state.region } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
-            
-            {/* New city */}
+             <div
+               className="font-lexend"
+               style={isPageWide ? { minHeight: "100vh" } : {}}
+             >
+               {isPageWide ? (
+                 <DesktopPersonaliseBanner
+                   onclick={_handlePersonaliseRedirect}
+                   text="Want to personalize your own experience?"
+                 ></DesktopPersonaliseBanner>
+               ) : (
+                 <MobileBanner />
+               )}
+               <WhatsappFloating message="Hey, I need help planning my trip." />
+               <div>
+                 {/* <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state.region } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  /> */}
 
-<NewMenu data={props.cityData} />
-            
-            {/* old city */}
+                 <HeroBanner
+                   image={props.cityData.images[0].image}
+                   page_id={props.cityData.id}
+                   destination={props.cityData.name}
+                  //  cities={props.experienceData.locations}
+                  //  children_cities={props.experienceData.children}
+                   title={props.cityData.name}
+                 />
 
+                 {/* New city */}
 
+                 <NewMenu data={props.cityData} />
 
-            {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
+                 {/* old city */}
+
+                 {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
           <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
 
           <Transition in={!props.cityData} timeout={1000} unmountOnExit>
@@ -101,9 +116,9 @@ const Experience = (props) => {
                  </div>
               }
                </Transition> */}
-            </div>
-        </div>
-      );
+               </div>
+             </div>
+           );
   }
 
 export default Experience;

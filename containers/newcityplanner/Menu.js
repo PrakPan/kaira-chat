@@ -12,7 +12,6 @@ import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry'
 const MenuContainer = styled.div`
 width : 95%;    
 margin : auto;
-// font-family: 'Poppins';
     @media screen and (min-width: 768px){
         width : 85%;
           }
@@ -37,13 +36,8 @@ const P = styled.p`
       }
     `;
 const Menu = (props)=>{
-  function handleClick(e){
-    let el = document.getElementById(e)
-    if(el){ 
-    el.scrollIntoView({behavior : 'smooth', block: 'center' }) 
-  }
-  }
 
+console.log('cityplanner-data',props.data)
   return (
         <MenuContainer>
             {/* <Navigator handleClick={handleClick} {...props} /> */}
