@@ -126,9 +126,9 @@ const RoomType = (props) => {
                 {ammenities  ? ammenities.length ? ( ammenities.length > 5 && !isPageWide ) || ( ammenities.length > 20 && isPageWide ) ?  <p style={{fontSize: '0.75rem', marginLeft: '3px', marginTop: '0.5rem', textDecoration: 'underline' , color:  'rgba(91, 89, 89, 1)'}} className="font-opensans">View All</p> : null : null : null}
                 </div>
                 <div style={{display: 'flex', flexDirection: 'column', flexGrow: '1', alignItems : 'flex-end', justifyContent: 'flex-end'}}>
-                    <Cost>
+                    {/* <Cost>
                     {"₹ " + (getIndianPrice(Math.round(props.data.prices.min_price*counterValue/100)) )+" /-"}
-                    </Cost>
+                    </Cost> */}
                     <div>
                         {/* {!showCounter ? <Button onclick={() => setShowCounter(true)} bgColor="#f7e700" borderWidth="0" fontSize="1rem" lineHeight="1" padding="0.25rem 1rem" borderRadius="5px" bold margin="0.5rem 0 0 0" width="100%">Select</Button>
                        :  <CounterContainer className='center-div font-opensans' >
