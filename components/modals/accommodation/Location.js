@@ -13,10 +13,6 @@ grid-gap: 2rem;
 `;
 
 const Address = styled.div``;
-
-const Map = styled.div`
-
-`;
 const Location = (props) => {
     // const [ammenities, setAmmenities] = useState(null);
     // useEffect(() => {
@@ -29,9 +25,6 @@ return(
         <p className='font-opensans' style={{fontWeight: '300'}}>{props.data.addr1}</p>
         <p className='font-opensans' style={{fontWeight: '300'}}>{props.data.addr2}</p>
     </Address>
-    {/* <Map>
-
-    </Map> */}
 </Container>
 );
 

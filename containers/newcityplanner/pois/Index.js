@@ -2,11 +2,10 @@ import styled from "styled-components"
 import PoiCard from "./PoiCard"
 import {useState} from 'react'
 import media from '../../../components/media'
-// import Map from '../../../components/NewMap'
 import PageDotsFlickity from '../../../components/PageDotsFlickity'
 import validateTextSize from "../../../services/textSizeValidator"
 import { useRouter } from "next/router"
-import MapApi from '../../../components/Map'
+import Map from '../../../components/Map'
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
@@ -100,8 +99,7 @@ const router = useRouter()
         <div className="hidden-desktop">
         <PageDotsFlickity padding={'1rem 0.2rem'} cards={cards} />
         </div>
-        {/* <div><Map locations={props.pois} defaultZoom={12} InfoWindowContainer={InfoWindowContainer} /></div> */}
-<MapApi locations={props.pois} defaultZoom={12} height={isPageWide?'350px':'230px'} InfoWindowContainer={InfoWindowContainer} />
+<Map locations={props.pois} defaultZoom={12} height={isPageWide?'350px':'230px'} InfoWindowContainer={InfoWindowContainer} />
 
     </GridContainer>
 

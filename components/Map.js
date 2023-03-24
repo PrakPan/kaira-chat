@@ -26,6 +26,7 @@ const markers = [
 ];
 
 function Map(props) {
+  console.log(props.center)
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E"
   })
@@ -41,15 +42,34 @@ function Map(props) {
   const handleOnLoad = (map) => {
     const bounds = new window.google.maps.LatLngBounds();
     // markers.forEach(({ position }) => bounds.extend(position));
-    props.locations.forEach(location=> bounds.extend({lat : location.lat , lng : location.long}))
-    map.fitBounds(bounds);
-  };
+      props.locations.forEach(location=> bounds.extend({lat : location.lat , lng : location.long}))
+      map.fitBounds(bounds);  
+    };
 
   const containerStyle={
     width: props.width || '100%', 
     height: props.height || '100%',
     borderRadius : props.borderRadius || '10px'
   }
+
+  if(props.center){
+    return isLoaded?(<GoogleMap
+    center={props.center}
+    zoom = { 14 }
+    onClick={() => setActiveMarker(null)}
+    mapContainerStyle={containerStyle}
+    
+options={{disableDefaultUI : true}}
+  >
+      <Marker onClick={() => handleActiveMarker(props.center.lat + props.center.lng)}  position={props.center} icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png'}>
+      {activeMarker === (props.center.lat + props.center.lng) ? (
+      <InfoWindow onCloseClick={() => setActiveMarker(null)}>
+              {props.InfoWindowContainer || ''}
+            </InfoWindow>) : null}
+      </Marker>
+  </GoogleMap>) : (<SkeletonCard {...containerStyle}></SkeletonCard>)
+  }
+
 
 
   return isLoaded? (

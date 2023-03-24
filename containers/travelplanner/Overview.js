@@ -8,7 +8,6 @@ import media from '../../components/media';
 import styled from 'styled-components';
 // import ImageLoader from '../../components/ImageLoader';
  import {BiChevronDown} from 'react-icons/bi'
-// import Map from './NewMap'
 const Container = styled.div`
  padding: 0 1rem;
 @media screen and (min-width: 768px){
@@ -73,7 +72,6 @@ const  Overview = (props) =>{
       </Text>      
      
         </div>
-        {/* <div style={{}}><Map locations={props.locations}></Map></div> */}
       {/* </GridContainer> */}
 
     </Container>

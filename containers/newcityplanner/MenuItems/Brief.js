@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styled from "styled-components"
-import Map from '../Map'
 import media from '../../../components/media'
 const Container = styled.div`
 margin-top : 30px;
@@ -31,7 +30,6 @@ return <Container>
      <P>{moreText?props.short_description:props.short_description.substr(0, textLength)}
      {props.short_description.length>textLength&&<span style={{fontWeight : '700',cursor : 'pointer'}} onClick={()=>setMoreText(!moreText)}>{moreText?' ...less' : ' ...more'}</span>}
      </P>
-    {/* <div className='hidden-mobile'><Map lat={props.lat} long={props.long} /></div> */}
     </Container>
 }
 
