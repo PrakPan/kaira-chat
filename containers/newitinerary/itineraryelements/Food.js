@@ -8,7 +8,7 @@ import {MdOutlineFlightTakeoff} from 'react-icons/md';
 import {IoMdRestaurant} from 'react-icons/io';
 import FoodItem from './FoodItem';
    const Container = styled.div`
-   padding: 0.5rem;
+padding: 10px 0px 20px 0px;
    
     @media screen and (min-width: 768px){
  
@@ -49,50 +49,53 @@ const ItineraryFoodElement = (props) => {
     
     
    const recomendation = JSON.parse(props.recomendation)
-    useEffect(() => {   
-      
-    },[]);
+   console.log('recomendation...'+ recomendation)
+    
     
     return(
-
-        <Container
+<>
+<Container
      
-        className='font-poppins'>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <SectionOneText>{props.time}</SectionOneText>
-                 
-                  
-                 
-            </div>
-
-            <GridContainer>
-                <div className='text-center'>
-                <IoMdRestaurant style={{fontSize: '2rem', textAlign: 'center'}}></IoMdRestaurant>
-
-                </div>
-             
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                <Heading>{props.heading}</Heading>
-
-                </div>
-            </GridContainer>
-            <Text>
-                {props.text}
-                </Text>
-                <FoodItem heading="Lassi" 
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></FoodItem>
-                 <FoodItem heading="Onion Kachodi" 
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></FoodItem>
-                <FoodItem heading="Maalpua" 
-                text='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.'
-                ></FoodItem>
+     className='font-poppins'>
+         <div style={{display: 'flex', alignItems: 'center'}}>
+             <SectionOneText>{props.time}</SectionOneText>
               
+               
+              
+         </div>
 
-<Line></Line>
-         </Container>
-        
+         <GridContainer>
+             <div className='text-center'>
+             <IoMdRestaurant style={{fontSize: '2rem', textAlign: 'center'}}></IoMdRestaurant>
+
+             </div>
+          
+             <div style={{display: 'flex', alignItems: 'center'}}>
+             <Heading>{props.heading}</Heading>
+
+             </div>
+         </GridContainer>
+         {recomendation ? <>
+             <Text>
+             {props.text}
+             </Text>
+             {recomendation?.map((item)=>(
+                 <FoodItem heading={item.name}
+             text={item.description}
+             ImageUrl={item.image}
+             ></FoodItem>
+             ))}
+             
+            
+         </> :null }
+         
+           
+
+
+      </Container>
+     <Line></Line>
+</>
+    
     );
  }
 

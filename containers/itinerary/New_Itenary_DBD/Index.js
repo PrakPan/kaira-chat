@@ -191,6 +191,7 @@ const NewItenaryDBD = (props) => {
         <City className="border-thin">Jodhpur (2N)</City>
         <City className="border-thin">Jaisalmer (2N)</City>
       </CitiesContainer>
+      {day_pannesl_jsx}
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <Day_I_Container
@@ -199,6 +200,7 @@ const NewItenaryDBD = (props) => {
           ></Day_I_Container>
         ))}
       </div>
+      
     </Wrapper>
   );
 };

@@ -27,7 +27,12 @@ const Tips = (props) => {
         <Container>
                      <Heading>Tips</Heading>
                      <Text>
-                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.
+                        <ul>
+                        {props.tips && props.tips.map((element)=>(
+<li>{element}</li>
+                     ))}
+                        </ul>
+                     
 
                      </Text>
         </Container>

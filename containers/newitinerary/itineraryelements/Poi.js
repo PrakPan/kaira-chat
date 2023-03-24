@@ -118,9 +118,9 @@ const ItineraryPoiElement = (props) => {
 
                 </div>
             </GridContainer>
-            { props.type === ITINERARY_ELEMENT_TYPES.activity && props.text?<Text>{props.text}</Text>
-             : null}
-                <Tips></Tips>
+            <Text>{props.text}</Text>
+             
+                <Tips tips={props.tips}></Tips>
 
 <Line></Line>
          </Container>

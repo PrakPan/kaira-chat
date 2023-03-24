@@ -36,7 +36,7 @@ const Day_I_Container = (props) => {
     Arslab_element_data.push(
       JsonArray.filter(
         (JSElement) => JSElement.element_type == Arslab_element_name
-      )[0]
+      )
     );
   }
   function divide(JsonArray, Arslab_elements) {
@@ -50,48 +50,71 @@ const Day_I_Container = (props) => {
     <Container className="font-poppins">
       <Date>Feb 3, 2023</Date>
 
-      <div className="border-thin" style={{ borderRadius: "10px" }}>
+      <div>
         {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
           time="9:00AM"
           heading={Arslab_elements[0].data[0].heading}
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
-        {(Arslab_elements[0].data[0] == "undefined") ? (
+        {Arslab_elements[0].data[0][0] ? (
           <TransferElements
             time="9:00AM"
-            transfers={Arslab_elements[0].data[0].transfers}
-            icon={Arslab_elements[0].data[0].icon}
-            heading={Arslab_elements[0].data[0].heading}
+            modes={Arslab_elements[0].data[0][0].modes}
+            transfers={Arslab_elements[0].data[0][0].transfers}
+            meta={Arslab_elements[0].data[0][0].meta}
+            icon={Arslab_elements[0].data[0][0].icon}
+            heading={Arslab_elements[0].data[0][0].heading}
             text={props.Days.slab_elements[0].text}
+            newcity={Arslab_elements[1].data[0][0]}
           ></TransferElements>
         ) : null}
-        {Arslab_elements[2].data[0] ? (
+        {Arslab_elements[2].data[0][0] ? (
           <ItineraryElement
-            icon={Arslab_elements[2].data[0].icon}
+            icon={Arslab_elements[2].data[0][0].icon}
             time="9:00AM"
-            heading={Arslab_elements[2].data[0].heading}
-            text={Arslab_elements[2].data[0].text}
+            heading={Arslab_elements[2].data[0][0].heading}
+            text={Arslab_elements[2].data[0][0].text}
           ></ItineraryElement>
         ) : null}
-        {Arslab_elements[3].data[0] ? (
+        {Arslab_elements[3].data[0][0] ? (
           <ItineraryFoodElement
-            icon={Arslab_elements[3].data[0].icon}
+            icon={Arslab_elements[3].data[0][0].icon}
             time="12:00PM"
-            heading={Arslab_elements[3].data[0].heading}
-            text={Arslab_elements[3].data[0].text}
-            recomendation={Arslab_elements[4].data[0] == "undefined" && Arslab_elements[4].data[0].tesxt }
+            heading={Arslab_elements[3].data[0][0].heading}
+            text={Arslab_elements[3].data[0][0].text}
+            recomendation={Arslab_elements[4].data[0][0] ? Arslab_elements[4].data[0][0].text : null }
           ></ItineraryFoodElement>
         ) : null}
         {
 
         }
-        <ItineraryPoiElement
-          time="9:00AM - 12:00PM"
-          image={"media/website/grey.png"}
-          booking
-          heading="Baapu Bazaar"
-          text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque."
-        ></ItineraryPoiElement>
+        {
+          Arslab_elements[5].data[0] ?
+          Arslab_elements[5].data[0].map((element)=>(
+            <ItineraryPoiElement
+              key={element.activity_data.id}
+            time="9:00AM - 12:00PM"
+            image={element.activity_data.poi.image}
+            booking
+            heading={element.heading}
+            text={element.text}
+            tips={element.activity_data.poi.tips}
+          ></ItineraryPoiElement>
+          ))
+        
+          : NULL
+        }
+       
+
+{Arslab_elements[3].data[0][1] ? (
+          <ItineraryFoodElement
+            icon={Arslab_elements[3].data[0][1].icon}
+            time="12:00PM"
+            heading={Arslab_elements[3].data[0][1].heading}
+            text={Arslab_elements[3].data[0][1].text}
+            recomendation={Arslab_elements[4].data[0][1] ? Arslab_elements[4].data[0][1].text : null }
+          ></ItineraryFoodElement>
+        ) : null}
       </div>
     </Container>
   );
