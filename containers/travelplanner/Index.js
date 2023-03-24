@@ -27,7 +27,7 @@ import Locations from '../../components/containers/newplannerlocations/Index';
 import OldLocations from '../../components/containers/plannerlocations/Index';
 import MobileBanner from './MobileBanner'
 import PLANNER_PAGES from '../../public/content/planner';
-import Map from '../../components/NewMap';
+import Map from '../../components/Map';
 import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry';
 import WhatsappFloating from '../../components/WhatsappFloating'
 import Carousel from '../../components/FlickityCarousel'
@@ -71,7 +71,7 @@ const MapGridContainer = styled.div`
     @media screen and (min-width: 768px){
         width: 100%;
 
-        grid-template-columns: auto 300px;
+        grid-template-columns: auto 500px;
         grid-gap: 40px;
         margin: 0 auto 0 auto;
     }
@@ -424,6 +424,8 @@ console.log(props.experienceData, "experienceData");
               <Map
                 locations={props.experienceData.locations}
                 InfoWindowContainer={InfoWindowContainer}
+                height='300px'
+                defaultZoom={12}
               ></Map>
             </MapContainer>
           </MapGridContainer>

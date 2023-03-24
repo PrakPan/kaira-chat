@@ -31,26 +31,26 @@ const POIDetailsSkeleton = (props) => {
           />
         </div>
 
-        <SkeletonCard width={"468px"} height={"188px"} />
+        <SkeletonCard width={isPageWide?"468px" : "100%"} height={"188px"} />
         <Title>{props.name}</Title>
         <SkeletonCard height={"100px"} width={"325px"} />
 
         <Box>
           <SkeletonCard width={"140px"} height={"20px"} mb={"10px"} />
-          <SkeletonCard width={"468px"} height={"84px"} />
+          <SkeletonCard width={isPageWide?"468px" : "100%"} height={"84px"} />
         </Box>
 
         <Box>
           <SkeletonCard width={"200px"} height={"20px"} mb={"10px"} />
-          <SkeletonCard width={"468px"} height={"120px"} />
+          <SkeletonCard width={isPageWide?"468px" : "100%"} height={"120px"} />
         </Box>
 
         <Box>
           <SkeletonCard width={"140px"} height={"20px"} mb={"10px"} />
-          <SkeletonCard width={"468px"} height={"100px"} />
+          <SkeletonCard width={isPageWide?"468px" : "100%"} height={"100px"} />
         </Box>
 
-        <SkeletonCard width={"468px"} height={"150px"} />
+        <SkeletonCard width={isPageWide?"468px" : "100%"} height={"150px"} />
       </Stack>
     );
 }

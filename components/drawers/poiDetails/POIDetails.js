@@ -101,7 +101,7 @@ const POIDetails = (props) => {
           }}
         ></ImageLoader>
       </div>
-      {imageLoading && <SkeletonCard width={"468px"} height={"188px"} />}
+      {imageLoading && <SkeletonCard width={isPageWide?"468px" : "100%"} height={"188px"} />}
 
       {props.data.ideal_duration_hours && (
         <TimeStamp>
