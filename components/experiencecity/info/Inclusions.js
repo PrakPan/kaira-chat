@@ -20,8 +20,8 @@ const Inlcusions = (props) => {
     
     
     let icons=[];
-    props.icons.map(icon => {
-        icons.push(<Icon text={icon} type="line"></Icon>)
+    props.icons.map((icon,i) => {
+        icons.push(<Icon text={icon} key={i} type="line"></Icon>)
     });
     return(
         <Container>

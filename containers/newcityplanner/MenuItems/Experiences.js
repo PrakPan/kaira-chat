@@ -4,7 +4,9 @@ import styled from 'styled-components';
 import ExperienceCard from '../../../components/cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../../../components/cards/newitinerarycard-myplan/ExperienceCard';
 import PastItineraryCard from '../../../components/cards/Testimonial';
-
+import PageDotFlickity from '../../../components/PageDotsFlickity'
+import Carousel from '../../../components/FlickityCarousel'
+import media from '../../../components/media'
 const Container = styled.div`
 @media screen and (min-width: 768px){
 
@@ -28,13 +30,14 @@ const GridContainer = styled.div`
     display: grid;
     grid-template-columns: ${(props)=>(props.columns ? "repeat("+props.columns+",1fr)" : "repeat(3,1fr)")};
     grid-template-rows: auto;
-    grid-gap: 2.5rem;
+    grid-gap: 2rem;
     heigth : 500px;
   }
 `;
 var i;
 
 const Experiences= (props) => {
+  let isPageWide = media('(min-width: 768px)')
 
   const [more,setMore] = useState(false)
   const TextRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null) ];
@@ -157,15 +160,23 @@ const Experiences= (props) => {
     }
     return(
       <>
+      {isPageWide?
       <Container>        
-          <GridContainer columns={props.cols} className="netflix-containe">
-             {!more ? [experiencecards[0], experiencecards[1]] : experiencecards}
-          </GridContainer>
-          <div style={{width:'100%', marginInline : 'auto'}}>
-          <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
-          </div>
+      {/* <GridContainer columns={props.cols} className="netflix-containe">
+         {!more ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
+      </GridContainer> */}
+      <div>
+      <Carousel initialIndex hideSides numberOfCards={3} cards={experiencecards} />
+      </div>
+      {/* <div style={{width:'100%', marginInline : 'auto'}}>
+      <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
+      </div> */}
 
-      </Container>
+  </Container>
+:
+<PageDotFlickity cards={experiencecards} padding={'1rem 0.2rem'} />  
+}
+      
   </>
   );
   

@@ -98,8 +98,7 @@ let MobileCardsArr = []
   }
   if(count%4 !=0){
     const el = cardsarr.slice(count*4,cardsarr.length)
-    MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
-    
+    MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>) 
   }
 setCardsToShowJSX(cardsarr);
 setCardsToShowJSXmobile(MobileCardsArr)

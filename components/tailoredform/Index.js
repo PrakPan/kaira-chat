@@ -24,23 +24,23 @@ import { fadeIn } from 'react-animations'
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
-height: max-content;
-color: black;
-z-index :2;
+  height: max-content;
+  color: black;
+  z-index: ${(props) => props.showBlack?'1006' : '2'};
 
-position: relative;
-  background-color: ${props => props.slideIndex  ? 'white' : 'rgba(255,255,255,0.9)'};
- width: 100%;
- border: none !important;
+  position: relative;
+  background-color: ${(props) =>
+    props.slideIndex ? "white" : "rgba(255,255,255,0.9)"};
+  width: 100%;
+  border: none !important;
 
- @media screen and (min-width: 768px){
+  @media screen and (min-width: 768px) {
     margin: auto 0;
     border-radius: 8px !important;
 
     min-height: 400px;
-}
-
-`
+  }
+`;
  const Heading = styled.p`
     font-size: 1.5rem;
     margin: 0.25rem 0 0.25rem 0;
@@ -76,7 +76,7 @@ const BlackContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: 1005;
   width: 100vw;
   display: none;
   height: 100vh;
@@ -127,8 +127,8 @@ const Enquiry = (props) => {
 
         let number_of_adults = 2, number_of_children=0, number_of_infants=0;
         if(groupType === 'Solo'){
-            number_of_adults = 1;
-        }
+         number_of_adults = 1;
+       }
         else if(groupType === 'Couple'){
             number_of_adults = 2;
         }
@@ -238,79 +238,154 @@ const Enquiry = (props) => {
 
     // const [budgetLower,setBudgetLower] = useState(0);
     if(!loading && !submitted)
- return(
-    <div style={{}}>
-                {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
-               
-    <Container slideIndex={slideIndex} className={isPageWide ? "border center-di"  : "center-div"} onClick={() => setShowBlack(true)}>
-        {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
-            {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-           
-            {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '0rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
-            {slideIndex ? <div className="center-div"><BiArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '2px', fontSize: '1.5rem'}}></BiArrowBack></div> : <div></div>}
-            <Heading style={{textAlign: !slideIndex ? 'left' : 'center'}}>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
+ return (
+   <div style={{}}>
+     {showBlack ? (
+       <BlackContainer onClick={_handleHideBlack}></BlackContainer>
+     ) : null}
 
-            </div>
-            {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
-            <div style={{padding: '0 1rem 1rem 1rem', width: '100%'}}>
-            <div style={{borderStyle: 'solid none none none', borderWidth: '1px', color: '#D3D3D3', height: '1px', width: '100%',marginBottom: '1rem'}}></div>
+     <Container
+       showBlack={showBlack}
+       slideIndex={slideIndex}
+       className={isPageWide ? "border center-di" : "center-div"}
+       onClick={() => setShowBlack(true)}
+     >
+       {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
+       {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
 
-            <Flickity
-            startingLocation={startingLocation}
-            setStartingLocation={setStartingLocation}
-            children_cities={props.children_cities}
-            showSearchStarting={showSearchStarting} 
-            setShowSearchStarting={setShowSearchStarting}
-            showCities={showCities}
-            setShowCities={setShowCities}
-            destination={props.destination}
-            token={props.token}
-            // _handlePrev={_prevSlideHandler}
-            slideIndex={slideIndex}
-            cities={props.cities}
-            selectedCities={selectedCities}
-            setSelectedCities={setSelectedCities}
-            valueStart={valueStart}
-            valueEnd={valueEnd}
-            setValueStart={setValueStart}
-            setValueEnd={setValueEnd}
-            groupType={groupType}
-            setGroupType={setGroupType}
-            numberOfAdults={numberOfAdults}
-         setNumberOfAdults={setNumberOfAdults}
-         numberOfChildren={numberOfChildren} 
-         setNumberOfChildren={setNumberOfChildren}
-         numberOfInfants={numberOfInfants}
-         setNumberOfInfants={setNumberOfInfants}
-         setBudget ={setBudget}
-         selectedPreferences={selectedPreferences} 
-         setSelectedPreferences={setSelectedPreferences}
-        >
-                           
-        </Flickity>
-        {/* {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+       {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
+       <div
+         style={{
+           padding: "0.5rem 1rem",
+           width: "100%",
+           marginBottom: slideIndex === 2 ? "0rem" : "0rem",
+           display: "grid",
+           gridTemplateColumns: "max-content auto",
+         }}
+       >
+         {slideIndex ? (
+           <div className="center-div">
+             <BiArrowBack
+               onClick={_prevSlideHandler}
+               className="hover-pointer"
+               style={{ marginTop: "2px", fontSize: "1.5rem" }}
+             ></BiArrowBack>
+           </div>
+         ) : (
+           <div></div>
+         )}
+         <Heading style={{ textAlign: !slideIndex ? "left" : "center" }}>
+           {!slideIndex ? "Get your free travel plan now" : "Trip Planner"}
+         </Heading>
+       </div>
+       {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
+       <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
+         <div
+           style={{
+             borderStyle: "solid none none none",
+             borderWidth: "1px",
+             color: "#D3D3D3",
+             height: "1px",
+             width: "100%",
+             marginBottom: "1rem",
+           }}
+         ></div>
+
+         <Flickity
+           startingLocation={startingLocation}
+           setStartingLocation={setStartingLocation}
+           children_cities={props.children_cities}
+           showSearchStarting={showSearchStarting}
+           setShowSearchStarting={setShowSearchStarting}
+           showCities={showCities}
+           setShowCities={setShowCities}
+           destination={props.destination}
+           token={props.token}
+           // _handlePrev={_prevSlideHandler}
+           slideIndex={slideIndex}
+           cities={props.cities}
+           selectedCities={selectedCities}
+           setSelectedCities={setSelectedCities}
+           valueStart={valueStart}
+           valueEnd={valueEnd}
+           setValueStart={setValueStart}
+           setValueEnd={setValueEnd}
+           groupType={groupType}
+           setGroupType={setGroupType}
+           numberOfAdults={numberOfAdults}
+           setNumberOfAdults={setNumberOfAdults}
+           numberOfChildren={numberOfChildren}
+           setNumberOfChildren={setNumberOfChildren}
+           numberOfInfants={numberOfInfants}
+           setNumberOfInfants={setNumberOfInfants}
+           setBudget={setBudget}
+           selectedPreferences={selectedPreferences}
+           setSelectedPreferences={setSelectedPreferences}
+         ></Flickity>
+         {/* {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
             Continue
             </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
             Submit
             </Button> } */}
-            {
-                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities && props.cities ? 'hidden' : 'visible'}}><Button width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
-                Next
-                </Button></div>  : null
-            }
-            {
-                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button fontSize="12px" width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"   onclick={() => setSlideIndex(slideIndex+1)}>
-                Next
-                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button width="100%" padding="0.5rem 2rem" fontSize="12px" fontWeight="600"  margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={_submitDataHandler}>
-            Submit
-            </Button></div> : null
-            }
-            <Grid container spacing={2}>
-           
- 
-    
-                {/* <Grid item xs={12}>
+         {slideIndex === 0 ? (
+           <div
+             style={{
+               display: "flex",
+               justifyContent: "flex-end",
+               visibility: showCities && props.cities ? "hidden" : "visible",
+             }}
+           >
+             <Button
+               width="100%"
+               padding="0.5rem 2rem"
+               fontWeight="600"
+               margin="1rem 0"
+               borderRadius="5px"
+               borderWidth="1px"
+               bgColor="#f7e700"
+               onclick={() => setSlideIndex(slideIndex + 1)}
+             >
+               Next
+             </Button>
+           </div>
+         ) : null}
+         {slideIndex === 1 ? (
+           !props.token ? (
+             <div style={{ display: "flex", justifyContent: "flex-end" }}>
+               <Button
+                 fontSize="12px"
+                 width="100%"
+                 padding="0.5rem 2rem"
+                 fontWeight="600"
+                 margin="1rem 0"
+                 borderRadius="5px"
+                 borderWidth="1px"
+                 bgColor="#f7e700"
+                 onclick={() => setSlideIndex(slideIndex + 1)}
+               >
+                 Next
+               </Button>
+             </div>
+           ) : (
+             <div style={{ display: "flex", justifyContent: "flex-end" }}>
+               <Button
+                 width="100%"
+                 padding="0.5rem 2rem"
+                 fontSize="12px"
+                 fontWeight="600"
+                 margin="1rem 0"
+                 borderRadius="5px"
+                 borderWidth="1px"
+                 bgColor="#f7e700"
+                 onclick={_submitDataHandler}
+               >
+                 Submit
+               </Button>
+             </div>
+           )
+         ) : null}
+         <Grid container spacing={2}>
+           {/* <Grid item xs={12}>
                     {!loading ? 
                     <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
                         : 
@@ -321,14 +396,14 @@ const Enquiry = (props) => {
 
                     }
                     </Grid> */}
-            </Grid> 
-           
-            {/* </Modal.Body> */}
-      {/* </Modal> */}
-      </div>
-      </Container>
-      </div>
-);
+         </Grid>
+
+         {/* </Modal.Body> */}
+         {/* </Modal> */}
+       </div>
+     </Container>
+   </div>
+ );
 else return(
     <div>
                         {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}

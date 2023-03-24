@@ -142,8 +142,8 @@ const Section= (props) => {
                             <Text className='font-opensans'>2 x Super Deluxe rooms</Text>
                         </div> */}
                       { rooms.length  && !props.is_registration_needed? 
-                        rooms.map(room => 
-                            <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+                        rooms.map((room,i) => 
+                            <div key={i} className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
                                 <Text className='font-opensans' style={{}}>{room.number_of_rooms + " x "}</Text>
                                 <RoomText className='font-opensans' style={{marginLeft: '0.25rem'}}>{room.room_type_name}</RoomText>
                             </div>

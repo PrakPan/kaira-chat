@@ -2,12 +2,16 @@ import styled from "styled-components"
 import PoiCard from "./PoiCard"
 import {useState} from 'react'
 import media from '../../../components/media'
+import Map from '../../../components/NewMap'
+import PageDotsFlickity from '../../../components/PageDotsFlickity'
+import validateTextSize from "../../../services/textSizeValidator"
+import { useRouter } from "next/router"
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
-    // display : grid;
-    // grid-template-columns : 3fr 1fr;    
-    // gap : 5rem;
+    display : grid;
+    grid-template-columns : 3fr 1.1fr;    
+    gap : 2.5rem;
 
 }
 `
@@ -28,28 +32,78 @@ padding : 13px 68px;
 display: block;
 margin : 15px auto;
 border-radius : 8px;
-
+`
+const MapInfo = styled.div`
+b{
+  font-weight : 600;
+}
 `
 const Poi = props=>{
-  const [more,setMore] = useState(false)
+  const [more,setMore] = useState(4)
+  const drawerShowArr = props.pois?.map((e)=>{return{...e,isOpen:false}})
+  const [showDrawer, setShowDrawer] = useState(drawerShowArr);
+
   let isPageWide = media('(min-width: 768px)')
 
-  let lessItems = !isPageWide? props.pois?.slice(0,2).map((e,i)=> ( <PoiCard key={e.id} data={e} />)) : props.pois?.slice(0,4).map((e,i)=> ( <PoiCard key={e.id} data={e} />))
+  const _handleOpen = (id)=>{
+    setShowDrawer(drawerShowArr.map((e)=>{
+      if(e.id == id) return{...e,isOpen:true}
+      return e
+    }
+  ))
+  }
+  const handleCloseDrawer = (e) => {
+    e.stopPropagation()
+    setShowDrawer(drawerShowArr);            
+  };
+
+const router = useRouter()
+
+
+  const _handleTailoredRedirect = () => {
+    router.push('/tailored-travel?search_text='+props.city)
+  
+  }
+
+
+
+  const InfoWindowContainer = (location)=><MapInfo>
+    <b>{location.name}</b>
+    <div>{location.experience_filters.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
+    {location.ideal_duration_hours && <p>Ideal duration : {location.ideal_duration_hours} hrs</p>}
+
+  </MapInfo>
+
+  const cards = props.pois?.map((e,i)=>
+  <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer} />  
+  )
+
 
     return (
-        <div>
-        <GridContainer>
+      <GridContainer>
+        <div className="hidden-mobile">
+        {/* <> */}
             
             <Items>
             {
-                more ? props.pois?.map((e,i)=> ( <PoiCard key={e.id} data={e} />))
-                : lessItems
+               props.pois.filter((e,i)=>i<more)?.map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer}/>))
             }
             </Items>
+
        
-        </GridContainer>
-          <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
+        {/* </GridContainer> */}
+          <Button onClick={()=>{more<props.pois.length?setMore(more+4):_handleTailoredRedirect()}}>{more<props.pois.length?'View More' : validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!')}</Button>
+       
         </div>
+        
+        <div className="hidden-desktop">
+        <PageDotsFlickity padding={'1rem 0.2rem'} cards={cards} />
+        </div>
+        <div><Map locations={props.pois} defaultZoom={12} InfoWindowContainer={InfoWindowContainer} /></div>
+
+
+    </GridContainer>
+
         )
 }
 

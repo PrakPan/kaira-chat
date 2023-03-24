@@ -12,9 +12,10 @@ const FlickityCarousel = (props) => {
 
     };
      let cards=[];
+     const padding = props.padding || '1rem'
     props.cards.map( (card,index) => {
       cards.push(
-        <div key={index}  style={{width: '100%', padding: '1rem'}} ><div>{card}</div></div>
+        <div key={index}  style={ {width: '100%' , padding : padding}} ><div>{card}</div></div>
       )
   });
       return(
@@ -24,7 +25,6 @@ const FlickityCarousel = (props) => {
           options={ flickityOptions }
           reloadOnUpdate
           static
-
         >
         {cards}
         </Flickity>

@@ -1,7 +1,7 @@
 
 import React, { Component, useEffect } from 'react';
 import Header from './navbar/Index';
-import Footer from './footer/Index';
+import Footer from './newfooter/Index';
 import LoginModal from '../components/modals/Login';
 import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth'

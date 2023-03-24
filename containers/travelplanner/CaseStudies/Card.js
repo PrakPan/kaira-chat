@@ -8,9 +8,11 @@ import { useRouter } from 'next/router';
 import {AiFillStar} from 'react-icons/ai'
  
 const Card = styled.div`
-      padding: 2rem 0rem;
+      padding:  0rem;
     @media screen and (min-width: 768px){
-     }
+        padding: 2rem 0rem;
+
+    }
 `;
 
 const CardHeading = styled.p`
