@@ -1,15 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
-import styled from "styled-components";
-import Day_I_Container from "./Day_I_Container";
-import HorizontalBar from "./Menubar";
+import React, { useRef, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Day_I_Container from './Day_I_Container';
+import HorizontalBar from './Menubar';
 
-import Tab from "@material-ui/core/Tab";
-import { getHumanDate } from "../../../services/getHumanDate";
-import { isJson } from "../../../services/isJSON";
-import { Navbar } from "./New_itenaryStyled";
-import CustomMenu from "../CustomMenu";
-import { useSticky } from "../../../hooks/useSticky";
-import useMediaQuery, { useMedia } from "../../../hooks/useMedia";
+import Tab from '@material-ui/core/Tab';
+import { getHumanDate } from '../../../services/getHumanDate';
+import { isJson } from '../../../services/isJSON';
+import { Navbar } from './New_itenaryStyled';
+import CustomMenu from '../CustomMenu';
+import { useSticky } from '../../../hooks/useSticky';
+import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 
 const NewItenaryDBD = (props) => {
   const Wrapper = styled.div`
@@ -32,7 +32,7 @@ const NewItenaryDBD = (props) => {
     border-radius: 8px;
     padding: 0.5rem;
   `;
-  console.log("itenary..." + JSON.stringify(props.itinerary));
+  console.log('itenary...' + JSON.stringify(props.itinerary));
   const dates = props.itinerary.day_slabs.map((element, index) => (
     <div>{element.slab}</div>
   ));
@@ -66,13 +66,13 @@ const NewItenaryDBD = (props) => {
       getCityFromDay(newValue, props.day_slabs, props.city_slabs)
     );
     setValue(newValue);
-    if (typeof window !== "undefined" && !props.experience)
+    if (typeof window !== 'undefined' && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const hadleLocationChange = (event, newValue) => {
     setLocationValue(newValue);
     setValue(props.city_slabs[newValue].day_slab_location.start_day_slab_index);
-    if (typeof window !== "undefined" && !props.experience)
+    if (typeof window !== 'undefined' && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const [hideTimer, setHideTimer] = useState(false);
@@ -91,10 +91,10 @@ const NewItenaryDBD = (props) => {
         day_tabs_jsx.push(
           <Tab
             style={{
-              textTransform: "none",
-              marginRight: "0.5rem",
-              padding: "0.25rem 1rem",
-              color: "white !important",
+              textTransform: 'none',
+              marginRight: '0.5rem',
+              padding: '0.25rem 1rem',
+              color: 'white !important',
             }}
             label={getHumanDate(props.day_slabs[i].slab)}
             className="itinerary-day-tab font-opensans"
@@ -112,7 +112,7 @@ const NewItenaryDBD = (props) => {
 
           // const city_id=props.day_slabs[i].slab_elements[j];
           //Push element if not newcity
-          if (props.day_slabs[i].slab_elements[j].element_type !== "newcity")
+          if (props.day_slabs[i].slab_elements[j].element_type !== 'newcity')
             day_slabs_jsx[i].push(
               <div>
                 {/* <IconElement
@@ -176,7 +176,7 @@ const NewItenaryDBD = (props) => {
 
     // setDayPannelsJSX(day_pannesl_jsx);
   };
-  
+
   const handleSelect = (itemId) => {
     setActiveItem(itemId);
   };
@@ -195,10 +195,10 @@ const NewItenaryDBD = (props) => {
         !props.city_slabs[i].is_departure_only &&
         !props.city_slabs[i].is_departure_only &&
         props.city_slabs[i].duration &&
-        props.city_slabs[i].duration !== "0"
+        props.city_slabs[i].duration !== '0'
       ) {
-        console.log('idssss'+ props.city_slabs[i].city_name)
-        console.log('idssss'+ props.itinerary.day_slabs[i].slab_id)
+        console.log('idssss' + props.city_slabs[i].city_name);
+        console.log('idssss' + props.itinerary.day_slabs[i].slab_id);
 
         items.push({
           id: i,
@@ -208,14 +208,10 @@ const NewItenaryDBD = (props) => {
       }
     }
   }
-  console.log("ITEMsssssss", items);
+  console.log('ITEMsssssss', items);
   return (
     <Wrapper>
-      <Navbar
-        ref={ref}
-        
-        sticky={isSticky & !isDesktop}
-      >
+      <Navbar ref={ref} sticky={isSticky & !isDesktop}>
         <CustomMenu
           Mstyle={'round'}
           items={items}
@@ -242,7 +238,6 @@ const NewItenaryDBD = (props) => {
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-            
             <Day_I_Container Days={element}></Day_I_Container>
           </div>
         ))}
