@@ -28,7 +28,7 @@ background : white;
 color : #01202B;
 border : 1.5px solid #01202B;
 font-size : 16px;
-padding : 13px 68px;
+padding : 10px 50px;
 display: block;
 margin : 15px auto;
 border-radius : 8px;

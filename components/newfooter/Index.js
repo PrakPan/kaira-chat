@@ -25,7 +25,7 @@ const SubContainer = styled.div`
     display: grid;
     grid-template-columns: 1fr 3fr;
     column-gap: 6%;
-    margin: 2% 7%;
+    margin: 2% 0% 2% 7%;
   }
 `;
 const Box = styled.div`
