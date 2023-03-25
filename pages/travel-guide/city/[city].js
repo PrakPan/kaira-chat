@@ -40,7 +40,7 @@ const Experience = (props) => {
           ></meta>
         </Head>
         <ExperienceContainer
-          reccomendedCitiesData={props.reccomendedCitiesData}
+          // reccomendedCitiesData={props.reccomendedCitiesData}
           cityData={props.cityData}
           id={router.query.city}
         ></ExperienceContainer>
@@ -88,19 +88,11 @@ export async function getStaticProps(context){
       const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`)
       const data = res.data
 
-       const resp = await axiosReccommendedCityInstance.get(
-         `/?slug=${context.params.city}`
-       );
-       const reccoData = resp.data;
-// id: 293;
-// image: "media/cities/162428369233103537559509277344.jpg";
-// is_hot_location: true;
-// lat: 26.9157487;
-// long: 70.9083443;
-// most_popular_for: (2)[("Heritage & Culture", "Nightlife & Shopping")];
-// name: "Jaisalmer";
-
-  const reccomendedCitiesData = reccoData.map(e=>({id : e.id , image : e.image , lat : e.lat , long : e.long , most_popular_for : e.most_popular_for , name : e.name}))
+  //      const resp = await axiosReccommendedCityInstance.get(
+  //        `/?slug=${context.params.city}`
+  //      );
+  //      const reccoData = resp.data;
+  // const reccomendedCitiesData = reccoData.map(e=>({id : e.id , image : e.image , lat : e.lat , long : e.long , most_popular_for : e.most_popular_for , name : e.name}))
   
 
       if (!data) {
@@ -111,7 +103,7 @@ export async function getStaticProps(context){
       return {
         props: {
           cityData: data,
-          reccomendedCitiesData
+          // reccomendedCitiesData
         },
       };
 }

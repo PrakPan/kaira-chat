@@ -19,7 +19,10 @@ const PlanWithUs = (props)=>{
     return (
         <Container>
         <WhyPlanWithUs />
-         <div className='hidden-mobile' style={{width : '400px'}}><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div>
+         <div className='hidden-mobile' style={{width : '400px'}}><Enquiry page_id={props.page_id} 
+         destination={props.destination} 
+        //  cities={props.cities}
+         ></Enquiry></div>
         </Container>
     )
 }

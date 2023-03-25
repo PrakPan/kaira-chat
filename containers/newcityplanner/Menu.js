@@ -37,7 +37,6 @@ const P = styled.p`
     `;
 const Menu = (props)=>{
 
-console.log('cityplanner-data',props.data)
   return (
     <MenuContainer>
       {/* <Navigator handleClick={handleClick} {...props} /> */}
@@ -99,7 +98,7 @@ console.log('cityplanner-data',props.data)
         <WhyPlanWithUs
           page_id={props.data.id}
           destination={props.destination}
-          cities={props.cities}
+          // cities={props.cities}
         />
       </MenuItem>
 

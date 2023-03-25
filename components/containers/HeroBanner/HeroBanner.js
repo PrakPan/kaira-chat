@@ -11,7 +11,7 @@ const HeroBanner = (props) => {
         <FullImgContent
           page_id={props.id}
           destination={props.destination}
-          cities={props.cities}
+          // cities={props.cities}
           children_cities={props.children_cities}
           title={props.title}
         />

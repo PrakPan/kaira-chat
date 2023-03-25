@@ -84,7 +84,7 @@ const Experience = (props) => {
                    image={props.cityData.images[0].image}
                    page_id={props.cityData.id}
                    destination={props.cityData.name}
-                   cities={props.reccomendedCitiesData}
+                  //  cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
                    title={props.cityData.name}
                  />
@@ -94,7 +94,7 @@ const Experience = (props) => {
                  <NewMenu
                    data={props.cityData}
                    destination={props.cityData.name}
-                   cities={props.reccomendedCitiesData}
+                  //  cities={props.reccomendedCitiesData}
                  />
 
                  {/* old city */}
