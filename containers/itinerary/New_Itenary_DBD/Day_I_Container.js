@@ -56,7 +56,7 @@ const Day_I_Container = (props) => {
           heading={Arslab_elements[0].data[0].heading}
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
-        {Arslab_elements[0].data[0][0] ? (
+        {Arslab_elements[0].data[0].length != 0 ? (
           <TransferElements
             time="9:00AM"
             modes={Arslab_elements[0].data[0][0].modes}
@@ -65,7 +65,7 @@ const Day_I_Container = (props) => {
             icon={Arslab_elements[0].data[0][0].icon}
             heading={Arslab_elements[0].data[0][0].heading}
             text={props.Days.slab_elements[0].text}
-            newcity={Arslab_elements[1].data[0][0]}
+            newcity={Arslab_elements[1].data[0].length != 0 ? Arslab_elements[1].data[0][0] : null }
           ></TransferElements>
         ) : null}
         {Arslab_elements[2].data[0][0] ? (
