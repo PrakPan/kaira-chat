@@ -394,16 +394,18 @@ const SimpleTabs = (props) => {
   };
   const Navbar = styled.div`
     position: sticky;
-    top: 80px;
+    z-index: 1000;
+    top: 15px;
     display: flex;
     ::-webkit-scrollbar{
       display: none;
     }
-
-    
+    background-color: white;
+    height: 50px;
+    margin: 0px -20px 0px -20px;
     overflow-x: scroll;
     align-items: center;
-    z-index: 1;
+    
     background-color: white;
   `;
 

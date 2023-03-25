@@ -44,3 +44,19 @@ export const Line = styled.div`
   border-color: #e4e4e4;
   border-width: 1px;
 `;
+
+export const Navbar = styled.div`
+position: ${({ sticky }) => (sticky ? "sticky" : "inherit")};
+top: 70px;
+display: flex;
+::-webkit-scrollbar{
+  display: none;
+}
+
+
+overflow-x: scroll;
+align-items: center;
+z-index: 999;
+margin: 0px -20px 0px -20px;
+background-color: white;
+`;

@@ -1,12 +1,15 @@
-
 import React, { useRef, useState, useEffect } from "react";
-import styled from 'styled-components';
-import Day_I_Container from './Day_I_Container';
-import HorizontalBar from './Menubar';
+import styled from "styled-components";
+import Day_I_Container from "./Day_I_Container";
+import HorizontalBar from "./Menubar";
 
-import Tab from "@material-ui/core/Tab"; 
+import Tab from "@material-ui/core/Tab";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { isJson } from "../../../services/isJSON";
+import { Navbar } from "./New_itenaryStyled";
+import CustomMenu from "../CustomMenu";
+import { useSticky } from "../../../hooks/useSticky";
+import useMediaQuery, { useMedia } from "../../../hooks/useMedia";
 
 const NewItenaryDBD = (props) => {
   const Wrapper = styled.div`
@@ -29,14 +32,16 @@ const NewItenaryDBD = (props) => {
     border-radius: 8px;
     padding: 0.5rem;
   `;
-  console.log('itenary...' + JSON.stringify(props.itinerary));
+  console.log("itenary..." + JSON.stringify(props.itinerary));
   const dates = props.itinerary.day_slabs.map((element, index) => (
     <div>{element.slab}</div>
   ));
   const getCityFromDay = (day_slab_index, day_slabs, city_slabs) => {
     // if(city_slabs)
     for (var i = 0; i < city_slabs.length - 1; i++) {
-      if (city_slabs[i].day_slab_location.start_day_slab_index === day_slab_index)
+      if (
+        city_slabs[i].day_slab_location.start_day_slab_index === day_slab_index
+      )
         return i;
       else if (
         city_slabs[i].day_slab_location.start_day_slab_index < day_slab_index
@@ -47,8 +52,9 @@ const NewItenaryDBD = (props) => {
     }
     return i;
   };
-  const ref = useRef();
 
+  const { ref, isSticky } = useSticky(90);
+  const isDesktop = useMediaQuery('(min-width:1148px)');
   const [value, setValue] = React.useState(0);
   const [locationValue, setLocationValue] = useState(0);
 
@@ -158,49 +164,89 @@ const NewItenaryDBD = (props) => {
               </div>
             );
         }
-        day_pannesl_jsx.push(
+        day_pannesl_jsx
+          .push
           // <TabPanel ref={ref} value={value} index={i}>
           //   <div style={{ marginBottom: "10vh" }}>{day_slabs_jsx[i]}</div>
           // </TabPanel>
-        );
+          ();
       }
 
     // setDayTabsJSX(day_tabs_jsx);
 
     // setDayPannelsJSX(day_pannesl_jsx);
   };
+  
+  const handleSelect = (itemId) => {
+    setActiveItem(itemId);
+  };
   useEffect(() => {
     // _generateDaySlabs();
   }, []);
   _generateDaySlabs();
+  const [activeItem, setActiveItem] = useState(1);
+  const items = [];
+  if (props.city_slabs) {
+    for (var i = 0; i < props.city_slabs.length; i++) {
+      // var cityname = props.city_slabs[i].city_name;
+      // var slabid = props.itinerary.day_slabs[i].slab_id;
+      if (
+        !props.city_slabs[i].is_trip_terminated &&
+        !props.city_slabs[i].is_departure_only &&
+        !props.city_slabs[i].is_departure_only &&
+        props.city_slabs[i].duration &&
+        props.city_slabs[i].duration !== "0"
+      ) {
+        console.log('idssss'+ props.city_slabs[i].city_name)
+        console.log('idssss'+ props.itinerary.day_slabs[i].slab_id)
 
+        items.push({
+          id: i,
+          label: `${props.city_slabs[i].city_name} ${props.city_slabs[i].duration} N`,
+          link: props.itinerary.day_slabs[i].slab_id,
+        });
+      }
+    }
+  }
+  console.log("ITEMsssssss", items);
   return (
     <Wrapper>
-      <HorizontalBar
+      <Navbar
+        ref={ref}
+        
+        sticky={isSticky & !isDesktop}
+      >
+        <CustomMenu
+          Mstyle={'round'}
+          items={items}
+          activeItem={activeItem}
+          onSelect={handleSelect}
+        />
+      </Navbar>
+      {/* <HorizontalBar
         width={'100%'}
         height={'40px'}
         content={dates}
-      ></HorizontalBar>
-      <CitiesContainer>
+      ></HorizontalBar> */}
+      {/* <CitiesContainer>
         <City
           className="border-thin"
-          style={{ backgroundColor: 'black', color: 'white' }}
+          style={{ backgroundColor: "black", color: "white" }}
         >
           Jaipur (2N)
         </City>
         <City className="border-thin">Jodhpur (2N)</City>
         <City className="border-thin">Jaisalmer (2N)</City>
-      </CitiesContainer>
+      </CitiesContainer> */}
       {day_pannesl_jsx}
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
-          <Day_I_Container
-            Days={element}
-            key={element.slab_id}
-          ></Day_I_Container>
+          <div key={element.slab_id} id={element.slab_id}>
+            
+            <Day_I_Container Days={element}></Day_I_Container>
+          </div>
         ))}
       </div>
-      
     </Wrapper>
   );
 };
