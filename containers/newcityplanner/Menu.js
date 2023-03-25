@@ -46,7 +46,8 @@ console.log('cityplanner-data',props.data)
           <Brief
             short_description={props.data.short_description}
             lat={props.data.lat}
-            long={props.data.long}
+            lon={props.data.long}
+            name={props.data.name}
           />
         </MenuItem>
       )}

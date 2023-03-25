@@ -130,7 +130,7 @@ const Overview = (props) => {
 
         </ImageContainer> */}
           <ImageContainer>
-                 <ImageLoader   url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="30vh" width="100%"></ImageLoader> 
+                 <ImageLoader url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="30vh" width="100%"></ImageLoader> 
                 {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(images)}  className="font-opensans">
                      {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
                     All Photos
