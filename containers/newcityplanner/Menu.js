@@ -53,14 +53,14 @@ const Menu = (props)=>{
 
       {props.data.itinerary_data && (
         <MenuItem id="Itinerary">
-          <Heading>TTW’s Top Recommendation</Heading>
+          <Heading>Trips by our users to {props.data.name}</Heading>
           <TopRecommendations itinerary_data={props.data.itinerary_data} />
         </MenuItem>
       )}
 
       {props.data.pois && (
         <MenuItem id="Things to do">
-          <Heading>Things to do</Heading>
+          <Heading>Places to visit in {props.data.name}</Heading>
           <Poi pois={props.data.pois} city={props.data.name} />
         </MenuItem>
       )}

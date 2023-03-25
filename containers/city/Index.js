@@ -71,7 +71,7 @@ const Experience = (props) => {
                {isPageWide ? (
                  <DesktopPersonaliseBanner
                    onclick={_handlePersonaliseRedirect}
-                   text="Want to personalize your own experience?"
+                   text={`Craft a trip to ${props.cityData.name} now!`}
                  ></DesktopPersonaliseBanner>
                ) : (
                  <MobileBanner cityName={props.cityData.name} />
@@ -86,7 +86,7 @@ const Experience = (props) => {
                    destination={props.cityData.name}
                   //  cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
-                   title={props.cityData.name}
+                   title={`${props.cityData.name} trip planner`}
                  />
 
                  {/* New city */}
