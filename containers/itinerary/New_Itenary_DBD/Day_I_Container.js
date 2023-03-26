@@ -94,11 +94,11 @@ const Day_I_Container = (props) => {
             <ItineraryPoiElement
               key={element.activity_data.id}
             time="9:00AM - 12:00PM"
-            image={element.activity_data.poi.image}
+            image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : 'media/website/grey.png' }
             booking
             heading={element.heading}
             text={element.text}
-            tips={element.activity_data.poi.tips}
+            tips={element.activity_data.poi}
           ></ItineraryPoiElement>
           ))
         
@@ -106,7 +106,7 @@ const Day_I_Container = (props) => {
         }
        
 
-{Arslab_elements[3].data[0][1] ? (
+{/* {Arslab_elements[3].data[0][1] ? (
           <ItineraryFoodElement
             icon={Arslab_elements[3].data[0][1].icon}
             time="12:00PM"
@@ -114,7 +114,7 @@ const Day_I_Container = (props) => {
             text={Arslab_elements[3].data[0][1].text}
             recomendation={Arslab_elements[4].data[0][1] ? Arslab_elements[4].data[0][1].text : null }
           ></ItineraryFoodElement>
-        ) : null}
+        ) : null} */}
       </div>
     </Container>
   );

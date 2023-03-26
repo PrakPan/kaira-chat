@@ -119,8 +119,10 @@ const ItineraryPoiElement = (props) => {
                 </div>
             </GridContainer>
             <Text>{props.text}</Text>
-             
-                <Tips tips={props.tips}></Tips>
+             { props.tipa ? <Tips tips={props.tips}></Tips> :
+                null
+             }
+                
 
 <Line></Line>
          </Container>

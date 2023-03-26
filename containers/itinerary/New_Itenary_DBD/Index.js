@@ -197,15 +197,19 @@ const NewItenaryDBD = (props) => {
         props.city_slabs[i].duration &&
         props.city_slabs[i].duration !== "0"
       ) {
+        const itenaryId = props.itinerary.day_slabs[i]
+        console.log(itenaryId !== undefined)
         console.log('idssss'+ props.city_slabs[i].city_name)
-        console.log('idssss'+ props.itinerary.day_slabs[i].slab_id)
+        console.log('idssss'+ props.itinerary.day_slabs[0].slab_id)
+        // console.log('idssss'+ itenaryId.slab_id)
+        // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
 
         items.push({
           id: i,
           label: `${props.city_slabs[i].city_name} ${props.city_slabs[i].duration} N`,
-          link: props.itinerary.day_slabs[i].slab_id,
+          link: itenaryId !== undefined ? itenaryId.slab_id  :  props.itinerary.day_slabs[0].slab_id,
         });
-      }
+      } 
     }
   }
   console.log("ITEMsssssss", items);

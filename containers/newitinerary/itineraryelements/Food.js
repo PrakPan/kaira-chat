@@ -46,9 +46,21 @@ font-size: 14px;
    border-width: 1px;
  `;
 const ItineraryFoodElement = (props) => {
-    
-    
-   const recomendation = JSON.parse(props.recomendation)
+    let recomendation = props.recomendation
+    const  isJson = (str) => {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+    if(isJson(recomendation)){
+        recomendation = JSON.parse(props.recomendation)
+    }else{
+        recomendation  = props.recomendation
+    }
+   
    console.log('recomendation...'+ recomendation)
     
     
@@ -79,12 +91,15 @@ const ItineraryFoodElement = (props) => {
              <Text>
              {props.text}
              </Text>
-             {recomendation?.map((item)=>(
-                 <FoodItem heading={item.name}
-             text={item.description}
-             ImageUrl={item.image}
-             ></FoodItem>
-             ))}
+             {
+               !isJson(recomendation) ? `${recomendation}`   :recomendation?.map((item)=>(
+                <FoodItem heading={item.name}
+            text={item.description}
+            ImageUrl={item.image}
+            ></FoodItem>
+            ))
+             }
+             
              
             
          </> :null }
