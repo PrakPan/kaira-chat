@@ -27,6 +27,7 @@ import { useSticky } from '../../hooks/useSticky';
 import StackedComponents from './StackedComponents';
 import NewItenary from './New_Itenary_DBD/Index';
 import NewItenaryDBD from './New_Itenary_DBD/Index';
+import useMediaQuery from '../../hooks/useMedia';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -348,12 +349,11 @@ const SimpleTabs = (props) => {
     { id: 1, label: 'Brief', link: 'Brief' },
     { id: 2, label: 'Itinerary', link: 'Itenary' },
     // { id: 3, label: 'Flights',link: 'Flights' },
-    { id: 3, label: 'Hotels',link: 'Hotels' },
-    { id: 4, label: 'Transportation',link: 'transportation' },
-    
+    { id: 3, label: 'Hotels', link: 'Hotels' },
+    { id: 4, label: 'Transportation', link: 'transportation' },
   ];
-
   const { ref, isSticky } = useSticky(90);
+  const isDesktop = useMediaQuery('(min-width:1148px)');
   const handleSelect = (itemId) => {
     setActiveItem(itemId);
   };
@@ -393,11 +393,11 @@ const SimpleTabs = (props) => {
     props.setShowFlightModal(false);
   };
   const Navbar = styled.div`
-    position: sticky;
-    z-index: 1000;
+    position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
+    z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
     top: 15px;
     display: flex;
-    ::-webkit-scrollbar{
+    ::-webkit-scrollbar {
       display: none;
     }
     background-color: white;
@@ -405,20 +405,20 @@ const SimpleTabs = (props) => {
     margin: 0px -20px 0px -20px;
     overflow-x: scroll;
     align-items: center;
-    
+
     background-color: white;
   `;
 
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       {/* <StackedComponents></StackedComponents> */}
-      
+
       <Navbar
         ref={ref}
         style={{
           boxShadow: isSticky ? '0 8px 6px -6px rgba(0, 0, 0, 0.1)' : 'none',
         }}
-        sticky={isSticky}
+        sticky={isSticky & !isDesktop}
       >
         <CustomMenu
           items={items}
@@ -426,8 +426,6 @@ const SimpleTabs = (props) => {
           onSelect={handleSelect}
         />
       </Navbar>
-      
-      
 
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile
@@ -439,47 +437,49 @@ const SimpleTabs = (props) => {
           payment={props.payment}
         ></PriceBannerMobile>
       ) : null} */}
-<div id={items[0].link}>
-<Breif
-        payment={props.payment}
+      <div id={items[0].link}>
+        <Breif
+          payment={props.payment}
+          traveleritinerary={props.traveleritinerary}
+          hours={hours}
+          minutes={minutes}
+          seconds={seconds}
+          breif={props.breif}
+          hideTimer={minimiseTimer}
+          timeRequired={props.timeRequired}
+          itineraryReleased={props.itineraryReleased}
+          itineraryDate={props.itineraryDate}
+          showTimer={showItineraryTimer}
+          _hideTimerHandler={_minimiseTimerHandler}
+          blur={blurItinerary}
+        ></Breif>
+      </div>
+      <NewItenaryDBD
+        is_registration_needed={
+          props.payment ? props.payment.is_registration_needed : false
+        }
+        selectedPoi={selectedPoi}
+        user_email={props.user_email}
+        is_preview={props.preview}
+        is_stock={props.is_stock}
+        setShowPoiModal={_handlePoiEditModalOpen}
         traveleritinerary={props.traveleritinerary}
+        day_slabs={props.itinerary.day_slabs}
         hours={hours}
         minutes={minutes}
         seconds={seconds}
-        breif={props.breif}
-        hideTimer={minimiseTimer}
         timeRequired={props.timeRequired}
-        itineraryReleased={props.itineraryReleased}
+        hideTimer={minimiseTimer}
         itineraryDate={props.itineraryDate}
-        showTimer={showItineraryTimer}
+        showTimer={false}
         _hideTimerHandler={_minimiseTimerHandler}
-        blur={blurItinerary}
-      ></Breif>
-</div>
-     <NewItenaryDBD is_registration_needed={
-              props.payment ? props.payment.is_registration_needed : false
-            }
-            selectedPoi={selectedPoi}
-            user_email={props.user_email}
-            is_preview={props.preview}
-            is_stock={props.is_stock}
-            setShowPoiModal={_handlePoiEditModalOpen}
-            traveleritinerary={props.traveleritinerary}
-            day_slabs={props.itinerary.day_slabs}
-            hours={hours}
-            minutes={minutes}
-            seconds={seconds}
-            timeRequired={props.timeRequired}
-            hideTimer={minimiseTimer}
-            itineraryDate={props.itineraryDate}
-            showTimer={false}
-            _hideTimerHandler={_minimiseTimerHandler}
-            blur={false}
-            location_selected={location}
-            city_slabs={props.breif.city_slabs}
-            itinerary={props.itinerary}
-            newData={props.newData}
-            demoitinerary={props.demoitinerary}></NewItenaryDBD>
+        blur={false}
+        location_selected={location}
+        city_slabs={props.breif.city_slabs}
+        itinerary={props.itinerary}
+        newData={props.newData}
+        demoitinerary={props.demoitinerary}
+      ></NewItenaryDBD>
 
       {isPageWide ? (
         <div id={items[1].link}>
@@ -544,81 +544,77 @@ const SimpleTabs = (props) => {
 
       {isGroup ? (
         <div id={items[2].link}>
-        <Register></Register>
-          </div>
-
+          <Register></Register>
+        </div>
       ) : (
         <div id={items[2].link}>
-        <Booking
-          itinerary={props.itinerary}
-          _updateStayBookingHandler={props._updateStayBookingHandler}
-          _updateFlightBookingHandler={props._updateFlightBookingHandler}
-          hasUserPaid={props.payment ? props.payment.paid_user : false}
-          payment_status={router.query.payment_status}
-          plan={props.plan}
-          isDatePresent={props.isDatePresent}
-          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-          showTaxiModal={props.showTaxiModal}
-          setShowTaxiModal={props.setShowTaxiModal}
-          paymentLoading={props.paymentLoading}
-          budget={props.budget}
-          _deselectActivityBookingHandler={
-            props._deselectActivityBookingHandler
-          }
-          activityFlickityIndex={props.activityFlickityIndex}
-          _deselectFlightBookingHandler={props._deselectFlightBookingHandler}
-          flightFlickityIndex={props.flightFlickityIndex}
-          _deselectTransferBookingHandler={
-            props._deselectTransferBookingHandler
-          }
-          transferFlickityIndex={props.transferFlickityIndex}
-          stayFlickityIndex={props.stayFlickityIndex}
-          setStayFlickityIndex={props.setStayFlickityIndex}
-          selectingBooking={props.selectingBooking}
-          _deselectStayBookingHandler={props._deselectStayBookingHandler}
-          getPaymentHandler={props.getPaymentHandler}
-          flightLoading={props.flightLoading}
-          transferLoading={props.transferLoading}
-          cardUpdateLoading={props.cardUpdateLoading}
-          activityBookings={props.activityBookings}
-          flightBookings={props.flightBookings}
-          transferBookings={props.transferBookings}
-          stayBookings={props.stayBookings}
-          _selectTaxiHandler={props._selectTaxiHandler}
-          showFlightModal={props.showFlightModal}
-          setShowFlightModal={_handleFlighModalShow}
-          setHideFlightModal={_handleFlightModalClose}
-          user_email={props.user_email}
-          no_bookings={props.no_bookings}
-          traveleritinerary={props.traveleritinerary}
-          preview={props.preview}
-          id={props.id}
-          is_stock={props.is_stock}
-          _updatePaymentHandler={props._updatePaymentHandler}
-          _updateBookingHandler={props._updateBookingHandler}
-          setShowBookingModal={() => props.setShowBookingModal(true)}
-          showBookingModal={props.showBookingModal}
-          setHideBookingModal={props.setHideBookingModal}
-          hours={hours}
-          minutes={minutes}
-          seconds={seconds}
-          timeRequired={props.timeRequired}
-          hideTimer={minimseBookingTimer}
-          showTimer={false}
-          itineraryDate={props.itineraryDate}
-          blur={false}
-          openItinerary={_previewItineraryHandler}
-          _handleTimerClose={_minimiseBookingTimerHandler}
-          setImagesHandler={props.setImagesHandler}
-          payment={props.payment}
-          booking={props.booking}
-        ></Booking>
-          </div>
-       
+          <Booking
+            itinerary={props.itinerary}
+            _updateStayBookingHandler={props._updateStayBookingHandler}
+            _updateFlightBookingHandler={props._updateFlightBookingHandler}
+            hasUserPaid={props.payment ? props.payment.paid_user : false}
+            payment_status={router.query.payment_status}
+            plan={props.plan}
+            isDatePresent={props.isDatePresent}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            showTaxiModal={props.showTaxiModal}
+            setShowTaxiModal={props.setShowTaxiModal}
+            paymentLoading={props.paymentLoading}
+            budget={props.budget}
+            _deselectActivityBookingHandler={
+              props._deselectActivityBookingHandler
+            }
+            activityFlickityIndex={props.activityFlickityIndex}
+            _deselectFlightBookingHandler={props._deselectFlightBookingHandler}
+            flightFlickityIndex={props.flightFlickityIndex}
+            _deselectTransferBookingHandler={
+              props._deselectTransferBookingHandler
+            }
+            transferFlickityIndex={props.transferFlickityIndex}
+            stayFlickityIndex={props.stayFlickityIndex}
+            setStayFlickityIndex={props.setStayFlickityIndex}
+            selectingBooking={props.selectingBooking}
+            _deselectStayBookingHandler={props._deselectStayBookingHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            flightLoading={props.flightLoading}
+            transferLoading={props.transferLoading}
+            cardUpdateLoading={props.cardUpdateLoading}
+            activityBookings={props.activityBookings}
+            flightBookings={props.flightBookings}
+            transferBookings={props.transferBookings}
+            stayBookings={props.stayBookings}
+            _selectTaxiHandler={props._selectTaxiHandler}
+            showFlightModal={props.showFlightModal}
+            setShowFlightModal={_handleFlighModalShow}
+            setHideFlightModal={_handleFlightModalClose}
+            user_email={props.user_email}
+            no_bookings={props.no_bookings}
+            traveleritinerary={props.traveleritinerary}
+            preview={props.preview}
+            id={props.id}
+            is_stock={props.is_stock}
+            _updatePaymentHandler={props._updatePaymentHandler}
+            _updateBookingHandler={props._updateBookingHandler}
+            setShowBookingModal={() => props.setShowBookingModal(true)}
+            showBookingModal={props.showBookingModal}
+            setHideBookingModal={props.setHideBookingModal}
+            hours={hours}
+            minutes={minutes}
+            seconds={seconds}
+            timeRequired={props.timeRequired}
+            hideTimer={minimseBookingTimer}
+            showTimer={false}
+            itineraryDate={props.itineraryDate}
+            blur={false}
+            openItinerary={_previewItineraryHandler}
+            _handleTimerClose={_minimiseBookingTimerHandler}
+            setImagesHandler={props.setImagesHandler}
+            payment={props.payment}
+            booking={props.booking}
+          ></Booking>
+        </div>
       )}
-<div id={items[3].link}>
-
-</div>
+      <div id={items[3].link}></div>
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}
