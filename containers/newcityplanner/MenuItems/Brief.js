@@ -35,7 +35,9 @@ const Brief = (props)=>{
     
 return <Container>
     
-     <P>{moreText?props.short_description:props.short_description.substr(0, textLength)}
+     <P>
+        {props.heading}
+        {moreText?props.short_description:props.short_description.substr(0, textLength)}
      {props.short_description.length>textLength&&<span style={{fontWeight : '700',cursor : 'pointer'}} onClick={()=>setMoreText(!moreText)}>{moreText?' ...less' : ' ...more'}</span>}
      </P>
      <WeatherContainer>
