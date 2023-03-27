@@ -81,7 +81,9 @@ const Term2=()=>{
         <div className="nav-content">
         
          
-           <div className="border-thin" style={{fontSize:"1rem"}}>
+           <div 
+          //  className="border-thin"
+            style={{fontSize:"1rem"}}>
                 
                 {headingText}
                 </div>

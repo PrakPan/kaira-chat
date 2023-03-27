@@ -94,7 +94,7 @@ const Menu = (props)=>{
       )}
 
       <MenuItem>
-        <Heading>Why plan with us?</Heading>
+        <Heading style={{marginBottom : '40px'}}>Why plan with us?</Heading>
         <WhyPlanWithUs
           page_id={props.data.id}
           destination={props.destination}
@@ -103,7 +103,7 @@ const Menu = (props)=>{
       </MenuItem>
 
       <MenuItem>
-        <Heading>What our customers say?</Heading>
+        <Heading style={{marginBottom : '0px'}}>What our customers say?</Heading>
         <Reviews />
       </MenuItem>
 

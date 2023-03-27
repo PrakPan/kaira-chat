@@ -35,7 +35,7 @@ padding:10vh 2rem 2rem 2rem;
 text-align:center;
 @media screen and (min-width: 768px){
     font-size:5rem;
-    padding:10vh 0rem 4rem 4rem;
+    padding:14vh 0rem 4rem 4rem;
   
     
 
@@ -105,16 +105,20 @@ padding:0.5rem 1rem 1rem 1rem;
      
     return(
       <>
-      <Heading className='font-opensans' >
+      <Heading className='font-poppins' >
           Terms And Conditions
       </Heading>
      
         
         
            
-        <Container>
-        <Linkcardstyle className='border-thin'   ><Navbar/></Linkcardstyle>
-        <Cardstyle className='border-thin'  >   <div> {textfieldText} </div> </Cardstyle>
+        <Container className='font-poppins'>
+        <Linkcardstyle 
+        // className='border-thin'
+           ><Navbar/></Linkcardstyle>
+        <Cardstyle
+        //  className='border-thin'
+           >   <div> {textfieldText} </div> </Cardstyle>
       
          
         </Container>

@@ -38,7 +38,7 @@ const linksArr = [
       { title: "Privacy Policy", link: urls.PRIVACY_POLICY },
       { title: "COVID-19 Safety", link: urls.COVID_19_SAFE_TRAVEL_INDIA },
       { title: "Subscribe", link: "" },
-      { title: "Sitemap", link: "" },
+      // { title: "Sitemap", link: "" },
     ],
   },
 ];
