@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Day_I_Container from './Day_I_Container';
-import HorizontalBar from './Menubar';
+
 
 import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
-import { isJson } from '../../../services/isJSON';
 import { Navbar } from './New_itenaryStyled';
 import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
@@ -14,6 +13,7 @@ import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
     display: flex;
+    width: 60vw;
     flex-direction: column;
   `;
   const CitiesContainer = styled.div`

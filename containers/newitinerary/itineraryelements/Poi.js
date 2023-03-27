@@ -99,7 +99,7 @@ const ItineraryPoiElement = (props) => {
             </div>
             <GridContainer image={props.image}>
                 {props.image ? 
-                   <ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="100%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
+                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
                 : 
                 null
                 }

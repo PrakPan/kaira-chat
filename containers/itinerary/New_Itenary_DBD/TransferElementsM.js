@@ -5,16 +5,14 @@ import {
   Container,
   Line,
   Timecontainer,
-  SubTimecontainer,
   TInfoContainer,
   TransferInfo,
   TransparentButton,
   TransportContainer,
-  HLine,
 } from "./New_itenaryStyled";
 import { convertNumToTime } from "../../../helper/convertNumToTime";
 import { formatNumber } from "../../../helper/formatNumber";
-const TransferElements = ({
+const TransferElementsM = ({
   time,
   heading,
   meta,
@@ -28,10 +26,10 @@ const TransferElements = ({
     <>
       <Container>
         <Timecontainer>
-          <div style={{width: '4rem'}}>{time}</div>
+          <div>{time}</div>
           
-          <SubTimecontainer>
-      <div style={{paddingRight: '15px'}}>{heading}</div>
+          <Timecontainer>
+          <div>{heading}</div>
           
             {meta ? (
               <TransparentButton>
@@ -39,16 +37,12 @@ const TransferElements = ({
                 {formatNumber(meta.estimated_cost)}
               </TransparentButton>
             ) : null}
-          </SubTimecontainer>
+          </Timecontainer>
  
           
         </Timecontainer>
-        <TInfoContainer >
-          <HLine style={{width: '2rem'}}>
-
-            </HLine>
-          <div>
-          {transfers !== undefined ? (
+        
+        {transfers !== undefined ? (
             <TransportContainer>
             <div style={{ paddingRight: "10px" }}>
               <ImageLoader
@@ -70,24 +64,20 @@ const TransferElements = ({
               </div>
               </TransportContainer>
           ) : null}
-          
         <TransferInfo>{text}</TransferInfo>
-        <Line></Line>
-          </div>
         
-        </TInfoContainer>
           
-      </Container>
-      
+
+        
+    </Container>
+      <Line></Line>
 
       {newcity !== null ? (
         
-          <Container style={{ fontSize: "14px", fontWeight: "500" }}>
+          <ArriveContainer style={{ fontSize: "14px", fontWeight: "500" }}>
+          <TransportContainer>
             <div>{time}</div>
-        
-<TInfoContainer >
-      <HLine style={{width: '2rem'}}>
-      <div style={{ marginLeft: "-10px" }}>
+            <div style={{ paddingLeft: "10px" }}>
               <ImageLoader
                 url={icon}
                 leftalign
@@ -96,26 +86,16 @@ const TransferElements = ({
                 widthmobile="1.25rem"
               ></ImageLoader>
             </div>
-</HLine>
-<div>
-<TransportContainer>
-            
-            
           </TransportContainer>{" "}
-          <div style={{paddingBottom: '20px'}}>Arrive in {newcity.city_data.city_name} </div>
-          <Line></Line>
-</div>
-  
-</TInfoContainer>
-          
-          </Container>
+          <div>Arrive in {newcity.city_data.city_name} </div>
+          </ArriveContainer>
           
         
       ) : null}
 
-      
+      <Line></Line>
     </>
   );
 };
 
-export default TransferElements;
+export default TransferElementsM;

@@ -28,7 +28,7 @@ const FoodItem = (props) => {
     return(
 
         <Container margin={props.margin}>
-                             <ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="100%" leftalign widthmobile="100%" url={props.ImageUrl} ></ImageLoader>
+                             <ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="80%" leftalign widthmobile="100%" url={props.ImageUrl} ></ImageLoader>
                             <div>
                                 <Heading>{props.heading}</Heading>
                                 <Text>{props.text}</Text>

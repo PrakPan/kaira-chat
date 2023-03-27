@@ -2,12 +2,11 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
 
-import ItineraryFoodElement from "../../newitinerary/itineraryelements/ItineraryFoodElement";
 import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
 
-import TransferElements from "./TransferElements";
-import ItineraryElement from "../../newitinerary/itineraryelements/ItineraryElement";
-
+import TransferElementsM from "./TransferElementsM";
+import ItineraryElementM from "../../newitinerary/itineraryelements/ItineraryElementM";
+import ItineraryFoodElementM from "../../newitinerary/itineraryelements/ItineraryFoodElementM";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -26,7 +25,7 @@ const Date = styled.div`
 // function ElementsSpreader(slab_elements){
 //         for
 // }
-const Day_I_Container = (props) => {
+const Day_I_ContainerM = (props) => {
   const Arslab_elements = [
     { name: "transfer", data: [] },
     { name: "newcity", data: [] },
@@ -60,7 +59,7 @@ const Day_I_Container = (props) => {
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
         {Arslab_elements[0].data[0].length != 0 ? (
-          <TransferElements
+          <TransferElementsM
             time="9:00AM"
             modes={Arslab_elements[0].data[0][0].modes}
             transfers={Arslab_elements[0].data[0][0].transfers}
@@ -69,24 +68,24 @@ const Day_I_Container = (props) => {
             heading={Arslab_elements[0].data[0][0].heading}
             text={props.Days.slab_elements[0].text}
             newcity={Arslab_elements[1].data[0].length != 0 ? Arslab_elements[1].data[0][0] : null }
-          ></TransferElements>
+          ></TransferElementsM>
         ) : null}
         {Arslab_elements[2].data[0][0] ? (
-          <ItineraryElement
+          <ItineraryElementM
             icon={Arslab_elements[2].data[0][0].icon}
             time="9:00AM"
             heading={Arslab_elements[2].data[0][0].heading}
             text={Arslab_elements[2].data[0][0].text}
-          ></ItineraryElement>
+          ></ItineraryElementM>
         ) : null}
         {Arslab_elements[3].data[0][0] ? (
-          <ItineraryFoodElement
+          <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][0].icon}
             time="12:00PM"
             heading={Arslab_elements[3].data[0][0].heading}
             text={Arslab_elements[3].data[0][0].text}
             recomendation={Arslab_elements[4].data[0][0] ? Arslab_elements[4].data[0][0].text : null }
-          ></ItineraryFoodElement>
+          ></ItineraryFoodElementM>
         ) : null}
         {
 
@@ -110,17 +109,17 @@ const Day_I_Container = (props) => {
        
 
 {Arslab_elements[3].data[0][1] ? (
-          <ItineraryFoodElement
+          <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][1].icon}
             time="12:00PM"
             heading={Arslab_elements[3].data[0][1].heading}
             text={Arslab_elements[3].data[0][1].text}
             recomendation={Arslab_elements[4].data[0][1] ? Arslab_elements[4].data[0][1].text : null }
-          ></ItineraryFoodElement>
+          ></ItineraryFoodElementM>
         ) : null}
       </div>
     </Container>
   );
 };
 
-export default Day_I_Container;
+export default Day_I_ContainerM;

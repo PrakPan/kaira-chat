@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Day_I_Container from './Day_I_Container';
+import Day_I_ContainerM from './Day_I_ContainerM';
 import HorizontalBar from './Menubar';
 
 import Tab from '@material-ui/core/Tab';
@@ -242,7 +242,7 @@ const NewItenaryDBDMob = (props) => {
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-            <Day_I_Container Days={element}></Day_I_Container>
+            <Day_I_ContainerM Days={element}></Day_I_ContainerM>
           </div>
         ))}
       </div>
