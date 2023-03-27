@@ -17,6 +17,9 @@ import linksArr from './Links';
    position: relative;
 
    @media screen and (min-width: 768px) {
+    padding: 9.5rem 0rem 1.5rem 0rem;
+  }
+   @media screen and (min-width: 1300px) {
      padding: 9.5rem 5rem 1.5rem 5rem;
    }
  `;
