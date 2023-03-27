@@ -43,6 +43,7 @@ const Menu = (props)=>{
       {props.data.short_description && (
         <MenuItem id="Brief">
           <Brief
+            heading={<Heading style={{margin: '0 0 30px 0'}}>{"A little about "+ props.data.name}</Heading>}
             short_description={props.data.short_description}
             lat={props.data.lat}
             lon={props.data.long}

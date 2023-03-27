@@ -51,7 +51,7 @@ showCities={props.showCities}
   <div onClick={() => setFlexible(!flexible)}><div className="center-div" style={{border: '2px solid #01202B', color: 'black', lineHeight: '1', fontSize: '0.75rem', borderRadius: '3px', opacity: '1', height: '20px', width: '20px', backgroundColor: flexible ? 'rgba(247,231,0,1)' : "transparent"}}>
     {flexible ? <BsCheck></BsCheck> : null}
     </div></div>
-  <div onClick={() => setFlexible(!flexible)} className='font-opensans' style={{fontSize: '0.85rem'}}>I'm flexibile</div>
+  <div onClick={() => setFlexible(!flexible)} className='font-opensans' style={{fontSize: '0.85rem'}}>I'm flexible with my dates</div>
 </div>
 
 </Section>
