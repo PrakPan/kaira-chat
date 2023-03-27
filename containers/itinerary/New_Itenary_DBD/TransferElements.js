@@ -1,6 +1,7 @@
 import React from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import {
+  ArriveContainer,
   Container,
   Line,
   Timecontainer,
@@ -25,15 +26,19 @@ const TransferElements = ({
       <Container>
         <Timecontainer>
           <div>{time}</div>
+          
+          <Timecontainer>
           <div>{heading}</div>
-          <div>
+          
             {meta ? (
               <TransparentButton>
                 {modes ? `${modes} From ` : null} ₹
                 {formatNumber(meta.estimated_cost)}
               </TransparentButton>
             ) : null}
-          </div>
+          </Timecontainer>
+ 
+          
         </Timecontainer>
         
           {transfers !== undefined ? (
@@ -64,7 +69,8 @@ const TransferElements = ({
       <Line></Line>
 
       {newcity !== null ? (
-        <Container style={{ fontSize: "14px", fontWeight: "500" }}>
+        
+          <ArriveContainer style={{ fontSize: "14px", fontWeight: "500" }}>
           <TransportContainer>
             <div>{time}</div>
             <div style={{ paddingLeft: "10px" }}>
@@ -77,8 +83,10 @@ const TransferElements = ({
               ></ImageLoader>
             </div>
           </TransportContainer>{" "}
-          <div>Arrive in {newcity.city_data.city_name} </div>{" "}
-        </Container>
+          <div>Arrive in {newcity.city_data.city_name} </div>
+          </ArriveContainer>
+          
+        
       ) : null}
 
       <Line></Line>

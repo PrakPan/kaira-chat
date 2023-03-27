@@ -7,7 +7,20 @@ export const Container = styled.div`
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;
-
+ 
+  padding: 10px 0px 20px 0px;
+  color: #01202b;
+`;
+export const ArriveContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+ @media screen and (min-width: 768px){
+  flex-direction: row;                
+          }
   padding: 10px 0px 20px 0px;
   color: #01202b;
 `;
@@ -36,6 +49,16 @@ export const TransferInfo = styled.div`
 export const Timecontainer = styled.div`
   font-weight: 500;
   font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  
+  @media screen and (min-width: 768px){
+  flex-direction: row;                
+align-items: center;
+justify-content: space-between;  
+}
+        
+      
 `;
 export const Line = styled.div`
   border-style: none none solid none;

@@ -106,7 +106,7 @@ const Day_I_Container = (props) => {
         }
        
 
-{/* {Arslab_elements[3].data[0][1] ? (
+{Arslab_elements[3].data[0][1] ? (
           <ItineraryFoodElement
             icon={Arslab_elements[3].data[0][1].icon}
             time="12:00PM"
@@ -114,7 +114,7 @@ const Day_I_Container = (props) => {
             text={Arslab_elements[3].data[0][1].text}
             recomendation={Arslab_elements[4].data[0][1] ? Arslab_elements[4].data[0][1].text : null }
           ></ItineraryFoodElement>
-        ) : null} */}
+        ) : null}
       </div>
     </Container>
   );

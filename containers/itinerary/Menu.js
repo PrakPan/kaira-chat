@@ -25,9 +25,11 @@ import { useRouter } from 'next/router';
 import CustomMenu from './CustomMenu';
 import { useSticky } from '../../hooks/useSticky';
 import StackedComponents from './StackedComponents';
-import NewItenary from './New_Itenary_DBD/Index';
-import NewItenaryDBD from './New_Itenary_DBD/Index';
+import NewItenary from './New_Itenary_DBD/NewItenaryDBDMob';
+import NewItenaryDBD from './New_Itenary_DBD/NewItenaryDBDMob';
 import useMediaQuery from '../../hooks/useMedia';
+import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
+import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -454,7 +456,35 @@ const SimpleTabs = (props) => {
           blur={blurItinerary}
         ></Breif>
       </div>
-      <NewItenaryDBD
+      
+{isPageWide ? (
+        <div id={items[1].link}>
+          <NewItenaryMain
+            is_registration_needed={
+              props.payment ? props.payment.is_registration_needed : false
+            }
+            selectedPoi={selectedPoi}
+            user_email={props.user_email}
+            is_preview={props.preview}
+            is_stock={props.is_stock}
+            setShowPoiModal={_handlePoiEditModalOpen}
+            traveleritinerary={props.traveleritinerary}
+            hideTimer={minimiseTimer}
+            timeRequired={props.timeRequired}
+            itineraryReleased={props.itineraryReleased}
+            itineraryDate={props.itineraryDate}
+            showTimer={false}
+            _hideTimerHandler={_minimiseTimerHandler}
+            blur={false}
+            city_slabs={props.breif.city_slabs}
+            itinerary={props.itinerary}
+            newData={props.newData}
+            demoitinerary={props.demoitinerary}
+          ></NewItenaryMain>
+        </div>
+      ) : (
+        <div id={items[1].link}>
+          <NewItenaryDBDMob
         is_registration_needed={
           props.payment ? props.payment.is_registration_needed : false
         }
@@ -479,8 +509,14 @@ const SimpleTabs = (props) => {
         itinerary={props.itinerary}
         newData={props.newData}
         demoitinerary={props.demoitinerary}
-      ></NewItenaryDBD>
-
+      ></NewItenaryDBDMob>
+          {/* <LocationsContainer >
+                {locationsArr}
+              </LocationsContainer> */}
+        </div>
+      )
+      // <NewMobileItinerary city_slabs={props.breif.city_slabs} day_slabs={props.itinerary.day_slabs} hours={hours} minutes={minutes} seconds={seconds}  timeRequired={props.timeRequired}  hideTimer={minimiseTimer} itineraryDate={props.itineraryDate}  showTimer={showItineraryTimer}   _hideTimerHandler={_minimiseTimerHandler} blur={blurItinerary} location_selected={location} city_slabs={props.breif.city_slabs}  itinerary={props.itinerary} newData={props.newData} demoitinerary={props.demoitinerary}/>
+      }
       {isPageWide ? (
         <div id={items[1].link}>
           <ItineraryContainer

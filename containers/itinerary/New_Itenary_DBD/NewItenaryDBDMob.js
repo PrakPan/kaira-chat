@@ -11,7 +11,7 @@ import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 
-const NewItenaryDBD = (props) => {
+const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -250,4 +250,4 @@ const NewItenaryDBD = (props) => {
   );
 };
 
-export default NewItenaryDBD;
+export default NewItenaryDBDMob;
