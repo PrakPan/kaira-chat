@@ -28,6 +28,8 @@ padding : 25px;
 height: 150px;
 `
 
+
+
 const Brief = (props)=>{
     const isPageWide = media('(min-width: 768px)')
     const [moreText,setMoreText] = useState(false)

@@ -138,101 +138,6 @@ const [filters, setFilters] = useState({
   'Road Trip': true,
 }
 ) 
-
-
-//  useEffect(() => {
- 
-//   let itineraries_exclusive = [];
-//   let itineraries_customer = [];
-
-//  let locations = [];
-// try{
-// for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
-//   locations.push(props.experienceData.locations[i].name);
-// }
-// }catch{
-
-// }
-//   axiossearchinstance.post(`?search_type=itinerary&owner=TTW&limit=9&offset=`+offsetExclusive, { 
-//     "city_list": locations
-//    }).then(res => {
-//     setLoading(false);
-//     console.log(res.data)
-//      for(var i =0 ; i<res.data.results.length; i++){
-//        itineraries_exclusive.push(
-//       <ExperienceCard 
-//           data={res.data.results[i]}
-//          key={res.data.results[i].short_text}
-//          hardcoded={res.data.results[i].payment_info ?true : false }
-//          filter={res.data.results[i].experience_filters ? res.data.results[i].experience_filters[0] : null}
-//          rating={res.data.results[i].rating}
-//          slug={res.data.results[i].slug}
-//          id={res.data.results[i].id}
-//          number_of_adults={res.data.results[i].number_of_adults}
-//          locations={res.data.results[i]["itinerary_locations"]}
-//          text={res.data.results[i].short_text} 
-//          experience={res.data.results[i].name}
-//          cost={res.data.results[i].payment_info ? res.data.results[i].payment_info.length ? res.data.results[i].payment_info[0].cost : null: null}
-//          duration_number={res.data.results[i].duration_number}
-//          duration_unit={res.data.results[i].duration_unit}
-//         location={res.data.results[i]["experience_region"]}
-//          starting_cost={res.data.results[i].payment_info?   res.data.results[i].payment_info.per_person_total_cost : res.data.results[i].starting_price }
-//        images={res.data.results[i].images}></ExperienceCard>
-//       )
- 
-//     }
-   
-//     setItinerariesExclusiveJSX(itineraries_exclusive.slice());
- 
-//     setOffsetExclusive(offsetExclusive+res.data.results.length);
-//     if(!res.data.next) setOffsetExclusive(-1);
- 
-//     // setItinerariesToShowExclusiveJSX(itineraries_exclusive.slice(0,9));
- 
-//   }).catch(err => {
-//     setLoading(false);
-
-//   });
-
-//   axiossearchinstance.post(`?search_type=itinerary&owner=USER`, { 
-//     "city_list": locations
-//    }).then(res => {
-//     setLoading(false);
-//      for(var i =0 ; i<res.data.length; i++){
-  
-//       itineraries_customer.push(
-//         <ExperienceCard 
-//             data={res.data[i]}
-//            key={res.data[i].short_text}
-//            hardcoded={res.data[i].payment_info ?true : false }
-//            filter={res.data[i].experience_filters ? res.data[i].experience_filters[0] : null}
-//            rating={res.data[i].rating}
-//            slug={res.data[i].slug}
-//            id={res.data[i].id}
-//            number_of_adults={res.data[i].number_of_adults}
-//            locations={res.data[i]["itinerary_locations"]}
-//            text={res.data[i].short_text} 
-//            experience={res.data[i].name}
-//            cost={res.data[i].payment_info ? res.data[i].payment_info.length ? res.data[i].payment_info[0].cost : null: null}
-//            duration_number={res.data[i].duration_number}
-//            duration_unit={res.data[i].duration_unit}
-//           location={res.data[i]["experience_region"]}
-//            starting_cost={res.data[i].payment_info?   res.data[i].payment_info.per_person_total_cost : res.data[i].starting_price }
-//          images={res.data[i].images}></ExperienceCard>
-//         )
-//     }
-   
-//      setItinerariesCustomerJSX(itineraries_customer);
-
-//      setOffsetCustomer(9);
-
-//      setItinerariesToShowCustomerJSX(itineraries_customer.slice(0,9));
-
-//   }).catch(() => {
-//     setLoading(false);
-
-//   });
-//  }, [props.experienceData])
  const [itinerariesToIndexExclusive, setItinerariesToIndexExclusive] = useState([]);
  const [itinerariesToIndexCustomer, setItinerariesToIndexCusstomer] = useState([]);
  useEffect(() => {
@@ -412,6 +317,7 @@ console.log(props.experienceData, "experienceData");
           cities={props.experienceData.locations}
           children_cities={props.experienceData.children}
           title={props.experienceData.banner_heading}
+          setShowMobilePlanner={setShowMobilePlanner}
         />
         <SetWidthContainer>
           <MapGridContainer>

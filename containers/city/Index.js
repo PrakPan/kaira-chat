@@ -12,8 +12,10 @@ import NewMenu from '../newcityplanner/Menu'
 import MobileBanner from './Banner/Mobile'
 import WhatsappFloating from '../../components/WhatsappFloating';
 import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
+import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
 const Experience = (props) => {
   const [escapeState, setEscapeState] = useState(false);
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 
   useEffect(() => {
     //Escape hatch for mobile images, do not remove
@@ -74,11 +76,10 @@ const Experience = (props) => {
                    text={`Craft a trip to ${props.cityData.name} now!`}
                  ></DesktopPersonaliseBanner>
                ) : (
-                 <MobileBanner cityName={props.cityData.name} />
+                 <MobileBanner cityName={props.cityData.name} onClick={()=>setShowMobilePlanner(true)} />
                )}
                <WhatsappFloating message="Hey, I need help planning my trip." />
                <div>
-                 {/* <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state.region } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  /> */}
 
                  <HeroBanner
                    image={props.cityData.images[0].image}
@@ -87,40 +88,27 @@ const Experience = (props) => {
                   //  cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
                    title={`${props.cityData.name} trip planner`}
+                  setShowMobilePlanner={setShowMobilePlanner}
+
                  />
 
-                 {/* New city */}
 
                  <NewMenu
                    data={props.cityData}
                    destination={props.cityData.name}
                   //  cities={props.reccomendedCitiesData}
                  />
-
-                 {/* old city */}
-
-                 {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
-          <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
-
-          <Transition in={!props.cityData} timeout={1000} unmountOnExit>
-              { state => 
-              <div
-              className="center-div"
-              style={{
-                backgroundColor: "#F7e700",
-                 width: '100vw',
-                 transition: 'all 1s ease-out',
-                 zIndex: '2500',
-                  height: '100vh',
-                 position: 'fixed',
-                 left: state=='exiting' ? '-100vw' : 0,
-                 top: '0',
-                 }}>
-                 <Loading/>
-                 </div>
-              }
-               </Transition> */}
                </div>
+
+               <TailoredFormMobileModal
+          page_id={props.cityData.id}
+          destination={props.cityData.name}
+          // cities={props.experienceData.locations}
+          // children_cities={props.experienceData.children}
+          onHide={() => setShowMobilePlanner(false)}
+          show={showMoiblePlanner}
+        ></TailoredFormMobileModal>
+
              </div>
            );
   }

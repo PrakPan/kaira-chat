@@ -4,10 +4,11 @@ import Brief from './MenuItems/Brief'
 import TopRecommendations from "./MenuItems/TopRecommendation"
 import Poi  from "./pois/Index"
 import FoodToEat from "./MenuItems/FoodToEat"
-import { AiOutlineConsoleSql } from "react-icons/ai"
 import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry';
  import Reviews from '../travelplanner/CaseStudies/Index';
   import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
+import { useRouter } from "next/router"
+import validateTextSize from "../../services/textSizeValidator"
 
 const MenuContainer = styled.div`
 width : 95%;    
@@ -35,7 +36,29 @@ const P = styled.p`
        font-size: 18px;
       }
     `;
+
+    const Button = styled.button`
+background : white;
+color : #01202B;
+border : 1.5px solid #01202B;
+font-size : 1rem;
+padding : 0.5rem 2rem;
+display: block;
+margin : 15px auto;
+border-radius : 8px;
+&:hover{
+  color : white;
+  background : black;
+}
+`
 const Menu = (props)=>{
+
+  const router = useRouter()
+
+
+  const _handleTailoredRedirect = () => {
+    router.push('/tailored-travel?search_text='+props.city)
+  }
 
   return (
     <MenuContainer>
@@ -49,6 +72,8 @@ const Menu = (props)=>{
             lon={props.data.long}
             name={props.data.name}
           />
+        <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button>
+
         </MenuItem>
       )}
 
@@ -60,9 +85,9 @@ const Menu = (props)=>{
       )}
 
       {props.data.pois && (
-        <MenuItem id="Things to do">
+        <MenuItem id="Places to visit in">
           <Heading>Places to visit in {props.data.name}</Heading>
-          <Poi pois={props.data.pois} city={props.data.name} />
+          <Poi pois={props.data.pois} city={props.data.name} _handleTailoredRedirect={_handleTailoredRedirect} />
         </MenuItem>
       )}
 

@@ -4,7 +4,6 @@ import {useState} from 'react'
 import media from '../../../components/media'
 import PageDotsFlickity from '../../../components/PageDotsFlickity'
 import validateTextSize from "../../../services/textSizeValidator"
-import { useRouter } from "next/router"
 import Map from '../../../components/Map'
 const GridContainer 
 = styled.div`
@@ -27,11 +26,15 @@ const Button = styled.button`
 background : white;
 color : #01202B;
 border : 1.5px solid #01202B;
-font-size : 16px;
-padding : 10px 50px;
+font-size : 1rem;
+padding : 0.5rem 2rem;
 display: block;
 margin : 15px auto;
 border-radius : 8px;
+&:hover{
+  color : white;
+  background : black;
+}
 `
 const MapInfo = styled.div`
 b{
@@ -56,16 +59,6 @@ const Poi = props=>{
     e.stopPropagation()
     setShowDrawer(drawerShowArr);            
   };
-
-const router = useRouter()
-
-
-  const _handleTailoredRedirect = () => {
-    router.push('/tailored-travel?search_text='+props.city)
-  
-  }
-
-
 
   const InfoWindowContainer = (location)=><MapInfo>
     <b>{location.name}</b>
@@ -92,7 +85,7 @@ const router = useRouter()
 
        
         {/* </GridContainer> */}
-          <Button onClick={()=>{more<props.pois.length?setMore(more+4):_handleTailoredRedirect()}}>{more<props.pois.length?'View More' : validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!')}</Button>
+          <Button onClick={()=>{more<props.pois.length?setMore(more+4):props._handleTailoredRedirect()}}>{more<props.pois.length?'View More' : validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!')}</Button>
        
         </div>
         

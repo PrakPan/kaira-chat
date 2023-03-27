@@ -1,25 +1,8 @@
  
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Modal} from 'react-bootstrap';
-// import Overview from './Overview/Overview';
-import styled from 'styled-components';
-// import About from './aboutus/About';
-// import GettingAround from './GettingAround';
-// import Recommendations from './Recommendations';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import {  faChevronLeft} from '@fortawesome/free-solid-svg-icons';
-// import Tabs from './tabs/Index';
-// import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodation';
-// import {connect} from 'react-redux';
 import {TbArrowBack} from 'react-icons/tb';
-// import Spinner from '../../Spinner';
 import media from '../media';
-// import gif from '../../../public/assets/loader.gif';
-// const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-//   &:hover{
-//     cursor: pointer;
-//   }
-// `;
 import TailoredForm from '../tailoredform/Index';
 
 

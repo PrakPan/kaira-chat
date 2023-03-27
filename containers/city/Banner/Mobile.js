@@ -8,7 +8,6 @@ position: fixed;
 bottom: 0;
 width: 100vw;
 padding: 1rem;
-// background-color: white;
 z-index: 1000;
 left: 0;
 `;
@@ -18,7 +17,7 @@ const BannerMobile = (props) => {
     <Container className="" style={{ borderRadius: "0" }}>
       <Button
         fontWeight="600"
-        onclick={() => "mobile banner button clicked."}
+        onclick={() => props.onClick()}
         hovercolor="white"
         hoverbgcolor="black"
         padding="0.75rem"
