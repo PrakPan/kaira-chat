@@ -70,7 +70,9 @@ const ItineraryPoiElementM = (props) => {
     useEffect(() => {   
       
     },[]);
-    
+    function ErrorNotDef(elem){
+      return elem === undefined || elem === null || !elem
+    }
     return(
 
         <Container
@@ -119,14 +121,15 @@ const ItineraryPoiElementM = (props) => {
                 </div>
             </GridContainer>
             <Text>{props.text}</Text>
-             { props.tipa ? <Tips tips={props.tips}></Tips> :
-                null
+            <Text>{props.text}</Text>
+             {!ErrorNotDef(props.poi)  ? !ErrorNotDef(props.poi.tips) ?  <Tips tips={props.poi.tips}></Tips> : null :
+                 null
              }
                 
 
 <Line></Line>
          </Container>
-        
+      
     );
  }
 

@@ -24,21 +24,25 @@ const TransferElements = ({
   text,
   newcity,
 }) => {
+  function isValueUndefined(value) {
+    return value === undefined;
+  }
   return (
+    
     <>
-      <Container>
+      <Container style={{paddingTop: '20px'}}>
         <Timecontainer>
           <div style={{width: '4rem'}}>{time}</div>
           
           <SubTimecontainer>
       <div style={{paddingRight: '15px'}}>{heading}</div>
           
-            {meta ? (
-              <TransparentButton>
-                {modes ? `${modes} From ` : null} ₹
-                {formatNumber(meta.estimated_cost)}
-              </TransparentButton>
-            ) : null}
+            {meta === null || meta.estimated_cost === undefined ? (
+            null
+            ) :   <TransparentButton>
+            {modes ? `${modes} From ` : null} ₹
+            {formatNumber(meta.estimated_cost)}
+          </TransparentButton>}
           </SubTimecontainer>
  
           

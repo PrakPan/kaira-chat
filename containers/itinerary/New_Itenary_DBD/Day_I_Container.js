@@ -66,6 +66,7 @@ const Day_I_Container = (props) => {
             modes={Arslab_elements[0].data[0][0].modes}
             transfers={Arslab_elements[0].data[0][0].transfers}
             meta={Arslab_elements[0].data[0][0].meta}
+            
             icon={Arslab_elements[0].data[0][0].icon}
             heading={Arslab_elements[0].data[0][0].heading}
             text={props.Days.slab_elements[0].text}
@@ -98,11 +99,11 @@ const Day_I_Container = (props) => {
             <ItineraryPoiElement
               key={element.activity_data.id}
             time="9:00AM - 12:00PM"
-            image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : 'media/website/grey.png' }
+            image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : null }
             booking
             heading={element.heading}
             text={element.text}
-            tips={element.activity_data.poi}
+            poi={element.activity_data.poi}
           ></ItineraryPoiElement>
           ))
         

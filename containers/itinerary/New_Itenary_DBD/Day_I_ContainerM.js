@@ -101,7 +101,7 @@ const Day_I_ContainerM = (props) => {
             booking
             heading={element.heading}
             text={element.text}
-            tips={element.activity_data.poi}
+            poi={element.activity_data.poi}
           ></ItineraryPoiElementM>
           ))
         

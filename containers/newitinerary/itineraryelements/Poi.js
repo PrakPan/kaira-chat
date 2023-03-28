@@ -89,7 +89,12 @@ const ItineraryPoiElement = (props) => {
     useEffect(() => {   
       
     },[]);
-    
+    function stringCompare(arr,str){
+
+    }
+    function ErrorNotDef(elem){
+      return elem === undefined || elem === null || !elem
+    }
     return(
 
         <Container
@@ -130,18 +135,30 @@ const ItineraryPoiElement = (props) => {
                     <HiPencil></HiPencil>
                     </div>
                     <Rating margin="0.25rem 0"></Rating>
-                    <BoldTags>Heritage • Culture</BoldTags>
-                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
-                    <ColorTags style={{color:'#9C54F6'}}>HIDDEN GEM</ColorTags>
-                    <ColorTags style={{color: '#5363F5'}}>ATTRACTION</ColorTags>
+                    {props.poi !== undefined ? props.poi.experience_filters ?
+                    
+                    <div>
+                      {props.poi.experience_filters.map((element, index)=>(
+ element.toString() != 'Hidden Gem'   ? <BoldTags> {element} </BoldTags> : 
+ <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
+ 
+ <ColorTags style={{color: index%2 ? '#9C54F6' : '#5363F5'}}>{element}</ColorTags>
+ 
 
-                    </div>
+ </div>
+                      ))}
+                   
+                      </div>
+                     : null : null} 
+
+                    
 
                 </div>
             </GridContainer>
+            
             <Text>{props.text}</Text>
-             { props.tipa ? <Tips tips={props.tips}></Tips> :
-                null
+             {!ErrorNotDef(props.poi)  ? !ErrorNotDef(props.poi.tips) ?  <Tips tips={props.poi.tips}></Tips> : null :
+                 null
              }
                 
 
