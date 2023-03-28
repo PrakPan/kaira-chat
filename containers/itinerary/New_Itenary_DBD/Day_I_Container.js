@@ -11,7 +11,14 @@ import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
 
 
 const Container = styled.div`
+background: #FFFFFF;
+border: 1.5px solid #ECEAEA;
+margin-top: 20px;
+padding: 20px;
+box-shadow: 0px 3px 0px #F0F0F0;
+border-radius: 16px;
   @media screen and (min-width: 768px) {
+    
   }
 `;
 

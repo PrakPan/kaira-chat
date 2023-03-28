@@ -30,7 +30,7 @@ const TransferElements = ({
   return (
     
     <>
-      <Container style={{paddingTop: '20px'}}>
+      <Container >
         <Timecontainer>
           <div style={{width: '4rem'}}>{time}</div>
           

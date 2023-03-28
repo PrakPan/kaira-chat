@@ -113,9 +113,9 @@ const ItineraryPoiElement = (props) => {
                 widthmobile="1.25rem"
               ></ImageLoader>
             </div>
-            <div style={{position: 'absolute', marginLeft: '-90px', marginTop: '10px' }}>
+            <div style={{position: 'absolute', marginLeft: '-50px', marginTop: '10px' }}>
             {props.image ? 
-                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
+                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="60%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
                 : 
                 null
                 }
