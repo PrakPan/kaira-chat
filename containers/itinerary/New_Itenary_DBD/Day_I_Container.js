@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
 
 import ItineraryFoodElement from "../../newitinerary/itineraryelements/ItineraryFoodElement";
-import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
+
 
 import TransferElements from "./TransferElements";
 import ItineraryElement from "../../newitinerary/itineraryelements/ItineraryElement";
+import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
 
 
 const Container = styled.div`
@@ -71,6 +72,8 @@ const Day_I_Container = (props) => {
             newcity={Arslab_elements[1].data[0].length != 0 ? Arslab_elements[1].data[0][0] : null }
           ></TransferElements>
         ) : null}
+        
+        
         {Arslab_elements[2].data[0][0] ? (
           <ItineraryElement
             icon={Arslab_elements[2].data[0][0].icon}
@@ -88,9 +91,7 @@ const Day_I_Container = (props) => {
             recomendation={Arslab_elements[4].data[0][0] ? Arslab_elements[4].data[0][0].text : null }
           ></ItineraryFoodElement>
         ) : null}
-        {
-
-        }
+        
         {
           Arslab_elements[5].data[0] ?
           Arslab_elements[5].data[0].map((element)=>(

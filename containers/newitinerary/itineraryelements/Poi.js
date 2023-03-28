@@ -7,14 +7,33 @@ import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import {HiPencil} from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
+import { HLine } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+  
+const padding = {
+    initialLeft: "100px",
+  };
+  const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 22px;
+  
+    padding: 0px 0px 0px 0px;
+    color: #01202b;
+  `;
+export const TInfoContainer = styled.div`
+@media screen and (min-width: 768px) {
+  display: flex;
 
-   const Container = styled.div`
-   padding: 0.5rem;
-   
-    @media screen and (min-width: 768px){
- 
-    }
-`;
+  flex-direction: row;
+  & > div {
+    padding-left: ${padding.initialLeft};
+    width: 100%;
+  }
+}
+`;  
  
  const SectionOneText = styled.span`
     
@@ -74,35 +93,37 @@ const ItineraryPoiElement = (props) => {
     return(
 
         <Container
-     
-        className='font-poppins'>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                <SectionOneText>{props.time}</SectionOneText>
-                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
-                {
-                    props.booking ? 
-                    <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>
-                         
-                        <Button
-                        borderRadius="8px"
-                        fontWeight="700"
-                        fontSize="12px"
-                        borderWidth="1.5px"
-                        padding="0.5rem 0.5rem"
-                        onclick={() => console.log('')}
-                        >
-                        View Booking
-                        </Button>
-                        </div>
-                    : null
-                }
+        className="font-poppins"
+        style={{ fontSize: "14px", fontWeight: "500" }}
+    >
+        <div>{props.time}</div>
+        <TInfoContainer>
+          <HLine style={{ width: "2rem" }}>
+            <div style={{ marginLeft: "-10px" }}>
+              <ImageLoader
+                url={props.icon}
+                leftalign
+                dimensions={{ width: 200, height: 200 }}
+                width="1.25rem"
+                widthmobile="1.25rem"
+              ></ImageLoader>
             </div>
-            <GridContainer image={props.image}>
-                {props.image ? 
+            <div style={{position: 'absolute', marginLeft: '-90px', marginTop: '10px' }}>
+            {props.image ? 
                    <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
                 : 
                 null
                 }
+            </div>
+            
+          </HLine>
+          <div>
+          <GridContainer image={props.image}>
+                {/* {props.image ? 
+                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
+                : 
+                null
+                } */}
                 <div>
                     <div className="display-flex" style={{lineHeight: '1'}}>
                     <Heading>{props.heading}</Heading>
@@ -125,6 +146,30 @@ const ItineraryPoiElement = (props) => {
                 
 
 <Line></Line>
+          </div>
+    </TInfoContainer>  
+            {/* <div style={{display: 'flex', alignItems: 'center'}}>
+                <SectionOneText>{props.time}</SectionOneText>
+                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
+                {
+                    props.booking ? 
+                    <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>
+                         
+                        <Button
+                        borderRadius="8px"
+                        fontWeight="700"
+                        fontSize="12px"
+                        borderWidth="1.5px"
+                        padding="0.5rem 0.5rem"
+                        onclick={() => console.log('')}
+                        >
+                        View Booking
+                        </Button>
+                        </div>
+                    : null
+                }
+            </div> */}
+            
          </Container>
         
     );

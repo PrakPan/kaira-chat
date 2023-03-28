@@ -107,6 +107,9 @@ border-style: none none none dotted;
   
   border-width: 2px;
   margin-left: 2rem;
+  & > div{
+    margin-top: 60%;
+  }
   }
   
 `;

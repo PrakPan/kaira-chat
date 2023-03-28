@@ -7,6 +7,7 @@ import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
 import TransferElementsM from "./TransferElementsM";
 import ItineraryElementM from "../../newitinerary/itineraryelements/ItineraryElementM";
 import ItineraryFoodElementM from "../../newitinerary/itineraryelements/ItineraryFoodElementM";
+import ItineraryPoiElementM from "../../newitinerary/itineraryelements/PoiM";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -93,7 +94,7 @@ const Day_I_ContainerM = (props) => {
         {
           Arslab_elements[5].data[0] ?
           Arslab_elements[5].data[0].map((element)=>(
-            <ItineraryPoiElement
+            <ItineraryPoiElementM
               key={element.activity_data.id}
             time="9:00AM - 12:00PM"
             image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : 'media/website/grey.png' }
@@ -101,7 +102,7 @@ const Day_I_ContainerM = (props) => {
             heading={element.heading}
             text={element.text}
             tips={element.activity_data.poi}
-          ></ItineraryPoiElement>
+          ></ItineraryPoiElementM>
           ))
         
           : NULL

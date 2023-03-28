@@ -98,10 +98,7 @@ const TransferElements = ({
             </div>
 </HLine>
 <div>
-<TransportContainer>
-            
-            
-          </TransportContainer>{" "}
+
           <div style={{paddingBottom: '20px'}}>Arrive in {newcity.city_data.city_name} </div>
           <Line></Line>
 </div>

@@ -4,11 +4,21 @@ import { AiFillCar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
 import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { HLine } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+const padding = {
+  initialLeft: '100px',
+};
 const Container = styled.div`
-  
-padding: 10px 0px 20px 0px;
-  @media screen and (min-width: 768px) {
-  }
+    
+ display: flex;
+  flex-direction: column;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+ 
+  padding: 0px 0px 0px 0px;
+  color: #01202b;
 `;
 
 const SectionOneText = styled.span``;
@@ -37,36 +47,39 @@ const Line = styled.div`
   border-color: #e4e4e4;
   border-width: 1px;
 `;
+export const TInfoContainer = styled.div`
+
+@media screen and (min-width: 768px){
+  display: flex;
+
+  flex-direction: row;           
+  & > div{
+    padding-left: ${padding.initialLeft};
+    width: 100%;
+  }
+          }
+`
 const ItineraryElement = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container className="font-poppins">
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <SectionOneText>{props.time}</SectionOneText>
-        <AiFillCar style={{ margin: "-2px 0  0 0.5rem" }}></AiFillCar>
-        {props.booking ? (
-          <div
-            style={{
-              flexGrow: "1",
-              justifyContent: "flex-end",
-              display: "flex",
-            }}
-          >
-            <Button
-              borderRadius="8px"
-              fontWeight="700"
-              fontSize="12px"
-              borderWidth="1.5px"
-              padding="0.5rem 0.5rem"
-              onclick={() => console.log("")}
-            >
-              View Booking
-            </Button>
-          </div>
-        ) : null}
-      </div>
-      <GridContainer image={props.image}>
+    <Container style={{ fontSize: "14px", fontWeight: "500" }}>
+      <div>{props.time}</div>
+        {/* <SectionOneText>{props.time}</SectionOneText> */}
+        <TInfoContainer >
+        <HLine style={{width: '2rem'}}>
+      <div style={{ marginLeft: "-10px" }}>
+              <ImageLoader
+                url={props.icon}
+                leftalign
+                dimensions={{ width: 200, height: 200 }}
+                width="1.25rem"
+                widthmobile="1.25rem"
+              ></ImageLoader>
+            </div>
+</HLine>
+<div>
+<GridContainer image={props.image}>
         {props.image ? (
           <ImageLoader
             dimensions={{ width: 200, height: 200 }}
@@ -87,6 +100,31 @@ const ItineraryElement = (props) => {
       </GridContainer>
 
       <Line></Line>
+</div>
+        </TInfoContainer>
+        {/* <AiFillCar style={{ margin: "-2px 0  0 0.5rem" }}></AiFillCar>
+        {props.booking ? (
+          <div
+            style={{
+              flexGrow: "1",
+              justifyContent: "flex-end",
+              display: "flex",
+            }}
+          >
+            <Button
+              borderRadius="8px"
+              fontWeight="700"
+              fontSize="12px"
+              borderWidth="1.5px"
+              padding="0.5rem 0.5rem"
+              onclick={() => console.log("")}
+            >
+              View Booking
+            </Button>
+          </div>
+        ) : null} */}
+
+      
     </Container>
   );
 };
