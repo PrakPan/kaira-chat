@@ -27,7 +27,6 @@ const SlideOne = (props) =>{
   const CITIES = null;
   // const [selectedCities, setSelectedCities] = useState([]);
   const [flexible, setFlexible] = useState(false);
-  // console.log('cs', props.children_cities)
 
    return (
    <Container>
@@ -36,7 +35,8 @@ const SlideOne = (props) =>{
 
         <Destinations  startingLocation={props.startingLocation} 
             setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting} children_cities={props.children_cities}
-            setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
+           setDestination={props.setDestination}
+           setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>
         <Question style={{visibility: props.showCities ? 'hidden' : 'visible'}} margin="0 0 1rem 0" >Your travel dates?</Question>

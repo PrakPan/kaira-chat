@@ -66,13 +66,12 @@ const SearchResults = (props) => {
     }
     setSearchedLocationJSX(seaarchedlocationsarr.slice())
   }
-
   return (
     <AbsoluteContainer className='border' top={props.top}>{
       props.results.length ?
       props.results.map(result => {
         return(
-          <Result name={result["_source"].name} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized}></Result>
+          <Result setDestination={props.setDestination} name={result["_source"].name} result={result['_source']} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities}></Result>
 
         )
       })

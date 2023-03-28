@@ -1,37 +1,39 @@
-import React, {useState, useEffect } from 'react';
-  
-import media from '../../../../media';
- 
+import React from 'react';
+import {FaMapMarkerAlt}from 'react-icons/fa' 
 import styled from 'styled-components';
-//  import LocationsContainer from './LocationsContainer'
-import SearchInput from './Input';
-
-const Container = styled.div`
-width: 100%;
- border-radius: 10px;
- padding: 0.5rem;
- font-size: 0.85rem;
- margin-bottom: 0.25rem;
- background-color: white;
-
- &:hover{
-    background-color: rgba(247,231,0, 0.2);
- }
-  @media screen and (min-width: 768px){
  
+const Container = styled.div`
+display : flex;
+gap : 12px;
+align-items : center;
+margin-block : 1rem;
+margin-left : 10px;
+border-radius : 50px;
+&:hover{
+    background : #F0F0F0;
 }
 
-`;
+`
+const MarkerContainer= styled.div`
+background : #dfdfdf;
+border-radius : 100%;
+padding : 10px;
+padding-top : 10px;
+`
+const Text = styled.div`
+font-weight : 500;
+}
+`
 
  
 const SearchResult = (props) => {
 
-  let isPageWide = media('(min-width: 768px)');
-  // const [showCities, setShowCities] = useState(false);
-  // const [selectedCities, setSelectedCities] = useState([]);
   return (
-   <Container className='border font-opensans hover-pointer' onClick={(event) => props.selectResult(event,props.text, props.place_id)}>
-        {props.text}
+   <Container className='font-poppins hover-pointer' onClick={(event) => props.selectResult(event,props.text, props.place_id)}>
+         <MarkerContainer>
+            <FaMapMarkerAlt />
+            </MarkerContainer>
+        <Text>{props.text}</Text>
     </Container>
   );
 }

@@ -33,7 +33,6 @@ const SearchInput = (props) => {
   const _handleKey = (e) => {
     axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value+"&parent=Himachal Pradesh").then(res=>{
         if(res.data.length){
-            console.log('res', res.data);
             props._showSearchedLocations(res.data);
         }
         // else setShowResults(false);

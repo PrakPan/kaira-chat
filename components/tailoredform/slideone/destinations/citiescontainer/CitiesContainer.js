@@ -1,11 +1,12 @@
  
-import React, {useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef } from 'react';
   
 import media from '../../../../media';
  import Button from '../../../../ui/button/Index';
 import styled from 'styled-components';
 //  import ImageLoader from '../../../ImageLoader';
  import Location from './Destination';
+ import NewLocation from './NewLocation'
  import { TbArrowBack } from 'react-icons/tb';
 import Search from './search/Index';
 // import Animate from '../../../HOC/'
@@ -23,9 +24,9 @@ z-index: 10;
 
  max-width: 100%;
  
- display: grid;
- grid-template-columns: 1fr 1fr 1fr;
- grid-gap: 0.5rem ;
+//  display: grid;
+//  grid-template-columns: 1fr 1fr 1fr;
+//  grid-gap: 0.5rem ;
  &:hover{
      cursor: pointer;
  }
@@ -43,9 +44,6 @@ const LocationsContainer = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
   const _isCityAdded =  (city) => {
-    // console.log('1', city);
-    // var i;
-    // console.log(props.selectedCities);
     if(city.id)
     for (var i = 0; i < props.selectedCities.length; i++) {
         if(props.selectedCities[i].id){
@@ -76,17 +74,15 @@ const LocationsContainer = (props) => {
   }
 
   const _handleClick = (city) => {
-    // console.log(props.selectedCities)
+    // (props.selectedCities)
     let is_city_added = _isCityAdded(city);
-    // console.log(is_city_added)
+    // (is_city_added)
     if(!is_city_added){
-      console.log(city)
     let selected_cities = props.selectedCities.slice();
     selected_cities.push(city)
     props.setSelectedCities(selected_cities.slice())
     }
     else {
-      // console.log(props.selectedCities, city)
       let selected_cities =[];
       for(var i = 0 ; i < props.selectedCities.length; i++){
         if(props.selectedCities[i].id !== city.id)          selected_cities.push(props.selectedCities[i]);
@@ -96,28 +92,35 @@ const LocationsContainer = (props) => {
         }
       }
       props.setSelectedCities(selected_cities)
-
     }
   }
+
+  const _handleClick2 = city =>{
+    props.setSelectedCities([city])
+  }
+
+
    useEffect(() => {
-    // console.log(props.selectedCities)
+    // (props.selectedCities)
     try{
       if(!searchedLocationsJSX.length){
     let locations_JSX = [];
     let more_locations_JSX = [];
     for(var i = 0 ; i< props.CITIES.length; i++){
       // if(i === 6) break;
-      // console.log(props.CITIES[i], i)
       locations_JSX.push(
-        <Location image={props.CITIES[i].image} text={props.CITIES[i].name} onclick={_handleClick} onclickparam={props.CITIES[i]} is_selected={_isCityAdded(props.CITIES[i])} ></Location>
-      )
+        // <Location image={props.CITIES[i].image} text={props.CITIES[i].name} onclick={_handleClick} onclickparam={props.CITIES[i]} is_selected={_isCityAdded(props.CITIES[i])} ></Location>
+      <NewLocation setShowCities={props.setShowCities} text={props.CITIES[i].name} onclick={_handleClick2} onclickparam={props.CITIES[i]} setDestination={props.setDestination} />
+        )
     }
     if(props.children_cities){
       for(var k = 0 ; k <props.children_cities.length; k++){
         for(var l = 0 ; l < props.children_cities[k].locations.length ; l++){
           locations_JSX.push(
-            <Location image={props.children_cities[k].locations[l].image} text={props.children_cities[k].locations[l].name} onclick={_handleClick} onclickparam={props.children_cities[k].locations[l]} is_selected={_isCityAdded(props.children_cities[k].locations[l])} ></Location>
-          )
+            // <Location image={props.children_cities[k].locations[l].image} text={props.children_cities[k].locations[l].name} onclick={_handleClick} onclickparam={props.children_cities[k].locations[l]} is_selected={_isCityAdded(props.children_cities[k].locations[l])} ></Location>
+      <NewLocation text={props.CITIES[i].name} setShowCities={props.setShowCities} setDestination={props.setDestination} onclick={_handleClick2} onclickparam={props.CITIES[i]} />
+         
+            )
         }
       }
     }
@@ -127,7 +130,7 @@ const LocationsContainer = (props) => {
     // if(props.CITIES.length > 6){
     //   for(var j = 6; j < props.CITIES.length; j++){
     //       more_locations_JSX.push(
-    //         <Location image={props.CITIES[j].image} text={props.CITIES[j].name} onclick={_handleClick} onclickparam={props.CITIES[j]} is_selected={_isCityAdded(props.CITIES[j])} ></Location>
+    //         <Location image={props.CITIES[j].image} text={props.CITIES[j].name} onclick={_handleClick} onclickparam={props.CITIES[j]} is_selected={_isCityAdded(props.CITIES[j])}  ></Location>
     //       )
     //   }
     // }
@@ -146,10 +149,11 @@ const LocationsContainer = (props) => {
   else{
     let searched_locations = [];
     for(var i = 0 ; i < searchedLocationsJSX.length; i++){
-      console.log(searchedLocationsJSX[i])
         searched_locations.push(
-          <Location image={searchedLocationsJSX[i].props.image} text={searchedLocationsJSX[i].props.text} onclick={_handleClick} onclickparam={searchedLocationsJSX[i].props} is_selected={_isCityAdded(searchedLocationsJSX[i].props)} ></Location>
-        )
+          // <Location image={searchedLocationsJSX[i].props.image} text={searchedLocationsJSX[i].props.text} onclick={_handleClick} onclickparam={searchedLocationsJSX[i].props} is_selected={_isCityAdded(searchedLocationsJSX[i].props)} ></Location>
+      <NewLocation text={props.CITIES[i].name} setShowCities={props.setShowCities} setDestination={props.setDestination} onclick={_handleClick} onclickparam={props.children_cities[k].locations[l]} />
+        
+          )
     }
     setSearchedLocationJSX(searched_locations.slice())
   }
@@ -173,16 +177,11 @@ const LocationsContainer = (props) => {
   return (
     <AbsoluteContainer className='border' top={props.top}>
       <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
-      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p>
+      {/* <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p> */}
+      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-opensans text-center">Top Locations</p>
    {/* <Search _showSearchedLocations={_showSearchedLocations}></Search> */}
     <LocationContainer  >
-        
-                {/* <Location image="" text="Port Blair" onclick={() => _handleClick(props.CITIES[0])} ></Location>
-                <Location  image="" text="Niel Island"></Location>
-                <Location  image="" text="Havelock"></Location>
-                <Location image="" text="Ross Island"></Location>
-                <Location  image="" text="Rajasthan"></Location>
-                <Location  image="" text="Sikkim"></Location> */}
+      
                 { !searchedLocationsJSX.length ?  locationsJSX.length ? locationsJSX : null : searchedLocationsJSX}
                 { !searchedLocationsJSX.length ?  props.CITIES? props.CITIES.length && showMore ? moreLocationsJSX : null : null : null}
    </LocationContainer>

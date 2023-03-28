@@ -51,9 +51,7 @@ color: black;
  
 const GroupType = (props) => {
     const _isPreferenceAdded =  (preference) => {
-        // console.log('1', city);
         // var i;
-        // console.log(props.selectedCities);
         for (var i = 0; i < props.selectedPreferences.length; i++) {
             if (props.selectedPreferences[i] === preference) {
                 return true;
@@ -63,7 +61,6 @@ const GroupType = (props) => {
         return false;
       }
     const _handleClick = (preference) => {
-        // console.log(preference)
         let is_preference_added = _isPreferenceAdded(preference);
          if(!is_preference_added){
             let selected_preferences = props.selectedPreferences.slice();

@@ -60,7 +60,6 @@ const SearchInput = (props) => {
       )
       .then((res) => {
         setLoading(false);
-
         let results = [];
        if(!res.data.length) _handleClearResults();
        else
@@ -88,7 +87,7 @@ const SearchInput = (props) => {
    return (
     <Container>
    {props.showSearchStarting ? 
-   <div style={{display: 'flex'}}><InputContainer onFocus={props.onfocus} onBlur={props.onblur} placeholder='Departing from' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
+   <div style={{display: 'flex'}}><InputContainer  onFocus={props.onfocus} onBlur={props.onblur} placeholder='Departing from' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
     {/* ed */}
     </InputContainer>
     {loading ? <Spinner size={16} margin="0"></Spinner> : null}

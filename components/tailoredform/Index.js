@@ -87,16 +87,14 @@ const BlackContainer = styled.div`
 
 `;
 const Enquiry = (props) => {
- 
     const router = useRouter();
-    
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState([]);
+    const [selectedCities, setSelectedCities] = useState([{id : props.page_id , name : props.destination}]);
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
-    
-  
+    const [destination , setDestination] = useState(props.destination)
+
      
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
@@ -116,7 +114,6 @@ const Enquiry = (props) => {
             }
           }
         }
-
         for(var i =0 ; i < selectedCities.length; i++){
           cityids.push(parseInt(selectedCities[i].id));
           citynames.push(selectedCities[i].name);
@@ -137,7 +134,7 @@ const Enquiry = (props) => {
             number_of_children=numberOfChildren;
             number_of_infants=numberOfInfants;
         }
-        // console.log(selectedPreferences);
+        // (selectedPreferences);
         let data=null;
         if(citynames.length){
 
@@ -178,8 +175,10 @@ const Enquiry = (props) => {
           
         };
           // if(startingLocation)
-        //   console.log(data)
-          setLoading(true);
+        //   (data)
+        
+            
+        setLoading(true);
          axiostailoredinstance.post('',
        data, {headers: {
         'Authorization': `Bearer ${props.token}`
@@ -207,6 +206,7 @@ const Enquiry = (props) => {
              if(err.response.data.email){
              }
         })
+
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {
@@ -223,7 +223,7 @@ const Enquiry = (props) => {
     const [showSearchStarting, setShowSearchStarting] = useState(false);
 
     const [showBlack, setShowBlack] = useState(false);
-    // console.log(startingLocation);
+    // (startingLocation);
     useEffect(() => {
 
         if(slideIndex === 2 && props.token) _submitDataHandler();
@@ -233,7 +233,7 @@ const Enquiry = (props) => {
         setShowCities(false);
         setShowSearchStarting(false);
       }
-      // console.log(props.experienceData)
+      // (props.experienceData)
   let isPageWide = media('(min-width: 768px)');
 
     // const [budgetLower,setBudgetLower] = useState(0);
@@ -299,7 +299,8 @@ const Enquiry = (props) => {
            setShowSearchStarting={setShowSearchStarting}
            showCities={showCities}
            setShowCities={setShowCities}
-           destination={props.destination}
+           destination={destination}
+           setDestination={setDestination}
            token={props.token}
            // _handlePrev={_prevSlideHandler}
            slideIndex={slideIndex}
@@ -332,7 +333,9 @@ const Enquiry = (props) => {
              style={{
                display: "flex",
                justifyContent: "flex-end",
-               visibility: showCities && props.cities ? "hidden" : "visible",
+              //  visibility: 
+              //  showCities && 
+              //  props.cities ? "hidden" : "visible",
              }}
            >
              <Button

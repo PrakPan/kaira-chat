@@ -31,7 +31,6 @@ const Search = (props) => {
     axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
         if(res.data.length){
           setShowResults(true);
-            console.log('res', res.data);
             setResults(res.data)
             // props._showSearchedLocations(res.data);
         }
@@ -44,7 +43,7 @@ const Search = (props) => {
   return (
    <Container>
         <SearchInput onfocus={props.onfocus} onblur={props.onblur} searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
-        {showResults && !props.searchFinalized? <SearchResults top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized}></SearchResults> : null}
+        {showResults && !props.searchFinalized? <SearchResults setDestination={props.setDestination} top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities}></SearchResults> : null}
     </Container>
   );
 }

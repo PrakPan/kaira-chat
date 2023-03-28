@@ -52,6 +52,7 @@ const SelectedDestination = (props) => {
   }
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
+  // const [showDestinationInput , setShowDestinationInput] = useState(false)
   const _handleFocusStarting = () => {
     setFocusLocation(true);
     props.setShowSearchStarting(true);
@@ -62,8 +63,14 @@ const SelectedDestination = (props) => {
     // props.setShowSearchStarting(true);
     // props.setShowCities(false)
   }
+
+  const [showDestination , setShowDestination] = useState(true)
   return ( 
-   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
+   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() 
+    // : props.openCities
+  //  : setShowDestinationInput(!showDestinationInput)
+  : ()=>setShowDestination(false)
+   }  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer'>
           {!props.selectlocation  ? 
                   <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', marginRight: '10px'}}></MdOutlineLocationOn>
@@ -73,10 +80,26 @@ const SelectedDestination = (props) => {
 
           }
         {/* <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn> */}
-    {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)}></SearchInput>}
+    {props.selectlocation ? 
+          !props.showSearchStarting ? 
+              !props.startingLocation ?  
+              'Delhi, IN'  : 
+          props.startingLocation.name : 
+     <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>
+     :
+     props.destination && showDestination
+      ? props.destination : 
+     <SearchInput setDestination={props.setDestination}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)} setSelectedCities={props.setSelectedCities}></SearchInput>
+     
+     }
+    
     </LeftContent>
-    {!props.selectlocation ? <RightContainer className='hover-pointer' >
-        {props.selectedCities ? 
+    
+    
+    {!props.selectlocation ? 
+    
+    <RightContainer className='hover-pointer' >
+        {/* {props.selectedCities ? 
         props.selectedCities.length ? 
         <span>{'+ '+ props.selectedCities.length + " Cities Added"}</span>
         : 
@@ -89,8 +112,12 @@ const SelectedDestination = (props) => {
         <span onClick={props.openCities}>{' + Select Cities'}</span>
         : null
        
-    }
-      {searchFinalized ? <AiFillDelete className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null}
+    } */}
+    {/* Change Location */}
+    <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> 
+ 
+ 
+      {/* {searchFinalized ? <AiFillDelete className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null} */}
 
 
        
@@ -98,6 +125,7 @@ const SelectedDestination = (props) => {
 
     </RightContainer>
      : 
+     
      <RightContainer className='hover-pointer' >
          <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> 
 

@@ -28,6 +28,7 @@ const flickityOptions = {
 
   };
 
+
 const FlickityComp = (props) => {
  
    
@@ -46,6 +47,7 @@ const FlickityComp = (props) => {
                                         showCities={props.showCities}
                                         setShowCities={props.setShowCities}
                             cities={props.cities} 
+                            setDestination={props.setDestination}
                             selectedCities={props.selectedCities} 
                             setSelectedCities={props.setSelectedCities} 
                             valueStart={props.valueStart}
