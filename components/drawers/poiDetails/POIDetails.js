@@ -36,7 +36,7 @@ font-weight: 800;
 const TimeStamp = styled.p`
 height : 31px;
 padding : 4px 8px;
-background-color : #01202B;
+background-color : #000000BF;
 border-radius : 20px;
 color : white;
 font-size : 14px;
@@ -44,11 +44,9 @@ font-weight : 600;
 position : absolute;
 top : 185px;
 left : 20px;
-
-
     @media screen and (min-width: 768px){
     top : 185px;
-left : 300px;
+left : 320px;
     }
 `
 
@@ -57,7 +55,7 @@ const POIDetails = (props) => {
   const [imageLoading,setImageLoading] = useState(true)
   const about = (
     <p>
-      {props.data.short_description?.substr(0, 250)} <b>...more</b>
+      {props.data.short_description?.substr(0, 250)} <b className='hover-pointer'>...more</b>
     </p>
   );
   const [aboutText,setAboutText] = useState(about)

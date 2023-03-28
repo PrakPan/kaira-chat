@@ -25,6 +25,7 @@ const POIDetailsDrawer = (props) => {
       anchor={"right"}
       ModalProps={{ onBackdropClick: props.handleCloseDrawer }}
       style={{ zIndex: 1250 }}
+      className='font-lexend'
     >
       {!!data.name ? (
         <POIDetails

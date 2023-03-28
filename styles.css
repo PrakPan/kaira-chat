@@ -1246,7 +1246,6 @@ margin-left: -25px;
         
           .flickity-prev-next-button.previous {
             left: 0;
-            z-index: 2000;
           }
           .flickity-prev-next-button.next {
             right: 0;

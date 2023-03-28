@@ -13,6 +13,7 @@ import MobileBanner from './Banner/Mobile'
 import WhatsappFloating from '../../components/WhatsappFloating';
 import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
+import validateTextSize from '../../services/textSizeValidator';
 const Experience = (props) => {
   const [escapeState, setEscapeState] = useState(false);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
@@ -73,7 +74,7 @@ const Experience = (props) => {
                {isPageWide ? (
                  <DesktopPersonaliseBanner
                    onclick={_handlePersonaliseRedirect}
-                   text={`Craft a trip to ${props.cityData.name} now!`}
+                   text={validateTextSize(`Craft a personalized itinerary to ${props.cityData.name} now!`,9,`Craft a trip to ${props.cityData.name} now!`)}
                  ></DesktopPersonaliseBanner>
                ) : (
                  <MobileBanner cityName={props.cityData.name} onClick={()=>setShowMobilePlanner(true)} />
