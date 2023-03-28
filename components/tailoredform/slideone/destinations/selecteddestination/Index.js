@@ -89,7 +89,7 @@ const SelectedDestination = (props) => {
      :
      props.destination && showDestination
       ? props.destination : 
-     <SearchInput setDestination={props.setDestination}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)} setSelectedCities={props.setSelectedCities}></SearchInput>
+     <SearchInput setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     
@@ -117,8 +117,7 @@ const SelectedDestination = (props) => {
     <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> 
  
  
-      {/* {searchFinalized ? <AiFillDelete className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null} */}
-
+      {/* {props._removeDestinationHandler ? <AiFillDelete onClick={()=>props._removeDestinationHandler()} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null} */}
 
        
     {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo> */}

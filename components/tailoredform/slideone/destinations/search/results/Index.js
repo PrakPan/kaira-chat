@@ -71,7 +71,7 @@ const SearchResults = (props) => {
       props.results.length ?
       props.results.map(result => {
         return(
-          <Result setDestination={props.setDestination} name={result["_source"].name} result={result['_source']} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities}></Result>
+          <Result inbox_id={props.inbox_id} setDestination={props.setDestination} name={result["_source"].name} result={result['_source']} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></Result>
 
         )
       })

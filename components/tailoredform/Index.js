@@ -90,7 +90,7 @@ const Enquiry = (props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState([{id : props.page_id , name : props.destination}]);
+    const [selectedCities, setSelectedCities] = useState([{id : props.page_id , name : props.destination , input_id : 0}]);
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
@@ -115,8 +115,10 @@ const Enquiry = (props) => {
           }
         }
         for(var i =0 ; i < selectedCities.length; i++){
-          cityids.push(parseInt(selectedCities[i].id));
-          citynames.push(selectedCities[i].name);
+          if(cityids.indexOf(selectedCities[i].id) == -1){
+            cityids.push(parseInt(selectedCities[i].id));
+            citynames.push(selectedCities[i].name);  
+          }
         }
         
         const start_date = format(value_start,  "yyyy-MM-dd");

@@ -43,7 +43,7 @@ const Search = (props) => {
   return (
    <Container>
         <SearchInput onfocus={props.onfocus} onblur={props.onblur} searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
-        {showResults && !props.searchFinalized? <SearchResults setDestination={props.setDestination} top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities}></SearchResults> : null}
+        {showResults && !props.searchFinalized? <SearchResults inbox_id={props.inbox_id} setDestination={props.setDestination} top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchResults> : null}
     </Container>
   );
 }

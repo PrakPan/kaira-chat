@@ -43,7 +43,13 @@ const Result = (props) => {
   const _handleClick = () => {
     props.setSearchFinalized({name: props.name, type: props.type});
     props.setDestination(props.name)
-    props.setSelectedCities([{...props.result , id : props.result.resource_id}])
+
+    // if(!props.selectedCities.some(e=>e.id == props.result.resource_id)){
+    //   props.selectedCities.push({...props.result , id : props.result.resource_id})
+    //   props.setSelectedCities(props.selectedCities)
+    // }
+    props.selectedCities[props.inbox_id] = {...props.result , id : props.result.resource_id}
+    props.setSelectedCities(props.selectedCities)
   }
   return (
     <Container className='font-poppins'  onClick={_handleClick}>
