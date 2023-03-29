@@ -2,13 +2,13 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Day_I_Container from './Day_I_Container';
 
-
 import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
 import { Navbar } from './New_itenaryStyled';
 import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
+import ScrollableTabs from '../../../components/ScrollableTabs';
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -197,24 +197,33 @@ const NewItenaryMain = (props) => {
         props.city_slabs[i].duration &&
         props.city_slabs[i].duration !== '0'
       ) {
-        const itenaryId = props.itinerary.day_slabs[i]
-        console.log(itenaryId !== undefined)
-        console.log('idssss'+ props.city_slabs[i].city_name)
-        console.log('idssss'+ props.itinerary.day_slabs[0].slab_id)
+        const itenaryId = props.itinerary.day_slabs[i];
+        console.log(itenaryId !== undefined);
+        console.log('idssss' + props.city_slabs[i].city_name);
+        console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
         // console.log('idssss'+ itenaryId.slab_id)
         // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
 
         items.push({
           id: i,
           label: `${props.city_slabs[i].city_name} ${props.city_slabs[i].duration} N`,
-          link: itenaryId !== undefined ? itenaryId.slab_id  :  props.itinerary.day_slabs[0].slab_id,
+          link:
+            itenaryId !== undefined
+              ? itenaryId.slab_id
+              : props.itinerary.day_slabs[0].slab_id,
         });
-      } 
+      }
     }
   }
   console.log('ITEMsssssss', items);
   return (
     <Wrapper>
+      {/* <ScrollableTabs
+        Mstyle={'round'}
+        items={items}
+        activeItem={activeItem}
+        onSelect={handleSelect}
+      ></ScrollableTabs> */}
       <Navbar ref={ref} sticky={isSticky & !isDesktop}>
         <CustomMenu
           Mstyle={'round'}
@@ -223,7 +232,7 @@ const NewItenaryMain = (props) => {
           onSelect={handleSelect}
         />
       </Navbar>
-      
+
       {day_pannesl_jsx}
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (

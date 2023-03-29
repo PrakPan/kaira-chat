@@ -2,8 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Day_I_ContainerM from './Day_I_ContainerM';
 import HorizontalBar from './Menubar';
-import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from 'react-icons/md'
-
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 
 import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
@@ -12,6 +11,7 @@ import { Navbar, NavbarContainer } from './New_itenaryStyled';
 import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
+import ScrollableTabs from '../../../components/ScrollableTabs';
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
@@ -199,39 +199,81 @@ const NewItenaryDBDMob = (props) => {
         props.city_slabs[i].duration &&
         props.city_slabs[i].duration !== '0'
       ) {
-        const itenaryId = props.itinerary.day_slabs[i]
-        console.log(itenaryId !== undefined)
-        console.log('idssss'+ props.city_slabs[i].city_name)
-        console.log('idssss'+ props.itinerary.day_slabs[0].slab_id)
+        const itenaryId = props.itinerary.day_slabs[i];
+        console.log(itenaryId !== undefined);
+        console.log('idssss' + props.city_slabs[i].city_name);
+        console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
         // console.log('idssss'+ itenaryId.slab_id)
         // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
 
         items.push({
           id: i,
           label: `${props.city_slabs[i].city_name} ${props.city_slabs[i].duration} N`,
-          link: itenaryId !== undefined ? itenaryId.slab_id  :  props.itinerary.day_slabs[0].slab_id,
+          link:
+            itenaryId !== undefined
+              ? itenaryId.slab_id
+              : props.itinerary.day_slabs[0].slab_id,
         });
-      } 
+      }
     }
   }
   console.log('ITEMsssssss', items);
+  const handleScrollLeft = () => {
+    const tabsContainer = ref.current;
+    const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
+    tabsContainer.scrollBy({
+      left: -scrollDistance,
+      behavior: 'smooth',
+    });
+  };
+
+  const handleScrollRight = () => {
+    const tabsContainer = ref.current;
+
+    const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
+
+    tabsContainer.scrollBy({
+      left: scrollDistance,
+      behavior: 'smooth',
+    });
+  };
   return (
     <Wrapper>
-      <NavbarContainer ref={ref} sticky={isSticky & !isDesktop}>
-      <MdKeyboardArrowLeft style={{color: 'black', width: 'max-content', fontSize: '80px', marginRight: '20px'}} />
-      <Navbar ref={ref} sticky={isSticky & !isDesktop}>
-      
-        <CustomMenu
-          Mstyle={'round'}
-          items={items}
-          activeItem={activeItem}
-          onSelect={handleSelect}
+      <ScrollableTabs
+        Mstyle={'round'}
+        items={items}
+        activeItem={activeItem}
+        onSelect={handleSelect}
+      ></ScrollableTabs>
+      <NavbarContainer sticky={isSticky & !isDesktop}>
+        <MdKeyboardArrowLeft
+          style={{
+            color: 'black',
+            width: 'max-content',
+            fontSize: '80px',
+            marginRight: '20px',
+          }}
+          onClick={handleScrollLeft}
         />
-        
-      </Navbar>
-      <MdKeyboardArrowRight style={{color: 'black',width: 'max-content', fontSize: '80px', marginLeft: '20px'}}/>
+        <Navbar ref={ref}>
+          <CustomMenu
+            Mstyle={'round'}
+            items={items}
+            activeItem={activeItem}
+            onSelect={handleSelect}
+          />
+        </Navbar>
+        <MdKeyboardArrowRight
+          style={{
+            color: 'black',
+            width: 'max-content',
+            fontSize: '80px',
+            marginLeft: '20px',
+          }}
+          onClick={handleScrollRight}
+        />
       </NavbarContainer>
-      
+
       {/* <HorizontalBar
         width={'100%'}
         height={'40px'}
