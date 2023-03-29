@@ -1,13 +1,9 @@
  
-import React, {useState, useEffect } from 'react';
-  
-import media from '../../../media';
- 
+import React, {useState} from 'react';
+import media from '../../../media'; 
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
-import CitiesContainer from './citiescontainer/CitiesContainer';
 import SelectedDestination from './selecteddestination/Index';
-import { AiOutlineConsoleSql } from 'react-icons/ai';
 import {AiFillDelete} from 'react-icons/ai';
 
 const Container = styled.div`
@@ -40,7 +36,7 @@ setDestinations(destinations.slice());
     let dest = destinations.slice();
     const id = destinations.length
     dest.push(
-      <SelectedDestination inbox_id={id} destinations={destinations}  selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
+      <SelectedDestination inbox_id={id} destinations={destinations}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
     )
     setDestinations(dest.slice());
 

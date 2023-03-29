@@ -51,10 +51,10 @@ const SearchInput = (props) => {
     props.setStartingLocation({'name': text, 'place_id': place_id});
   }
   const _getResults = (query) => {
-    setLoading(true);
     if(query)
     if(query.length > 1)
-
+{
+  setLoading(true);
   axiossearchstartinginstance.get(
         `?q=`+query
       )
@@ -78,6 +78,8 @@ const SearchInput = (props) => {
         _handleClearResults();
         // alert('Page could not be loaded. Please try again.');
       });
+    
+    }
     }
     const _handleClearResults = () => {
       setResultsJSX([]);

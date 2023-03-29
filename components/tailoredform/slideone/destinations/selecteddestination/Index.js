@@ -20,7 +20,7 @@ justify-content: space-between;
 align-items: center;    
 padding: 0.55rem  0.35rem;
 background-color: white;
-
+position : relative;
  @media screen and (min-width: 768px){
     padding: 0.55rem  0.55rem;
 }
@@ -52,7 +52,6 @@ const SelectedDestination = (props) => {
   }
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
-  // const [showDestinationInput , setShowDestinationInput] = useState(false)
   const _handleFocusStarting = () => {
     setFocusLocation(true);
     props.setShowSearchStarting(true);

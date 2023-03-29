@@ -2,13 +2,7 @@
 import React, {useState, useEffect } from 'react';
   
 import media from '../../../../../media';
-//  import Button from '../../../../ui/button/Index';
 import styled from 'styled-components';
-//  import ImageLoader from '../../../ImageLoader';
-//  import Location from './Destination';
-//  import { TbArrowBack } from 'react-icons/tb';
-// import Search from './search/Index';
-// import Animate from '../../../HOC/'
 import Result from './Result';
  const AbsoluteContainer = styled.div`
  background-color: white;
@@ -51,8 +45,13 @@ const SearchResults = (props) => {
   const _handleClick = (city) => {
     
   }
+
    useEffect(() => {
-    
+     document.body.addEventListener('click', ()=>props.setShowResults(false) );
+
+     return ()=> {
+      window.removeEventListener('click', ()=>props.setShowResults(false) );
+  } 
 
   },[]);
 
