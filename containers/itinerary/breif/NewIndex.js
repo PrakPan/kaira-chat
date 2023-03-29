@@ -83,6 +83,7 @@ const Details = (props) => {
   //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   //   }
   const router = useRouter();
+  let isPageWide = media('(min-width: 768px)');
   const _handleTailoredRedirect = (e) => {
     router.push('/tailored-travel');
   };
@@ -98,13 +99,16 @@ const Details = (props) => {
             <Route breif={props.breif}></Route>
           </div>
         </RouteComponent>
-        <div>
+        {
+          isPageWide ? <div>
           <div >
             
               {true ? <Overview breif={props.breif}></Overview> : null}
             
           </div>
-        </div>
+        </div> : null
+        }
+        
       </DetailsContainer>
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>

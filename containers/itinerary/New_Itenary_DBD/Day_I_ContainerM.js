@@ -99,7 +99,7 @@ const Day_I_ContainerM = (props) => {
               key={element.activity_data.id}
             time="9:00AM - 12:00PM"
             image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : null }
-            booking
+            booking={element.activity_data.poi !== undefined ? element.activity_data.poi.image : null}
             heading={element.heading}
             text={element.text}
             poi={element.activity_data.poi}
