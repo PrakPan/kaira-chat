@@ -180,34 +180,36 @@ const Enquiry = (props) => {
         //   (data)
         
             
-        setLoading(true);
-         axiostailoredinstance.post('',
-       data, {headers: {
-        'Authorization': `Bearer ${props.token}`
-        }}
-        ).then(response => {
-            setSubmitted(true);
-            if(!response.data.auto_itinerary_created) {
-                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+      //   setLoading(true);
+      //    axiostailoredinstance.post('',
+      //  data, {headers: {
+      //   'Authorization': `Bearer ${props.token}`
+      //   }}
+      //   ).then(response => {
+      //       setSubmitted(true);
+      //       if(!response.data.auto_itinerary_created) {
+      //           window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
-                 }
-             else{
-                // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
+      //            }
+      //        else{
+      //           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
   
-                setTimeout(function(){ 
+      //           setTimeout(function(){ 
                    
-                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
-                }, 10000);
-                  setLoading(false);
+      //             router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
+      //           }, 10000);
+      //             setLoading(false);
 
-              }
-        }).catch(err => {
-            setLoading(false);
-            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+      //         }
+      //   }).catch(err => {
+      //       setLoading(false);
+      //       window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
-             if(err.response.data.email){
-             }
-        })
+      //        if(err.response.data.email){
+      //        }
+      //   })
+
+      console.log('data=>',data)
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {

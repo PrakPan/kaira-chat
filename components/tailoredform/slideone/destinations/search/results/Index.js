@@ -29,7 +29,6 @@ z-index: 10;
  `;
  
 const SearchResults = (props) => {
-
   useEffect(() => {
      document.body.addEventListener('click', ()=>props.setShowResults(false) );
 

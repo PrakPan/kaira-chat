@@ -88,7 +88,7 @@ const SelectedDestination = (props) => {
      :
      props.destination && showDestination
       ? props.destination : 
-     <SearchInput setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+     <SearchInput destination={props.destination}setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     

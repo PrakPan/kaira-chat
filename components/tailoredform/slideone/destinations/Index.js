@@ -22,7 +22,7 @@ const Destinations = (props) => {
 
   let isPageWide = media('(min-width: 768px)')
 
-  const [destinations, setDestinations] = useState([<SelectedDestination id={0} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>]);
+  const [destinations, setDestinations] = useState([<SelectedDestination inbox_id={0} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>]);
   function _removeDestinationHandler() {
 
 
