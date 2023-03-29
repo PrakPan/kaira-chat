@@ -49,7 +49,8 @@ const ImagesMobile = (props) => {
         heightMobile="auto"
         dimensionsMobile={{ width: 328, height: 141 }}
       ></ImageLoader>
-      <GridContainer>
+      {
+        props.images[1] ? <GridContainer>
         <ImageLoader
           borderRadius="12px"
           url={props.images[1]}
@@ -75,7 +76,9 @@ const ImagesMobile = (props) => {
           </div> */}
           {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
         </MoreContainer>
-      </GridContainer>
+      </GridContainer>: null
+      }
+      
     </Container>
   );
 };

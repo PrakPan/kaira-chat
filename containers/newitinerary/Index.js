@@ -4,12 +4,12 @@ import Overview from './overview/Index';
 import Menu from './Menu';
 import Brief from './breif/Index';
 import NewFooter from '../../components/newfooter/Index';
-import ItineraryElement from './itineraryelements/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../services/constants';
-import ItineraryPoiElement from './itineraryelements/Poi';
-import ItineraryFlightElement from './itineraryelements/Flight';
-import ItineraryFoodElement from './itineraryelements/Food';
-import DayContainer from './itinerary/DayContainer';
+
+// import { ITINERARY_ELEMENT_TYPES } from '../../services/constants';
+// import ItineraryPoiElement from './itineraryelements/Poi';
+// import ItineraryFlightElement from './itineraryelements/Flight';
+// import ItineraryFoodElement from './itineraryelements/Food';
+// import DayContainer from './itinerary/DayContainer';
 import Itinerary from './itinerary/Index';
 
 const Container = styled.div`
