@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import IconsFetcher from './IconsFetcher';
+import SkeletonCard from '../ui/SkeletonCard';
 
 
 const WeatherGrid = styled.div`
@@ -51,8 +52,10 @@ const WeatherWidget = ({
       setWeatherText(`Weather (${todayDate} ${todayMonth} ${postYear!=todayYear ? todayYear : ''} - ${postDate} ${postMonth} ${postYear})`)
   
   }, [city, apiKey]);
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div><SkeletonCard height='1.6rem' width='16rem'></SkeletonCard><SkeletonCard mt='1rem' height='4rem' width='10rem'></SkeletonCard>
+    </div>;
   }
 
   if (!weather) {
@@ -60,12 +63,13 @@ const WeatherWidget = ({
   }
   return (
     <div>
-    <TextBold>{weatherText}</TextBold>
+
+    {weatherText &&<TextBold>{weatherText}</TextBold>}
      <WeatherGrid>
-      <IconsFetcher iconId={weather.icon} />    
+      {weather.icon && <IconsFetcher iconId={weather.icon} />}    
       <div>
-        <TextBold>{weather.minTemp}°C - {weather.maxTemp}°C</TextBold>
-        <p style={{fontWeight : '300'}}>{weather.description}</p>
+       {weather.minTemp && weather.maxTemp && <TextBold>{weather.minTemp}°C - {weather.maxTemp}°C</TextBold>}
+        {weather.description && <p style={{fontWeight : '300'}}>{weather.description}</p>}
       </div>
     </WeatherGrid>
     

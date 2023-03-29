@@ -68,7 +68,7 @@ const SelectedDestination = (props) => {
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() 
     // : props.openCities
   //  : setShowDestinationInput(!showDestinationInput)
-  : ()=>setShowDestination(false)
+  : ()=>{setShowDestination(false);_handleFocusSearch()}
    }  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer'>
           {!props.selectlocation  ? 

@@ -20,12 +20,18 @@ const P = styled.p`
        font-size:18px ;
       }
     `;
+    const TextBold = styled.p`
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: rgb(1, 32, 43);
+`;
 
 const WeatherContainer = styled.div`
 border : 1px solid #ECEAEA;
 border-radius : 10px;
 padding : 25px;
-height: 150px;
+height: ${props=>props.elevation?'200px' : '150px'};
 `
 
 
@@ -42,8 +48,14 @@ return <Container>
         {moreText?props.short_description:props.short_description.substr(0, textLength)}
      {props.short_description.length>textLength&&<span style={{fontWeight : '700',cursor : 'pointer'}} onClick={()=>setMoreText(!moreText)}>{moreText?' ...less' : ' ...more'}</span>}
      </P>
-     <WeatherContainer>
+     <WeatherContainer elevation={props.elevation}>
      <WeatherWidget city={props.name} lat={props.lat} lon={props.lon} />
+     {props.elevation && 
+    <div style={{marginTop : '20px'}}>
+    <TextBold>Altitude</TextBold>
+    <p style={{fontWeight : '300'}}>{Math.floor(props.elevation)} meteres ({Math.floor(props.elevation*3.281)} feet) above sea level</p>
+    </div>
+}
      </WeatherContainer>
     </Container>
 }

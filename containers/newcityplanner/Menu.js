@@ -52,7 +52,7 @@ border-radius : 8px;
 }
 `
 const Menu = (props)=>{
-
+console.log(props.data,'props.dTA')
   const router = useRouter()
 
 
@@ -71,6 +71,7 @@ const Menu = (props)=>{
             lat={props.data.lat}
             lon={props.data.long}
             name={props.data.name}
+            elevation={props.data.elevation[0]?.elevation}
           />
         <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button>
 
