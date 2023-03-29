@@ -208,7 +208,6 @@ const Enquiry = (props) => {
              if(err.response.data.email){
              }
         })
-
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {

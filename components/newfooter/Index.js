@@ -93,7 +93,7 @@ const Heading = styled.p`
 
   margin: 2rem 0rem 1rem 0rem;
   @media screen and (min-width: 768px) {
-    margin: 0rem 0rem 1rem 0rem;
+    margin: -0.3rem 0rem 1.85rem 0rem;
   }
 `;
 const SubscribeBox = styled.div`

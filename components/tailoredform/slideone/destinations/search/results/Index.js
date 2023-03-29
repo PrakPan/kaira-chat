@@ -30,23 +30,7 @@ z-index: 10;
  
 const SearchResults = (props) => {
 
-  const [locationsJSX, setLocationsJSX] = useState([]);
-  const [moreLocationsJSX, setMoreLocationJSX] = useState([]);
-  const [showMore, setShowMore] = useState(false);
-
-  const [searchedLocationsJSX, setSearchedLocationJSX] = useState([]);
-
-  let isPageWide = media('(min-width: 768px)');
-
-  const _isCityAdded =  (city) => {
- 
-  }
-
-  const _handleClick = (city) => {
-    
-  }
-
-   useEffect(() => {
+  useEffect(() => {
      document.body.addEventListener('click', ()=>props.setShowResults(false) );
 
      return ()=> {
@@ -55,30 +39,16 @@ const SearchResults = (props) => {
 
   },[]);
 
-  const _showSearchedLocations = (results) => {
-    let seaarchedlocationsarr = [];
-    for(var i = 0 ; i < results.length; i++) {
-      seaarchedlocationsarr.push(
-        // <Location image={results[i]["_source"].image} text={results[i]["_source"].name} onclick={_handleClick} onclickparam={results[i]["_source"]} is_selected={_isCityAdded(results[i]["_source"])} ></Location>
-
-      )
-    }
-    setSearchedLocationJSX(seaarchedlocationsarr.slice())
-  }
   return (
     <AbsoluteContainer className='border' top={props.top}>{
       props.results.length ?
-      props.results.map(result => {
-        return(
+      props.results.map((result,i) => {
+       if(i<5) return(
           <Result inbox_id={props.inbox_id} setDestination={props.setDestination} name={result["_source"].name} result={result['_source']} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></Result>
-
         )
       })
       : null
     }
-     
-
-
    </AbsoluteContainer>
   );
 }

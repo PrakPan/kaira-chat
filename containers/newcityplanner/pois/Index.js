@@ -29,7 +29,7 @@ border : 1.5px solid #01202B;
 font-size : 1rem;
 padding : 0.5rem 2rem;
 display: block;
-margin : 15px auto;
+margin : 15px auto 0px auto;
 border-radius : 8px;
 &:hover{
   color : white;

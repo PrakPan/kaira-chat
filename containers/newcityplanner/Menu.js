@@ -26,7 +26,10 @@ const Heading = styled.p`
 font-weight: 600;
 font-size: 32px;
 line-height: 48px;
-margin-block : 30px;
+margin-block : 1.5rem;
+@media screen and (min-width: 768px) {
+margin-block : 3.5rem;
+ }
 `
 const P = styled.p`
       font-weight: 300;
@@ -52,9 +55,7 @@ border-radius : 8px;
 }
 `
 const Menu = (props)=>{
-console.log(props.data,'props.dTA')
   const router = useRouter()
-
 
   const _handleTailoredRedirect = () => {
     router.push('/tailored-travel?search_text='+props.city)
@@ -78,21 +79,21 @@ console.log(props.data,'props.dTA')
         </MenuItem>
       )}
 
-      {props.data.itinerary_data && (
+      {!!props.data.itinerary_data.length && (
         <MenuItem id="Itinerary">
           <Heading>Trips by our users to {props.data.name}</Heading>
           <TopRecommendations itinerary_data={props.data.itinerary_data} />
         </MenuItem>
       )}
 
-      {props.data.pois && (
+      {!!props.data.pois.length && (
         <MenuItem id="Places to visit in">
           <Heading>Places to visit in {props.data.name}</Heading>
           <Poi pois={props.data.pois} city={props.data.name} _handleTailoredRedirect={_handleTailoredRedirect} />
         </MenuItem>
       )}
 
-      {props.data.foods && (
+      {!!props.data.foods.length && (
         <MenuItem id="Food to eat" single>
           <Heading>Food to eat</Heading>
           <FoodToEat foods={props.data.foods} />
@@ -101,27 +102,27 @@ console.log(props.data,'props.dTA')
 
       {props.data.conveyance_available && (
         <MenuItem id="How to reach" single>
-          <Heading>How to reach</Heading>
+          <Heading style={{marginBottom : '1rem'}}>How to reach</Heading>
           <P>{props.data.conveyance_available}</P>
         </MenuItem>
       )}
 
       {props.data.survival_tips_and_tricks && (
         <MenuItem id="Survival Tips & Tricks" single>
-          <Heading>Survival Tips & Tricks</Heading>
+          <Heading style={{marginBottom : '1rem'}}>Survival Tips & Tricks</Heading>
           <P>{props.data.survival_tips_and_tricks}</P>
         </MenuItem>
       )}
 
       {props.data.folklore_or_story && (
         <MenuItem id="Folklore or Story" single>
-          <Heading>Folklore or Story</Heading>
+          <Heading style={{marginBottom : '1rem'}}>Folklore or Story</Heading>
           <P>{props.data.folklore_or_story}</P>
         </MenuItem>
       )}
 
       <MenuItem>
-        <Heading style={{marginBottom : '40px'}}>Why plan with us?</Heading>
+        <Heading>Why plan with us?</Heading>
         <WhyPlanWithUs
           page_id={props.data.id}
           destination={props.destination}
@@ -130,7 +131,7 @@ console.log(props.data,'props.dTA')
       </MenuItem>
 
       <MenuItem>
-        <Heading style={{marginBottom : '0px'}}>What our customers say?</Heading>
+        <Heading style={{marginBottom : '1.5rem'}}>What our customers say?</Heading>
         <Reviews />
       </MenuItem>
 

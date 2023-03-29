@@ -31,7 +31,7 @@ const WeatherContainer = styled.div`
 border : 1px solid #ECEAEA;
 border-radius : 10px;
 padding : 25px;
-height: ${props=>props.elevation?'200px' : '150px'};
+height: max-content;
 `
 
 
@@ -53,7 +53,7 @@ return <Container>
      {props.elevation && 
     <div style={{marginTop : '20px'}}>
     <TextBold>Altitude</TextBold>
-    <p style={{fontWeight : '300'}}>{Math.floor(props.elevation)} meteres ({Math.floor(props.elevation*3.281)} feet) above sea level</p>
+    <p style={{fontWeight : '300', marginBottom : '0'}}>{Math.floor(props.elevation)} metres ({Math.floor(props.elevation*3.281)} feet) above sea level</p>
     </div>
 }
      </WeatherContainer>

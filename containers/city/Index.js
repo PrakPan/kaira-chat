@@ -88,7 +88,7 @@ const Experience = (props) => {
                    destination={props.cityData.name}
                    cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
-                   title={`${props.cityData.name} trip planner`}
+                   title={`${props.cityData.name} Trip Planner`}
                   setShowMobilePlanner={setShowMobilePlanner}
 
                  />

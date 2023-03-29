@@ -9,14 +9,13 @@ import ImageLoader from '../../ImageLoader';
  width: 100%;
  display: grid;
 text-align: center;
-position : relative;
   @media screen and (min-width: 768px){
     padding: 0;
     width: 85%;
     text-align: left;
     margin:  auto;
     grid-template-columns: auto 400px;
- 
+    margin-top:5vh;
     }
 `;
 const Heading = styled.h1`
