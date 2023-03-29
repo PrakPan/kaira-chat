@@ -2,11 +2,13 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Day_I_ContainerM from './Day_I_ContainerM';
 import HorizontalBar from './Menubar';
+import {MdKeyboardArrowLeft, MdKeyboardArrowRight} from 'react-icons/md'
+
 
 import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
 import { isJson } from '../../../services/isJSON';
-import { Navbar } from './New_itenaryStyled';
+import { Navbar, NavbarContainer } from './New_itenaryStyled';
 import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
@@ -215,14 +217,21 @@ const NewItenaryDBDMob = (props) => {
   console.log('ITEMsssssss', items);
   return (
     <Wrapper>
+      <NavbarContainer ref={ref} sticky={isSticky & !isDesktop}>
+      <MdKeyboardArrowLeft style={{color: 'black', width: 'max-content', fontSize: '80px', marginRight: '20px'}} />
       <Navbar ref={ref} sticky={isSticky & !isDesktop}>
+      
         <CustomMenu
           Mstyle={'round'}
           items={items}
           activeItem={activeItem}
           onSelect={handleSelect}
         />
+        
       </Navbar>
+      <MdKeyboardArrowRight style={{color: 'black',width: 'max-content', fontSize: '80px', marginLeft: '20px'}}/>
+      </NavbarContainer>
+      
       {/* <HorizontalBar
         width={'100%'}
         height={'40px'}
