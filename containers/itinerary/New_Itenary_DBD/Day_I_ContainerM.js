@@ -8,6 +8,7 @@ import TransferElementsM from "./TransferElementsM";
 import ItineraryElementM from "../../newitinerary/itineraryelements/ItineraryElementM";
 import ItineraryFoodElementM from "../../newitinerary/itineraryelements/ItineraryFoodElementM";
 import ItineraryPoiElementM from "../../newitinerary/itineraryelements/PoiM";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -51,7 +52,7 @@ const Day_I_ContainerM = (props) => {
   console.log(Arslab_elements);
   return (
     <Container className="font-poppins">
-      {/* <Date>Feb 3, 2023</Date> */}
+      {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>}
 
       <div>
         {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
@@ -97,7 +98,7 @@ const Day_I_ContainerM = (props) => {
             <ItineraryPoiElementM
               key={element.activity_data.id}
             time="9:00AM - 12:00PM"
-            image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : 'media/website/grey.png' }
+            image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : null }
             booking
             heading={element.heading}
             text={element.text}

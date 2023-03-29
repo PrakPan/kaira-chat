@@ -27,31 +27,31 @@ const Itinerary = (props) => {
   const router = useRouter();
   const [citySelected, setCitySelected] = useState(0);
 
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
-  const [hideTimer, setHideTimer] = useState(false);
+  // const [hideTimer, setHideTimer] = useState(false);
 
-  const _handleTimerClose = () => {
-    window.scrollTo(0, window.innerHeight);
-    setHideTimer(true);
-    props._hideTimerHandler();
-  };
-  const showModalHandler = () => {
-    setShowModal(true);
-  };
-  const hideModalHandler = () => {
-    setShowModal(false);
-  };
+  // const _handleTimerClose = () => {
+  //   window.scrollTo(0, window.innerHeight);
+  //   setHideTimer(true);
+  //   props._hideTimerHandler();
+  // };
+  // const showModalHandler = () => {
+  //   setShowModal(true);
+  // };
+  // const hideModalHandler = () => {
+  //   setShowModal(false);
+  // };
   const _handleTailoredRedirect = (e) => {
     router.push('/tailored-travel');
   };
 
-  let links = [];
-  const StyledLink = styled(Link)`
-    &:hover {
-      cursor: pointer;
-    }
-  `;
+  // let links = [];
+  // const StyledLink = styled(Link)`
+  //   &:hover {
+  //     cursor: pointer;
+  //   }
+  // `;
   let classnames = '';
   if (props.blur) classnames = 'blurry-text ';
   let LinksArr = [];

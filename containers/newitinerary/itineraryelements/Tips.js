@@ -20,13 +20,13 @@ const Tips = (props) => {
     function proptipsMaker(tips){
         
         if(tips.length > 3){
-               return  tips.slice(3).map(
+               return  tips.slice(0,3).map(
                     (element)=>(
                         <li>{element}</li>
                                              )   
                 )
         }
-      return  tips.slice(3).map((element)=>(
+      return  tips.slice(0,3).map((element)=>(
             <li>{element}</li>
                                  ))
     }
