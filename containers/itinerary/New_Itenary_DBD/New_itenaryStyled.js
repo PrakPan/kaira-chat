@@ -114,9 +114,9 @@ border-style: none none none dotted;
   
 `;
 export const Navbar = styled.div`
-  position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
+  /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
   
-  top: 70px;
+  
   display: flex;
   ::-webkit-scrollbar {
     display: none;
@@ -125,19 +125,20 @@ export const Navbar = styled.div`
 scrollbar-width: none;
   overflow-x: scroll;
   align-items: center;
-  z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
+  
   margin: 0px -20px 0px -20px;
   background-color: white;
 `;
 export const NavbarContainer = styled.div`
   position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
-  
+  z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
+  top: 70px;
   display:flex;
   flex-direction: row;
   
 
  
-  z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
+  
   margin: 0px -20px 0px -20px;
   background-color: white;
 `;

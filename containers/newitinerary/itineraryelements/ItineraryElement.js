@@ -84,7 +84,7 @@ const ItineraryElement = (props) => {
           <ImageLoader
             dimensions={{ width: 200, height: 200 }}
             dimensionsMobile={{ width: 250, height: 200 }}
-            borderRadius="8px"
+          borderRadius="8px"
             hoverpointer
             onclick={() => console.log("")}
             width="100%"

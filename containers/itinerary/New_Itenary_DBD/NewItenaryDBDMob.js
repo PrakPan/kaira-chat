@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Day_I_ContainerM from './Day_I_ContainerM';
 import HorizontalBar from './Menubar';
-import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
 import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
@@ -12,6 +12,7 @@ import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 import ScrollableTabs from '../../../components/ScrollableTabs';
+import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
@@ -239,40 +240,14 @@ const NewItenaryDBDMob = (props) => {
   };
   return (
     <Wrapper>
-      <ScrollableTabs
+      {/* <ScrollableTabs
         Mstyle={'round'}
         items={items}
         activeItem={activeItem}
         onSelect={handleSelect}
-      ></ScrollableTabs>
-      <NavbarContainer sticky={isSticky & !isDesktop}>
-        <MdKeyboardArrowLeft
-          style={{
-            color: 'black',
-            width: 'max-content',
-            fontSize: '80px',
-            marginRight: '20px',
-          }}
-          onClick={handleScrollLeft}
-        />
-        <Navbar ref={ref}>
-          <CustomMenu
-            Mstyle={'round'}
-            items={items}
-            activeItem={activeItem}
-            onSelect={handleSelect}
-          />
-        </Navbar>
-        <MdKeyboardArrowRight
-          style={{
-            color: 'black',
-            width: 'max-content',
-            fontSize: '80px',
-            marginLeft: '20px',
-          }}
-          onClick={handleScrollRight}
-        />
-      </NavbarContainer>
+      ></ScrollableTabs> */}
+  <ScrollableMenuTabs offset={'120px'} items={items} BarName='CityName' Mstyle={'round'}
+/>
 
       {/* <HorizontalBar
         width={'100%'}
@@ -293,6 +268,7 @@ const NewItenaryDBDMob = (props) => {
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
+
             <Day_I_ContainerM Days={element}></Day_I_ContainerM>
           </div>
         ))}

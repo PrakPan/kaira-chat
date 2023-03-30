@@ -30,6 +30,7 @@ import NewItenaryDBD from './New_Itenary_DBD/NewItenaryDBDMob';
 import useMediaQuery from '../../hooks/useMedia';
 import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
 import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
+import ScrollableMenuTabs from '../../components/ScrollableMenuTabs';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -415,19 +416,23 @@ const SimpleTabs = (props) => {
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       {/* <StackedComponents></StackedComponents> */}
 
-      <Navbar
+      {/* <Navbar
         ref={ref}
         style={{
           boxShadow: isSticky ? '0 8px 6px -6px rgba(0, 0, 0, 0.1)' : 'none',
         }}
         sticky={isSticky & !isDesktop}
       >
+        {items.map((item) => (
         <CustomMenu
-          items={items}
-          activeItem={activeItem}
-          onSelect={handleSelect}
-        />
-      </Navbar>
+        items={items}
+        activeItem={activeItem}
+        onSelect={handleSelect}
+      />
+    ))}
+        
+      </Navbar> */}
+      <ScrollableMenuTabs   offset={'70px'}      items={items} BarName='TabsName'/>
 
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile

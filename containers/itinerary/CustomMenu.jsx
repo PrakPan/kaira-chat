@@ -1,7 +1,12 @@
 import React from "react";
-import { Link, ScrollLink } from "react-scroll";
+import { useRef } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
+import { Link } from "react-scroll";
 import styled, { keyframes } from "styled-components";
+
 const slideIn = keyframes`
+
   from {
     transform: translateY(-50px);
     opacity: 0;
@@ -52,12 +57,40 @@ const RoundMenuItem = styled.div`
 const AnimatedMenuItem = styled(MenuItem)`
   animation: ${slideIn} 0.5s ease;
 `;
-const CustomMenu = ({ Mstyle = "simple", items, activeItem, onSelect }) => (
-  <>
-    {items.map((item) => (
+
+const CustomMenu = ({BarName, Mstyle = "simple", item, activeItem, onSelect }) => {
+
+  // const [activeTabPosition, setActiveTabPosition] = useState(0);
+
+  // const isActiveTabInView = useIsComponentInView(
+  //   activeItem.id,
+  //   { threshold: 0.5 },
+  //   (isInView) => {
+  //     if (!isInView) {
+  //       const containerElement = navref.current;
+  //       if (containerElement) {
+  //         containerElement.scrollTo({
+  //           left: activeTabPosition,
+  //           behavior: 'smooth',
+  //         });
+  //       }
+  //     }
+  //   }
+  // );
+  // useEffect(() => {
+  //   const activeTabElement = document.getElementById(activeItem.id);
+  //   if (activeTabElement) {
+  //     setActiveTabPosition(activeTabElement.offsetLeft);
+  //   }
+  // }, [activeItem,isActiveTabInView]);
+
+  return (
+  
+
       <Link
         key={item.id}
         to={item.link}
+        id={`${BarName} ${item.id}`}
         style={{ textDecoration: "none" }}
         spy={true}
         smooth={true}
@@ -81,8 +114,8 @@ const CustomMenu = ({ Mstyle = "simple", items, activeItem, onSelect }) => (
           </MenuItem>
         )}
       </Link>
-    ))}
-  </>
-);
+  
+  
+)};
 
 export default CustomMenu;

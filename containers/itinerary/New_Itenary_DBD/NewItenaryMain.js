@@ -9,6 +9,7 @@ import CustomMenu from '../CustomMenu';
 import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 import ScrollableTabs from '../../../components/ScrollableTabs';
+import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -224,15 +225,16 @@ const NewItenaryMain = (props) => {
         activeItem={activeItem}
         onSelect={handleSelect}
       ></ScrollableTabs> */}
-      <Navbar ref={ref} sticky={isSticky & !isDesktop}>
+      {/* <Navbar ref={ref} sticky={isSticky & !isDesktop}>
         <CustomMenu
           Mstyle={'round'}
           items={items}
           activeItem={activeItem}
           onSelect={handleSelect}
         />
-      </Navbar>
-
+      </Navbar> */}
+      <ScrollableMenuTabs offset={'120px'} items={items} BarName='CityName' Mstyle={'round'}
+></ScrollableMenuTabs>
       {day_pannesl_jsx}
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
