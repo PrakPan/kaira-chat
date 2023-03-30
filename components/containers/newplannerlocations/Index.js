@@ -41,7 +41,6 @@ const LocationsBlog= (props) => {
 
     
       const _handleTailored = (location) => {
-        console.log('test')
         //  localStorage.setItem('search_city_selected_id', location.id);
         // localStorage.setItem('search_city_selected_name', location.name);
         // localStorage.setItem('search_city_selected_parent', '');

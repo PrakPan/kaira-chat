@@ -33,8 +33,8 @@ const Dates = (props) => {
   
   return (
    <Grid container spacing={2} style={{visibility: props.showCities && props.destination ? 'hidden' : 'visible'}}>
- <Grid item xs={6}   >
-               
+ <Grid item xs={6}>
+
                <LocalizationProvider dateAdapter={AdapterDateFns}>
              <DatePicker
              inputFormat='dd/MM/yyyy'
@@ -68,6 +68,7 @@ const Dates = (props) => {
                           value={props.valueEnd}
                           onChange={(newValue) => {
                             props.setValueEnd(newValue);
+                            console.log(newValue,'newValue')
                           }}
                           renderInput={(params) => <TextField style={{backgroundColor: 'white'}}   onClick={(e) => setOpenEnd(true)} {...params}/>}
                         />

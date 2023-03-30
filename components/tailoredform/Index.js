@@ -1,7 +1,7 @@
  
 import React, {useState, useEffect} from "react";
 import dayjs  from 'dayjs';
-
+import moment from 'moment'
 import styled , {keyframes}from 'styled-components';
   import Grid from '@material-ui/core/Grid';
 import Button from '../ui/button/Index';
@@ -181,41 +181,43 @@ const Enquiry = (props) => {
         
             
         setLoading(true);
-         axiostailoredinstance.post('',
-       data, {headers: {
-        'Authorization': `Bearer ${props.token}`
-        }}
-        ).then(response => {
-            setSubmitted(true);
-            if(!response.data.auto_itinerary_created) {
-                window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+      //    axiostailoredinstance.post('',
+      //  data, {headers: {
+      //   'Authorization': `Bearer ${props.token}`
+      //   }}
+      //   ).then(response => {
+      //       setSubmitted(true);
+      //       if(!response.data.auto_itinerary_created) {
+      //           window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
               
-                 }
-             else{
-                // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
+      //            }
+      //        else{
+      //           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
   
-                setTimeout(function(){ 
+      //           setTimeout(function(){ 
                    
-                  router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
-                }, 10000);
-                  setLoading(false);
+      //             router.push('/itinerary/'+response.data.itinerary.itinerary_id); 
+      //           }, 10000);
+      //             setLoading(false);
 
-              }
-        }).catch(err => {
-            setLoading(false);
-            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+      //         }
+      //   }).catch(err => {
+      //       setLoading(false);
+      //       window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
-             if(err.response.data.email){
-             }
-        })
+      //        if(err.response.data.email){
+      //        }
+      //   })
+
+      console.log(data,'data')
 
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {
         if(slideIndex) setSlideIndex(slideIndex-1);
     }
-    const [valueStart, setValueStart] =useState((dayjs().add(5, 'day')));
-    const [valueEnd, setValueEnd] =useState((dayjs().add(10,'day')));
+    const [valueStart, setValueStart] =useState((moment().add(5, 'day')));
+    const [valueEnd, setValueEnd] =useState((moment().add(10,'day')));
     const [numberOfAdults, setNumberOfAdults] = useState(2);
     const [numberOfChildren, setNumberOfChildren] = useState(0);
     const [numberOfInfants, setNumberOfInfants] = useState(0);

@@ -15,7 +15,7 @@ text-align: center;
     text-align: left;
     margin:  auto;
     grid-template-columns: auto 400px;
-    margin-top:5vh;
+    margin-top:2vh;
     }
 `;
 const Heading = styled.h1`
@@ -111,6 +111,7 @@ bottom : 10px;
 width : 100%;
 padding-inline : 10px;
 @media screen and (min-width: 768px){
+bottom : 30px;
 width : 40%;
 // bottom : -20%;
 }

@@ -303,7 +303,6 @@ const InfoWindowContainer = (location)=><MapInfo>
 <b>{location.name}</b>
 <div>{location.most_popular_for.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
 </MapInfo>
-console.log(props.experienceData, "experienceData");
     return (
       <div
         className={"Homepage"}

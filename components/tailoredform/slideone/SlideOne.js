@@ -1,6 +1,6 @@
  
 import React, {useState, useEffect } from 'react';
-  
+  import NewDatePicker from './NewDatePicker'
 import media from '../../media';
  
 import styled from 'styled-components';
@@ -40,13 +40,20 @@ const SlideOne = (props) =>{
       </Section>
       <Section>
         <Question style={{visibility: props.showCities ? 'hidden' : 'visible'}} margin="0 0 1rem 0" >Your travel dates?</Question>
-<Dates 
+{/* <Dates 
 showCities={props.showCities}
  valueStart={props.valueStart}
  valueEnd={props.valueEnd}
  setValueStart={props.setValueStart}
  setValueEnd={props.setValueEnd}
-></Dates>
+></Dates> */}
+<NewDatePicker
+ valueStart={props.valueStart}
+ valueEnd={props.valueEnd}
+ setValueStart={props.setValueStart}
+ setValueEnd={props.setValueEnd}
+
+/>
 <div  className='hover-pointer' style={{display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '1rem', marginLeft: '2px'}}>
   <div onClick={() => setFlexible(!flexible)}><div className="center-div" style={{border: '2px solid #01202B', color: 'black', lineHeight: '1', fontSize: '0.75rem', borderRadius: '3px', opacity: '1', height: '20px', width: '20px', backgroundColor: flexible ? 'rgba(247,231,0,1)' : "transparent"}}>
     {flexible ? <BsCheck></BsCheck> : null}
