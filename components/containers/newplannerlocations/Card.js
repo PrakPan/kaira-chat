@@ -96,7 +96,7 @@ const Experiences= (props) => {
 //       </Container>
 //   ); 
 return(
-    <div className='hover-pointer' onClick={() => props._handleTailored(props.data)}>
+    <div className='hover-pointer' onClick={() => {props.slug ?props._handleCityRedirect(props.slug) : console.log('')}}>
   {/* <ImageLoader
 
 url={'media'}

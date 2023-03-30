@@ -3,6 +3,7 @@ import 'react-dates/initialize'
 import "react-dates/lib/css/_datepicker.css";
 import {BiCalendarAlt} from 'react-icons/bi'
 import moment from "moment";
+import media from '../../media'
 import {
     DateRangePicker,
     isInclusivelyBeforeDay
@@ -39,24 +40,34 @@ overflow : hidden;
   display : none;
 }
 
-.DayPickerNavigation{
-    display: flex;
-    height: 20px;
-    width: fit-content;
-    margin-inline : 37%;
-    margin-bottom : 10px;
+@media screen and (max-width: 768px){
+  .DayPickerNavigation{  
+        display: flex;
+        height: 20px;
+        width: fit-content;
+        margin-inline : 37%;
+        margin-bottom : 10px;
+      }
+      .DayPickerNavigation>.DayPickerNavigation_button{
+      height: 32px;
+      width:32px;
+      border-radius: 100%;
+      margin-inline : 5px;
+      padding : 2px;
+      }
+      .DayPickerNavigation>.DayPickerNavigation_button > svg{
+        height:10px;
+        width: 10px;
+      }
+
+    
+}
+.DateRangePicker_picker_1{
+  left : 0px;
+  @media screen and (min-width: 768px){
+    left : -130px !important;;
   }
-  .DayPickerNavigation>.DayPickerNavigation_button{
-  height: 32px;
-  width:32px;
-  border-radius: 100%;
-  margin-inline : 5px;
-  padding : 2px;
-  }
-  .DayPickerNavigation>.DayPickerNavigation_button > svg{
-    height:10px;
-    width: 10px;
-  }
+}
   .CalendarDay{
     border : 0px;
   }
@@ -94,7 +105,7 @@ display: flex;
 justify-content: space-between;
 width: 58.5%;
 position: absolute;
-top: 30%;
+top: 27%;
 right: 8px;
 font-size : 20px;
 `
@@ -108,6 +119,8 @@ width: 70%;
 `
 const DatePicker = (props) => {
 const [focusedInput, setFocusedInput] = useState(null);
+let isPageWide = media('(min-width: 768px)');
+
 return (
   <>
     <TextContainer>
@@ -117,6 +130,7 @@ return (
    <Container>
     
     <DateRangePicker
+    displayFormat='DD/MM/YYYY'
         startDate={props.valueStart}
         startDateId="startDate"
         endDate={props.valueEnd}
@@ -129,8 +143,8 @@ return (
         onFocusChange={setFocusedInput}
         isOutsideRange={day => day.isBefore(moment()) }
           initialVisibleMonth={() => moment().subtract(0, "month")}
-        numberOfMonths={3}
-        orientation={"vertical"}
+        numberOfMonths={2}
+        orientation={isPageWide?"horizontal":"vertical"}
       />
       <CalenderIcons><BiCalendarAlt/><BiCalendarAlt/></CalenderIcons>
    </Container>

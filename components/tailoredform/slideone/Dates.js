@@ -68,7 +68,6 @@ const Dates = (props) => {
                           value={props.valueEnd}
                           onChange={(newValue) => {
                             props.setValueEnd(newValue);
-                            console.log(newValue,'newValue')
                           }}
                           renderInput={(params) => <TextField style={{backgroundColor: 'white'}}   onClick={(e) => setOpenEnd(true)} {...params}/>}
                         />

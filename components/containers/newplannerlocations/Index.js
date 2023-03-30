@@ -34,6 +34,7 @@ grid-template-columns: 1fr 1fr ;
 
 
 const LocationsBlog= (props) => {
+  console.log(props)
   let isPageWide = media('(min-width: 768px)')
 
     const router = useRouter();
@@ -48,7 +49,9 @@ const LocationsBlog= (props) => {
     }
     const _handlePlannerPage = (id,name,parent) => {
       router.push('/travel-planner/'+name)
-
+    }
+    const _handleCityRedirect = (name)=>{
+      router.push(`/travel-guide/city/${name}`)
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
     const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
@@ -82,6 +85,7 @@ let MobileCardsArr = []
             slug={props.locations[i].slug}
             filters={props.locations[i].most_popular_for}
             _handleTailored={_handleTailored}
+            _handleCityRedirect={_handleCityRedirect}
 
             // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
             > 
