@@ -432,7 +432,7 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
-      <ScrollableMenuTabs   offset={'70px'}      items={items} BarName='TabsName'/>
+      <ScrollableMenuTabs offset={'82px'} items={items} BarName="TabsName" />
 
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile
@@ -461,8 +461,8 @@ const SimpleTabs = (props) => {
           blur={blurItinerary}
         ></Breif>
       </div>
-      
-{isPageWide ? (
+
+      {isPageWide ? (
         <div id={items[1].link}>
           <NewItenaryMain
             is_registration_needed={
@@ -490,31 +490,31 @@ const SimpleTabs = (props) => {
       ) : (
         <div id={items[1].link}>
           <NewItenaryDBDMob
-        is_registration_needed={
-          props.payment ? props.payment.is_registration_needed : false
-        }
-        selectedPoi={selectedPoi}
-        user_email={props.user_email}
-        is_preview={props.preview}
-        is_stock={props.is_stock}
-        setShowPoiModal={_handlePoiEditModalOpen}
-        traveleritinerary={props.traveleritinerary}
-        day_slabs={props.itinerary.day_slabs}
-        hours={hours}
-        minutes={minutes}
-        seconds={seconds}
-        timeRequired={props.timeRequired}
-        hideTimer={minimiseTimer}
-        itineraryDate={props.itineraryDate}
-        showTimer={false}
-        _hideTimerHandler={_minimiseTimerHandler}
-        blur={false}
-        location_selected={location}
-        city_slabs={props.breif.city_slabs}
-        itinerary={props.itinerary}
-        newData={props.newData}
-        demoitinerary={props.demoitinerary}
-      ></NewItenaryDBDMob>
+            is_registration_needed={
+              props.payment ? props.payment.is_registration_needed : false
+            }
+            selectedPoi={selectedPoi}
+            user_email={props.user_email}
+            is_preview={props.preview}
+            is_stock={props.is_stock}
+            setShowPoiModal={_handlePoiEditModalOpen}
+            traveleritinerary={props.traveleritinerary}
+            day_slabs={props.itinerary.day_slabs}
+            hours={hours}
+            minutes={minutes}
+            seconds={seconds}
+            timeRequired={props.timeRequired}
+            hideTimer={minimiseTimer}
+            itineraryDate={props.itineraryDate}
+            showTimer={false}
+            _hideTimerHandler={_minimiseTimerHandler}
+            blur={false}
+            location_selected={location}
+            city_slabs={props.breif.city_slabs}
+            itinerary={props.itinerary}
+            newData={props.newData}
+            demoitinerary={props.demoitinerary}
+          ></NewItenaryDBDMob>
           {/* <LocationsContainer >
                 {locationsArr}
               </LocationsContainer> */}

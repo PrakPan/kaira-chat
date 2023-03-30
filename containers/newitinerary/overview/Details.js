@@ -37,12 +37,17 @@ const Details = (props) => {
         <Heading>Duration</Heading>
         <Text>{props.duration_time} Nights</Text>
       </div>
-      <div style={{ width: 'max-content' }}>
-        <Heading>Type of Travel</Heading>
-        <Text>
-          {props.travellerType[0]} {(props.travellerType.length - 1 <= 0)? null : `+${props.travellerType.length - 1}`}
-        </Text>
-      </div>
+      {props.travellerType[0] ? (
+        <div style={{ width: 'max-content' }}>
+          <Heading>Type of Travel</Heading>
+          <Text>
+            {props.travellerType[0]}{' '}
+            {props.travellerType.length - 1 <= 0
+              ? null
+              : `+${props.travellerType.length - 1}`}
+          </Text>
+        </div>
+      ) : null}
 
       {/* <div style={{ width: 'max-content' }}>
         <Heading>Destination</Heading>

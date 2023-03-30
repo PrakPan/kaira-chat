@@ -1,5 +1,5 @@
-import React from "react";
-import ImageLoader from "../../../components/ImageLoader";
+import React from 'react';
+import ImageLoader from '../../../components/ImageLoader';
 import {
   ArriveContainer,
   Container,
@@ -9,9 +9,9 @@ import {
   TransferInfo,
   TransparentButton,
   TransportContainer,
-} from "./New_itenaryStyled";
-import { convertNumToTime } from "../../../helper/convertNumToTime";
-import { formatNumber } from "../../../helper/formatNumber";
+} from './New_itenaryStyled';
+import { convertNumToTime } from '../../../helper/convertNumToTime';
+import { formatNumber } from '../../../helper/formatNumber';
 const TransferElementsM = ({
   time,
   heading,
@@ -27,24 +27,24 @@ const TransferElementsM = ({
       <Container>
         <Timecontainer>
           <div>{time}</div>
-          
+
           <Timecontainer>
-          <div>{heading}</div>
-          
+            <div>{heading}</div>
+
             {meta ? (
-              <TransparentButton>
-                {modes ? `${modes} From ` : null} ₹
-                {formatNumber(meta.estimated_cost)}
-              </TransparentButton>
+              meta.estimated_cost ? (
+                <TransparentButton>
+                  {modes ? `${modes} From ` : null} ₹
+                  {formatNumber(meta.estimated_cost)}
+                </TransparentButton>
+              ) : null
             ) : null}
           </Timecontainer>
- 
-          
         </Timecontainer>
-        
+
         {transfers !== undefined ? (
-            <TransportContainer>
-            <div style={{ paddingRight: "10px" }}>
+          <TransportContainer>
+            <div style={{ paddingRight: '10px' }}>
               <ImageLoader
                 url={icon}
                 leftalign
@@ -53,31 +53,26 @@ const TransferElementsM = ({
                 widthmobile="1.25rem"
               ></ImageLoader>
             </div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-                <div>
-                  {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
-                  {transfers.routes[0]?.legs[0].destination.shortName}
-                </div>
-                {meta ? (
-                  <div>Duration: {convertNumToTime(meta.duration)}</div>
-                ) : null}
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div>
+                {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
+                {transfers.routes[0]?.legs[0].destination.shortName}
               </div>
-              </TransportContainer>
-          ) : null}
+              {meta ? (
+                <div>Duration: {convertNumToTime(meta.duration)}</div>
+              ) : null}
+            </div>
+          </TransportContainer>
+        ) : null}
         <TransferInfo>{text}</TransferInfo>
-        
-          
-
-        
-    </Container>
+      </Container>
       <Line></Line>
 
       {newcity !== null ? (
-        
-          <ArriveContainer style={{ fontSize: "14px", fontWeight: "500" }}>
+        <ArriveContainer style={{ fontSize: '14px', fontWeight: '500' }}>
           <TransportContainer>
             <div>{time}</div>
-            <div style={{ paddingLeft: "10px" }}>
+            <div style={{ paddingLeft: '10px' }}>
               <ImageLoader
                 url={icon}
                 leftalign
@@ -86,11 +81,9 @@ const TransferElementsM = ({
                 widthmobile="1.25rem"
               ></ImageLoader>
             </div>
-          </TransportContainer>{" "}
+          </TransportContainer>{' '}
           <div>Arrive in {newcity.city_data.city_name} </div>
-          </ArriveContainer>
-          
-        
+        </ArriveContainer>
       ) : null}
 
       <Line></Line>

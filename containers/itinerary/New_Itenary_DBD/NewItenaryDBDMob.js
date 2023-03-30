@@ -209,7 +209,7 @@ const NewItenaryDBDMob = (props) => {
 
         items.push({
           id: i,
-          label: `${props.city_slabs[i].city_name} ${props.city_slabs[i].duration} N`,
+          label: `${props.city_slabs[i].city_name} (${props.city_slabs[i].duration} N)`,
           link:
             itenaryId !== undefined
               ? itenaryId.slab_id
@@ -246,8 +246,12 @@ const NewItenaryDBDMob = (props) => {
         activeItem={activeItem}
         onSelect={handleSelect}
       ></ScrollableTabs> */}
-  <ScrollableMenuTabs offset={'120px'} items={items} BarName='CityName' Mstyle={'round'}
-/>
+      <ScrollableMenuTabs
+        offset={'132px'}
+        items={items}
+        BarName="CityName"
+        Mstyle={'round'}
+      />
 
       {/* <HorizontalBar
         width={'100%'}
@@ -268,7 +272,6 @@ const NewItenaryDBDMob = (props) => {
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-
             <Day_I_ContainerM Days={element}></Day_I_ContainerM>
           </div>
         ))}
