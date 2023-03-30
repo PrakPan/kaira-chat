@@ -9,6 +9,7 @@ import Spinner from '../../../../Spinner';
 
 //  import LocationsContainer from './LocationsContainer'
 import axiossearchstartinginstance from '../../../../../services/search/startinglocation';
+import SkeletonCard from '../../../../ui/SkeletonCard';
 
 const Container = styled.div`
  `;
@@ -34,7 +35,16 @@ width: 9rem;
 
 `;
 
- 
+const skeleton = <div style={{display:'flex' , marginBlock:'1rem' , marginLeft :'10px'}}>
+<SkeletonCard borderRadius='100%' width='52px' ml='1px'></SkeletonCard>
+<div>
+<SkeletonCard height='14px' ml='4px' width={'50%'} borderRadius={'2px'}></SkeletonCard>
+<SkeletonCard height='12px' ml='4px' mt='4px' width={'35%'} borderRadius={'2px'}></SkeletonCard>
+</div>
+</div>
+
+
+
 const SearchInput = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
@@ -86,6 +96,8 @@ const SearchInput = (props) => {
       props.onfocus();
       // props.setStartingLocation(false);
     }
+
+
    return (
     <Container>
    {props.showSearchStarting ? 
@@ -101,7 +113,7 @@ const SearchInput = (props) => {
       </div> : null 
     }
     {resultsJSX.length && props.showSearchStarting? <ResultsContainer>
-    {resultsJSX}
+       {loading ? [skeleton,skeleton,skeleton,skeleton,skeleton] :resultsJSX}
     </ResultsContainer> : null}
 
     </Container>

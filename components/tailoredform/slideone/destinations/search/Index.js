@@ -34,10 +34,11 @@ const Search = (props) => {
     if(e.target.value.length > 1)
     {
       setLoading(true)
+      setShowResults(true);
       axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
       setLoading(false)  
       if(res.data.length){
-          setShowResults(true);
+          // setShowResults(true);
             setResults(res.data)
             // props._showSearchedLocations(res.data);
         }
@@ -55,7 +56,7 @@ const Search = (props) => {
     <SearchInput destination={props.destination} onfocus={props.onfocus} onblur={props.onblur} searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
     {loading ? <Spinner size={16} margin="0"></Spinner> : null}
     </div>
-        {showResults && !props.searchFinalized? <SearchResults setShowResults={setShowResults} inbox_id={props.inbox_id} setDestination={props.setDestination} top="2.75rem" results={results} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchResults> : null}
+        {showResults && !props.searchFinalized? <SearchResults loading={loading} setShowResults={setShowResults} inbox_id={props.inbox_id} setDestination={props.setDestination} top="2.75rem" results={results} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchResults> : null}
     </Container>
   );
 }

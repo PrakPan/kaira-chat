@@ -47,7 +47,7 @@ border : 1.5px solid #01202B;
 font-size : 1rem;
 padding : 0.5rem 2rem;
 display: block;
-margin : 15px auto;
+margin : 1rem auto;
 border-radius : 8px;
 &:hover{
   color : white;
@@ -120,6 +120,7 @@ const Menu = (props)=>{
           <P>{props.data.folklore_or_story}</P>
         </MenuItem>
       )}
+        <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button>
 
       <MenuItem>
         <Heading>Why plan with us?</Heading>
@@ -128,6 +129,7 @@ const Menu = (props)=>{
           destination={props.destination}
           // cities={props.cities}
         />
+
       </MenuItem>
 
       <MenuItem>
