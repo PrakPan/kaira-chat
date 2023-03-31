@@ -20,6 +20,12 @@ const Container = styled.div`
     left : ${props=>props.left};
     bottom : ${props=>props.bottom};
     right: ${props=>props.right};
+
+@media screen and (max-width: 768px){
+top : ${props=>props.mobiletop};
+left : ${props=>props.mobileleft};
+};
+
 &:after {
     content: "";
     position: absolute;

@@ -22,7 +22,7 @@ const Container = styled.input`
 
  
 const SearchInput = (props) => {
-const [value, setValue] = useState(props.destination || null);
+const [value, setValue] = useState(null);
 
 const _handleKey = (e) => {
   setValue(e.target.value)
@@ -44,7 +44,7 @@ useEffect(() => {
 
   }
   return (
-   <Container onFocus={props.onfocus} onBlur={props.onblur} onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} onChange={(e) => _handleKey(e)}>
+   <Container onFocus={props.onfocus} onBlur={props.onblur} onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} autoFocus onChange={(e) => _handleKey(e)}>
     
     </Container>
   );

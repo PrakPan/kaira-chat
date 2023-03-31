@@ -264,8 +264,8 @@ const Enquiry = (props) => {
        onClick={() => setShowBlack(true)}
      >
 
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' left='10px' text='Please fill starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' left='200px' text='Please fill ending date!' />}
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='10px' text='Please fill starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='200px' text='Please fill ending date!' />}
       {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please Select your group type!' />}
       
 
