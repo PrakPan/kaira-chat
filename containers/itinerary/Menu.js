@@ -527,7 +527,8 @@ const SimpleTabs = (props) => {
       )
       // <NewMobileItinerary city_slabs={props.breif.city_slabs} day_slabs={props.itinerary.day_slabs} hours={hours} minutes={minutes} seconds={seconds}  timeRequired={props.timeRequired}  hideTimer={minimiseTimer} itineraryDate={props.itineraryDate}  showTimer={showItineraryTimer}   _hideTimerHandler={_minimiseTimerHandler} blur={blurItinerary} location_selected={location} city_slabs={props.breif.city_slabs}  itinerary={props.itinerary} newData={props.newData} demoitinerary={props.demoitinerary}/>
       }
-      {isPageWide ? (
+
+      {/* {isPageWide ? (
         <div id={items[1].link}>
           <ItineraryContainer
             is_registration_needed={
@@ -580,13 +581,11 @@ const SimpleTabs = (props) => {
             newData={props.newData}
             demoitinerary={props.demoitinerary}
           ></ItineraryContainerMobile>
-          {/* <LocationsContainer >
-                {locationsArr}
-              </LocationsContainer> */}
+        
         </div>
       )
-      // <NewMobileItinerary city_slabs={props.breif.city_slabs} day_slabs={props.itinerary.day_slabs} hours={hours} minutes={minutes} seconds={seconds}  timeRequired={props.timeRequired}  hideTimer={minimiseTimer} itineraryDate={props.itineraryDate}  showTimer={showItineraryTimer}   _hideTimerHandler={_minimiseTimerHandler} blur={blurItinerary} location_selected={location} city_slabs={props.breif.city_slabs}  itinerary={props.itinerary} newData={props.newData} demoitinerary={props.demoitinerary}/>
-      }
+     
+      }  */}
 
       {isGroup ? (
         <div id={items[2].link}>

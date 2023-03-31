@@ -207,7 +207,7 @@ const NewItenaryDBDMob = (props) => {
           label: `${props.city_slabs[i].city_name} ${
             props.city_slabs[i].duration
               ? `(${props.city_slabs[i].duration} N)`
-              : null
+              : ` `
           } `,
           link:
             itenaryId !== undefined
@@ -246,6 +246,7 @@ const NewItenaryDBDMob = (props) => {
         onSelect={handleSelect}
       ></ScrollableTabs> */}
       <ScrollableMenuTabs
+        icons={items.length < 3 ? false : true}
         offset={'127px'}
         items={items}
         BarName="CityName"

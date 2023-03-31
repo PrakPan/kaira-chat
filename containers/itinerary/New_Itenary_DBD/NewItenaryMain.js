@@ -188,7 +188,7 @@ const NewItenaryMain = (props) => {
   const [activeItem, setActiveItem] = useState(1);
   const items = [];
   if (props.city_slabs) {
-    for (var i = 0; i < props.city_slabs.length; i++) {
+    for (var i = 1; i < props.city_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
       if (props.city_slabs[i].is_trip_terminated) break;
@@ -210,7 +210,7 @@ const NewItenaryMain = (props) => {
           link:
             itenaryId !== undefined
               ? itenaryId.slab_id
-              : props.itinerary.day_slabs[0].slab_id,
+              : props.itinerary.day_slabs[1].slab_id,
         });
       }
     }
@@ -233,6 +233,7 @@ const NewItenaryMain = (props) => {
         />
       </Navbar> */}
       <ScrollableMenuTabs
+        icons={items.length < 3 ? false : true}
         offset={'120px'}
         items={items}
         BarName="CityName"
