@@ -50,7 +50,13 @@ const NavbarContainer = styled.div`
 
 ///// Implementation
 
-const ScrollableMenuTabs = ({ offset, items, BarName, Mstyle = 'simple' }) => {
+const ScrollableMenuTabs = ({
+  icons = true,
+  offset,
+  items,
+  BarName,
+  Mstyle = 'simple',
+}) => {
   const [activeItem, setActiveItem] = useState(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [activeTabPosition, setActiveTabPosition] = useState(0);
@@ -129,17 +135,22 @@ const ScrollableMenuTabs = ({ offset, items, BarName, Mstyle = 'simple' }) => {
   const debounceFun = useDebounce(handleScroll, 500);
 
   return (
-    <NavbarContainer style={{ top: offset }}>
-      <IoIosArrowBack
-        style={{
-          color: 'black',
-          width: 'max-content',
-          fontSize: '50px',
-          marginRight: '20px',
-          contentVisibility: `${canScrollLeft ? 'auto' : 'hidden'}`,
-        }}
-        onClick={handleScrollLeft}
-      />
+    <NavbarContainer
+      style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
+    >
+      {icons ? (
+        <IoIosArrowBack
+          style={{
+            color: 'black',
+            width: 'max-content',
+            fontSize: '50px',
+            marginRight: '20px',
+            contentVisibility: `${canScrollLeft ? 'auto' : 'hidden'}`,
+          }}
+          onClick={handleScrollLeft}
+        />
+      ) : null}
+
       <Navbar ref={ref} onScroll={debounceFun}>
         {items.map((item) => (
           <CustomMenu
@@ -151,15 +162,17 @@ const ScrollableMenuTabs = ({ offset, items, BarName, Mstyle = 'simple' }) => {
           />
         ))}
       </Navbar>
-      <IoIosArrowForward
-        style={{
-          color: 'black',
-          width: 'max-content',
-          fontSize: '50px',
-          marginLeft: '20px',
-        }}
-        onClick={handleScrollRight}
-      />
+      {icons ? (
+        <IoIosArrowForward
+          style={{
+            color: 'black',
+            width: 'max-content',
+            fontSize: '50px',
+            marginLeft: '20px',
+          }}
+          onClick={handleScrollRight}
+        />
+      ) : null}
     </NavbarContainer>
   );
 };

@@ -432,7 +432,12 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
-      <ScrollableMenuTabs offset={'82px'} items={items} BarName="TabsName" />
+      <ScrollableMenuTabs
+        icons={false}
+        offset={'82px'}
+        items={items}
+        BarName="TabsName"
+      />
 
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile
