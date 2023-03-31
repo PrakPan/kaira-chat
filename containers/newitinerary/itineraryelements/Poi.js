@@ -7,14 +7,33 @@ import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import {HiPencil} from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
+import { HLine } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+  
+const padding = {
+    initialLeft: "100px",
+  };
+  const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 22px;
+  
+    padding: 0px 0px 0px 0px;
+    color: #01202b;
+  `;
+export const TInfoContainer = styled.div`
+@media screen and (min-width: 768px) {
+  display: flex;
 
-   const Container = styled.div`
-   padding: 0.5rem;
-   
-    @media screen and (min-width: 768px){
- 
-    }
-`;
+  flex-direction: row;
+  & > div {
+    padding-left: ${padding.initialLeft};
+    width: 100%;
+  }
+}
+`;  
  
  const SectionOneText = styled.span`
     
@@ -70,13 +89,83 @@ const ItineraryPoiElement = (props) => {
     useEffect(() => {   
       
     },[]);
-    
+    function stringCompare(arr,str){
+
+    }
+    function ErrorNotDef(elem){
+      return elem === undefined || elem === null || !elem
+    }
     return(
 
         <Container
-     
-        className='font-poppins'>
-            <div style={{display: 'flex', alignItems: 'center'}}>
+        className="font-poppins"
+        style={{ fontSize: "14px", fontWeight: "500" }}
+    >
+        <div>{props.time}</div>
+        <TInfoContainer>
+          <HLine style={{ width: "2rem" }}>
+            <div style={{ marginLeft: "-10px" }}>
+              <ImageLoader
+                url={props.icon}
+                leftalign
+                dimensions={{ width: 200, height: 200 }}
+                width="1.25rem"
+                widthmobile="1.25rem"
+              ></ImageLoader>
+            </div>
+            <div style={{position: 'absolute', marginLeft: '-50px', marginTop: '10px' }}>
+            {props.image ? 
+                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="60%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
+                : 
+                null
+                }
+            </div>
+            
+          </HLine>
+          <div>
+          <GridContainer image={props.image}>
+                {/* {props.image ? 
+                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
+                : 
+                null
+                } */}
+                <div>
+                    <div className="display-flex" style={{lineHeight: '1'}}>
+                    <Heading>{props.heading}</Heading>
+                    <HiPencil></HiPencil>
+                    </div>
+                    <Rating margin="0.25rem 0"></Rating>
+                    {props.poi !== undefined ? props.poi.experience_filters ?
+                    
+                    <div>
+                      {props.poi.experience_filters.map((element, index)=>(
+ element.toString() != 'Hidden Gem'   ? <BoldTags> {element} </BoldTags> : 
+ <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
+ 
+ <ColorTags style={{color: index%2 ? '#9C54F6' : '#5363F5'}}>{element}</ColorTags>
+ 
+
+ </div>
+                      ))}
+                   
+                      </div>
+                     : null : null} 
+
+                    
+
+                </div>
+            </GridContainer>
+            
+            <Text>{props.text}</Text>
+             {!ErrorNotDef(props.poi)  ? !ErrorNotDef(props.poi.tips) ?  <Tips tips={props.poi.tips}></Tips> : null :
+                 null
+             }
+                
+
+<Line></Line>
+          </div>
+    </TInfoContainer>  
+            {/* <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
                 <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
                 {
@@ -96,33 +185,8 @@ const ItineraryPoiElement = (props) => {
                         </div>
                     : null
                 }
-            </div>
-            <GridContainer image={props.image}>
-                {props.image ? 
-                   <ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="100%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
-                : 
-                null
-                }
-                <div>
-                    <div className="display-flex" style={{lineHeight: '1'}}>
-                    <Heading>{props.heading}</Heading>
-                    <HiPencil></HiPencil>
-                    </div>
-                    <Rating margin="0.25rem 0"></Rating>
-                    <BoldTags>Heritage • Culture</BoldTags>
-                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '0.5rem'}}>
-                    <ColorTags style={{color:'#9C54F6'}}>HIDDEN GEM</ColorTags>
-                    <ColorTags style={{color: '#5363F5'}}>ATTRACTION</ColorTags>
-
-                    </div>
-
-                </div>
-            </GridContainer>
-            { props.type === ITINERARY_ELEMENT_TYPES.activity && props.text?<Text>{props.text}</Text>
-             : null}
-                <Tips></Tips>
-
-<Line></Line>
+            </div> */}
+            
          </Container>
         
     );

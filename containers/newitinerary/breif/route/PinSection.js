@@ -1,32 +1,33 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import Pin from './Pin';
- 
-const  Container = styled.div`
-display: grid;
-grid-template-columns: max-content auto;
+
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: max-content auto;
 `;
 const Heading = styled.div`
-    font-weight: 600;
-    margin: 0 0 0 0.75rem;
-    line-height: 24px;
-    display: flex;
-    align-items: center;
+  font-weight: 650;
+  margin: 0 0 0 2rem;
+  color: black;
+
+  font-size: 16px;
+  line-height: 28px;
+  display: flex;
+  align-items: center;
 `;
- 
+
 const PinSection = (props) => {
-   
-    useEffect(() => {
-      
-    },[]);
+  useEffect(() => {}, []);
 
-    return(
-        <Container>
-            <Pin duration={props.duration}></Pin>
-            <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading>
-        </Container>
-        
-    );
- }
+  return (
+    <Container>
+      <Pin duration={props.duration} pinColour={props.pinColour}></Pin>
+      <Heading>
+        {props.duration ? props.city + ' (' + props.duration + ')' : props.city}
+      </Heading>
+    </Container>
+  );
+};
 
-export default  PinSection;
+export default PinSection;

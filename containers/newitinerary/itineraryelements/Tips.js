@@ -17,6 +17,19 @@ const Text = styled.p`
  
 const Tips = (props) => {
     
+    function proptipsMaker(tips){
+        
+        if(tips.length > 3){
+               return  tips.slice(0,3).map(
+                    (element)=>(
+                        <li>{element}</li>
+                                             )   
+                )
+        }
+      return  tips.slice(0,3).map((element)=>(
+            <li>{element}</li>
+                                 ))
+    }
    
     useEffect(() => {   
       
@@ -27,7 +40,10 @@ const Tips = (props) => {
         <Container>
                      <Heading>Tips</Heading>
                      <Text>
-                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam varius aliquet viverra. Vivamus vitae felis ut nisl viverra molestie. Quisque.
+                        <ul>
+                        {props.tips == undefined || props.tips  == null ? null: proptipsMaker(props.tips)}
+                        </ul>
+                     
 
                      </Text>
         </Container>

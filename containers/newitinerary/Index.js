@@ -4,12 +4,12 @@ import Overview from './overview/Index';
 import Menu from './Menu';
 import Brief from './breif/Index';
 import NewFooter from '../../components/newfooter/Index';
-import ItineraryElement from './itineraryelements/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../services/constants';
-import ItineraryPoiElement from './itineraryelements/Poi';
-import ItineraryFlightElement from './itineraryelements/Flight';
-import ItineraryFoodElement from './itineraryelements/Food';
-import DayContainer from './itinerary/DayContainer';
+
+// import { ITINERARY_ELEMENT_TYPES } from '../../services/constants';
+// import ItineraryPoiElement from './itineraryelements/Poi';
+// import ItineraryFlightElement from './itineraryelements/Flight';
+// import ItineraryFoodElement from './itineraryelements/Food';
+// import DayContainer from './itinerary/DayContainer';
 import Itinerary from './itinerary/Index';
 
 const Container = styled.div`
@@ -35,6 +35,7 @@ border: 1px solid #F0F0F0;
 `;
 
 const NewItinerary = (props) => {
+    console.log(props)
    const [offsets, setOffsets] = useState({
     "Brief" : null,
     "Itinerary": null,
@@ -44,6 +45,7 @@ const NewItinerary = (props) => {
     "Activities": null,
    })
    const [currentMenu, setCurrentMenu] = useState('Brief');
+   
     useEffect(() => {
      
         let prevScroll = window.pageYOffset;
@@ -75,7 +77,7 @@ const NewItinerary = (props) => {
     return(
         <div style={{}}>
         <Container>
-            <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} ></Overview>
+            {/* <Overview FONT_SIZES_MOBILE={FONT_SIZES_MOBILE} ></Overview> */}
             <Menu currentMenu={currentMenu} ></Menu>
             <Line  ></Line>
             <div
