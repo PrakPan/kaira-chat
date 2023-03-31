@@ -204,7 +204,11 @@ const NewItenaryDBDMob = (props) => {
 
         items.push({
           id: i,
-          label: `${props.city_slabs[i].city_name} (${props.city_slabs[i].duration} N)`,
+          label: `${props.city_slabs[i].city_name} ${
+            props.city_slabs[i].duration
+              ? `(${props.city_slabs[i].duration} N)`
+              : null
+          } `,
           link:
             itenaryId !== undefined
               ? itenaryId.slab_id
