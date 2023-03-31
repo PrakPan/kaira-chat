@@ -40,9 +40,8 @@ const SearchResults = (props) => {
      document.body.addEventListener('click', ()=>props.setShowResults(false) );
 
      return ()=> {
-      window.removeEventListener('click', ()=>props.setShowResults(false) );
+      document.body.removeEventListener('click', ()=>props.setShowResults(false) );
   } 
-
   },[]);
 
   return (

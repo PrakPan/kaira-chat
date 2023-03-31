@@ -29,7 +29,6 @@ width: 100%;
  
  
 const Pax= (props) => {
-
     let defaultcounters = [2,0,0];
     // if(props.answers[2][0] === 2){
     //     defaultcounters=[2,0,0];

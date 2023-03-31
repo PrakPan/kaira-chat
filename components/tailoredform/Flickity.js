@@ -54,7 +54,8 @@ const FlickityComp = (props) => {
                             valueEnd={props.valueEnd}
                             setValueStart={props.setValueStart}
                             setValueEnd={props.setValueEnd}></SlideOne></Card> : null}
-                            {props.slideIndex === 1 ? <Card><SlideTwo 
+                            {props.slideIndex === 1 ?
+                             <Card><SlideTwo 
                             numberOfAdults={props.numberOfAdults}
                             setNumberOfAdults={props.setNumberOfAdults}
                             numberOfChildren={props.numberOfChildren} 
@@ -66,6 +67,7 @@ const FlickityComp = (props) => {
                             setBudget={props.setBudget}
                             selectedPreferences={props.selectedPreferences} 
                             setSelectedPreferences={props.setSelectedPreferences}
+                            setSubmitSecondSlide={props.setSubmitSecondSlide}
                             ></SlideTwo></Card>: null}
                             {props.slideIndex === 2 && ! props.token ? <Login nospacing noheading noicons hideloginclose noclose></Login> : null}
                             {/* <Card><SlideOne></SlideOne></Card> */}

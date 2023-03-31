@@ -21,13 +21,13 @@ import {BiArrowBack} from 'react-icons/bi';
 import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
+import Popup from "./Popup";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
   height: max-content;
   color: black;
   z-index: ${(props) => props.showBlack?'1006' : '2'};
-
   position: relative;
   background-color: ${(props) =>
     props.slideIndex ? "white" : "rgba(255,255,255,0.9)"};
@@ -50,9 +50,6 @@ const Container = styled.div`
     line-height: normal;
 
 `;
- 
- 
- 
 const CountryCodeOption = styled.div`
   &:hover{
     cursor: pointer;
@@ -94,6 +91,7 @@ const Enquiry = (props) => {
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
+    
 
      
      const _submitDataHandler = () => {
@@ -215,8 +213,11 @@ const Enquiry = (props) => {
     const _prevSlideHandler = () => {
         if(slideIndex) setSlideIndex(slideIndex-1);
     }
-    const [valueStart, setValueStart] =useState((moment().add(5, 'day')));
-    const [valueEnd, setValueEnd] =useState((moment().add(10,'day')));
+    // const [valueStart, setValueStart] =useState((moment().add(5, 'day')));
+    // const [valueEnd, setValueEnd] =useState((moment().add(10,'day')));
+
+    const [valueStart, setValueStart] =useState(null);
+    const [valueEnd, setValueEnd] =useState(null);
     const [numberOfAdults, setNumberOfAdults] = useState(2);
     const [numberOfChildren, setNumberOfChildren] = useState(0);
     const [numberOfInfants, setNumberOfInfants] = useState(0);
@@ -224,11 +225,10 @@ const Enquiry = (props) => {
     const [selectedPreferences, setSelectedPreferences]  = useState([]);
     const [showCities, setShowCities] = useState(false);
     const [showSearchStarting, setShowSearchStarting] = useState(false);
-
+    const [showPopup , setShowPopup] = useState({dateStart : false, dateEnd : false , group : false})
     const [showBlack, setShowBlack] = useState(false);
-    // (startingLocation);
+    const [submitSecondSlide,setSubmitSecondSlide] = useState(false)
     useEffect(() => {
-
         if(slideIndex === 2 && props.token) _submitDataHandler();
       }, [slideIndex, props.token]);
       const _handleHideBlack = () => {
@@ -236,10 +236,20 @@ const Enquiry = (props) => {
         setShowCities(false);
         setShowSearchStarting(false);
       }
-      // (props.experienceData)
   let isPageWide = media('(min-width: 768px)');
 
-    // const [budgetLower,setBudgetLower] = useState(0);
+  const _SlideOneSubmitHandler = ()=>{
+    if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
+    if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
+    setSlideIndex(slideIndex + 1)
+  }
+
+  const _SlideTwoSubmitHandler = ()=>{
+    if(!submitSecondSlide) return setShowPopup({...showPopup ,group : true })
+    setSlideIndex(slideIndex + 1)
+  }
+
+
     if(!loading && !submitted)
  return (
    <div style={{}}>
@@ -253,6 +263,12 @@ const Enquiry = (props) => {
        className={isPageWide ? "border center-di" : "center-div"}
        onClick={() => setShowBlack(true)}
      >
+
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' left='10px' text='Please fill starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' left='200px' text='Please fill ending date!' />}
+      {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please Select your group type!' />}
+      
+
        {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
        {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
 
@@ -325,6 +341,7 @@ const Enquiry = (props) => {
            setBudget={setBudget}
            selectedPreferences={selectedPreferences}
            setSelectedPreferences={setSelectedPreferences}
+           setSubmitSecondSlide={setSubmitSecondSlide}
          ></Flickity>
          {/* {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
             Continue
@@ -349,7 +366,7 @@ const Enquiry = (props) => {
                borderRadius="5px"
                borderWidth="1px"
                bgColor="#f7e700"
-               onclick={() => setSlideIndex(slideIndex + 1)}
+               onclick={_SlideOneSubmitHandler}
              >
                Next
              </Button>
@@ -367,7 +384,7 @@ const Enquiry = (props) => {
                  borderRadius="5px"
                  borderWidth="1px"
                  bgColor="#f7e700"
-                 onclick={() => setSlideIndex(slideIndex + 1)}
+                 onclick={_SlideTwoSubmitHandler}
                >
                  Next
                </Button>

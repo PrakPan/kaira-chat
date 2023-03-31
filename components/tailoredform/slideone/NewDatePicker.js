@@ -36,8 +36,8 @@ overflow : hidden;
   font-size : 1rem;
 }
 
-.DateRangePickerInput_arrow{
-  display : none;
+.DateRangePickerInput_arrow , .DayPickerKeyboardShortcuts_buttonReset{
+  display : none !important;
 }
 
 @media screen and (max-width: 768px){
@@ -65,7 +65,7 @@ overflow : hidden;
 .DateRangePicker_picker_1{
   left : 0px;
   @media screen and (min-width: 768px){
-    left : -130px !important;;
+    left : -210px !important;;
   }
 }
   .CalendarDay{
@@ -101,13 +101,13 @@ overflow : hidden;
 `
 
 const CalenderIcons = styled.div`
-display: flex;
-justify-content: space-between;
-width: 58.5%;
 position: absolute;
-top: 27%;
+top: 14%;
 right: 8px;
+pointer-events: none;
 font-size : 20px;
+z-index : 0;
+
 `
 const TextContainer = styled.div`
 display : flex;
@@ -133,6 +133,8 @@ return (
     displayFormat='DD/MM/YYYY'
         startDate={props.valueStart}
         startDateId="startDate"
+        startDatePlaceholderText='DD/MM/YYYY'
+        endDatePlaceholderText='DD/MM/YYYY'
         endDate={props.valueEnd}
         endDateId="endDate"
         onDatesChange={({ startDate, endDate }) => {
@@ -146,7 +148,8 @@ return (
         numberOfMonths={2}
         orientation={isPageWide?"horizontal":"vertical"}
       />
-      <CalenderIcons><BiCalendarAlt/><BiCalendarAlt/></CalenderIcons>
+      <CalenderIcons style={{right : '12.6rem'}}><BiCalendarAlt /></CalenderIcons>
+      <CalenderIcons style={{right : '8px'}}><BiCalendarAlt /></CalenderIcons>
    </Container>
   </>
 

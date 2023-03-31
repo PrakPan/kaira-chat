@@ -30,10 +30,11 @@ const SlideTwo = (props) =>{
   let isPageWide = media('(min-width: 768px)');
   const _handleShowPax = (grouptype) => {
     props.setGroupType(grouptype);
+    props.setSubmitSecondSlide(true)
     if(grouptype === 'Friends' || grouptype === 'Family'){
       // props.setNumberOfAdults(2);
     setShowPax(true);
-  
+      
     }
   }
   return (
