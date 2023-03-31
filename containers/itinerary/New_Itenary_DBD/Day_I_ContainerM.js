@@ -1,14 +1,14 @@
-import styled from "styled-components";
-import { useState, useEffect } from "react";
-import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
+import styled from 'styled-components';
+import { useState, useEffect } from 'react';
+import ItineraryFlightElement from '../../newitinerary/itineraryelements/Flight';
 
-import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
+import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
 
-import TransferElementsM from "./TransferElementsM";
-import ItineraryElementM from "../../newitinerary/itineraryelements/ItineraryElementM";
-import ItineraryFoodElementM from "../../newitinerary/itineraryelements/ItineraryFoodElementM";
-import ItineraryPoiElementM from "../../newitinerary/itineraryelements/PoiM";
-import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import TransferElementsM from './TransferElementsM';
+import ItineraryElementM from '../../newitinerary/itineraryelements/ItineraryElementM';
+import ItineraryFoodElementM from '../../newitinerary/itineraryelements/ItineraryFoodElementM';
+import ItineraryPoiElementM from '../../newitinerary/itineraryelements/PoiM';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -29,12 +29,12 @@ const Date = styled.div`
 // }
 const Day_I_ContainerM = (props) => {
   const Arslab_elements = [
-    { name: "transfer", data: [] },
-    { name: "newcity", data: [] },
-    { name: "accommodation", data: [] },
-    { name: "meal", data: [] },
-    { name: "recommendation", data: [] },
-    { name: "activity", data: [] },
+    { name: 'transfer', data: [] },
+    { name: 'newcity', data: [] },
+    { name: 'accommodation', data: [] },
+    { name: 'meal', data: [] },
+    { name: 'recommendation', data: [] },
+    { name: 'activity', data: [] },
   ];
   function filter(JsonArray, Arslab_element_name, Arslab_element_data) {
     Arslab_element_data.push(
@@ -69,9 +69,14 @@ const Day_I_ContainerM = (props) => {
             icon={Arslab_elements[0].data[0][0].icon}
             heading={Arslab_elements[0].data[0][0].heading}
             text={props.Days.slab_elements[0].text}
-            newcity={Arslab_elements[1].data[0].length != 0 ? Arslab_elements[1].data[0][0] : null }
+            newcity={
+              Arslab_elements[1].data[0].length != 0
+                ? Arslab_elements[1].data[0][0]
+                : null
+            }
           ></TransferElementsM>
         ) : null}
+
         {Arslab_elements[2].data[0][0] ? (
           <ItineraryElementM
             icon={Arslab_elements[2].data[0][0].icon}
@@ -80,43 +85,85 @@ const Day_I_ContainerM = (props) => {
             text={Arslab_elements[2].data[0][0].text}
           ></ItineraryElementM>
         ) : null}
+        {Arslab_elements[0].data[0][1] ? (
+          <TransferElementsM
+            time="9:00AM"
+            modes={Arslab_elements[0].data[0][1].modes}
+            transfers={Arslab_elements[0].data[0][1].transfers}
+            meta={Arslab_elements[0].data[0][1].meta}
+            icon={Arslab_elements[0].data[0][1].icon}
+            heading={Arslab_elements[0].data[0][1].heading}
+            text={props.Days.slab_elements[0].text}
+            newcity={
+              Arslab_elements[1].data[0][1]
+                ? Arslab_elements[1].data[0][1]
+                : null
+            }
+          ></TransferElementsM>
+        ) : null}
+        {Arslab_elements[0].data[0][2] ? (
+          <TransferElementsM
+            time="9:00AM"
+            modes={Arslab_elements[0].data[0][2].modes}
+            transfers={Arslab_elements[0].data[0][2].transfers}
+            meta={Arslab_elements[0].data[0][2].meta}
+            icon={Arslab_elements[0].data[0][2].icon}
+            heading={Arslab_elements[0].data[0][2].heading}
+            text={props.Days.slab_elements[0].text}
+            newcity={
+              Arslab_elements[1].data[0][1]
+                ? Arslab_elements[1].data[0][0]
+                : null
+            }
+          ></TransferElementsM>
+        ) : null}
         {Arslab_elements[3].data[0][0] ? (
           <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][0].icon}
             time="12:00PM"
             heading={Arslab_elements[3].data[0][0].heading}
             text={Arslab_elements[3].data[0][0].text}
-            recomendation={Arslab_elements[4].data[0][0] ? Arslab_elements[4].data[0][0].text : null }
+            recomendation={
+              Arslab_elements[4].data[0][0]
+                ? Arslab_elements[4].data[0][0].text
+                : null
+            }
           ></ItineraryFoodElementM>
         ) : null}
-        {
+        {}
+        {Arslab_elements[5].data[0]
+          ? Arslab_elements[5].data[0].map((element) => (
+              <ItineraryPoiElementM
+                key={element.activity_data.id}
+                time="9:00AM - 12:00PM"
+                image={
+                  element.activity_data.poi !== undefined
+                    ? element.activity_data.poi.image
+                    : null
+                }
+                booking={
+                  element.activity_data.poi !== undefined
+                    ? element.activity_data.poi.image
+                    : null
+                }
+                heading={element.heading}
+                text={element.text}
+                poi={element.activity_data.poi}
+              ></ItineraryPoiElementM>
+            ))
+          : NULL}
 
-        }
-        {
-          Arslab_elements[5].data[0] ?
-          Arslab_elements[5].data[0].map((element)=>(
-            <ItineraryPoiElementM
-              key={element.activity_data.id}
-            time="9:00AM - 12:00PM"
-            image={element.activity_data.poi !== undefined ? element.activity_data.poi.image : null }
-            booking={element.activity_data.poi !== undefined ? element.activity_data.poi.image : null}
-            heading={element.heading}
-            text={element.text}
-            poi={element.activity_data.poi}
-          ></ItineraryPoiElementM>
-          ))
-        
-          : NULL
-        }
-       
-
-{Arslab_elements[3].data[0][1] ? (
+        {Arslab_elements[3].data[0][1] ? (
           <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][1].icon}
             time="12:00PM"
             heading={Arslab_elements[3].data[0][1].heading}
             text={Arslab_elements[3].data[0][1].text}
-            recomendation={Arslab_elements[4].data[0][1] ? Arslab_elements[4].data[0][1].text : null }
+            recomendation={
+              Arslab_elements[4].data[0][1]
+                ? Arslab_elements[4].data[0][1].text
+                : null
+            }
           ></ItineraryFoodElementM>
         ) : null}
       </div>

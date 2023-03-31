@@ -191,19 +191,14 @@ const NewItenaryDBDMob = (props) => {
   const items = [];
   if (props.city_slabs) {
     for (var i = 0; i < props.city_slabs.length; i++) {
-      // var cityname = props.city_slabs[i].city_name;
-      // var slabid = props.itinerary.day_slabs[i].slab_id;
-      if (
-        !props.city_slabs[i].is_trip_terminated &&
-        !props.city_slabs[i].is_departure_only &&
-        !props.city_slabs[i].is_departure_only &&
-        props.city_slabs[i].duration &&
-        props.city_slabs[i].duration !== '0'
-      ) {
+      const index = i;
+      //Don't do anything if ending city
+      if (props.city_slabs[i].is_trip_terminated) break;
+      else {
         const itenaryId = props.itinerary.day_slabs[i];
-        console.log(itenaryId !== undefined);
-        console.log('idssss' + props.city_slabs[i].city_name);
-        console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
+        // console.log(itenaryId !== undefined);
+        // console.log('idssss' + props.city_slabs[i].city_name);
+        // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
         // console.log('idssss'+ itenaryId.slab_id)
         // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
 
@@ -247,7 +242,7 @@ const NewItenaryDBDMob = (props) => {
         onSelect={handleSelect}
       ></ScrollableTabs> */}
       <ScrollableMenuTabs
-        offset={'132px'}
+        offset={'127px'}
         items={items}
         BarName="CityName"
         Mstyle={'round'}
