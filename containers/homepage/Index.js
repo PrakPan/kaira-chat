@@ -223,8 +223,12 @@ useEffect(() => {
     
        <Locations locations={PLANNER_PAGES} viewall></Locations>
 
+      {
+        props.ThemeData && props.ThemeData.length ? <>
       <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
-      <PlanAsPerTheme ThemeData={props.ThemeData} />
+      <PlanAsPerTheme ThemeData={props.ThemeData} />  
+        </> : null
+      }
       
       <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
       <PlanWithUs />
