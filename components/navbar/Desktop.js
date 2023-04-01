@@ -41,7 +41,8 @@ position: relative;
 `;
 
 const CenterNav = styled.div`
-  width: 100%;
+  width: 85%;
+  margin : auto;
   height: 100%;
   display: flex;
   align-items: center;
@@ -200,7 +201,9 @@ const Navbar = (props) => {
      return (
     <div>
     <Header changeHeight={Height} >
-      <NavbarContainer bgColor={props.bgColor} hideNav={props.hideNav} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white', opacity : props.hideNav ? '0' : '1'}}>
+      <NavbarContainer bgColor={props.bgColor} hideNav={props.hideNav} style={{
+        backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white', 
+        opacity : props.hideNav ? '0' : '1'}}>
       <div style={{position: 'absolute', left: '50%', height: '100%'}} className="center-div" onClick={() => setToggleSearch(true)}><FaSearch className="hover-pointer" style={{ color: props.headerColor === 'black' ? 'white': 'black', width: '16px', height:  '16px'}}></FaSearch></div>
       {toggleSearch ? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : 
          <CenterNav>

@@ -1,12 +1,12 @@
 import React,{useEffect, useRef} from 'react';
 import styled from 'styled-components';
- 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../ImageLoader';
 import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
+import { FaUserCircle } from 'react-icons/fa';
 
 
 const CenterNav=styled.div`
@@ -14,6 +14,7 @@ width:100%;
 height:3rem;
 display:flex;
 align-items:center;
+gap : 5px;
 `;
 
 
@@ -132,7 +133,7 @@ const ProfileDropDown =(props)=>{
     });
 
     
-    let AuthMenu = <ProfileContainer className={props.headerColor==="white" ? "border" : ""} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white', color: props.headerColor === 'white' ? 'rgba(0,0,0,0.7)' : 'white'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
+    let AuthMenu = <ProfileContainer className={"border"} style={{backgroundColor:'white', color: 'rgba(0,0,0,0.7)'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
                      <ProfileList onClick={props.authShowLogin}>Login</ProfileList>
                    </ProfileContainer>;
 
@@ -140,8 +141,8 @@ const ProfileDropDown =(props)=>{
     return(
         <div ref={profileRef}>
             <CenterNav onClick={props.toggleProfileList}>
-              <ImageLoader hoverpointer url={ props.headerColor ==='white' ?  "media/icons/login/user.png" : "media/icons/login/user (1).png"} width="2rem" height="2rem" dimensions={{width: 300, height: 300}} onclick={props.toggleProfileList}/>
-            {typeof window !== 'undefined'  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color: props.headerColor === "black" ? 'white' : 'black'}}></StyledFontAwesomeIcon> : null}
+            <FaUserCircle  style={{width:'2rem', height : '2rem'}} />
+            {typeof window !== 'undefined'  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color:'black'}}></StyledFontAwesomeIcon> : null}
             </CenterNav>
              {AuthMenu}
         </div>
