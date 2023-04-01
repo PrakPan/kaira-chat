@@ -100,7 +100,7 @@ const CustomMenu = ({
       spy={true}
       smooth={true}
       duration={500}
-      offset={-110}
+      offset={-150}
       onSetActive={() => onSelect(item.id)}
     >
       {Mstyle == 'round' ? (

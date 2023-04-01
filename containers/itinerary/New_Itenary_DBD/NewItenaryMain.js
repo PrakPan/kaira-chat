@@ -188,8 +188,8 @@ const NewItenaryMain = (props) => {
   _generateDaySlabs();
   const [activeItem, setActiveItem] = useState(1);
   const items = [];
-  if (props.city_slabs) {
-    for (var i = 1; i < props.city_slabs.length; i++) {
+  if (props.itinerary.day_slabs) {
+    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
       if (props.city_slabs[i].is_trip_terminated) break;
@@ -240,19 +240,18 @@ const NewItenaryMain = (props) => {
       </Navbar> */}
       <ScrollableMenuTabs
         icons={items.length < 3 ? false : true}
-        offset={'120px'}
+        offset={'16.6vh'}
         items={items}
         BarName="CityName"
         Mstyle={'round'}
-        
       ></ScrollableMenuTabs>
       <ScrollableMenuTabs
-        icons={items.length < 3 ? false : true}
-        offset={'120px'}
+        icons={false}
+        offset={'24.6vh'}
         items={items}
         BarName="CityName"
         Mstyle={'round'}
-        Iterable='date'
+        Iterable="date"
         vertical={true}
       ></ScrollableMenuTabs>
       {day_pannesl_jsx}

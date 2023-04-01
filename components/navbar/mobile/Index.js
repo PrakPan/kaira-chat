@@ -30,7 +30,7 @@ const Container = styled.div`
   position: fixed !important;
   top: 0 !important;
   width: 100vw;
-  height: 20vw;
+  height: 10vh;
   z-index: 998;
   display: flex;
   flex-direction: row;

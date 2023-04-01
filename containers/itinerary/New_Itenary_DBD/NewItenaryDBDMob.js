@@ -253,7 +253,7 @@ const NewItenaryDBDMob = (props) => {
       ></ScrollableTabs> */}
       <ScrollableMenuTabs
         icons={items.length < 3 ? false : true}
-        offset={'127px'}
+        offset={'16.6vh'}
         items={items}
         BarName="CityName"
         Mstyle={'round'}

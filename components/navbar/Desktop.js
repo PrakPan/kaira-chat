@@ -32,7 +32,7 @@ const NavbarContainer = styled.div`
   display: flex;
   @media screen and (min-width: 768px) {
     transition: all 0.3s ease-in-out;
-    height: 8vh;
+    height: 10vh;
     width: 100%;
     &:hover {
       opacity: 1;
@@ -85,7 +85,7 @@ const Header = styled.div`
 
   box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
   @media screen and (min-width: 768px) {
-    height: 8vh;
+    height: 10vh;
   }
 `;
 const CompanyName = styled.p`

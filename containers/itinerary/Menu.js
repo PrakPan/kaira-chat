@@ -434,7 +434,7 @@ const SimpleTabs = (props) => {
       </Navbar> */}
       <ScrollableMenuTabs
         icons={false}
-        offset={'82px'}
+        offset={'10.1vh'}
         items={items}
         BarName="TabsName"
       />
