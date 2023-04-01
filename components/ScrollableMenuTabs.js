@@ -109,7 +109,7 @@ const ScrollableMenuTabs = ({
     }
 
     console.log(ref.current);
-    setCanScrollLeft(tabContainer.scrollLeft > 8);
+    setCanScrollLeft(tabContainer.scrollLeft > 10);
   };
 
   useEffect(() => {
