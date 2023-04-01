@@ -30,7 +30,8 @@ const NavbarContainer = styled.div`
   z-index: 1000;
 
   display: flex;
-  flex-direction: row;
+  
+  flex-direction: ${({ Isvaertical }) => (Isvaertical ? 'coloumn' : 'row')};
   margin: 0px -20px 0px -20px;
   background-color: white;
 
@@ -57,6 +58,7 @@ const ScrollableMenuTabs = ({
   BarName,
   Mstyle = 'simple',
   Iterable = 'label',
+  vertical=false,
 }) => {
   const [activeItem, setActiveItem] = useState(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -139,6 +141,7 @@ const ScrollableMenuTabs = ({
   return (
     <NavbarContainer
       style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
+      Isvaertical={vertical}
     >
       {icons ? (
         <IoIosArrowBack

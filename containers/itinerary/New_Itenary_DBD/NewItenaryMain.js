@@ -244,15 +244,17 @@ const NewItenaryMain = (props) => {
         items={items}
         BarName="CityName"
         Mstyle={'round'}
-        Iterable={label}
+        
       ></ScrollableMenuTabs>
-      {/* <ScrollableMenuTabs
+      <ScrollableMenuTabs
         icons={items.length < 3 ? false : true}
         offset={'120px'}
         items={items}
         BarName="CityName"
         Mstyle={'round'}
-      ></ScrollableMenuTabs> */}
+        Iterable='date'
+        vertical={true}
+      ></ScrollableMenuTabs>
       {day_pannesl_jsx}
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (

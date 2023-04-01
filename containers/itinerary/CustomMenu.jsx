@@ -108,14 +108,14 @@ const CustomMenu = ({
           isActive={activeItem === item.id}
           onClick={() => onSelect(item.id)}
         >
-          {item.Iterable}
+          {item[Iterable]}
         </RoundMenuItem>
       ) : (
         <MenuItem
           isActive={activeItem === item.id}
           onClick={() => onSelect(item.id)}
         >
-          {item.Iterable}
+          {item[Iterable]}
         </MenuItem>
       )}
     </Link>
