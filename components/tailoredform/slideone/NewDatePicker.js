@@ -49,6 +49,8 @@ margin : auto;
   display : none !important;
 }
 
+//  Customized navigation button
+
 // @media screen and (max-width: 768px){
 //   .DayPickerNavigation{  
 //         display: flex;
@@ -68,17 +70,17 @@ margin : auto;
 //         height:10px;
 //         width: 10px;
 //       }
-
-    
 // }
+
 .DateRangePicker_picker_1{
   left : 0px;
-  top : 55px !important;
+  top : 48px !important;
   @media screen and (max-width: 768px){
     right : 0px !important;
   }
   @media screen and (min-width: 768px){
     left : -210px !important;
+    top : 55px !important;
   }
 }
   .CalendarDay{
@@ -90,9 +92,8 @@ margin : auto;
     color : black;
   }
   .CalendarDay__selected_span , .CalendarDay__hovered_span , .CalendarDay__hovered_span_3 {
-    background-color : #F7E700;
+    background-color : #F7E70033;
     color : black;
-    opacity:0.5;
     &:active{
       background-color : #F7E700;
       opacity:0.7;
@@ -100,8 +101,7 @@ margin : auto;
       }
     &:hover{
     color : black;
-    background-color : #F7E700;
-    opacity:0.7;
+    background-color : #F7E7004A;
     border : none;
     }
   }
@@ -159,7 +159,7 @@ return (
         }}
         focusedInput={focusedInput}
         onFocusChange={setFocusedInput}
-        isOutsideRange={day => day.isBefore(moment()) }
+        isOutsideRange={day => day.startOf('day').isBefore(moment().add(2,'day')) }
           initialVisibleMonth={() => moment().subtract(0, "month")}
         numberOfMonths={isPageWide?2:1}
         orientation={"horizontal"}

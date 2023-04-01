@@ -264,9 +264,9 @@ const Enquiry = (props) => {
        onClick={() => setShowBlack(true)}
      >
 
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='10px' text='Please fill starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='200px' text='Please fill ending date!' />}
-      {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please Select your group type!' />}
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='10px' text='Please select starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='170px' text='Please select ending date!' />}
+      {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}
       
 
        {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
@@ -307,6 +307,7 @@ const Enquiry = (props) => {
              height: "1px",
              width: "100%",
              marginBottom: "1rem",
+             
            }}
          ></div>
 

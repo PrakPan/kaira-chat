@@ -88,11 +88,11 @@ const SelectedDestination = (props) => {
               !props.startingLocation ?  
               'Delhi, IN'  : 
           props.startingLocation.name : 
-     <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => {setFocusLocation(false) ; props.setShowSearchStarting(false) }} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>
+     <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => {setFocusLocation(false)}} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>
      :
      props.destination && showDestination
       ? props.destination : 
-     <SearchInput setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination}setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false) ; setShowDestination(true)}} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+     <SearchInput setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination}setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     
