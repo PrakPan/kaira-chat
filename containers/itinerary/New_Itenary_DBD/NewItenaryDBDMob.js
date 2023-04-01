@@ -13,6 +13,7 @@ import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 import ScrollableTabs from '../../../components/ScrollableTabs';
 import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
@@ -212,7 +213,12 @@ const NewItenaryDBDMob = (props) => {
           link:
             itenaryId !== undefined
               ? itenaryId.slab_id
-              : props.itinerary.day_slabs[0].slab_id,
+              : props.itinerary.day_slabs[1].slab_id,
+
+          date:
+            itenaryId !== undefined
+              ? itenaryId.slab && convertDateFormat(itenaryId.slab)
+              : convertDateFormat(props.itinerary.day_slabs[1].slab),
         });
       }
     }

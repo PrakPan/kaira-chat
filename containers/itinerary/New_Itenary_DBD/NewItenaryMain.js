@@ -10,6 +10,7 @@ import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 import ScrollableTabs from '../../../components/ScrollableTabs';
 import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -211,6 +212,11 @@ const NewItenaryMain = (props) => {
             itenaryId !== undefined
               ? itenaryId.slab_id
               : props.itinerary.day_slabs[1].slab_id,
+
+          date:
+            itenaryId !== undefined
+              ? itenaryId.slab && convertDateFormat(itenaryId.slab)
+              : convertDateFormat(props.itinerary.day_slabs[1].slab),
         });
       }
     }
@@ -238,7 +244,15 @@ const NewItenaryMain = (props) => {
         items={items}
         BarName="CityName"
         Mstyle={'round'}
+        Iterable={label}
       ></ScrollableMenuTabs>
+      {/* <ScrollableMenuTabs
+        icons={items.length < 3 ? false : true}
+        offset={'120px'}
+        items={items}
+        BarName="CityName"
+        Mstyle={'round'}
+      ></ScrollableMenuTabs> */}
       {day_pannesl_jsx}
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (

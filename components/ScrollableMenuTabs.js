@@ -56,6 +56,7 @@ const ScrollableMenuTabs = ({
   items,
   BarName,
   Mstyle = 'simple',
+  Iterable = 'label',
 }) => {
   const [activeItem, setActiveItem] = useState(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -155,6 +156,7 @@ const ScrollableMenuTabs = ({
       <Navbar ref={ref} onScroll={debounceFun}>
         {items.map((item) => (
           <CustomMenu
+            Iterable={Iterable}
             BarName={BarName}
             Mstyle={Mstyle}
             item={item}
