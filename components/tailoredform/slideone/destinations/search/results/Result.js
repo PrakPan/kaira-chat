@@ -40,11 +40,13 @@ const Result = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
  
-  const _handleClick = () => {
+  const _handleClick = (e) => {
+    e.stopPropagation()
     props.setSearchFinalized({name: props.name, type: props.type});
     props.setDestination(props.name)
     props.selectedCities[props.inbox_id] = {...props.result , id : props.result.resource_id}
     props.setSelectedCities(props.selectedCities)
+    props.setFocusSearch(false)
   }
   return (
     <Container className='font-poppins'  onClick={_handleClick}>

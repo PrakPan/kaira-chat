@@ -39,12 +39,13 @@ const Experience = (props) => {
   });
   const router = useRouter();
   const _handlePersonaliseRedirect = () => {
-     localStorage.setItem('search_city_selected_id', props.cityData.id)
-    localStorage.setItem('search_city_selected_name', props.cityData.name)
-    localStorage.setItem('search_city_selected_parent', props.cityData.state.name)
+    //  localStorage.setItem('search_city_selected_id', props.cityData.id)
+    // localStorage.setItem('search_city_selected_name', props.cityData.name)
+    // localStorage.setItem('search_city_selected_parent', props.cityData.state.name)
 
+if(props.cityData.name) router.push(`/tailored-travel/?search_text=${props.cityData.name}`)
+else router.push('/tailored-travel')
 
-    router.push('/tailored-travel')
   }
   const _openPoiModal = (poi) => {
     setPoiData({...poi});

@@ -66,8 +66,6 @@ const SelectedDestination = (props) => {
   const [showDestination , setShowDestination] = useState(true)
 
 
-
-
   return ( 
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() 
     // : props.openCities
@@ -92,7 +90,7 @@ const SelectedDestination = (props) => {
      :
      props.destination && showDestination
       ? props.destination : 
-     <SearchInput setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination}setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+     <SearchInput  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     

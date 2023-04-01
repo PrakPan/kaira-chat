@@ -37,7 +37,7 @@ useEffect(() => {
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   const _handleReset = () => {
-    // setValue('');
+    setValue('');
     props.setSearchFinalized(false);
     props.setResults([]);
     props.setShowResults(false);
