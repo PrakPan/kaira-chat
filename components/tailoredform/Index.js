@@ -87,7 +87,7 @@ const Enquiry = (props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState([{id : props.page_id , name : props.destination , input_id : 0}]);
+    const [selectedCities, setSelectedCities] = useState();
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
@@ -112,11 +112,16 @@ const Enquiry = (props) => {
             }
           }
         }
+        console.log(selectedCities)
+        try{
         for(var i =0 ; i < selectedCities.length; i++){
           if(cityids.indexOf(selectedCities[i].id) == -1){
             cityids.push(parseInt(selectedCities[i].id));
             citynames.push(selectedCities[i].name);  
           }
+        }}
+        catch{
+
         }
         
         const start_date = format(value_start,  "yyyy-MM-dd");
@@ -136,6 +141,7 @@ const Enquiry = (props) => {
         }
         // (selectedPreferences);
         let data=null;
+        console.log('cn', citynames)
         if(citynames.length){
 
         data = {
