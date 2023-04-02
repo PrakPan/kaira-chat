@@ -37,7 +37,7 @@ const Details = (props) => {
         <Heading>Duration</Heading>
         <Text>{props.duration_time} Nights</Text>
       </div>
-      {props.travellerType[0] ? (
+      {props.travellerType !== null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>
