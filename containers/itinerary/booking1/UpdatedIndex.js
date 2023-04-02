@@ -401,7 +401,7 @@ const Booking = (props) => {
   }, [props.stayBookings, props.selectingBooking, props.stayFlickityIndex, props.token, props.payment]);
 
       useEffect(() => {
-
+        console.log(props.transferBookings)
     if(props.transferBookings)
     for(var i=0 ; i < props.transferBookings.length ; i++){
        if(true){
@@ -443,7 +443,7 @@ const Booking = (props) => {
           ) 
         }
          else{
-          
+            console.log(props.transferBookings[i].booking_type)
           if(props.transferBookings[i].booking_type === 'Taxi')
            bookings_transfers.push(
             <TaxiBookingCard is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_registration_needed={props.payment ? props.payment.is_registration_needed : false}   payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
@@ -456,6 +456,10 @@ const Booking = (props) => {
       bookings_transfers.push(
         <FerryBookingCard  is_registration_needed={props.payment ? props.payment.is_registration_needed : false} isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false}  payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></FerryBookingCard>
     )
+    else if(props.transferBookings[i].booking_type === 'Rental')
+    bookings_transfers.push(
+     <TaxiBookingCard  rental is_registration_needed={props.payment ? props.payment.is_registration_needed : false}  isDatePresent={props.isDatePresent}  token={props.token} setShowLoginModal={setShowLoginModal} setShowTaxiModal={(props) => _changeTaxiHandler(name, itinerary_id, tailored_id,  id, check_in, check_out, pax, city, itinerary_name, cost, costings_breakdown, origin_iata, destination_iata, destination_city, taxi_type, transfer_type)}  setShowLoginModal={setShowLoginModal} token={props.token}  _deselectTransferBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={ props.transferBookings[i].id === props.selectingBooking}  data={props.transferBookings[i]}  cardUpdateLoading={props.cardUpdateLoading}   is_stock={props.is_stock}  _selectTaxiHandler={props._selectTaxiHandler}   is_auth={props.is_auth} are_prices_hidden={props.payment ? props.payment.are_prices_hidden : false} is_registration_needed={props.payment ? props.payment.is_registration_needed : false}   payment={props.payment} key ={i}  setImagesHandler =  {_setImagesHandler} setHideTaxiModal={() => props.setShowTaxiModal(false)} ></TaxiBookingCard>
+ )
       }
     }
   
