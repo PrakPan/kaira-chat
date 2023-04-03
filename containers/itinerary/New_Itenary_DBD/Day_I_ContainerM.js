@@ -9,6 +9,7 @@ import ItineraryElementM from '../../newitinerary/itineraryelements/ItineraryEle
 import ItineraryFoodElementM from '../../newitinerary/itineraryelements/ItineraryFoodElementM';
 import ItineraryPoiElementM from '../../newitinerary/itineraryelements/PoiM';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
+import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -118,7 +119,7 @@ const Day_I_ContainerM = (props) => {
           ></TransferElementsM>
         ) : null}
         {Arslab_elements[3].data[0][0] ? (
-          <ItineraryFoodElementM
+          <ItineraryFoodElement
             icon={Arslab_elements[3].data[0][0].icon}
             time="12:00PM"
             heading={Arslab_elements[3].data[0][0].heading}
@@ -128,7 +129,16 @@ const Day_I_ContainerM = (props) => {
                 ? Arslab_elements[4].data[0][0].text
                 : null
             }
-          ></ItineraryFoodElementM>
+          ></ItineraryFoodElement>
+        ) : null}
+        {Arslab_elements[4].data[0][0] ? (
+          <RecomendationComponent
+            recomendation={
+              Arslab_elements[4].data[0][0]
+                ? Arslab_elements[4].data[0][0].text
+                : null
+            }
+          ></RecomendationComponent>
         ) : null}
         {}
         {Arslab_elements[5].data[0]

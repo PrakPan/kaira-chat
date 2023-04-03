@@ -21,8 +21,10 @@ const Navbar = styled.div`
 scrollbar-width: none;
   overflow-x: scroll;
   align-items: center;
-  
-  margin: 0px -20px 0px -20px;
+  flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
+  margin: ${({ Isvertical }) =>
+    Isvertical ? '0px -20px 0px -120px' : '0px -20px 0px -20px'};
+  position: ${({ Isvertical }) => (Isvertical ? 'absolute' : 'inherit')};
   background-color: white;
 `;
 const NavbarContainer = styled.div`
@@ -30,17 +32,18 @@ const NavbarContainer = styled.div`
   z-index: 1000;
 
   display: flex;
-  flex-direction: row;
-  margin: 0px -20px 0px -20px;
+
+  flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
+  margin: ${({ Isvertical }) =>
+    Isvertical ? '0px -20px 0px -20px' : '0px -20px 0px -20px'};
   background-color: white;
 
   position: inherit;
   z-index: 997;
   top: 120px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
+
   display: flex;
+  width: ${({ Isvertical }) => (Isvertical ? 'fit-content' : 'auto')};
   -webkit-flex-direction: row;
   -ms-flex-direction: row;
   flex-direction: row;
@@ -56,6 +59,8 @@ const ScrollableMenuTabs = ({
   items,
   BarName,
   Mstyle = 'simple',
+  Iterable = 'label',
+  vertical = false,
 }) => {
   const [activeItem, setActiveItem] = useState(1);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -104,7 +109,7 @@ const ScrollableMenuTabs = ({
     }
 
     console.log(ref.current);
-    setCanScrollLeft(tabContainer.scrollLeft > 8);
+    setCanScrollLeft(tabContainer.scrollLeft > 10);
   };
 
   useEffect(() => {
@@ -138,6 +143,7 @@ const ScrollableMenuTabs = ({
   return (
     <NavbarContainer
       style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
+      Isvertical={vertical}
     >
       {icons ? (
         <IoIosArrowBack
@@ -152,9 +158,10 @@ const ScrollableMenuTabs = ({
         />
       ) : null}
 
-      <Navbar ref={ref} onScroll={debounceFun}>
+      <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
         {items.map((item) => (
           <CustomMenu
+            Iterable={Iterable}
             BarName={BarName}
             Mstyle={Mstyle}
             item={item}
