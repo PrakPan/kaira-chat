@@ -92,8 +92,6 @@ const Enquiry = (props) => {
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
-    
-     
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
@@ -277,8 +275,8 @@ const Enquiry = (props) => {
        onClick={() => setShowBlack(true)}
      >
 
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem' mobiletop='405px' left='10px' text='Please select starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.2rem' mobiletop='405px' left='170px' text='Please select ending date!' />}
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem'  left='10px' text='Please select starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.2rem' left='170px' mobileleft={'135px'} text='Please select ending date!' />}
       {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}
       
 
