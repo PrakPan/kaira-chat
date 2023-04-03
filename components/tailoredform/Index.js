@@ -22,6 +22,7 @@ import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
 import Popup from "./Popup";
+import { CompressOutlined } from "@mui/icons-material";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -87,19 +88,19 @@ const Enquiry = (props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState();
+    const [selectedCities, setSelectedCities] = useState(props.destinationType == 'travel-planner'? [{destination_id  :props.page_id,input_id : 0}]: [{id : props.page_id , name : props.destination , input_id : 0}]);
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
     
-
      
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
         setLoading(true);
         let cityids =[];
-        let citynames=[];
+        let locations=[];
+        let stateIds = []
         // let starting_location = null;
          let preferences = [];
         for(var i =  0 ; i < selectedPreferences.length; i++){
@@ -112,12 +113,14 @@ const Enquiry = (props) => {
             }
           }
         }
-        console.log(selectedCities)
         try{
         for(var i =0 ; i < selectedCities.length; i++){
-          if(cityids.indexOf(selectedCities[i].id) == -1){
-            cityids.push(parseInt(selectedCities[i].id));
-            citynames.push(selectedCities[i].name);  
+          if(cityids.indexOf(selectedCities[i].id) == -1 && selectedCities[i].id){
+            if(selectedCities[i].type == 'State') stateIds.push(parseInt(selectedCities[i].id)) 
+            else{
+              cityids.push(parseInt(selectedCities[i].id));
+            }
+            locations.push(selectedCities[i].name);    
           }
         }}
         catch{
@@ -141,45 +144,50 @@ const Enquiry = (props) => {
         }
         // (selectedPreferences);
         let data=null;
-        console.log('cn', citynames)
-        if(citynames.length){
-
+        // if(selectedCities.length){
+        
         data = {
-            "locations": citynames,
+            // "locations": locations,
             "experience_filters_selected": preferences,
             "budget": budget,
-             "city_id": cityids,
+            // "city_id": cityids,
             "group_type": groupType,
             "number_of_adults": number_of_adults,
             "number_of_children": number_of_children,
             "number_of_infants": number_of_infants,
             "start_date": start_date,
             "end_date": end_date,
-          
             "user_location": {
                 "place_id": startingLocation ? startingLocation.place_id  :  "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
             }
-            
           };
-        }
-          else 
-
-         data = {
-           "experience_filters_selected": preferences,
-          "budget": budget,
-           "destination_id": [props.page_id],
-          "group_type": groupType,
-          "number_of_adults": number_of_adults,
-          "number_of_children": number_of_children,
-          "number_of_infants": number_of_infants,
-          "start_date": start_date,
-          "end_date": end_date,
+         
+          if(selectedCities[0].destination_id) data.destination_id = [selectedCities[0].destination_id]; 
+          if(stateIds.length) data.state_id = stateIds
+          if(cityids.length) data.city_id = cityids
+          if(locations.length) data.locations = locations
         
-          "user_location": {
-              "place_id": startingLocation ? startingLocation.place_id  :  "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
-          }
+        // }
+        //   else 
+
+        //  data = {
+        //    "experience_filters_selected": preferences,
+        //   "budget": budget,
+        //    "destination_id": [props.page_id],
+        //   "group_type": groupType,
+        //   "number_of_adults": number_of_adults,
+        //   "number_of_children": number_of_children,
+        //   "number_of_infants": number_of_infants,
+        //   "start_date": start_date,
+        //   "end_date": end_date,
+        
+        //   "user_location": {
+        //       "place_id": startingLocation ? startingLocation.place_id  :  "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
+        //   }
           
-        };
+        // };
+
+        
           if(startingLocation)
           (data)
         
@@ -212,7 +220,6 @@ const Enquiry = (props) => {
              if(err.response.data.email){
              }
         })
-
 
     }
     const [slideIndex, setSlideIndex] = useState(0);
@@ -270,8 +277,8 @@ const Enquiry = (props) => {
        onClick={() => setShowBlack(true)}
      >
 
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='10px' text='Please select starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='170px' text='Please select ending date!' />}
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem' mobiletop='405px' left='10px' text='Please select starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.2rem' mobiletop='405px' left='170px' text='Please select ending date!' />}
       {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}
       
 

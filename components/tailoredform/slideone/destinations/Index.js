@@ -40,7 +40,7 @@ setDestinations(destinations.slice());
     )
     setDestinations(dest.slice());
 
-    props.selectedCities.push({...props.selectedCities[props.selectedCities.length-1],input_id : id })
+    props.selectedCities.push({input_id : id })
     props.setSelectedCities(props.selectedCities)
    }
 
