@@ -8,6 +8,7 @@ import TransferElements from './TransferElements';
 import ItineraryElement from '../../newitinerary/itineraryelements/ItineraryElement';
 import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
+import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 
 const Container = styled.div`
   background: #ffffff;
@@ -131,6 +132,15 @@ const Day_I_Container = (props) => {
                 : null
             }
           ></ItineraryFoodElement>
+        ) : null}
+        {Arslab_elements[4].data[0][0] ? (
+          <RecomendationComponent
+            recomendation={
+              Arslab_elements[4].data[0][0]
+                ? Arslab_elements[4].data[0][0].text
+                : null
+            }
+          ></RecomendationComponent>
         ) : null}
 
         {Arslab_elements[5].data[0]

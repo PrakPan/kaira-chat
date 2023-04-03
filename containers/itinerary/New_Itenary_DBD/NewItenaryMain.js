@@ -188,11 +188,14 @@ const NewItenaryMain = (props) => {
   _generateDaySlabs();
   const [activeItem, setActiveItem] = useState(1);
   const items = [];
+  const itemsDays = [];
+
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
-      if (props.city_slabs[i].is_trip_terminated) break;
+      if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
+        break;
       else {
         const itenaryId = props.itinerary.day_slabs[i];
         // console.log(itenaryId !== undefined);
@@ -219,6 +222,31 @@ const NewItenaryMain = (props) => {
               : convertDateFormat(props.itinerary.day_slabs[1].slab),
         });
       }
+    }
+  }
+  if (props.itinerary.day_slabs) {
+    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
+      const index = i;
+      //Don't do anything if ending city
+
+      const itenaryId = props.itinerary.day_slabs[i];
+      // console.log(itenaryId !== undefined);
+      // console.log('idssss' + props.city_slabs[i].city_name);
+      // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
+      // console.log('idssss'+ itenaryId.slab_id)
+      // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
+
+      itemsDays.push({
+        id: i,
+        link:
+          itenaryId !== undefined
+            ? itenaryId.slab_id
+            : props.itinerary.day_slabs[1].slab_id,
+        date:
+          itenaryId !== undefined
+            ? itenaryId.slab && convertDateFormat(itenaryId.slab)
+            : convertDateFormat(props.itinerary.day_slabs[1].slab),
+      });
     }
   }
   console.log('ITEMsssssss', items);
@@ -248,7 +276,7 @@ const NewItenaryMain = (props) => {
       <ScrollableMenuTabs
         icons={false}
         offset={'22.6vh'}
-        items={items}
+        items={itemsDays}
         BarName="CityName"
         Mstyle={'round'}
         Iterable="date"

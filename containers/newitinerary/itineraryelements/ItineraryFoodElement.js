@@ -1,17 +1,17 @@
-import styled from "styled-components";
-import { useState, useEffect } from "react";
-import { AiFillCar } from "react-icons/ai";
-import ImageLoader from "../../../components/ImageLoader";
-import Button from "../../../components/ui/button/Index";
-import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
-import { MdOutlineFlightTakeoff } from "react-icons/md";
-import { IoMdRestaurant } from "react-icons/io";
-import { HLine } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
-import FoodItem from "./FoodItem";
-import { isJson } from "../../../services/isJSON";
+import styled from 'styled-components';
+import { useState, useEffect } from 'react';
+import { AiFillCar } from 'react-icons/ai';
+import ImageLoader from '../../../components/ImageLoader';
+import Button from '../../../components/ui/button/Index';
+import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import { MdOutlineFlightTakeoff } from 'react-icons/md';
+import { IoMdRestaurant } from 'react-icons/io';
+import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import FoodItem from './FoodItem';
+import { isJson } from '../../../services/isJSON';
 
 const padding = {
-  initialLeft: "100px",
+  initialLeft: '100px',
 };
 const Container = styled.div`
   display: flex;
@@ -32,7 +32,7 @@ const GridContainer = styled.div`
   grid-template-columns: 1fr 5fr;
   grid-column-gap: 0.5rem;
 `;
-const Text = styled.p`
+export const Text = styled.p`
   margin: 0.75rem 0;
   overflow: hidden;
   line-height: 1.5;
@@ -52,7 +52,7 @@ const Line = styled.div`
   border-color: #e4e4e4;
   border-width: 1px;
 `;
-const RecommendationGridContainer = styled.div`
+export const RecommendationGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
@@ -86,18 +86,18 @@ const ItineraryFoodElement = (props) => {
   //     recomendation  = props.recomendation
   // }
 
-  console.log("recomendation..." + props.recomendation);
+  console.log('recomendation...' + props.recomendation);
 
   return (
     <>
       <Container
         className="font-poppins"
-        style={{ fontSize: "14px", fontWeight: "500" }}
+        style={{ fontSize: '14px', fontWeight: '500' }}
       >
         <div>{props.time}</div>
         <TInfoContainer>
-          <HLine style={{ width: "2rem" }}>
-            <div style={{ marginLeft: "-10px" }}>
+          <HLine style={{ width: '2rem' }}>
+            <div style={{ marginLeft: '-10px' }}>
               <ImageLoader
                 url={props.icon}
                 leftalign
@@ -111,11 +111,11 @@ const ItineraryFoodElement = (props) => {
             <GridContainer>
               <div className="text-center">
                 <IoMdRestaurant
-                  style={{ fontSize: "2rem", textAlign: "center" }}
+                  style={{ fontSize: '2rem', textAlign: 'center' }}
                 ></IoMdRestaurant>
               </div>
 
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Heading>{props.heading}</Heading>
               </div>
             </GridContainer>
