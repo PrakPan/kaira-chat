@@ -17,15 +17,13 @@ const ExElementContainer = (props) => {
         <ColElementContainer style={{ paddingLeft: '12px' }}>
           <MainHeading size={'1.2rem'}>Flights</MainHeading>
           <ColElementContainer>
-
-            {props.Idxs?.map(
-                (idx, index) =>
-                    (index < 3 ?
-                    <SubHeading size={'0.9rem'}>
-                    {props.info.costings_breakdown.[idx.id].detail.name}
-                  </SubHeading>
-                    : null)  
-              )}
+            {props.Idxs?.map((idx, index) =>
+              index < 3 ? (
+                <SubHeading size={'0.9rem'}>
+                  {props.info.costings_breakdown[idx.id].detail.name}
+                </SubHeading>
+              ) : null
+            )}
           </ColElementContainer>
         </ColElementContainer>
       </RowElementContainer>
