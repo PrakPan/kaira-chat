@@ -7,6 +7,7 @@ import { faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../ImageLoader';
 import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
+import { FaBell, FaRegListAlt, FaUser } from 'react-icons/fa';
 
 
 const CenterNav=styled.div`
@@ -22,8 +23,8 @@ align-items:center;
  
 
 const ProfileList=styled.span`
-font-family: 'Open Sans';
-
+// font-family: 'Open Sans';
+font-weight : 500;
 text-align:center;
 padding:1rem 0rem 0.5rem 0rem;
 display:flex;
@@ -76,7 +77,10 @@ const ProfileDropDown =(props)=>{
     @media screen and (min-width: 768px){
         border-top: none;
         width: max-content;
-        right:0;
+        right:7rem;
+        top : 3rem;
+        border-radius: 1rem !important; 
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         left:auto;
         padding: 0rem 3rem 1rem  3rem;
         margin: 0.5rem 0.5rem 0rem 0rem;
@@ -109,15 +113,16 @@ const ProfileDropDown =(props)=>{
     });
 
     
-    let AuthMenu = <ProfileContainer className={props.headerColor==="white" ? "border" : ""} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white', color: props.headerColor === 'white' ? 'rgba(0,0,0,0.7)' : 'white'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
+    let AuthMenu = <ProfileContainer className={props.headerColor==="white" ? "border" : ""} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white', color: 'rgba(0,0,0,0.7)'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
                      <Link style={{ textDecoration: 'none'}} onClick={props.authShowLogin}><ProfileList>Login</ProfileList></Link>
                    </ProfileContainer>;
 
     if(props.token) AuthMenu = 
-    <ProfileContainer className={props.headerColor==="white" ? "border" : ""}  style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white' , color: props.headerColor === 'white' ? 'rgba(0,0,0,0.7)' : 'white'}} showProfileList={props.showDropDownProfileList} >  
-      <ProfileList style={{borderStyle: 'none'}}>{"Hi "+firstname+" 🙂"}</ProfileList>
-      <ProfileList style={{display: 'grid', gridTemplateColumns: 'auto max-content'}} onClick={props._handleNotifications} className="font-opensans">
-          <div >Notifications</div>
+    <ProfileContainer className={props.headerColor==="white" ? "border" : ""}  style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white' , color: 'rgba(0,0,0,0.7)' }} showProfileList={props.showDropDownProfileList} >  
+      <ProfileList style={{borderStyle: 'none'}}><FaUser /> <div>{"Hi "+firstname}</div></ProfileList>
+      <ProfileList style={{display: 'grid', gridTemplateColumns: 'auto max-content'}} onClick={props._handleNotifications}>
+      <FaBell />
+          <div>Notifications</div>
           {props.notOpenedCount ? <div style={{fontWeight: '700', fontSize: '0.75rem',backgroundColor: '#f7e700', width: '1.25rem', height: '1.25rem', marginLeft: '0.5rem', color: 'black', borderRadius: '50%'}} className="center-div">{props.notOpenedCount}</div> : null}
         </ProfileList>
 
@@ -125,13 +130,13 @@ const ProfileDropDown =(props)=>{
       {/* <Link to='/profile/plans' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Saved Plans</ProfileList></Link> */}
       {/* <Link to='/profile/notifications' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Previous Plans</ProfileList></Link> */}
       {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
-    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList  className="font-opensans">My Plans</ProfileList></Link>
+    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList><FaRegListAlt /><div></div>My Plans</ProfileList></Link>
 
-      <ProfileList onClick={props.onLogout} className="font-opensans"> Logout</ProfileList>
+      <ProfileList onClick={props.onLogout}> Logout</ProfileList>
    </ProfileContainer>;
     return(
         <div ref={profileRef} style={{marginRight: '2.5rem'}}>
-            {props.notifications.length && props.notOpenedCount ? <RedDot className="center-div font-opensans">1</RedDot> : null}
+            {props.notifications.length && props.notOpenedCount ? <RedDot className="center-div">1</RedDot> : null}
             {/* <RedDot/> */}
             <CenterNav className=''>
               <ImageLoader borderRadius="50%" url={ props.image !== 'null' && props.image!== null ? props.image : "media/website/user.svg"} width="2rem" height="2rem" dimensions={{width: 300, height: 300}} onclick={props.toggleProfileList}/>   

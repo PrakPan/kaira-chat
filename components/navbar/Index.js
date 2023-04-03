@@ -93,7 +93,7 @@ const _openAllNotificationsHandler = () => {
 }
  
     return(
-      <div>
+      <div className='font-poppins'>
       <div className='hidden-desktop'><NewMobile _openAllNotificationsHandler={_openAllNotificationsHandler} hidecta={props.hidecta} ctaonclick={props.ctaonclick} _deleteNotificationHandler={_deleteNotificationHandler} notifications={notifications} _deleteNotificationHandler={_deleteNotificationHandler} headerColor={headerColor} hideNav={hideNav} notOpenCount={notOpenCount} ></NewMobile></div>
       <div   className='hidden-mobile'>
         <div style={{display: hideNav? 'none !important' : 'initial !important'}}>

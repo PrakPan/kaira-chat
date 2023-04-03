@@ -48,10 +48,9 @@ z-index:1;
 `;
 
 const ProfileList=styled.span`
-font-family: 'Open Sans';
+// font-family: 'Open Sans';
 
 text-align:center;
-padding:1rem 0rem 0.5rem 0rem;
 display:flex;
 justify-content: center;
 align-items: center;
@@ -96,17 +95,18 @@ const ProfileDropDown =(props)=>{
     height: auto;
     margin-top: ${props => (props.showProfileList ? `0` : '-40rem')};
     opacity: ${props => (props.showProfileList ? `1` : '0')};
+    font-weight : 600;
   
     @media screen and (min-width: 768px){
         border-top: none;
         width: max-content;
-        right:0;
+        right: 7rem;
         left:auto;
-        padding: 0rem 3rem 1rem  3rem;
+        padding: 1rem 2.5rem;
+        border-radius: 1rem !important; 
         margin: 0.5rem 0.5rem 0rem 0rem;
-        border-radius:0.5rem;
         height: auto;
-        margin-top: ${props => (props.showProfileList ? `1.25rem` : '-50rem')};
+        margin-top: ${props => (props.showProfileList ? `0.1rem` : '-50rem')};
         opacity: ${props => (props.showProfileList ? `1` : '0')};
         transition: opacity 0.2s linear; 
        
@@ -136,6 +136,7 @@ const ProfileDropDown =(props)=>{
     let AuthMenu = <ProfileContainer className={"border"} style={{backgroundColor:'white', color: 'rgba(0,0,0,0.7)'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
                      <ProfileList onClick={props.authShowLogin}>Login</ProfileList>
                    </ProfileContainer>;
+
 
    
     return(
