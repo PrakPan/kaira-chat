@@ -27,6 +27,7 @@ const DivDayContainerRow = styled.div`
   justify-content: space-between;
     align-content: center;
     align-items: center;
+    padding: 0px 0px 10px 0px;
 
 `
  const InnerDayLocationRow = styled.div`
@@ -77,9 +78,9 @@ const Day_I_Container = (props) => {
   console.log(Arslab_elements);
   return (
     <Container className="font-poppins">
-      {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>}
+      {/* {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>} */}
       <DivDayContainerRow>
-        Day {props.indexDay + 1}  {Arslab_elements[0].data[0][0] !== undefined ? <div>- {Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].origin.shortName} to {Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].destination.shortName}</div> : null}
+       <InnerDayLocationRow style={{paddingRight: '2px'}}><div>Day {props.indexDay + 1}</div>{Arslab_elements[0].data[0][0] !== undefined ? <div style={{fontWeight: '600'}}>- {Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].origin.shortName} to {Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].destination.shortName}</div> : null}</InnerDayLocationRow> 
         <InnerDayLocationRow>
 <GrMapLocation/>
         <div>
