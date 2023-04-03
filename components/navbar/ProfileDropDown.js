@@ -8,7 +8,7 @@ import ImageLoader from '../ImageLoader';
 import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
 import { FaBell, FaRegListAlt, FaUser } from 'react-icons/fa';
-
+import {MdOutlineLogout,MdAssignment } from 'react-icons/md'
 
 const CenterNav=styled.div`
 width:100%;
@@ -130,9 +130,9 @@ const ProfileDropDown =(props)=>{
       {/* <Link to='/profile/plans' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Saved Plans</ProfileList></Link> */}
       {/* <Link to='/profile/notifications' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Previous Plans</ProfileList></Link> */}
       {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
-    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList><FaRegListAlt /><div></div>My Plans</ProfileList></Link>
+    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList><MdAssignment /><div></div>My Plans</ProfileList></Link>
 
-      <ProfileList onClick={props.onLogout}> Logout</ProfileList>
+      <ProfileList onClick={props.onLogout}><MdOutlineLogout /> <div>Logout</div></ProfileList>
    </ProfileContainer>;
     return(
         <div ref={profileRef} style={{marginRight: '2.5rem'}}>
