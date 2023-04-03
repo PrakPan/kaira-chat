@@ -23,7 +23,7 @@ scrollbar-width: none;
   align-items: center;
   flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
   margin: ${({ Isvertical }) =>
-    Isvertical ? '0px -20px 0px -120px' : '0px -20px 0px -20px'};
+    Isvertical ? '0px -20px 0px -130px' : '0px -20px 0px -20px'};
   position: ${({ Isvertical }) => (Isvertical ? 'absolute' : 'inherit')};
   background-color: white;
 `;

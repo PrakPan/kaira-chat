@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import ItineraryFlightElement from '../../newitinerary/itineraryelements/Flight';
 
 import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
-
+import {GrMapLocation} from 'react-icons/gr'
+import {BiChevronRight} from 'react-icons/bi'
 import TransferElements from './TransferElements';
 import ItineraryElement from '../../newitinerary/itineraryelements/ItineraryElement';
 import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
@@ -20,7 +21,24 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
 `;
+const DivDayContainerRow = styled.div`
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+    align-content: center;
+    align-items: center;
 
+`
+ const InnerDayLocationRow = styled.div`
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+  > div {
+    padding-Right: 8px;
+    padding-Left: 8px;
+  }
+  
+`
 const Date = styled.div`
   width: max-content;
   border-radius: 2rem;
@@ -60,7 +78,17 @@ const Day_I_Container = (props) => {
   return (
     <Container className="font-poppins">
       {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>}
-
+      <DivDayContainerRow>
+        Day {props.indexDay + 1}  {Arslab_elements[0].data[0][0] !== undefined ? <div>- {Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].origin.shortName} to {Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].destination.shortName}</div> : null}
+        <InnerDayLocationRow>
+<GrMapLocation/>
+        <div>
+          
+        <a>View on Google Map</a>  
+        </div>
+        <BiChevronRight/>
+        </InnerDayLocationRow>
+        </DivDayContainerRow>
       <div>
         {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
           time="9:00AM"
