@@ -10,6 +10,7 @@ import ItineraryFoodElementM from '../../newitinerary/itineraryelements/Itinerar
 import ItineraryPoiElementM from '../../newitinerary/itineraryelements/PoiM';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
+import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {

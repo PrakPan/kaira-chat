@@ -23,6 +23,7 @@ import Notifications from '../../modals/Notifications/Index';
 import SearchMobile from '../../search/homepage/mobile/Index';
 import { FaSearch } from 'react-icons/fa';
 import ButtonYellow from '../../ButtonYellow';
+import Image from 'next/image';
 // import ImageLoader from '../../ImageLoader';
 const Container = styled.div`
   background-color: white;
@@ -247,7 +248,10 @@ const Mobile = (props) => {
           className="mobile-header-menu"
         >
           <DrawerContainer>
-            <Cross onClick={() => setToggleMenu(false)} src={cross}></Cross>
+            <Cross onClick={() => setToggleMenu(false)}>
+              <Image src={cross} width={50} height={50} objectFit="none" />
+            </Cross>
+
             <ListContainer>
               {props.token ? (
                 <LoggedInMenu
