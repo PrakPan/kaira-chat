@@ -28,13 +28,18 @@ font-weight : 500;
 text-align:center;
 padding:1rem 0rem 0.5rem 0rem;
 display:flex;
-justify-content: center;
+justify-content: flex-start;
+gap : 0.5rem;
 align-items: center;
 cursor:pointer;
 transition: all 0.2s ease-in-out;
 &:hover{
     color:lightgrey;
 }
+div{
+    text-align : left;   
+   }
+
 `;
 
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
@@ -82,7 +87,7 @@ const ProfileDropDown =(props)=>{
         border-radius: 1rem !important; 
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         left:auto;
-        padding: 0rem 3rem 1rem  3rem;
+        padding: 0rem 1rem 1rem 1rem;
         margin: 0.5rem 0.5rem 0rem 0rem;
         border-radius:0.5rem;
         height: auto;
@@ -130,7 +135,7 @@ const ProfileDropDown =(props)=>{
       {/* <Link to='/profile/plans' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Saved Plans</ProfileList></Link> */}
       {/* <Link to='/profile/notifications' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Previous Plans</ProfileList></Link> */}
       {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
-    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList><MdAssignment /><div></div>My Plans</ProfileList></Link>
+    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList><MdAssignment /><div>My Plans</div></ProfileList></Link>
 
       <ProfileList onClick={props.onLogout}><MdOutlineLogout /> <div>Logout</div></ProfileList>
    </ProfileContainer>;

@@ -10,7 +10,7 @@ const Container = styled.div`
 
 `;
 const ListItem = styled.div`
-    text-align: right;
+    text-align: left;
     margin-bottom: 1rem;
 
 `;
@@ -41,22 +41,22 @@ const LoggedIn = (props) =>{
     return(
         <Container>
             <ListItem style={{fontWeight: '600'}}>
-                <StyledLink className="font-opensans" style={{fontWeight: '700', fontSize: '1.75rem'}}>{!props.name || props.name===''? "Hi Traveler!" : "Hi "+getFirstName(props.name)+"!"}</StyledLink>    
+                <StyledLink  style={{fontWeight: '700', fontSize: '1.75rem'}}>{!props.name || props.name===''? "Hi Traveler!" : "Hi "+getFirstName(props.name)+"!"}</StyledLink>    
             </ListItem>
             <ListItem>
                 <Link href='/dashboard' className="next-link" passHref={true}>
-                    {router.pathname === '/dashboard' ? <StyledLink className="font-opensans" style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px', fontWeight: '300'}}>My Plans</StyledLink> : <StyledLink className="font-opensans" style={{fontWeight: '300'}}>My Plans</StyledLink> }
+                    {router.pathname === '/dashboard' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px', fontWeight: '300'}}>My Plans</StyledLink> : <StyledLink  style={{fontWeight: '300'}}>My Plans</StyledLink> }
                 </Link>
             </ListItem>
             <ListItem style={{display: 'grid', gridTemplateColumns: 'auto max-content'}}>
-                    <StyledLink className="font-opensans " style={{fontWeight: '300', alignItems: 'center', display: 'flex', justifyContent: 'flex-end'}} onClick={props._handleNotifications}>
+                    <StyledLink onClick={props._handleNotifications}>
                         Notifications
                     </StyledLink>
                     {props.notifications.length && props.notOpenCount ? <div style={{fontSize: '0.75rem', width: '1.5rem', height: '1.5rem', backgroundColor: "#f7e700", marginLeft: '0.25rem', borderRadius: '50%', fontWeight: '600'}} className="font-opensans center-div">{props.notOpenCount}</div>:null}
             </ListItem>
           
             <ListItem>
-                    <StyledLink onClick={props.onLogout} className="font-opensans" style={{fontWeight: '300'}}>Logout</StyledLink> 
+                    <StyledLink onClick={props.onLogout}  style={{fontWeight: '300'}}>Logout</StyledLink> 
             </ListItem>
         </Container>
     );
