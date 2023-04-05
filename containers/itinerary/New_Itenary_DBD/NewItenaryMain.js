@@ -191,13 +191,13 @@ const NewItenaryMain = (props) => {
   const itemsDays = [];
 
   if (props.itinerary.day_slabs) {
-    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
+    for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
         break;
       else {
-        const itenaryId = props.itinerary.day_slabs[i];
+        const itenaryId = props.itinerary.day_slabs[i - 1];
         // console.log(itenaryId !== undefined);
         // console.log('idssss' + props.city_slabs[i].city_name);
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
