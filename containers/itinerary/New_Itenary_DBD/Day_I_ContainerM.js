@@ -54,7 +54,7 @@ const Day_I_ContainerM = (props) => {
   console.log(Arslab_elements);
   return (
     <Container className="font-poppins">
-      {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>}
+      <div>Day {props.indexDay + 1}</div>
 
       <div>
         {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement

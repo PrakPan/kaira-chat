@@ -39,7 +39,7 @@ const NavbarContainer = styled.div`
   background-color: white;
 
   position: inherit;
-  z-index: 997;
+  z-index: 992;
   top: 120px;
 
   display: flex;
@@ -149,8 +149,10 @@ const ScrollableMenuTabs = ({
         <IoIosArrowBack
           style={{
             color: 'black',
+            textAlign: 'center',
             width: 'max-content',
-            fontSize: '50px',
+            fontSize: '20px',
+            height: 'auto',
             marginRight: '20px',
             contentVisibility: `${canScrollLeft ? 'auto' : 'hidden'}`,
           }}
@@ -174,8 +176,10 @@ const ScrollableMenuTabs = ({
         <IoIosArrowForward
           style={{
             color: 'black',
+            textAlign: 'center',
             width: 'max-content',
-            fontSize: '50px',
+            fontSize: '20px',
+            height: 'auto',
             marginLeft: '20px',
           }}
           onClick={handleScrollRight}
