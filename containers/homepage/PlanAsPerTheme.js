@@ -57,21 +57,22 @@ height : 430px;
 `
 
 const TopSlideIn = keyframes`
-  from { 
-    transform: translateX(0px);
-  } 
-  to { 
-    transform: translateX(50px);
-  } 
+from { 
+  transform: translateY(0%);
+}
+to { 
+  transform: translateY(30%);
+} 
 `;
 
 const TopSlideOut = keyframes`
-  from { 
-    transform: translateX(50px);
-  }
-  to { 
-    transform: translateX(0px);
-  } 
+from { 
+  transform: translateY(30%);
+}
+to { 
+  transform: translateY(0%);
+} 
+
 `;
 
 const TextContainer = styled.div`
@@ -192,8 +193,8 @@ useEffect(()=>{
             <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>
             <TextContainer className='AnimateTop'>
                 <Heading>{e.banner_heading}</Heading>
+            {isPageWide && <div className='StartNow'>Explore!</div> }
             </TextContainer>
-            {isPageWide && <TextContainer className='StartNow'>Explore!</TextContainer> }
             <ImageLoader onload={()=>setImgLoading(false)} fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
             <BlackContainer/>
 
