@@ -84,13 +84,13 @@ const SelectedDestination = (props) => {
     {props.selectlocation ? 
           !props.showSearchStarting ? 
               !props.startingLocation ?  
-              <>Delhi, IN <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Departing</span></>  : 
+              <>Delhi, IN <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Departing from</span></>  : 
           <>{props.startingLocation.name} <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Departing</span></> : 
      <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => {setFocusLocation(false)}} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>
      :
      props.destination && showDestination
       ? <>{props.destination} <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Destination</span></> : 
-     <SearchInput  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+     <SearchInput CITIES={props.CITIES}  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     
