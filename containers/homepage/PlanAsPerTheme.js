@@ -6,7 +6,7 @@ import media from '../../components/media'
    import Button from '../../components/ui/button/Index'
 import ImageLoader from '../../components/ImageLoader';
 import axiosCountInstance from '../../services/itinerary/count';
-   
+import SkeletonCard from '../../components/ui/SkeletonCard'
 const Container = styled.div`
 height : 430px;
   display : grid;
@@ -26,7 +26,7 @@ height : 430px;
     grid-template-areas: 
     'a a a a b b b b b'
     'a a a a b b b b b'
-    'a a a a b b b b b'
+    // 'a a a a b b b b b'
     'a a a a b b b b b'
     'a a a a e e e e e'
     'c c c d e e e e e'
@@ -158,7 +158,8 @@ const PlanAsPerTheme = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [count,setCount] = useState(null)
+    const [count,setCount] = useState(null);
+    const[ImgLoading , setImgLoading] = useState(true)
 
 useEffect(()=>{
   axiosCountInstance.get('').then(res=>setCount(res.data.user))
@@ -183,19 +184,21 @@ useEffect(()=>{
       router.push(`/travel-planner/${link}`)
     }
 
-    const order = ['a','c','e','b']
+    const order = ['e','b','c','a']
     const ThemeContainer = 
     props.ThemeData?.map((e,i)=>(
-        (i != 0) &&<GridItem className={order[i-1]} onClick={()=>_handleTripRedirect(e.link)}>
-            <ImageContainer bg='road-trip.png'>
+        <GridItem className={order[i]} onClick={()=>_handleTripRedirect(e.link)}>
+            {ImgLoading && <SkeletonCard />}
+            <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>
             <TextContainer className='AnimateTop'>
-                <Heading>{e.heading=='Travel'? 'Offbeat' : e.heading}</Heading>
+                <Heading>{e.banner_heading}</Heading>
             </TextContainer>
             {isPageWide && <TextContainer className='StartNow'>Explore!</TextContainer> }
-            <ImageLoader fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
+            <ImageLoader onload={()=>setImgLoading(false)} fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
             <BlackContainer/>
 
             </ImageContainer>
+          
         </GridItem >
       ))
     

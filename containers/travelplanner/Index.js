@@ -317,6 +317,7 @@ const InfoWindowContainer = (location)=><MapInfo>
           children_cities={props.experienceData.children}
           title={props.experienceData.banner_heading}
           setShowMobilePlanner={setShowMobilePlanner}
+          destinationType={'travel-planner'}
         />
         <SetWidthContainer>
           <MapGridContainer>
@@ -481,6 +482,7 @@ const InfoWindowContainer = (location)=><MapInfo>
         </div> */}
         </SetWidthContainer>
         <TailoredFormMobileModal
+        destinationType={'travel-planner'}
           page_id={props.experienceData.id}
           destination={props.experienceData.destination}
           cities={props.experienceData.locations}
