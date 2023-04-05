@@ -411,7 +411,15 @@ const SimpleTabs = (props) => {
 
     background-color: white;
   `;
-
+  const MenuContainer = styled.div`
+    border-bottom: 1px solid #f0f0f0;
+    width: 100vw;
+    margin-left: -1rem;
+    margin-bottom: 1rem;
+    > div {
+      margin: 0px 0px 0px -50px;
+    }
+  `;
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       {/* <StackedComponents></StackedComponents> */}
@@ -432,6 +440,7 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
+
       <ScrollableMenuTabs
         icons={false}
         offset={'10.1vh'}

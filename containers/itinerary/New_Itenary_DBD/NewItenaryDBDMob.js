@@ -193,13 +193,15 @@ const NewItenaryDBDMob = (props) => {
   const itemsDays = [];
 
   if (props.itinerary.day_slabs) {
-    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
+    for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
         break;
+      if (props.city_slabs[i] ? props.city_slabs[i].is_departure_only : true)
+        break;
       else {
-        const itenaryId = props.itinerary.day_slabs[i];
+        const itenaryId = props.itinerary.day_slabs[i - 1];
         // console.log(itenaryId !== undefined);
         // console.log('idssss' + props.city_slabs[i].city_name);
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
@@ -306,7 +308,10 @@ const NewItenaryDBDMob = (props) => {
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-            <Day_I_ContainerM Days={element}></Day_I_ContainerM>
+            <Day_I_ContainerM
+              Days={element}
+              indexDay={index}
+            ></Day_I_ContainerM>
           </div>
         ))}
       </div>

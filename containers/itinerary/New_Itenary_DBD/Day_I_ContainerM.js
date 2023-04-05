@@ -54,7 +54,29 @@ const Day_I_ContainerM = (props) => {
   console.log(Arslab_elements);
   return (
     <Container className="font-poppins">
-      {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>}
+      <div
+        style={{ paddingTop: '10px', display: 'flex', alignItems: 'center' }}
+      >
+        <div style={{ padding: '0px 10px 0px 0px' }}>
+          Day {props.indexDay + 1}
+        </div>
+        {Arslab_elements[0].data[0][0] !== undefined &&
+        Arslab_elements[0].data[0][0].transfers !== undefined &&
+        Arslab_elements[0].data[0][0].transfers.routes !== undefined ? (
+          <div style={{ fontWeight: '600' }}>
+            -{' '}
+            {
+              Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0].origin
+                .shortName
+            }{' '}
+            to{' '}
+            {
+              Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0]
+                .destination.shortName
+            }
+          </div>
+        ) : null}
+      </div>
 
       <div>
         {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
@@ -120,7 +142,7 @@ const Day_I_ContainerM = (props) => {
           ></TransferElementsM>
         ) : null}
         {Arslab_elements[3].data[0][0] ? (
-          <ItineraryFoodElement
+          <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][0].icon}
             time="12:00PM"
             heading={Arslab_elements[3].data[0][0].heading}
@@ -130,9 +152,9 @@ const Day_I_ContainerM = (props) => {
                 ? Arslab_elements[4].data[0][0].text
                 : null
             }
-          ></ItineraryFoodElement>
+          ></ItineraryFoodElementM>
         ) : null}
-        {Arslab_elements[4].data[0][0] ? (
+        {Arslab_elements[4].data[0][0] && !Arslab_elements[3].data[0][0] ? (
           <RecomendationComponent
             recomendation={
               Arslab_elements[4].data[0][0]

@@ -137,7 +137,6 @@ const ItineraryFoodElement = (props) => {
                 )}
               </>
             ) : null}
-            <Line></Line>
           </div>
         </TInfoContainer>
       </Container>

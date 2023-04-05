@@ -29,15 +29,21 @@ const Details = (props) => {
 
   return (
     <Container className="font-poppins">
-      <div style={{ width: 'max-content' }}>
-        <Heading>Group Type</Heading>
-        <Text>{props.group_type}</Text>
-      </div>
-      <div style={{ width: 'max-content' }}>
-        <Heading>Duration</Heading>
-        <Text>{props.duration_time} Nights</Text>
-      </div>
-      {props.travellerType !== null ? (
+      {props.group_type !== null ? (
+        <div style={{ width: 'max-content' }}>
+          <Heading>Group Type</Heading>
+          <Text>{props.group_type}</Text>
+        </div>
+      ) : null}
+
+      {props.duration_time != null ? (
+        <div style={{ width: 'max-content' }}>
+          <Heading>Duration</Heading>
+          <Text>{props.duration_time} Nights</Text>
+        </div>
+      ) : null}
+
+      {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>

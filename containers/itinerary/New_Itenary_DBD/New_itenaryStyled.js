@@ -106,6 +106,7 @@ border-style: none none none dotted;
   border-color: #111;
   
   border-width: 2px;
+  
   margin-left: 2rem;
   & > div{
     margin-top: 60%;

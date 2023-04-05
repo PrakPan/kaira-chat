@@ -1,22 +1,21 @@
-import styled from "styled-components";
-import { useState, useEffect } from "react";
-import { AiFillCar } from "react-icons/ai";
-import ImageLoader from "../../../components/ImageLoader";
-import Button from "../../../components/ui/button/Index";
-import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
-import { HLine } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import styled from 'styled-components';
+import { useState, useEffect } from 'react';
+import { AiFillCar } from 'react-icons/ai';
+import ImageLoader from '../../../components/ImageLoader';
+import Button from '../../../components/ui/button/Index';
+import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 const padding = {
   initialLeft: '100px',
 };
 const Container = styled.div`
-    
- display: flex;
+  display: flex;
   flex-direction: column;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;
- 
+
   padding: 0px 0px 0px 0px;
   color: #01202b;
 `;
@@ -25,7 +24,7 @@ const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: ${(props) => (props.image ? "1fr 2fr" : "1fr")};
+  grid-template-columns: ${(props) => (props.image ? '1fr 2fr' : '1fr')};
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
@@ -36,73 +35,74 @@ const Text = styled.p`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   font-size: 14px;
+  font-weight: 400;
 `;
 const Heading = styled.p`
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
   font-weight: 500;
+  font-size: 16px;
   line-height: 1;
 `;
 const Line = styled.div`
   border-style: none none solid none;
-  border-color: #e4e4e4;
+  border-color: #f0f0f0;
   border-width: 1px;
 `;
 export const TInfoContainer = styled.div`
+  @media screen and (min-width: 768px) {
+    display: flex;
 
-@media screen and (min-width: 768px){
-  display: flex;
-
-  flex-direction: row;           
-  & > div{
-    padding-left: ${padding.initialLeft};
-    width: 100%;
+    flex-direction: row;
+    & > div {
+      padding-left: ${padding.initialLeft};
+      width: 100%;
+    }
   }
-          }
-`
+`;
 const ItineraryElement = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container style={{ fontSize: "14px", fontWeight: "500" }}>
+    <Container style={{ fontSize: '14px', fontWeight: '500' }}>
       <div>{props.time}</div>
-        {/* <SectionOneText>{props.time}</SectionOneText> */}
-        <TInfoContainer >
-        <HLine style={{width: '2rem'}}>
-      <div style={{ marginLeft: "-10px" }}>
-              <ImageLoader
-                url={props.icon}
-                leftalign
-                dimensions={{ width: 200, height: 200 }}
-                width="1.25rem"
-                widthmobile="1.25rem"
-              ></ImageLoader>
-            </div>
-</HLine>
-<div>
-<GridContainer image={props.image}>
-        {props.image ? (
-          <ImageLoader
-            dimensions={{ width: 200, height: 200 }}
-            dimensionsMobile={{ width: 250, height: 200 }}
-          borderRadius="8px"
-            hoverpointer
-            onclick={() => console.log("")}
-            width="100%"
-            leftalign
-            widthmobile="100%"
-            url={props.image}
-          ></ImageLoader>
-        ) : null}
+      {/* <SectionOneText>{props.time}</SectionOneText> */}
+      <TInfoContainer>
+        <HLine style={{ width: '2rem' }}>
+          <div style={{ marginLeft: '-10px' }}>
+            <ImageLoader
+              url={props.icon}
+              leftalign
+              dimensions={{ width: 200, height: 200 }}
+              width="1.25rem"
+              widthmobile="1.25rem"
+            ></ImageLoader>
+          </div>
+        </HLine>
         <div>
-          <Heading>{props.heading}</Heading>
-          <Text>{props.text ? props.text : null}</Text>
-        </div>
-      </GridContainer>
+          <GridContainer image={props.image}>
+            {props.image ? (
+              <ImageLoader
+                dimensions={{ width: 200, height: 200 }}
+                dimensionsMobile={{ width: 250, height: 200 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log('')}
+                width="100%"
+                leftalign
+                widthmobile="100%"
+                url={props.image}
+              ></ImageLoader>
+            ) : null}
+            <div>
+              <Heading>{props.heading}</Heading>
+              <Text>{props.text ? props.text : null}</Text>
+            </div>
+          </GridContainer>
 
-      <Line></Line>
-</div>
-        </TInfoContainer>
-        {/* <AiFillCar style={{ margin: "-2px 0  0 0.5rem" }}></AiFillCar>
+          <Line></Line>
+        </div>
+      </TInfoContainer>
+      {/* <AiFillCar style={{ margin: "-2px 0  0 0.5rem" }}></AiFillCar>
         {props.booking ? (
           <div
             style={{
@@ -123,8 +123,6 @@ const ItineraryElement = (props) => {
             </Button>
           </div>
         ) : null} */}
-
-      
     </Container>
   );
 };

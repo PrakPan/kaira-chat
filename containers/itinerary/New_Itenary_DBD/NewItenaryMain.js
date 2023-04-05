@@ -191,13 +191,13 @@ const NewItenaryMain = (props) => {
   const itemsDays = [];
 
   if (props.itinerary.day_slabs) {
-    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
+    for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
         break;
       else {
-        const itenaryId = props.itinerary.day_slabs[i];
+        const itenaryId = props.itinerary.day_slabs[i - 1];
         // console.log(itenaryId !== undefined);
         // console.log('idssss' + props.city_slabs[i].city_name);
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
@@ -275,7 +275,7 @@ const NewItenaryMain = (props) => {
       ></ScrollableMenuTabs>
       <ScrollableMenuTabs
         icons={false}
-        offset={'22.6vh'}
+        offset={'23.6vh'}
         items={itemsDays}
         BarName="CityName"
         Mstyle={'round'}
@@ -286,7 +286,7 @@ const NewItenaryMain = (props) => {
       <div className="itenaryContainer">
         {props.itinerary.day_slabs.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-            <Day_I_Container Days={element}></Day_I_Container>
+            <Day_I_Container Days={element} indexDay={index}></Day_I_Container>
           </div>
         ))}
       </div>
