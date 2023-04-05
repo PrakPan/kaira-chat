@@ -58,10 +58,10 @@ const Booking = (props) =>{
         <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-opensans'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
 
         <Container className='border' style={{ borderRadius: "10px"}}>
-         <SectionOne data={props.data}></SectionOne>
-         <SectionTwo   is_registration_needed={props.is_registration_needed} isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
+         <SectionOne data={props.data} rental={props.rental}></SectionOne>
+         <SectionTwo rental={props.rental}   is_registration_needed={props.is_registration_needed} isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
          <SectionThree  is_registration_needed={props.is_registration_needed} are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         {!props.is_registration_needed? <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> : null}
+         {!props.is_registration_needed && !props.rental? <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> : null}
         </Container>
         </div>
     );

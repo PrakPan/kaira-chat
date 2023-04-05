@@ -33,7 +33,7 @@ const Section= (props) => {
               {/* <p className='text-center font-opensans' style={{fontSize: '13px', margin: '0'}}>Occupancy: 5</p> */}
             </div>
             {/* <div style={{padding:'1rem 0 1rem 0.5rem'}}><ImageLoader url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="2.5rem" ></ImageLoader></div> */}
-              <Route data={props.data}></Route>
+              <Route  rental={props.rental} data={props.data}></Route>
       </Container>
   ); 
   else return null;

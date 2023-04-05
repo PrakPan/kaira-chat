@@ -87,7 +87,7 @@ const Enquiry = (props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState([{id : props.page_id , name : props.destination , input_id : 0}]);
+    const [selectedCities, setSelectedCities] = useState();
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
@@ -112,11 +112,16 @@ const Enquiry = (props) => {
             }
           }
         }
+        console.log(selectedCities)
+        try{
         for(var i =0 ; i < selectedCities.length; i++){
           if(cityids.indexOf(selectedCities[i].id) == -1){
             cityids.push(parseInt(selectedCities[i].id));
             citynames.push(selectedCities[i].name);  
           }
+        }}
+        catch{
+
         }
         
         const start_date = format(value_start,  "yyyy-MM-dd");
@@ -136,6 +141,7 @@ const Enquiry = (props) => {
         }
         // (selectedPreferences);
         let data=null;
+        console.log('cn', citynames)
         if(citynames.length){
 
         data = {
@@ -264,9 +270,9 @@ const Enquiry = (props) => {
        onClick={() => setShowBlack(true)}
      >
 
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' left='10px' text='Please fill starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' left='200px' text='Please fill ending date!' />}
-      {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please Select your group type!' />}
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='10px' text='Please select starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} top='380px' mobiletop='405px' left='170px' text='Please select ending date!' />}
+      {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}
       
 
        {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
@@ -307,6 +313,7 @@ const Enquiry = (props) => {
              height: "1px",
              width: "100%",
              marginBottom: "1rem",
+             
            }}
          ></div>
 

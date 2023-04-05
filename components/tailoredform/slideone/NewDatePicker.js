@@ -4,6 +4,7 @@ import "react-dates/lib/css/_datepicker.css";
 import {BiCalendarAlt} from 'react-icons/bi'
 import moment from "moment";
 import media from '../../media'
+import {FaChevronLeft , FaChevronRight} from 'react-icons/fa'
 import {
     DateRangePicker,
     isInclusivelyBeforeDay
@@ -35,37 +36,51 @@ overflow : hidden;
   font-weight : 400;
   font-size : 1rem;
 }
-
+ .DayPicker__withBorder{
+  @media screen and (max-width: 768px){
+border : none;
+-webkit-box-shadow : none;
+box-shadow :none;
+width:320px;
+margin : auto;
+  }
+}
 .DateRangePickerInput_arrow , .DayPickerKeyboardShortcuts_buttonReset{
   display : none !important;
 }
 
-@media screen and (max-width: 768px){
-  .DayPickerNavigation{  
-        display: flex;
-        height: 20px;
-        width: fit-content;
-        margin-inline : 37%;
-        margin-bottom : 10px;
-      }
-      .DayPickerNavigation>.DayPickerNavigation_button{
-      height: 32px;
-      width:32px;
-      border-radius: 100%;
-      margin-inline : 5px;
-      padding : 2px;
-      }
-      .DayPickerNavigation>.DayPickerNavigation_button > svg{
-        height:10px;
-        width: 10px;
-      }
+//  Customized navigation button
 
-    
-}
+// @media screen and (max-width: 768px){
+//   .DayPickerNavigation{  
+//         display: flex;
+//         height: 20px;
+//         width: fit-content;
+//         margin-inline : 37%;
+//         margin-bottom : 10px;
+//       }
+//       .DayPickerNavigation>.DayPickerNavigation_button{
+//       height: 32px;
+//       width:32px;
+//       border-radius: 100%;
+//       margin-inline : 5px;
+//       padding : 2px;
+//       }
+//       .DayPickerNavigation>.DayPickerNavigation_button > svg{
+//         height:10px;
+//         width: 10px;
+//       }
+// }
+
 .DateRangePicker_picker_1{
   left : 0px;
+  top : 48px !important;
+  @media screen and (max-width: 768px){
+    right : 0px !important;
+  }
   @media screen and (min-width: 768px){
-    left : -210px !important;;
+    left : -210px !important;
+    top : 55px !important;
   }
 }
   .CalendarDay{
@@ -74,20 +89,19 @@ overflow : hidden;
   .CalendarDay__selected , .CalendarDay__selected:hover{
     background-color : #F7E700;
     border:0px;
+    color : black;
   }
   .CalendarDay__selected_span , .CalendarDay__hovered_span , .CalendarDay__hovered_span_3 {
-    background-color : #F7E700;
-    color : white;
-    opacity:0.5;
+    background-color : #F7E70033;
+    color : black;
     &:active{
       background-color : #F7E700;
       opacity:0.7;
       border : none;
       }
     &:hover{
-    color : white;
-    background-color : #F7E700;
-    opacity:0.7;
+    color : black;
+    background-color : #F7E7004A;
     border : none;
     }
   }
@@ -102,12 +116,14 @@ overflow : hidden;
 
 const CalenderIcons = styled.div`
 position: absolute;
-top: 14%;
-right: 8px;
+top: 27%;
+right: 2%;
 pointer-events: none;
-font-size : 20px;
-z-index : 0;
-
+font-size: 20px;
+z-index: 0;
+display: flex;
+justify-content: space-between;
+width: 59%;
 `
 const TextContainer = styled.div`
 display : flex;
@@ -143,13 +159,18 @@ return (
         }}
         focusedInput={focusedInput}
         onFocusChange={setFocusedInput}
-        isOutsideRange={day => day.isBefore(moment()) }
+        isOutsideRange={day => day.startOf('day').isBefore(moment().add(2,'day')) }
           initialVisibleMonth={() => moment().subtract(0, "month")}
-        numberOfMonths={2}
-        orientation={isPageWide?"horizontal":"vertical"}
+        numberOfMonths={isPageWide?2:1}
+        orientation={"horizontal"}
+        noBorder={true}
+        // navPrev={<FaChevronLeft />}
+        // navNext={<FaChevronRight />}
       />
-      <CalenderIcons style={{right : '12.6rem'}}><BiCalendarAlt /></CalenderIcons>
-      <CalenderIcons style={{right : '8px'}}><BiCalendarAlt /></CalenderIcons>
+      <CalenderIcons>
+      <BiCalendarAlt />
+      <BiCalendarAlt />
+      </CalenderIcons>
    </Container>
   </>
 

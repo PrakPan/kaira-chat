@@ -1,9 +1,21 @@
-import { MarginTwoTone } from '@mui/icons-material';
 import React from 'react';
 import Flickity from 'react-flickity-component';
+import styled from 'styled-components'
+
+const GridContainer = styled.div`
+display : grid;
+grid-template-columns : ${props=>`repeat(${props.columns},1fr)`} ;
+gap : 1.5%;
+`
+
 
 const FlickityCarousel = (props) => {
 
+  if(props.cards.length<=props.numberOfCards) 
+  return (<GridContainer columns={props.numberOfCards}>
+  {props.cards}
+  </GridContainer>
+  );
 
     const flickityOptions = {
         initialIndex: props.initialIndex === 0  ? 0 : props.initialIndex  ?  props.initialIndex : 1,
@@ -71,7 +83,6 @@ const FlickityCarousel = (props) => {
           options={props.locations ? flickityOptionsLocations : flickityOptions}
           reloadOnUpdate
           static
-
         >
         {cards}
         </Flickity>

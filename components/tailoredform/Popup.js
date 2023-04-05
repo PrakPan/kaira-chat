@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
+import {ImCross} from 'react-icons/im'
 const Container = styled.div`
 // display : ${props=>props.show? 'block' : 'none'};
   font-size: 14px;
@@ -7,7 +8,7 @@ const Container = styled.div`
   font-weight: 500;
     position: absolute;
     line-height: 20px;
-    padding: 5px 10px;;
+    padding: 5px 15px;;
     color : white;
     font-size: 14px;
     text-align: center;
@@ -20,6 +21,12 @@ const Container = styled.div`
     left : ${props=>props.left};
     bottom : ${props=>props.bottom};
     right: ${props=>props.right};
+
+@media screen and (max-width: 768px){
+top : ${props=>props.mobiletop};
+left : ${props=>props.mobileleft};
+};
+
 &:after {
     content: "";
     position: absolute;
@@ -46,7 +53,17 @@ const Popup = (props) => {
  }
  },[]);
   return (
-    <Container {...props}>{props.text}</Container>
+    // <div style={{position : 'relative'}}>
+    <Container {...props}>{props.text} <ImCross 
+    style={{
+      top: '0',
+      fontSize: '8px',
+      position: 'absolute',
+      right: '0',
+      cursor : 'pointer'
+    }}
+    /></Container>
+    // </div>
   )
 }
 

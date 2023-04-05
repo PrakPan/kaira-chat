@@ -22,7 +22,7 @@ const Container = styled.input`
 
  
 const SearchInput = (props) => {
-const [value, setValue] = useState(props.destination || null);
+const [value, setValue] = useState(null);
 
 const _handleKey = (e) => {
   setValue(e.target.value)
@@ -37,14 +37,19 @@ useEffect(() => {
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   const _handleReset = () => {
-    // setValue('');
+    setValue('');
     props.setSearchFinalized(false);
     props.setResults([]);
     props.setShowResults(false);
-
   }
+
+  function _handleBlur(){
+    props.onblur()
+    if(!value) props.setShowDestination(true)
+  }
+
   return (
-   <Container onFocus={props.onfocus} onBlur={props.onblur} onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} onChange={(e) => _handleKey(e)}>
+   <Container onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} autoFocus onChange={(e) => _handleKey(e)}>
     
     </Container>
   );
