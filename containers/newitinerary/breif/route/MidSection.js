@@ -17,9 +17,10 @@ const Container = styled.div`
 // `;
 const Line = styled.div`
   border-style: dashed;
-  border-width: 1px;
+  border-width: 1.4px;
   position: absolute;
   left: 50%;
+  border-color: #374259;
   min-height: 10vw;
   height: 100%;
 `;

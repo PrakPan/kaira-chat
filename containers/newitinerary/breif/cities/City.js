@@ -9,15 +9,14 @@ const Heading = styled.p`
   font-size: 23px;
   font-weight: 600;
   font-style: Helvetica;
-  @media (min-width: 768px) 
- {
-  font-size: 26px;
- }
+  @media (min-width: 768px) {
+    font-size: 26px;
+  }
 `;
 const CityText = styled.p`
   font-size: 18px;
   font-weight: 400;
-  margin: 0 0 0 8px;
+  margin: 0 0 0 15px;
   line-height: 24px;
   color: rgba(1, 32, 43, 1);
 `;
@@ -38,7 +37,24 @@ const TextLight = styled.p`
   line-height: 24px;
   margin: 0;
 `;
+const ITbutton = styled.button`
+  /* Background/Primary */
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 8px;
 
+  background: #ffffff;
+  /* Background/Tertiary  */
+
+  border: 1.5px solid #eceaea;
+  /* Elevaion/Light/medium */
+
+  box-shadow: 0px 2px 0px #eceaea;
+  border-radius: 8px;
+`;
 const City = ({ cityData }) => {
   useEffect(() => {}, []);
 
@@ -51,17 +67,20 @@ const City = ({ cityData }) => {
         <ImageLoader
           borderRadius="8px"
           url={cityData.image}
-          height={190}
+          height={250}
           heightMobile="auto"
           dimensionsMobile={{ width: 180, height: 180 }}
         ></ImageLoader>
         <CityText className="font-poppins">
+          <div></div>
+          <div></div>
           <TruncatedText
             text={cityData.short_description}
             maxLength={120}
             viewMoreText="more v"
             viewLessText="less ^"
           />
+
           <div>
             {/* <TextLight>Things to do</TextLight>
       <TextBold>Tours · Wildlife · Museums</TextBold> */}
@@ -73,7 +92,7 @@ const City = ({ cityData }) => {
               date={'2023-03-23 06:00:00'}
               city={cityData.city_name}
             />
-
+            <ITbutton>View {cityData.city_name} in your Itinerary</ITbutton>
             {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
       <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}
           </div>
