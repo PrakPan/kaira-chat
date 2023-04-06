@@ -44,16 +44,15 @@ const Result = (props) => {
     e.stopPropagation()
     props.setSearchFinalized({name: props.name, type: props.type});
     props.setDestination(props.name)
-   const selected = props.selectedCities.map(e=>{
-      if(e.input_id == props.inbox_id) return {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
-      return e
-    })
-    // props.selectedCities[props.inbox_id] = {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
-    props.setSelectedCities(selected)
+  //  const selected = props.selectedCities.map(e=>{
+  //     if(e.input_id == props.inbox_id) return {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
+  //     return e
+  //   })
+  //   props.setSelectedCities(selected)
     props.setFocusSearch(false)
   }
   return (
-    <Container className='font-poppins'  onClick={_handleClick}>
+    <Container className='font-poppins'  onClick={(e)=>{_handleClick(e) , props._updateDestinationHandler(props.inbox_id,props.result)}}>
                 {/* <div style={{fontWeight: '600'}}>{props.name}</div> */}
                 {/* <div style={{flexGrow: '1', textAlign: 'right', fontWeight: '300'}}>{props.type}</div> */}
 
