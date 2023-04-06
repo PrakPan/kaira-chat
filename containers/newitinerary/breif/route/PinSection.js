@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Pin from './Pin';
 
 const Container = styled.div`
+  cursor: pointer;
   display: grid;
   grid-template-columns: max-content auto;
 `;
@@ -17,14 +18,14 @@ const Heading = styled.div`
   align-items: center;
 `;
 
-const PinSection = (props) => {
+const PinSection = ({duration,city,pinColour,handlemap,Mapid}) => {
   useEffect(() => {}, []);
 
   return (
-    <Container>
-      <Pin duration={props.duration} pinColour={props.pinColour}></Pin>
+    <Container  className='cursor-pointer' onClick={()=>handlemap(Mapid)}>
+      <Pin duration={duration} pinColour={pinColour}></Pin>
       <Heading>
-        {props.duration ? props.city + ' (' + props.duration + ')' : props.city}
+        {duration ? city + ' (' + duration + ')' : city}
       </Heading>
     </Container>
   );

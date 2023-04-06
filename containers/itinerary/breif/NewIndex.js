@@ -24,6 +24,8 @@ import Route from '../../newitinerary/breif/route/Index';
 import ButtonYellow from '../../../components/ButtonYellow';
 import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
 import Map from '../../../components/Map';
+
+import dynamic from 'next/dynamic';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -59,7 +61,8 @@ const MapInfo = styled.div`
 const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
-
+  const [active,setActive] = useState(null)
+  console.log(`id mapp${active}`)
   // useEffect(()=> {
 
   //         window.addEventListener('scroll', _handleScroll);
@@ -94,10 +97,13 @@ const Details = (props) => {
     router.push('/tailored-travel');
   };
   const Locationlatlong = [];
+  // setActive(props.breif.city_slabs[1].gmaps_place_id)
   for (var i = 0; i < props.breif.city_slabs.length; i++) {
     let postion = props.breif.city_slabs[i];
+    
     if (!postion.is_departure_only && !postion.is_trip_terminated) {
       Locationlatlong.push({
+        id: postion.gmaps_place_id,
         lat: postion.lat,
         long: postion.long,
         name: postion.city_name,
@@ -121,6 +127,17 @@ const Details = (props) => {
       {location.duration && <p>Ideal duration : {location.duration} days</p>}
     </MapInfo>
   );
+  const MapCaller = ({ location }) => (
+    <LeafMap location={location} />
+  );
+  const LeafMap = dynamic(
+    () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
+    {
+      loading: () => <p>A map is loading now</p>,
+  
+      ssr: false, // This line is important. It's what prevents server-side render
+    }
+  );  
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
@@ -129,14 +146,27 @@ const Details = (props) => {
       <DetailsContainer>
         <RouteComponent>
           <div id="route">
-            <Route breif={props.breif}></Route>
+            <Route breif={props.breif} setPlaceID={setActive} active={active}></Route>
           </div>
+          
+        {/* <div className='svg-container'>
+        <MapCaller
+          // Data={MapData1}
+          // Data2={MapData2}
+          // SData={visibilities}
+          location={Locationlatlong}
+        />
+        </div> */}
+          <div id="MapcontainerRoute">
           <Map
             locations={Locationlatlong}
             defaultZoom={12}
             height={isPageWide ? '350px' : '230px'}
             InfoWindowContainer={InfoWindowContainer}
+            active={active}
           ></Map>
+          </div>
+          
         </RouteComponent>
         {isPageWide ? (
           <div>

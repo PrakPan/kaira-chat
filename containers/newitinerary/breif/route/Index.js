@@ -45,6 +45,27 @@ const Route = (props) => {
         [index + 1]: order[index],
       });
   };
+  function scrollToTargetAdjusted() {
+    // if (window.location.pathname === '/') {
+    //   router.push({ pathname: '/locations', query: { scroll: target } });
+    //   return;
+    // }
+    // console.log(`lool${target}`);
+    const element = document.getElementById('MapcontainerRoute');
+    const headerOffset = 117;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    });
+  }
+  function handlemap(MapId){
+    props.setPlaceID(MapId)
+    scrollToTargetAdjusted()
+    console.log(`id mapp${props.active}`)
+  }
   const _moveUpHandler = (index) => {
     if (index === 1) {
       //First item, disable button
@@ -77,7 +98,10 @@ const Route = (props) => {
             'colorsssssssssss.....' + props.breif.city_slabs[i].color
           );
           locationsArr.push(
-            <PinSection
+        
+<PinSection
+        handlemap={handlemap}
+             Mapid={props.breif.city_slabs[i].gmaps_place_id}
               city={props.breif.city_slabs[i].city_name}
               duration={props.breif.city_slabs[i].duration + ' Nights'}
               pinColour={props.breif.city_slabs[i].color}
@@ -86,6 +110,8 @@ const Route = (props) => {
               _moveUpHandler={_moveUpHandler}
               index={i}
             ></PinSection>
+  
+            
           );
           locationsArr.push(
             <MidSection

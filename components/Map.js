@@ -1,16 +1,45 @@
 import React, { useState } from "react";
-import { GoogleMap, InfoWindow, Marker,useJsApiLoader,MarkerClusterer } from "@react-google-maps/api";
+import { GoogleMap, InfoWindow, Marker,useJsApiLoader,MarkerClusterer,Polyline } from "@react-google-maps/api";
 import SkeletonCard from "./ui/SkeletonCard";
+import { useRef } from "react";
+import { useEffect } from "react";
 
 function Map(props) {
+  const [center, setCenter] = useState({lat: props.locations[0].lat, lng: props.locations[0].long });
+  const [zoom, setZoom] = useState(14);
+  const [map, setMap] = useState(null);
+  const MapRef = useRef(null) 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E"
   })
   const [activeMarker, setActiveMarker] = useState(null);
+   useEffect(()=>{
+    if(map){
+      let selectedMarker = props.locations.filter((location) => (
+        location.id == props.active
+      ))
+      console.log(`change marker${JSON.stringify(selectedMarker[0].lat)}`)
+      // handleZoomToLocation (selectedMarker[0].lat,selectedMarker[0].long)
+      setCenter({lat : selectedMarker[0].lat , lng : selectedMarker[0].long});
+      setZoom(18);
+      handleActiveMarker(props.active)
+    } 
+    
+  },[props.active])
+  const handleZoomToLocation = (lat, lng) => {
+    const newCenter = { lat, lng };
+    const newZoom = 15;
 
+    setCenter(newCenter);
+    setZoom(newZoom);
+
+    if (MapRef.current) {
+      MapRef.current.panTo(newCenter);
+    }
+  };
   const mapOptions = 
     {
-      zoomControl: false,
+      zoomControl: true,
       mapTypeControl: false,
       scaleControl: false,
       streetViewControl: false,
@@ -25,13 +54,15 @@ function Map(props) {
     }
     setActiveMarker(marker);
   };
-
+  const path = []
   const handleOnLoad = (map) => {
+    setMap(map);
     const bounds = new window.google.maps.LatLngBounds();
-      props.locations.forEach(location=> bounds.extend({lat : location.lat , lng : location.long}))
+     
+    props.locations.forEach(location=> bounds.extend({lat : location.lat , lng : location.long}))
       map.fitBounds(bounds);  
     };
-
+    props.locations.forEach(location=> path.push({lat : location.lat , lng : location.long}))
   const containerStyle={
     width: props.width || '100%', 
     height: props.height || '100%',
@@ -40,8 +71,8 @@ function Map(props) {
 
   if(props.center){
     return isLoaded?(<GoogleMap
-    center={props.center}
-    zoom = { 14 }
+    
+    
     onClick={() => setActiveMarker(null)}
     mapContainerStyle={containerStyle}
     
@@ -56,18 +87,40 @@ options={{disableDefaultUI : true ,  fullscreenControl: true}}
   </GoogleMap>) : (<SkeletonCard {...containerStyle}></SkeletonCard>)
   }
 
+  const options = {
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2,
+  };
+  const onLoad = polyline => {
+    console.log('Polyline onLoad:', polyline);
+  };
 
+  const onUnmount = polyline => {
+    console.log('Polyline onUnmount:', polyline);
+  };
+
+  
 
   return isLoaded? (
     <GoogleMap
+    ref={MapRef}
       onLoad={handleOnLoad}
       options={mapOptions}
+      zoom={zoom}
       onClick={() => setActiveMarker(null)}
       mapContainerStyle={containerStyle}
       // zoom={props.defaultZoom?props.defaultZoom:6}
-      center={{ lat: props.locations[0].lat, lng: props.locations[0].long}}
+      center={center}
  
     >
+      <Polyline
+        path={path}
+        options={options}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        
+      />
       <MarkerClusterer>
         { clusterer=>props.locations.map((location) => (
         <Marker
