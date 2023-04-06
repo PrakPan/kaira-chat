@@ -23,6 +23,7 @@ import Banner from '../../homepage/banner/Mobile';
 import Route from '../../newitinerary/breif/route/Index';
 import ButtonYellow from '../../../components/ButtonYellow';
 import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
+import Map from '../../../components/Map';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -39,7 +40,7 @@ const DetailsContainer = styled.div`
 const RouteComponent = styled.div`
   width: 100%;
   display: flex;
-
+  flex-direction: column;
   @media screen and (min-width: 768px) {
     width: 100%;
     margin-left: 20px;
@@ -49,6 +50,11 @@ const ContainerBt = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+`;
+const MapInfo = styled.div`
+  b {
+    font-weight: 600;
+  }
 `;
 const Details = (props) => {
   let offsets = {};
@@ -87,9 +93,36 @@ const Details = (props) => {
   const _handleTailoredRedirect = (e) => {
     router.push('/tailored-travel');
   };
+  const Locationlatlong = [];
+  for (var i = 0; i < props.breif.city_slabs.length; i++) {
+    let postion = props.breif.city_slabs[i];
+    if (!postion.is_departure_only && !postion.is_trip_terminated) {
+      Locationlatlong.push({
+        lat: postion.lat,
+        long: postion.long,
+        name: postion.city_name,
+        duration: postion.duration,
+      });
+    }
+  }
+  // props.breif.city_slabs.map(
+  //   (postion) =>
 
+  // );
+  console.log(Locationlatlong);
+  const InfoWindowContainer = (location) => (
+    <MapInfo>
+      <b>{location.name}</b>
+      {/* <div>
+        {location.experience_filters.map((e, i) =>
+          i != 0 ? <span>{', ' + e}</span> : <span>{e}</span>
+        )}
+      </div> */}
+      {location.duration && <p>Ideal duration : {location.duration} days</p>}
+    </MapInfo>
+  );
   return (
-    <div >
+    <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
       {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
@@ -98,17 +131,18 @@ const Details = (props) => {
           <div id="route">
             <Route breif={props.breif}></Route>
           </div>
+          <Map
+            locations={Locationlatlong}
+            defaultZoom={12}
+            height={isPageWide ? '350px' : '230px'}
+            InfoWindowContainer={InfoWindowContainer}
+          ></Map>
         </RouteComponent>
-        {
-          isPageWide ? <div>
-          <div >
-            
-              {true ? <Overview breif={props.breif}></Overview> : null}
-            
+        {isPageWide ? (
+          <div>
+            <div>{true ? <Overview breif={props.breif}></Overview> : null}</div>
           </div>
-        </div> : null
-        }
-        
+        ) : null}
       </DetailsContainer>
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>

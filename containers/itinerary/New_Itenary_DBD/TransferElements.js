@@ -44,7 +44,7 @@ const TransferElements = ({
               {heading}
             </div>
 
-            {meta === null || meta.estimated_cost === undefined ? null : (
+            {meta == null || meta.estimated_cost == undefined ? null : (
               <TransparentButton>
                 {modes ? `${modes} From ` : null} ₹
                 {formatNumber(meta.estimated_cost)}
