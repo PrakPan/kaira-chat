@@ -6,8 +6,13 @@ import WeatherWidget from '../../../../components/WeatherWidget/WeatherWidget';
 
 const Container = styled.div``;
 const Heading = styled.p`
-  font-size: 18px;
+  font-size: 23px;
   font-weight: 600;
+  font-style: Helvetica;
+  @media (min-width: 768px) 
+ {
+  font-size: 26px;
+ }
 `;
 const CityText = styled.p`
   font-size: 18px;
@@ -18,7 +23,7 @@ const CityText = styled.p`
 `;
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 0.6fr 1fr;
   grid-gap: 0.5rem;
   margin-bottom: 0.75rem;
 `;
@@ -46,14 +51,14 @@ const City = ({ cityData }) => {
         <ImageLoader
           borderRadius="8px"
           url={cityData.image}
-          height={180}
+          height={190}
           heightMobile="auto"
-          dimensionsMobile={{ width: 118, height: 80 }}
+          dimensionsMobile={{ width: 180, height: 180 }}
         ></ImageLoader>
         <CityText className="font-poppins">
           <TruncatedText
             text={cityData.short_description}
-            maxLength={80}
+            maxLength={120}
             viewMoreText="more v"
             viewLessText="less ^"
           />

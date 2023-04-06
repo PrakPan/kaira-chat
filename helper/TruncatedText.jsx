@@ -51,7 +51,7 @@ const TruncatedText = ({
       <div ref={textRef} className="truncated-text">
         {truncatedText}
         {isTruncated && (
-          <div className="view-more-btn" onClick={handleViewMoreClick}>
+          <div className="view-more-btn font-bold" onClick={handleViewMoreClick}>
             {viewMoreText}
           </div>
         )}
@@ -59,7 +59,7 @@ const TruncatedText = ({
       {!isTruncated &&
         textRef.current &&
         textRef.current.scrollHeight > textRef.current.clientHeight && (
-          <div className="view-more-btn" onClick={handleViewMoreClick}>
+          <div className="view-more-btn font-bold" onClick={handleViewMoreClick}>
             {viewLessText}
           </div>
         )}
