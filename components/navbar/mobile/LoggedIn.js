@@ -5,20 +5,24 @@ import {getFirstName} from '../../../services/getfirstname';
 import { useRouter } from 'next/router'
 
 import  Link  from 'next/link';
+import ImageLoader from '../../ImageLoader';
+import { FaUserCircle } from 'react-icons/fa';
 
-const Container = styled.div`
 
-`;
 const ListItem = styled.div`
     text-align: left;
-    margin-bottom: 1rem;
 
 `;
 const StyledLink = styled.a`
-    text-decoration: none;
-    color: black;
-    font-size: 1rem;
-    letter-spacing: 2px;
+text-decoration: none;
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 21px;
+text-align: center;
+letter-spacing: 0.04em;
+color: #01202B;
+
 `;
 const RedDot = styled.div`
 width: 1rem;
@@ -39,11 +43,16 @@ const LoggedIn = (props) =>{
  
 
     return(
-        <Container>
-            <ListItem style={{fontWeight: '600'}}>
-                <StyledLink  style={{fontWeight: '700', fontSize: '1.75rem'}}>{!props.name || props.name===''? "Hi Traveler!" : "Hi "+getFirstName(props.name)+"!"}</StyledLink>    
-            </ListItem>
+        <>
+            <ImageLoader borderRadius='50%' leftalign url={props.userImage && props.userImage !== 'null'?props.userImage: 'media/icons/navigation/profile-user.png'} width="36px" height="36px" widthmobile='36px' dimensions={{width: 300, height: 300}} /> 
+            {props.token?
             <ListItem>
+            {!props.name || props.name===''? "Hi Traveler!" : "Hi "+getFirstName(props.name)+"!"}
+        </ListItem>
+        : 
+        <ListItem onClick={props._handleLogin}>Login/Signup</ListItem>
+        }
+            {/* <ListItem>
                 <Link href='/dashboard' className="next-link" passHref={true}>
                     {router.pathname === '/dashboard' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px', fontWeight: '300'}}>My Plans</StyledLink> : <StyledLink  style={{fontWeight: '300'}}>My Plans</StyledLink> }
                 </Link>
@@ -57,8 +66,8 @@ const LoggedIn = (props) =>{
           
             <ListItem>
                     <StyledLink onClick={props.onLogout}  style={{fontWeight: '300'}}>Logout</StyledLink> 
-            </ListItem>
-        </Container>
+            </ListItem> */}
+        </>
     );
 }
 

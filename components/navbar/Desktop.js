@@ -265,11 +265,11 @@ const Navbar = (props) => {
               {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
               </Link>
             </NavItem>
-            <NavItem style={{marginLeft: '0rem'}}>
+            {/* <NavItem style={{marginLeft: '0rem'}}>
               <Link href={urls.travel_guide.BASE} className="next-link" passHref={true}>
               { router.pathname === '/travel-guide' ?  <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Travel Guide</StyledLink> :  <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Travel Guide</StyledLink>}
               </Link>
-            </NavItem>
+            </NavItem> */}
          
             {/* <NavItem style={{padding: "0"}}>
               <Link href={urls.ABOUT_US} passHref={true}>
