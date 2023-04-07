@@ -39,12 +39,13 @@ const Experience = (props) => {
   });
   const router = useRouter();
   const _handlePersonaliseRedirect = () => {
-     localStorage.setItem('search_city_selected_id', props.cityData.id)
-    localStorage.setItem('search_city_selected_name', props.cityData.name)
-    localStorage.setItem('search_city_selected_parent', props.cityData.state.name)
+    //  localStorage.setItem('search_city_selected_id', props.cityData.id)
+    // localStorage.setItem('search_city_selected_name', props.cityData.name)
+    // localStorage.setItem('search_city_selected_parent', props.cityData.state.name)
 
+if(props.cityData.name) router.push(`/tailored-travel/?search_text=${props.cityData.name}`)
+else router.push('/tailored-travel')
 
-    router.push('/tailored-travel')
   }
   const _openPoiModal = (poi) => {
     setPoiData({...poi});
@@ -85,6 +86,7 @@ const Experience = (props) => {
                  <HeroBanner
                    image={props.cityData.images[0].image}
                    page_id={props.cityData.id}
+                   destinationType={'city-planner'}
                    destination={props.cityData.name}
                    cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
@@ -104,6 +106,7 @@ const Experience = (props) => {
                <TailoredFormMobileModal
           page_id={props.cityData.id}
           destination={props.cityData.name}
+          destinationType={'city-planner'}
           // cities={props.experienceData.locations}
           // children_cities={props.experienceData.children}
           onHide={() => setShowMobilePlanner(false)}

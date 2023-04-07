@@ -40,11 +40,17 @@ const Result = (props) => {
 
   let isPageWide = media('(min-width: 768px)');
  
-  const _handleClick = () => {
+  const _handleClick = (e) => {
+    e.stopPropagation()
     props.setSearchFinalized({name: props.name, type: props.type});
     props.setDestination(props.name)
-    props.selectedCities[props.inbox_id] = {...props.result , id : props.result.resource_id}
-    props.setSelectedCities(props.selectedCities)
+   const selected = props.selectedCities.map(e=>{
+      if(e.input_id == props.inbox_id) return {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
+      return e
+    })
+    // props.selectedCities[props.inbox_id] = {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
+    props.setSelectedCities(selected)
+    props.setFocusSearch(false)
   }
   return (
     <Container className='font-poppins'  onClick={_handleClick}>

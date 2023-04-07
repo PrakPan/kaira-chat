@@ -74,7 +74,7 @@ const Menu = (props)=>{
             name={props.data.name}
             elevation={props.data.elevation[0]?.elevation}
           />
-        <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button>
+        {/* <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button> */}
 
         </MenuItem>
       )}
@@ -120,7 +120,7 @@ const Menu = (props)=>{
           <P>{props.data.folklore_or_story}</P>
         </MenuItem>
       )}
-        <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button>
+        {/* <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button> */}
 
       <MenuItem>
         <Heading>Why plan with us?</Heading>

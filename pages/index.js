@@ -45,10 +45,10 @@ const mapDispatchToProps = (dispatch) => {
 
 export async function getStaticProps(){
 
-  const res = await axiosTravelPlannerInstance.get(`/list?country=India&page_type=Theme`)
+  const res = await axiosTravelPlannerInstance.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
   const data = res.data
 
-  const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,heading : e.meta_keywords.split(',')[0]}})
+  const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading}})
       if (!data) {
             return {
               notFound: true,

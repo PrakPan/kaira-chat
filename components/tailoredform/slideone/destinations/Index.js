@@ -1,5 +1,5 @@
  
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import media from '../../../media'; 
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
@@ -21,26 +21,36 @@ position: relative;;
 const Destinations = (props) => {
 
   let isPageWide = media('(min-width: 768px)')
+const [deletedId , setDeletedId] = useState(null)
+  const [destinations, setDestinations] = useState([<SelectedDestination key={0} inbox_id={0} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>]);
+  console.log(props.selectedCities , !props.selectedCities.slice(1).some(e=>!e.name) , 'selectedCities')
+  useEffect(()=>{
+    if(deletedId){
+      const newDestinations = destinations.filter(e=>e.props.inbox_id != deletedId)
+      setDestinations(newDestinations.slice())
+      const selected = props.selectedCities.filter((e)=>e.input_id != deletedId )
+      props.setSelectedCities(selected)
+    }
+  },[deletedId])
 
-  const [destinations, setDestinations] = useState([<SelectedDestination inbox_id={0} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>]);
-  function _removeDestinationHandler() {
 
 
 
-destinations.pop()
-props.selectedCities.pop()
-props.setSelectedCities(props.selectedCities)    
-setDestinations(destinations.slice());
+  function _removeDestinationHandler(id) {
+// destinations.pop()
+// props.selectedCities.pop()
+// props.setSelectedCities(props.selectedCities)    
+// setDestinations(destinations.slice());
    }
    const _addDestinationHandler= () => {
     let dest = destinations.slice();
-    const id = destinations.length
+    const id = Date.now()
     dest.push(
-      <SelectedDestination inbox_id={id} destinations={destinations}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
+      <SelectedDestination setDeletedId={setDeletedId} key={id} inbox_id={id}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
     )
     setDestinations(dest.slice());
 
-    props.selectedCities.push({...props.selectedCities[props.selectedCities.length-1],input_id : id })
+    props.selectedCities.push({input_id : id })
     props.setSelectedCities(props.selectedCities)
    }
 
@@ -48,18 +58,18 @@ setDestinations(destinations.slice());
   return (
    <Container>
     {/* <p className="font-opensans">Where do  you want to go?</p> */}
-    <SelectedDestination  startingLocation={props.startingLocation} setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting}
+    <SelectedDestination startingLocation={props.startingLocation} setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting}
             setShowSearchStarting={props.setShowSearchStarting} setShowCities={props.setShowCities} selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities} ></SelectedDestination>
         {
-          destinations
+          destinations.map(e=>e)
         }
         {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */} 
         
         <div style={{display : 'flex' , alignItems : 'center' , justifyContent : 'space-between' , marginLeft : '33%' , marginRight : '10px'}}>
-        <p onClick={_addDestinationHandler} className='text-center font-opensans hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>
-        {destinations.length>1 && 
+        {(!props.selectedCities.slice(1).some(e=>!e.name) || props.selectedCities.length<2) &&  <p onClick={_addDestinationHandler} className='text-center font-opensans hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>}
+        {/* {destinations.length>1 && 
         <AiFillDelete onClick={()=>{_removeDestinationHandler()}} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete>        
-        }
+        } */}
         </div>
         
         

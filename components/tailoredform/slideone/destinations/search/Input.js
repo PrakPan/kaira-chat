@@ -37,10 +37,16 @@ useEffect(() => {
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
   const _handleReset = () => {
-    // setValue('');
+    setValue('');
     props.setSearchFinalized(false);
     props.setResults([]);
     props.setShowResults(false);
+
+    const selected = props.selectedCities.map(e=>{
+      if(e.input_id == props.inbox_id) return {input_id : props.inbox_id}
+      return e
+    })
+    props.setSelectedCities(selected)
   }
 
   function _handleBlur(){

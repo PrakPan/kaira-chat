@@ -32,6 +32,9 @@ border : 1px solid #ECEAEA;
 border-radius : 10px;
 padding : 25px;
 height: max-content;
+display : flex;
+flex-direction : column;
+gap : 20px;
 `
 
 
@@ -42,7 +45,6 @@ const Brief = (props)=>{
     const textLength = isPageWide?1000:500
     
 return <Container>
-    
      <P>
         {props.heading}
         {moreText?props.short_description:props.short_description.substr(0, textLength)}
@@ -51,7 +53,7 @@ return <Container>
      <WeatherContainer elevation={props.elevation}>
      <WeatherWidget city={props.name} lat={props.lat} lon={props.lon} />
      {props.elevation && 
-    <div style={{marginTop : '20px'}}>
+    <div>
     <TextBold>Altitude</TextBold>
     <p style={{fontWeight : '300', marginBottom : '0'}}>{Math.floor(props.elevation)} metres ({Math.floor(props.elevation*3.281)} feet) above sea level</p>
     </div>

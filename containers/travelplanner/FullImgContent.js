@@ -157,7 +157,7 @@ Craft AI-personalized itineraries.</SubHeading>}
                 </PaddingContianer>
                {/* <Banner></Banner> */}
                <div className='hidden-mobile' style={{ }}>
-                <TailoredForm page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+                <TailoredForm destionType={'state'} page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
                 
                 </div>
               

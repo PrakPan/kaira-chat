@@ -202,11 +202,11 @@ const Mobile = (props) => {
                 {router.pathname === '/travel-experiences' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Experiences</StyledLink> : <StyledLink  style={{fontWeight: '300'}}>Experiences</StyledLink>}
                 </Link>
             </ListItem> */}
-            <ListItem>
+            {/* <ListItem>
                 <Link href='/travel-guide' className="next-link" passHref={true}>
                 {router.pathname === '/travel-guide' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Travel Guide</StyledLink> : <StyledLink  style={{fontWeight: '300'}}>Travel Guide</StyledLink>}
                 </Link>
-            </ListItem>
+            </ListItem> */}
             <ListItem>
                     <StyledLink href="http://blog.thetarzanway.com/"  style={{fontWeight: '300'}}>Travel Feed</StyledLink>
             </ListItem>
