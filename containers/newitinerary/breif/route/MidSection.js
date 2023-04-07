@@ -25,14 +25,14 @@ const Line = styled.div`
   height: 100%;
 `;
 const Text = styled.div`
-  color: #0883c9;
+  color: #111;
   font-style: normal;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 28px;
   display: flex;
   align-items: center;
-  margin: 2rem 0 2rem 2rem;
+  margin: 0rem 0 0rem 1rem;
 `;
 const MidSection = (props) => {
   useEffect(() => {}, []);

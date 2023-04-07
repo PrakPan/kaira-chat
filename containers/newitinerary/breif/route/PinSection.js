@@ -9,10 +9,10 @@ const Container = styled.div`
 `;
 const Heading = styled.div`
   font-weight: 650;
-  margin: 0 0 0 2rem;
+  margin: 0 0 0 1rem;
   color: black;
 
-  font-size: 16px;
+  font-size: 20px;
   line-height: 28px;
   display: flex;
   align-items: center;

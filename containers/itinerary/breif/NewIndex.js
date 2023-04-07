@@ -44,8 +44,8 @@ const RouteComponent = styled.div`
   display: flex;
   flex-direction: column;
   @media screen and (min-width: 768px) {
-    width: 100%;
-    margin-left: 20px;
+    width: 32%;
+    margin-left: 5vw;
   }
 `;
 const ContainerBt = styled.div`
@@ -172,7 +172,7 @@ const Details = (props) => {
         </RouteComponent>
         {isPageWide ? (
           <div>
-            <div>{true ? <Overview breif={props.breif}></Overview> : null}</div>
+            <div>{true ? <Overview breif={props.breif} daysSlab={props.itinerary.day_slabs}></Overview> : null}</div>
           </div>
         ) : null}
       </DetailsContainer>

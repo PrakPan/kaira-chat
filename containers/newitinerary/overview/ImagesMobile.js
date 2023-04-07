@@ -5,8 +5,8 @@ import ImageLoader from '../../../components/ImageLoader';
 const Container = styled.div`
   display: grid;
   @media screen and (min-width: 768px) {
-    grid-template-columns: 2.5fr 1fr;
-    grid-column-gap: 1rem;
+    grid-template-columns: 3.3fr 1fr;
+    grid-column-gap: 2rem;
   }
 `;
 
@@ -17,6 +17,7 @@ const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr;
     margin-top: 0;
+    grid-row-gap: 2rem;
   }
 
   grid-gap: 1rem;
@@ -43,7 +44,7 @@ const ImagesMobile = (props) => {
     <Container>
       <ImageLoader
         borderRadius="12px"
-        dimensions={{ width: 912, height: 331 }}
+        dimensions={{ width: 922, height: 331 }}
         url={props.images[0]}
         height="auto"
         heightMobile="auto"
@@ -54,7 +55,7 @@ const ImagesMobile = (props) => {
         <ImageLoader
           borderRadius="12px"
           url={props.images[1]}
-          dimensions={{ width: 456, height: 150 }}
+          dimensions={{ width: 436, height: 150 }}
           height="100%"
           heightMobile="auto"
           dimensionsMobile={{ width: 160, height: 90 }}
@@ -63,7 +64,7 @@ const ImagesMobile = (props) => {
           <ImageLoader
             borderRadius="12px"
             url={props.images[2]}
-            dimensions={{ width: 456, height: 150 }}
+            dimensions={{ width: 436, height: 150 }}
             height="100%"
             heightMobile="auto"
             dimensionsMobile={{ width: 160, height: 90 }}

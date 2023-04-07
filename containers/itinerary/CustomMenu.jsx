@@ -22,14 +22,14 @@ const MenuItem = styled.div`
   padding: 10px;
   cursor: pointer;
   width: max-content;
-  padding: 8px 24px 8px 24px;
+  padding: 10px 24px 10px 24px;
   margin-left: 4px;
   background-color: ${({ isActive }) => (isActive ? '#262626' : 'none')};
   color: ${({ isActive }) => (isActive ? '#F7E700' : '#7A7A7A')};
   border-radius: ${({ isActive }) =>
-    isActive ? '20% 20% 0 0' : '20% 20% 0 0'};
+    isActive ? '10% 10% 0 0' : '10% 10% 0 0'};
   transition: border-color 0.3s ease;
-
+  font-weight: 600  ;
   border-bottom: ${({ isActive }) => (isActive ? '4px solid #F7E700' : 'none')};
   &:hover {
     background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};

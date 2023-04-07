@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react';
 import ImageLoader from '../../../../components/ImageLoader';
 import TruncatedText from '../../../../helper/TruncatedText';
 import WeatherWidget from '../../../../components/WeatherWidget/WeatherWidget';
-
+import {FaBed} from 'react-icons/fa'
 const Container = styled.div``;
 const Heading = styled.p`
   font-size: 23px;
   font-weight: 600;
+  color: #01202B;
   font-style: Helvetica;
   @media (min-width: 768px) {
     font-size: 26px;
@@ -45,7 +46,8 @@ const ITbutton = styled.button`
   justify-content: center;
   align-items: center;
   padding: 8px 8px;
-
+  font-weight: 600;
+  font-size: 12px;
   background: #ffffff;
   /* Background/Tertiary  */
 
@@ -55,31 +57,63 @@ const ITbutton = styled.button`
   box-shadow: 0px 2px 0px #eceaea;
   border-radius: 8px;
 `;
-const City = ({ cityData }) => {
-  useEffect(() => {}, []);
 
+const City = (props) => {
+  useEffect(() => {}, []);
+  function scrollToTargetAdjusted(id) {
+    // if (window.location.pathname === '/') {
+    //   router.push({ pathname: '/locations', query: { scroll: target } });
+    //   return;
+    // }
+    // console.log(`lool${target}`);
+    const element = document.getElementById(id);
+    const headerOffset = 117;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    });
+  }
   return (
     <Container className="font-poppins">
       <Heading className="font-poppins">
-        {cityData.city_name + ' - ' + cityData.duration}
+        {props.cityData.city_name + ' - ' + props.cityData.duration} Nights
       </Heading>
       <GridContainer>
         <ImageLoader
           borderRadius="8px"
-          url={cityData.image}
-          height={250}
+          url={props.cityData.image}
+          height={235}
           heightMobile="auto"
           dimensionsMobile={{ width: 180, height: 180 }}
         ></ImageLoader>
         <CityText className="font-poppins">
-          <div></div>
-          <div></div>
-          <TruncatedText
-            text={cityData.short_description}
+          <div className='flex flex-row'>
+            <div className='flex justify-center items-center bg-slate-100 rounded-lg px-3 py-3 mr-2'>
+                <FaBed/>
+            </div>
+            <div className='flex flex-col'>
+              <div className='text-xl font-semibold'>Lemon Tree Premium Hotel</div>
+              <div className='text-xs font-light'>Nirwan Marg, Bani Park, Jaipur</div>
+            </div>
+          </div>
+          <div className='flex flex-col py-2'>
+          <div className='text-sm'>
+            Things to do
+          </div>
+          <div className='font-semibold text-sm'>
+       
+Tours · Wildlife · Museums · Historic Sites
+          </div>
+          </div>
+          {/* <TruncatedText
+            text={props.cityData.short_description}
             maxLength={120}
             viewMoreText="more v"
             viewLessText="less ^"
-          />
+          /> */}
 
           <div>
             {/* <TextLight>Things to do</TextLight>
@@ -89,10 +123,11 @@ const City = ({ cityData }) => {
         Weather (03 Feb - 05 Feb 2023)
       </TextLight> */}
             <WeatherWidget
+
               date={'2023-03-23 06:00:00'}
-              city={cityData.city_name}
+              city={props.cityData.city_name}
             />
-            <ITbutton>View {cityData.city_name} in your Itinerary</ITbutton>
+            <ITbutton onClick={()=> scrollToTargetAdjusted(props.dayId)}>View {props.cityData.city_name} in your Itinerary</ITbutton>
             {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
       <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}
           </div>

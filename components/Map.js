@@ -7,6 +7,8 @@ import {
   MarkerClusterer,
   Polyline,
 } from '@react-google-maps/api';
+import { Wrapper } from "@googlemaps/react-wrapper";
+
 import SkeletonCard from './ui/SkeletonCard';
 import { useRef } from 'react';
 import { useEffect } from 'react';
@@ -88,6 +90,7 @@ function Map(props) {
   };
   if (props.center) {
     return isLoaded ? (
+      
       <GoogleMap
         onClick={() => setActiveMarker(null)}
         mapContainerStyle={containerStyle}
@@ -111,10 +114,21 @@ function Map(props) {
       <SkeletonCard {...containerStyle}></SkeletonCard>
     );
   }
-
+  const lineSymbol = {
+    path: "M 0,-1 0,1",
+    strokeOpacity: 1,
+    scale: 2,
+  };
   const options = {
-    strokeColor: '#FF0000',
-    strokeOpacity: 1.0,
+    
+    strokeOpacity: 0,
+    icons: [
+      {
+        icon: lineSymbol,
+        offset: "0",
+        repeat: "20px",
+      },
+    ],
     strokeWeight: 2,
   };
   const onLoad = (polyline) => {

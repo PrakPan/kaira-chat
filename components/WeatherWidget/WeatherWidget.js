@@ -6,14 +6,15 @@ import SkeletonCard from '../ui/SkeletonCard';
 
 const WeatherGrid = styled.div`
   display: grid;
-  margin-top: 1rem;
+  margin-top: 0.2rem;
   grid-template-columns: max-content max-content;
-  grid-gap: 0.75rem;
+  grid-gap: 0.8rem;
   height : 50px;
 `;
 const TextBold = styled.p`
-  line-height: 24px;
-  font-weight: 600;
+  line-height: 21px;
+  font-weight: 400;
+  font-size: 14px;
   margin: 0;
   color: rgb(1, 32, 43);
 `;

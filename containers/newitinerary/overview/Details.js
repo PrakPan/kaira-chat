@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import Button from '../../../components/ui/button/Index';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
+import { format, parseISO } from 'date-fns';
 const Container = styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto auto;
@@ -12,15 +14,19 @@ const Container = styled.div`
     grid-column-gap: 2.5rem;
   }
 `;
-
+const convertDFormat = dt => {
+  const date = parseISO(dt);
+const formattedDate = format(date, 'MMMM d yyyy');
+return formattedDate
+}
 const Heading = styled.p`
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 400;
   color: #7a7a7a;
   margin: 0;
 `;
 const Text = styled.p`
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   margin: 0;
 `;
@@ -42,7 +48,12 @@ const Details = (props) => {
           <Text>{props.duration_time} Nights</Text>
         </div>
       ) : null}
-
+{props.duration_time != null ? (
+        <div style={{ width: 'max-content' }}>
+          <Heading>Duration</Heading>
+          <Text>{props.duration_time} Nights</Text>
+        </div>
+      ) : null}
       {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
@@ -54,12 +65,21 @@ const Details = (props) => {
           </Text>
         </div>
       ) : null}
+      {props.travellerType != null ? (
+        <div style={{ width: 'max-content' }}>
+          <Heading>Date of travelling ({props.duration})</Heading>
+          <Text>
+            {convertDFormat(props.start_date)} -
+            {convertDFormat(props.end_date)}
+          </Text>
+        </div>
+      ) : null}
 
       {/* <div style={{ width: 'max-content' }}>
         <Heading>Destination</Heading>
         <Text>Rajasthan</Text>
       </div> */}
-      <div className="hidden-mobile">
+      {/* <div className="hidden-mobile">
         <Button
           borderRadius="6px"
           borderWidth="1.5px"
@@ -67,7 +87,7 @@ const Details = (props) => {
         >
           Trip Settings
         </Button>
-      </div>
+      </div> */}
     </Container>
   );
 };

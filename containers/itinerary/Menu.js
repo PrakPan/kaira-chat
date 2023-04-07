@@ -465,6 +465,7 @@ const SimpleTabs = (props) => {
           hours={hours}
           minutes={minutes}
           seconds={seconds}
+          itinerary={props.itinerary}
           breif={props.breif}
           hideTimer={minimiseTimer}
           timeRequired={props.timeRequired}

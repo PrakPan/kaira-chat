@@ -667,6 +667,9 @@ const Itinerary = (props) => {
           duration_time={duration_time}
           images={itinerary.images}
           travellerType={travellerType}
+          start_date={plan ? plan.start_date  : null        }
+          end_date={plan ? plan.end_date       :   null}
+
           duration={
             plan ? plan.duration_number + ' ' + plan.duration_unit : null
           }

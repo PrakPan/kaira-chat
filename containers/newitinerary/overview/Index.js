@@ -7,10 +7,11 @@ const Container = styled.div``;
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
+  margin-Top: 2rem;
   margin-bottom: 0.5rem;
 `;
 const Heading = styled.h1`
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 600;
   line-height: 34px;
 `;
@@ -23,13 +24,21 @@ const Line = styled.div`
     visibility: hidden;
   }
 `;
+const toTitleCase = (str) => {
+  return str.replace(
+    /\w\S*/g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+}
 const Overview = (props) => {
   useEffect(() => {}, []);
 
   return (
     <Container>
       <GridContainer>
-        <Heading className="font-poppins">{props.title}</Heading>
+        <Heading className="font-poppins">{toTitleCase(props.title)}</Heading>
         {/* <div className="center-div">
           <div className="hidden-desktop">
             <Button
@@ -46,10 +55,16 @@ const Overview = (props) => {
         group_type={props.group_type}
         duration_time={props.duration_time}
         travellerType={props.travellerType}
+        start_date={props.start_date}
+        end_date={props.end_date}
+        duration={props.duration}
       ></Details>
-      <Line></Line>
 
-      <ImagesMobile images={props.images}></ImagesMobile>
+      {/* <Line></Line> */}
+        <div className='pt-8 pb-1'>
+        <ImagesMobile images={props.images}></ImagesMobile>
+        </div>
+      
     </Container>
   );
 };
