@@ -7,7 +7,7 @@ import {
   MarkerClusterer,
   Polyline,
 } from '@react-google-maps/api';
-import { Wrapper } from "@googlemaps/react-wrapper";
+
 
 import SkeletonCard from './ui/SkeletonCard';
 import { useRef } from 'react';
@@ -25,6 +25,17 @@ function Map(props) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: 'AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E',
   });
+  const colorMarker = (color) =>{
+    return {
+      path:"M11 0.666672C5.40001 0.666672 0.333344 4.96 0.333344 11.6C0.333344 16.0267 3.89334 21.2667 11 27.3333C18.1067 21.2667 21.6667 16.0267 21.6667 11.6C21.6667 4.96 16.6 0.666672 11 0.666672ZM11 14C9.53334 14 8.33334 12.8 8.33334 11.3333C8.33334 9.86667 9.53334 8.66667 11 8.66667C12.4667 8.66667 13.6667 9.86667 13.6667 11.3333C13.6667 12.8 12.4667 14 11 14Z",
+      // scaledSize: { width: 30, height: 30 },
+      fillColor: color,
+      fillOpacity: 1,
+      strokeColor: '#000',
+      strokeWeight: 1,
+      scale: 1
+    };
+  }
   const [activeMarker, setActiveMarker] = useState(null);
   useEffect(() => {
     if (map) {
@@ -101,7 +112,7 @@ function Map(props) {
             handleActiveMarker(props.center.lat + props.center.lng)
           }
           position={props.center}
-          icon={<FaMapMarkerAlt />}
+          icon={colorMarker(props.locations[0].color)}
         >
           {activeMarker === props.center.lat + props.center.lng ? (
             <InfoWindow onCloseClick={() => setActiveMarker(null)}>
@@ -158,12 +169,12 @@ function Map(props) {
       />
       <MarkerClusterer>
         {(clusterer) =>
-          props.locations.map((location) => (
+          props.locations.map((location,index) => (
             <Marker
               key={location.id}
               position={{ lat: location.lat, lng: location.long }}
               onClick={() => handleActiveMarker(location.id)}
-              icon={<FaMapMarkerAlt />}
+              icon={colorMarker(location.color)}
               clusterer={clusterer}
             >
               {activeMarker === location.id ? (

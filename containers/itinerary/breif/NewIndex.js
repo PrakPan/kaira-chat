@@ -162,6 +162,7 @@ const Details = (props) => {
         </div> */}
           <div id="MapcontainerRoute">
             <Map
+            
               locations={Locationlatlong}
               defaultZoom={12}
               height={isPageWide ? '350px' : '230px'}
