@@ -84,7 +84,7 @@ const Linkcardstyle=styled.div`
  height: max-content;
 font-size: 1.25rem;
 font-weight:400;
-text-decoration: underline;
+text-decoration: none;
 
 
  top: 15vh;

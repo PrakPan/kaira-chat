@@ -80,7 +80,7 @@ const Links = styled.div`
   };
   a:hover ,p:hover {
     color: white;
-    text-decoration: underline;
+    text-decoration: none;
     cursor: pointer;
     text-underline-offset: 10px;
     text-decoration-thickness: 2px;

@@ -67,7 +67,7 @@ const StyledA = styled.a`
 text-decoration: none;
 color: white;
 &:hover{
-    text-decoration: underline;
+    text-decoration: none;
     cursor: pointer;
     color: white;
 }

@@ -73,7 +73,7 @@ const CardContainer = (props) => {
           <CardHeading className="font-opensans">{props.heading}</CardHeading>
 
           <RatingContainer>
-            <div className="flex flex-col">
+            <div className="flex flex-row">
               <AiFillStar
                 style={{
                   color: '#FFD201',
