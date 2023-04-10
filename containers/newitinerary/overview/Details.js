@@ -68,10 +68,10 @@ const Details = (props) => {
       {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Date of travelling ({props.duration})</Heading>
-          <Text>
+          {props.start_date && <Text>
             {convertDFormat(props.start_date)} -
             {convertDFormat(props.end_date)}
-          </Text>
+          </Text>}
         </div>
       ) : null}
 

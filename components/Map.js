@@ -19,6 +19,7 @@ function Map(props) {
     lat: props.locations[0].lat,
     lng: props.locations[0].long,
   });
+  
   const [zoom, setZoom] = useState(14);
   const [map, setMap] = useState(null);
   const MapRef = useRef(null);
