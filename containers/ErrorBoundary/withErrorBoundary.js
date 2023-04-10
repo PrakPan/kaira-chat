@@ -1,41 +1,35 @@
-import React from "react";
+import React from 'react';
 
-// HOC for adding error boundary to a component
-function withErrorBoundary(WrappedComponent) {
-  return class ErrorBoundary extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = { error: null, errorInfo: null };
+export default class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null, errorInfo: null };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // Catch errors in any components below and re-render with error message
+    this.setState({
+      error,
+      errorInfo,
+    });
+    // You can also log error messages to an error reporting service here
+  }
+
+  render() {
+    if (this.state.errorInfo) {
+      // Error path
+      return (
+        <div>
+          <h2>Something went wrong.</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
     }
-
-    componentDidCatch(error, errorInfo) {
-      // Log error to server, console, or error reporting tool
-      console.error(error);
-      console.error(errorInfo);
-      this.setState({ error, errorInfo });
-    }
-
-    render() {
-      const { error, errorInfo } = this.state;
-
-      // If there's an error, display error message or fallback UI
-      if (error) {
-        return (
-          <div>
-            <h1>Something went wrong.</h1>
-            <details style={{ whiteSpace: "pre-wrap" }}>
-              {error && error.toString()}
-              <br />
-              {errorInfo && errorInfo.componentStack}
-            </details>
-          </div>
-        );
-      }
-
-      // Otherwise, render the wrapped component
-      return <WrappedComponent {...this.props} />;
-    }
-  };
+    // Normally, just render children
+    return this.props.children;
+  }
 }
-
-export default withErrorBoundary;

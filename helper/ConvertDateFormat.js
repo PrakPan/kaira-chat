@@ -1,7 +1,7 @@
 export function convertDateFormat(dateString) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June', 'July',
-      'August', 'September', 'October', 'November', 'December'
+      'Jan', 'Feb', 'Mar', 'April', 'May', 'June', 'July',
+      'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
     ];
   
     const [day, monthIndex, year] = dateString.split('/');

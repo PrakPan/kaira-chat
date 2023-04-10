@@ -1,49 +1,36 @@
-import content from '../../public/content/termsconditions';
+import content from "../../public/content/termsconditions";
 import styled from "styled-components";
-import YellowContainer from '../contact/YellowContainer';
-import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import dummyText from './dummyText';
+import YellowContainer from "../contact/YellowContainer";
+import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
+import { useState } from "react";
+import { useEffect } from "react";
+import dummyText from "./dummyText";
 import Navbar from "./Components/Navbar";
 import Section from "./Components/Section";
 
-
 const Container = styled.div`
   text-align: center;
-  padding:1rem 2rem 2rem 2rem;
+  padding: 1rem 2rem 2rem 2rem;
   display: grid;
   grid-template-columns: 1fr 4fr;
   gap: 10px;
-  
-  
 
-  @media screen and (min-width: 768px){
- padding:2rem 4rem 4rem 4rem;
- 
-}
-  
-
+  @media screen and (min-width: 768px) {
+    padding: 2rem 4rem 4rem 4rem;
+  }
 `;
-const Heading =styled.p`
-font-size: 3.25rem;
-font-weight:700;
-margin:1.5rem 0 0 0;
-padding:10vh 2rem 2rem 2rem;
-text-align:center;
-@media screen and (min-width: 768px){
-    font-size:5rem;
-    padding:10vh 1rem 4rem 4rem;
-  
-    
-
-    
-   }
-
-
-
-`
-const SubHeading =styled.p`
+const Heading = styled.p`
+  font-size: 3.25rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0 0;
+  padding: 10vh 2rem 2rem 2rem;
+  text-align: center;
+  @media screen and (min-width: 768px) {
+    font-size: 5rem;
+    padding: 10vh 1rem 4rem 4rem;
+  }
+`;
+const SubHeading = styled.p`
 
 font-weight:300;
 
@@ -58,156 +45,110 @@ text-align:center;
 
 
 
-`
-const StyleListItem =styled.li`
-text-align:left;
-font-weight:300;
-font-size:1.25rem;
+`;
+const StyleListItem = styled.li`
+  text-align: left;
+  font-weight: 300;
+  font-size: 1.25rem;
+`;
+const TextContainer = styled.p`
+  text-align: left;
+  font-weight: 300;
+  font-size: 1rem;
+`;
+const Linkcardstyle = styled.div`
+  position: sticky;
+  height: max-content;
+  font-size: 1.25rem;
+  font-weight: 400;
+  text-decoration: none;
 
+  top: 15vh;
+  box-shadow: yellow;
+`;
+const Cardstyle = styled.div`
+  font-size: 2rem;
+  padding: 1rem;
+`;
 
-
-
-`
-const TextContainer=styled.p`
-text-align:left;
-font-weight:300;
-font-size:1rem;
-
-
-
-
-`
-const Linkcardstyle=styled.div`
-
-
- position: sticky;
- height: max-content;
-font-size: 1.25rem;
-font-weight:400;
-text-decoration: none;
-
-
- top: 15vh;
- box-shadow:yellow;
-`
-const Cardstyle=styled.div`
-
-
-font-size:2rem;
-padding:1rem;
-`
-
-
-
-
-
-
-
- const Terms = () => { 
-    let cards=[];
-    let linkcards=[];
-    const [CardText , setCardText]=useState(false);
-    const [LinkCards,setLinkCards]=useState(false);
-    useEffect(()=>{
-
-        for(var i =0;i<content.length;i++){
-    
-            {
-                cards.push(
-                <SubHeading >
-                    {content[i].subheading}
-                </SubHeading>),
-                linkcards.push(
-                  <SubHeading >
-                      
-                     {content[i].subheading } 
-                     
-                </SubHeading>
-                )
-                
-                
-                
-            }
-            //ab text ko dhundo
-            for(var j=0;j<content[i].content.length;j++){
-                
-               
-                if(content[i].content[j].array){
-                    //loop through it
-                    for(var k =0;k<content[i].content[j].array.length;k++){
-                        cards.push(
-                            <StyleListItem>
-                                {content[i].content[j].array[k]}
-                             </StyleListItem>
-                        )
-                    }
-        
-                }else{
-                  cards.push(
-                      <TextContainer>
-                          {content[i].content[j].text}
-                      </TextContainer>
-                  )
-                }
-            }
-        } 
+const Terms = () => {
+  let cards = [];
+  let linkcards = [];
+  const [CardText, setCardText] = useState(false);
+  const [LinkCards, setLinkCards] = useState(false);
+  useEffect(() => {
+    for (var i = 0; i < content.length; i++) {
+      {
+        cards.push(<SubHeading>{content[i].subheading}</SubHeading>),
+          linkcards.push(<SubHeading>{content[i].subheading}</SubHeading>);
+      }
+      //ab text ko dhundo
+      for (var j = 0; j < content[i].content.length; j++) {
+        if (content[i].content[j].array) {
+          //loop through it
+          for (var k = 0; k < content[i].content[j].array.length; k++) {
+            cards.push(
+              <StyleListItem>{content[i].content[j].array[k]}</StyleListItem>
+            );
+          }
+        } else {
+          cards.push(
+            <TextContainer>{content[i].content[j].text}</TextContainer>
+          );
+        }
+      }
+    }
 
     setCardText(cards);
     setLinkCards(linkcards);
-    },[])
+  }, []);
 
-     
-    return(
-      <>
-      <Heading className='font-opensans' >
-          Terms And Conditions
-      </Heading>
-     
-        
-        <Container>
-            
-            <Linkcardstyle className='border-thin'   >{LinkCards} </Linkcardstyle>
-            
-              
-            <Cardstyle className='border-thin'  >   <div> {CardText} </div> </Cardstyle>
-             
-        </Container>
-        
-        <Navbar />
-        <Section
-          title="Section 1"
-          subtitle={dummyText}
-          dark={true}
-          id="section1"
-        />
-        <Section
-          title="Section 2"
-          subtitle={dummyText}
-          dark={false}
-          id="section2"
-        />
-        <Section
-          title="Section 3"
-          subtitle={dummyText}
-          dark={true}
-          id="section3"
-        />
-        <Section
-          title="Section 4"
-          subtitle={dummyText}
-          dark={false}
-          id="section4"
-        />
-        <Section
-          title="Section 5"
-          subtitle={dummyText}
-          dark={true}
-          id="section5"
-        />
+  return (
+    <>
+      <Heading className="font-opensans">Terms And Conditions</Heading>
 
-        </>
-    )
-  
- }
+      <Container>
+        <Linkcardstyle className="border-thin">{LinkCards} </Linkcardstyle>
+
+        <Cardstyle className="border-thin">
+          {" "}
+          <div> {CardText} </div>{" "}
+        </Cardstyle>
+      </Container>
+
+      <Navbar />
+      <Section
+        title="Section 1"
+        subtitle={dummyText}
+        dark={true}
+        id="section1"
+      />
+      <Section
+        title="Section 2"
+        subtitle={dummyText}
+        dark={false}
+        id="section2"
+      />
+      <Section
+        title="Section 3"
+        subtitle={dummyText}
+        dark={true}
+        id="section3"
+      />
+      <Section
+        title="Section 4"
+        subtitle={dummyText}
+        dark={false}
+        id="section4"
+      />
+      <Section
+        title="Section 5"
+        subtitle={dummyText}
+        dark={true}
+        id="section5"
+      />
+    </>
+  );
+};
 
 export default Terms;
