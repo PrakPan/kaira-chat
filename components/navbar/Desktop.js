@@ -16,6 +16,7 @@ import ImageLoader from '../ImageLoader';
 import * as ga from '../../services/ga/Index';
 import {FaSearch} from 'react-icons/fa';
 import DesktopSearch from '../search/header/desktop/Index';
+import { ImSearch } from 'react-icons/im';
 const NavItemsContainer = styled.div`
   display: none;
 
@@ -48,7 +49,7 @@ const CenterNav = styled.div`
   height: 100%;
   // display: flex;
   display : grid;
-  grid-template-columns: 0.5fr 2fr 1fr;
+  grid-template-columns: 0.5fr 2fr 0.5fr;
 gap: 6rem;
   align-items: center;
    &:hover{
@@ -61,9 +62,7 @@ const TTWLogoContainer = styled(CenterNav)`
   justify-content: center; 
   position : relative;
    @media screen and (min-width: 768px) {
-    justify-content: flex-start;
-    margin-left: 2rem;
-   
+    justify-content: flex-start;   
   }
 `;
 
@@ -133,7 +132,31 @@ font-weight: 600;
   border-width: 1px;
 }
 `;
-
+const TopContainer = styled.div`
+    border-style: solid;
+    border-width: 1px;
+    border-radius : 6px;
+    border-color: #e4e4e4;
+    width: 100%;
+    margin: auto;
+    height : 50px;
+    // display: grid;
+    // grid-template-columns: max-content auto;
+`;
+const SearchContainer = styled.div`
+width : 100%;
+margin-block : auto;
+    position : absolute;
+`;
+const Search = styled.input`
+    border: none !important;
+    width: 80%;
+    margin-top: 12px;
+    margin-inline: 40px;
+    &:focus{
+        outline: none;
+    }
+`;
 const Navbar = (props) => {
   const router = useRouter()
  
@@ -224,8 +247,8 @@ const Navbar = (props) => {
           
           <TTWLogoContainer>
         {props.hidehomecta ? 
- <ImageLoader   hoverpointer  leftalign width="55px" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader> : 
-        props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="55px" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="55px" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
+ <ImageLoader   hoverpointer  leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader> : 
+        props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="55px" widthmobile="55px"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
         }           <div>
 
   {/* {props.headerColor === 'black'? <Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> } */}
@@ -245,9 +268,16 @@ const Navbar = (props) => {
         {/* </Link> */}
           
           </TTWLogoContainer>
-
+          
           {/* <input /> */}
-          <div style={{position: 'absolute', left: '50%', height: '100%'}} className="center-div" onClick={() => setToggleSearch(true)}><FaSearch className="hover-pointer" style={{ color: props.headerColor === 'black' ? 'white': 'black', width: '16px', height:  '16px'}}></FaSearch></div>
+          <div style={{position: 'absolute', left: '32%', height: '100%' , width : '30%'}} className="center-div" onClick={() => setToggleSearch(true)}>
+          <TopContainer>
+            <SearchContainer>
+                    <Search placeholder="Search by destination (country, region or city)" ></Search>
+                    <ImSearch style={{position : 'absolute' , top : '17px' , left : '13px', color : '#B0BABF' , pointerEvents : 'none'}} />
+            </SearchContainer>
+        </TopContainer>
+          </div>
       {toggleSearch ? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : <div></div>}
           {/* <SearchBar />  */}
           <NavItemsContainer style={{ marginRight: props.token ? '0rem' : '0'}}>

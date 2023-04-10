@@ -197,7 +197,7 @@ const Mobile = (props) => {
 
          <div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}}>
              {/* <TTWLogo src={TTWlogowhite}></TTWLogo> */}
-             {showLogo && <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="15vw" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
+             {showLogo && <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="55px" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
             {!props.hidecta &&<CompanyName>thetarzanway</CompanyName>}
             </div>
             {  !props.hidecta  ?

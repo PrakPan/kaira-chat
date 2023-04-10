@@ -9,7 +9,6 @@ const Container = styled.div`
 display : flex;
 gap : 12px;
 align-items : center;
-// margin-bottom : 10px;
 margin-block : 1rem;
 border-radius : 50px;
 &:hover{
