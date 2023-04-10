@@ -1,28 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
-import { faBars, faTimes, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 import Drawer from '@material-ui/core/Drawer';
 import  Link  from 'next/link';
-import Button from '../../ui/button/Index';
 import {CgMenuLeftAlt} from 'react-icons/cg'
 import { useRouter } from 'next/router'
 import LoggedInMenu from './LoggedIn';
 import * as authaction from '../../../store/actions/auth';
 import { connect } from 'react-redux';
 import ImageLoader from '../../ImageLoader';
-import cross from '../../../public/assets/close.png';
 import * as logout from '../../../store/actions/logout';
 import Notifications from '../../modals/Notifications/Index';
 import SearchMobile from '../../search/homepage/mobile/Index';
-import {FaClipboard, FaSearch , FaPenSquare} from 'react-icons/fa'
-import { MdAssignment, MdNotifications } from 'react-icons/md';
-import {HiPhone} from 'react-icons/hi'
-import {IoMdChatboxes} from 'react-icons/io'
-import {BsShieldFillPlus} from 'react-icons/bs'
-import {TbLogout} from 'react-icons/tb'
-// import ImageLoader from '../../ImageLoader';
+import { FaSearch } from 'react-icons/fa'
 const Container = styled.div`
 background-color: white;
 padding: 0 5vw;
@@ -174,21 +163,13 @@ const Mobile = (props) => {
             </ListItem>
         })
 
-    //     <ListItem>
-    //     <Link href='/' className="next-link" passHref={true}>
-    //     {router.pathname === '/' ? <StyledLink style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px', }}>Home</StyledLink> : <StyledLink style={{fontWeight: '300'}}>Home</StyledLink>}
-    //     </Link>
-    // </ListItem>
 
        return(
       <div key={props.notOpenCount} >
     <Container hidecta={props.hidecta} style={{ backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white'}}>
     <div style={{display:'flex', alignItems: 'center' , marginRight : '-10px'}}>
         {props.notifications.length && props.notOpenCount ? <RedDot className="center-div ">{props.notOpenCount}</RedDot> : null}
-            {/* {props.token?<ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}} url={props.image!==null && props.image!=='null' ? props.image : "media/website/user.svg"} onclick={() => setToggleMenu(true)} width="3rem" leftalign height="3rem" widthmobile="3rem" borderRadius="50%"></ImageLoader>:null} */}
             {typeof window !=='undefined' ? <div>
-                {/* {props.token  ? <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faEllipsisV} onClick={() => setToggleMenu(true)}></FontAwesomeIcon> : <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faBars} onClick={() => setToggleMenu(true)}></FontAwesomeIcon>} */}
-                {/* <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={CgMenuLeftAlt} onClick={() => setToggleMenu(true)}></FontAwesomeIcon> */}
 
                 <CgMenuLeftAlt style={{fontSize: '1.5rem', fontWeight: '900'}} onClick={() => setToggleMenu(!toggleMenu)} />
                 </div> : null}
@@ -196,7 +177,6 @@ const Mobile = (props) => {
         </div>
 
          <div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}}>
-             {/* <TTWLogo src={TTWlogowhite}></TTWLogo> */}
              {showLogo && <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="55px" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
             {!props.hidecta &&<CompanyName>thetarzanway</CompanyName>}
             </div>
@@ -206,11 +186,6 @@ const Mobile = (props) => {
             </div>
           : null}
 
-            {/* <LocalPhoneIcon style={{hieght : '100%',margin : 'auto 0' , color : props.headerColor === 'black' ? 'white' : 'black'}} onClick={() => router.push('/contact')} /> */}
-            {/* {  !props.hidecta  ? 
-                        <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" padding="0.75rem 0.75rem" link={'/tailored-travel'}>Create a Trip</Button> 
-          : null} */}
-            
         <Drawer
       anchor='left'
       open={toggleMenu}
@@ -219,13 +194,8 @@ const Mobile = (props) => {
       width='250px'
     >
       <DrawerContainer>
-      {/* <Cross onClick={() => setToggleMenu(false)} src={cross}></Cross> */}
           <ListContainer>
-              {/* {props.token ? <LoggedInMenu notOpenCount={props.notOpenCount} notifications={props.notifications} _handleNotifications={_handleNotifications} onClose={() => setToggleMenu(false)} onLogout={props.onLogout} name={props.name}/> : null}
-              {props.token ? <Segregtation/> : null}
-              {!props.token ?  <ListItem style={{fontWeight: '600'}}>
-                <StyledLink style={{fontWeight: '700', fontSize: '1.75rem'}}>Login/Signup</StyledLink>    
-            </ListItem> : null} */}
+
 
             <ListItem style={{backgroundColor : '#F8F8F8'}}>
                 <LoggedInMenu  userImage={props.image} _handleLogin={_handleLogin} token={props.token} notOpenCount={props.notOpenCount} notifications={props.notifications} _handleNotifications={_handleNotifications} onClose={() => setToggleMenu(false)} onLogout={props.onLogout} name={props.name} />
@@ -240,66 +210,13 @@ const Mobile = (props) => {
             </ListItem>}
 
 
-
-            {/* <ListItem>onclick
-                <Link href='/' className="next-link" passHref={true}>
-                {router.pathname === '/' ? <StyledLink style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px', }}>Home</StyledLink> : <StyledLink style={{fontWeight: '300'}}>Home</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/about-us' className="next-link" passHref={true}>
-                    {router.pathname=== '/about-us' ? <StyledLink style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px'}}>About Us</StyledLink> : <StyledLink style={{fontWeight: '300'}}>About Us</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/travel-experiences' className="next-link" passHref={true}>
-                {router.pathname === '/travel-experiences' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Experiences</StyledLink> : <StyledLink  style={{fontWeight: '300'}}>Experiences</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/travel-guide' className="next-link" passHref={true}>
-                {router.pathname === '/travel-guide' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Travel Guide</StyledLink> : <StyledLink  style={{fontWeight: '300'}}>Travel Guide</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                    <StyledLink href="http://blog.thetarzanway.com/"  style={{fontWeight: '300'}}>Travel Feed</StyledLink>
-            </ListItem>
-            <ListItem>
-                <Link href='/tailored-travel' className="next-link" passHref={true}>
-                {router.pathname === '/tailored-travel' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Tailor-Made Travel</StyledLink> :  <StyledLink  style={{fontWeight: '300'}}>Tailor-Made Travel</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/testimonials' className="next-link" passHref={true}>
-                {router.pathname === '/testimonials' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Testimonials</StyledLink> :  <StyledLink  style={{fontWeight: '300'}}>Testimonials</StyledLink>}
-                </Link>
-            </ListItem>
-            <Segregtation/>
-            {!props.token ? <ListItem>
-                <StyledLink  style={{fontWeight: '300'}} onClick={_handleLogin}>Login</StyledLink>
-            </ListItem> : null}
-            <ListItem>
-                <Link href='/contact' className="next-link" passHref={true}>
-                {router.pathname === '/contact' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Contact Us</StyledLink> :  <StyledLink  style={{fontWeight: '300'}}>Contact Us</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/covid-19-safe-travel-india' className="next-link" passHref={true}>
-                {router.pathname === '/covid-19-safe-travel-india' ? <StyledLink  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>COVID-19 Safety</StyledLink> :  <StyledLink  style={{fontWeight: '300'}}>COVID-19 Safety</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/about-us' className="next-link" passHref={true}>
-                    <StyledLink  style={{fontWeight: '100'}}>Login</StyledLink>
-                </Link>
-            </ListItem> */}
           </ListContainer>
       </DrawerContainer>
     </Drawer>
     </Container>
     {toggleSearch ? <div className='hidden-desktop' style={{width: '100%'}}><SearchMobile onclose={() => setToggleSearch(false)} open={true}></SearchMobile></div> : null}
 
-    <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} _deleteNotificationHandler={props._deleteNotificationHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)}></Notifications>
+    <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)}></Notifications>
     </div>
   );
 }

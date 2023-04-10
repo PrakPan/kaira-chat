@@ -8,13 +8,11 @@ import * as logout from '../../store/actions/logout';
 import * as authaction from '../../store/actions/auth';
 import { connect } from 'react-redux';
 import { useRouter } from 'next/router'
-// import Button from '../Button';
 import Button from '../ui/button/Index';
 import Notifications from '../modals/Notifications/Index';
 import urls from '../../services/urls';
 import ImageLoader from '../ImageLoader';
 import * as ga from '../../services/ga/Index';
-import {FaSearch} from 'react-icons/fa';
 import DesktopSearch from '../search/header/desktop/Index';
 import { ImSearch } from 'react-icons/im';
 const NavItemsContainer = styled.div`
@@ -34,7 +32,6 @@ position: relative;
 
   @media screen and (min-width: 768px) {
     transition: all 0.3s ease-in-out;
-    // height: 10vh;
     height : 80px;
     width: 100%;
     &:hover {
@@ -47,10 +44,8 @@ const CenterNav = styled.div`
   width: 85%;
   margin : auto;
   height: 100%;
-  // display: flex;
   display : grid;
-  grid-template-columns: 0.5fr 2fr 0.5fr;
-gap: 6rem;
+  grid-template-columns: 0fr 2fr 0.5fr;
   align-items: center;
    &:hover{
     cursor: pointer;
@@ -88,7 +83,6 @@ const NavItem = styled.div`
 const Header = styled.div`
   position: fixed !important;
   z-index: 900;   
-  // height: ${(props) => (props.changeHeight ? `100%` : '0')};
   height : 80px;
 
   transition: height ease-out 0.5s;
@@ -159,11 +153,6 @@ const Search = styled.input`
 `;
 const Navbar = (props) => {
   const router = useRouter()
- 
-
-  // localStorage.setItem('NavbarHeight', 4);
-  // let prevScroll = window.pageYOffset;
-
 
 
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
@@ -241,8 +230,6 @@ const Navbar = (props) => {
       <NavbarContainer bgColor={props.bgColor} hideNav={props.hideNav} style={{
         backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white', 
         opacity : props.hideNav ? '0' : '1'}}>
-      {/* <div style={{position: 'absolute', left: '50%', height: '100%'}} className="center-div" onClick={() => setToggleSearch(true)}><FaSearch className="hover-pointer" style={{ color: props.headerColor === 'black' ? 'white': 'black', width: '16px', height:  '16px'}}></FaSearch></div>
-      {toggleSearch ? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> :  */}
          <CenterNav>
           
           <TTWLogoContainer>
@@ -251,7 +238,6 @@ const Navbar = (props) => {
         props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="55px" widthmobile="55px"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
         }           <div>
 
-  {/* {props.headerColor === 'black'? <Link href={urls.HOMEPAGE}><ImageLoader hoverpointer  onclick={_handleHomepageRedirect} width="7vh" widthmobile="15vh"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={_handleHomepageRedirect} leftalign width="7vh" widthmobile="15vh"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> } */}
         {props.hidehomecta ?  
             <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0rem 0 0.25rem", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}}>{'thetarzanway'}</CompanyName>
          : 
@@ -263,7 +249,6 @@ const Navbar = (props) => {
        <Link href={'/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0.25rem", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} >{'Physics Wallah Holidays'}</CompanyName></Link>
 : null
       }
-              {/* <p style={{margin: "0", fontSize: "3vh", fontWeight: '700', lineHeight: 1, display: 'inline', letterSpacing: '-2px'}}>thetarzanway</p> */}
               </div> 
         {/* </Link> */}
           
@@ -295,20 +280,7 @@ const Navbar = (props) => {
               {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
               </Link>
             </NavItem>
-            {/* <NavItem style={{marginLeft: '0rem'}}>
-              <Link href={urls.travel_guide.BASE} className="next-link" passHref={true}>
-              { router.pathname === '/travel-guide' ?  <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Travel Guide</StyledLink> :  <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Travel Guide</StyledLink>}
-              </Link>
-            </NavItem> */}
-         
-            {/* <NavItem style={{padding: "0"}}>
-              <Link href={urls.ABOUT_US} passHref={true}>
-                {router.pathname === '/about-us' ? <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>About Us</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>About Us</StyledLink>}
-              </Link>
-            </NavItem> */}
-          {/* <NavItem>
-              <Button>Login</Button>
-          </NavItem> */}
+      
           {  !props.hidecta  ? 
                         <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 1.5rem 0 0" padding="0.75rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
           : null}

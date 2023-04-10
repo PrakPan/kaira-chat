@@ -2,9 +2,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
-import Results from './results/Index';
 import NewResults from './NewResults';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
@@ -16,7 +13,6 @@ const Container = styled.div`
     text-align: left;
     position: absolute;
 width: 30%;
-// margin: 0px  auto;
 top : 15px;
 left : 32%;
 z-index: 2;
@@ -97,7 +93,6 @@ console.log(results , 'results')
                     {inputValue !== '' &&<MdCancel onClick={()=>setInputValue('')} style={{position : 'absolute' , top : '13px' , right : '35px',fontSize : '1.4rem', color : '#7A7A7A', cursor : 'pointer'}} />}
             </SearchContainer>
         </TopContainer>
-        {/* {showResults && <Results results={results}></Results>} */}
         {showResults && <NewResults results={results} />}
         <Locations hotlocations={props.hotlocations}></Locations>
         </Container>
