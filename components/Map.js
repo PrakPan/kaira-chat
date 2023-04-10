@@ -16,8 +16,8 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 
 function Map(props) {
   const [center, setCenter] = useState({
-    lat: props.locations[0].lat,
-    lng: props.locations[0].long,
+    lat: props.locations[0].lat && 0,
+    lng: props.locations[0].long && 0,
   });
   
   const [zoom, setZoom] = useState(14);
@@ -43,9 +43,9 @@ function Map(props) {
       let selectedMarker = props.locations.filter(
         (location) => location.id == props.active
       );
-      console.log(`change marker${JSON.stringify(selectedMarker[0].lat)}`);
+
       // handleZoomToLocation (selectedMarker[0].lat,selectedMarker[0].long)
-      setCenter({ lat: selectedMarker[0].lat, lng: selectedMarker[0].long });
+      setCenter({ lat: selectedMarker[0].lat && 0, lng: selectedMarker[0].long && 0});
       setZoom(18);
       handleActiveMarker(props.active);
     }
@@ -82,12 +82,12 @@ function Map(props) {
     const bounds = new window.google.maps.LatLngBounds();
 
     props.locations.forEach((location) =>
-      bounds.extend({ lat: location.lat, lng: location.long })
+      bounds.extend({ lat: location.lat == null  ? 0 : location.lat, lng: location.long == null  ? 0 : location.long})
     );
     map.fitBounds(bounds);
   };
   props.locations.forEach((location) =>
-    path.push({ lat: location.lat, lng: location.long })
+    path.push({ lat: location.lat && 0, lng: location.long && 0 })
   );
   const containerStyle = {
     width: props.width || '100%',
@@ -115,7 +115,7 @@ function Map(props) {
           position={props.center}
           icon={colorMarker(props.locations[0].color)}
         >
-          {activeMarker === props.center.lat + props.center.lng ? (
+          {activeMarker === props.center.lat  + props.center.lng ? (
             <InfoWindow onCloseClick={() => setActiveMarker(null)}>
               {props.InfoWindowContainer || ''}
             </InfoWindow>

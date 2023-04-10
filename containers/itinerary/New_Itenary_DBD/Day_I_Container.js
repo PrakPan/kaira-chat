@@ -16,6 +16,7 @@ const Container = styled.div`
   border: 1.5px solid #eceaea;
   margin-top: 20px;
   padding: 20px;
+
   box-shadow: 0px 3px 0px #f0f0f0;
   border-radius: 16px;
   @media screen and (min-width: 768px) {

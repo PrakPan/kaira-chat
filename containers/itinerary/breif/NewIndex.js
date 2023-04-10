@@ -161,6 +161,7 @@ const Details = (props) => {
           location={Locationlatlong}
         />
         </div> */}
+        
           <div id="MapcontainerRoute">
             <Map
             
