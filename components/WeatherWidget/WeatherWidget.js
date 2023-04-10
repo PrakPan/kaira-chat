@@ -60,7 +60,7 @@ const WeatherWidget = ({
   }
 
   if (!weather) {
-    return <div>No forecast available for this date.</div>;
+    return <></>;
   }
   return (
     <div>

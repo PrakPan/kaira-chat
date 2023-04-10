@@ -21,6 +21,7 @@ const PlanWithUs = (props)=>{
         <WhyPlanWithUs />
          <div className='hidden-mobile' style={{width : '400px'}}><Enquiry page_id={props.page_id} 
          destination={props.destination} 
+         destinationType={props.destinationType}
         //  cities={props.cities}
          ></Enquiry></div>
         </Container>

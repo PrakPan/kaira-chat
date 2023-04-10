@@ -86,6 +86,7 @@ else router.push('/tailored-travel')
                  <HeroBanner
                    image={props.cityData.images[0].image}
                    page_id={props.cityData.id}
+                   destinationType={'city-planner'}
                    destination={props.cityData.name}
                    cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
@@ -105,6 +106,7 @@ else router.push('/tailored-travel')
                <TailoredFormMobileModal
           page_id={props.cityData.id}
           destination={props.cityData.name}
+          destinationType={'city-planner'}
           // cities={props.experienceData.locations}
           // children_cities={props.experienceData.children}
           onHide={() => setShowMobilePlanner(false)}

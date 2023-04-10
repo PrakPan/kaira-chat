@@ -119,7 +119,7 @@ const NewFooter = (props) => {
          ) : data.title == "Subscribe" ? (
            <p onClick={() => setShadow(!shadow)}>{data.title}</p>
          ) : (
-           <Link href={data.link}>{data.title}</Link>
+           <a href={'https://thetarzanway.com'+data.link}>{data.title}</a>
          )}
        </Links>
      ))}
