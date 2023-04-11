@@ -29,7 +29,7 @@ const MenuItem = styled.div`
   border-radius: ${({ isActive }) =>
     isActive ? '10% 10% 0 0' : '10% 10% 0 0'};
   transition: border-color 0.3s ease;
-  font-weight: 600  ;
+  font-weight: 600;
   border-bottom: ${({ isActive }) => (isActive ? '4px solid #F7E700' : 'none')};
   &:hover {
     background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};
@@ -37,15 +37,16 @@ const MenuItem = styled.div`
   }
 `;
 const RoundMenuItem = styled.div`
-  padding: 10px;
+  padding: 5px 10px 5px 10px;
   cursor: pointer;
   width: max-content;
-
+  margin: ${({ Isvertical }) =>
+    Isvertical ? '12px 0px 0px 0px' : '0px 7px 0px 0px'};
   margin-left: 7px;
   background-color: ${({ isActive }) => (isActive ? '#01202B' : 'none')};
   color: ${({ isActive }) => (isActive ? '#fff' : '#111')};
   border-radius: 8px;
-    padding: 0.5rem;
+
   transition: border-color 0.3s ease;
   border: ${({ isActive }) => (!isActive ? '1.5px solid #ECEAEA' : 'none')};
   /* border-bottom: ${({ isActive }) =>
@@ -60,6 +61,7 @@ const AnimatedMenuItem = styled(MenuItem)`
 `;
 
 const CustomMenu = ({
+  Isvertical,
   Iterable,
   BarName,
   Mstyle = 'simple',
@@ -105,6 +107,7 @@ const CustomMenu = ({
     >
       {Mstyle == 'round' ? (
         <RoundMenuItem
+          Isvertical={Isvertical}
           isActive={activeItem === item.id}
           onClick={() => onSelect(item.id)}
         >

@@ -37,7 +37,7 @@ const DetailsContainer = styled.div`
   @media screen and (min-width: 768px) {
     flex-direction: row-reverse;
     padding: 0;
-    margin: 10vh auto 10vh auto;
+    margin: 10vh auto 4vh auto;
   }
 `;
 const RouteComponent = styled.div`

@@ -12,7 +12,7 @@ import { useIsComponentInView } from '../hooks/useComponentInView';
 const Navbar = styled.div`
   /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
   
-  
+  font-family: Lexend;
   display: flex;
   ::-webkit-scrollbar {
     display: none;
@@ -58,6 +58,7 @@ const ScrollableMenuTabs = ({
   offset,
   items,
   BarName,
+  year = '2023',
   Mstyle = 'simple',
   Iterable = 'label',
   vertical = false,
@@ -161,15 +162,19 @@ const ScrollableMenuTabs = ({
       ) : null}
 
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
+        {vertical ? <div className="font-bold">{year}</div> : null}
         {items.map((item) => (
-          <CustomMenu
-            Iterable={Iterable}
-            BarName={BarName}
-            Mstyle={Mstyle}
-            item={item}
-            activeItem={activeItem}
-            onSelect={handleSelect}
-          />
+          <>
+            <CustomMenu
+              Isvertical={vertical}
+              Iterable={Iterable}
+              BarName={BarName}
+              Mstyle={Mstyle}
+              item={item}
+              activeItem={activeItem}
+              onSelect={handleSelect}
+            />
+          </>
         ))}
       </Navbar>
       {icons ? (
