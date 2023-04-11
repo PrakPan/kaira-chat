@@ -97,7 +97,7 @@ const Locations= (props) => {
                         // onclick={_handlePersonaliseRedirect}
                         // onclickparams={{id, name, parent}}
                         hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{props.hotlocations[i].name}</ImageText>
+                        <ImageText className='center-div text-center font-poppins'>{props.hotlocations[i].name}</ImageText>
                 {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}
            {/* </ImageContainer> */}
            </LocationContainer>
@@ -121,14 +121,14 @@ const Locations= (props) => {
                         // onclick={_handlePersonaliseRedirect}
                         // onclickparams={{id, name, parent}}
                         hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{''}</ImageText>
+                        <ImageText className='center-div text-center font-poppins'>{''}</ImageText>
            </LocationContainer>
             )
         }
     }
     return(
         <div>
-        <Heading className="font-opensans">Top Locations</Heading>
+        <Heading className="font-poppins">Top Locations</Heading>
         <Container>
             {locations}
         </Container>

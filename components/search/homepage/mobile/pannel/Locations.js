@@ -2,65 +2,62 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import { useRouter } from 'next/router'
-
+import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../../../../ImageLoader';
+import SkeletonCard from '../../../../ui/SkeletonCard';
 
 const Container = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 1rem;
+    // display: grid;
+    // grid-template-columns: 1fr 1fr;
+    // grid-gap: 1rem;
    margin: 1rem;
     `;
-const Heading = styled.p`
-    font-weight: 600;
-    margin: 1.5rem;
-    font-size: 1.5rem;
-    text-align: center;
-`;
-    const ImageContainer = styled.div`
-position: relative;
-text-align: center;
-color: white;
-margin: auto;
-border-radius: 50%;
-width: 100%;
-min-height: 28vw;
-background: white;
-
-&:hover{
-    cursor: pointer;
-    background: #f7e700;
+const MarkerContainer= styled.div`
+background : #dfdfdf;
+border-radius : 100%;
+padding: 11px 14px;
+`
+const Text = styled.div`
+font-weight : 500;
+// margin-block : 5px;
+p{
+font-weight : 400;
+margin-bottom : 0rem;
+margin-top : -2px;
+font-size : 12px;
+color : #7e7e7e;
 }
-@media screen and (min-width: 768px){
-
-}
-`;
-const ImageText = styled.div`
-font-weight: 400;
-margin: 0;
-padding: 0;
-font-size: 0.75rem;
-
-`;
+`
 
 const LocationContainer = styled.div`
 padding: 0.5rem;
+margin-block : auto;
 &:hover{
     cursor: pointer;
 }
 max-width: 100%;
 border-radius: 10px;
 display: grid;
-grid-template-columns: 2fr 4fr;
+grid-template-columns: 45px 5.5fr;
 grid-gap: 0.5rem;
 &:hover{
     cursor: pointer;
 }
-
 `;
-
+const Heading = styled.p`
+font-weight: 500;
+font-style: normal;
+font-size: 12px;
+line-height: 16px;
+display: flex;
+align-items: center;
+text-align: center;
+text-transform: uppercase;
+margin : 1rem;
+color: #7A7A7A;
+`;
 
 const Locations= (props) => {
     const router = useRouter()
@@ -80,61 +77,45 @@ const Locations= (props) => {
   }
   let locations=[];
     if(props.hotlocations){
-        for(var i=0; i<props.hotlocations.length; i++){
+        for(var i=0; i<5; i++){
             let location =  props.hotlocations[i];
             let id = props.hotlocations[i].id;
             let name=props.hotlocations[i].name;
             let parent = props.hotlocations[i].state.name;
             let slug = props.hotlocations[i].slug;
             locations.push(
-                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
-                {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
-                <ImageLoader
-                        url={props.hotlocations[i].image}
-                        borderRadius='50%'
-                        height='100%'
-                        width="100%"
-                        heighttab="100%"
-                        dimensions={{width: 600, height: 600}}
-                        dimensionsMobile={{width: 600, height: 600}}
-                        fit="cover"
-                        // onclick={_handlePersonaliseRedirect}
-                        // onclickparams={{id, name, parent}}
-                        hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{props.hotlocations[i].name}</ImageText>
-                {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}
-           {/* </ImageContainer> */}
+                <LocationContainer  onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+                <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
+            <Text>
+              <div>{props.hotlocations[i].name}</div>
+            <p>{props.hotlocations[i].state?.name}</p>  
+            </Text>
            </LocationContainer>
             )
         }
     }
     else {
-        for(var i=0; i<6; i++){
+        for(var i=0; i<5; i++){
           
             locations.push(
-                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
-               <ImageLoader
-                        url={'media/website/grey.png'}
-                        borderRadius='50%'
-                        height='100%'
-                        width="100%"
-                        heighttab="100%"
-                        dimensions={{width: 100, height: 100}}
-                        dimensionsMobile={{width: 100, height: 100}}
-                        fit="cover"
-                        // onclick={_handlePersonaliseRedirect}
-                        // onclickparams={{id, name, parent}}
-                        hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{''}</ImageText>
-           </LocationContainer>
+             <div style={{display:'flex' , marginBlock : '0.7rem' }}>
+                <div>
+  <SkeletonCard borderRadius='100%' width='50px' ml='8px'></SkeletonCard>
+  </div>
+  <div style={{marginBlock : 'auto'}}>
+  <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
+  <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
+  </div>
+  </div>    
             )
         }
     }
     return(
         <div>
-        <Heading className="font-opensans">Top Locations</Heading>
-        <Container>
-            {locations}
+        <Heading className="font-poppins">POPULAR DESTINATION</Heading>
+        <Container>      
+            {locations}  
+        
         </Container>
         </div>
     );
