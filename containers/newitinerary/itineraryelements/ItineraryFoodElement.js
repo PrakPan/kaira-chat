@@ -11,7 +11,7 @@ import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
 
 const padding = {
-  initialLeft: '100px',
+  initialLeft: '60px',
 };
 const Container = styled.div`
   display: flex;
@@ -55,7 +55,8 @@ const Line = styled.div`
 export const RecommendationGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-rows: ${(props) =>
+    props.Norows > 2 ? 'repeat(2, 1fr)' : 'auto'};
   grid-column-gap: 20px;
   grid-row-gap: 27px;
 `;
@@ -125,7 +126,9 @@ const ItineraryFoodElement = (props) => {
                 {!isJson(props.recomendation) ? (
                   `${props.recomendation}`
                 ) : (
-                  <RecommendationGridContainer>
+                  <RecommendationGridContainer
+                    Norows={JSON.parse(props.recomendation)?.length}
+                  >
                     {JSON.parse(props.recomendation)?.map((item) => (
                       <FoodItem
                         heading={item.name}

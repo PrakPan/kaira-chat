@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const padding = {
-  initialLeft: '100px',
+  initialLeft: '60px',
 };
 export const Container = styled.div`
   display: flex;
@@ -10,7 +10,7 @@ export const Container = styled.div`
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;
- 
+
   padding: 0px 0px 0px 0px;
   color: #01202b;
 `;
@@ -21,10 +21,9 @@ export const ArriveContainer = styled.div`
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;
- @media screen and (min-width: 768px){
-  flex-direction: row;      
-
-          }
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
+  }
   padding: 10px 0px 20px 0px;
   color: #01202b;
 `;
@@ -45,20 +44,18 @@ export const TransportContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  
 `;
 export const TInfoContainer = styled.div`
+  @media screen and (min-width: 768px) {
+    display: flex;
 
-@media screen and (min-width: 768px){
-  display: flex;
-
-  flex-direction: row;           
-  & > div{
-    padding-left: ${padding.initialLeft};
-    width: 100%;
+    flex-direction: row;
+    & > div {
+      padding-left: ${padding.initialLeft};
+      width: 100%;
+    }
   }
-          }
-`
+`;
 export const TransferInfo = styled.div`
   padding: 10px 0px 30px 0px;
 `;
@@ -66,33 +63,27 @@ export const Timecontainer = styled.div`
   font-weight: 500;
   font-size: 13px;
   display: flex;
-  
+
   flex-direction: column;
-  
-  @media screen and (min-width: 768px){
-  flex-direction: row;                
-align-items: center;
 
-
-}
-        
-      
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+  }
 `;
 export const SubTimecontainer = styled.div`
   font-weight: 500;
   font-size: 13px;
   display: flex;
-  
+
   flex-direction: column;
-  
-  @media screen and (min-width: 768px){
-  flex-direction: row;                
-align-items: center;
-padding-left: ${padding.initialLeft};
-padding-right: '10px';
-}
-        
-      
+
+  @media screen and (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    padding-left: ${padding.initialLeft};
+    padding-right: '10px';
+  }
 `;
 export const Line = styled.div`
   border-style: none none solid none;
@@ -101,18 +92,17 @@ export const Line = styled.div`
   width: 100%;
 `;
 export const HLine = styled.span`
-  @media screen and (min-width: 768px){
-border-style: none none none dotted;
-  border-color: #111;
-  
-  border-width: 2px;
-  
-  margin-left: 2rem;
-  & > div{
-    margin-top: 60%;
+  @media screen and (min-width: 768px) {
+    border-style: none none none dotted;
+    border-color: #111;
+
+    border-width: 2px;
+
+    margin-left: 2rem;
+    & > div {
+      margin-top: 60%;
+    }
   }
-  }
-  
 `;
 export const Navbar = styled.div`
   /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
@@ -134,12 +124,9 @@ export const NavbarContainer = styled.div`
   position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
   z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
   top: 70px;
-  display:flex;
+  display: flex;
   flex-direction: row;
-  
 
- 
-  
   margin: 0px -20px 0px -20px;
   background-color: white;
 `;

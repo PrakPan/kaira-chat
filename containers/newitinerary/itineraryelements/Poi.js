@@ -10,7 +10,7 @@ import Tips from './Tips';
 import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 
 const padding = {
-  initialLeft: '100px',
+  initialLeft: '60px',
 };
 const Container = styled.div`
   display: flex;
@@ -110,7 +110,7 @@ const ItineraryPoiElement = (props) => {
           >
             {props.image ? (
               <ImageLoader
-                dimensions={{ width: 250, height: 200 }}
+                dimensions={{ width: 200, height: 200 }}
                 dimensionsMobile={{ width: 250, height: 200 }}
                 borderRadius="8px"
                 hoverpointer

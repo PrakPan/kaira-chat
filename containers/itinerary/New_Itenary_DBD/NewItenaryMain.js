@@ -15,7 +15,7 @@ import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
     display: flex;
-    width: 60vw;
+    width: 70vw;
     flex-direction: column;
   `;
   const CitiesContainer = styled.div`

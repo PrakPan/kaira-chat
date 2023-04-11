@@ -6,7 +6,7 @@ import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 const padding = {
-  initialLeft: '100px',
+  initialLeft: '60px',
 };
 const Container = styled.div`
   display: flex;
