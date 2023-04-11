@@ -1,13 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
 import Results from './results/Index';
+import {RxCross2} from 'react-icons/rx'
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import axioslocationsinstance from '../../../../../services/poi/hotlocations'
+import NewResults from './NewResults';
+import {ImSearch} from 'react-icons/im'
+import {MdCancel} from 'react-icons/md'
 
 const Container = styled.div`
     background-color: white;
@@ -15,10 +19,11 @@ const Container = styled.div`
     height: 100vh;
     text-align: left;
     position: fixed;
+    overflow : overlay;
 top: 0;
 width: 100%;
-z-index: 1100;
-overflow: hidden;
+z-index: 1500;
+// overflow: hidden;
 @media screen and (min-width: 768px){
         width: 100%;
     }
@@ -26,23 +31,32 @@ overflow: hidden;
 
 const TopContainer = styled.div`
     border-style: none none solid none;
+    position : fixed;
+    background : white;
     border-width: 1px;
     border-color: #e4e4e4;
-    width: 95%;
+padding-right : 15px;
+    height : 70px;
     margin: auto;
     display: grid;
     grid-template-columns: max-content auto;
 `;
 const SearchContainer = styled.div`
-    display: flex;
-    align-items: center;
+margin-block : auto;
 `;
 const Search = styled.input`
-    border: none !important;
+border: 1px solid #DDE2E4;
+padding: 10px;
+padding-inline : 50px;
+border-radius: 6px;
+position : relative;
+width: 100%;
     &:focus{
         outline: none;
     }
-    
+&::placeholder{
+  color  : black;  
+}
 `;
 
 const SearchPannel= (props) => {
@@ -51,8 +65,8 @@ const SearchPannel= (props) => {
     let [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);
     const [hotLocationsData, setHotLocationsData] = useState();
-
     const _onChangeHandler = (event) => {
+        setInputValue(event.target.value);
         if(event.target.value.length %3 === 0)
         ga.event({
             action: "HS-locationssearched",
@@ -60,11 +74,11 @@ const SearchPannel= (props) => {
               'search_text': event.target.value
             }
           });
-        setInputValue(event.target.value);
+          setShowResults(true);
+          setResults(null);
         axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
             if(res.data.length){
                 setResults(res.data);
-                setShowResults(true);
             }
             else setShowResults(false);
         });
@@ -89,12 +103,18 @@ const SearchPannel= (props) => {
    `}
 </style>
        <TopContainer>
-            <FontAwesomeIcon style={{textAlign: 'left'}} icon={faChevronLeft} onClick={props.setPannelClose} style={{fontSize: '1.5rem', fontWeight: '300', margin: '1.5rem'}}></FontAwesomeIcon>
+            <RxCross2 onClick={props.setPannelClose} style={{fontSize: '1.8rem',textAlign: 'left', fontWeight: '500', margin: 'auto 0.7rem'}}/>
             <SearchContainer>
-                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-opensans" placeholder="Search Locations"></Search>
+                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-poppins" placeholder="Search Locations">
+                    </Search>
+                    <ImSearch style={{position : 'absolute' , top : '27px' , left : '73px', color : '#B0BABF' , pointerEvents : 'none'}} />
+                    {inputValue !== '' &&<MdCancel onClick={()=>setInputValue('')} style={{position : 'absolute' , top : '25px' , right : '25px',fontSize : '1.1rem', color : '#7A7A7A'}} />}
             </SearchContainer>
         </TopContainer>
-        {!showResults ? <Locations hotlocations={hotLocationsData}></Locations> : <Results results={results}></Results>}
+        <div style={{marginTop  :'85px'}}>
+        {showResults && <NewResults results={results} />}
+        <Locations hotlocations={hotLocationsData}></Locations>
+        </div>
         </Container>
     );
 }

@@ -131,7 +131,9 @@
 }
 .modal-backdrop.in{
   opacity: 0.9 !important;
-
+}
+.modal{
+  --bs-modal-zindex : 1500 !important ;
 }
 .css-1tape97{
   padding: 0rem;
