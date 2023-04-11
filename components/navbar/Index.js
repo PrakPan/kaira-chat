@@ -21,10 +21,10 @@ const Navbar = (props) => {
 
   let [notifications, setNotifications] = useState([]);
   const router = useRouter();
-  const path = router.route.split('/')
+  const path = router.route.split('/');
 
   useEffect(() => {
-    if ( path[1] == 'itinerary') {
+    if (path[1] == 'itinerary') {
       setIsitenary(true);
     }
     if (props.token)
@@ -103,28 +103,20 @@ const Navbar = (props) => {
         .catch((err) => {});
   };
 
-            setNotifications(res.data)
-        }).catch(err => {
-    })
-   
-}
-const _openAllNotificationsHandler = () => {
-  if(props.token)
-  axiosnotificationsinstance.patch("", {},  {headers: {
-      'Authorization': `Bearer ${props.token}`
-      }}).then(res => {
-        setNotOpenCount(0);
-      }).catch(err => {
-  })
-}
- 
-    return(
-      <div className='font-poppins'>
-      <div className='hidden-desktop'><NewMobile _openAllNotificationsHandler={_openAllNotificationsHandler} hidecta={props.hidecta} ctaonclick={props.ctaonclick} _deleteNotificationHandler={_deleteNotificationHandler} notifications={notifications} hideNav={hideNav} notOpenCount={notOpenCount} ></NewMobile></div>
-      <div   className='hidden-mobile'>
-        <div style={{display: hideNav? 'none !important' : 'initial !important'}}>
-          <IndexDesktop PW={props.PW} ctaonclick={props.ctaonclick} hidehomecta={props.hidehomecta} hidecta={props.hidecta} _deleteNotificationHandler={_deleteNotificationHandler} _openAllNotificationsHandler={_openAllNotificationsHandler} notOpenCount={notOpenCount} notifications={notifications} token={props.token}  style={{}}></IndexDesktop>
-        </div> 
+  return (
+    <div>
+      <div className="hidden-desktop">
+        <NewMobile
+          _openAllNotificationsHandler={_openAllNotificationsHandler}
+          hidecta={Isitenary}
+          ctaonclick={props.ctaonclick}
+          _deleteNotificationHandler={_deleteNotificationHandler}
+          notifications={notifications}
+          _deleteNotificationHandler={_deleteNotificationHandler}
+          headerColor={headerColor}
+          hideNav={false}
+          notOpenCount={notOpenCount}
+        ></NewMobile>
       </div>
       <div className="hidden-mobile">
         <div

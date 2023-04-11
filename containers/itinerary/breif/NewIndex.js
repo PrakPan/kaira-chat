@@ -161,10 +161,9 @@ const Details = (props) => {
           location={Locationlatlong}
         />
         </div> */}
-        
+
           <div id="MapcontainerRoute">
             <Map
-            
               locations={Locationlatlong}
               defaultZoom={12}
               height={isPageWide ? '350px' : '230px'}
@@ -175,7 +174,14 @@ const Details = (props) => {
         </RouteComponent>
         {isPageWide ? (
           <div>
-            <div>{true ? <Overview breif={props.breif} daysSlab={props.itinerary.day_slabs}></Overview> : null}</div>
+            <div>
+              {true ? (
+                <Overview
+                  breif={props.breif}
+                  daysSlab={props.itinerary.day_slabs}
+                ></Overview>
+              ) : null}
+            </div>
           </div>
         ) : null}
       </DetailsContainer>
