@@ -29,7 +29,7 @@ scrollbar-width: none;
 `;
 const NavbarContainer = styled.div`
   position: sticky !important;
-  z-index: 1000;
+  z-index: 1;
 
   display: flex;
 
@@ -39,7 +39,7 @@ const NavbarContainer = styled.div`
   background-color: white;
 
   position: inherit;
-  z-index: 992;
+
   top: 120px;
 
   display: flex;
