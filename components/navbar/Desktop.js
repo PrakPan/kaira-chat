@@ -45,7 +45,7 @@ const CenterNav = styled.div`
   margin : auto;
   height: 100%;
   display : grid;
-  grid-template-columns: 0fr 2fr 0.5fr;
+  grid-template-columns: ${props=>props.hidecta?'3.5fr 2fr 0.95fr' : '0fr 2fr 0.5fr'};
   align-items: center;
    &:hover{
     cursor: pointer;
@@ -64,7 +64,7 @@ const TTWLogoContainer = styled(CenterNav)`
 
 
 const NavItem = styled.div`
-  font-family: 'Open Sans';
+  font-family: http://localhost:3000/travel-supporthttp://localhost:3000/travel-supporthttp://localhost:3000/travel-support'Open Sans';
   color: white;
   padding: 1rem 0rem 0.5rem 0rem;
   @media screen and (min-width: 768px) {
@@ -230,7 +230,7 @@ const Navbar = (props) => {
       <NavbarContainer bgColor={props.bgColor} hideNav={props.hideNav} style={{
         backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white', 
         opacity : props.hideNav ? '0' : '1'}}>
-         <CenterNav>
+         <CenterNav hidecta={props.hidecta}>
           
           <TTWLogoContainer>
         {props.hidehomecta ? 
@@ -244,11 +244,11 @@ const Navbar = (props) => {
           <Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0.25rem", fontWeight: '600', lineHeight: 1, display: 'inline', letterSpacing: '0'}}>thetarzanway</CompanyName></Link>
 
       }
-      {
+      {/* {
        props.PW ?  
        <Link href={'/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0.25rem", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} >{'Physics Wallah Holidays'}</CompanyName></Link>
 : null
-      }
+      } */}
               </div> 
         {/* </Link> */}
           
@@ -275,9 +275,9 @@ const Navbar = (props) => {
             {/* <NavItem>
                 <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
             </NavItem> */}
-               <NavItem>
+               <NavItem style={{paddingInline: '1.5rem'}}>
               <Link href={urls.CONTACT} passHref={true}>
-              {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
+              {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700' , fontWeight : '500'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
               </Link>
             </NavItem>
       
