@@ -268,14 +268,14 @@ const NewItenaryMain = (props) => {
       </Navbar> */}
       <ScrollableMenuTabs
         icons={items.length < 5 ? false : true}
-        offset={'18vh'}
+        offset={'130px'}
         items={items}
         BarName="CityName"
         Mstyle={'round'}
       ></ScrollableMenuTabs>
       <ScrollableMenuTabs
         icons={false}
-        offset={'25.6vh'}
+        offset={'170px'}
         items={itemsDays}
         BarName="CityName"
         Mstyle={'round'}

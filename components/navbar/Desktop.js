@@ -44,13 +44,9 @@ const CenterNav = styled.div`
   width: 85%;
   margin: auto;
   height: 100%;
-  <<<<<<<HEAD
   display: grid;
-  grid-template-columns: 0fr 2fr 0.5fr;
-  =======display : grid;
   grid-template-columns: ${(props) =>
     props.hidecta ? '3.5fr 2fr 0.95fr' : '0fr 2fr 0.5fr'};
-  >>>>>>>origin/feature/newheader
   align-items: center;
   &:hover {
     cursor: pointer;

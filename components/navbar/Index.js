@@ -14,7 +14,7 @@ const Navbar = (props) => {
   const [hideNav, setHideNav] = useState(false);
   const [Isitenary, setIsitenary] = useState(false);
 
-  const [headerColor, setHeaderColor] = useState('black');
+  const [headerColor, setHeaderColor] = useState('white');
   const [notOpenCount, setNotOpenCount] = useState();
 
   let notopencount = 0;
@@ -51,7 +51,7 @@ const Navbar = (props) => {
     let scrollhandler = () => {
       if (window.pageYOffset < 10) {
         setHideNav(false);
-        setHeaderColor('black');
+        setHeaderColor('white');
       } else setHeaderColor('white');
       let currentScroll = window.pageYOffset;
       //sfroll up
@@ -60,7 +60,7 @@ const Navbar = (props) => {
       }
       //scroll down
       else {
-        if (window.pageYOffset < 10) setHeaderColor('black');
+        if (window.pageYOffset < 10) setHeaderColor('white');
         else setHideNav(true);
         // else setHeaderColor('black');
       }
