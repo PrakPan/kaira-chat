@@ -91,7 +91,7 @@ const NewResults = (props) => {
   const _handleLocationClick = (id, name, parent, slug) => {
     router.push('/travel-guide/city/'+slug)
   }
-  const _handlePersonaliseRedirect = (id, name, parent) => {
+  const _handlePersonaliseRedirect = (name) => {
     router.push('/tailored-travel?search_text='+name)
   }
   let results=[];
@@ -114,7 +114,7 @@ const NewResults = (props) => {
     return(      
         <Container>
         {props.results.map((e,i)=>
-       { if(i<5) return<LocationContainer key={e["_source"].resource_id} onClick={() => {}}>
+       { if(i<5) return<LocationContainer key={e["_source"].resource_id} onClick={() => {_handlePersonaliseRedirect(e['_source'].name)}}>
             
             <MarkerContainer><ImSearch /></MarkerContainer>
             <Text>

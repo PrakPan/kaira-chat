@@ -48,7 +48,7 @@ padding: ${props => props.padding ? props.padding : '20vw 0 0 0'};
 
 @media screen and (min-width: 768px){
   height: 85vh;
-  padding: ${props => props.padding ? props.padding : '10vh 0 0 0'};
+  padding: ${props => props.padding ? props.padding : '2rem 0 0 0'};
 
 }
 
