@@ -8,7 +8,8 @@ const FlickityCarousel = (props) => {
     freeScroll: true,
     groupCells: 2,
     initialIndex: 0,
-    prevNextButtons: false
+    prevNextButtons : props.prevNextButtons? true :  false,
+    pageDots : props.pageDots? true : false
 
 };
 let cards=[];
