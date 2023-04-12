@@ -51,6 +51,7 @@
     "react-animations": "^1.0.0",
     "react-bootstrap": "^1.6.4",
     "react-card-flip": "^1.1.1",
+    "react-cookie": "^4.1.1",
     "react-custom-scrollbars": "^4.2.1",
     "react-date-range": "^1.4.0",
     "react-dates": "^21.8.0",

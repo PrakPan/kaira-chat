@@ -36,6 +36,7 @@ import media from '../../components/media';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
+import { useCookies } from 'react-cookie';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -79,13 +80,13 @@ const  Homepage = (props) =>{
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading ] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
+  const [cookies, setCookie] = useCookies(['user']);
   let isPageWide = media('(min-width: 768px)');
   useEffect(() => {
     if(props.token){
    axiomyplansinstance.get("?limit=3&offset=0", {headers: {
        'Authorization': `Bearer ${props.token}`
        }}).then(res => {
-           
  
            let plansarr = [];
  
@@ -95,16 +96,14 @@ const  Homepage = (props) =>{
                );
            }
            setMyPlansArr(plansarr.slice());
-           console.log('d', res.data.count)
+           setCookie('MyPlans' , {plans : JSON.stringify(plansarr) , count : res.data.count} , { path: '/' })
            setPlansCount(res.data.count);
            setPlansLoading(false);
        }).catch(err => {
            setPlansLoading(false);
- 
        })
      }
  },[props.token]);
-
 
 
 //JSX for How it works 

@@ -17,6 +17,7 @@ import ImageLoader from '../../components/ImageLoader';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import Spinner from '../../components/Spinner';
+import { useCookies } from 'react-cookie';
 
 const Container = styled.div`
     width: 100%;
@@ -62,29 +63,42 @@ const NoPlans = styled.p`
 const UserDashboard = (props) => {
     const [myPlansArr, setMyPlansArr] = useState([]);
     const [loading, setLoading] = useState(true);
+  const [cookies, setCookie] = useCookies(['user']);
     let isPageWide = media('(min-width: 768px)')
     let router = useRouter();
     useEffect(() => {
         window.scrollTo(0,0);
-        if(props.token)
-        axiomyplansinstance.get("", {headers: {
-            'Authorization': `Bearer ${props.token}`
-            }}).then(res => {
-                
+        if(props.token){
+if(cookies.MyPlans){
+               setMyPlansArr(JSON.parse(cookies.MyPlans.plans));
+               setLoading(false);
+}
+            else{
+                axiomyplansinstance.get("", {headers: {
+                    'Authorization': `Bearer ${props.token}`
+                    }}).then(res => {
+                        
+        
+                        let plansarr = [];
+        
+                        for(var i=0 ; i<res.data.length; i++){
+                             plansarr.push(
+                                res.data[i]
+                            );
+                        }
+                        setMyPlansArr(plansarr)
+                        setLoading(false);
+                    }).catch(err => {
+                        setLoading(false);
+        
+                    })
+        
+            }
+        }
 
-                let plansarr = [];
 
-                for(var i=0 ; i<res.data.length; i++){
-                     plansarr.push(
-                        res.data[i]
-                    );
-                }
-                setMyPlansArr(plansarr)
-                setLoading(false);
-            }).catch(err => {
-                setLoading(false);
 
-            })
+
         
       },[props.token]);
   
