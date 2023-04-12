@@ -11,6 +11,12 @@ import media from '../../components/media';
 import { useRouter } from 'next/router';
 import axioscityinstance from '../../services/poi/city'
  import POIModal from '../../components/modals/poi/Index';
+import validateTextSize from '../../services/textSizeValidator';
+import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
+import NewMenu from '../newcityplanner/Menu'
+import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
+import MobileBanner from './Banner/Mobile'
+import WhatsappFloating from '../../components/WhatsappFloating';
 
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
@@ -32,6 +38,7 @@ const Experience = (props) => {
       experience_filters: ['']
     },
   });
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
   const _handlePersonaliseRedirect = () => {
 
@@ -79,7 +86,7 @@ const Experience = (props) => {
 
  
   }, []);
-
+console.log(props , 'rrprops')
 
   const closeGalleryHandler = () => {
     let images = [];
@@ -88,82 +95,130 @@ const Experience = (props) => {
     }    setGalleryImages(images);
     setGalleryOpen(false);
   }
-     if (isPageWide){
+    //  if (isPageWide){
       //Open Gallery
       if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages} ></FullScreenGallery >);
       //Open experience page
-      else return (
-        <div style={{minHeight: '100vh'}}>
-          <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
-          <div>
-          <FullImage center url={cityLoaded ? props.cityData.images[0].image  : ''}>
-            <FullImageContent city tagline={props.cityData.nicknames.length ? props.cityData.nicknames[0] : ''} text={props.cityData.tagline}/>
-          </FullImage>            
-          <Menu slug={props.id}    setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
-          <ChatBot history={props.history} />
-          {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
+    //   else return (
+    //     <div style={{minHeight: '100vh'}}>
+    //       <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
+    //       <div>
+    //       <FullImage center url={cityLoaded ? props.cityData.images[0].image  : ''}>
+    //         <FullImageContent city tagline={props.cityData.nicknames.length ? props.cityData.nicknames[0] : ''} text={props.cityData.tagline}/>
+    //       </FullImage>            
+    //       {/* <Menu slug={props.id}    setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu> */}
+    //       {/* <ChatBot history={props.history} /> */}
+    //       {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
+    //     </div>
+    //     {/* <Loading hide={experienceLoaded}></Loading> */}
+    //       <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
+    //           { state => 
+    //           <div
+    //           className="center-div"
+    //           style={{
+    //             backgroundColor: "#F7e700",
+    //              width: '100vw',
+    //              transition: 'all 1s ease-out',
+    //              zIndex: '1000',
+    //               height: '100vh',
+    //              position: 'fixed',
+    //              left: state=='exiting' ? '-100vw' : 0,
+
+    //              top: '0',
+    //              }}>
+    //              <Loading/>
+    //              </div>
+
+
+    //           }
+    //            </Transition>
+    //     </div>
+    //   );
+    //   }
+    // else{
+    //   if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages}  ></FullScreenGallery>);
+    //   else
+    //   return (
+
+    //     <div style={{}}>
+    //       <FullImage center url={cityLoaded ? props.cityData.images[0].image : null}>
+    //         <FullImageContent city tagline={props.cityData.nickname} text={props.cityData.tagline}/>
+    //       </FullImage>
+    //       {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={cityData.data.images}></Menu> */}
+    //       {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
+    //       <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
+    //           { state => 
+    //           <div
+    //           className="center-div"
+    //           style={{
+    //             width: '100vw',
+    //             backgroundColor: "#F7e700",
+    //              transition: 'all 1s linear',
+    //              zIndex: '2500',
+    //               height: '100vh',
+    //              position: 'fixed',
+    //              top: '0',
+    //              left: state=='exiting' ? '-100vw' : 0,
+    //              }}>
+    //              <Loading/>
+    //              </div>
+
+
+    //           }
+    //            {/* <div style={{backgroundColor: '#F7e700', height: '50vh'}}></div> */}
+    //            </Transition>
+
+    //     </div>
+    //   );
+
+    else return (
+      <div
+        className="font-lexend"
+        style={isPageWide ? { minHeight: "100vh" } : {}}
+      >
+        {isPageWide ? (
+          <DesktopPersonaliseBanner
+            onclick={_handlePersonaliseRedirect}
+            text={validateTextSize(`Craft a personalized itinerary to ${props.cityData.name} now!`,9,`Craft a trip to ${props.cityData.name} now!`)}
+          ></DesktopPersonaliseBanner>
+        ) : (
+          <MobileBanner cityName={props.cityData.name} onClick={()=>setShowMobilePlanner(true)} />
+        )}
+        <WhatsappFloating message="Hey, I need help planning my trip." />
+        <div>
+
+          <HeroBanner
+            image={props.cityData.images[0].image}
+            page_id={props.cityData.id}
+            destination={props.cityData.name}
+            cities={props.reccomendedCitiesData}
+            //  children_cities={props.experienceData.children}
+            title={`Things to do in ${props.cityData.name}`}
+           setShowMobilePlanner={setShowMobilePlanner}
+
+          />
+
+
+          <NewMenu
+            data={props.cityData}
+            destination={props.cityData.name}
+            cities={props.reccomendedCitiesData}
+            thingsToDoPage={true}
+          />
         </div>
-        {/* <Loading hide={experienceLoaded}></Loading> */}
-          <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
-              { state => 
-              <div
-              className="center-div"
-              style={{
-                backgroundColor: "#F7e700",
-                 width: '100vw',
-                 transition: 'all 1s ease-out',
-                 zIndex: '1000',
-                  height: '100vh',
-                 position: 'fixed',
-                 left: state=='exiting' ? '-100vw' : 0,
 
-                 top: '0',
-                 }}>
-                 <Loading/>
-                 </div>
+        <TailoredFormMobileModal
+   page_id={props.cityData.id}
+   destination={props.cityData.name}
+   // cities={props.experienceData.locations}
+   // children_cities={props.experienceData.children}
+   onHide={() => setShowMobilePlanner(false)}
+   show={showMoiblePlanner}
+ ></TailoredFormMobileModal>
 
-
-              }
-               </Transition>
-        </div>
-      );
-      }
-    else{
-      if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages}  ></FullScreenGallery>);
-      else
-      return (
-
-        <div style={{}}>
-          <FullImage center url={cityLoaded ? props.cityData.images[0].image : null}>
-            <FullImageContent city tagline={props.cityData.nickname} text={props.cityData.tagline}/>
-          </FullImage>
-          <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={cityData.data.images}></Menu>
-          {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
-          <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
-              { state => 
-              <div
-              className="center-div"
-              style={{
-                width: '100vw',
-                backgroundColor: "#F7e700",
-                 transition: 'all 1s linear',
-                 zIndex: '2500',
-                  height: '100vh',
-                 position: 'fixed',
-                 top: '0',
-                 left: state=='exiting' ? '-100vw' : 0,
-                 }}>
-                 <Loading/>
-                 </div>
-
-
-              }
-               {/* <div style={{backgroundColor: '#F7e700', height: '50vh'}}></div> */}
-               </Transition>
-
-        </div>
-      );
+      </div>
+    );
     }
-  }
+  // }
 
 export default React.memo(Experience);
