@@ -13,6 +13,15 @@ module.exports = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'd31aoa0ehgvjdi.cloudfront.net',
+        port: '',
+      },
+    ],
+  },
   // images: {
   //   disableStaticImages: true,
   // },
