@@ -18,7 +18,10 @@ module.exports = {
       {
         protocol: 'https',
         hostname: 'd31aoa0ehgvjdi.cloudfront.net',
-        port: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'q-xx.bstatic.com',
       },
     ],
   },

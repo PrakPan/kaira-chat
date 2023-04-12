@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import media from './media';
-import Image from 'next/image';
 
 const ImageLoader = (props) => {
   const [error, setError] = useState(false);
@@ -129,10 +128,10 @@ const ImageLoader = (props) => {
     }
   `;
 
-  const SmallImage = styled.div`
+  const SmallImage = styled.img`
     width: 100%;
   `;
-  const FullImage = styled.div`
+  const FullImage = styled.img`
     width: 100%;
     object-fit: ${props.resizeMode ? props.resizeMode : 'cover'};
     z-index: 0 !important;
@@ -178,25 +177,29 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
-            // src={!is_url ? typeof window !== "undefined" ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}` : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png' : props.url}
+            src={
+              !is_url
+                ? typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             style={{
               height: props.height ? props.height : 'auto',
               display: !fullLoaded ? 'initial' : 'none',
               borderRadius: props.borderRadius ? props.borderRadius : '5px',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </SmallImage>
+          ></SmallImage>
           <FullImage
+            src={
+              !is_url
+                ? error
+                  ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                  : typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             onLoad={fullImageLoadedHandler}
             onError={props.onfail ? props.onfail : _handleError}
             style={{
@@ -206,20 +209,7 @@ const ImageLoader = (props) => {
               maxWidth: props.maxwidth ? props.maxwidth : 'none',
               maxHeight: props.maxheight ? props.maxheight : 'none',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? error
-                    ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                    : typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </FullImage>
+          ></FullImage>
         </Container>
       );
     else
@@ -237,24 +227,29 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            src={
+              !is_url
+                ? typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             style={{
               height: props.height ? props.height : 'auto',
               display: !fullLoaded ? 'initial' : 'none',
               borderRadius: props.borderRadius ? props.borderRadius : '5px',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </SmallImage>
+          ></SmallImage>
           <FullImage
+            src={
+              !is_url
+                ? error
+                  ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                  : typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             onLoad={fullImageLoadedHandler}
             onError={props.onfail ? props.onfail : _handleError}
             style={{
@@ -264,20 +259,7 @@ const ImageLoader = (props) => {
               maxWidth: props.maxwidth ? props.maxwidth : 'none',
               maxHeight: props.maxheight ? props.maxheight : 'none',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? error
-                    ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                    : typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </FullImage>
+          ></FullImage>
         </Container>
       );
   } else if (props.dimensionsMobile) {
@@ -296,24 +278,29 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            src={
+              !is_url
+                ? typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             style={{
               height: props.height ? props.height : 'auto',
               display: !fullLoaded ? 'initial' : 'none',
               borderRadius: props.borderRadius ? props.borderRadius : '5px',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </SmallImage>
+          ></SmallImage>
           <FullImage
+            src={
+              !is_url
+                ? error
+                  ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                  : typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             // src={!is_url  ?   `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
             width={props.dimensionsMobile.width}
             height={props.dimensionsMobile.height}
@@ -326,20 +313,7 @@ const ImageLoader = (props) => {
               maxWidth: props.maxwidth ? props.maxwidth : 'none',
               maxHeight: props.maxheight ? props.maxheight : 'none',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? error
-                    ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                    : typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </FullImage>
+          ></FullImage>
         </Container>
       );
     else
@@ -357,24 +331,29 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            src={
+              !is_url
+                ? typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             style={{
               height: props.height ? props.height : 'auto',
               display: !fullLoaded ? 'initial' : 'none',
               borderRadius: props.borderRadius ? props.borderRadius : '5px',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </SmallImage>
+          ></SmallImage>
           <FullImage
+            src={
+              !is_url
+                ? error
+                  ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                  : typeof window !== 'undefined'
+                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                  : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
+                : props.url
+            }
             onLoad={fullImageLoadedHandler}
             onError={props.onfail ? props.onfail : _handleError}
             style={{
@@ -384,20 +363,7 @@ const ImageLoader = (props) => {
               maxWidth: props.maxwidth ? props.maxwidth : 'none',
               maxHeight: props.maxheight ? props.maxheight : 'none',
             }}
-          >
-            <Image
-              layout="fill"
-              src={
-                !is_url
-                  ? error
-                    ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                    : typeof window !== 'undefined'
-                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                    : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : props.url
-              }
-            ></Image>
-          </FullImage>
+          ></FullImage>
         </Container>
       );
   }
