@@ -370,14 +370,14 @@ const EXPERIENCE = {
       </FullImage> */}
 <SetWidthContainer>
   <div id="holi"></div>
-<Heading align="center" aligndesktop="left" margin={!isPageWide  ? "2.5rem 0.5rem" : "2.5rem 0rem"} bold noline>Holi Specials</Heading>
-{!loading ? <GridContainer>
+<Heading align="center" aligndesktop="left" margin={!isPageWide  ? "2.5rem 0.5rem" : "2.5rem 0rem"} bold noline>Recommended trips for you</Heading>
+{/* {!loading ? <GridContainer>
     
     { itinerariesJSX}
     
  
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
-  }
+  } */}
   {!loading ? <GridContainer>
     
     { itinerariesJSX}

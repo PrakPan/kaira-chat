@@ -25,6 +25,8 @@ const Container = styled.div`
 @media screen and (max-width: 768px){
 top : ${props=>props.mobiletop};
 left : ${props=>props.mobileleft};
+bottom : ${props=>props.mobileBottom};
+right : ${props=>props.mobileRight};
 };
 
 &:after {
