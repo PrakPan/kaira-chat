@@ -80,7 +80,7 @@ const  Homepage = (props) =>{
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading ] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
-  const [cookies, setCookie] = useCookies(['user']);
+  const [cookies, setCookie] = useCookies(['MyPlans']);
   let isPageWide = media('(min-width: 768px)');
   useEffect(() => {
     if(props.token){

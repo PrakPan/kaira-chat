@@ -22,6 +22,7 @@ import Spinner from '../../../components/Spinner';
 // import Pax from '../../personaliseform/grouptype/Index';
 import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
 const Container = styled.div`
 height: max-content;
 padding: 1rem 1rem 1rem 1rem;
@@ -85,8 +86,7 @@ const CountryCodeOption = styled.div`
 `;
 const Enquiry = (props) => {
     const [calendarOpen, setCalendarOpen] = useState(false);
-
-
+    const [cookies, setCookie , removeCookie] = useCookies(['MyPlans']);
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null)
     const [adults, setAdults] = useState("2");
@@ -180,7 +180,7 @@ const Enquiry = (props) => {
          axiostailoredinstance.post('',
        data
         ).then(response => {
-
+            removeCookie('MyPlans')
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
                 window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
@@ -195,6 +195,7 @@ const Enquiry = (props) => {
   
               }
         }).catch(err => {
+            removeCookie('MyPlans')
             setLoading(false);
 
              if(err.response.data.email){
