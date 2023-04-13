@@ -73,8 +73,9 @@ const Experiences= (props) => {
 //           </BackroundImageLoader>
 //       </Container>
 //   ); 
+const path = props.city? "https://thetarzanway.com/travel-guide/city/" : "https://thetarzanway.com/travel-planner/"
 return(
-    <ImageContainer className='hover-pointer' onClick={(e) => window.location.href="https://thetarzanway.com/travel-planner/"+props.link}>
+    <ImageContainer className='hover-pointer' onClick={(e) => window.location.href= path +props.link}>
         <ImageFade><ImageLoader
 
             url={props.img}

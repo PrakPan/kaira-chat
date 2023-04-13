@@ -1,5 +1,4 @@
 import styled from "styled-components"
-import Navigator from "./Navigator"
 import Brief from './MenuItems/Brief'
 import TopRecommendations from "./MenuItems/TopRecommendation"
 import Poi  from "./pois/Index"
@@ -8,9 +7,9 @@ import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry'
  import Reviews from '../travelplanner/CaseStudies/Index';
   import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import { useRouter } from "next/router"
-import validateTextSize from "../../services/textSizeValidator"
 import WeatherWidget from "../../components/WeatherWidget/WeatherWidget"
 import media from "../../components/media"
+import NearbyLocations from "./MenuItems/NearbyLocations"
 
 const MenuContainer = styled.div`
 width : 95%;    
@@ -46,7 +45,11 @@ margin : auto;
 #Customers{
   grid-area : Customers
 }
-${props=>props.thingsToDoPage? 'display : grid;grid-template-areas : "Places" "Food" "Itinerary" "Reach" "Survival" "Folklore" "Why" "Customers"'
+
+#nearby-places{
+  grid-area : nearby-places 
+}
+${props=>props.thingsToDoPage? 'display : grid;grid-template-areas : "Places" "Food" "nearby-places" "Itinerary" "Reach" "Survival" "Folklore" "Why" "Customers"'
  : ''}
 `
 const TextBold = styled.p`
@@ -80,20 +83,6 @@ const P = styled.p`
       }
     `;
 
-    const Button = styled.button`
-background : white;
-color : #01202B;
-border : 1.5px solid #01202B;
-font-size : 1rem;
-padding : 0.5rem 2rem;
-display: block;
-margin : 1rem auto;
-border-radius : 8px;
-&:hover{
-  color : white;
-  background : black;
-}
-`
 const WeatherContainer = styled.div`
 border : 1px solid #ECEAEA;
 border-radius : 10px;
@@ -101,7 +90,9 @@ padding : 25px;
 height: max-content;
 `
 const Menu = (props)=>{
-  console.log(props , 'poppop')
+
+
+
   const router = useRouter()
 
   const _handleTailoredRedirect = () => {
@@ -141,13 +132,18 @@ const Menu = (props)=>{
         </MenuItem>
       )}
 
+{props.thingsToDoPage && <MenuItem id="nearby-places">
+<Heading>Nearby Places</Heading>
+       <NearbyLocations data={props.data} />
+        </MenuItem> }
+
       {!!props.data.foods.length && (
         <MenuItem id="Food" single={props.thingsToDoPage?false : true}>
           <Heading>Food to eat</Heading>
           <div style={(props.thingsToDoPage && isPageWide)?{display : 'grid' , gridTemplateColumns :'3fr 1.1fr' , gap : '2.5rem'} : {}}>
           <FoodToEat foods={props.data.foods} />
           
-          {props.thingsToDoPage && <WeatherContainer elevation={props.elevation}>
+          {(props.thingsToDoPage ) && <WeatherContainer elevation={props.elevation}>
       <WeatherWidget city={props.data.name} lat={props.data.lat} lon={props.data.long} />
       {props.data.elevation[0]?.elevation && 
      <div style={{marginTop : '20px'}}>
@@ -159,6 +155,9 @@ const Menu = (props)=>{
           </div>
          </MenuItem>
       )}
+
+
+
 
       {props.data.conveyance_available && (
         <MenuItem id="Reach" single>
