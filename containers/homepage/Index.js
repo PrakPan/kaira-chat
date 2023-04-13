@@ -80,29 +80,31 @@ const  Homepage = (props) =>{
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading ] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
-  const [cookies, setCookie] = useCookies(['MyPlans']);
+  const [cookies, setCookie] = useCookies(['user']);
   let isPageWide = media('(min-width: 768px)');
   useEffect(() => {
+    
     if(props.token){
-      if(cookies.MyPlans){
-        setMyPlansArr(JSON.parse(cookies.MyPlans.plans));
-        setPlansCount(cookies.MyPlans.count);
-        setPlansLoading(false);
+    const MyPlans = JSON.parse(localStorage.getItem('MyPlans'))
+if(MyPlans){
+setMyPlansArr(MyPlans.plans)
+setPlansCount(MyPlans.count)
+setPlansLoading(false)
 }
 else{
   axiomyplansinstance.get("?limit=3&offset=0", {headers: {
     'Authorization': `Bearer ${props.token}`
     }}).then(res => {
-
         let plansarr = [];
 
         for(var i=0 ; i<res.data.results.length; i++){
              plansarr.push(
                 res.data.results[i]
             );
+          
         }
         setMyPlansArr(plansarr.slice());
-        setCookie('MyPlans' , {plans : JSON.stringify(plansarr) , count : res.data.count} , { path: '/' , maxAge : 3600 * 2 })
+        localStorage.setItem('MyPlans' , JSON.stringify({plans : plansarr , count : res.data.count}))
         setPlansCount(res.data.count);
         setPlansLoading(false);
     }).catch(err => {
@@ -112,7 +114,6 @@ else{
 }
  
  },[props.token]);
-
 
 //JSX for How it works 
 const HowitWorksHeadingsArr=[

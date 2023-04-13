@@ -23,7 +23,6 @@ import Spinner from '../../components/Spinner';
 
 // import questions from './questions';
 import questioncontansts from './questioncontansts';
-import { useCookies } from 'react-cookie';
 const Container = styled.div`
 min-height: 100vh;
 padding-top: 22vw;
@@ -79,7 +78,6 @@ const Personaliseform = (props) => {
   let isPageWide = media('(min-width: 768px)')
   const WORKCATION_MIN_DURATION= 13;
   const [showPax, setShowPax] = useState(false);
-  const [cookies, setCookie , removeCookie] = useCookies(['MyPlans']);
 
   const [selectedCities, setSelectedCities] = useState([]);
   const [toggle, setToggle] = useState(false);
@@ -342,7 +340,7 @@ const _addCityHandler = (city_id, city) => {
           }}).then(response => {
             setSubmitted(true);
             setLoading(false);
-            removeCookie('MyPlans')
+            localStorage.removeItem('MyPlans')
            
             // _nextQuestionHandler();
             window.scrollTo(0,0);
@@ -360,7 +358,6 @@ const _addCityHandler = (city_id, city) => {
 
             }
           }).catch( err => {
-            removeCookie('MyPlans')
             window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
           }
           );

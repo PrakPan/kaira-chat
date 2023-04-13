@@ -23,7 +23,6 @@ import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
 import Popup from "./Popup";
 import { CompressOutlined } from "@mui/icons-material";
-import { useCookies } from "react-cookie";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -94,7 +93,6 @@ const Enquiry = (props) => {
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
-  const [cookies, setCookie , removeCookie] = useCookies(['MyPlans']);
 
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
@@ -196,13 +194,14 @@ const Enquiry = (props) => {
         
             
         setLoading(true);
+        localStorage.removeItem('MyPlans')
+
          axiostailoredinstance.post('',
        data, {headers: {
         'Authorization': `Bearer ${props.token}`
         }}
         ).then(response => {
             setSubmitted(true);
-            removeCookie('MyPlans')
             if(!response.data.auto_itinerary_created) {
                 window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
                  }
@@ -218,7 +217,6 @@ const Enquiry = (props) => {
               }
         }).catch(err => {
             setLoading(false);
-            removeCookie('MyPlans')
             window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
 
              if(err.response.data.email){
