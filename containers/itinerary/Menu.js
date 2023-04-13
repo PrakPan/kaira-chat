@@ -596,7 +596,78 @@ const SimpleTabs = (props) => {
       )
      
       }  */}
-
+      {isGroup ? (
+        <div id={items[2].link}>
+          <Register></Register>
+        </div>
+      ) : (
+        <div id={items[2].link}>
+          <Booking
+            itinerary={props.itinerary}
+            _updateStayBookingHandler={props._updateStayBookingHandler}
+            _updateFlightBookingHandler={props._updateFlightBookingHandler}
+            hasUserPaid={props.payment ? props.payment.paid_user : false}
+            payment_status={router.query.payment_status}
+            plan={props.plan}
+            isDatePresent={props.isDatePresent}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            showTaxiModal={props.showTaxiModal}
+            setShowTaxiModal={props.setShowTaxiModal}
+            paymentLoading={props.paymentLoading}
+            budget={props.budget}
+            _deselectActivityBookingHandler={
+              props._deselectActivityBookingHandler
+            }
+            activityFlickityIndex={props.activityFlickityIndex}
+            _deselectFlightBookingHandler={props._deselectFlightBookingHandler}
+            flightFlickityIndex={props.flightFlickityIndex}
+            _deselectTransferBookingHandler={
+              props._deselectTransferBookingHandler
+            }
+            transferFlickityIndex={props.transferFlickityIndex}
+            stayFlickityIndex={props.stayFlickityIndex}
+            setStayFlickityIndex={props.setStayFlickityIndex}
+            selectingBooking={props.selectingBooking}
+            _deselectStayBookingHandler={props._deselectStayBookingHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            flightLoading={props.flightLoading}
+            transferLoading={props.transferLoading}
+            cardUpdateLoading={props.cardUpdateLoading}
+            activityBookings={props.activityBookings}
+            flightBookings={props.flightBookings}
+            transferBookings={props.transferBookings}
+            stayBookings={props.stayBookings}
+            _selectTaxiHandler={props._selectTaxiHandler}
+            showFlightModal={props.showFlightModal}
+            setShowFlightModal={_handleFlighModalShow}
+            setHideFlightModal={_handleFlightModalClose}
+            user_email={props.user_email}
+            no_bookings={props.no_bookings}
+            traveleritinerary={props.traveleritinerary}
+            preview={props.preview}
+            id={props.id}
+            is_stock={props.is_stock}
+            _updatePaymentHandler={props._updatePaymentHandler}
+            _updateBookingHandler={props._updateBookingHandler}
+            setShowBookingModal={() => props.setShowBookingModal(true)}
+            showBookingModal={props.showBookingModal}
+            setHideBookingModal={props.setHideBookingModal}
+            hours={hours}
+            minutes={minutes}
+            seconds={seconds}
+            timeRequired={props.timeRequired}
+            hideTimer={minimseBookingTimer}
+            showTimer={false}
+            itineraryDate={props.itineraryDate}
+            blur={false}
+            openItinerary={_previewItineraryHandler}
+            _handleTimerClose={_minimiseBookingTimerHandler}
+            setImagesHandler={props.setImagesHandler}
+            payment={props.payment}
+            booking={props.booking}
+          ></Booking>
+        </div>
+      )}
       {isGroup ? (
         <div id={items[2].link}>
           <Register></Register>

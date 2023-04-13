@@ -4,8 +4,11 @@ import { useState, useEffect } from 'react';
 import ImageLoader from '../../../components/ImageLoader';
 const Container = styled.div`
   display: grid;
+
   @media screen and (min-width: 768px) {
-    grid-template-columns: 3.3fr 1fr;
+    grid-template-columns: ${(props) =>
+      props.ConImg ? '3.3fr 1fr' : '3.3fr 0fr'};
+
     grid-column-gap: 2rem;
   }
 `;
@@ -41,7 +44,7 @@ const ImagesMobile = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container>
+    <Container ConImg={props.images[1]}>
       <ImageLoader
         borderRadius="12px"
         dimensions={{ width: 922, height: 331 }}
@@ -50,36 +53,35 @@ const ImagesMobile = (props) => {
         heightMobile="auto"
         dimensionsMobile={{ width: 328, height: 141 }}
       ></ImageLoader>
-      {
-        props.images[1] ? <GridContainer>
-        <ImageLoader
-          borderRadius="12px"
-          url={props.images[1]}
-          dimensions={{ width: 436, height: 150 }}
-          height="100%"
-          heightMobile="auto"
-          dimensionsMobile={{ width: 160, height: 90 }}
-        ></ImageLoader>
-        <MoreContainer className="center-div">
+      {props.images[1] ? (
+        <GridContainer>
           <ImageLoader
             borderRadius="12px"
-            url={props.images[2]}
+            url={props.images[1]}
             dimensions={{ width: 436, height: 150 }}
             height="100%"
             heightMobile="auto"
             dimensionsMobile={{ width: 160, height: 90 }}
           ></ImageLoader>
-          {/* <div
+          <MoreContainer className="center-div">
+            <ImageLoader
+              borderRadius="12px"
+              url={props.images[2]}
+              dimensions={{ width: 436, height: 150 }}
+              height="100%"
+              heightMobile="auto"
+              dimensionsMobile={{ width: 160, height: 90 }}
+            ></ImageLoader>
+            {/* <div
             className="center-div"
             style={{ position: 'absolute', height: '100%', color: 'white' }}
           >
             View 10+ photos
           </div> */}
-          {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
-        </MoreContainer>
-      </GridContainer>: null
-      }
-      
+            {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
+          </MoreContainer>
+        </GridContainer>
+      ) : null}
     </Container>
   );
 };

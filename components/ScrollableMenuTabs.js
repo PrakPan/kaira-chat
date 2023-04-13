@@ -163,9 +163,10 @@ const ScrollableMenuTabs = ({
 
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
         {vertical ? <div className="font-bold">{year}</div> : null}
-        {items.map((item) => (
+        {items.map((item, index) => (
           <>
             <CustomMenu
+              key={index}
               Isvertical={vertical}
               Iterable={Iterable}
               BarName={BarName}

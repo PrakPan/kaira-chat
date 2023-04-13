@@ -15,8 +15,9 @@ const RecomendationComponent = (props) => {
             `${props.recomendation}`
           ) : (
             <RecommendationGridContainer>
-              {JSON.parse(props.recomendation)?.map((item) => (
+              {JSON.parse(props.recomendation)?.map((item, index) => (
                 <FoodItem
+                  key={index}
                   heading={item.name}
                   text={item.description}
                   ImageUrl={item.image}

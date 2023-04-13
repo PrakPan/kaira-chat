@@ -1,28 +1,28 @@
 import styled from 'styled-components';
 import ImageLoader from '../ImageLoader';
-import  Socials from './Socials';
-import {FiPhoneCall} from 'react-icons/fi';
-import {HiOutlineMail} from 'react-icons/hi';
+import Socials from './Socials';
+import { FiPhoneCall } from 'react-icons/fi';
+import { HiOutlineMail } from 'react-icons/hi';
 import Subscribe from './Subscribe';
-import Link from 'next/link'
+import Link from 'next/link';
 import { useState } from 'react';
 import linksArr from './Links';
 
- const Container = styled.div`
-   min-height: 10vw;
-   background-color: rgb(35, 35, 35);
-   padding: 1.5rem 1rem;
-   color: white;
-   z-index: 1000;
-   position: relative;
+const Container = styled.div`
+  min-height: 10vw;
+  background-color: rgb(35, 35, 35);
+  padding: 1.5rem 1rem;
+  color: white;
+  z-index: 1000;
+  position: relative;
 
-   @media screen and (min-width: 768px) {
+  @media screen and (min-width: 768px) {
     padding: 9.5rem 0rem 1.5rem 0rem;
   }
-   @media screen and (min-width: 1300px) {
-     padding: 9.5rem 5rem 1.5rem 5rem;
-   }
- `;
+  @media screen and (min-width: 1300px) {
+    padding: 9.5rem 5rem 1.5rem 5rem;
+  }
+`;
 const SubContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -33,52 +33,52 @@ const SubContainer = styled.div`
 `;
 const Box = styled.div`
   &.linkContainer {
-  
   }
 `;
- const LogoContainer = styled.div`
-   position: relative;
-   .CompanyName {
-     position: absolute;
-     top: 18px;
-     left: 40px;
-   }
- `;
- const CompanyName = styled.div`
-   display: flex;
-   align-items: flex-end;
-   font-size: 16px;
-   font-weight: 700;
+const LogoContainer = styled.div`
+  position: relative;
+  .CompanyName {
+    position: absolute;
+    top: 18px;
+    left: 40px;
+  }
+`;
+const CompanyName = styled.div`
+  display: flex;
+  align-items: flex-end;
+  font-size: 16px;
+  font-weight: 700;
+`;
+const CompanyText = styled.div`
+  font-size: 14px;
+  margin: 1.5rem 0;
+`;
 
- `;
- const CompanyText= styled.div`
- font-size: 14px;
- margin: 1.5rem 0;
- `;
+const LinksContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  margin: 0;
+  @media screen and (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin-top: 1.5rem;
+  }
+`;
 
- const LinksContainer = styled.div`
-   display: grid;
-   grid-template-columns: 1.2fr 1fr;
-   margin: 0;
-@media screen and (min-width: 768px){
-   display: grid;
-   grid-template-columns: 1fr 1fr 1fr 1fr;
-   margin-top : 1.5rem;
-}
- `;
-
- const CopyWrite = styled.div`
-    font-size: 10px;
-    margin: 1.5rem 0 0 0;
- `;
+const CopyWrite = styled.div`
+  font-size: 10px;
+  margin: 1.5rem 0 0 0;
+`;
 const Links = styled.div`
   font-size: 14px;
   margin: 0 0 1rem 0;
-  a,p {
+  a,
+  p {
     text-decoration: none;
     color: white;
-  };
-  a:hover ,p:hover {
+  }
+  a:hover,
+  p:hover {
     color: white;
     text-decoration: none;
     cursor: pointer;
@@ -108,23 +108,23 @@ const SubscribeBox = styled.div`
 `;
 
 const NewFooter = (props) => {
-  const [shadow, setShadow] = useState(false)
- const LinksComponent = linksArr.map((e) => (
-   <div>
-     <Heading>{e.heading}</Heading>
-     {e.data.map((data) => (
-       <Links>
-         {typeof data.link != "string" ? (
-           <a href={data.link[0]}>{data.title}</a>
-         ) : data.title == "Subscribe" ? (
-           <p onClick={() => setShadow(!shadow)}>{data.title}</p>
-         ) : (
-           <a href={'https://thetarzanway.com'+data.link}>{data.title}</a>
-         )}
-       </Links>
-     ))}
-   </div>
- ));
+  const [shadow, setShadow] = useState(false);
+  const LinksComponent = linksArr.map((e) => (
+    <div>
+      <Heading>{e.heading}</Heading>
+      {e.data.map((data, index) => (
+        <Links key={index}>
+          {typeof data.link != 'string' ? (
+            <a href={data.link[0]}>{data.title}</a>
+          ) : data.title == 'Subscribe' ? (
+            <p onClick={() => setShadow(!shadow)}>{data.title}</p>
+          ) : (
+            <a href={'https://thetarzanway.com' + data.link}>{data.title}</a>
+          )}
+        </Links>
+      ))}
+    </div>
+  ));
   return (
     <>
       <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
@@ -152,19 +152,19 @@ const NewFooter = (props) => {
             </CompanyText>
             <Socials></Socials>
 
-            <CompanyName style={{ margin: "1rem 0" }}>Contact Us</CompanyName>
-            <CompanyText style={{ display: "flex", margin: "0" }}>
-              <div style={{ display: "flex" }}>
+            <CompanyName style={{ margin: '1rem 0' }}>Contact Us</CompanyName>
+            <CompanyText style={{ display: 'flex', margin: '0' }}>
+              <div style={{ display: 'flex' }}>
                 <FiPhoneCall
-                  style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
+                  style={{ fontSize: '1.15rem', marginRight: '0.5rem' }}
                 ></FiPhoneCall>
                 +91 95821 25476, +91 87872 00342
               </div>
             </CompanyText>
-            <CompanyText style={{ display: "flex", margin: "0.25rem 0 0 0" }}>
-              <div style={{ display: "flex" }}>
+            <CompanyText style={{ display: 'flex', margin: '0.25rem 0 0 0' }}>
+              <div style={{ display: 'flex' }}>
                 <HiOutlineMail
-                  style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
+                  style={{ fontSize: '1.15rem', marginRight: '0.5rem' }}
                 ></HiOutlineMail>
                 <Links>
                   <a href="mailto:info@thetarzanway.com">
@@ -178,9 +178,9 @@ const NewFooter = (props) => {
         </SubContainer>
         <div
           style={{
-            borderBottom: "1px solid rgba(255, 255, 255, 0.5)",
-            width: "80%",
-            margin: "auto",
+            borderBottom: '1px solid rgba(255, 255, 255, 0.5)',
+            width: '80%',
+            margin: 'auto',
           }}
         ></div>
         <CopyWrite className="text-center">
@@ -190,6 +190,6 @@ const NewFooter = (props) => {
       </Container>
     </>
   );
- }
+};
 
 export default NewFooter;

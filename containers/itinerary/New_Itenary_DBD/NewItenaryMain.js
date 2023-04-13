@@ -36,7 +36,7 @@ const NewItenaryMain = (props) => {
   `;
   console.log('itenary...' + JSON.stringify(props.itinerary));
   const dates = props.itinerary.day_slabs.map((element, index) => (
-    <div>{element.slab}</div>
+    <div key={index}>{element.slab}</div>
   ));
   const getCityFromDay = (day_slab_index, day_slabs, city_slabs) => {
     // if(city_slabs)

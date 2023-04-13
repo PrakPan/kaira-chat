@@ -19,7 +19,7 @@ const ExElementContainer = (props) => {
           <ColElementContainer>
             {props.Idxs?.map((idx, index) =>
               index < 3 ? (
-                <SubHeading size={'0.9rem'}>
+                <SubHeading size={'0.9rem'} key={index}>
                   {props.info.costings_breakdown[idx.id].detail.name}
                 </SubHeading>
               ) : null

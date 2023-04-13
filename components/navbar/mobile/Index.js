@@ -187,10 +187,11 @@ const Mobile = (props) => {
       icon: 'media/icons/navigation/health-insurance.png',
     },
   ];
-  const MainLinksDiv = LinksArr.map((e) => {
+  const MainLinksDiv = LinksArr.map((e, index) => {
     if (e.type === 'main')
       return (
         <ListItem
+          key={index}
           onClick={e.onclick && e.onclick}
           style={
             router.pathname === e.link ? { backgroundColor: '#ffff4a45' } : {}
@@ -216,10 +217,11 @@ const Mobile = (props) => {
       );
   });
 
-  const OtherLinksDiv = LinksArr.map((e) => {
+  const OtherLinksDiv = LinksArr.map((e, index) => {
     if (e.type == 'others')
       return (
         <ListItem
+          key={index}
           onClick={e.onclick && e.onclick}
           style={
             router.pathname === e.link ? { backgroundColor: '#ffff4a45' } : {}

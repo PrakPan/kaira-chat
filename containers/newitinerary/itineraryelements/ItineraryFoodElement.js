@@ -131,6 +131,7 @@ const ItineraryFoodElement = (props) => {
                   >
                     {JSON.parse(props.recomendation)?.map((item) => (
                       <FoodItem
+                        key={item.name}
                         heading={item.name}
                         text={item.description}
                         ImageUrl={item.image}

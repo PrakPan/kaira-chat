@@ -1,60 +1,58 @@
-import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
-import media from '../../components/media'
-   import * as ga from '../../services/ga/Index';
-   import Button from '../../components/ui/button/Index'
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import media from '../../components/media';
+import * as ga from '../../services/ga/Index';
+import Button from '../../components/ui/button/Index';
 import ImageLoader from '../../components/ImageLoader';
 import axiosCountInstance from '../../services/itinerary/count';
-import SkeletonCard from '../../components/ui/SkeletonCard'
+import SkeletonCard from '../../components/ui/SkeletonCard';
 const Container = styled.div`
-height : 430px;
-  display : grid;
-  gap : 0.2rem;
-  grid-template-areas: 
-  'a a a b b b b b'
-  'a a a b b b b b'
-  'd d e e e e e e'
-  'c c c c c c c c'
-  'c c c c c c c c';
+  height: 430px;
+  display: grid;
+  gap: 0.2rem;
+  grid-template-areas:
+    'a a a b b b b b'
+    'a a a b b b b b'
+    'd d e e e e e e'
+    'c c c c c c c c'
+    'c c c c c c c c';
 
-  padding : 10px;
+  padding: 10px;
 
- @media screen and (min-width: 768px){
-    height : 600px;
-    gap : 0.5rem;
-    grid-template-areas: 
-    'a a a a b b b b b'
-    'a a a a b b b b b'
-    // 'a a a a b b b b b'
-    'a a a a b b b b b'
-    'a a a a e e e e e'
-    'c c c d e e e e e'
-    'c c c d e e e e e';
-}
+  @media screen and (min-width: 768px) {
+    height: 600px;
+    gap: 0.5rem;
+    grid-template-areas:
+      'a a a a b b b b b'
+      'a a a a b b b b b'
+      // 'a a a a b b b b b'
+      'a a a a b b b b b'
+      'a a a a e e e e e'
+      'c c c d e e e e e'
+      'c c c d e e e e e';
+  }
 
-& >.d{
-    border : null;
-    background : rgba(247, 231, 0, 0.2);
-  padding : 15px;
+  & > .d {
+    border: null;
+    background: rgba(247, 231, 0, 0.2);
+    padding: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-size : 14px;
-    padding-left : 5px;
-    margin-bottom : 0px;
- @media screen and (min-width: 768px){
-  padding : 25px;
-    font-size : 20px;
-    text-align : center;
-    align-items : center;
-    background : white;
-    border : 1px solid black;
-
-}
-}
-
-`
+    font-size: 14px;
+    padding-left: 5px;
+    margin-bottom: 0px;
+    @media screen and (min-width: 768px) {
+      padding: 25px;
+      font-size: 20px;
+      text-align: center;
+      align-items: center;
+      background: white;
+      border: 1px solid black;
+    }
+  }
+`;
 
 const TopSlideIn = keyframes`
 from { 
@@ -76,154 +74,203 @@ to {
 `;
 
 const TextContainer = styled.div`
-position : absolute;
-z-index : 2;
-top : 9px;
-right : ${props=>props.right? '9px' : null};
-left : ${props=>props.right? null : '9px'};
-text-align : ${props=>props.right? 'right' : 'left'};
-color : white;
-animation: 0.5s ${TopSlideOut};
+  position: absolute;
+  z-index: 2;
+  top: 9px;
+  right: ${(props) => (props.right ? '9px' : null)};
+  left: ${(props) => (props.right ? null : '9px')};
+  text-align: ${(props) => (props.right ? 'right' : 'left')};
+  color: white;
+  animation: 0.5s ${TopSlideOut};
 
-& >p{
-    margin-top : -5px;
-    font-weight : 500;
-    font-size : 14px;
- @media screen and (min-width: 768px){
-    font-size : 20px;
-}
-}
-@media screen and (min-width: 768px){
-    top : 30px;
-    left : 30px;
-}
-
-`
+  & > p {
+    margin-top: -5px;
+    font-weight: 500;
+    font-size: 14px;
+    @media screen and (min-width: 768px) {
+      font-size: 20px;
+    }
+  }
+  @media screen and (min-width: 768px) {
+    top: 30px;
+    left: 30px;
+  }
+`;
 
 const Heading = styled.div`
-font-size : 16px;
-font-weight : 700;
+  font-size: 16px;
+  font-weight: 700;
 
-@media screen and (min-width: 768px){
-    font-size : 25px;
-}
-`
+  @media screen and (min-width: 768px) {
+    font-size: 25px;
+  }
+`;
 
 const GridItem = styled.div`
-grid-area : ${props=>props.className};
-border-radius : 8px;
-position : relative;
-overflow :hidden;
-height : 100%;
-width : 100%;
-`
+  grid-area: ${(props) => props.className};
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+`;
 const ImageContainer = styled.div`
-cursor : pointer;
-height : 100%;
-width : 100%;
-.StartNow{
-    display : none;
-    top : 45px;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+  .StartNow {
+    display: none;
+    top: 45px;
     animation: 0.5s ${TopSlideIn};
-@media screen and (min-width: 768px){
-  top : 65px;
-  left : 30px;
-}
-}
-transition: 0.5s all ease-in-out ;
-&:hover{
-    transform: scale(1.1); 
-    .AnimateTop{
-        animation: 0.5s ${TopSlideIn} forwards;
-     }
-    .StartNow{
-        animation: 0.5s ${TopSlideIn} forwards;
-        display : initial;
+    @media screen and (min-width: 768px) {
+      top: 65px;
+      left: 30px;
     }
-}
-`
+  }
+  transition: 0.5s all ease-in-out;
+  &:hover {
+    transform: scale(1.1);
+    .AnimateTop {
+      animation: 0.5s ${TopSlideIn} forwards;
+    }
+    .StartNow {
+      animation: 0.5s ${TopSlideIn} forwards;
+      display: initial;
+    }
+  }
+`;
 
 const BlackContainer = styled.div`
-background: linear-gradient(0deg, rgba(2,0,36,1) 0%, rgba(0,0,0,1) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
-width: 100%;
-height: 100%;
-position: absolute; 
-top: 0;
-&:hover{
-  background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(255,255,255,0) 58%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#ffffff",GradientType=1);
-}
+  background: linear-gradient(
+    0deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  &:hover {
+    background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(255, 255, 255, 0) 58%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#ffffff",GradientType=1);
+  }
 `;
 
 const PlanAsPerTheme = (props) => {
-    let isPageWide = media('(min-width: 768px)')
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [count,setCount] = useState(null);
-    const[ImgLoading , setImgLoading] = useState(true)
+  let isPageWide = media('(min-width: 768px)');
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(null);
+  const [ImgLoading, setImgLoading] = useState(true);
 
-useEffect(()=>{
-  axiosCountInstance.get('').then(res=>setCount(res.data.user))
-},[])
+  useEffect(() => {
+    axiosCountInstance.get('').then((res) => setCount(res.data.user));
+  }, []);
 
+  const _handleTailoredRedirect = () => {
+    router.push('/tailored-travel');
+  };
+  const _handleTailoredClick = () => {
+    setLoading(true);
+    setTimeout(_handleTailoredRedirect, 1000);
 
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-      }
-      const _handleTailoredClick = () => {
-        setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Howitworks',
-          
-          callback: _handleTailoredRedirect,
-        })
-    }
-    
-    const _handleTripRedirect = (link)=>{
-      router.push(`/travel-planner/${link}`)
-    }
+    ga.callback_event({
+      action: 'TT-Howitworks',
 
-    const order = ['e','b','c','a']
-    const ThemeContainer = 
-    props.ThemeData?.map((e,i)=>(
-        <GridItem className={order[i]} onClick={()=>_handleTripRedirect(e.link)}>
-            {ImgLoading && <SkeletonCard />}
-            <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>
-            <TextContainer className='AnimateTop'>
-                <Heading>{e.banner_heading}</Heading>
-            {isPageWide && <div className='StartNow'>Explore!</div> }
-            </TextContainer>
-            <ImageLoader onload={()=>setImgLoading(false)} fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
-            <BlackContainer/>
+      callback: _handleTailoredRedirect,
+    });
+  };
 
-            </ImageContainer>
-          
-        </GridItem >
-      ))
-    
+  const _handleTripRedirect = (link) => {
+    router.push(`/travel-planner/${link}`);
+  };
+
+  const order = ['e', 'b', 'c', 'a'];
+  const ThemeContainer = props.ThemeData?.map((e, i) => (
+    <GridItem
+      className={order[i]}
+      onClick={() => _handleTripRedirect(e.link)}
+      key={i}
+    >
+      {ImgLoading && <SkeletonCard />}
+      <ImageContainer
+        style={ImgLoading ? { display: 'none' } : { display: 'initial' }}
+        bg="road-trip.png"
+      >
+        <TextContainer className="AnimateTop">
+          <Heading>{e.banner_heading}</Heading>
+          {isPageWide && <div className="StartNow">Explore!</div>}
+        </TextContainer>
+        <ImageLoader
+          onload={() => setImgLoading(false)}
+          fit="cover"
+          width="100%"
+          height="100%"
+          url={e.image}
+        ></ImageLoader>
+        <BlackContainer />
+      </ImageContainer>
+    </GridItem>
+  ));
 
   return (
     <>
-     <Container>
+      <Container>
         {ThemeContainer}
-        <GridItem className='d' >
-        <h2 style={isPageWide?{fontSize : '50px', fontWeight : 700}:{fontSize : '18px', fontWeight : 700}}>{count}</h2>
-        <p style={isPageWide?{}:{marginTop : '-10px' , marginBottom:'0px'}}>Trips Planned</p>
-        <p style={isPageWide?{marginTop : "-15px"}:{marginTop : '-5px' , marginBottom:'0px'}}>so far.</p>
-        </GridItem >
-        
-    </Container>
+        <GridItem className="d">
+          <h2
+            style={
+              isPageWide
+                ? { fontSize: '50px', fontWeight: 700 }
+                : { fontSize: '18px', fontWeight: 700 }
+            }
+          >
+            {count}
+          </h2>
+          <p
+            style={
+              isPageWide ? {} : { marginTop: '-10px', marginBottom: '0px' }
+            }
+          >
+            Trips Planned
+          </p>
+          <p
+            style={
+              isPageWide
+                ? { marginTop: '-15px' }
+                : { marginTop: '-5px', marginBottom: '0px' }
+            }
+          >
+            so far.
+          </p>
+        </GridItem>
+      </Container>
 
-    {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='600' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
-            {isPageWide? 'Create your free itinerary' :'Create your personalised Itinerary'}
-            {/* {loading ? <Spinner size={16}></Spinner> : null} */}
-        </Button> : null}
+      {!props.nostart ? (
+        <Button
+          onclick={props.onclick ? props.onclick : _handleTailoredClick}
+          fontWeight="600"
+          boxShadow
+          borderRadius="8px"
+          bgColor="#F7E700"
+          margin="1rem auto"
+          width="20rem"
+          borderWidth="1px"
+        >
+          {isPageWide
+            ? 'Create your free itinerary'
+            : 'Create your personalised Itinerary'}
+          {/* {loading ? <Spinner size={16}></Spinner> : null} */}
+        </Button>
+      ) : null}
     </>
-   
-  )
-}
+  );
+};
 
-
-export default PlanAsPerTheme
+export default PlanAsPerTheme;
