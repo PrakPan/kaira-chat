@@ -12,13 +12,14 @@ import SkeletonCard from './ui/SkeletonCard';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import { useRouter } from 'next/router';
 
 function Map(props) {
   const [center, setCenter] = useState({
     lat: props.locations[0].lat,
     lng: props.locations[0].long,
   });
-
+  const [currentpage, setcurrentPage] = useState('/');
   const [zoom, setZoom] = useState(14);
   const [map, setMap] = useState(null);
   const MapRef = useRef(null);
@@ -37,8 +38,12 @@ function Map(props) {
       scale: 1,
     };
   };
+  const router = useRouter();
   const [activeMarker, setActiveMarker] = useState(null);
   useEffect(() => {
+    const currentRoute = router.asPath.split('/')[1];
+    setcurrentPage(currentRoute);
+    console.log(`routee ${currentRoute}`);
     if (map) {
       let selectedMarker = props.locations.filter(
         (location) => location.id == props.active
@@ -166,12 +171,15 @@ function Map(props) {
       // zoom={props.defaultZoom?props.defaultZoom:6}
       center={center}
     >
-      <Polyline
-        path={path}
-        options={options}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-      />
+      {currentpage == 'itinerary' ? (
+        <Polyline
+          path={path}
+          options={options}
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+        />
+      ) : null}
+
       <MarkerClusterer>
         {(clusterer) =>
           props.locations.map((location, index) => (

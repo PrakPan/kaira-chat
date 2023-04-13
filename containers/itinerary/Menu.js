@@ -31,6 +31,8 @@ import useMediaQuery from '../../hooks/useMedia';
 import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
 import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
 import ScrollableMenuTabs from '../../components/ScrollableMenuTabs';
+import NewBooking from './HotelsBooking/HotelsBooking';
+import HotelsBooking from './HotelsBooking/HotelsBooking';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -602,7 +604,7 @@ const SimpleTabs = (props) => {
         </div>
       ) : (
         <div id={items[2].link}>
-          <Booking
+          <HotelsBooking
             itinerary={props.itinerary}
             _updateStayBookingHandler={props._updateStayBookingHandler}
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
@@ -665,7 +667,7 @@ const SimpleTabs = (props) => {
             setImagesHandler={props.setImagesHandler}
             payment={props.payment}
             booking={props.booking}
-          ></Booking>
+          ></HotelsBooking>
         </div>
       )}
       {isGroup ? (
