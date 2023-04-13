@@ -15,7 +15,8 @@ import { FaSearch } from 'react-icons/fa';
 const Container = styled.div`
 background-color: white;
 padding: 0 5vw;
-position: fixed !important;
+position: ${(props) => (!props.fixedC ? 'fixed !important;' : 'inherit')};
+
 top: 0 !important;
 width: 100vw;
 height: 72px;
@@ -117,15 +118,19 @@ const Mobile = (props) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
+  const [currentPage, setCurrentPage] = useState('');
   const _handleNotifications = () => {
     setToggleMenu(false);
     setShowNotifications(true);
   };
-
+  const router = useRouter();
   useEffect(() => {
+    const currentRoute = router.asPath.split('/')[1];
+    setCurrentPage(currentRoute);
+    console.log(`cuR ${currentRoute}`);
     setShowLogo(true);
   }, []);
-  const router = useRouter();
+
   const _handleLogin = () => {
     setToggleMenu(false);
     props.authShowLogin();
@@ -250,6 +255,7 @@ const Mobile = (props) => {
   return (
     <div key={props.notOpenCount}>
       <Container
+        fixedC={currentPage == 'itinerary'}
         hidecta={props.hidecta}
         style={{
           backgroundColor:

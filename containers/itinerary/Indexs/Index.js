@@ -24,7 +24,7 @@ import Overview from '../../newitinerary/overview/Index';
 
 const Container = styled.div`
   width: 90%;
-  margin: 24vw auto 0 auto;
+  margin: 0vw auto 0 auto;
   @media screen and (min-width: 768px) {
     width: 85%;
     margin: 15vh auto 0 auto;
@@ -667,9 +667,8 @@ const Itinerary = (props) => {
           duration_time={duration_time}
           images={itinerary.images}
           travellerType={travellerType}
-          start_date={plan ? plan.start_date  : null        }
-          end_date={plan ? plan.end_date       :   null}
-
+          start_date={plan ? plan.start_date : null}
+          end_date={plan ? plan.end_date : null}
           duration={
             plan ? plan.duration_number + ' ' + plan.duration_unit : null
           }
