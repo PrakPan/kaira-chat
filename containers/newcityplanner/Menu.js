@@ -128,7 +128,7 @@ const Menu = (props)=>{
       {!!props.data.pois.length && (
         <MenuItem id="Places">
           <Heading>Places to visit in {props.data.name}</Heading>
-          <Poi pois={props.data.pois} city={props.data.name} _handleTailoredRedirect={_handleTailoredRedirect} />
+          <Poi elevation={props.elevation} data={props.data} thingsToDoPage={props.thingsToDoPage} pois={props.data.pois} city={props.data.name} _handleTailoredRedirect={_handleTailoredRedirect} />
         </MenuItem>
       )}
 
@@ -138,21 +138,9 @@ const Menu = (props)=>{
         </MenuItem> }
 
       {!!props.data.foods.length && (
-        <MenuItem id="Food" single={props.thingsToDoPage?false : true}>
+        <MenuItem id="Food" single>
           <Heading>Food to eat</Heading>
-          <div style={(props.thingsToDoPage && isPageWide)?{display : 'grid' , gridTemplateColumns :'3fr 1.1fr' , gap : '2.5rem'} : {}}>
           <FoodToEat foods={props.data.foods} />
-          
-          {(props.thingsToDoPage ) && <WeatherContainer elevation={props.elevation}>
-      <WeatherWidget city={props.data.name} lat={props.data.lat} lon={props.data.long} />
-      {props.data.elevation[0]?.elevation && 
-     <div style={{marginTop : '20px'}}>
-     <TextBold>Altitude</TextBold>
-     <p style={{fontWeight : '300', marginBottom : '0'}}>{Math.floor(props.data.elevation[0]?.elevation)} metres ({Math.floor(props.data.elevation[0]?.elevation*3.281)} feet) above sea level</p>
-     </div>
- }
-      </WeatherContainer>} 
-          </div>
          </MenuItem>
       )}
 

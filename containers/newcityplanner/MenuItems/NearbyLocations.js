@@ -40,7 +40,7 @@ for(let i = 0;i<res.data.length;i++){
     <Card
     key={res.data[i].id}
     location={res.data[i].name}
-    heading={res.data[i].most_popular_for[0]}
+    heading={res.data[i].most_popular_for[res.data[i].most_popular_for.length-1]}
     img={res.data[i].image}
     slug={res.data[i].slug}
     link={res.data[i].slug}
@@ -72,8 +72,8 @@ setMobileCardsToShowJSX(MobileCardsArr)
    <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
 </>
  : 
-     <div style={{ padding: "1rem 0"}}>
-       {MobilecardsToShowJSX.length?<PageDotsFlickity initialIndex cards={MobilecardsToShowJSX}></PageDotsFlickity>:<MobileSkeleton />}
+     <div>
+       {MobilecardsToShowJSX.length?<PageDotsFlickity padding={'0.2rem'} initialIndex cards={MobilecardsToShowJSX}></PageDotsFlickity>:<MobileSkeleton />}
 </div>
 
 }
