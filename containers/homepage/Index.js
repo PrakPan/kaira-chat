@@ -84,25 +84,33 @@ const  Homepage = (props) =>{
   let isPageWide = media('(min-width: 768px)');
   useEffect(() => {
     if(props.token){
-   axiomyplansinstance.get("?limit=3&offset=0", {headers: {
-       'Authorization': `Bearer ${props.token}`
-       }}).then(res => {
+      if(cookies.MyPlans){
+        setMyPlansArr(JSON.parse(cookies.MyPlans.plans));
+        setPlansCount(cookies.MyPlans.count);
+        setPlansLoading(false);
+}
+else{
+  axiomyplansinstance.get("?limit=3&offset=0", {headers: {
+    'Authorization': `Bearer ${props.token}`
+    }}).then(res => {
+
+        let plansarr = [];
+
+        for(var i=0 ; i<res.data.results.length; i++){
+             plansarr.push(
+                res.data.results[i]
+            );
+        }
+        setMyPlansArr(plansarr.slice());
+        setCookie('MyPlans' , {plans : JSON.stringify(plansarr) , count : res.data.count} , { path: '/' , maxAge : 3600 * 2 })
+        setPlansCount(res.data.count);
+        setPlansLoading(false);
+    }).catch(err => {
+        setPlansLoading(false);
+    })
+  }
+}
  
-           let plansarr = [];
- 
-           for(var i=0 ; i<res.data.results.length; i++){
-                plansarr.push(
-                   res.data.results[i]
-               );
-           }
-           setMyPlansArr(plansarr.slice());
-           setCookie('MyPlans' , {plans : JSON.stringify(plansarr) , count : res.data.count} , { path: '/' })
-           setPlansCount(res.data.count);
-           setPlansLoading(false);
-       }).catch(err => {
-           setPlansLoading(false);
-       })
-     }
  },[props.token]);
 
 
