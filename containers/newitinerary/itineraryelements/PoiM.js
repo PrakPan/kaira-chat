@@ -9,8 +9,6 @@ import Rating from './Rating';
 import Tips from './Tips';
 
 const Container = styled.div`
-  padding: 0.5rem;
-
   @media screen and (min-width: 768px) {
   }
 `;
@@ -18,8 +16,8 @@ const Container = styled.div`
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
-  margin-top: 1rem;
-  grid-template-columns: ${(props) => (props.image ? '1fr 2fr' : '1fr')};
+
+  grid-template-columns: ${(props) => (props.image ? '1.6fr 2.5fr' : '1fr')};
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
@@ -30,11 +28,12 @@ const Text = styled.p`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   font-size: 14px;
+  font-weight: 500;
 `;
 const Heading = styled.span`
   margin-bottom: 0rem;
   margin-right: 0.25rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
 `;
 const Line = styled.div`
@@ -65,9 +64,12 @@ const ItineraryPoiElementM = (props) => {
   }
   return (
     <Container className="font-poppins">
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      {/* <div style={{ display: 'flex', alignItems: 'center' }}>
         <SectionOneText>{props.time}</SectionOneText>
-        <AiFillCar style={{ margin: '-2px 0  0 0.5rem' }}></AiFillCar>
+        <AiFillCar
+          className="text-xl"
+          style={{ margin: '-2px 0  0 0.5rem' }}
+        ></AiFillCar>
         {props.booking ? (
           <div
             style={{
@@ -88,8 +90,8 @@ const ItineraryPoiElementM = (props) => {
             </Button>
           </div>
         ) : null}
-      </div>
-      <GridContainer image={props.image}>
+      </div> */}
+      <GridContainer image={props.image} className="pt-3">
         {props.image ? (
           <ImageLoader
             dimensions={{ width: 250, height: 200 }}
@@ -104,31 +106,37 @@ const ItineraryPoiElementM = (props) => {
           ></ImageLoader>
         ) : null}
         <div>
-          <div className="display-flex" style={{ lineHeight: '1' }}>
+          <div className="flex flex-row " style={{ lineHeight: '1' }}>
             <Heading>{props.heading}</Heading>
-            <HiPencil></HiPencil>
+            <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
           <Rating margin="0.25rem 0"></Rating>
           {props.poi !== undefined ? (
             props.poi.experience_filters ? (
-              <div>
+              <div
+                className={`grid grid-flow-col grid-rows-${Math.ceil(
+                  props.poi.experience_filters.length / 2
+                )} gap-2`}
+              >
                 {props.poi.experience_filters.map((element, index) =>
                   element.toString() != 'Hidden Gem' ? (
-                    <BoldTags key={index}> {element} </BoldTags>
-                  ) : (
                     <div
-                      style={{
-                        display: 'flex',
-                        gap: '0.5rem',
-                        marginBottom: '0.5rem',
-                      }}
+                      className="flex max-w-min text-sm  font-bold"
                       key={index}
                     >
-                      <ColorTags
+                      {' '}
+                      {element.split(' ').length > 2
+                        ? element.split(' ')[0]
+                        : element}{' '}
+                    </div>
+                  ) : (
+                    <div className="flex font-bold" key={index}>
+                      <div
+                        className="border-solid border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
                         style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
                       >
                         {element}
-                      </ColorTags>
+                      </div>
                     </div>
                   )
                 )}
@@ -137,13 +145,13 @@ const ItineraryPoiElementM = (props) => {
           ) : null}
         </div>
       </GridContainer>
-      <Text>{props.text}</Text>
-      <Text>{props.text}</Text>
-      {!ErrorNotDef(props.poi) ? (
+      <Text className="pt-1">{props.text}</Text>
+
+      {/* {!ErrorNotDef(props.poi) ? (
         !ErrorNotDef(props.poi.tips) ? (
           <Tips tips={props.poi.tips}></Tips>
         ) : null
-      ) : null}
+      ) : null} */}
 
       <Line></Line>
     </Container>

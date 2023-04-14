@@ -26,10 +26,10 @@ const TransferElementsM = ({
     <>
       <Container>
         <Timecontainer>
-          <div>{time}</div>
+          {/* <div className="text-base">{time}</div> */}
 
           <Timecontainer>
-            <div>{heading}</div>
+            <di className="text-base font-medium">{heading}</di>
 
             {meta ? (
               meta.estimated_cost ? (
@@ -43,33 +43,35 @@ const TransferElementsM = ({
         </Timecontainer>
 
         {transfers !== undefined ? (
-          <TransportContainer>
+          <TransportContainer className="pt-3">
             <div style={{ paddingRight: '10px' }}>
               <ImageLoader
                 url={icon}
                 leftalign
                 dimensions={{ width: 200, height: 200 }}
-                width="1.25rem"
-                widthmobile="1.25rem"
+                width="2.05rem"
+                widthmobile="2.05rem"
               ></ImageLoader>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div>
+              <div className="text-base">
                 {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
                 {transfers.routes[0]?.legs[0].destination.shortName}
               </div>
               {meta ? (
-                <div>Duration: {convertNumToTime(meta.duration)}</div>
+                <div className="text-base">
+                  Duration: {convertNumToTime(meta.duration)}
+                </div>
               ) : null}
             </div>
           </TransportContainer>
         ) : null}
-        <TransferInfo>{text}</TransferInfo>
+        <TransferInfo className="text-sm">{text}</TransferInfo>
       </Container>
       <Line></Line>
 
       {newcity !== null ? (
-        <ArriveContainer style={{ fontSize: '14px', fontWeight: '500' }}>
+        <ArriveContainer style={{ fontSize: '15px', fontWeight: '550' }}>
           <TransportContainer>
             <div>{time}</div>
             <div style={{ paddingLeft: '10px' }}>

@@ -9,7 +9,7 @@ import { IoMdRestaurant } from 'react-icons/io';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
 const Container = styled.div`
-  padding: 10px 0px 20px 0px;
+  padding: 10px 0px 0px 0px;
 
   @media screen and (min-width: 768px) {
   }
@@ -18,12 +18,12 @@ const Container = styled.div`
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
-  margin-top: 1rem;
-  grid-template-columns: 1fr 5fr;
+
+  grid-template-columns: 0fr 5fr;
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
-  margin: 0.75rem 0;
+  margin: 0.65rem 0;
   overflow: hidden;
   line-height: 1.5;
   text-overflow: ellipsis;
@@ -31,10 +31,11 @@ const Text = styled.p`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   font-size: 14px;
+  font-weight: 500;
 `;
 const Heading = styled.p`
   margin: 0;
-  font-weight: 500;
+
   line-height: 1;
 `;
 const Line = styled.div`
@@ -63,9 +64,9 @@ const ItineraryFoodElementM = (props) => {
   return (
     <>
       <Container className="font-poppins">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        {/* <div style={{ display: 'flex', alignItems: 'center' }}>
           <SectionOneText>{props.time}</SectionOneText>
-        </div>
+        </div> */}
 
         <GridContainer>
           <div className="text-center">
@@ -75,7 +76,7 @@ const ItineraryFoodElementM = (props) => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Heading>{props.heading}</Heading>
+            <Heading className="font-bold">{props.heading}</Heading>
           </div>
         </GridContainer>
         {props.recomendation ? (

@@ -18,7 +18,7 @@ const InElementContainer = (props) => {
 
         <ColElementContainer style={{ paddingLeft: '12px' }}>
           <MainHeading size={'1.2rem'}>
-            Stay ({props.info.meta_info.number_of_adults} Adults)
+            Stay ({props.info?.meta_info.number_of_adults} Adults)
           </MainHeading>
           <ColElementContainer>
             {props.Idxs.map((idx, index) =>

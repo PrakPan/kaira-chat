@@ -24,20 +24,22 @@ export const ArriveContainer = styled.div`
   @media screen and (min-width: 768px) {
     flex-direction: row;
   }
-  padding: 10px 0px 20px 0px;
+  padding: 10px 0px 10px 0px;
   color: #01202b;
 `;
 export const TransparentButton = styled.button`
-  border: 1.5px solid #000000;
+  border: 1.8px solid #000000;
   filter: drop-shadow(0px 1px 0px #f0f0f0);
   border-radius: 6px;
   display: flex;
-  font-weight: 550;
+  font-weight: 600;
   font-size: 13px;
+
+  width: fit-content;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 8px 10px;
+  padding: 8px 18px;
   margin: 10px 0px 10px 0px;
 `;
 export const TransportContainer = styled.div`
@@ -57,7 +59,7 @@ export const TInfoContainer = styled.div`
   }
 `;
 export const TransferInfo = styled.div`
-  padding: 10px 0px 30px 0px;
+  padding: 4px 0px 10px 0px;
 `;
 export const Timecontainer = styled.div`
   font-weight: 500;

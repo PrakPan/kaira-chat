@@ -152,7 +152,7 @@ const ScrollableMenuTabs = ({
             color: 'black',
             textAlign: 'center',
             width: 'max-content',
-            fontSize: `${!isDesktop ? '80px' : '20px'}`,
+            fontSize: `${!isDesktop ? '50px' : '20px'}`,
             height: 'auto',
             marginRight: '20px',
             contentVisibility: `${canScrollLeft ? 'auto' : 'hidden'}`,
@@ -184,7 +184,7 @@ const ScrollableMenuTabs = ({
             color: 'black',
             textAlign: 'center',
             width: 'max-content',
-            fontSize: `${!isDesktop ? '80px' : '20px'}`,
+            fontSize: `${!isDesktop ? '50px' : '20px'}`,
             height: 'auto',
             marginLeft: '20px',
           }}

@@ -62,10 +62,10 @@ const Day_I_ContainerM = (props) => {
   return (
     <Container className="font-poppins">
       <div
-        style={{ paddingTop: '10px', display: 'flex', alignItems: 'center' }}
-        className="pb-6"
+        style={{ paddingTop: '4px', display: 'flex', alignItems: 'center' }}
+        className="pb-4"
       >
-        <div style={{ padding: '0px 10px 0px 0px' }}>
+        <div className="font-medium text-black text-md">
           Day {props.indexDay + 1}
         </div>
         {Arslab_elements[0].data[0][0] !== undefined &&
@@ -100,6 +100,7 @@ const Day_I_ContainerM = (props) => {
             meta={Arslab_elements[0].data[0][0].meta}
             icon={Arslab_elements[0].data[0][0].icon}
             heading={Arslab_elements[0].data[0][0].heading}
+            bookings={Arslab_elements[0].data[0][0].bookings}
             text={props.Days.slab_elements[0].text}
             newcity={
               Arslab_elements[1].data[0].length != 0
@@ -113,6 +114,7 @@ const Day_I_ContainerM = (props) => {
           <ItineraryElementM
             icon={Arslab_elements[2].data[0][0].icon}
             time="9:00AM"
+            bookings={Arslab_elements[2].data[0][0].bookings}
             heading={Arslab_elements[2].data[0][0].heading}
             text={Arslab_elements[2].data[0][0].text}
           ></ItineraryElementM>
@@ -153,6 +155,7 @@ const Day_I_ContainerM = (props) => {
           <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][0].icon}
             time="12:00PM"
+            bookings={Arslab_elements[3].data[0][0].bookings}
             heading={Arslab_elements[3].data[0][0].heading}
             text={Arslab_elements[3].data[0][0].text}
             recomendation={
@@ -198,6 +201,7 @@ const Day_I_ContainerM = (props) => {
           <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][1].icon}
             time="12:00PM"
+            bookings={Arslab_elements[3].data[0][1].bookings}
             heading={Arslab_elements[3].data[0][1].heading}
             text={Arslab_elements[3].data[0][1].text}
             recomendation={
