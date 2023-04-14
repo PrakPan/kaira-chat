@@ -22,6 +22,7 @@ const NavItemsContainer = styled.div`
     margin-right: 0rem;
     display: flex;
     align-items: center;
+    justify-content : space-between;
   }
 `;
 
@@ -276,9 +277,9 @@ const Navbar = (props) => {
                 <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
             </NavItem> */}
                <NavItem style={{paddingInline: '1.5rem'}}>
-              <Link href={urls.CONTACT} passHref={true}>
+              {/* <Link href={urls.CONTACT} passHref={true}>
               {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700' , fontWeight : '500'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
-              </Link>
+              </Link> */}
             </NavItem>
       
           {  !props.hidecta  ? 

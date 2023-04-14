@@ -106,9 +106,7 @@ const NewResults = (props) => {
   </div>
 
 
-  
   if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
-
 
 
     return(      
@@ -122,7 +120,8 @@ const NewResults = (props) => {
             {e['_source'].parent && <p>{e['_source'].parent}</p>}            
             </Text>
         </LocationContainer>}
-        )}
+        )
+    }
 
         </Container>
         

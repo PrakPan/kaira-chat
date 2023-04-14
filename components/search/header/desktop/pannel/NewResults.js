@@ -104,7 +104,6 @@ const NewResults = (props) => {
     router.push('/tailored-travel?search_text='+name)
   }
   let results=[];
-  console.log(props.results,'_sour') 
   
   const skeleton = <div style={{display:'flex' , padding : '0.3rem'}}>
   <SkeletonCard borderRadius='100%' width='95px' ml='1px'></SkeletonCard>
@@ -117,7 +116,6 @@ const NewResults = (props) => {
 
   
   if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
-
 
 
     return(      

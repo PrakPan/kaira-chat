@@ -17,7 +17,6 @@ import ImageLoader from '../../components/ImageLoader';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import Spinner from '../../components/Spinner';
-import { useCookies } from 'react-cookie';
 
 const Container = styled.div`
     width: 100%;
@@ -63,7 +62,6 @@ const NoPlans = styled.p`
 const UserDashboard = (props) => {
     const [myPlansArr, setMyPlansArr] = useState([]);
     const [loading, setLoading] = useState(true);
-  const [cookies, setCookie] = useCookies(['user']);
     let isPageWide = media('(min-width: 768px)')
     let router = useRouter();
     useEffect(() => {
