@@ -7,6 +7,7 @@ import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { HiPencil } from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
+import StarRating from '../../../components/StarRating';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -110,7 +111,8 @@ const ItineraryPoiElementM = (props) => {
             <Heading>{props.heading}</Heading>
             <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
-          <Rating margin="0.25rem 0"></Rating>
+          <StarRating initialRating={4}></StarRating>
+          {/* <Rating margin="0.25rem 0"></Rating> */}
           {props.poi !== undefined ? (
             props.poi.experience_filters ? (
               <div
