@@ -13,6 +13,13 @@ import RecomendationComponent from '../../newitinerary/itineraryelements/Recomen
 import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 
 const Container = styled.div`
+  background: #ffffff;
+  border: 1.5px solid #eceaea;
+  margin-top: 20px;
+  padding: 20px;
+
+  box-shadow: 0px 3px 0px #f0f0f0;
+  border-radius: 16px;
   @media screen and (min-width: 768px) {
   }
 `;
@@ -56,6 +63,7 @@ const Day_I_ContainerM = (props) => {
     <Container className="font-poppins">
       <div
         style={{ paddingTop: '10px', display: 'flex', alignItems: 'center' }}
+        className="pb-6"
       >
         <div style={{ padding: '0px 10px 0px 0px' }}>
           Day {props.indexDay + 1}

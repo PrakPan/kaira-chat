@@ -212,7 +212,7 @@ const NewItenaryDBDMob = (props) => {
           id: i,
           label: `${props.city_slabs[i].city_name} ${
             props.city_slabs[i].duration
-              ? `(${props.city_slabs[i].duration} N)`
+              ? `(${props.city_slabs[i].duration}N)`
               : ` `
           } `,
           link:
