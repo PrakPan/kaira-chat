@@ -14,6 +14,7 @@ import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 import ScrollableTabs from '../../../components/ScrollableTabs';
 import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
+import DropdownWrapper from '../../../components/DropDownWrapper';
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
@@ -288,7 +289,27 @@ const NewItenaryDBDMob = (props) => {
         BarName="CityName"
         Mstyle={'round'}
       />
-
+      {/* <DropdownWrapper>
+        {itemsDays.map((item, index) => (
+          <CustomMenu
+            key={index}
+            item={item}
+            BarName="CityName"
+            year={'2023'}
+            Mstyle={'round'}
+            Iterable="date"
+          />
+        ))}
+      </DropdownWrapper> */}
+      <ScrollableMenuTabs
+        icons={itemsDays.length < 3 ? false : true}
+        offset={'80px'}
+        items={itemsDays}
+        BarName="CityName"
+        year={'2023'}
+        Mstyle={'round'}
+        Iterable="date"
+      />
       {/* <HorizontalBar
         width={'100%'}
         height={'40px'}
