@@ -193,7 +193,7 @@ const Day_I_ContainerM = (props) => {
                 heading={element.heading}
                 text={element.text}
                 poi={element.activity_data.poi}
-              ></ItineraryPoiElementM>
+            ></ItineraryPoiElementM>
             ))
           : NULL}
 
