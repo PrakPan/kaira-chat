@@ -35,11 +35,7 @@ const TransferElements = ({
 
           <SubTimecontainer>
             <div
-              style={{
-                paddingRight: '15px',
-                fontWeight: '500',
-                fontSize: '14px',
-              }}
+            className="text-base font-medium pr-2"
             >
               {heading}
             </div>
@@ -66,7 +62,7 @@ const TransferElements = ({
                     widthmobile="1.25rem"
                   ></ImageLoader>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }} className='text-md font-medium'>
                   <div>
                     {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
                     {transfers.routes[0]?.legs[0].destination.shortName}
@@ -78,7 +74,7 @@ const TransferElements = ({
               </TransportContainer>
             ) : null}
 
-            <TransferInfo>{text}</TransferInfo>
+            <TransferInfo className="text-sm pt-2 text-black">{text}</TransferInfo>
             <Line></Line>
           </div>
         </TInfoContainer>

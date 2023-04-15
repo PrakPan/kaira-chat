@@ -117,7 +117,7 @@ const ItineraryFoodElement = (props) => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Heading>{props.heading}</Heading>
+                <Heading className='text-xl font-bold'>{props.heading}</Heading>
               </div>
             </GridContainer>
             {props.recomendation ? (

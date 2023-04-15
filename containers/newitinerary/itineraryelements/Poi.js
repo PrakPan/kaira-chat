@@ -133,7 +133,7 @@ const ItineraryPoiElement = (props) => {
                 } */}
             <div>
           <div className="flex flex-row " style={{ lineHeight: '1' }}>
-            <Heading>{props.heading}</Heading>
+            <Heading className='text-lg'>{props.heading}</Heading>
             <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
           <StarRating initialRating={4}></StarRating>

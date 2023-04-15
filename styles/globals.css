@@ -25,6 +25,9 @@ a.termsnavunderlinelink {
 * {
   box-sizing: border-box;
 }
+.grid-rows-2 {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
 .MuiButtonBase-root:focus {
   outline: none;
 }

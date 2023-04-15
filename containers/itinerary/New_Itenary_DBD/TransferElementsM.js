@@ -29,7 +29,7 @@ const TransferElementsM = ({
           {/* <div className="text-base">{time}</div> */}
 
           <Timecontainer>
-            <di className="text-base font-medium">{heading}</di>
+            <div className="text-base font-medium ">{heading}</div>
 
             {meta ? (
               meta.estimated_cost ? (

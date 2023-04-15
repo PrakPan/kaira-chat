@@ -250,6 +250,7 @@ const NewItenaryMain = (props) => {
     }
   }
   console.log('ITEMsssssss', items);
+  
   function memoize(fn) {
     const cache = {};
     return function(...args) {

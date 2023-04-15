@@ -40,7 +40,7 @@ const Text = styled.p`
 const Heading = styled.p`
   margin-bottom: 0.5rem;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
 `;
 const Line = styled.div`
