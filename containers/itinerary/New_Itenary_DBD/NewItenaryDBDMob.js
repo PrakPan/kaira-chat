@@ -57,7 +57,7 @@ const NewItenaryDBDMob = (props) => {
     }
     return i;
   };
-
+  const [activeItem, setActiveItem] = useState(0);
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
   const [value, setValue] = React.useState(0);
@@ -189,7 +189,7 @@ const NewItenaryDBDMob = (props) => {
     // _generateDaySlabs();
   }, []);
   _generateDaySlabs();
-  const [activeItem, setActiveItem] = useState(1);
+
   const items = [];
   const itemsDays = [];
 
@@ -274,6 +274,10 @@ const NewItenaryDBDMob = (props) => {
       behavior: 'smooth',
     });
   };
+  
+  const handleActiveSelect = (itemId) => {
+    setActiveItem(itemsDays[itemId].date);
+  };
   return (
     <Wrapper>
       {/* <ScrollableTabs
@@ -289,7 +293,9 @@ const NewItenaryDBDMob = (props) => {
         BarName="CityName"
         Mstyle={'round'}
       />
-      {/* <DropdownWrapper>
+      <div className='sticky pl-2' style={{zIndex: '100', top: 86}}>
+        
+      <DropdownWrapper Dhead={activeItem}>
         {itemsDays.map((item, index) => (
           <CustomMenu
             key={index}
@@ -298,9 +304,12 @@ const NewItenaryDBDMob = (props) => {
             year={'2023'}
             Mstyle={'round'}
             Iterable="date"
+            onSelect={handleActiveSelect}
           />
         ))}
-      </DropdownWrapper> */}
+      </DropdownWrapper>
+      </div>
+{/*       
       <ScrollableMenuTabs
         icons={itemsDays.length < 3 ? false : true}
         offset={'88px'}
@@ -309,7 +318,7 @@ const NewItenaryDBDMob = (props) => {
         year={'2023'}
         Mstyle={'round'}
         Iterable="date"
-      />
+      /> */}
       {/* <HorizontalBar
         width={'100%'}
         height={'40px'}

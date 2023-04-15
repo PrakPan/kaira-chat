@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSpring, animated } from 'react-spring';
-
-const DropdownWrapper = ({ children }) => {
+import {RiArrowDropDownLine} from 'react-icons/ri'
+const DropdownWrapper = ({ children,Dhead }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const dropdownAnimation = useSpring({
@@ -19,18 +19,25 @@ const DropdownWrapper = ({ children }) => {
   });
 
   return (
-    <div className="relative">
+    <div className="relative max-w-max" >
+      <div onClick={() => setShowDropdown(!showDropdown)} className='flex flex-row  items-center max-w-max px-4   py-2 bg-gray-300 rounded-md hover:bg-gray-400'>
       <button
-        className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-        onClick={() => setShowDropdown(!showDropdown)}
+        className=" focus:outline-none"
+        
       >
-        Toggle Dropdown
+        {Dhead}
       </button>
+      <RiArrowDropDownLine></RiArrowDropDownLine>
+        </div>
+      
       <animated.div
         style={dropdownAnimation}
-        className="absolute top-10 left-0 right-0 bg-white border border-gray-300 rounded-md overflow-hidden z-10"
+        className=" absolute z-[100] top-10 left-0 right-0 bg-white border border-gray-300 rounded-md overflow-hidden "
       >
+        <div className='flex flex-col justify-center items-center'>
         {children}
+        </div>
+        
       </animated.div>
     </div>
   );
