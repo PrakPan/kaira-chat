@@ -58,6 +58,7 @@ const NewItenaryDBDMob = (props) => {
     return i;
   };
   const [activeItem, setActiveItem] = useState(0);
+
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
   const [value, setValue] = React.useState(0);
@@ -229,6 +230,7 @@ const NewItenaryDBDMob = (props) => {
       }
     }
   }
+  
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;

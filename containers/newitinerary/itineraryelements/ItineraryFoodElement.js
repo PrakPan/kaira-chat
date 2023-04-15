@@ -26,12 +26,7 @@ const Container = styled.div`
 `;
 
 const SectionOneText = styled.span``;
-const GridContainer = styled.div`
-  display: grid;
-  margin-top: 1rem;
-  grid-template-columns: 0fr 5fr;
-  grid-column-gap: 0.5rem;
-`;
+
 export const Text = styled.p`
   margin: 0.75rem 0;
   overflow: hidden;
@@ -109,17 +104,17 @@ const ItineraryFoodElement = (props) => {
             </div>
           </HLine>
           <div>
-            <GridContainer>
+            <div>
               <div className="text-center">
-                <IoMdRestaurant
-                  style={{ fontSize: '2rem', textAlign: 'center' }}
-                ></IoMdRestaurant>
+                {/* <IoMdRestaurant
+                  style={{ fontSize: '1.5rem', textAlign: 'center' }}
+                ></IoMdRestaurant> */}
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Heading className='text-xl font-bold'>{props.heading}</Heading>
+                <Heading className='text-base font-bold'>{props.heading}</Heading>
               </div>
-            </GridContainer>
+            </div>
             {props.recomendation ? (
               <>
                 <Text>{props.text}</Text>

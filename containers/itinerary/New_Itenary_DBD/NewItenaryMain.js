@@ -290,7 +290,7 @@ const NewItenaryMain = (props) => {
           onSelect={handleSelect}
         />
       </Navbar> */}
-      itemDays
+
       <ScrollableMenuTabs
         icons={items.length < 5 ? false : true}
         offset={'130px'}
