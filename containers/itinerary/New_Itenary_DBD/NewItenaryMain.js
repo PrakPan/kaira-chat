@@ -250,6 +250,29 @@ const NewItenaryMain = (props) => {
     }
   }
   console.log('ITEMsssssss', items);
+  function memoize(fn) {
+    const cache = {};
+    return function(...args) {
+      const key = JSON.stringify(args);
+      if (cache[key]) {
+        return cache[key];
+      }
+      const result = fn.apply(this, args);
+      cache[key] = result;
+      return result;
+    }
+  }
+  
+  const yearCalc=(days)=>{
+    var year1 = days[0].date.split('/')[2]
+    var year2 = days[days.length - 1].date.split('/')[2]
+    if(year1 != year2){
+      return `${year1}/${year2}`
+    }else{
+     return year1
+    }
+    
+  }
   return (
     <Wrapper>
       {/* <ScrollableTabs
@@ -266,6 +289,7 @@ const NewItenaryMain = (props) => {
           onSelect={handleSelect}
         />
       </Navbar> */}
+      itemDays
       <ScrollableMenuTabs
         icons={items.length < 5 ? false : true}
         offset={'130px'}
@@ -278,7 +302,7 @@ const NewItenaryMain = (props) => {
         offset={'170px'}
         items={itemsDays}
         BarName="CityName"
-        year={'2023'}
+        year={yearCalc(itemsDays)}
         Mstyle={'round'}
         Iterable="date"
         vertical={true}

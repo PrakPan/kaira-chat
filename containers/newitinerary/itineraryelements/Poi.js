@@ -8,6 +8,7 @@ import { HiPencil } from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
 import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import StarRating from '../../../components/StarRating';
 
 const padding = {
   initialLeft: '60px',
@@ -131,45 +132,53 @@ const ItineraryPoiElement = (props) => {
                 null
                 } */}
             <div>
-              <div className="flex flex-row" style={{ lineHeight: '1' }}>
-                <Heading>{props.heading}</Heading>
-                <HiPencil></HiPencil>
+          <div className="flex flex-row " style={{ lineHeight: '1' }}>
+            <Heading>{props.heading}</Heading>
+            <HiPencil className="text-lg min-w-max"></HiPencil>
+          </div>
+          <StarRating initialRating={4}></StarRating>
+          {/* <Rating margin="0.25rem 0"></Rating> */}
+          {props.poi !== undefined ? (
+            props.poi.experience_filters ? (
+              <div
+                className={`grid grid-rows-${Math.ceil(
+                  props.poi.experience_filters.length / 2
+                )} grid-flow-col gap-2`}
+              >
+                {props.poi.experience_filters.map((element, index) =>
+                  element.toString() != 'Hidden Gem' ? (
+                    <div
+                      className="flex max-w-min text-sm  font-bold"
+                      key={index}
+                    >
+                      {' '}
+                      {element.split(' ').length > 2
+                        ? element.split(' ')[0]
+                        : element}{' '}
+                    </div>
+                  ) : (
+                    <div className="flex font-bold" key={index}>
+                      <div
+                        className="border-solid border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
+                        style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
+                      >
+                        {element}
+                      </div>
+                    </div>
+                  )
+                )}
               </div>
-              <Rating margin="0.25rem 0"></Rating>
-              {props.poi !== undefined ? (
-                props.poi.experience_filters ? (
-                  <div>
-                    {props.poi.experience_filters.map((element, index) =>
-                      element.toString() != 'Hidden Gem' ? (
-                        <BoldTags> {element} </BoldTags>
-                      ) : (
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: '0.5rem',
-                            marginBottom: '0.5rem',
-                          }}
-                        >
-                          <ColorTags
-                            style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
-                          >
-                            {element}
-                          </ColorTags>
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : null
-              ) : null}
-            </div>
+            ) : null
+          ) : null}
+        </div>
           </GridContainer>
 
           <Text>{props.text}</Text>
-          {!ErrorNotDef(props.poi) ? (
+          {/* {!ErrorNotDef(props.poi) ? (
             !ErrorNotDef(props.poi.tips) ? (
               <Tips tips={props.poi.tips}></Tips>
             ) : null
-          ) : null}
+          ) : null} */}
         </div>
       </TInfoContainer>
       {/* <div style={{display: 'flex', alignItems: 'center'}}>

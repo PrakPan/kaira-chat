@@ -29,7 +29,7 @@ const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: 1fr 5fr;
+  grid-template-columns: 0fr 5fr;
   grid-column-gap: 0.5rem;
 `;
 export const Text = styled.p`
