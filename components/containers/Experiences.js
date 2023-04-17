@@ -5,6 +5,7 @@ import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
 import PastItineraryCard from '../cards/Testimonial';
 import Carousel from '../FlickityCarousel';
 import media from '../media';
+import PageDotsFlickity from '../PageDotsFlickity'
 
 const Container = styled.div`
 @media screen and (min-width: 768px){
@@ -220,7 +221,7 @@ console.log(cards)
 
     <div className='hidden-desktop'>       
            <div style={{ padding: "1rem 0"}}>
-            {typeof window !=='undefined' ? <Carousel initialIndex experience cards={experiencecards}></Carousel> :null }
+            {typeof window !=='undefined' ? <PageDotsFlickity initialIndex experience cards={experiencecards}></PageDotsFlickity> :null }
     </div>
   </div></>
   );
