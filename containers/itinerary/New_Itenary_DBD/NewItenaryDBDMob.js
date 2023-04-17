@@ -38,9 +38,9 @@ const NewItenaryDBDMob = (props) => {
     padding: 0.5rem;
   `;
   console.log('itenary...' + JSON.stringify(props.itinerary));
-  const dates = props.itinerary.day_slabs.map((element, index) => (
-    <div key={index}>{element.slab}</div>
-  ));
+  // const dates = props.itinerary.day_slabs.map((element, index) => (
+  //   <div key={index}>{element.slab}</div>
+  // ));
   const getCityFromDay = (day_slab_index, day_slabs, city_slabs) => {
     // if(city_slabs)
     for (var i = 0; i < city_slabs.length - 1; i++) {
@@ -230,7 +230,7 @@ const NewItenaryDBDMob = (props) => {
       }
     }
   }
-  
+
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -276,7 +276,7 @@ const NewItenaryDBDMob = (props) => {
       behavior: 'smooth',
     });
   };
-  
+
   const handleActiveSelect = (itemId) => {
     setActiveItem(itemsDays[itemId].date);
   };
@@ -295,23 +295,22 @@ const NewItenaryDBDMob = (props) => {
         BarName="CityName"
         Mstyle={'round'}
       />
-      <div className='sticky pl-2' style={{zIndex: '100', top: 86}}>
-        
-      <DropdownWrapper Dhead={activeItem}>
-        {itemsDays.map((item, index) => (
-          <CustomMenu
-            key={index}
-            item={item}
-            BarName="CityName"
-            year={'2023'}
-            Mstyle={'round'}
-            Iterable="date"
-            onSelect={handleActiveSelect}
-          />
-        ))}
-      </DropdownWrapper>
+      <div className="sticky pl-2" style={{ zIndex: '100', top: 86 }}>
+        <DropdownWrapper Dhead={activeItem}>
+          {itemsDays.map((item, index) => (
+            <CustomMenu
+              key={index}
+              item={item}
+              BarName="CityName"
+              year={'2023'}
+              Mstyle={'round'}
+              Iterable="date"
+              onSelect={handleActiveSelect}
+            />
+          ))}
+        </DropdownWrapper>
       </div>
-{/*       
+      {/*       
       <ScrollableMenuTabs
         icons={itemsDays.length < 3 ? false : true}
         offset={'88px'}

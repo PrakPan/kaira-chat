@@ -20,15 +20,17 @@ const InElementContainer = (props) => {
           <MainHeading size={'1.2rem'}>
             Stay ({props.info?.meta_info.number_of_adults} Adults)
           </MainHeading>
-          <ColElementContainer>
-            {props.Idxs.map((idx, index) =>
-              index < 3 ? (
-                <SubHeading size={'0.9rem'} key={index}>
-                  {props.info.costings_breakdown[idx.id].detail.name}
-                </SubHeading>
-              ) : null
-            )}
-          </ColElementContainer>
+          {props.Idxs && (
+            <ColElementContainer>
+              {props.Idxs.map((idx, index) =>
+                index < 3 ? (
+                  <SubHeading size={'0.9rem'} key={index}>
+                    {props.info.costings_breakdown[idx.id].detail.name}
+                  </SubHeading>
+                ) : null
+              )}
+            </ColElementContainer>
+          )}
         </ColElementContainer>
       </RowElementContainer>
 
