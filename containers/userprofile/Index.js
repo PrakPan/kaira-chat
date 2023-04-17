@@ -66,25 +66,33 @@ const UserDashboard = (props) => {
     let router = useRouter();
     useEffect(() => {
         window.scrollTo(0,0);
-        if(props.token)
-        axiomyplansinstance.get("", {headers: {
-            'Authorization': `Bearer ${props.token}`
-            }}).then(res => {
-                
+        if(props.token){
 
-                let plansarr = [];
+                axiomyplansinstance.get("", {headers: {
+                    'Authorization': `Bearer ${props.token}`
+                    }}).then(res => {
+                        
+        
+                        let plansarr = [];
+        
+                        for(var i=0 ; i<res.data.length; i++){
+                             plansarr.push(
+                                res.data[i]
+                            );
+                        }
+                        setMyPlansArr(plansarr)
+                        setLoading(false);
+                    }).catch(err => {
+                        setLoading(false);
+        
+                    })
+        
+            
+        }
 
-                for(var i=0 ; i<res.data.length; i++){
-                     plansarr.push(
-                        res.data[i]
-                    );
-                }
-                setMyPlansArr(plansarr)
-                setLoading(false);
-            }).catch(err => {
-                setLoading(false);
 
-            })
+
+
         
       },[props.token]);
   

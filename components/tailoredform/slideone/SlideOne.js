@@ -33,7 +33,7 @@ const SlideOne = (props) =>{
     <Section>
         <Question>What do you want to explore?</Question>
 
-        <Destinations  startingLocation={props.startingLocation} 
+        <Destinations  startingLocation={props.startingLocation} initialInputId={props.initialInputId}
             setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting} children_cities={props.children_cities}
            setDestination={props.setDestination}
            setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>

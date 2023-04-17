@@ -86,12 +86,14 @@ const BlackContainer = styled.div`
 `;
 const Enquiry = (props) => {
     const router = useRouter();
+    const initialInputId = Date.now()
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState(props.destinationType == 'travel-planner'? [{destination_id  :props.page_id,input_id : 0}]: [{id : props.page_id , name : props.destination , input_id : 0}]);
+    const [selectedCities, setSelectedCities] = useState(props.destinationType == 'travel-planner'? [{destination_id  :props.page_id,input_id : initialInputId}]: [{id : props.page_id , name : props.destination , input_id : initialInputId}]);
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
+
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
@@ -192,6 +194,8 @@ const Enquiry = (props) => {
         
             
         setLoading(true);
+        localStorage.removeItem('MyPlans')
+
          axiostailoredinstance.post('',
        data, {headers: {
         'Authorization': `Bearer ${props.token}`
@@ -200,7 +204,6 @@ const Enquiry = (props) => {
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
                 window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-              
                  }
              else{
                 // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
@@ -324,6 +327,7 @@ const Enquiry = (props) => {
          ></div>
 
          <Flickity
+         initialInputId={initialInputId}
            startingLocation={startingLocation}
            setStartingLocation={setStartingLocation}
            children_cities={props.children_cities}

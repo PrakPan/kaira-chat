@@ -19,22 +19,18 @@ position: relative;;
 
  
 const Destinations = (props) => {
-
   let isPageWide = media('(min-width: 768px)')
 const [deletedId , setDeletedId] = useState(null)
-  const [destinations, setDestinations] = useState([<SelectedDestination key={0} inbox_id={0} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>]);
-  console.log(props.selectedCities , !props.selectedCities.slice(1).some(e=>!e.name) , 'selectedCities')
+const [updatedData , setUpdatedData] = useState({id : null , data : null})
+  const [destinations, setDestinations] = useState([<SelectedDestination _updateDestinationHandler={_updateDestinationHandler} key={props.initialInputId} inbox_id={props.initialInputId} selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>]);
   useEffect(()=>{
     if(deletedId){
       const newDestinations = destinations.filter(e=>e.props.inbox_id != deletedId)
       setDestinations(newDestinations.slice())
       const selected = props.selectedCities.filter((e)=>e.input_id != deletedId )
-      props.setSelectedCities(selected)
+      props.setSelectedCities(selected.slice())
     }
   },[deletedId])
-
-
-
 
   function _removeDestinationHandler(id) {
 // destinations.pop()
@@ -46,14 +42,26 @@ const [deletedId , setDeletedId] = useState(null)
     let dest = destinations.slice();
     const id = Date.now()
     dest.push(
-      <SelectedDestination setDeletedId={setDeletedId} key={id} inbox_id={id}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
+      <SelectedDestination _updateDestinationHandler={_updateDestinationHandler} setDeletedId={setDeletedId} key={id} inbox_id={id}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
     )
     setDestinations(dest.slice());
-
-    props.selectedCities.push({input_id : id })
-    props.setSelectedCities(props.selectedCities)
+     props.selectedCities.push({input_id : id })
+    props.setSelectedCities(props.selectedCities.slice())
    }
 
+   function _updateDestinationHandler(id , data){
+    setUpdatedData({id,data})
+  }
+
+   useEffect(()=>{
+    if(updatedData.id){
+      const selected = props.selectedCities.map(e=>{
+        if(e.input_id == updatedData.id) return {input_id : updatedData.id,...updatedData.data , id : updatedData.data.resource_id}
+        return e
+      })
+      props.setSelectedCities(selected)
+    }
+   },[updatedData.id])
 
   return (
    <Container>
@@ -66,7 +74,7 @@ const [deletedId , setDeletedId] = useState(null)
         {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */} 
         
         <div style={{display : 'flex' , alignItems : 'center' , justifyContent : 'space-between' , marginLeft : '33%' , marginRight : '10px'}}>
-        {(!props.selectedCities.slice(1).some(e=>!e.name) || props.selectedCities.length<2) &&  <p onClick={_addDestinationHandler} className='text-center font-opensans hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>}
+        {!props.selectedCities.slice(1).some((e)=>!e.name) &&  <p onClick={_addDestinationHandler} className='text-center font-opensans hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>}
         {/* {destinations.length>1 && 
         <AiFillDelete onClick={()=>{_removeDestinationHandler()}} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete>        
         } */}

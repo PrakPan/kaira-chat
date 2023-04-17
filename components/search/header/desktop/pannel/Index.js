@@ -2,18 +2,19 @@ import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
-import Results from './results/Index';
+import NewResults from './NewResults';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
+import { ImSearch } from 'react-icons/im';
+import { MdCancel } from 'react-icons/md';
 const Container = styled.div`
     background-color: white;
-    border-radius: 1rem !important;
+    border-radius: 5px 5px 1rem 1rem !important;
     text-align: left;
     position: absolute;
-width: 600px;
-margin: -6vh  auto;
+width: 30%;
+top : 15px;
+left : 32%;
 z-index: 2;
     `;
 
@@ -21,29 +22,38 @@ const TopContainer = styled.div`
     border-style: none none solid none;
     border-width: 1px;
     border-color: #e4e4e4;
-    width: 95%;
+    width: 98%;
     margin: auto;
-    display: grid;
-    grid-template-columns: max-content auto;
+    height : 50px;
 `;
 const SearchContainer = styled.div`
-    display: flex;
-    align-items: center;
+width : 100%;
+margin-block : auto;
+    position : absolute;
 `;
 const Search = styled.input`
     border: none !important;
+    width: 70%;
+    margin-top: 12px;
+    margin-inline: 35px;
     &:focus{
         outline: none;
     }
-    
 `;
+const Text = styled.div`
+font-weight: 400;
+margin: 1.5rem;
+font-size: 12px;
+color: #7e7e7e;
+font-size : 1rem;
+`
 
 const SearchPannel= (props) => {
   let isPageWide = media('(min-width: 768px)')
     const [showResults, setShowResults] = useState(false);
     let [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);
-
+    const [showP , setShowP] = useState(false)
     const _onChangeHandler = (event) => {
         if(event.target.value.length %3 === 0)
         ga.event({
@@ -53,13 +63,17 @@ const SearchPannel= (props) => {
             }
           });
         setInputValue(event.target.value);
+        setResults(null)
         axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
             if(res.data.length){
                 setResults(res.data);
                 setShowResults(true)
+                setShowP(false)
             }
-            else setShowResults(false);
-
+            else {
+                setShowP(true) 
+                setShowResults(false)
+            };
         });
     }
     const ref=useRef();
@@ -81,14 +95,16 @@ const SearchPannel= (props) => {
 },[]);
     return(
         <Container className="border"  ref={ref}>
-
        <TopContainer>
-            <FontAwesomeIcon style={{textAlign: 'left'}} icon={faChevronLeft} onClick={props.setPannelClose} style={{fontSize: '1.5rem', fontWeight: '300', margin: '1.5rem'}}></FontAwesomeIcon>
             <SearchContainer>
-                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-opensans" placeholder="Search Locations" ></Search>
+                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-poppins" placeholder="Search by destination (country, region or city)" ></Search>
+                    <ImSearch style={{position : 'absolute' , top : '17px' , left : '8px', color : '#B0BABF' , pointerEvents : 'none'}} />
+                    {inputValue !== '' &&<MdCancel onClick={()=>{setInputValue(''); setShowResults(false)}} style={{position : 'absolute' , top : '13px' , right : '35px',fontSize : '1.4rem', color : '#7A7A7A', cursor : 'pointer'}} />}
             </SearchContainer>
         </TopContainer>
-        {!showResults ? <Locations hotlocations={props.hotlocations}></Locations> : <Results results={results}></Results>}
+        {showP && (inputValue != '') && <Text>We couldn't find anything for '{inputValue}'</Text>}
+        {showResults ? <NewResults results={results} inputValue={inputValue} /> : 
+        <Locations hotlocations={props.hotlocations}></Locations>}
         </Container>
     );
 }

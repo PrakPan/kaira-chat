@@ -13,7 +13,7 @@ const Container = styled.div`
 width: 600px;
 margin: auto;
 animation: 0.3s ${fadeInAnimation};
-
+position : initial;
 `;
 
 const BlackContainer = styled.div`

@@ -21,7 +21,7 @@ const MobileBar= (props) => {
 
     return(
         <Container className="center-div" onClick={props.setPannelOpen}  style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-            <SearchText className="font-opensans">
+            <SearchText className="font-poppins">
                 {typeof window!=='undefined' ? <FontAwesomeIcon icon={faSearch} style={{ fontSize: '1rem', margin:'0 0.5rem 0 0'}}></FontAwesomeIcon> : null}
                 Start Planning
             </SearchText>

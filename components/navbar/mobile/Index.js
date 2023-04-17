@@ -1,59 +1,60 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
-import { faBars, faTimes, faEllipsisV} from '@fortawesome/free-solid-svg-icons';
 import Drawer from '@material-ui/core/Drawer';
 import  Link  from 'next/link';
-import Button from '../../ui/button/Index';
-
+import {CgMenuLeftAlt} from 'react-icons/cg'
 import { useRouter } from 'next/router'
 import LoggedInMenu from './LoggedIn';
 import * as authaction from '../../../store/actions/auth';
 import { connect } from 'react-redux';
 import ImageLoader from '../../ImageLoader';
-import cross from '../../../public/assets/close.png';
 import * as logout from '../../../store/actions/logout';
 import Notifications from '../../modals/Notifications/Index';
 import SearchMobile from '../../search/homepage/mobile/Index';
-import {FaSearch} from 'react-icons/fa'
-// import ImageLoader from '../../ImageLoader';
+import { FaSearch } from 'react-icons/fa'
 const Container = styled.div`
 background-color: white;
-padding: 0 3vw;
+padding: 0 5vw;
 position: fixed !important;
 top: 0 !important;
 width: 100vw;
-height: 20vw;
-z-index: 998;
-display: grid;
-grid-template-columns: ${props=> props.hidecta? '0.1fr 1fr 0.1fr' : '0.3fr 1fr 1.5fr'} ;
+height: 72px;
+z-index: 1500;
+// display: grid;
+// grid-template-columns: ${props=> props.hidecta? '0.1fr 1fr 0.1fr' : '0.3fr 1fr 1.5fr'} ;
 
+display : flex;
+justify-content : space-between;
 box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
+
 `;
 
 const DrawerContainer = styled.div`
-width: 80vw;
+width: 250px;
 background-color: white;
-border-style: solid;
-border-color: #f7e700;
-border-width: 5px;
 height: 100vh;
+padding-top : 65px;
 `;
 const ListContainer = styled.div`
-    padding: 0.5rem 1rem;
+    padding-block: 0.5rem;
 `;
 const ListItem = styled.div`
-    text-align: right;
-    margin-bottom: 1rem;
-
+    // text-align: right;
+    padding-block: 1rem;
+    padding-inline : 15px;
+    display : flex;
+    gap : 13px;
+    align-items : center;
+    font-family : Poppins;
 `;
 const StyledLink = styled.a`
-    text-decoration: none;
-    color: black;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    font-weight: 300;
+text-decoration : none;
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 16px;
+color: #01202B;
+
 `;
 const TTWLogo= styled.img`
   width: 15vw;
@@ -83,20 +84,40 @@ const RedDot = styled.div`
     top: -1rem;
     left: 2.95rem;
     z-index: 1000;
-    color: black
+    color: black;
 `;
+
+const CompanyName =styled.div`
+position: absolute;
+left: 34px;
+top: 23px;
+font-size : 14px;
+font-weight : 600;
+`
+const Heading = styled.p`
+font-family: 'Poppins';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 16px;
+text-transform: uppercase;
+color: #7A7A7A;
+margin-block: 1rem;
+padding-inline: 1rem;
+`
+
 const Mobile = (props) => {
     const [toggleMenu, setToggleMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [toggleSearch, setToggleSearch] = useState(false);
-
+    const [showLogo , setShowLogo] = useState(false)
     const _handleNotifications = ( ) => {
         setToggleMenu(false);
         setShowNotifications(true);
     }
 
   useEffect(() => {
-
+    setShowLogo(true)
     },[])
     const router = useRouter();
     const _handleLogin = () => {
@@ -109,109 +130,93 @@ const Mobile = (props) => {
        const _handleHomepageRedirect = () => {
             router.push('/');
        }
+
+       const LinksArr = [
+            {type : 'main' , link : '/' , text : 'Home' , icon : 'media/icons/navigation/home-page.png'},
+            {type : 'main' , link : '/dashboard' , text : 'My Plans' , icon : 'media/icons/navigation/clipboard.png'},
+            {type : 'main' , onclick : ()=>_handleNotifications() , text : 'Notifications', icon: 'media/icons/navigation/bell.png' },
+            // {type : 'main' ,link : '/travel-guide' , text : 'Travel Guide' },
+            {type : 'main' ,link : 'http://blog.thetarzanway.com/' , text : 'Travel Feed' , icon : 'media/icons/navigation/chat.png' },
+            {type : 'main' ,link : '/tailored-travel' , text : 'Tailor-made travel' , icon : 'media/icons/navigation/page.png' },
+            {type : 'main' ,link : '/testimonials' , text : 'Testimonials' ,icon : 'media/icons/navigation/testimonial.png' },
+            {type : 'others' ,link : '/contact' , text : 'Contact Us' , icon : 'media/icons/navigation/call.png'},
+            {type : 'others' ,link : '/covid-19-safe-travel-india' , text : 'Covid 19 Safety' , icon : 'media/icons/navigation/health-insurance.png' },
+        ] 
+        const MainLinksDiv = LinksArr.map((e)=>{
+            if(e.type === 'main')
+        return <ListItem onClick={e.onclick && e.onclick} style={router.pathname===e.link ? {backgroundColor :  "#ffff4a45"} : {}} >
+            {e.icon && <ImageLoader leftalign url={e.icon} height='20px' width='20px' dimensions={{height : 20 , width : 20}} widthmobile='20px' />}
+           {e.link &&  <Link href={e.link} className='next-link' passHref={true}>
+            <StyledLink>{e.text}</StyledLink>
+            </Link>}
+            {e.onclick && <StyledLink onClick={e.onclick}>{e.text}</StyledLink>}
+            </ListItem>}
+        )
+
+        const OtherLinksDiv = LinksArr.map((e)=>
+        {if(e.type == 'others') return <ListItem onClick={e.onclick && e.onclick} style={router.pathname===e.link ? {backgroundColor :  "#ffff4a45"} : {}}>
+            {e.icon && <ImageLoader leftalign url={e.icon} height='20px' width='20px' dimensions={{height : 20 , width : 20}} widthmobile='20px' />}
+           {e.link &&  <Link href={e.link} className='next-link' passHref={true}>
+            <StyledLink>{e.text}</StyledLink>
+            </Link>}
+            {e.onclick && <StyledLink onClick={e.onclick}>{e.text}</StyledLink>}
+            </ListItem>
+        })
+
+
        return(
-      <div key={props.notOpenCount}>
-    <Container hidecta={props.hidecta} style={{display: props.hideNav? 'none' : 'grid', backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white'}}>
-    <div style={{display:'flex', alignItems: 'center' , marginRight : '7px'}}>
-        {props.notifications.length && props.notOpenCount ? <RedDot className="center-div font-opensans">{props.notOpenCount}</RedDot> : null}
-            {/* {props.token?<ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}} url={props.image!==null && props.image!=='null' ? props.image : "media/website/user.svg"} onclick={() => setToggleMenu(true)} width="3rem" leftalign height="3rem" widthmobile="3rem" borderRadius="50%"></ImageLoader>:null} */}
+      <div key={props.notOpenCount} >
+    <Container hidecta={props.hidecta} style={{ backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white'}}>
+    <div style={{display:'flex', alignItems: 'center' , marginRight : '-10px'}}>
+        {props.notifications.length && props.notOpenCount ? <RedDot className="center-div ">{props.notOpenCount}</RedDot> : null}
             {typeof window !=='undefined' ? <div>
-                {/* {props.token  ? <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faEllipsisV} onClick={() => setToggleMenu(true)}></FontAwesomeIcon> : <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faBars} onClick={() => setToggleMenu(true)}></FontAwesomeIcon>} */}
-                <FontAwesomeIcon style={{color:props.headerColor === 'black' ? 'white' : 'black', fontSize: '1.5rem', margin: '0 0 0 0.5rem', fontWeight: '300'}} icon={faBars} onClick={() => setToggleMenu(true)}></FontAwesomeIcon>
+
+                <CgMenuLeftAlt style={{fontSize: '1.5rem', fontWeight: '900'}} onClick={() => setToggleMenu(!toggleMenu)} />
                 </div> : null}
                 
         </div>
 
-         <div style={{display:'flex', alignItems: 'center'  }}>
-             {/* <TTWLogo src={TTWlogowhite}></TTWLogo> */}
-             {props.headerColor === 'black' ? <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="15vw" leftalign widthmobile="15vw" url={'media/website/logowhite.svg'} ></ImageLoader></Link> : <Link href='/'><ImageLoader dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} leftalign width="15vw" widthmobile="15vw"  url={'media/website/logoblack.svg'}></ImageLoader></Link>}
+         <div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}}>
+             {showLogo && <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="55px" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
+            {!props.hidecta &&<CompanyName>thetarzanway</CompanyName>}
             </div>
-            <div style={{display : 'flex' ,justifyContent : 'space-between', width : '100%', alignItems : 'center' , gap : '15px'}}>
             {  !props.hidecta  ?
-            <div style={{}} className="center-div" onClick={() => setToggleSearch(true)}>
+            <div style={{background : '#F0F0F0' , padding : '10px' , marginBlock : 'auto' , borderRadius : '50%'}} className="center-div" onClick={() => setToggleSearch(true)}>
             <FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black'}}></FaSearch> 
             </div>
           : null}
 
-            <LocalPhoneIcon style={{hieght : '100%',margin : 'auto 0' , color : props.headerColor === 'black' ? 'white' : 'black'}} onClick={() => router.push('/contact')} />
-            {/* {  !props.hidecta  ? 
-                        <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" padding="0.75rem 0.75rem" link={'/tailored-travel'}>Create a Trip</Button> 
-          : null} */}
-            </div>
-            
         <Drawer
-      anchor='right'
+      anchor='left'
       open={toggleMenu}
       onClose={() => setToggleMenu(false)}
       className="mobile-header-menu"
+      width='250px'
     >
       <DrawerContainer>
-      <Cross onClick={() => setToggleMenu(false)} src={cross}></Cross>
           <ListContainer>
-              {props.token ? <LoggedInMenu notOpenCount={props.notOpenCount} notifications={props.notifications} _handleNotifications={_handleNotifications} onClose={() => setToggleMenu(false)} onLogout={props.onLogout} name={props.name}/> : null}
-              {props.token ? <Segregtation/> : null}
-              {!props.token ?  <ListItem style={{fontWeight: '600'}}>
-                <StyledLink className="font-opensans" style={{fontWeight: '700', fontSize: '1.75rem'}}>Hi Traveler!</StyledLink>    
-            </ListItem> : null}
-            <ListItem>
-                <Link href='/' className="next-link" passHref={true}>
-                {router.pathname === '/' ? <StyledLink className="font-opensans" style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px', }}>Home</StyledLink> : <StyledLink className="font-opensans" style={{fontWeight: '300'}}>Home</StyledLink>}
-                </Link>
+
+
+            <ListItem style={{backgroundColor : '#F8F8F8'}}>
+                <LoggedInMenu  userImage={props.image} _handleLogin={_handleLogin} token={props.token} notOpenCount={props.notOpenCount} notifications={props.notifications} _handleNotifications={_handleNotifications} onClose={() => setToggleMenu(false)} onLogout={props.onLogout} name={props.name} />
             </ListItem>
-            <ListItem>
-                <Link href='/about-us' className="next-link" passHref={true}>
-                    {router.pathname=== '/about-us' ? <StyledLink className="font-opensans" style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px'}}>About Us</StyledLink> : <StyledLink className="font-opensans" style={{fontWeight: '300'}}>About Us</StyledLink>}
-                </Link>
-            </ListItem>
-            {/* <ListItem>
-                <Link href='/travel-experiences' className="next-link" passHref={true}>
-                {router.pathname === '/travel-experiences' ? <StyledLink className="font-opensans"  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Experiences</StyledLink> : <StyledLink className="font-opensans"  style={{fontWeight: '300'}}>Experiences</StyledLink>}
-                </Link>
-            </ListItem> */}
-            {/* <ListItem>
-                <Link href='/travel-guide' className="next-link" passHref={true}>
-                {router.pathname === '/travel-guide' ? <StyledLink className="font-opensans"  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Travel Guide</StyledLink> : <StyledLink className="font-opensans"  style={{fontWeight: '300'}}>Travel Guide</StyledLink>}
-                </Link>
-            </ListItem> */}
-            <ListItem>
-                    <StyledLink href="http://blog.thetarzanway.com/" className="font-opensans"  style={{fontWeight: '300'}}>Travel Feed</StyledLink>
-            </ListItem>
-            <ListItem>
-                <Link href='/tailored-travel' className="next-link" passHref={true}>
-                {router.pathname === '/tailored-travel' ? <StyledLink className="font-opensans"  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Tailor-Made Travel</StyledLink> :  <StyledLink className="font-opensans"  style={{fontWeight: '300'}}>Tailor-Made Travel</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/testimonials' className="next-link" passHref={true}>
-                {router.pathname === '/testimonials' ? <StyledLink className="font-opensans"  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Testimonials</StyledLink> :  <StyledLink className="font-opensans"  style={{fontWeight: '300'}}>Testimonials</StyledLink>}
-                </Link>
-            </ListItem>
-            <Segregtation/>
-            {!props.token ? <ListItem>
-                <StyledLink className="font-opensans"  style={{fontWeight: '300'}} onClick={_handleLogin}>Login</StyledLink>
-            </ListItem> : null}
-            <ListItem>
-                <Link href='/contact' className="next-link" passHref={true}>
-                {router.pathname === '/contact' ? <StyledLink className="font-opensans"  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>Contact Us</StyledLink> :  <StyledLink className="font-opensans"  style={{fontWeight: '300'}}>Contact Us</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                <Link href='/covid-19-safe-travel-india' className="next-link" passHref={true}>
-                {router.pathname === '/covid-19-safe-travel-india' ? <StyledLink className="font-opensans"  style={{borderStyle: 'none none solid none', borderColor: '#f7e700', borderWidth: '2px',}}>COVID-19 Safety</StyledLink> :  <StyledLink className="font-opensans"  style={{fontWeight: '300'}}>COVID-19 Safety</StyledLink>}
-                </Link>
-            </ListItem>
-            <ListItem>
-                {/* <Link href='/about-us' className="next-link" passHref={true}> */}
-                    {/* <StyledLink className="font-opensans"  style={{fontWeight: '100'}}>Login</StyledLink> */}
-                {/* </Link> */}
-            </ListItem>
+            {MainLinksDiv}
+            <Heading>OTHERS</Heading>
+            {OtherLinksDiv}
+
+           {props.token &&  <ListItem onClick={props.onLogout}>
+            {<ImageLoader leftalign url={'media/icons/navigation/logout.png'} height='20px' width='20px' dimensions={{height : 20 , width : 20}} widthmobile='20px' />}
+            <StyledLink>Logout</StyledLink>
+            </ListItem>}
+
+
           </ListContainer>
       </DrawerContainer>
     </Drawer>
     </Container>
     {toggleSearch ? <div className='hidden-desktop' style={{width: '100%'}}><SearchMobile onclose={() => setToggleSearch(false)} open={true}></SearchMobile></div> : null}
 
-    <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} _deleteNotificationHandler={props._deleteNotificationHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)}></Notifications>
+    <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)}></Notifications>
     </div>
   );
 }
