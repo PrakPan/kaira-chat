@@ -102,12 +102,10 @@ const POIDetails = (props) => {
         <ImageLoader
           borderRadius="8px"
           marginTop="23px"
-          width="468px"
-          height="188px"
           widthMobile="100%"
           url={props.data.image}
-          dimensionsMobile={{ width: 600, height: 600 }}
-          dimensions={{ width: 900, height: 900 }}
+          dimensionsMobile={{ width: 500, height: 280 }}
+          dimensions={{ width: 468, height: 188 }}
           onload={() => {
             console.log("loaded"), setImageLoading(false);
           }}

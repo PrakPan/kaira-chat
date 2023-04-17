@@ -256,7 +256,7 @@ const Navbar = (props) => {
           </TTWLogoContainer>
           
           {/* <input /> */}
-          <div style={{position: 'absolute', left: '32%', height: '100%' , width : '30%'}} className="center-div" onClick={() => setToggleSearch(true)}>
+          <div style={{position: 'absolute', left: '32%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
           <TopContainer>
             <SearchContainer>
                     <Search placeholder="Search by destination (country, region or city)" ></Search>

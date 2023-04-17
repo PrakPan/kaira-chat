@@ -46,6 +46,13 @@ grid-gap: 0.5rem;
     cursor: pointer;
 }
 `;
+const SkeletonContainer = styled.div`
+padding: 0.5rem;
+max-width: 100%;
+display : grid;
+grid-template-columns : 1fr 7fr;
+`
+
 const Heading = styled.p`
 font-weight: 500;
 font-style: normal;
@@ -98,15 +105,13 @@ const Locations= (props) => {
         for(var i=0; i<5; i++){
           
             locations.push(
-             <div style={{display:'flex' , marginBlock : '0.7rem' }}>
-                <div>
-  <SkeletonCard borderRadius='100%' width='50px' ml='8px'></SkeletonCard>
-  </div>
-  <div style={{marginBlock : 'auto'}}>
-  <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
-  <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
-  </div>
-  </div>    
+                <SkeletonContainer>
+                <SkeletonCard borderRadius='100%' width='46px'></SkeletonCard>
+                <div style={{marginBlock : 'auto'}}>
+                <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
+                <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
+                </div>
+                         </SkeletonContainer>
             )
         }
     }

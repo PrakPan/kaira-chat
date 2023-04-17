@@ -76,7 +76,6 @@ padding: 10px 13px 10px 13px;
 `
 const Text = styled.div`
 font-weight : 500;
-// margin-block : 5px;
 p{
 font-weight : 400;
 margin-bottom : 0rem;
@@ -105,8 +104,8 @@ const NewResults = (props) => {
   }
   let results=[];
   
-  const skeleton = <div style={{display:'flex' , padding : '0.3rem'}}>
-  <SkeletonCard borderRadius='100%' width='95px' ml='1px'></SkeletonCard>
+  const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '1fr 5fr'}}>
+  <SkeletonCard borderRadius='100%' width='45px'></SkeletonCard>
   <div style={{marginBlock : 'auto'}}>
   <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
   <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
@@ -115,10 +114,11 @@ const NewResults = (props) => {
 
 
   
-  if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
+  if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
 
 
     return(      
+        <>
         <Container>
         {props.results.map((e)=>
         <LocationContainer key={e["_source"].resource_id} onClick={() => {_handlePersonaliseRedirect(e['_source'].name)}}>
@@ -131,7 +131,8 @@ const NewResults = (props) => {
         </LocationContainer>
         )}
         </Container>
-        
+        </>
+
     );
 }
 

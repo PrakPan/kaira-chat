@@ -12,7 +12,7 @@ const Container = styled.div`
     border-radius: 5px 5px 1rem 1rem !important;
     text-align: left;
     position: absolute;
-width: 30%;
+width: 37%;
 top : 15px;
 left : 32%;
 z-index: 2;
@@ -22,8 +22,9 @@ const TopContainer = styled.div`
     border-style: none none solid none;
     border-width: 1px;
     border-color: #e4e4e4;
-    width: 98%;
+    width: 100%;
     margin: auto;
+    margin-left : 5px;
     height : 50px;
 `;
 const SearchContainer = styled.div`
@@ -62,6 +63,8 @@ const SearchPannel= (props) => {
               'search_text': event.target.value
             }
           });
+          setShowP(false)
+
         setInputValue(event.target.value);
         setResults(null)
         axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{

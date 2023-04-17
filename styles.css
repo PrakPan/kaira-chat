@@ -350,6 +350,9 @@ text-align: right;
 .MuiBox-root{
   padding: 0 !important;
 }
+.MuiDrawer-root{
+  z-index : 1501 !important;
+}
 .MuiTabs-flexContainer{
   z-index: 2 !important;
 }

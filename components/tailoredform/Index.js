@@ -1,5 +1,5 @@
  
-import React, {useState, useEffect} from "react";
+import React, {useState , useRef, useEffect} from "react";
 import dayjs  from 'dayjs';
 import moment from 'moment'
 import styled , {keyframes}from 'styled-components';
@@ -93,6 +93,7 @@ const Enquiry = (props) => {
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
+    // const ContainerRef = useRef()
 
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
@@ -257,6 +258,10 @@ const Enquiry = (props) => {
     if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
     if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
     setSlideIndex(slideIndex + 1)
+    // window.scrollBy(0, -200 , 'smooth');
+    // ContainerRef.current.scrollIntoView(0,-150)
+    if(props.HeroBanner && isPageWide) window.scrollTo({top: 0,
+      behavior: "smooth"})
   }
 
   const _SlideTwoSubmitHandler = ()=>{
@@ -277,6 +282,7 @@ const Enquiry = (props) => {
        slideIndex={slideIndex}
        className={isPageWide ? "border center-di" : "center-div"}
        onClick={() => setShowBlack(true)}
+      //  ref={ContainerRef}
      >
 
       {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem'  left='10px' text='Please select starting date!' />}

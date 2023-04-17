@@ -82,6 +82,7 @@ const SearchPannel= (props) => {
               'search_text': event.target.value
             }
           });
+          setShowP(false)
           setShowResults(true);
           setResults(null);
           axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
