@@ -1,5 +1,5 @@
 import React, {useState, useEffect, Fragment, useRef} from 'react';
-import Button from '@material-ui/core/Button';
+import Button from '../ui/button/Index';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -23,6 +23,85 @@ import GoogleLogin from 'react-google-login';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import DropDown from '../ui/DropDown';
+import CountryCodeDropdown from './CountryDropdown';
+import {FiChevronDown} from 'react-icons/fi'
+import {ImCheckboxUnchecked,ImCheckboxChecked} from 'react-icons/im'
+import OTPInput from "react-otp-input";
+
+const MobileNumberContainer = styled.div`
+display: grid;
+grid-template-columns: 1.2fr 4fr;
+gap: 0.5rem;
+`
+const WhatsappCheckBox = styled.div`
+cursor : pointer;
+font-weight: 400;
+font-size: 14px;
+line-height: 16px;
+display : flex;
+gap: 0.3rem;
+margin-block: 0.7rem 1rem;
+align-items : center;
+`
+
+const InputBox = styled.input`
+padding: 0.8rem 0rem 0.8rem 1rem;
+font-style: normal;
+border : 1px solid #D0D5DD;
+border-radius : 0.5rem;
+box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+font-weight: 400;
+font-size: 14px;
+line-height: 24px;
+width  : 100%;
+&::placeholder{
+  color : black;
+}
+`
+
+const CountryCodeContainer = styled.div`
+position : relative;
+width : 90px;
+.CountryInput{
+display : grid;
+border : 1px solid #D0D5DD;
+border-radius : 0.5rem;
+grid-template-columns: 1fr 1fr 1fr;
+padding-inline: 0.2rem;
+  gap : 0.4rem;
+  height : 100%;
+  paddding-left : 10%;
+}
+img{
+  margin-block : auto;
+}
+p{
+  margin : auto;
+}
+svg{
+  margin-block : auto;
+  font-size: 1.3rem;
+margin-left: -5px;
+}
+
+`
+const OtpContainer = styled.div`
+div{
+  display : grid !important;
+  grid-template-columns : 1fr 1fr 1fr 1fr !important;
+  gap : 0.8rem;
+}
+.otpBox{
+width : 100% !important;
+border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    height: 3rem;
+    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+}
+`
+
+
 const useStyles = makeStyles(themes => ({
     '@global': {
       body: {
@@ -49,13 +128,13 @@ const useStyles = makeStyles(themes => ({
       backgroundColor: '#f7e700 !important',
       textTransform: 'none !important',
       color: "black !important",
-      borderRadius: "2rem !important",
+      borderRadius: "0.5rem !important",
       '&:hover':{
         backgroundColor: "#F7e700 !important"
       }
     }, 
     updatephone: {
-      margin: "2rem 0 2rem 1rem !important",
+      margin: "2rem 0 2rem 0.5rem !important",
       backgroundColor: '#f7e700 !important',
       textTransform: 'none !important',
       color: "black !important",
@@ -79,12 +158,13 @@ const useStyles = makeStyles(themes => ({
     }
   }));
   var userDetails = {
-    firstName: "",
-    lastName: "",
+    firstName : '',
+    lastName : '',
+    userName : '',
     email: "",
 }
 const CountryImg = styled.img`
-      height: 100%;
+      height: 1.5rem;
     `;
     const UpdatePhone = styled.p`
     padding: 0 8px;
@@ -113,16 +193,26 @@ const CountryImg = styled.img`
 
 
   const CountryCodeOption = styled.div`
+  display : grid;
+  grid-template-columns: 0.7fr max-content;
+    padding-inline: 0.2rem;
+    gap: 0.6rem;
   &:hover{
     cursor: pointer;
   }
   text-align: center;
   height: 2rem !important;
-  margin: 0.5rem;
+  margin-block: 0.5rem;
+
+  p{
+    margin : auto;
+
+    }
   `;
 
 
 const LogIn = (props) => {
+console.log(props.otpFail , 'props.otpFail')
   const mobileRef = useRef();
   let mobilevariable = ""; //store mobile number before storing in state
 
@@ -132,6 +222,8 @@ const LogIn = (props) => {
   const [whatsapp, setWhatsapp] = useState(true);
   const classes = useStyles();
   const [extension, setExtension] = useState('India');  //store extension
+  const [openCountryCodeOption , setOpenCountryCodeOption] = useState(false)
+  const [otp , setOtp] = useState('')
   let firstname=null; //JSX for first name
   let lastname=null;//JSX for last name
    let email=null;//JSX for email
@@ -146,8 +238,6 @@ const LogIn = (props) => {
         script.async = true;
         document.body.appendChild(script);
       }, []);
-
-
       useEffect(() => {
         if((props.token  && props.phone && props.name ) && (props.token  && props.name && props.phone!== 'null' ) && (props.token  && props.name && props.phone!== null )) props.authCloseLogin();
 
@@ -158,10 +248,13 @@ const LogIn = (props) => {
       };
   for(const country in extensions){
         ExtensionOptions.push(
-          <CountryCodeOption key={country} value={country} onClick={() => handleExtensionChangeOption(country)}>
+          <CountryCodeOption key={country} value={country} onClick={() => {handleExtensionChangeOption(country),setOpenCountryCodeOption(false)}}>
                   <CountryImg src={extensions[country].img}  onClick={() => handleExtensionChangeOption(country)}></CountryImg>
+                  <p>{extensions[country].label}</p>
           </CountryCodeOption>
         )
+
+
       }
       //Change user details on key press 
   const _userDetailsOnChangeHandler = (event, target) =>{
@@ -186,29 +279,32 @@ const LogIn = (props) => {
   //Submit OTP 
   const submitOtpHandler = (event) =>{
      event.preventDefault();
+
+     console.log(extensions[extension].label+mobile,otp,userDetails.userName, userDetails.email, whatsapp , 'submitOtpHandler')
+
     if(props.newUser ){
       const newUserValidity = checkNewUserData();
-      if(newUserValidity) props.onAuth(extensions[extension].label+mobile,otpvariable,userDetails.firstName+" "+userDetails.lastName, userDetails.email, whatsapp);
+      if(newUserValidity) props.onAuth(extensions[extension].label+mobile,otp,userDetails.userName, userDetails.email, whatsapp);
   }
 else if(( props.otpSent && !props.name  )){
-  props.onAuth(extensions[extension].label+mobile,otpvariable,userDetails.firstName+" "+userDetails.lastName, null, whatsapp);
+  props.onAuth(extensions[extension].label+mobile,otp,userDetails.userName, null, whatsapp);
 }
 else if((props.otpSent && !props.name && !props.email)){
-  props.onAuth(extensions[extension].label+mobile,otpvariable,userDetails.firstName+" "+userDetails.lastName, userDetails.email, whatsapp);
+  props.onAuth(extensions[extension].label+mobile,otp,userDetails.userName, userDetails.email, whatsapp);
 
 }
 else if(props.otpSent &&  !props.email){
-  props.onAuth(extensions[extension].label+mobile,otpvariable,null, userDetails.email, whatsapp);
+  props.onAuth(extensions[extension].label+mobile,otp,null, userDetails.email, whatsapp);
 
 }
   else {
-      props.onAuth(extensions[extension].label+mobile,otpvariable, null, null, whatsapp);
+      props.onAuth(extensions[extension].label+mobile,otp, null, null, whatsapp);
   }
     
   }
   //Store OTP
-  const handleOtpChange = (event) => {
-    otpvariable=event.target.value; 
+  const handleOtpChange = (OTP) => {
+    setOtp(OTP)
   }
   //Set Mobile 
   const handleMobileChange = (event) => {
@@ -234,9 +330,10 @@ else if(props.otpSent &&  !props.email){
     props.onUpdate({'phone': extensions[extension].label + mobile})
   }
  //Mobile, name, email, password, JSX
-  mobileInput = <Grid item xs={9}>
-  <TextField
-      key="mobile"
+  mobileInput = <div>
+  {/* <TextField
+      key="mobile"top: 0%;
+    left: 4%;
       error={props.mobileFail ? true: false}
       helperText={props.mobileFail ? props.mobilefailmessage : null}
       disabled={props.otpSent ? true : false}
@@ -251,8 +348,24 @@ else if(props.otpSent &&  !props.email){
       onBlur={handleMobileBlur}
       className="loginform"
       inputRef={mobileRef}
-    />
-  </Grid>
+    /> */}
+    <InputBox 
+  placeholder='Mobile Number'
+  required
+  disabled={props.otpSent ? true : false}
+  key="mobile"
+  name="mobile"
+  label="Mobile Number"
+  type="mobile"
+  // max='10'
+  id="mobile"
+  onChange={handleMobileChange}
+  onBlur={handleMobileBlur}
+  className="loginform"
+  ref={mobileRef}
+
+/>
+  </div>
   firstname = 
         <Grid item xs={12} sm={6}>
               <TextField
@@ -284,7 +397,7 @@ else if(props.otpSent &&  !props.email){
               />
             </Grid>;
     email=<Grid item xs={12}>
-              <TextField
+              {/* <TextField
               key="email"
                 error={props.emailFail ? true : false}
                 helperText={props.emailFail ? props.emailfailmessage : null}
@@ -298,10 +411,20 @@ else if(props.otpSent &&  !props.email){
                 onChange={event => {_userDetailsOnChangeHandler(event,'email')}}
                         className="loginform"
 
-              />
+              /> */}
+  <InputBox 
+  placeholder='Email Address'
+  required
+  key="email"
+  name="email"
+  label="Email Address"
+  type="email"
+  id="email"
+  onChange={event => {_userDetailsOnChangeHandler(event,'email')}}
+/>
     </Grid>;
      password=<Grid item xs={12}>
-      <TextField
+      {/* <TextField
       key="otp"
         error={props.otpFail ? true : false}
         helperText={props.otpFail ? "OTP is not valid" : null}
@@ -316,8 +439,23 @@ else if(props.otpSent &&  !props.email){
         onChange={handleOtpChange}
                 className="loginform"
 
-      />
-      </Grid>;
+      /> */}
+      <OtpContainer>
+        <OTPInput
+      value={otp}
+      onChange={handleOtpChange}
+      numInputs={4}
+      inputType='tel'
+      inputStyle="otpBox"
+      // renderSeparator={<span> </span>}
+      renderInput={(props) => <input {...props} />}
+    />
+      </OtpContainer>
+      </Grid>
+      
+   
+
+      ;
  
 
 const _handlePhoneUpdate = () => {
@@ -329,11 +467,11 @@ const googleResponse = (response) => {
 }
 // if(!props.loadingsocial)
   return(
-    <div className={classes.paper}>
-      {!props.noheading ? <h1 style={{textAlign: "center", margin: '2rem 1rem', fontWeight: '700'}} className="font-opensans">
-      {props.loginmessage ? props.loginmessage : 'Log In'}
+    <div className='font-poppins' style={{padding : '20px'}}>
+      {!props.noheading ? <h1 style={{fontSize : '24px' ,textAlign: "left", margin: '1rem 0rem 1rem 0.5rem ', fontWeight: '700'}} className="font-poppins">
+      {props.loginmessage ? props.loginmessage : 'Login to your account'}
       </h1> : null}
-      {!props.noclose && !props.hideloginclose ? <StyledCrossFontAwesomeIcon icon={faTimes} onClick={props.onhide} /> : null}
+      {/* {!props.noclose && !props.hideloginclose ? <StyledCrossFontAwesomeIcon icon={faTimes} onClick={props.onhide} /> : null}
       {props.noicons || (props.token && !props.phone ) || ( props.token && props.phone === 'null' )  ?  null : <div style={{display: "grid", gridTemplateColumns: "33% 33% 33%", margin: "5vh 0"}}>
         <div style={{textAlign: "center"}}>
           <img src={icon1} style={{width: "40%", margin: "auto"}}></img>
@@ -349,8 +487,8 @@ const googleResponse = (response) => {
 
 
         </div>
-      </div>}
-      {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? <p style={{margin: '0 1rem 4rem 1rem', fontWeight: '100'}} className="font-opensans text-center">This is where your experience captain can reach you to personalize your plan.</p> : null}
+      </div>} */}
+      {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? <p style={{margin: '0 1rem 4rem 1rem', fontWeight: '100'}} className="font-poppins text-center">This is where your experience captain can reach you to personalize your plan.</p> : null}
       {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? 
         <form className={classes.form} noValidate ><Grid container spacing={props.nospacing ? 0 : 2}>
 
@@ -387,16 +525,17 @@ const googleResponse = (response) => {
 
       className="loginform"
       inputRef={mobileRef}
-      error={props.mobileFail ? true: false}
-
     />
+
+
+
   </Grid>
   <Button
           fullWidth
           variant="contained"
           color="primary"
           className={classes.updatephone}
-          onClick={_updatePhoneHandler}
+          onclick={_updatePhoneHandler}
           error={props.mobileFail ? true: false}
 
         >
@@ -405,9 +544,16 @@ const googleResponse = (response) => {
         </Button>
       </Grid> </form>
       : <form className={classes.form} noValidate >
-        <Grid container spacing={props.nospacing ? 1 : 2}>
-          <Grid item xs={3}>
-          <TextField
+       <InputBox style={{marginBottom : '0.7rem'}} 
+       placeholder={'Enter Your Full Name'}
+       key="userName"
+       required
+       id="userName"
+       label="Enter Your Full Name"
+       onChange={event => {_userDetailsOnChangeHandler(event,'userName')}}
+       />
+          <MobileNumberContainer>
+          {/* <TextField
           select
           label={extension}
           fullWidth
@@ -419,10 +565,29 @@ const googleResponse = (response) => {
 
           >
           {ExtensionOptions}
-        </TextField>
-          </Grid>
+        </TextField> */}
+
+<CountryCodeContainer>
+  <div className='CountryInput' onClick={()=>setOpenCountryCodeOption(true)}>
+    {/* {extension} */}
+    <CountryImg src={ extensions[extension].img} ></CountryImg>
+                  
+                  <p>{extensions[extension].label} </p>
+                  <FiChevronDown />
+                  
+</div>
+{openCountryCodeOption && <CountryCodeDropdown onClose={()=>setOpenCountryCodeOption(false)} ExtensionOptions={ExtensionOptions} />}
+
+</CountryCodeContainer>
           {mobileInput}
-          <Grid item xs={12}>
+</MobileNumberContainer>
+
+<WhatsappCheckBox onClick={()=>setWhatsapp(!whatsapp)}>
+ {whatsapp? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}
+{' '}  Receive boooking updates via WhatsApp
+</WhatsappCheckBox>
+{props.newUser || ( props.otpSent && !props.email ) ? email : null}
+        { props.otpSent &&  <div>
               <Typography variant="overline"
               >
               {props.otpSent && !otpResent ? "OTP HAS BEEN SENT" : null}
@@ -431,52 +596,61 @@ const googleResponse = (response) => {
               </Typography>
               <br></br>
 
-          </Grid>
+          </div>}
    
-          {props.newUser || ( props.otpSent && !props.name  ) ? firstname : null}
-          {props.newUser  || ( props.otpSent && !props.name ) ? lastname : null}
-          {props.newUser || ( props.otpSent && !props.email ) ? email : null}
+          {/* {props.newUser || ( props.otpSent && !props.name  ) ? firstname : null} */}
+          {/* {props.newUser  || ( props.otpSent && !props.name ) ? lastname : null} */}
           {props.otpSent ? password : null}
    
           {props.otpSent ? 
-            <UpdatePhone style={{textAlign: 'left', width: '100%'}}>
+            <UpdatePhone style={{textAlign: 'left', width: '100%' , fontSize : '14px' , marginBlock : '0.5rem'}}>
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
               <ResendOtp onClick={resetOtpHandler} ><u>Resend OTP</u></ResendOtp>
             </UpdatePhone>        
            : null}
-      </Grid>
+      
      
-          <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-          onClick={otpHandler}
-          style={{display: !props.otpSent ? 'initial' : 'none' , margin: props.nospacing ? '0' :  '0.5rem 0'}}
+          {!props.otpSent?<Button
+          onclick={otpHandler}
+          margin={props.nospacing ? '0' : '0.5rem 0'}
+          width='100%'
+          bgColor='#F7E700'
+          fontWeight='500'
+          fontSize='16px'
+          borderWidth='1px'
+          hoverColor='white'
+          hoverBgColor='black'
+          boxShadow='0px 2px 0px #ECEAEA'
+          borderRadius= '8px'
         >
-          Get OTP
-            {props.loading ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
-        </Button>
+          Request OTP
+            {props.loading ? <Spinner color='white' display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
+        </Button>:
         <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-          style={{display: props.otpSent && props.token === null ?  'initial' : 'none', margin: props.nospacing ? '0' : '0.5rem 0' }}
-          onClick={submitOtpHandler}
-       >
+          onclick={submitOtpHandler}
+          margin={props.nospacing ? '0' : '0.5rem 0'}
+          width='100%'
+          bgColor='#F7E700'
+          fontWeight='500'
+          fontSize='16px'
+          borderWidth='1px'
+          hoverColor='white'
+          hoverBgColor='black'
+          boxShadow='0px 2px 0px #ECEAEA'
+          borderRadius= '8px'
+           >
           Login
           {props.loading ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
-        </Button>
-        {props.newUser || ( props.otpSent && !props.name  ) ? <Grid container spacing={props.nospacing ? 1 : 2}>
+        </Button>}
+        {/* {props.newUser || ( props.otpSent && !props.name  ) ? <Grid container spacing={props.nospacing ? 1 : 2}>
           <Grid item xs={12}>
           <FormGroup>
-  <FormControlLabel control={<Checkbox size='small' defaultChecked  value={whatsapp} onChange={() => setWhatsapp(!whatsapp)}  />} label={<div className='font-opensans' style={{fontWeight: '300', fontSize: '0.75rem'}}>Receive booking updates via WhatsApp?</div>} className='font-opensans' />
+  <FormControlLabel control={<Checkbox size='small' defaultChecked  value={whatsapp} onChange={() => setWhatsapp(!whatsapp)}  />} label={<div className='font-poppins' style={{fontWeight: '300', fontSize: '0.75rem'}}>Receive booking updates via WhatsApp?</div>} className='font-poppins' />
 </FormGroup>
           </Grid>
         
-        </Grid> : null}
-        <div><hr></hr></div>
+        </Grid> : null} */}
+        <div style={{position : 'relative' , marginBlock : '2rem'}}><hr></hr><p style={{position : 'absolute' ,background: 'white',top: '-12px',left: '43%',paddingInline: '10px' ,fontSize : '16px', fontWeight : '500'}}>OR</p></div>
       
         <Grid container spacing={0}>
           <Grid item xs={12}>
@@ -489,15 +663,20 @@ const googleResponse = (response) => {
           onFailure={googleResponse}
           render={renderProps => (
             <Button
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      className={classes.google}
-                      onClick={renderProps.onClick}
-                      style={{textTransform: 'none', margin: props.nospacing ? '0' : '0.5rem 0'}}
+                      onclick={renderProps.onClick}
+                      margin={'0'}
+                      width='100%'
+                      bgColor='#F9F9F9'
+                      fontWeight='600'
+                      fontSize='16px'
+                      borderWidth='0px'
+                      hoverColor='white'
+                      hoverBgColor='black'
+                      boxShadow='0px 2px 0px #ECEAEA'
+                      borderRadius= '8px'
                     >
                       <img src={google} style={{height: '1.5rem', margin: "0 0.5rem"}}></img>
-                      <p style={{margin: '0', fontWeight: '300'}} className="font-opensans">Continue with Google</p>
+                      <p style={{margin: '0', fontWeight: '500' , fontSize : '1rem' , display : 'inline'}} className="font-poppins">Sign in with Google</p>
                       {/* {props.loadingsocial ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null} */}
                     </Button>          )}
         />
@@ -517,7 +696,7 @@ const googleResponse = (response) => {
             variant="contained"
             color="primary"
             className={classes.google}
-            onClick={renderProps.onClick}
+            onClick={renderProps.onClick}handleExtensionChange
             
           >
           <img src={facebook} style={{height: '1.5rem', margin: "0 0.5rem"}}></img>
@@ -525,7 +704,7 @@ const googleResponse = (response) => {
         />
         </Grid> */}
         </Grid>
-       <div className="text-center font-nuntio" style={{fontSize: '0.75rem', fontWeight: '300', margin: '1rem 0'}}>By signing up you are agreeing with our <Link href="/privacy-policy"  style={{textDecoration: 'none'}} passHref><a target="_blank">T&Cs and privacy policy </a></Link></div>
+       <div className="text-center font-nuntio" style={{fontSize: '12px', fontWeight: '300', margin: '1.5rem 0'}}>By signing up you are agreeing with our <Link href="/privacy-policy"  style={{textDecoration: 'none'}} passHref><a style={{color : 'black'}} target="_blank">T&Cs and privacy policy </a></Link></div>
       </form>}
       {props.loadingsocial ?<div style={{position: 'absolute', height: '100%', width: '100%', top: '0', zIndex: '2', backgroundColor: 'white'}} className="center-div"><Spinner></Spinner></div>: null}
       {/* {props.token !== null ? <Redirect to={props.authRedirectPath}></Redirect>: null} */}

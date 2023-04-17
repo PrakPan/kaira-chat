@@ -74,7 +74,7 @@ const Externallinkbutton = (props) => {
   return (
     <Link href={props.external_link ? props.external_link : "/404"} passHref={true}>
       <Externalbuttonstyle
-      className="font-opensans"
+      className="font-poppins"
         color={props.color}
         borderRadius={props.borderRadius}
         bgColor={props.bgColor}

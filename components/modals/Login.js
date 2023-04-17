@@ -1,5 +1,6 @@
 import React, {useRef, useEffect, useState} from 'react';
-import {Modal} from 'react-bootstrap';
+// import {Modal} from 'react-bootstrap';
+import Modal from '../ui/Modal'
 import Login from '../userauth/LogInModal';
 import styled from 'styled-components';
 import {connect} from 'react-redux';
@@ -7,7 +8,41 @@ import ImageLoader from '../ImageLoader';
 import media from '../media';
 const ImgContainer = styled.div`
   height: 100%;
+  position  : relative;
+  img{
+    filter: brightness(0.5);
+  }
   `;
+
+const ImgTagsContainer  = styled.div`
+position : absolute;
+top : 24%;
+left : 10%;
+img{
+  filter: brightness(1);
+}
+`
+const TagItem = styled.div`
+display : grid;
+grid-template-columns :40px  max-content;
+gap : 1rem;
+margin-bottom : 2rem;
+p{
+color : white;
+font-weight: 600;
+font-size: 16px;
+line-height: 24px;
+margin-block : auto;
+}
+`
+
+const TagsContent = [{icon : 'media/icons/login/tag.png' ,  text : 'Better prices'} ,
+{icon : 'media/icons/login/officer.png' , text : 'Get an experience captain'} ,
+{icon : 'media/icons/login/24-hours.png' , text : '24x7 live support for your trips'} ,{
+  icon : 'media/icons/login/discount.png' , text : 'Exclusive discounts'} ]
+
+
+
 const Enquiry = (props) => {
   let isPageWide = media('(min-width: 768px)')
 
@@ -31,26 +66,31 @@ const Enquiry = (props) => {
 
   if(isPageWide)
   return(
-      <div>
-        <Modal  backdrop={props.hideloginclose ? 'static' : true} show={props.show}  size="lg" centered onHide={props.hideloginclose ? null : props.onhide} style={{padding: "0"}}>
-            <Modal.Body style={{padding: "0"}} >
+      <div className='font-poppins'>
+        <Modal closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width='50%'>
+            {/* <Modal.Body style={{padding: "0"}} > */}
                 <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
-                  <div style={{backgroundColor: "	hsl(56, 100%, 48%, 50%)", display: showImage ? 'none' : 'block' }}></div>
+                  <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
                   <ImgContainer style={{display: showImage ? 'block' : 'none'}}>
-                      <ImageLoader url={'media/website/locationyellow.jpg'} height="100%" width="100%" onload={() => setShowImage(true)} ></ImageLoader>
+                      <ImageLoader url={'media/website/login-background.png'} height="100%" width="100%" onload={() => setShowImage(true)} ></ImageLoader>
+
+                    <ImgTagsContainer>
+                    {TagsContent.map((e,i)=><TagItem key={i}><ImageLoader borderRadius={'0.4rem 0 0 0.4rem'} url={e.icon} dimensions={{width : 200 , height : 200}}/><p className='font-poppins'>{e.text}</p></TagItem>)}
+                    </ImgTagsContainer>
+                
                   </ImgContainer>
                   <Login ref={myref} onhide={props.onhide}></Login>
                 </div>
-            </Modal.Body>
+            {/* </Modal.Body> */}
       </Modal>
       </div>
   );
   else return(
   <div>
-    <Modal backdrop={props.hideloginclose ? 'static' : true} show={props.show}  size="lg" centered onHide={props.hideloginclose ? null : props.onhide}>
-        <Modal.Body style={{padding: "0"}} >
+    <Modal backdrop={props.hideloginclose ? 'static' : true} show={props.show}  centered onHide={props.hideloginclose ? null : props.onhide} width={'90%'} mobileLeft='5%' mobileTop='7%' borderRadius={'12px'}>
+        {/* <Modal.Body style={{padding: "0"}} > */}
               <Login onhide={props.onhide}></Login>
-        </Modal.Body>
+        {/* </Modal.Body> */}
   </Modal>
   </div>);
 
