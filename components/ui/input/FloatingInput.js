@@ -1,5 +1,6 @@
-import React from "react";
+import React , {forwardRef, useState} from "react";
 import styled from "styled-components";
+import {BiError} from 'react-icons/bi'
 
 const Container = styled.div`
   position: relative;
@@ -13,20 +14,26 @@ const Input = styled.input`
   font-size: 14px;
   padding-inline: 20px;
   font-style: normal;
-border : 1px solid #D0D5DD;
-border-radius : 0.5rem;
-box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-font-weight: 400;
-font-size: 14px;
-line-height: 24px;
+  border: ${props=>props.error ? '1px solid red !important' :  '1px solid rgba(208, 213, 221, 1)'};
+  border-radius: 0.5rem;
+  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+  &:focus {
+    outline: none;
+    border-width : 2px !important;
+  }
 `;
 
 const Label = styled.label`
   position: absolute;
   pointer-events: none;
+  font-size : ${props=>props.fontSize};
   left: 20px;
   top: 14px;
   transition: 0.3s ease all;
+  color : ${props=>props.error? 'red !important' : 'black'};
   ${Input}:focus ~ & {
     top: -5px;
     left: 10px;
@@ -34,18 +41,43 @@ const Label = styled.label`
     padding-inline: 5px;
     background: white;
   }
+  ${(props) =>
+    props.filled &&
+    "top: -5px; left: 10px; font-size: 11px; padding-inline: 5px; background: white;"};
+    `;
+const Error = styled.div`
+  color : red;
+  font-size : 13px;
+  margin-top : 5px;
+  margin-left : 5px;
+  height : 1rem;
+  display : flex;
+  align-items : center
 `;
-
-const FloatingInput = (props) => (
-  <Container
+const FloatingInput = forwardRef((props,ref) => {
+  const [value,setValue] = useState('')
+ return <div style={props.error && props.helperText? {marginBottom : '0.5rem'} : {}}>  
+ <Container
     style={props.ContainerStyle}
     height={props.height}
     width={props.width}
-    className='font-poppins'
-  >
-    <Input {...props} height={props.height} width={props.width} placeholder={''} />
-    <Label style={props.labelStyle}>{props.label || props.placeholder}</Label>
+    className="font-poppins"
+  > 
+    <Input
+      {...props}
+      height={props.height}
+      width={props.width}
+      placeholder={""}
+      onChange={(e) => {
+        props.onChange && props.onChange(e);
+        setValue(e.target.value);
+      }}
+      ref={ref} 
+    />
+    <Label filled={value !== ""} fontSize={props.fontSize || props.style?.fontSize || '1rem'} error={props.error} style={props.labelStyle}>{props.label || props.placeholder}</Label>
   </Container>
-);
+  {props.error && props.helperText && <Error><BiError style={{fontSize : '1rem'}} /><span style={{marginLeft : '2px' , marginTop : '2px'}}>{props.helperText}</span></Error>}
+  </div>
+});
 
 export default FloatingInput;

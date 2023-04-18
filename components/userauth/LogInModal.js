@@ -29,6 +29,7 @@ import {FiChevronDown} from 'react-icons/fi'
 import {ImCheckboxUnchecked,ImCheckboxChecked} from 'react-icons/im'
 import OTPInput from "react-otp-input";
 import FloatingInput from '../ui/input/FloatingInput';
+import { BiError } from 'react-icons/bi';
 const MobileNumberContainer = styled.div`
 display: grid;
 grid-template-columns: 1.2fr 4fr;
@@ -48,6 +49,7 @@ align-items : center;
 const CountryCodeContainer = styled.div`
 position : relative;
 width : 90px;
+height: 3.1rem;
 .CountryInput{
 display : grid;
 border : 1px solid #D0D5DD;
@@ -71,6 +73,15 @@ margin-left: -5px;
 }
 
 `
+const ErrorText = styled.div`
+  color : red;
+  font-size : 13px;
+  margin-top : 5px;
+  margin-left : 5px;
+  height : 1rem;
+  display : flex;
+  align-items : center
+`;
 const OtpContainer = styled.div`
 div{
   display : grid !important;
@@ -209,13 +220,14 @@ console.log(props.otpFail , 'props.otpFail')
   const [extension, setExtension] = useState('India');  //store extension
   const [openCountryCodeOption , setOpenCountryCodeOption] = useState(false)
   const [otp , setOtp] = useState('')
+  const [userNameError , setUserNameError] = useState(false)
   let firstname=null; //JSX for first name
   let lastname=null;//JSX for last name
    let email=null;//JSX for email
   let password = null;//JSX for OTP
   let mobileInput=null; //JSX for mobile input field
   let ExtensionOptions = [];
- 
+  
     
   useEffect(() => {
         const script = document.createElement('script');
@@ -260,9 +272,10 @@ console.log(props.otpFail , 'props.otpFail')
 
     return 1;
   }
-
+console.log(props.otpFail , 'props.otpFail')
   //Submit OTP 
   const submitOtpHandler = (event) =>{
+
      event.preventDefault();
 
      console.log(extensions[extension].label+mobile,otp,userDetails.userName, userDetails.email, whatsapp , 'submitOtpHandler')
@@ -298,7 +311,11 @@ else if(props.otpSent &&  !props.email){
   
   //Dispatch Action 
   const otpHandler = () => {
-    props.onOtp(extensions[extension].label+mobile);
+    if(!userDetails.userName) setUserNameError(true)
+    else{
+      setUserNameError(false)
+      props.onOtp(extensions[extension].label+mobile);
+    }
   }
   //TEST 
   const resetOtpHandler = () => {
@@ -337,6 +354,8 @@ else if(props.otpSent &&  !props.email){
     <FloatingInput 
   placeholder='Mobile Number'
   required
+  error={props.mobileFail ? true: false}
+  helperText={props.mobileFail ? props.mobilefailmessage : null}
   disabled={props.otpSent ? true : false}
   key="mobile"
   name="mobile"
@@ -399,6 +418,8 @@ else if(props.otpSent &&  !props.email){
   <FloatingInput 
   placeholder='Email Address'
   required
+  error={props.emailFail ? true : false}
+  helperText={props.emailFail ? props.emailfailmessage : null}
   key="email"
   name="email"
   label="Email Address"
@@ -435,6 +456,7 @@ else if(props.otpSent &&  !props.email){
       renderInput={(props) => <input {...props} />}
     />
       </OtpContainer>
+  {props.otpFail && <ErrorText><BiError style={{fontSize : '1rem'}} /><span style={{marginLeft : '2px' , marginTop : '2px'}}>OTP is not valid</span></ErrorText>}
       </Grid>
       
    
@@ -528,7 +550,9 @@ const googleResponse = (response) => {
         </Button>
       </Grid> </form>
       : <form className={classes.form} noValidate >
-       <FloatingInput style={{marginBottom : '0.7rem'}} 
+       <FloatingInput style={{marginBottom : '0.7rem'}}
+       error={userNameError}
+       helperText={'Please enter valid username'} 
        placeholder={'Enter Your Full Name'}
        key="userName"
        required
@@ -611,22 +635,27 @@ const googleResponse = (response) => {
           Request OTP
             {props.loading ? <Spinner color='white' display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
         </Button>:
-        <Button
-          onclick={submitOtpHandler}
-          margin={props.nospacing ? '0' : '0.5rem 0'}
-          width='100%'
-          bgColor='#F7E700'
-          fontWeight='500'
-          fontSize='16px'
-          borderWidth='1px'
-          hoverColor='white'
-          hoverBgColor='black'
-          boxShadow='0px 2px 0px #ECEAEA'
-          borderRadius= '8px'
+        <button
+          onClick={submitOtpHandler}
+          style={{
+            width:'100%',
+            background : '#F7E700',
+            fontWeight:'500',
+            cursor : 'pointer',
+            fontSize:'16px',
+            padding : '0.5rem',
+            border:'1px solid black',
+            boxShadow:'0px 2px 0px #ECEAEA',
+            borderRadius: '8px',
+            "&:hover": {
+              background: "black",
+              color : 'white',
+            }
+          }}
            >
           Login
           {props.loading ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
-        </Button>}
+        </button>}
         {/* {props.newUser || ( props.otpSent && !props.name  ) ? <Grid container spacing={props.nospacing ? 1 : 2}>
           <Grid item xs={12}>
           <FormGroup>
