@@ -68,11 +68,16 @@ export async function getStaticProps(context){
       const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`)
       const data = res.data
 
-      const resp = await axiosReccommendedCityInstance.get(
-            `/?slug=${context.params.city}`
-          );
-          const reccoData = resp.data;
-     var reccomendedCitiesData = reccoData.map(e=>({id : e.id , image : e.image , lat : e.lat , long : e.long , most_popular_for : e.most_popular_for , name : e.name})) 
+      try{
+            const resp = await axiosReccommendedCityInstance.get(
+              `/?slug=${context.params.city}`
+            );
+            const reccoData = resp.data;
+       var reccomendedCitiesData = reccoData.map(e=>({id : e.id , image : e.image , lat : e.lat , long : e.long , most_popular_for : e.most_popular_for , name : e.name})) 
+          }
+          catch{
+        var reccomendedCitiesData = null
+          }
       if (!data) {
             return {
               notFound: true,
@@ -80,7 +85,8 @@ export async function getStaticProps(context){
           }
       return{
             props: {
-                  cityData: data
+                  cityData: data,
+                  reccomendedCitiesData
             }
       }
 }
