@@ -87,10 +87,7 @@ const ItineraryPoiElement = (props) => {
     return elem === undefined || elem === null || !elem;
   }
   return (
-    <Container
-      className="font-poppins"
-      style={{ fontSize: '14px', fontWeight: '500' }}
-    >
+    <Container>
       {/* <div>{props.time}</div> */}
       <TInfoContainer>
         <HLine style={{ width: '2rem' }}>

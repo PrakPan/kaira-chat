@@ -70,7 +70,7 @@ const TransferElementsM = ({
       </Container>
       <Line></Line>
 
-      {newcity !== null ? (
+      {/* {newcity !== null ? (
         <ArriveContainer style={{ fontSize: '15px', fontWeight: '550' }}>
           <TransportContainer>
             <div>{time}</div>
@@ -88,7 +88,7 @@ const TransferElementsM = ({
         </ArriveContainer>
       ) : null}
 
-      <Line></Line>
+      <Line></Line> */}
     </>
   );
 };

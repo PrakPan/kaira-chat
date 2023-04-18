@@ -52,12 +52,96 @@ const Day_I_ContainerM = (props) => {
       )
     );
   }
-  function divide(JsonArray, Arslab_elements) {
+  function divides(JsonArray, Arslab_elements) {
     Arslab_elements.forEach((Arslab_element) =>
       filter(JsonArray, Arslab_element.name, Arslab_element.data)
     );
   }
+  divides(props.Days.slab_elements, Arslab_elements);
+  let dayIcontainer = [];
+  function divide(JsonArray, Arslab_elements) {
+    JsonArray.forEach(function(element) {
+      switch (element.element_type) {
+        case 'transfer':
+          console.log(`it is ${element.element_type}`);
+          dayIcontainer.push(
+            <TransferElementsM
+              time="9:00AM"
+              modes={element.modes}
+              transfers={element.transfers}
+              meta={element.meta}
+              icon={element.icon}
+              heading={element.heading}
+              bookings={element.bookings}
+              text={props.Days.slab_elements[0].text}
+              // newcity={
+              //   Arslab_elements[1].data[0].length != 0
+              //     ? Arslab_elements[1].data[0][0]
+              //     : null
+              // }
+            ></TransferElementsM>
+          );
+          break;
+        case 'newcity':
+          console.log(`it is ${element.element_type}`);
+          // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
+
+          break;
+        case 'accommodation':
+          console.log(`it is ${element.element_type}`);
+          dayIcontainer.push(
+            <ItineraryElementM
+              icon={element.icon}
+              time="9:00AM"
+              bookings={element.bookings}
+              heading={element.heading}
+              text={element.text}
+            ></ItineraryElementM>
+          );
+          break;
+        case 'meal':
+          console.log(`it is ${element.element_type}`);
+          dayIcontainer.push(
+            <ItineraryFoodElementM
+              icon={element.icon}
+              time="12:00PM"
+              bookings={element.bookings}
+              heading={element.heading}
+              text={element.text}
+            ></ItineraryFoodElementM>
+          );
+          break;
+        case 'recommendation':
+          console.log(`it is ${element.element_type}`);
+          dayIcontainer.push(
+            <RecomendationComponent
+              icon={element.icon}
+              recomendation={element.text}
+            ></RecomendationComponent>
+          );
+          break;
+        case 'activity':
+          console.log(`it is ${element.element_type}`);
+          dayIcontainer.push(
+            <ItineraryPoiElementM
+              key={element.activity_data.id}
+              time="11:00AM"
+              image={element.icon !== undefined ? element.icon : null}
+              booking
+              heading={element.heading}
+              text={element.text}
+              poi={element.activity_data.poi}
+            ></ItineraryPoiElementM>
+          );
+          break;
+        default:
+          console.log(`Sorry, we are out of ${element.element_type}.`);
+      }
+    });
+  }
   divide(props.Days.slab_elements, Arslab_elements);
+
+  console.log(`it is there${dayIcontainer}`);
   console.log(Arslab_elements);
   return (
     <Container className="font-poppins">
@@ -92,7 +176,8 @@ const Day_I_ContainerM = (props) => {
           heading={Arslab_elements[0].data[0].heading}
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
-        {Arslab_elements[0].data[0].length != 0 ? (
+        {dayIcontainer}
+        {/* {Arslab_elements[0].data[0].length != 0 ? (
           <TransferElementsM
             time="9:00AM"
             modes={Arslab_elements[0].data[0][0].modes}
@@ -108,9 +193,9 @@ const Day_I_ContainerM = (props) => {
                 : null
             }
           ></TransferElementsM>
-        ) : null}
+        ) : null} */}
 
-        {Arslab_elements[2].data[0][0] ? (
+        {/* {Arslab_elements[2].data[0][0] ? (
           <ItineraryElementM
             icon={Arslab_elements[2].data[0][0].icon}
             time="9:00AM"
@@ -164,8 +249,8 @@ const Day_I_ContainerM = (props) => {
                 : null
             }
           ></ItineraryFoodElementM>
-        ) : null}
-        {Arslab_elements[4].data[0][0] && !Arslab_elements[3].data[0][0] ? (
+        ) : null} */}
+        {/* {Arslab_elements[4].data[0][0] && !Arslab_elements[3].data[0][0] ? (
           <RecomendationComponent
             recomendation={
               Arslab_elements[4].data[0][0]
@@ -193,7 +278,7 @@ const Day_I_ContainerM = (props) => {
                 heading={element.heading}
                 text={element.text}
                 poi={element.activity_data.poi}
-            ></ItineraryPoiElementM>
+              ></ItineraryPoiElementM>
             ))
           : NULL}
 
@@ -210,7 +295,7 @@ const Day_I_ContainerM = (props) => {
                 : null
             }
           ></ItineraryFoodElementM>
-        ) : null}
+        ) : null} */}
       </div>
     </Container>
   );

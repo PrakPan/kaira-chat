@@ -156,7 +156,7 @@ const Day_I_Container = (props) => {
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: '2px' }}>
           <div className="font-medium text-black text-md">
-            {props.Days?.slab}
+            {convertDateFormat(props.Days?.slab)}
           </div>
           {/* {Arslab_elements[0].data[0][0] !== undefined &&
           Arslab_elements[0].data[0][0].transfers !== undefined &&
