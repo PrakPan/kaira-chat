@@ -65,12 +65,12 @@ const LocationContainer = styled.div`
   }
 `;
 const SkeletonContainer = styled.div`
-padding: 0.3rem;
-max-width: 100%;
-display : grid;
-grid-template-columns : 1fr 5fr;
-gap : 2px;
-`
+  padding: 0.3rem;
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  gap: 2px;
+`;
 
 const MarkerContainer = styled.div`
   background: #dfdfdf;
@@ -100,40 +100,53 @@ const Locations = (props) => {
     // localStorage.setItem('search_city_selected_name', name)
     // localStorage.setItem('search_city_selected_parent', parent)
 
-
-    router.push('/tailored-travel?search_text='+name)
-  }
-  let locations=[];
-    if(props.hotlocations){
-        for(var i=0; i<props.hotlocations.length; i++){
-            let slug = props.hotlocations[i].slug
-            locations.push(
-                <LocationContainer onClick={() => _handleLocationClick(slug)}>
-                <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
-            <Text>
-              <div>{props.hotlocations[i].name}</div>
-            <p>{props.hotlocations[i].state?.name}</p>            
-            </Text>
-           </LocationContainer>
-            )
-        }
-
+    router.push('/tailored-travel?search_text=' + name);
+  };
+  let locations = [];
+  if (props.hotlocations) {
+    for (var i = 0; i < props.hotlocations.length; i++) {
+      let slug = props.hotlocations[i].slug;
+      locations.push(
+        <LocationContainer onClick={() => _handleLocationClick(slug)}>
+          <MarkerContainer>
+            <FaMapMarkerAlt />
+          </MarkerContainer>
+          <Text>
+            <div>{props.hotlocations[i].name}</div>
+            <p>{props.hotlocations[i].state?.name}</p>
+          </Text>
+        </LocationContainer>
+      );
     }
-    else {
-        for(var i=0; i<8; i++){
-          
-            locations.push(
-                <SkeletonContainer>
-  <SkeletonCard borderRadius='100%' width='44px' ml='1px'></SkeletonCard>
-  <div style={{marginBlock : 'auto'}}>
-  <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
-  <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
-  </div>
-           </SkeletonContainer>
-            )
-        }
+  } else {
+    for (var i = 0; i < 8; i++) {
+      locations.push(
+        <SkeletonContainer>
+          <SkeletonCard
+            borderRadius="100%"
+            width="44px"
+            ml="1px"
+          ></SkeletonCard>
+          <div style={{ marginBlock: 'auto' }}>
+            <SkeletonCard
+              height="14px"
+              ml="8px"
+              width={'70%'}
+              borderRadius={'2px'}
+            ></SkeletonCard>
+            <SkeletonCard
+              height="12px"
+              ml="8px"
+              mt="4px"
+              width={'55%'}
+              borderRadius={'2px'}
+            ></SkeletonCard>
+          </div>
+        </SkeletonContainer>
+      );
     }
   }
+
   return (
     <div>
       <Heading className="font-poppins">POPULAR DESTINATIONS</Heading>

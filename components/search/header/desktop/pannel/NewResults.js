@@ -100,33 +100,33 @@ const NewResults = (props) => {
   };
   let results = [];
 
-  const skeleton = (
-    <div
-      style={{
-        display: 'grid',
-        padding: '0.3rem',
-        gap: '2px',
-        gridTemplateColumns: '1fr 5fr',
-      }}
-    >
-      <SkeletonCard borderRadius="100%" width="45px"></SkeletonCard>
-      <div style={{ marginBlock: 'auto' }}>
-        <SkeletonCard
-          height="14px"
-          ml="8px"
-          width={'70%'}
-          borderRadius={'2px'}
-        ></SkeletonCard>
-        <SkeletonCard
-          height="12px"
-          ml="8px"
-          mt="4px"
-          width={'55%'}
-          borderRadius={'2px'}
-        ></SkeletonCard>
-      </div>
-    </div>
-  );
+  // const skeleton = (
+  //   <div
+  //     style={{
+  //       display: 'grid',
+  //       padding: '0.3rem',
+  //       gap: '2px',
+  //       gridTemplateColumns: '1fr 5fr',
+  //     }}
+  //   >
+  //     <SkeletonCard borderRadius="100%" width="45px"></SkeletonCard>
+  //     <div style={{ marginBlock: 'auto' }}>
+  //       <SkeletonCard
+  //         height="14px"
+  //         ml="8px"
+  //         width={'70%'}
+  //         borderRadius={'2px'}
+  //       ></SkeletonCard>
+  //       <SkeletonCard
+  //         height="12px"
+  //         ml="8px"
+  //         mt="4px"
+  //         width={'55%'}
+  //         borderRadius={'2px'}
+  //       ></SkeletonCard>
+  //     </div>
+  //   </div>
+  // );
 
   const skeleton = (
     <div style={{ display: 'flex', padding: '0.3rem' }}>
