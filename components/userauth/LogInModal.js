@@ -28,7 +28,7 @@ import CountryCodeDropdown from './CountryDropdown';
 import {FiChevronDown} from 'react-icons/fi'
 import {ImCheckboxUnchecked,ImCheckboxChecked} from 'react-icons/im'
 import OTPInput from "react-otp-input";
-
+import FloatingInput from '../ui/input/FloatingInput';
 const MobileNumberContainer = styled.div`
 display: grid;
 grid-template-columns: 1.2fr 4fr;
@@ -43,21 +43,6 @@ display : flex;
 gap: 0.3rem;
 margin-block: 0.7rem 1rem;
 align-items : center;
-`
-
-const InputBox = styled.input`
-padding: 0.8rem 0rem 0.8rem 1rem;
-font-style: normal;
-border : 1px solid #D0D5DD;
-border-radius : 0.5rem;
-box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-font-weight: 400;
-font-size: 14px;
-line-height: 24px;
-width  : 100%;
-&::placeholder{
-  color : black;
-}
 `
 
 const CountryCodeContainer = styled.div`
@@ -349,7 +334,7 @@ else if(props.otpSent &&  !props.email){
       className="loginform"
       inputRef={mobileRef}
     /> */}
-    <InputBox 
+    <FloatingInput 
   placeholder='Mobile Number'
   required
   disabled={props.otpSent ? true : false}
@@ -363,7 +348,6 @@ else if(props.otpSent &&  !props.email){
   onBlur={handleMobileBlur}
   className="loginform"
   ref={mobileRef}
-
 />
   </div>
   firstname = 
@@ -412,7 +396,7 @@ else if(props.otpSent &&  !props.email){
                         className="loginform"
 
               /> */}
-  <InputBox 
+  <FloatingInput 
   placeholder='Email Address'
   required
   key="email"
@@ -544,13 +528,14 @@ const googleResponse = (response) => {
         </Button>
       </Grid> </form>
       : <form className={classes.form} noValidate >
-       <InputBox style={{marginBottom : '0.7rem'}} 
+       <FloatingInput style={{marginBottom : '0.7rem'}} 
        placeholder={'Enter Your Full Name'}
        key="userName"
        required
        id="userName"
        label="Enter Your Full Name"
        onChange={event => {_userDetailsOnChangeHandler(event,'userName')}}
+       ContainerStyle={{marginBottom : '0.5rem'}}
        />
           <MobileNumberContainer>
           {/* <TextField

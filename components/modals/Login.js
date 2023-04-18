@@ -24,7 +24,7 @@ img{
 `
 const TagItem = styled.div`
 display : grid;
-grid-template-columns :40px  max-content;
+grid-template-columns :40px 2fr;
 gap : 1rem;
 margin-bottom : 2rem;
 p{
@@ -67,7 +67,7 @@ const Enquiry = (props) => {
   if(isPageWide)
   return(
       <div className='font-poppins'>
-        <Modal closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width='50%'>
+        <Modal closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={true} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width='50%'>
             {/* <Modal.Body style={{padding: "0"}} > */}
                 <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
                   <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
