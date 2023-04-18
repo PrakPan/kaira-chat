@@ -14,6 +14,7 @@ import {
 } from './New_itenaryStyled';
 import { convertNumToTime } from '../../../helper/convertNumToTime';
 import { formatNumber } from '../../../helper/formatNumber';
+import { Text } from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 const TransferElements = ({
   time,
   heading,
@@ -73,9 +74,7 @@ const TransferElements = ({
               </TransportContainer>
             ) : null}
 
-            <TransferInfo className="text-sm pt-2 text-black pb-4">
-              {text}
-            </TransferInfo>
+            <Text className="pt-2 pb-4">{text}</Text>
             <Line></Line>
           </div>
         </TInfoContainer>

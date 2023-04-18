@@ -93,7 +93,7 @@ const Day_I_Container = (props) => {
           break;
         case 'newcity':
           console.log(`it is ${element.element_type}`);
-          dayIcontainer.push(<NewCity newcity={element}></NewCity>);
+          // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
 
           break;
         case 'accommodation':

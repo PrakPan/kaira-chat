@@ -15,7 +15,7 @@ import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
     display: flex;
-    width: 70vw;
+    width: 60vw;
     flex-direction: column;
   `;
   const CitiesContainer = styled.div`
@@ -299,7 +299,7 @@ const NewItenaryMain = (props) => {
       ></ScrollableMenuTabs>
       <ScrollableMenuTabs
         icons={false}
-        offset={'170px'}
+        offset={'160px'}
         items={itemsDays}
         BarName="CityName"
         year={yearCalc(itemsDays)}

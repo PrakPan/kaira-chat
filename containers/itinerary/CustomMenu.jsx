@@ -37,12 +37,15 @@ const MenuItem = styled.div`
   }
 `;
 const RoundMenuItem = styled.div`
-  padding: 5px 10px 5px 10px;
+  padding: 2px 3px 2px 3px;
   cursor: pointer;
-  width: max-content;
+  width: ${({ Isvertical }) => (Isvertical ? '95px' : 'max-content')};
+ 
+  display: flex;
+  justify-content: center;
   margin: ${({ Isvertical }) =>
     Isvertical ? '12px 0px 0px 0px' : '0px 7px 0px 0px'};
-  margin-left: 7px;
+  
   background-color: ${({ isActive }) => (isActive ? '#01202B' : 'none')};
   color: ${({ isActive }) => (isActive ? '#fff' : '#111')};
   border-radius: 8px;

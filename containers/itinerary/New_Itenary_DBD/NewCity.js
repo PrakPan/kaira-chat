@@ -1,11 +1,11 @@
 import React from 'react';
 import { Container, HLine, Line, TInfoContainer } from './New_itenaryStyled';
 import ImageLoader from '../../../components/ImageLoader';
-
+import { FaCarSide } from 'react-icons/fa';
 const NewCity = (props) => (
   <Container style={{ fontSize: '14px', fontWeight: '500' }}>
     {/* <div>{time}</div> */}
-    {props.newcity.city_data.image && (
+    {props.newcity.city_data.image ? (
       // <div style={{ marginLeft: '6px' }}>
       //   <ImageLoader
       //     url={props.newcity.city_data.image}
@@ -34,7 +34,20 @@ const NewCity = (props) => (
             widthmobile="100%"
             url={props.newcity.city_data.image}
           ></ImageLoader>
-        ) : null}
+        ) : (
+          <FaCarSide />
+        )}
+      </div>
+    ) : (
+      <div
+        style={{
+          position: 'absolute',
+
+          marginTop: '10px',
+        }}
+        className="text-4xl pl-4"
+      >
+        <FaCarSide className="text-4xl" />
       </div>
     )}
     <div className="flex flex-row pt-2">
