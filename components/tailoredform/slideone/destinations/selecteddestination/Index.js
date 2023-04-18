@@ -85,17 +85,17 @@ const SelectedDestination = (props) => {
           !props.showSearchStarting ? 
               !props.startingLocation ?  
               <>Delhi, IN <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Departing from</span></>  : 
-          <>{props.startingLocation.name} <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Departing</span></> : 
+          <>{props.startingLocation.name} <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem'}}>Departing</span></> : 
      <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => {setFocusLocation(false)}} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>
      :
      props.destination && showDestination
-      ? <>{props.destination} <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Destination</span></> : 
-     <SearchInput CITIES={props.CITIES}  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+      ? <>{props.destination}
+    <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Destination</span></> : 
+     <SearchInput _updateDestinationHandler={props._updateDestinationHandler} CITIES={props.CITIES}  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     
     </LeftContent>
-    
     
     {!props.selectlocation ? 
     
@@ -118,7 +118,7 @@ const SelectedDestination = (props) => {
     {/* <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill>  */}
  
  
-      {props.setDeletedId ? <AiFillDelete onClick={()=>props.setDeletedId(props.inbox_id)} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null}
+      {props.setDeletedId ? <AiFillDelete onClick={()=>{props.setDeletedId(props.inbox_id)}} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null}
 
        
     {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo> */}

@@ -24,7 +24,7 @@ const  Home = (props) =>  {
           <meta property='keywords' content='travel in india, tour in india, india travel, travel agents near me, plan a trip, travel and experience culture, local travel experience, customized trip planner india, customized holiday packages, customized packages in computer, customized travel, honeymoon travel packages, personalized travel package'></meta>
       </Head>
        
-     <HomepageContainer ThemeData={props.ThemeData}></HomepageContainer>
+     <HomepageContainer token={props.token} ThemeData={props.ThemeData}></HomepageContainer>
     </Layout>
   )
  

@@ -5,6 +5,7 @@ import Head  from 'next/head';
 import axios from 'axios';
 import axiosallCityInstance from '../../../../services/travel-guide/SearchAllLocation'
 import axiosPoiCityInstance from '../../../../services/poi/city'
+import axiosReccommendedCityInstance from '../../../../services/poi/reccommededcities'
 
 const Experience = (props) => {
 
@@ -17,7 +18,10 @@ const Experience = (props) => {
     />
     <meta property="og:title" content={props.cityData.name +" Things To Do  | The Tarzan Way"}/><meta property="og:description" content="We envision to simplify travel and build immersive travel experiences." /><meta property="og:image" content="/logoblack.svg" />
     <title>{props.cityData.name +" Things To Do | Travel Guide |  The Tarzan Way"}</title>
-      </Head><ExperienceContainer cityData={props.cityData}   id={router.query.city}></ExperienceContainer></Layout>
+      </Head><ExperienceContainer 
+          reccomendedCitiesData={props.reccomendedCitiesData}
+      cityData={props.cityData}   
+      id={router.query.city}></ExperienceContainer></Layout>
 // return null;
 }
 
@@ -63,6 +67,17 @@ export async function getStaticProps(context){
 
       const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`)
       const data = res.data
+
+      try{
+            const resp = await axiosReccommendedCityInstance.get(
+              `/?slug=${context.params.city}`
+            );
+            const reccoData = resp.data;
+       var reccomendedCitiesData = reccoData.map(e=>({id : e.id , image : e.image , lat : e.lat , long : e.long , most_popular_for : e.most_popular_for , name : e.name})) 
+          }
+          catch{
+        var reccomendedCitiesData = null
+          }
       if (!data) {
             return {
               notFound: true,
@@ -70,7 +85,8 @@ export async function getStaticProps(context){
           }
       return{
             props: {
-                  cityData: data
+                  cityData: data,
+                  reccomendedCitiesData
             }
       }
 }

@@ -5,6 +5,7 @@ import media from '../../../components/media';
 import PageDotsFlickity from '../../../components/PageDotsFlickity';
 import validateTextSize from '../../../services/textSizeValidator';
 import Map from '../../../components/Map';
+import WeatherWidget from '../../../components/WeatherWidget/WeatherWidget';
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -19,6 +20,12 @@ const Items = styled.div`
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
   }
+`;
+const TextBold = styled.p`
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: rgb(1, 32, 43);
 `;
 const Button = styled.button`
   background: white;
@@ -38,6 +45,14 @@ const MapInfo = styled.div`
   b {
     font-weight: 600;
   }
+`;
+
+const WeatherContainer = styled.div`
+  border: 1px solid #eceaea;
+  border-radius: 10px;
+  padding: 25px;
+  height: max-content;
+  margin-bottom: 1.7rem;
 `;
 const Poi = (props) => {
   const [more, setMore] = useState(4);
@@ -86,11 +101,20 @@ const Poi = (props) => {
     />
   ));
 
+  const cards = props.pois?.map((e, i) => (
+    <PoiCard
+      key={e.id}
+      data={e}
+      showDrawer={showDrawer[i]}
+      setShowDrawer={setShowDrawer}
+      _handleOpen={_handleOpen}
+      handleCloseDrawer={handleCloseDrawer}
+    />
+  ));
+
   return (
     <GridContainer>
       <div className="hidden-mobile">
-        {/* <> */}
-
         <Items>
           {props.pois
             .filter((e, i) => i < more)
@@ -105,8 +129,6 @@ const Poi = (props) => {
               />
             ))}
         </Items>
-
-        {/* </GridContainer> */}
         <Button
           onClick={() => {
             more < props.pois.length
@@ -127,12 +149,36 @@ const Poi = (props) => {
       <div className="hidden-desktop">
         <PageDotsFlickity padding={'1rem 0.2rem'} cards={cards} />
       </div>
-      <Map
-        locations={props.pois}
-        defaultZoom={12}
-        height={isPageWide ? '350px' : '230px'}
-        InfoWindowContainer={InfoWindowContainer}
-      />
+      <div>
+        {props.thingsToDoPage && (
+          <WeatherContainer elevation={props.elevation}>
+            <WeatherWidget
+              city={props.data.name}
+              lat={props.data.lat}
+              lon={props.data.long}
+            />
+            {props.data.elevation[0]?.elevation && (
+              <div style={{ marginTop: '20px' }}>
+                <TextBold>Altitude</TextBold>
+                <p style={{ fontWeight: '300', marginBottom: '0' }}>
+                  {Math.floor(props.data.elevation[0]?.elevation)} metres (
+                  {Math.floor(props.data.elevation[0]?.elevation * 3.281)} feet)
+                  above sea level
+                </p>
+              </div>
+            )}
+          </WeatherContainer>
+        )}
+
+        <Map
+          locations={props.pois}
+          defaultZoom={12}
+          height={
+            isPageWide ? (props.thingsToDoPage ? '320px' : '350px') : '230px'
+          }
+          InfoWindowContainer={InfoWindowContainer}
+        />
+      </div>
     </GridContainer>
   );
 };

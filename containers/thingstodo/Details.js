@@ -35,9 +35,6 @@ const Details = (props) => {
   const [locations, setLocations] = useState([]);
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-  
-
-
     axiosrecommendedinstance
       .get(
         `/?slug=`+props.slug

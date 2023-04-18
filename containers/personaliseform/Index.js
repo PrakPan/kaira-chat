@@ -340,6 +340,7 @@ const _addCityHandler = (city_id, city) => {
           }}).then(response => {
             setSubmitted(true);
             setLoading(false);
+            localStorage.removeItem('MyPlans')
            
             // _nextQuestionHandler();
             window.scrollTo(0,0);

@@ -30,8 +30,8 @@ z-index: 10;
  const skeleton = <div style={{display:'flex' , marginBlock:'1rem'}}>
         <SkeletonCard borderRadius='100%' width='52px' ml='1px'></SkeletonCard>
         <div>
-        <SkeletonCard height='14px' ml='4px' width={'50%'} borderRadius={'2px'}></SkeletonCard>
-        <SkeletonCard height='12px' ml='4px' mt='4px' width={'35%'} borderRadius={'2px'}></SkeletonCard>
+        <SkeletonCard height='14px' ml='7px' width={'50%'} borderRadius={'2px'}></SkeletonCard>
+        <SkeletonCard height='12px' ml='7px' mt='4px' width={'35%'} borderRadius={'2px'}></SkeletonCard>
         </div>
         </div>
 
@@ -44,12 +44,13 @@ const SearchResults = (props) => {
   } 
   },[]);
 
+  if(props.loading) return <AbsoluteContainer className='border' top={props.top}>{[skeleton,skeleton,skeleton,skeleton,skeleton]}</AbsoluteContainer>
   return (
     <AbsoluteContainer className='border' top={props.top}>{
       props.results.length ?
       props.results.map((result,i) => {
        if(i<5) return(
-        props.loading? skeleton :  <Result setFocusSearch={props.setFocusSearch} inbox_id={props.inbox_id} setDestination={props.setDestination} name={result["_source"].name} result={result['_source']} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></Result>
+         <Result _updateDestinationHandler={props._updateDestinationHandler} setShowResults={props.setShowResults} setFocusSearch={props.setFocusSearch} inbox_id={props.inbox_id} setDestination={props.setDestination} name={result["_source"].name} result={result['_source']} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></Result>
         )
       })
       : null

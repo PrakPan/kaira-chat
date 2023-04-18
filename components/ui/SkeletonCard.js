@@ -1,4 +1,3 @@
-import react from 'react'
 import styled from 'styled-components';
 import Lottie from 'react-lottie'
 import animationData from '../../public/assets/skeleton_square.json'

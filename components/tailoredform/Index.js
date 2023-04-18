@@ -1,5 +1,5 @@
  
-import React, {useState, useEffect} from "react";
+import React, {useState , useRef, useEffect} from "react";
 import dayjs  from 'dayjs';
 import moment from 'moment'
 import styled , {keyframes}from 'styled-components';
@@ -86,12 +86,15 @@ const BlackContainer = styled.div`
 `;
 const Enquiry = (props) => {
     const router = useRouter();
+    const initialInputId = Date.now()
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState(props.destinationType == 'travel-planner'? [{destination_id  :props.page_id,input_id : 0}]: [{id : props.page_id , name : props.destination , input_id : 0}]);
+    const [selectedCities, setSelectedCities] = useState(props.destinationType == 'travel-planner'? [{destination_id  :props.page_id,input_id : initialInputId}]: [{id : props.page_id , name : props.destination , input_id : initialInputId}]);
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
     const [destination , setDestination] = useState(props.destination)
+    // const ContainerRef = useRef()
+
      const _submitDataHandler = () => {
          const value_start = new Date(valueStart);
         const value_end = new Date(valueEnd);
@@ -192,6 +195,8 @@ const Enquiry = (props) => {
         
             
         setLoading(true);
+        localStorage.removeItem('MyPlans')
+
          axiostailoredinstance.post('',
        data, {headers: {
         'Authorization': `Bearer ${props.token}`
@@ -200,7 +205,6 @@ const Enquiry = (props) => {
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
                 window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-              
                  }
              else{
                 // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
@@ -254,6 +258,10 @@ const Enquiry = (props) => {
     if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
     if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
     setSlideIndex(slideIndex + 1)
+    // window.scrollBy(0, -200 , 'smooth');
+    // ContainerRef.current.scrollIntoView(0,-150)
+    if(props.HeroBanner && isPageWide) window.scrollTo({top: 0,
+      behavior: "smooth"})
   }
 
   const _SlideTwoSubmitHandler = ()=>{
@@ -274,6 +282,7 @@ const Enquiry = (props) => {
        slideIndex={slideIndex}
        className={isPageWide ? "border center-di" : "center-div"}
        onClick={() => setShowBlack(true)}
+      //  ref={ContainerRef}
      >
 
       {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem'  left='10px' text='Please select starting date!' />}
@@ -324,6 +333,7 @@ const Enquiry = (props) => {
          ></div>
 
          <Flickity
+         initialInputId={initialInputId}
            startingLocation={startingLocation}
            setStartingLocation={setStartingLocation}
            children_cities={props.children_cities}

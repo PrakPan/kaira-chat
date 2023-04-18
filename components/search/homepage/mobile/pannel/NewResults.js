@@ -97,8 +97,8 @@ const NewResults = (props) => {
   let results=[];
   console.log(props.results,'_sour') 
   
-  const skeleton = <div style={{display:'flex' , padding : '0.3rem'}}>
-  <SkeletonCard borderRadius='100%' width='90px' ml='1px'></SkeletonCard>
+  const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '0.5fr 5fr'}}>
+  <SkeletonCard borderRadius='100%' width='44px'></SkeletonCard>
   <div style={{marginBlock : 'auto'}}>
   <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
   <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
@@ -106,12 +106,10 @@ const NewResults = (props) => {
   </div>
 
 
-  
   if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
 
 
-
-    return(      
+    return(      <>
         <Container>
         {props.results.map((e,i)=>
        { if(i<5) return<LocationContainer key={e["_source"].resource_id} onClick={() => {_handlePersonaliseRedirect(e['_source'].name)}}>
@@ -122,10 +120,11 @@ const NewResults = (props) => {
             {e['_source'].parent && <p>{e['_source'].parent}</p>}            
             </Text>
         </LocationContainer>}
-        )}
+        )
+    }
 
         </Container>
-        
+        </>
     );
 }
 

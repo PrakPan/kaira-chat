@@ -22,6 +22,7 @@ const NavItemsContainer = styled.div`
     margin-right: 0rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
 `;
 
@@ -335,7 +336,7 @@ const Navbar = (props) => {
                 position: 'absolute',
                 left: '32%',
                 height: '100%',
-                width: '30%',
+                width: '37%',
               }}
               className="center-div"
               onClick={() => setToggleSearch(true)}
@@ -375,29 +376,9 @@ const Navbar = (props) => {
                 <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
             </NavItem> */}
               <NavItem style={{ paddingInline: '1.5rem' }}>
-                <Link href={urls.CONTACT} passHref={true}>
-                  {router.pathname === '/contact' ? (
-                    <StyledLink
-                      style={{
-                        color:
-                          props.headerColor === 'black' ? 'white' : 'black',
-                        borderColor: '#f7e700',
-                        fontWeight: '500',
-                      }}
-                    >
-                      Contact
-                    </StyledLink>
-                  ) : (
-                    <StyledLink
-                      style={{
-                        color:
-                          props.headerColor === 'black' ? 'white' : 'black',
-                      }}
-                    >
-                      Contact
-                    </StyledLink>
-                  )}
-                </Link>
+                {/* <Link href={urls.CONTACT} passHref={true}>
+              {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700' , fontWeight : '500'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
+              </Link> */}
               </NavItem>
 
               {!props.hidecta ? (

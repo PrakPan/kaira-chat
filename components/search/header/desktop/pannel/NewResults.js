@@ -72,7 +72,6 @@ const MarkerContainer = styled.div`
 `;
 const Text = styled.div`
   font-weight: 500;
-  // margin-block : 5px;
   p {
     font-weight: 400;
     margin-bottom: 0rem;
@@ -100,7 +99,34 @@ const NewResults = (props) => {
     router.push('/tailored-travel?search_text=' + name);
   };
   let results = [];
-  console.log(props.results, '_sour');
+
+  const skeleton = (
+    <div
+      style={{
+        display: 'grid',
+        padding: '0.3rem',
+        gap: '2px',
+        gridTemplateColumns: '1fr 5fr',
+      }}
+    >
+      <SkeletonCard borderRadius="100%" width="45px"></SkeletonCard>
+      <div style={{ marginBlock: 'auto' }}>
+        <SkeletonCard
+          height="14px"
+          ml="8px"
+          width={'70%'}
+          borderRadius={'2px'}
+        ></SkeletonCard>
+        <SkeletonCard
+          height="12px"
+          ml="8px"
+          mt="4px"
+          width={'55%'}
+          borderRadius={'2px'}
+        ></SkeletonCard>
+      </div>
+    </div>
+  );
 
   const skeleton = (
     <div style={{ display: 'flex', padding: '0.3rem' }}>
@@ -126,9 +152,43 @@ const NewResults = (props) => {
   if (!props.results)
     return (
       <SkeletonContainer>
-        {[skeleton, skeleton, skeleton, skeleton, skeleton, skeleton]}
+        {[
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+          skeleton,
+        ]}
       </SkeletonContainer>
     );
+
+  return (
+    <>
+      <Container>
+        {props.results.map((e) => (
+          <LocationContainer
+            key={e['_source'].resource_id}
+            onClick={() => {
+              _handlePersonaliseRedirect(e['_source'].name);
+            }}
+          >
+            <MarkerContainer>
+              <ImSearch />
+            </MarkerContainer>
+            <Text>
+              <div>{e['_source'].name}</div>
+              {e['_source'].parent && <p>{e['_source'].parent}</p>}
+            </Text>
+          </LocationContainer>
+        ))}
+      </Container>
+    </>
+  );
 
   return (
     <Container>

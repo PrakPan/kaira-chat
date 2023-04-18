@@ -85,8 +85,6 @@ const CountryCodeOption = styled.div`
 `;
 const Enquiry = (props) => {
     const [calendarOpen, setCalendarOpen] = useState(false);
-
-
     const [firstName, setFirstName] = useState(null);
     const [lastName, setLastName] = useState(null)
     const [adults, setAdults] = useState("2");
@@ -176,11 +174,11 @@ const Enquiry = (props) => {
             // },
             
           };
-  
+          localStorage.removeItem('MyPlans')
+
          axiostailoredinstance.post('',
        data
         ).then(response => {
-
             setSubmitted(true);
             if(!response.data.auto_itinerary_created) {
                 window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
