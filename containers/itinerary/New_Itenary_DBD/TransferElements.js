@@ -31,26 +31,22 @@ const TransferElements = ({
     <>
       <Container>
         <Timecontainer>
-          <div style={{ width: '3.7rem' }}>{time}</div>
-
-          <SubTimecontainer>
-            <div
-            className="text-base font-medium pr-2"
-            >
-              {heading}
-            </div>
-
-            {meta == null || meta.estimated_cost == undefined ? null : (
-              <TransparentButton>
-                {modes ? `${modes} From ` : null} ₹
-                {formatNumber(meta.estimated_cost)}
-              </TransparentButton>
-            )}
-          </SubTimecontainer>
+          {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
         </Timecontainer>
         <TInfoContainer>
           <HLine style={{ width: '2rem' }}></HLine>
-          <div>
+
+          <div className="pt-4">
+            <div>
+              <div className="text-base font-semibold pr-2 ">{heading}</div>
+
+              {meta == null || meta.estimated_cost == undefined ? null : (
+                <TransparentButton>
+                  {modes ? `${modes} From ` : null} ₹
+                  {formatNumber(meta.estimated_cost)}
+                </TransparentButton>
+              )}
+            </div>
             {transfers !== undefined ? (
               <TransportContainer>
                 <div style={{ paddingRight: '10px' }}>
@@ -62,7 +58,10 @@ const TransferElements = ({
                     widthmobile="1.25rem"
                   ></ImageLoader>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }} className='text-md font-medium'>
+                <div
+                  style={{ display: 'flex', flexDirection: 'column' }}
+                  className="text-md font-medium"
+                >
                   <div>
                     {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
                     {transfers.routes[0]?.legs[0].destination.shortName}
@@ -74,37 +73,13 @@ const TransferElements = ({
               </TransportContainer>
             ) : null}
 
-            <TransferInfo className="text-sm pt-2 text-black">{text}</TransferInfo>
+            <TransferInfo className="text-sm pt-2 text-black pb-4">
+              {text}
+            </TransferInfo>
             <Line></Line>
           </div>
         </TInfoContainer>
       </Container>
-
-      {newcity !== null ? (
-        <Container style={{ fontSize: '14px', fontWeight: '500' }}>
-          <div>{time}</div>
-
-          <TInfoContainer>
-            <HLine style={{ width: '2rem' }}>
-              <div style={{ marginLeft: '-10px' }}>
-                <ImageLoader
-                  url={icon}
-                  leftalign
-                  dimensions={{ width: 200, height: 200 }}
-                  width="1.25rem"
-                  widthmobile="1.25rem"
-                ></ImageLoader>
-              </div>
-            </HLine>
-            <div>
-              <div style={{ paddingBottom: '20px' }}>
-                Arrive in {newcity.city_data.city_name}{' '}
-              </div>
-              <Line></Line>
-            </div>
-          </TInfoContainer>
-        </Container>
-      ) : null}
     </>
   );
 };

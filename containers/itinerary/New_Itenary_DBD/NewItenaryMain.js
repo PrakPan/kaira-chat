@@ -34,7 +34,7 @@ const NewItenaryMain = (props) => {
     border-radius: 8px;
     padding: 0.5rem;
   `;
-  console.log('itenary...' + JSON.stringify(props.itinerary));
+  // console.log('itenary...' + JSON.stringify(props.itinerary));
   const dates = props.itinerary.day_slabs.map((element, index) => (
     <div key={index}>{element.slab}</div>
   ));
@@ -250,7 +250,7 @@ const NewItenaryMain = (props) => {
     }
   }
   console.log('ITEMsssssss', items);
-  
+
   function memoize(fn) {
     const cache = {};
     return function(...args) {
@@ -261,19 +261,18 @@ const NewItenaryMain = (props) => {
       const result = fn.apply(this, args);
       cache[key] = result;
       return result;
-    }
+    };
   }
-  
-  const yearCalc=(days)=>{
-    var year1 = days[0].date.split('/')[2]
-    var year2 = days[days.length - 1].date.split('/')[2]
-    if(year1 != year2){
-      return `${year1}/${year2}`
-    }else{
-     return year1
+
+  const yearCalc = (days) => {
+    var year1 = days[0].date.split('/')[2];
+    var year2 = days[days.length - 1].date.split('/')[2];
+    if (year1 != year2) {
+      return `${year1}/${year2}`;
+    } else {
+      return year1;
     }
-    
-  }
+  };
   return (
     <Wrapper>
       {/* <ScrollableTabs

@@ -64,23 +64,44 @@ const ItineraryElement = (props) => {
 
   return (
     <Container style={{ fontSize: '14px', fontWeight: '500' }}>
-      <div>{props.time}</div>
+      {/* <div>{props.time}</div> */}
       {/* <SectionOneText>{props.time}</SectionOneText> */}
-      <TInfoContainer>
-        <HLine style={{ width: '2rem' }}>
-          <div style={{ marginLeft: '-10px' }}>
-            <ImageLoader
-              url={props.icon}
-              leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="1.25rem"
-              widthmobile="1.25rem"
-            ></ImageLoader>
+      <div className="flex flex-row pt-2">
+        <div className="ml-[6px] flex justify-center items-center">
+          <ImageLoader
+            url={props.icon}
+            leftalign
+            dimensions={{ width: 200, height: 200 }}
+            width="3.25rem"
+            widthmobile="1.25rem"
+          ></ImageLoader>
+        </div>
+        <div
+          style={{ display: 'flex', alignItems: 'center' }}
+          className="pl-[3.8rem]"
+        >
+          <div className="flex flex-col">
+            <div className="text-base font-bold">{props.heading}</div>
+            <div>
+              <Text>{props.text ? props.text : null}</Text>
+            </div>
           </div>
-        </HLine>
+        </div>
+      </div>
+      {/* <div style={{ marginLeft: '0px' }}>
+        <ImageLoader
+          url={props.icon}
+          leftalign
+          dimensions={{ width: 200, height: 200 }}
+          width="3.25rem"
+          widthmobile="1.25rem"
+        ></ImageLoader>
+      </div> */}
+      <TInfoContainer>
+        <HLine style={{ width: '2rem' }}></HLine>
         <div>
-          <GridContainer image={props.image}>
-            {props.image ? (
+          <GridContainer image={props.image} className="">
+            {/* {props.image ? (
               <ImageLoader
                 dimensions={{ width: 200, height: 200 }}
                 dimensionsMobile={{ width: 250, height: 200 }}
@@ -92,11 +113,7 @@ const ItineraryElement = (props) => {
                 widthmobile="100%"
                 url={props.image}
               ></ImageLoader>
-            ) : null}
-            <div>
-              <Heading>{props.heading}</Heading>
-              <Text>{props.text ? props.text : null}</Text>
-            </div>
+            ) : null} */}
           </GridContainer>
 
           <Line></Line>

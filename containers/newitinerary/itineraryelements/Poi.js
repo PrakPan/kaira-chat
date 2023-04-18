@@ -39,8 +39,9 @@ export const TInfoContainer = styled.div`
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
+  width: 100%;
   margin-top: 1rem;
-  grid-template-columns: ${(props) => (props.image ? '1fr 2fr' : '1fr')};
+
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
@@ -90,7 +91,7 @@ const ItineraryPoiElement = (props) => {
       className="font-poppins"
       style={{ fontSize: '14px', fontWeight: '500' }}
     >
-      <div>{props.time}</div>
+      {/* <div>{props.time}</div> */}
       <TInfoContainer>
         <HLine style={{ width: '2rem' }}>
           <div style={{ marginLeft: '-10px' }}>
@@ -125,53 +126,56 @@ const ItineraryPoiElement = (props) => {
           </div>
         </HLine>
         <div>
-          <GridContainer image={props.image}>
+          <div className="w-full pt-10">
             {/* {props.image ? 
                    <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
                 : 
                 null
                 } */}
-            <div>
-          <div className="flex flex-row " style={{ lineHeight: '1' }}>
-            <Heading className='text-lg'>{props.heading}</Heading>
-            <HiPencil className="text-lg min-w-max"></HiPencil>
-          </div>
-          <StarRating initialRating={4}></StarRating>
-          {/* <Rating margin="0.25rem 0"></Rating> */}
-          {props.poi !== undefined ? (
-            props.poi.experience_filters ? (
+            <div className="w-full">
               <div
-                className={`grid grid-rows-${Math.ceil(
-                  props.poi.experience_filters.length / 2
-                )} grid-flow-col gap-2`}
+                className="flex flex-row w-full  justify-start items-center"
+                style={{ lineHeight: '1' }}
               >
-                {props.poi.experience_filters.map((element, index) =>
-                  element.toString() != 'Hidden Gem' ? (
-                    <div
-                      className="flex max-w-min text-sm  font-bold"
-                      key={index}
-                    >
-                      {' '}
-                      {element.split(' ').length > 2
-                        ? element.split(' ')[0]
-                        : element}{' '}
-                    </div>
-                  ) : (
-                    <div className="flex font-bold" key={index}>
-                      <div
-                        className="border-solid border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
-                        style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
-                      >
-                        {element}
-                      </div>
-                    </div>
-                  )
-                )}
+                <div className="text-base font-semibold ">{props.heading}</div>
+                <HiPencil className="text-lg min-w-max pl-3"></HiPencil>
               </div>
-            ) : null
-          ) : null}
-        </div>
-          </GridContainer>
+              <StarRating initialRating={4}></StarRating>
+              {/* <Rating margin="0.25rem 0"></Rating> */}
+              {props.poi !== undefined ? (
+                props.poi.experience_filters ? (
+                  <div
+                    className={`grid w-fit grid-rows-${Math.ceil(
+                      props.poi.experience_filters.length / 2
+                    )} grid-flow-col gap-x-5 gap-y-0`}
+                  >
+                    {props.poi.experience_filters.map((element, index) =>
+                      element.toString() != 'Hidden Gem' ? (
+                        <div
+                          className="flex  items-center text-sm  font-bold"
+                          key={index}
+                        >
+                          {' '}
+                          {element.split(' ').length > 2
+                            ? element.split(' ')[0]
+                            : element}{' '}
+                        </div>
+                      ) : (
+                        <div className="flex font-bold" key={index}>
+                          <div
+                            className="border-solid  border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
+                            style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
+                          >
+                            {element}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : null
+              ) : null}
+            </div>
+          </div>
 
           <Text>{props.text}</Text>
           {/* {!ErrorNotDef(props.poi) ? (
@@ -202,6 +206,7 @@ const ItineraryPoiElement = (props) => {
                     : null
                 }
             </div> */}
+      <Line></Line>
     </Container>
   );
 };

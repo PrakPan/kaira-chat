@@ -28,7 +28,6 @@ const Container = styled.div`
 const SectionOneText = styled.span``;
 
 export const Text = styled.p`
-  margin: 0.75rem 0;
   overflow: hidden;
   line-height: 1.5;
   text-overflow: ellipsis;
@@ -90,10 +89,26 @@ const ItineraryFoodElement = (props) => {
         className="font-poppins"
         style={{ fontSize: '14px', fontWeight: '500' }}
       >
-        <div>{props.time}</div>
+        {/* <div>{props.time}</div> */}
+        <div className="flex flex-row pt-2">
+          <div style={{ marginLeft: '6px' }}>
+            <ImageLoader
+              url={props.icon}
+              leftalign
+              dimensions={{ width: 200, height: 200 }}
+              width="3.25rem"
+              widthmobile="1.25rem"
+            ></ImageLoader>
+          </div>
+          <div className="pl-[3.8rem] flex justify-center flex-col">
+            <div className="text-base font-bold">{props.heading}</div>
+            <Text>{props.text}</Text>
+          </div>
+        </div>
+
         <TInfoContainer>
           <HLine style={{ width: '2rem' }}>
-            <div style={{ marginLeft: '-10px' }}>
+            {/* <div style={{ marginLeft: '-10px' }}>
               <ImageLoader
                 url={props.icon}
                 leftalign
@@ -101,18 +116,15 @@ const ItineraryFoodElement = (props) => {
                 width="1.25rem"
                 widthmobile="1.25rem"
               ></ImageLoader>
-            </div>
+            </div> */}
           </HLine>
+
           <div>
             <div>
               <div className="text-center">
                 {/* <IoMdRestaurant
                   style={{ fontSize: '1.5rem', textAlign: 'center' }}
                 ></IoMdRestaurant> */}
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Heading className='text-base font-bold'>{props.heading}</Heading>
               </div>
             </div>
             {props.recomendation ? (

@@ -37,7 +37,7 @@ const NewItenaryDBDMob = (props) => {
     border-radius: 8px;
     padding: 0.5rem;
   `;
-  console.log('itenary...' + JSON.stringify(props.itinerary));
+  // console.log('itenary...' + JSON.stringify(props.itinerary));
   // const dates = props.itinerary.day_slabs.map((element, index) => (
   //   <div key={index}>{element.slab}</div>
   // ));

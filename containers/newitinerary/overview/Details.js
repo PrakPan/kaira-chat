@@ -14,11 +14,11 @@ const Container = styled.div`
     grid-column-gap: 2.5rem;
   }
 `;
-const convertDFormat = dt => {
+const convertDFormat = (dt) => {
   const date = parseISO(dt);
-const formattedDate = format(date, 'MMMM d yyyy');
-return formattedDate
-}
+  const formattedDate = format(date, 'MMMM d yyyy');
+  return formattedDate;
+};
 const Heading = styled.p`
   font-size: 15px;
   font-weight: 400;
@@ -48,13 +48,13 @@ const Details = (props) => {
           <Text>{props.duration_time} Nights</Text>
         </div>
       ) : null}
-{props.duration_time != null ? (
+      {/* {props.duration_time != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Duration</Heading>
           <Text>{props.duration_time} Nights</Text>
         </div>
-      ) : null}
-      {props.travellerType != null ? (
+      ) : null} */}
+      {props.travellerType[0] != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>
@@ -68,10 +68,12 @@ const Details = (props) => {
       {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Date of travelling ({props.duration})</Heading>
-          {props.start_date && <Text>
-            {convertDFormat(props.start_date)} -
-            {convertDFormat(props.end_date)}
-          </Text>}
+          {props.start_date && (
+            <Text>
+              {convertDFormat(props.start_date)} -
+              {convertDFormat(props.end_date)}
+            </Text>
+          )}
         </div>
       ) : null}
 

@@ -32,14 +32,14 @@ export const TransparentButton = styled.button`
   filter: drop-shadow(0px 1px 0px #f0f0f0);
   border-radius: 6px;
   display: flex;
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 500;
+  font-size: 14px;
 
   width: fit-content;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 8px 18px;
+  padding: 4px 10px;
   margin: 10px 0px 10px 0px;
 `;
 export const TransportContainer = styled.div`
