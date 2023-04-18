@@ -444,14 +444,10 @@
 .MuiBox-root {
   padding: 0 !important;
 }
-<<<<<<< HEAD
-.MuiTabs-flexContainer {
-=======
-.MuiDrawer-root{
-  z-index : 1501 !important;
+.MuiDrawer-root {
+  z-index: 1501 !important;
 }
-.MuiTabs-flexContainer{
->>>>>>> origin/feature/cityplanner
+.MuiTabs-flexContainer {
   z-index: 2 !important;
 }
 #itinerary-modal .modal-body {

@@ -24,7 +24,7 @@ const TransferElementsM = ({
 }) => {
   return (
     <>
-      <Container>
+      <Container className="pt-3">
         <Timecontainer>
           {/* <div className="text-base">{time}</div> */}
 

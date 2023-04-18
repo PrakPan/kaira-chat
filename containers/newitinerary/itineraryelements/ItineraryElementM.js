@@ -43,10 +43,10 @@ const ItineraryElementM = (props) => {
     <Container className="font-poppins">
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {/* <SectionOneText>{props.time}</SectionOneText> */}
-        <AiFillCar
+        {/* <AiFillCar
           style={{ margin: '-2px 0  0 0.5rem' }}
           className="text-2xl"
-        ></AiFillCar>
+        ></AiFillCar> */}
         {props.bookings ? (
           <div
             style={{
