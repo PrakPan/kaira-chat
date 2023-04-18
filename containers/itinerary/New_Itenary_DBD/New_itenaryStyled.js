@@ -11,7 +11,7 @@ export const Container = styled.div`
   font-size: 12px;
   line-height: 22px;
 
-  padding: 0px 0px 0px 0px;
+  padding: px 0px 0px 0px;
   color: #01202b;
 `;
 export const ArriveContainer = styled.div`
