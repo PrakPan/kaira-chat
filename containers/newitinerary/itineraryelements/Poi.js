@@ -111,17 +111,19 @@ const ItineraryPoiElement = (props) => {
             }}
           >
             {props.image ? (
-              <ImageLoader
-                dimensions={{ width: 200, height: 200 }}
-                dimensionsMobile={{ width: 250, height: 200 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={() => console.log('')}
-                width="60%"
-                leftalign
-                widthmobile="100%"
-                url={props.image}
-              ></ImageLoader>
+              <div className="bg-white w-[60%]">
+                <ImageLoader
+                  dimensions={{ width: 200, height: 200 }}
+                  dimensionsMobile={{ width: 250, height: 200 }}
+                  borderRadius="8px"
+                  hoverpointer
+                  onclick={() => console.log('')}
+                  width="100%"
+                  leftalign
+                  widthmobile="100%"
+                  url={props.image}
+                ></ImageLoader>
+              </div>
             ) : null}
           </div>
         </HLine>
@@ -178,6 +180,7 @@ const ItineraryPoiElement = (props) => {
           </div>
 
           <Text>{props.text}</Text>
+          <Line></Line>
           {/* {!ErrorNotDef(props.poi) ? (
             !ErrorNotDef(props.poi.tips) ? (
               <Tips tips={props.poi.tips}></Tips>
@@ -206,7 +209,6 @@ const ItineraryPoiElement = (props) => {
                     : null
                 }
             </div> */}
-      <Line></Line>
     </Container>
   );
 };
