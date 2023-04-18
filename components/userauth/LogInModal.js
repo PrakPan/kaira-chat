@@ -98,61 +98,61 @@ border: 1px solid #D0D5DD;
 `
 
 
-const useStyles = makeStyles(themes => ({
-    '@global': {
-      body: {
-        backgroundColor: 'white'
-      },
-    },
-    paper: {
-      display: 'flex', 
-      flexDirection: 'column',
-      justifyContent: 'center',
-      padding: "0",
-      position: 'relative',
-      color: 'black'
+// const useStyles = makeStyles(themes => ({
+//     '@global': {
+//       body: {
+//         backgroundColor: 'white'
+//       },
+//     },
+//     paper: {
+//       display: 'flex', 
+//       flexDirection: 'column',
+//       justifyContent: 'center',
+//       padding: "0",
+//       position: 'relative',
+//       color: 'black'
 
 
-    },
+//     },
   
-    form: {
-      width: '95%', 
-      margin: "0 auto",
-    },
-    submit: {
-      margin: "1rem 0",
-      backgroundColor: '#f7e700 !important',
-      textTransform: 'none !important',
-      color: "black !important",
-      borderRadius: "0.5rem !important",
-      '&:hover':{
-        backgroundColor: "#F7e700 !important"
-      }
-    }, 
-    updatephone: {
-      margin: "2rem 0 2rem 0.5rem !important",
-      backgroundColor: '#f7e700 !important',
-      textTransform: 'none !important',
-      color: "black !important",
-      borderRadius: "2rem !important",
-      '&:hover':{
-        backgroundColor: "#F7e700 !important"
-      }
-    },
-    google: {
-      margin: "1rem 0  !important",
-      backgroundColor: "white !important",
-      color: "black !important",
-      borderRadius: "2rem !important", 
-       '&:hover':{
-        backgroundColor: "#e4e4e4 !important"
-      }
+//     form: {
+//       width: '95%', 
+//       margin: "0 auto",
+//     },
+//     submit: {
+//       margin: "1rem 0",
+//       backgroundColor: '#f7e700 !important',
+//       textTransform: 'none !important',
+//       color: "black !important",
+//       borderRadius: "0.5rem !important",
+//       '&:hover':{
+//         backgroundColor: "#F7e700 !important"
+//       }
+//     }, 
+//     updatephone: {
+//       margin: "2rem 0 2rem 0.5rem !important",
+//       backgroundColor: '#f7e700 !important',
+//       textTransform: 'none !important',
+//       color: "black !important",
+//       borderRadius: "2rem !important",
+//       '&:hover':{
+//         backgroundColor: "#F7e700 !important"
+//       }
+//     },
+//     google: {
+//       margin: "1rem 0  !important",
+//       backgroundColor: "white !important",
+//       color: "black !important",
+//       borderRadius: "2rem !important", 
+//        '&:hover':{
+//         backgroundColor: "#e4e4e4 !important"
+//       }
 
-    },
-    height: {
-      height: "1.5rem !important",
-    }
-  }));
+//     },
+//     height: {
+//       height: "1.5rem !important",
+//     }
+  // }));
   var userDetails = {
     firstName : '',
     lastName : '',
@@ -216,7 +216,7 @@ console.log(props.otpFail , 'props.otpFail')
   const [mobile, setMobile] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
-  const classes = useStyles();
+  // const classes = useStyles();
   const [extension, setExtension] = useState('India');  //store extension
   const [openCountryCodeOption , setOpenCountryCodeOption] = useState(false)
   const [otp , setOtp] = useState('')
@@ -369,37 +369,37 @@ else if(props.otpSent &&  !props.email){
   ref={mobileRef}
 />
   </div>
-  firstname = 
-        <Grid item xs={12} sm={6}>
-              <TextField
-                key="fname"
-                required
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                fullWidth
-                id="firstName"
-                label="First Name"
-                onChange={event => {_userDetailsOnChangeHandler(event,'firstName')}}
-                className="loginform"
-              />
-          </Grid>;
-    lastname=<Grid item xs={12} sm={6}>
-              <TextField
-                    key="lname"
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-                onChange={event => {_userDetailsOnChangeHandler(event,'lastName')}}
-                        className="loginform"
+  // firstname = 
+  //       <Grid item xs={12} sm={6}>
+  //             <TextField
+  //               key="fname"
+  //               required
+  //               autoComplete="fname"
+  //               name="firstName"
+  //               variant="outlined"
+  //               fullWidth
+  //               id="firstName"
+  //               label="First Name"
+  //               onChange={event => {_userDetailsOnChangeHandler(event,'firstName')}}
+  //               className="loginform"
+  //             />
+  //         </Grid>;
+  //   lastname=<Grid item xs={12} sm={6}>
+  //             <TextField
+  //                   key="lname"
+  //               variant="outlined"
+  //               required
+  //               fullWidth
+  //               id="lastName"
+  //               label="Last Name"
+  //               name="lastName"
+  //               autoComplete="lname"
+  //               onChange={event => {_userDetailsOnChangeHandler(event,'lastName')}}
+  //                       className="loginform"
 
-              />
-            </Grid>;
-    email=<Grid item xs={12}>
+  //             />
+  //           </Grid>;
+    email=<>
               {/* <TextField
               key="email"
                 error={props.emailFail ? true : false}
@@ -427,8 +427,8 @@ else if(props.otpSent &&  !props.email){
   id="email"
   onChange={event => {_userDetailsOnChangeHandler(event,'email')}}
 />
-    </Grid>;
-     password=<Grid item xs={12}>
+    </>;
+     password=<>
       {/* <TextField
       key="otp"
         error={props.otpFail ? true : false}
@@ -457,7 +457,7 @@ else if(props.otpSent &&  !props.email){
     />
       </OtpContainer>
   {props.otpFail && <ErrorText><BiError style={{fontSize : '1rem'}} /><span style={{marginLeft : '2px' , marginTop : '2px'}}>OTP is not valid</span></ErrorText>}
-      </Grid>
+      </>
       
    
 
@@ -496,51 +496,42 @@ const googleResponse = (response) => {
       </div>} */}
       {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? <p style={{margin: '0 1rem 4rem 1rem', fontWeight: '100'}} className="font-poppins text-center">This is where your experience captain can reach you to personalize your plan.</p> : null}
       {(props.token && !props.phone ) || ( props.token && props.phone === 'null' ) ? 
-        <form className={classes.form} noValidate ><Grid container spacing={props.nospacing ? 0 : 2}>
+        <form 
+        // className={classes.form} 
+        noValidate > <MobileNumberContainer>
+        {/* <TextField
+        select
+        label={extension}
+        fullWidth
 
-       <Grid item xs={3}>
-          <TextField
-          select
-          label={extension}
-          fullWidth
+        value={extension}
+        onChange={handleExtensionChange}
+        variant="outlined"
+                className="loginform country-code-field"
 
-          value={extension}
-          onChange={handleExtensionChange}
-          variant="outlined"
-                  className="loginform country-code-field"
+        >
+        {ExtensionOptions}
+      </TextField> */}
 
-          >
-          {ExtensionOptions}
-        </TextField>
-        </Grid>
-        <Grid item xs={9}>
-  <TextField
-      key="mobile"
-      error={props.mobileFail ? true: false}
-      helperText={props.mobileFail ? props.mobilefailmessage : null}
-      // disabled={props.otpSent ? true : false}
-      variant="outlined"
-      required
-      fullWidth
-      name="mobile"
-      label="Mobile Number"
-      type="mobile"
-      id="mobile"
-      onChange={handleMobileChange}
-      onBlur={handleMobileBlur}
+<CountryCodeContainer>
+<div className='CountryInput' onClick={()=>setOpenCountryCodeOption(true)}>
+  {/* {extension} */}
+  <CountryImg src={ extensions[extension].img} ></CountryImg>
+                
+                <p>{extensions[extension].label} </p>
+                <FiChevronDown />
+                
+</div>
+{openCountryCodeOption && <CountryCodeDropdown onClose={()=>setOpenCountryCodeOption(false)} ExtensionOptions={ExtensionOptions} />}
 
-      className="loginform"
-      inputRef={mobileRef}
-    />
-
-
-
-  </Grid>
+</CountryCodeContainer>
+        {mobileInput}
+</MobileNumberContainer>
   <Button
           fullWidth
           variant="contained"
           color="primary"
-          className={classes.updatephone}
+          // className={classes.updatephone}
           onclick={_updatePhoneHandler}
           error={props.mobileFail ? true: false}
 
@@ -548,8 +539,10 @@ const googleResponse = (response) => {
           Complete Signup
             {props.loading ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null}
         </Button>
-      </Grid> </form>
-      : <form className={classes.form} noValidate >
+       </form>
+      : <form 
+      // className={classes.form} 
+      noValidate >
        <FloatingInput style={{marginBottom : '0.7rem'}}
        error={userNameError}
        helperText={'Please enter valid username'} 
@@ -596,13 +589,13 @@ const googleResponse = (response) => {
 {' '}  Receive boooking updates via WhatsApp
 </WhatsappCheckBox>
 {props.newUser || ( props.otpSent && !props.email ) ? email : null}
-        { props.otpSent &&  <div>
-              <Typography variant="overline"
+        { props.otpSent &&  <div style={{    height: '1.2rem',marginLeft: '2px',fontSize: '0.7rem' , marginTop : '10px'}}>
+              <p style={{letterSpacing : '2px'}}
               >
               {props.otpSent && !otpResent ? "OTP HAS BEEN SENT" : null}
               {props.otpSent && otpResent ? "OTP HAS BEEN RESENT" : null}
 
-              </Typography>
+              </p>
               <br></br>
 
           </div>}
@@ -666,8 +659,8 @@ const googleResponse = (response) => {
         </Grid> : null} */}
         <div style={{position : 'relative' , marginBlock : '2rem'}}><hr></hr><p style={{position : 'absolute' ,background: 'white',top: '-12px',left: '43%',paddingInline: '10px' ,fontSize : '16px', fontWeight : '500'}}>OR</p></div>
       
-        <Grid container spacing={0}>
-          <Grid item xs={12}>
+        <>
+          <>
     
         <GoogleLogin
           clientId="905616545950-uvachhjv75hejrp9plvodags7s1tqq20.apps.googleusercontent.com"
@@ -694,7 +687,7 @@ const googleResponse = (response) => {
                       {/* {props.loadingsocial ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null} */}
                     </Button>          )}
         />
-        </Grid>
+        </>
         {/* <Grid item xs={6}>
         <FacebookLogin
           appId= "189892422091317"
@@ -717,7 +710,7 @@ const googleResponse = (response) => {
         </Button>          )}
         />
         </Grid> */}
-        </Grid>
+        </>
        <div className="text-center font-nuntio" style={{fontSize: '12px', fontWeight: '300', margin: '1.5rem 0'}}>By signing up you are agreeing with our <Link href="/privacy-policy"  style={{textDecoration: 'none'}} passHref><a style={{color : 'black'}} target="_blank">T&Cs and privacy policy </a></Link></div>
       </form>}
       {props.loadingsocial ?<div style={{position: 'absolute', height: '100%', width: '100%', top: '0', zIndex: '2', backgroundColor: 'white'}} className="center-div"><Spinner></Spinner></div>: null}

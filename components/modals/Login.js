@@ -87,7 +87,7 @@ const Enquiry = (props) => {
   );
   else return(
   <div>
-    <Modal backdrop={props.hideloginclose ? 'static' : true} show={props.show}  centered onHide={props.hideloginclose ? null : props.onhide} width={'90%'} mobileLeft='5%' mobileTop='7%' borderRadius={'12px'}>
+    <Modal backdrop={props.hideloginclose ? 'static' : true} show={true}  centered onHide={props.hideloginclose ? null : props.onhide} width={'90%'} mobileLeft='5%' mobileTop='7%' borderRadius={'12px'}>
         {/* <Modal.Body style={{padding: "0"}} > */}
               <Login onhide={props.onhide}></Login>
         {/* </Modal.Body> */}

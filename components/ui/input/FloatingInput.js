@@ -6,6 +6,7 @@ const Container = styled.div`
   position: relative;
   height: ${(props) => props.height || "50px"};
   width: ${(props) => props.width || "100%"};
+  overflow : hidden;
 `;
 
 const Input = styled.input`
@@ -32,10 +33,12 @@ const Label = styled.label`
   font-size : ${props=>props.fontSize};
   left: 20px;
   top: 14px;
+  white-space: nowrap;
+  overflow: hidden;
   transition: 0.3s ease all;
   color : ${props=>props.error? 'red !important' : 'black'};
   ${Input}:focus ~ & {
-    top: -5px;
+    top: -4px;
     left: 10px;
     font-size: 11px;
     padding-inline: 5px;
