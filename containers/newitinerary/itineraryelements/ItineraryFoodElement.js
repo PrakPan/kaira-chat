@@ -100,7 +100,7 @@ const ItineraryFoodElement = (props) => {
               widthmobile="1.25rem"
             ></ImageLoader>
           </div>
-          <div className="pl-[3.8rem] flex justify-center flex-col">
+          <div className="pl-[3.5rem] flex justify-center flex-col">
             <div className="text-base font-bold">{props.heading}</div>
             <Text>{props.text}</Text>
           </div>
