@@ -51,15 +51,12 @@ const Label = styled.label`
 const Error = styled.div`
   color : red;
   font-size : 13px;
-  margin-top : 5px;
   margin-left : 5px;
-  height : 1rem;
   display : flex;
-  align-items : center
 `;
 const FloatingInput = forwardRef((props,ref) => {
   const [value,setValue] = useState('')
- return <div style={props.error && props.helperText? {marginBottom : '0.5rem' , marginTop : '2px', overflow : 'hidden'} : {marginBottom : '2px' , marginTop : '2px' , overflow : 'hidden'}}>  
+ return <div style={{marginBottom : '2px' , margin : props.margin}}>  
  <Container
     style={props.ContainerStyle}
     height={props.height}
@@ -79,7 +76,7 @@ const FloatingInput = forwardRef((props,ref) => {
     />
     <Label filled={value !== ""} fontSize={props.fontSize || props.style?.fontSize || '1rem'} error={props.error} style={props.labelStyle}>{props.label || props.placeholder}</Label>
   </Container>
-  {props.error && props.helperText && <Error><BiError style={{fontSize : '1rem'}} /><span style={{marginLeft : '2px' , marginTop : '2px'}}>{props.helperText}</span></Error>}
+  {props.error && props.helperText && <Error><BiError style={{fontSize : '1rem' , marginTop : '2px'}} /><span style={{marginLeft : '2px'}}>{props.helperText}</span></Error>}
   </div>
 });
 

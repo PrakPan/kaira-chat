@@ -552,7 +552,7 @@ const googleResponse = (response) => {
        id="userName"
        label="Enter Your Full Name"
        onChange={event => {_userDetailsOnChangeHandler(event,'userName')}}
-       ContainerStyle={{marginBottom : '0.5rem'}}
+       margin='0.7rem 0rem'
        />
           <MobileNumberContainer>
           {/* <TextField

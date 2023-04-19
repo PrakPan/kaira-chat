@@ -76,7 +76,7 @@ console.log(modalWidth , 'modalWidth function called')
     window.addEventListener("resize", findModalWidth);
     findModalWidth()
     return ()=> window.removeEventListener("resize", findModalWidth)
-  },[])
+  },[modalWidth])
 
 
   if(isPageWide)
