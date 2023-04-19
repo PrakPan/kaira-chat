@@ -32,7 +32,7 @@ import FloatingInput from '../ui/input/FloatingInput';
 import { BiError } from 'react-icons/bi';
 const MobileNumberContainer = styled.div`
 display: grid;
-grid-template-columns: 1.2fr 4fr;
+grid-template-columns: 90px 1fr;
 gap: 0.5rem;
 `
 const WhatsappCheckBox = styled.div`

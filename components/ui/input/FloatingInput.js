@@ -34,7 +34,7 @@ const Label = styled.label`
   left: 20px;
   top: 14px;
   white-space: nowrap;
-  overflow: hidden;
+  // overflow: hidden;
   transition: 0.3s ease all;
   color : ${props=>props.error? 'red !important' : 'black'};
   ${Input}:focus ~ & {
@@ -59,7 +59,7 @@ const Error = styled.div`
 `;
 const FloatingInput = forwardRef((props,ref) => {
   const [value,setValue] = useState('')
- return <div style={props.error && props.helperText? {marginBottom : '0.5rem'} : {}}>  
+ return <div style={props.error && props.helperText? {marginBottom : '0.5rem' , marginTop : '2px', overflow : 'hidden'} : {marginBottom : '2px' , marginTop : '2px' , overflow : 'hidden'}}>  
  <Container
     style={props.ContainerStyle}
     height={props.height}

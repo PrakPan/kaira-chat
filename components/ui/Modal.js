@@ -36,7 +36,7 @@ const ModalContainer = styled.div`
   transition: opacity 0.8s linear;
   overflow : auto;
   overscroll-behavior: contain;
-  margin : ${props=>props.margin? props.margin : '0px'}
+  margin : ${props=>props.margin? props.margin : '0px'};
   @media screen and (min-width: 768px) {
     top: ${props=>props.top? props.top : '25%'};
     left: ${props=>props.left? props.left : '25%'};
