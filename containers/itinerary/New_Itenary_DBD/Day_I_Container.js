@@ -158,22 +158,22 @@ const Day_I_Container = (props) => {
           <div className="font-medium text-black text-md">
             {convertDateFormat(props.Days?.slab)}
           </div>
-          {/* {Arslab_elements[0].data[0][0] !== undefined &&
-          Arslab_elements[0].data[0][0].transfers !== undefined &&
-          Arslab_elements[0].data[0][0].transfers.routes !== undefined ? (
+          {props.Days.slab_elements[0] !== undefined &&
+          props.Days.slab_elements[0].transfers !== undefined &&
+          props.Days.slab_elements[0].transfers.routes !== undefined ? (
             <div style={{ fontWeight: '600' }}>
               -{' '}
               {
-                Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0]
-                  .origin.shortName
+                props.Days.slab_elements[0].transfers.routes[0]?.legs[0].origin
+                  .shortName
               }{' '}
               to{' '}
               {
-                Arslab_elements[0].data[0][0].transfers.routes[0]?.legs[0]
+                props.Days.slab_elements[0].transfers.routes[0]?.legs[0]
                   .destination.shortName
               }
             </div>
-          ) : null} */}
+          ) : null}
         </InnerDayLocationRow>
         {/* <InnerDayLocationRow>
           <GrMapLocation />

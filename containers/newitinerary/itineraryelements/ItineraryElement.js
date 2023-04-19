@@ -66,13 +66,15 @@ const ItineraryElement = (props) => {
     <Container style={{ fontSize: '14px', fontWeight: '500' }}>
       {/* <div>{props.time}</div> */}
       {/* <SectionOneText>{props.time}</SectionOneText> */}
-      <div className="flex flex-row pt-2">
-        <div className="ml-[6px] flex justify-center items-center">
+      <HLine style={{ width: '2rem' }}></HLine>
+
+      <div className="flex flex-row pt-8">
+        <div className="ml-[7px] flex justify-center items-center">
           <ImageLoader
             url={props.icon}
             leftalign
             dimensions={{ width: 200, height: 200 }}
-            width="3.25rem"
+            width="3.05rem"
             widthmobile="1.25rem"
           ></ImageLoader>
         </div>
@@ -100,8 +102,8 @@ const ItineraryElement = (props) => {
       <TInfoContainer>
         <HLine style={{ width: '2rem' }}></HLine>
         <div>
-          <GridContainer image={props.image} className="">
-            {/* {props.image ? (
+          {/* <GridContainer image={props.image} className="">
+            {props.image ? (
               <ImageLoader
                 dimensions={{ width: 200, height: 200 }}
                 dimensionsMobile={{ width: 250, height: 200 }}
@@ -113,8 +115,8 @@ const ItineraryElement = (props) => {
                 widthmobile="100%"
                 url={props.image}
               ></ImageLoader>
-            ) : null} */}
-          </GridContainer>
+            ) : null}
+          </GridContainer> */}
 
           <Line></Line>
         </div>

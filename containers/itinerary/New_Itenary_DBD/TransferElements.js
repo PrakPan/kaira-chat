@@ -37,7 +37,7 @@ const TransferElements = ({
         <TInfoContainer>
           <HLine style={{ width: '2rem' }}></HLine>
 
-          <div className="pt-4">
+          <div className="pt-2">
             <div>
               <div className="text-base font-semibold pr-2 ">{heading}</div>
 
@@ -74,7 +74,7 @@ const TransferElements = ({
               </TransportContainer>
             ) : null}
 
-            <Text className="pt-2 pb-4">{text}</Text>
+            <Text className="pt-1">{text}</Text>
             <Line></Line>
           </div>
         </TInfoContainer>

@@ -91,12 +91,12 @@ const ItineraryFoodElement = (props) => {
       >
         {/* <div>{props.time}</div> */}
         <div className="flex flex-row pt-2">
-          <div style={{ marginLeft: '6px' }}>
+          <div style={{ marginLeft: '0px' }}>
             <ImageLoader
               url={props.icon}
               leftalign
               dimensions={{ width: 200, height: 200 }}
-              width="3.25rem"
+              width="4.05rem"
               widthmobile="1.25rem"
             ></ImageLoader>
           </div>

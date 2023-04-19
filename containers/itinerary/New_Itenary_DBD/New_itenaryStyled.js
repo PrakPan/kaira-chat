@@ -97,7 +97,7 @@ export const HLine = styled.span`
   @media screen and (min-width: 768px) {
     border-style: none none none dotted;
     border-color: #111;
-
+    margin: -10px 0px;
     border-width: 2px;
 
     margin-left: 2rem;

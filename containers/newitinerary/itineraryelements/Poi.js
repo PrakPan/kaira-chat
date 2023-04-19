@@ -104,7 +104,7 @@ const ItineraryPoiElement = (props) => {
             style={{
               position: 'absolute',
               marginLeft: '-50px',
-              marginTop: '10px',
+              marginTop: '0px',
             }}
           >
             {props.image ? (
@@ -125,7 +125,7 @@ const ItineraryPoiElement = (props) => {
           </div>
         </HLine>
         <div>
-          <div className="w-full pt-10">
+          <div className="w-full pt-4">
             {/* {props.image ? 
                    <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
                 : 
