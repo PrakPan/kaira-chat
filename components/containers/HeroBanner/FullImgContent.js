@@ -143,7 +143,7 @@ Craft AI-personalized itineraries.</SubHeading>}
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
                 <div className='hidden-desktop'>
-                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props.setShowMobilePlanner(true)} margin="1rem auto 1rem auto">Start Planning</Button>
+                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props._startPlanningFunction()} margin="1rem auto 1rem auto">Start Planning</Button>
              </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}

@@ -192,6 +192,7 @@ const Mobile = (props) => {
       onClose={() => setToggleMenu(false)}
       className="mobile-header-menu"
       width='250px'
+      style={{zIndex : '1200 !important'}}
     >
       <DrawerContainer>
           <ListContainer>

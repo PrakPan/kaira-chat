@@ -1,7 +1,5 @@
  
-import React, {useState , useRef, useEffect} from "react";
-import dayjs  from 'dayjs';
-import moment from 'moment'
+import React, {useState , useEffect} from "react";
 import styled , {keyframes}from 'styled-components';
   import Grid from '@material-ui/core/Grid';
 import Button from '../ui/button/Index';
@@ -15,14 +13,11 @@ import Spinner from '../Spinner';
 //  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
 import {connect} from 'react-redux';
-import {TbArrowBack} from 'react-icons/tb';
 import {BiArrowBack} from 'react-icons/bi';
-// import SlideOne from "./SlideOne";
 import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
 import Popup from "./Popup";
-import { CompressOutlined } from "@mui/icons-material";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -144,9 +139,7 @@ const Enquiry = (props) => {
             number_of_children=numberOfChildren;
             number_of_infants=numberOfInfants;
         }
-        // (selectedPreferences);
         let data=null;
-        // if(selectedCities.length){
         
         data = {
             // "locations": locations,
@@ -168,27 +161,6 @@ const Enquiry = (props) => {
           if(stateIds.length) data.state_id = stateIds
           if(cityids.length) data.city_id = cityids
           if(locations.length) data.locations = locations
-        
-        // }
-        //   else 
-
-        //  data = {
-        //    "experience_filters_selected": preferences,
-        //   "budget": budget,
-        //    "destination_id": [props.page_id],
-        //   "group_type": groupType,
-        //   "number_of_adults": number_of_adults,
-        //   "number_of_children": number_of_children,
-        //   "number_of_infants": number_of_infants,
-        //   "start_date": start_date,
-        //   "end_date": end_date,
-        
-        //   "user_location": {
-        //       "place_id": startingLocation ? startingLocation.place_id  :  "ChIJLbZ-NFv9DDkRzk0gTkm3wlI"
-        //   }
-          
-        // };
-
         
           if(startingLocation)
           (data)
@@ -223,7 +195,6 @@ const Enquiry = (props) => {
              if(err.response.data.email){
              }
         })
-
     }
     const [slideIndex, setSlideIndex] = useState(0);
     const _prevSlideHandler = () => {
@@ -241,7 +212,7 @@ const Enquiry = (props) => {
     const [selectedPreferences, setSelectedPreferences]  = useState([]);
     const [showCities, setShowCities] = useState(false);
     const [showSearchStarting, setShowSearchStarting] = useState(false);
-    const [showPopup , setShowPopup] = useState({dateStart : false, dateEnd : false , group : false})
+    const [showPopup , setShowPopup] = useState({dateStart : false, dateEnd : false , group : false , InputOne : false})
     const [showBlack, setShowBlack] = useState(false);
     const [submitSecondSlide,setSubmitSecondSlide] = useState(false)
     useEffect(() => {
@@ -255,6 +226,7 @@ const Enquiry = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
   const _SlideOneSubmitHandler = ()=>{
+    if (!selectedCities[0].destination_id &&  !selectedCities[0].id) return setShowPopup({...showPopup , InputOne : true})
     if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
     if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
     setSlideIndex(slideIndex + 1)
@@ -285,6 +257,7 @@ const Enquiry = (props) => {
       //  ref={ContainerRef}
      >
 
+      {showPopup.InputOne && <Popup setShowPopup={setShowPopup} top='12.6rem'  left='10px' text='Please select your destination!' />}
       {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem'  left='10px' text='Please select starting date!' />}
       {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.2rem' left='170px' mobileleft={'135px'} text='Please select ending date!' />}
       {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}

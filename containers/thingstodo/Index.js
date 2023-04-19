@@ -194,7 +194,8 @@ console.log(props , 'rrprops')
             cities={props.reccomendedCitiesData}
             //  children_cities={props.experienceData.children}
             title={`Things to do in ${props.cityData.name}`}
-           setShowMobilePlanner={setShowMobilePlanner}
+            _startPlanningFunction={()=>setShowMobilePlanner(true)}
+
 
           />
 

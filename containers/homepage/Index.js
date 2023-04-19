@@ -36,6 +36,7 @@ import media from '../../components/media';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
+import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -194,10 +195,24 @@ useEffect(() => {
     
     <div className={  "Homepage font-poppins" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       {/* <Snowflakes></Snowflakes> */}
-      <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
-
+   
+      {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
        <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
-      </FullImage>
+      </FullImage> */}
+
+      <HeroBanner
+                   image={'media/website/Home (1).png'}
+                  //  page_id={props.cityData.id}
+                   destinationType={'city-planner'}
+                  //  destination={props.cityData.name}
+                  //  cities={props.reccomendedCitiesData}
+                   //  children_cities={props.experienceData.children}
+                   title={`Explore different realities.`}
+                  _startPlanningFunction={()=>_handleTailoredRedirect()}
+
+                 />
+
+
        <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>

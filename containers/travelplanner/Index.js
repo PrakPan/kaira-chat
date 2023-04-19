@@ -316,7 +316,7 @@ const InfoWindowContainer = (location)=><MapInfo>
           cities={props.experienceData.locations}
           children_cities={props.experienceData.children}
           title={props.experienceData.banner_heading}
-          setShowMobilePlanner={setShowMobilePlanner}
+          _startPlanningFunction={()=>setShowMobilePlanner(true)}
           destinationType={'travel-planner'}
         />
         <SetWidthContainer>

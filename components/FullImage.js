@@ -24,7 +24,7 @@ const fullimage = (props) =>{
         return(
         <Container height={props.height} heightmobile={props.heightmobile}>
 
-            {props.img ? <BackgroundImageLoader padding={props.padding} filter={props.filter}  center url={props.url} dimensions={{width: 1200, height: 675}} dimensionsMobile={{width: 900, height: 600}} className="center-div" >{props.children}</BackgroundImageLoader> : <BackgroundImageLoader filter={props.filter} center className="center-div" url={props.url} dimensionsMobile={{width: 900, height: 600}} dimensions={{width: 1600, height: 900}}  className="center-div">{props.children}</BackgroundImageLoader>}
+            {props.img ? <BackgroundImageLoader padding={props.padding} filter={props.filter}  center url={props.url} dimensions={{width: 1200, height: 675}} dimensionsMobile={{width: 600, height: 1200}} className="center-div" >{props.children}</BackgroundImageLoader> : <BackgroundImageLoader filter={props.filter} center className="center-div" url={props.url} dimensionsMobile={{width: 900, height: 600}} dimensions={{width: 1600, height: 900}}>{props.children}</BackgroundImageLoader>}
         </Container>
         
     )
@@ -33,7 +33,7 @@ const fullimage = (props) =>{
         return(
         <Container height={props.height} heightmobile={props.heightmobile} className="center-dv">
 
- <BackgroundImageLoader padding={props.padding}  filter={props.filter} url={props.url} dimensions={{width: 1200, height: 675}} dimensionsMobile={{width: 900, height: 600}} className="center-dv">{props.children}</BackgroundImageLoader>       
+ <BackgroundImageLoader padding={props.padding}  filter={props.filter} url={props.url} dimensions={{width: 1200, height: 600}} dimensionsMobile={{width: 900, height: 400}} className="center-dv">{props.children}</BackgroundImageLoader>       
   </Container>
     );
     }

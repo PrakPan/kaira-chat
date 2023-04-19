@@ -353,6 +353,9 @@ text-align: right;
 .MuiDrawer-root{
   z-index : 1501 !important;
 }
+.mobile-header-menu{
+  z-index : 1200 !important;
+}
 .MuiTabs-flexContainer{
   z-index: 2 !important;
 }

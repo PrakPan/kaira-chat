@@ -15,7 +15,7 @@ const HeroBanner = (props) => {
           cities={props.cities}
           children_cities={props.children_cities}
           title={props.title}
-          setShowMobilePlanner={props.setShowMobilePlanner}
+          _startPlanningFunction={props._startPlanningFunction}
         />
       </FullImage>
     );
