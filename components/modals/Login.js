@@ -94,7 +94,7 @@ console.log(modalWidth , 'modalWidth function called')
                     </ImgTagsContainer>
                 
                   </ImgContainer>
-                  <Login ref={myref} onhide={props.onhide}></Login>
+                 <div style={{padding : '20px'}}><Login ref={myref} onhide={props.onhide}></Login></div>
                 </div>
             {/* </Modal.Body> */}
       </Modal>
@@ -104,7 +104,7 @@ console.log(modalWidth , 'modalWidth function called')
   <div>
     <Modal centered backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} width={modalWidth + '%'} mobileLeft={(100-modalWidth)/2 + '%'} mobileTop='7%' borderRadius={'12px'}>
         {/* <Modal.Body style={{padding: "0"}} > */}
-              <Login onhide={props.onhide}></Login>
+        <div style={{padding : '20px'}}><Login onhide={props.onhide}></Login></div>
         {/* </Modal.Body> */}
   </Modal>
   </div>);
