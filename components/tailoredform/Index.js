@@ -17,7 +17,8 @@ import {BiArrowBack} from 'react-icons/bi';
 import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
-import Popup from "./Popup";
+import Popup from "../ErrorPopup";
+import { CompressOutlined } from "@mui/icons-material";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
