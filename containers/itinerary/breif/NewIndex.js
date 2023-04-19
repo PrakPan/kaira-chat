@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Row from '../../../components/experiencecity/info/Row';
 
 import Overview from './overview/Index';
+import axiosPoiCityInstance from '../../../services/poi/city';
 
 // import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
 // import RouteData from './Locations';
@@ -63,6 +64,7 @@ const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
+
   console.log(`id mapp${active}`);
   // useEffect(()=> {
 
@@ -98,13 +100,16 @@ const Details = (props) => {
     router.push('/tailored-travel');
   };
   const Locationlatlong = [];
-  // setActive(props.breif.city_slabs[1].gmaps_place_id)
-  for (var i = 0; i < props.breif.city_slabs.length; i++) {
-    let postion = props.breif.city_slabs[i];
 
+  for (var i = 0; i < props.breif.city_slabs.length; i++) {
+    var postion = props.breif.city_slabs[i];
+
+    // console.log(`response city data${JSON.stringify(citydetails)}`);
+    // console.log(`lat,long${citydetails.lat}`);
     if (!postion.is_departure_only && !postion.is_trip_terminated) {
       Locationlatlong.push({
         id: postion.gmaps_place_id,
+        city_id: postion.city_id,
         lat: postion.lat,
         long: postion.long,
         name: postion.city_name,
@@ -113,11 +118,12 @@ const Details = (props) => {
       });
     }
   }
+
   // props.breif.city_slabs.map(
   //   (postion) =>
 
   // );
-  console.log(Locationlatlong);
+  // console.log(Locationlatlong);
   const InfoWindowContainer = (location) => (
     <MapInfo>
       <b>{location.name}</b>
@@ -138,6 +144,7 @@ const Details = (props) => {
       ssr: false, // This line is important. It's what prevents server-side render
     }
   );
+
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}

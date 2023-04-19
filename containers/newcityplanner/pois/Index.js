@@ -101,17 +101,6 @@ const Poi = (props) => {
     />
   ));
 
-  const cards = props.pois?.map((e, i) => (
-    <PoiCard
-      key={e.id}
-      data={e}
-      showDrawer={showDrawer[i]}
-      setShowDrawer={setShowDrawer}
-      _handleOpen={_handleOpen}
-      handleCloseDrawer={handleCloseDrawer}
-    />
-  ));
-
   return (
     <GridContainer>
       <div className="hidden-mobile">

@@ -1,13 +1,10 @@
-
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import PinSection from './PinSection';
 import MidSection from './MidSection';
 const Container = styled.div`
-
   @media screen and (min-width: 768px) {
-    width:30vw;
-  
+    width: 30vw;
   }
   margin-bottom: 1.5rem;
 `;
@@ -61,10 +58,10 @@ const Route = (props) => {
       behavior: 'smooth',
     });
   }
-  function handlemap(MapId){
-    props.setPlaceID(MapId)
-    scrollToTargetAdjusted()
-    console.log(`id mapp${props.active}`)
+  function handlemap(MapId) {
+    props.setPlaceID(MapId);
+    scrollToTargetAdjusted();
+    console.log(`id mapp${props.active}`);
   }
   const _moveUpHandler = (index) => {
     if (index === 1) {
@@ -94,14 +91,10 @@ const Route = (props) => {
           props.breif.city_slabs[i].duration &&
           props.breif.city_slabs[i].duration !== '0'
         ) {
-          console.log(
-            'colorsssssssssss.....' + props.breif.city_slabs[i].color
-          );
           locationsArr.push(
-        
-<PinSection
-        handlemap={handlemap}
-             Mapid={props.breif.city_slabs[i].gmaps_place_id}
+            <PinSection
+              handlemap={handlemap}
+              Mapid={props.breif.city_slabs[i].gmaps_place_id}
               city={props.breif.city_slabs[i].city_name}
               duration={props.breif.city_slabs[i].duration + ' Nights'}
               pinColour={props.breif.city_slabs[i].color}
@@ -110,12 +103,13 @@ const Route = (props) => {
               _moveUpHandler={_moveUpHandler}
               index={i}
             ></PinSection>
-  
-            
           );
           locationsArr.push(
             <MidSection
-              pinColour={[props.breif.city_slabs[i].color,props.breif.city_slabs[i].color]}
+              pinColour={[
+                props.breif.city_slabs[i].color,
+                props.breif.city_slabs[i].color,
+              ]}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
             ></MidSection>
@@ -132,7 +126,6 @@ const Route = (props) => {
       <Heading className="font-poppins">Route</Heading>
 
       <PinSection
-        
         city={props.nostartinglocation ? 'Your Location' : startingcity}
       ></PinSection>
       <MidSection
@@ -148,7 +141,6 @@ const Route = (props) => {
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
              <MidSection></MidSection> */}
       <PinSection
-        
         city={props.nostartinglocation ? 'Your Location' : endingcity}
       ></PinSection>
     </Container>

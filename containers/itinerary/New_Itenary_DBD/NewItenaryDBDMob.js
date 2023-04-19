@@ -256,7 +256,7 @@ const NewItenaryDBDMob = (props) => {
       });
     }
   }
-  console.log('ITEMsssssss', items);
+
   const handleScrollLeft = () => {
     const tabsContainer = ref.current;
     const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);

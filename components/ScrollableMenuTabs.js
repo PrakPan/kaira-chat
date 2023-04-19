@@ -137,8 +137,7 @@ const ScrollableMenuTabs = ({
       }
     }
   );
-  console.log(activeItem);
-  console.log('iconsssss' + icons);
+
   const debounceFun = useDebounce(handleScroll, 500);
 
   return (

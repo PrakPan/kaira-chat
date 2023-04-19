@@ -63,7 +63,6 @@ const Day_I_ContainerM = (props) => {
     JsonArray.forEach(function(element) {
       switch (element.element_type) {
         case 'transfer':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <TransferElementsM
               time="9:00AM"
@@ -83,12 +82,10 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case 'newcity':
-          console.log(`it is ${element.element_type}`);
           // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
 
           break;
         case 'accommodation':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <ItineraryElementM
               icon={element.icon}
@@ -100,7 +97,6 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case 'meal':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <ItineraryFoodElementM
               icon={element.icon}
@@ -112,7 +108,6 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case 'recommendation':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <RecomendationComponent
               icon={element.icon}
@@ -121,7 +116,6 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case 'activity':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <ItineraryPoiElementM
               key={element.activity_data.id}
@@ -141,8 +135,6 @@ const Day_I_ContainerM = (props) => {
   }
   divide(props.Days.slab_elements, Arslab_elements);
 
-  console.log(`it is there${dayIcontainer}`);
-  console.log(Arslab_elements);
   return (
     <Container className="font-poppins">
       <div

@@ -127,7 +127,7 @@ const Mobile = (props) => {
   useEffect(() => {
     const currentRoute = router.asPath.split('/')[1];
     setCurrentPage(currentRoute);
-    console.log(`cuR ${currentRoute}`);
+
     setShowLogo(true);
   }, []);
 

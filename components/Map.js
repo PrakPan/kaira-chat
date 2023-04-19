@@ -13,7 +13,7 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useRouter } from 'next/router';
-
+import axiosPoiCityInstance from '../services/poi/city';
 function Map(props) {
   const [center, setCenter] = useState({
     lat: props.locations[0].lat,
@@ -74,7 +74,11 @@ function Map(props) {
     rotateControl: false,
     fullscreenControl: true,
   };
-
+  async function getCityDetails(cityname) {
+    const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
+    const data = res.data;
+    return data;
+  }
   const handleActiveMarker = (marker) => {
     if (marker === activeMarker) {
       return;
@@ -94,12 +98,30 @@ function Map(props) {
     );
     map.fitBounds(bounds);
   };
+
   props.locations.forEach((location) =>
     path.push({
       lat: location.lat == null ? 0 : location.lat,
       lng: location.long == null ? 0 : location.long,
     })
   );
+  // async function processLocations(locations) {
+  //   const path = [];
+  //   for (const location of locations) {
+  //     const lat =
+  //       location.lat == null
+  //         ? await getCityDetails(location.city_id).lat
+  //         : location.lat;
+  //     const long =
+  //       location.long == null
+  //         ? await getCityDetails(location.city_id).long
+  //         : location.long;
+  //     path.push({ lat, long });
+  //   }
+  //   return path;
+  // }
+
+  // const path = processLocations(props.locations);
   const containerStyle = {
     width: props.width || '100%',
     height: props.height || '100%',

@@ -73,7 +73,6 @@ const Day_I_Container = (props) => {
     JsonArray.forEach(function(element) {
       switch (element.element_type) {
         case 'transfer':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <TransferElements
               time="9:00AM"
@@ -92,12 +91,10 @@ const Day_I_Container = (props) => {
           );
           break;
         case 'newcity':
-          console.log(`it is ${element.element_type}`);
           // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
 
           break;
         case 'accommodation':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <ItineraryElement
               icon={element.icon}
@@ -108,7 +105,6 @@ const Day_I_Container = (props) => {
           );
           break;
         case 'meal':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <ItineraryFoodElement
               icon={element.icon}
@@ -119,7 +115,6 @@ const Day_I_Container = (props) => {
           );
           break;
         case 'recommendation':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <RecomendationComponent
               icon={element.icon}
@@ -128,7 +123,6 @@ const Day_I_Container = (props) => {
           );
           break;
         case 'activity':
-          console.log(`it is ${element.element_type}`);
           dayIcontainer.push(
             <ItineraryPoiElement
               key={element.activity_data.id}
@@ -148,7 +142,6 @@ const Day_I_Container = (props) => {
   }
   divide(props.Days.slab_elements, Arslab_elements);
 
-  console.log(`it is there${dayIcontainer}`);
   return (
     <Container className="font-poppins">
       {/* {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>} */}
