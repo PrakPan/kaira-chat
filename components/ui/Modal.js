@@ -3,19 +3,19 @@ import { RxCross2 } from "react-icons/rx";
 import { useEffect, useState } from "react";
 const TopSlideIn = keyframes`
 from { 
-  transform: translateY(-30%);
+  transform: translate(-50%,-100%);
 }
 to { 
-  transform: translateY(0%);
+  transform: translate(-50%,-50%);
 } 
 `;
 
 const TopSlideOut = keyframes`
 from { 
-  transform: translateY(0%);
+  transform: translate(-50%,-50%);
 }
 to { 
-  transform: translateY(-30%);
+  transform: translate(-50%,-100%);
 } 
 
 `;
@@ -29,8 +29,7 @@ const ModalContainer = styled.div`
   ${props=>props.width && `width : ${props.width}`};
   ${props=>props.height && `width : ${props.height}`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)}
-    forwards;
+  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)} forwards;
   z-index: 1600;
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   transition: opacity 0.8s linear;
@@ -40,7 +39,9 @@ const ModalContainer = styled.div`
   @media screen and (min-width: 768px) {
     top: ${props=>props.top? props.top : '25%'};
     left: ${props=>props.left? props.left : '25%'};
-  }
+  ${props=>props.centered && 'top: 50%;left:50%'};
+  };
+  ${props=>props.centered && 'top: 50%;left:50%'};
 `;
 const BlackContainer = styled.div`
   background: ${(props) =>
@@ -97,6 +98,7 @@ export default function Modal(props) {
             width={props.width}
             height={props.height}
             bgColor={props.bgColor}
+            centered={props.centered}
           >
             {props.closeIcon && (
               <RxCross2
