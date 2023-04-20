@@ -67,9 +67,9 @@ export default function SignUp() {
     lname: "",
     country: "",
     mobile: "",
-    message: "",
     email: "",
     query_type : "",
+    message: "",
   });
   const [emailFail, setEmailFail] = useState(false);
   const [loading, setLoading] = useState(false);
