@@ -138,6 +138,7 @@ const LogIn = (props) => {
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
   let ExtensionOptions = [];
+  let mobilevariable = "";
 
   useEffect(() => {
     const script = document.createElement("script");

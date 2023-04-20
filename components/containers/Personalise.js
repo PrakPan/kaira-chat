@@ -1,4 +1,3 @@
-import { Router } from '@material-ui/icons';
 import React from 'react';
 import styled from 'styled-components';
 import img from '../../public/assets/icons/confused.svg';
