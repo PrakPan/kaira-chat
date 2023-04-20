@@ -258,9 +258,9 @@ export default function SignUp() {
           Submit
         </Button>
 
-        <div style={{ width: "max-content", margin: "auto" }}>
+        {/* <div style={{ width: "max-content", margin: "auto" }}> */}
           {/* {loading ? <Spinner size={20}></Spinner> : null} */}
-        </div>
+        {/* </div> */}
         <SuccessModal
           show={submitted}
           hide={() => setSubmitted(false)}

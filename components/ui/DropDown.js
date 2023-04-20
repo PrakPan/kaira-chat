@@ -66,7 +66,7 @@ const Label = styled.label`
   font-size : ${props=>props.fontSize};
   color : ${props=>props.error? 'red !important' : 'black'};
   left: 20px;
-  top: 14px;
+  top: 30%;
   white-space: nowrap;
   // overflow: hidden;
   transition: 0.2s ease all;
@@ -95,7 +95,7 @@ const CountryCodeDropdown = (props) => {
 <Label error={props.error} selected={selected}>{props.label}</Label>
     {selected}
           <DropDownIcon rotate={open}>
-            <BsCaretDownFill style={{verticalAlign : 'top'}} />
+            <BsCaretDownFill />
           </DropDownIcon>
         </SelectBox>
         {open && (
