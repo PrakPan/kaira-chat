@@ -11,7 +11,7 @@ import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
 
 const padding = {
-  initialLeft: '60px',
+  initialLeft: '120px',
 };
 const Container = styled.div`
   display: flex;
@@ -85,13 +85,10 @@ const ItineraryFoodElement = (props) => {
 
   return (
     <>
-      <Container
-        className="font-poppins"
-        style={{ fontSize: '14px', fontWeight: '500' }}
-      >
+      <Container className="font-poppins">
         {/* <div>{props.time}</div> */}
         <div className="flex flex-row pt-2">
-          <div style={{ marginLeft: '0px' }}>
+          <div>
             <ImageLoader
               url={props.icon}
               leftalign
@@ -100,15 +97,15 @@ const ItineraryFoodElement = (props) => {
               widthmobile="1.25rem"
             ></ImageLoader>
           </div>
-          <div className="pl-[3.5rem] flex justify-center flex-col">
+          <div className="pl-[3rem] flex justify-center flex-col">
             <div className="text-base font-bold">{props.heading}</div>
             <Text>{props.text}</Text>
           </div>
         </div>
 
         <TInfoContainer>
-          <HLine style={{ width: '2rem' }}>
-            {/* <div style={{ marginLeft: '-10px' }}>
+          {/* <HLine style={{ width: '2rem' }}>
+            <div style={{ marginLeft: '-10px' }}>
               <ImageLoader
                 url={props.icon}
                 leftalign
@@ -116,8 +113,8 @@ const ItineraryFoodElement = (props) => {
                 width="1.25rem"
                 widthmobile="1.25rem"
               ></ImageLoader>
-            </div> */}
-          </HLine>
+            </div>
+          </HLine> */}
 
           <div>
             <div>

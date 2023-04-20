@@ -66,21 +66,21 @@ const ItineraryElement = (props) => {
     <Container style={{ fontSize: '14px', fontWeight: '500' }}>
       {/* <div>{props.time}</div> */}
       {/* <SectionOneText>{props.time}</SectionOneText> */}
-      <HLine style={{ width: '2rem' }}></HLine>
+      {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
       <div className="flex flex-row pt-8">
-        <div className="ml-[7px] flex justify-center items-center">
+        <div className=" flex justify-center items-center">
           <ImageLoader
             url={props.icon}
             leftalign
             dimensions={{ width: 200, height: 200 }}
-            width="3.05rem"
+            width="4.05rem"
             widthmobile="1.25rem"
           ></ImageLoader>
         </div>
         <div
           style={{ display: 'flex', alignItems: 'center' }}
-          className="pl-[3.8rem]"
+          className="pl-[3rem]"
         >
           <div className="flex flex-col">
             <div className="text-base font-bold">{props.heading}</div>
@@ -88,6 +88,7 @@ const ItineraryElement = (props) => {
               <Text>{props.text ? props.text : null}</Text>
             </div>
           </div>
+          <Line></Line>
         </div>
       </div>
       {/* <div style={{ marginLeft: '0px' }}>
@@ -99,28 +100,7 @@ const ItineraryElement = (props) => {
           widthmobile="1.25rem"
         ></ImageLoader>
       </div> */}
-      <TInfoContainer>
-        <HLine style={{ width: '2rem' }}></HLine>
-        <div>
-          {/* <GridContainer image={props.image} className="">
-            {props.image ? (
-              <ImageLoader
-                dimensions={{ width: 200, height: 200 }}
-                dimensionsMobile={{ width: 250, height: 200 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={() => console.log('')}
-                width="100%"
-                leftalign
-                widthmobile="100%"
-                url={props.image}
-              ></ImageLoader>
-            ) : null}
-          </GridContainer> */}
 
-          <Line></Line>
-        </div>
-      </TInfoContainer>
       {/* <AiFillCar style={{ margin: "-2px 0  0 0.5rem" }}></AiFillCar>
         {props.booking ? (
           <div

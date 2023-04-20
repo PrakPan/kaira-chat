@@ -25,7 +25,8 @@ export const SubHeading = styled.div`
 
 export const RowElementContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  padding-right: 2rem;
+  justify-content: flex-start;
   flex-direction: row;
 `;
 

@@ -34,8 +34,17 @@ const TransferElements = ({
         <Timecontainer>
           {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
         </Timecontainer>
+        <div style={{ marginLeft: '0px' }}>
+          <ImageLoader
+            url={icon}
+            leftalign
+            dimensions={{ width: 200, height: 200 }}
+            width="4.05rem"
+            widthmobile="1.25rem"
+          ></ImageLoader>
+        </div>
         <TInfoContainer>
-          <HLine style={{ width: '2rem' }}></HLine>
+          {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
           <div className="pt-2">
             <div>

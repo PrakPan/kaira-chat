@@ -354,8 +354,8 @@ const SimpleTabs = (props) => {
     { id: 1, label: 'Brief', link: 'Brief' },
     { id: 2, label: 'Itinerary', link: 'Itenary' },
     // { id: 3, label: 'Flights',link: 'Flights' },
-    { id: 3, label: 'Hotels', link: 'Hotels' },
-    { id: 4, label: 'Transportation', link: 'transportation' },
+    { id: 3, label: 'Stays', link: 'Stays' },
+    { id: 4, label: 'Transfers', link: 'Transfers' },
   ];
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
@@ -540,7 +540,7 @@ const SimpleTabs = (props) => {
       // <NewMobileItinerary city_slabs={props.breif.city_slabs} day_slabs={props.itinerary.day_slabs} hours={hours} minutes={minutes} seconds={seconds}  timeRequired={props.timeRequired}  hideTimer={minimiseTimer} itineraryDate={props.itineraryDate}  showTimer={showItineraryTimer}   _hideTimerHandler={_minimiseTimerHandler} blur={blurItinerary} location_selected={location} city_slabs={props.breif.city_slabs}  itinerary={props.itinerary} newData={props.newData} demoitinerary={props.demoitinerary}/>
       }
 
-      {/* {isPageWide ? (
+      {isPageWide ? (
         <div id={items[1].link}>
           <ItineraryContainer
             is_registration_needed={
@@ -594,7 +594,7 @@ const SimpleTabs = (props) => {
             demoitinerary={props.demoitinerary}
           ></ItineraryContainerMobile>
         </div>
-      )} */}
+      )}
       {isGroup ? (
         <div id={items[2].link}>
           <Register></Register>

@@ -34,7 +34,7 @@ const FoodItem = (props) => {
         url={props.ImageUrl}
       ></ImageLoader>
       <div>
-        <Heading className="font-bold">{props.heading}</Heading>
+        <Heading className="font-bold text-base">{props.heading}</Heading>
         <Text className="font-medium">{cutSentence(props.text, 18)}</Text>
       </div>
     </Container>

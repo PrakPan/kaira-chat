@@ -1,3 +1,5 @@
+import { getHumanDate } from '../services/getHumanDate';
+
 const convertDFormat = (dt) => {
   const date = parseISO(dt);
   const formattedDate = format(date, 'MMMM d yyyy');
@@ -31,3 +33,10 @@ export function convertDateFormat(dateString) {
 
   return `${monthName} ${Number(day)}`;
 }
+const getDate = (date) => {
+  let year = date.substring(0, 4);
+  let month = date.substring(5, 7);
+  let day = date.substring(8, 10);
+
+  return getHumanDate(day + '/' + month + '/' + year);
+};

@@ -24,17 +24,17 @@ const Container = styled.div`
   color: #01202b;
 `;
 const RecomendationComponent = (props) => {
-  return (
+  return props.recomendation ? (
     <Container>
       <Timecontainer>
         {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
       </Timecontainer>
       <TInfoContainer>
-        <HLine style={{ width: '2rem' }}></HLine>
+        {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
         <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-4'}`}>
           {props.recomendation ? (
-            <div>
+            <div className="pb-2">
               {!isJson(props.recomendation) ? (
                 <Text className="text-base font-medium">
                   {props.recomendation}
@@ -57,7 +57,7 @@ const RecomendationComponent = (props) => {
         </div>
       </TInfoContainer>
     </Container>
-  );
+  ) : null;
 };
 
 export default RecomendationComponent;

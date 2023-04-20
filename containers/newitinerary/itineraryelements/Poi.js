@@ -89,48 +89,27 @@ const ItineraryPoiElement = (props) => {
   return (
     <Container>
       {/* <div>{props.time}</div> */}
-      <TInfoContainer>
-        <HLine style={{ width: '2rem' }}>
-          <div style={{ marginLeft: '-10px' }}>
+      <div className="flex flex-row items-center">
+        <div className="bg-white w-[6rem]">
+          {props.image ? (
             <ImageLoader
-              url={props.icon}
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 300, height: 300 }}
+              borderRadius="8px"
+              hoverpointer
+              onclick={() => console.log('')}
+              width="6rem"
               leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="1.25rem"
-              widthmobile="1.25rem"
+              widthmobile="6rem"
+              url={props.image}
             ></ImageLoader>
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              marginLeft: '-50px',
-              marginTop: '0px',
-            }}
-          >
-            {props.image ? (
-              <div className="bg-white w-[60%]">
-                <ImageLoader
-                  dimensions={{ width: 200, height: 200 }}
-                  dimensionsMobile={{ width: 250, height: 200 }}
-                  borderRadius="8px"
-                  hoverpointer
-                  onclick={() => console.log('')}
-                  width="100%"
-                  leftalign
-                  widthmobile="100%"
-                  url={props.image}
-                ></ImageLoader>
-              </div>
-            ) : null}
-          </div>
-        </HLine>
-        <div>
+          ) : (
+            <div className="w-[6rem]"></div>
+          )}
+        </div>
+
+        <div className="pl-6">
           <div className="w-full pt-4">
-            {/* {props.image ? 
-                   <ImageLoader  dimensions={{width: 250, height: 200}} dimensionsMobile={{width: 250, height: 200}} borderRadius="8px"  hoverpointer  onclick={() =>  console.log('')} width="70%" leftalign widthmobile="100%" url={props.image} ></ImageLoader>
-                : 
-                null
-                } */}
             <div className="w-full">
               <div
                 className="flex flex-row w-full  justify-start items-center"
@@ -139,25 +118,24 @@ const ItineraryPoiElement = (props) => {
                 <div className="text-base font-semibold ">{props.heading}</div>
                 <HiPencil className="text-lg min-w-max pl-3"></HiPencil>
               </div>
-              <StarRating initialRating={4}></StarRating>
-              {/* <Rating margin="0.25rem 0"></Rating> */}
+              {props.rating && <StarRating initialRating={4}></StarRating>}
+
               {props.poi !== undefined ? (
                 props.poi.experience_filters ? (
-                  <div
-                    className={`grid w-fit grid-rows-${Math.ceil(
-                      props.poi.experience_filters.length / 2
-                    )} grid-flow-col gap-x-5 gap-y-0`}
-                  >
+                  <div className={`flex gap-4 flex-row`}>
                     {props.poi.experience_filters.map((element, index) =>
                       element.toString() != 'Hidden Gem' ? (
-                        <div
-                          className="flex  items-center text-sm  font-bold"
-                          key={index}
-                        >
-                          {' '}
-                          {element.split(' ').length > 2
-                            ? element.split(' ')[0]
-                            : element}{' '}
+                        <div className="flex flex-row items-end">
+                          <span className="font-bold text-xl pr-1">.</span>
+                          <div
+                            className="flex  items-center text-sm  font-bold"
+                            key={index}
+                          >
+                            {' '}
+                            {element.split(' ').length > 2
+                              ? element.split(' ')[0]
+                              : element}{' '}
+                          </div>
                         </div>
                       ) : (
                         <div className="flex font-bold" key={index}>
@@ -178,13 +156,9 @@ const ItineraryPoiElement = (props) => {
 
           <Text>{props.text}</Text>
           <Line></Line>
-          {/* {!ErrorNotDef(props.poi) ? (
-            !ErrorNotDef(props.poi.tips) ? (
-              <Tips tips={props.poi.tips}></Tips>
-            ) : null
-          ) : null} */}
         </div>
-      </TInfoContainer>
+      </div>
+
       {/* <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
                 <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>

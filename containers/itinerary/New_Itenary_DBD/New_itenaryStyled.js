@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
 const padding = {
-  initialLeft: '60px',
+  initialLeft: '50px',
 };
 export const Container = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   font-style: normal;
+  align-items: center;
   font-weight: 400;
   font-size: 12px;
   line-height: 22px;

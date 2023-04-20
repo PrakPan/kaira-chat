@@ -60,8 +60,8 @@ const NewCity = (props) => (
     </div>
 
     <TInfoContainer>
-      <HLine style={{}}>
-        {/* <div style={{ marginLeft: '-28px' }}>
+      {/* <HLine style={{}}>
+        <div style={{ marginLeft: '-28px' }}>
                 <ImageLoader
                   url={icon}
                   leftalign
@@ -69,8 +69,8 @@ const NewCity = (props) => (
                   width="3.25rem"
                   widthmobile="1.25rem"
                 ></ImageLoader>
-              </div> */}
-      </HLine>
+              </div>
+      </HLine> */}
     </TInfoContainer>
   </Container>
 );

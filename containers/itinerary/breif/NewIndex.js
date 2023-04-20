@@ -30,7 +30,7 @@ import dynamic from 'next/dynamic';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 10;
   flex-direction: column;
   margin: 0 auto 2vh auto;
