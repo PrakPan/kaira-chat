@@ -95,82 +95,7 @@ console.log(props , 'rrprops')
     }    setGalleryImages(images);
     setGalleryOpen(false);
   }
-    //  if (isPageWide){
-      //Open Gallery
       if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages} ></FullScreenGallery >);
-      //Open experience page
-    //   else return (
-    //     <div style={{minHeight: '100vh'}}>
-    //       <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
-    //       <div>
-    //       <FullImage center url={cityLoaded ? props.cityData.images[0].image  : ''}>
-    //         <FullImageContent city tagline={props.cityData.nicknames.length ? props.cityData.nicknames[0] : ''} text={props.cityData.tagline}/>
-    //       </FullImage>            
-    //       {/* <Menu slug={props.id}    setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu> */}
-    //       {/* <ChatBot history={props.history} /> */}
-    //       {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
-    //     </div>
-    //     {/* <Loading hide={experienceLoaded}></Loading> */}
-    //       <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
-    //           { state => 
-    //           <div
-    //           className="center-div"
-    //           style={{
-    //             backgroundColor: "#F7e700",
-    //              width: '100vw',
-    //              transition: 'all 1s ease-out',
-    //              zIndex: '1000',
-    //               height: '100vh',
-    //              position: 'fixed',
-    //              left: state=='exiting' ? '-100vw' : 0,
-
-    //              top: '0',
-    //              }}>
-    //              <Loading/>
-    //              </div>
-
-
-    //           }
-    //            </Transition>
-    //     </div>
-    //   );
-    //   }
-    // else{
-    //   if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages}  ></FullScreenGallery>);
-    //   else
-    //   return (
-
-    //     <div style={{}}>
-    //       <FullImage center url={cityLoaded ? props.cityData.images[0].image : null}>
-    //         <FullImageContent city tagline={props.cityData.nickname} text={props.cityData.tagline}/>
-    //       </FullImage>
-    //       {/* <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={cityLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={cityData.data.images}></Menu> */}
-    //       {/* <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal> */}
-    //       <Transition in={!cityLoaded} timeout={1000} unmountOnExit>
-    //           { state => 
-    //           <div
-    //           className="center-div"
-    //           style={{
-    //             width: '100vw',
-    //             backgroundColor: "#F7e700",
-    //              transition: 'all 1s linear',
-    //              zIndex: '2500',
-    //               height: '100vh',
-    //              position: 'fixed',
-    //              top: '0',
-    //              left: state=='exiting' ? '-100vw' : 0,
-    //              }}>
-    //              <Loading/>
-    //              </div>
-
-
-    //           }
-    //            {/* <div style={{backgroundColor: '#F7e700', height: '50vh'}}></div> */}
-    //            </Transition>
-
-    //     </div>
-    //   );
-
     else return (
       <div
         className="font-lexend"
@@ -195,11 +120,7 @@ console.log(props , 'rrprops')
             //  children_cities={props.experienceData.children}
             title={`Things to do in ${props.cityData.name}`}
             _startPlanningFunction={()=>setShowMobilePlanner(true)}
-
-
           />
-
-
           <NewMenu
             data={props.cityData}
             destination={props.cityData.name}
