@@ -148,7 +148,7 @@ const Day_I_Container = (props) => {
 
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: '2px' }}>
-          <div className="font-medium text-black text-md">
+          <div className="font-bold text-black text-md">
             {convertDateFormat(props.Days?.slab)}
           </div>
           {props.Days.slab_elements[0] !== undefined &&

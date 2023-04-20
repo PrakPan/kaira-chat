@@ -50,35 +50,39 @@ const HotelsBooking = (props) => {
                   <div className="flex flex-col gap-2 text-[#01202B]">
                     <div className="text-lg font-bold ">{booking?.name}</div>
                     <div className="flex flex-col gap-1">
-                      <div className="text-sm font-medium">
-                        Nirwan Marg, Bani Park, Jaipur
-                      </div>
+                      <div className="text-sm font-medium">{booking?.city}</div>
                       <div className="gap-1 flex flex-row items-center">
                         <StarRating
-                          initialRating={booking.booking?.star_category}
+                          initialRating={booking?.user_rating}
                         ></StarRating>
-                        <div className="text-sm text-[#7A7A7A] font-medium underline">
-                          2450 Google reviews
-                        </div>
+                        {booking.number_of_reviews && (
+                          <div className="text-sm text-[#7A7A7A] font-medium underline">
+                            {booking.number_of_reviews} Google reviews
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="flex flex-row gap-2 items-center">
                       <BsCalendar2 className="text-md text-[#7A7A7A]" />
                       <div>
                         <div className="text-md font-medium ">
-                          {/* {getDate(booking.check_in)}-
-                          {getDate(booking.check_out)} */}
+                          {getDate(booking.check_in)}-
+                          {getDate(booking.check_out)}
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-row gap-3">
                       <div className="text-md font-medium gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                        <div className="text-md font-medium">2 Adults</div>
+                        <div className="text-md font-medium">
+                          {booking.number_of_adults} Adults
+                        </div>
                       </div>
                       <div className="text-md font-medium gap-2 flex flex-row items-center">
                         <FaBed className="text-md text-[#7A7A7A]" />
-                        <div className="text-md font-medium">Deluxe Room</div>
+                        <div className="text-md font-medium">
+                          {booking.costings_breakdown[0].room_type}
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-row gap-2 items-center">
