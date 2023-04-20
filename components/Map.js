@@ -106,19 +106,20 @@ function Map(props) {
     })
   );
   // async function processLocations(locations) {
-  //   const path = [];
+  //   let path = [];
   //   for (const location of locations) {
   //     const lat =
-  //       location.lat == null
+  //       location.lat === null
   //         ? await getCityDetails(location.city_id).lat
   //         : location.lat;
   //     const long =
-  //       location.long == null
+  //       location.long === null
   //         ? await getCityDetails(location.city_id).long
   //         : location.long;
   //     path.push({ lat, long });
   //   }
   //   return path;
+
   // }
 
   // const path = processLocations(props.locations);

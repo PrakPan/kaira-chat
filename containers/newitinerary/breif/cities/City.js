@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import ImageLoader from '../../../../components/ImageLoader';
 import TruncatedText from '../../../../helper/TruncatedText';
 import WeatherWidget from '../../../../components/WeatherWidget/WeatherWidget';
-import {FaBed} from 'react-icons/fa'
+import { FaBed } from 'react-icons/fa';
 const Container = styled.div``;
 const Heading = styled.p`
   font-size: 23px;
   font-weight: 600;
-  color: #01202B;
+  color: #01202b;
   font-style: Helvetica;
   @media (min-width: 768px) {
     font-size: 26px;
@@ -70,7 +70,7 @@ const City = (props) => {
     const headerOffset = 117;
     const elementPosition = element.getBoundingClientRect().top;
     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-  
+
     window.scrollTo({
       top: offsetPosition,
       behavior: 'smooth',
@@ -90,23 +90,24 @@ const City = (props) => {
           dimensionsMobile={{ width: 180, height: 180 }}
         ></ImageLoader>
         <CityText className="font-poppins">
-          <div className='flex flex-row'>
-            <div className='flex justify-center items-center bg-slate-100 rounded-lg px-3 py-3 mr-2'>
-                <FaBed/>
+          <div className="flex flex-row">
+            <div className="flex justify-center items-center bg-slate-100 rounded-lg px-3 py-3 mr-2">
+              <FaBed />
             </div>
-            <div className='flex flex-col'>
-              <div className='text-xl font-semibold'>Lemon Tree Premium Hotel</div>
-              <div className='text-xs font-light'>Nirwan Marg, Bani Park, Jaipur</div>
+            <div className="flex flex-col">
+              <div className="text-xl font-semibold">
+                Lemon Tree Premium Hotel
+              </div>
+              <div className="text-xs font-light">
+                Nirwan Marg, Bani Park, Jaipur
+              </div>
             </div>
           </div>
-          <div className='flex flex-col py-2'>
-          <div className='text-sm'>
-            Things to do
-          </div>
-          <div className='font-semibold text-sm'>
-       
-Tours · Wildlife · Museums · Historic Sites
-          </div>
+          <div className="flex flex-col py-2">
+            <div className="text-sm">Things to do</div>
+            <div className="font-semibold text-sm">
+              Tours · Wildlife · Museums · Historic Sites
+            </div>
           </div>
           {/* <TruncatedText
             text={props.cityData.short_description}
@@ -123,11 +124,13 @@ Tours · Wildlife · Museums · Historic Sites
         Weather (03 Feb - 05 Feb 2023)
       </TextLight> */}
             <WeatherWidget
-
-              date={'2023-03-23 06:00:00'}
               city={props.cityData.city_name}
+              lat={props.cityData.lat}
+              lon={props.cityData.long}
             />
-            <ITbutton onClick={()=> scrollToTargetAdjusted(props.dayId)}>View {props.cityData.city_name} in your Itinerary</ITbutton>
+            <ITbutton onClick={() => scrollToTargetAdjusted(props.dayId)}>
+              View {props.cityData.city_name} in your Itinerary
+            </ITbutton>
             {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
       <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}
           </div>
