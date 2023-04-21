@@ -88,8 +88,9 @@ margin: 1rem;
 const NewResults = (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (id, name, parent, slug) => {
-    router.push('/travel-guide/city/'+slug)
+  const _handleLocationClick = (data) => {
+    if(data.type == 'Location') router.push('/travel-guide/city/'+data.cta)
+    else router.push('/travel-planner/'+data.cta)
   }
   const _handlePersonaliseRedirect = (name) => {
     router.push('/tailored-travel?search_text='+name)
@@ -105,14 +106,13 @@ const NewResults = (props) => {
   </div>
   </div>
 
-
+console.log(props.results , 'props.results')
   if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
-
 
     return(      <>
         <Container>
         {props.results.map((e,i)=>
-       { if(i<5) return<LocationContainer key={e["_source"].resource_id} onClick={() => {_handlePersonaliseRedirect(e['_source'].name)}}>
+       { if(i<5) return<LocationContainer key={e["_source"].resource_id} onClick={() => {_handleLocationClick(e['_source'])}}>
             
             <MarkerContainer><ImSearch /></MarkerContainer>
             <Text>

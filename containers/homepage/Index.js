@@ -201,13 +201,14 @@ useEffect(() => {
       </FullImage> */}
 
       <HeroBanner
-                   image={'media/website/Home (1).png'}
+                   image={isPageWide?'media/website/homepage-banner-desktop.png' :'media/website/homepage-banner-mobile.png'}
                   //  page_id={props.cityData.id}
                    destinationType={'city-planner'}
                   //  destination={props.cityData.name}
                   //  cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
-                   title={`Explore different realities.`}
+                   title={<p>Travel planning a chore,<br/>
+                   Let our AI Explore.</p>}
                   _startPlanningFunction={()=>_handleTailoredRedirect()}
 
                  />
@@ -229,7 +230,7 @@ useEffect(() => {
               props.token && myPlansArr.length ? 
               <>
               <Experiences  margin="2.5rem 0" experiences={myPlansArr} ></Experiences>
-             <Button  link='/dashboard'  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button>
+             <Button  link='/dashboard'  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="500" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button>
               
               </>
 : null

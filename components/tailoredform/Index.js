@@ -42,7 +42,7 @@ const Container = styled.div`
     font-size: 1.5rem;
     margin: 0.25rem 0 0.25rem 0;
     text-align: left;
-    font-weight: 700;
+    font-weight: 600;
     color: black;
     line-height: normal;
 
@@ -358,14 +358,14 @@ const Enquiry = (props) => {
              <Button
                width="100%"
                padding="0.5rem 2rem"
-               fontWeight="600"
+               fontWeight="500"
                margin="1rem 0"
                borderRadius="5px"
                borderWidth="1px"
                bgColor="#f7e700"
                onclick={_SlideOneSubmitHandler}
              >
-               Next
+               Continue
              </Button>
            </div>
          ) : null}
@@ -376,14 +376,14 @@ const Enquiry = (props) => {
                  fontSize="12px"
                  width="100%"
                  padding="0.5rem 2rem"
-                 fontWeight="600"
+                 fontWeight="500"
                  margin="1rem 0"
                  borderRadius="5px"
                  borderWidth="1px"
                  bgColor="#f7e700"
                  onclick={_SlideTwoSubmitHandler}
                >
-                 Next
+                 Continue
                </Button>
              </div>
            ) : (
@@ -392,7 +392,7 @@ const Enquiry = (props) => {
                  width="100%"
                  padding="0.5rem 2rem"
                  fontSize="12px"
-                 fontWeight="600"
+                 fontWeight="500"
                  margin="1rem 0"
                  borderRadius="5px"
                  borderWidth="1px"

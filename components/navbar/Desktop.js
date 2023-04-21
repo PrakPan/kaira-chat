@@ -283,7 +283,7 @@ const Navbar = (props) => {
             </NavItem>
       
           {  !props.hidecta  ? 
-                        <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 1.5rem 0 0" padding="0.75rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
+                        <Button fontWeight="500" borderColor='black' borderWidth='1px' hoverBgColor="black" hoverColor="white" bgColor="#F7e700"  borderRadius="6px" margin="0 1.5rem 0 0" padding="0.5rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
           : null}
           {props.token ? 
           <ProfilDropDown

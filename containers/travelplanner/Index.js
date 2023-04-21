@@ -339,7 +339,7 @@ const InfoWindowContainer = (location)=><MapInfo>
             link={isPageWide ? "/tailored-travel" : null}
             onclick={!isPageWide ? () => setShowMobilePlanner(true) : null}
             borderWidth="1px"
-            fontWeight="600"
+            fontWeight="500"
             borderRadius="6px"
             margin="2rem auto"
             padding="0.5rem 2rem"
@@ -392,7 +392,7 @@ const InfoWindowContainer = (location)=><MapInfo>
             link={isPageWide ? "/tailored-travel" : null}
             onclick={!isPageWide ? () => setShowMobilePlanner(true) : null}
             borderWidth="1px"
-            fontWeight="600"
+            fontWeight="500"
             borderRadius="6px"
             margin="2rem auto"
             padding="0.5rem 2rem"

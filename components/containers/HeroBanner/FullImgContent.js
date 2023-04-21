@@ -24,9 +24,9 @@ color: white;
 width: 99%;
 font-weight: 800;
 margin-bottom: 1rem;
-font-size: 35px;
+font-size: 26px;
 @media screen and (min-width: 768px){
-  font-size: 55px;
+  font-size: 48px;
   font-weight: 700;
 
 }
@@ -83,7 +83,7 @@ display : flex;
  align-items: center;
  text-align : center;
 color : black;
-    font-weight: 600;
+    font-weight: 500;
     margin-top : 7px;
 @media screen and (min-width: 768px){
     font-size: 16px;
@@ -97,7 +97,7 @@ const SubHeading = styled.div`
     line-height : 20px;
     font-weight : 400;
     @media screen and (min-width: 768px){
-    font-size: 28px;
+    font-size: 25px;
     line-height : 35px;
 
 }
@@ -123,7 +123,7 @@ const FullImgContent = (props) => {
 // console.log('', props.children_cities)
     return (
 
-        <Container className='font-opensans center-di text-cente'>
+        <Container className='font-poppins center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.title}</Heading>
            {isPageWide?<SubHeading>Bid farewell to generic holiday packages.<br/>
@@ -143,7 +143,7 @@ Craft AI-personalized itineraries.</SubHeading>}
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
                 <div className='hidden-desktop'>
-                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props._startPlanningFunction()} margin="1rem auto 1rem auto">Start Planning</Button>
+                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="500" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props._startPlanningFunction()} margin="1rem auto 1rem auto">Start Planning</Button>
              </div>
                 </PaddingContianer>
                {/* <Banner></Banner> */}

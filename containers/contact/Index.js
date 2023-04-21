@@ -11,7 +11,7 @@ const Contact = () => {
   },[])
 
   return(
-    <div>
+    <div style={{marginTop : '72px'}}>
         <Image></Image>
         <YellowContainer desktopWidth="70%" mobileWidth="95%">
             <ContactForm></ContactForm>

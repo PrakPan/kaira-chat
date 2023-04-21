@@ -12,10 +12,10 @@ import urls from "../../services/urls";
 const Container = styled.div`
 
   text-align: center;
-  padding: 10vh 2rem 2rem 2rem;
+  padding: 0rem 2rem 2rem 2rem;
 
   @media screen and (min-width: 768px) {
-    padding: 10vh 4rem 4rem 4rem;
+    padding: 0rem 4rem 4rem 4rem;
   }
 
  

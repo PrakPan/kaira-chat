@@ -16,7 +16,8 @@ const ImgContainer = styled.div`
 
 const ImgTagsContainer  = styled.div`
 position : absolute;
-top : 24%;
+top : 50%;
+transform : translateY(-43%);
 left : 10%;
 img{
   filter: brightness(1);
@@ -58,25 +59,20 @@ const Enquiry = (props) => {
   if(props.token) if(props.onhide) props.onhide();
 }, [props.token, props.onhide]);
 
-console.log(modalWidth , 'modalWidth')
-
-
   useEffect(()=>{
-    function findModalWidth(){
-console.log(modalWidth , 'modalWidth function called')
-
-  if(window.innerWidth >= 1800) setModalWidth(50)
-  else if(window.innerWidth >= 1400) setModalWidth(60)
-  else if(window.innerWidth >= 1100) setModalWidth(70)
-  else if(window.innerWidth >= 768) setModalWidth(90)
-  else if(window.innerWidth >= 600) setModalWidth(60)
-  else if(window.innerWidth >= 400) setModalWidth(80)
-  else setModalWidth(90)
-    }
-    window.addEventListener("resize", findModalWidth);
-    findModalWidth()
-    return ()=> window.removeEventListener("resize", findModalWidth)
-  },[modalWidth])
+  function findModalWidth(){
+    if(window.innerWidth >= 1800) setModalWidth(50)
+    else if(window.innerWidth >= 1400) setModalWidth(60)
+    else if(window.innerWidth >= 1100) setModalWidth(70)
+    else if(window.innerWidth >= 768) setModalWidth(90)
+    else if(window.innerWidth >= 600) setModalWidth(60)
+    else if(window.innerWidth >= 400) setModalWidth(80)
+    else setModalWidth(90)
+      }
+      window.addEventListener("resize", findModalWidth);
+      findModalWidth()
+      return ()=> window.removeEventListener("resize", findModalWidth)  
+  },[])
 
 
   if(isPageWide)

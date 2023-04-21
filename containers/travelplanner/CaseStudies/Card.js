@@ -77,7 +77,7 @@ const CardContainer = (props) => {
 
                     </div>
                 </RatingContainer>
-                <Button fontWeight="600" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700">View Details</Button>
+                <Button fontWeight="500" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700">View Details</Button>
 
 
                 </div>

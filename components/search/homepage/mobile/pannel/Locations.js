@@ -70,7 +70,7 @@ const Locations= (props) => {
     const router = useRouter()
 
   let isPageWide = media('(min-width: 768px)')
-  const _handleLocationClick = (id, name, parent, slug) => {
+  const _handleLocationClick = (slug) => {
     router.push('/travel-guide/city/'+slug)
 
   }
@@ -91,7 +91,7 @@ const Locations= (props) => {
             let parent = props.hotlocations[i].state.name;
             let slug = props.hotlocations[i].slug;
             locations.push(
-                <LocationContainer  onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+                <LocationContainer  onClick={() => _handleLocationClick(slug)}>
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
             <Text>
               <div>{props.hotlocations[i].name}</div>
@@ -117,7 +117,7 @@ const Locations= (props) => {
     }
     return(
         <div>
-        <Heading className="font-poppins">POPULAR DESTINATION</Heading>
+        <Heading className="font-poppins">POPULAR DESTINATIONS</Heading>
         <Container>      
             {locations}  
         

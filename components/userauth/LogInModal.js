@@ -199,18 +199,14 @@ const LogIn = (props) => {
   //Submit OTP
   const submitOtpHandler = (event) => {
     event.preventDefault();
+    setUserNameError(false)
 
-    console.log(
-      extensions[extension].label + mobile,
-      otp,
-      userDetails.userName,
-      userDetails.email,
-      whatsapp,
-      "submitOtpHandler"
-    );
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
+
+  if(!userDetails.userName) return setUserNameError(true);      
+
       if (newUserValidity)
         props.onAuth(
           extensions[extension].label + mobile,
@@ -264,11 +260,11 @@ const LogIn = (props) => {
 
   //Dispatch Action
   const otpHandler = () => {
-    if (!userDetails.userName) setUserNameError(true);
-    else {
-      setUserNameError(false);
+    // if (!userDetails.userName) setUserNameError(true);
+    // else {
+      // setUserNameError(false);
       props.onOtp(extensions[extension].label + mobile);
-    }
+    // }
   };
   //TEST
   const resetOtpHandler = () => {
@@ -423,7 +419,7 @@ const LogIn = (props) => {
         </form>
       ) : (
         <form noValidate>
-          <FloatingInput
+          {/* <FloatingInput
             style={{ marginBottom: "0.7rem" }}
             error={userNameError}
             helperText={"Please enter valid username"}
@@ -436,7 +432,7 @@ const LogIn = (props) => {
               _userDetailsOnChangeHandler(event, "userName");
             }}
             margin="0.7rem 0rem"
-          />
+          /> */}
           <MobileNumberContainer>
             <CountryCodeContainer>
               <div
@@ -463,7 +459,26 @@ const LogIn = (props) => {
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
             boooking updates via WhatsApp
           </WhatsappCheckBox>
+
+
+          {props.newUser || (props.otpSent && !props.name) ? <FloatingInput
+            style={{ marginBottom: "0.7rem" }}
+            error={userNameError}
+            helperText={"Please enter valid username"}
+            placeholder={"Enter Your Full Name"}
+            key="userName"
+            required
+            id="userName"
+            label="Enter Your Full Name"
+            onChange={(event) => {
+              _userDetailsOnChangeHandler(event, "userName");
+            }}
+            margin="0.7rem 0rem"
+          /> : null}
+
           {props.newUser || (props.otpSent && !props.email) ? email : null}
+
+         
           {props.otpSent && (
             <div
               style={{
@@ -583,7 +598,7 @@ const LogIn = (props) => {
                     margin={"0"}
                     width="100%"
                     bgColor="#F9F9F9"
-                    fontWeight="600"
+                    fontWeight="500"
                     fontSize="16px"
                     borderWidth="0px"
                     hoverColor="white"

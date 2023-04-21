@@ -64,17 +64,19 @@ grid-gap: 0.5rem;
 const Locations= (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (id, name, parent, slug) => {
+  const _handleLocationClick = (slug) => {
     router.push('/travel-guide/city/'+slug)
   }
   const _handlePersonaliseRedirect = (id, name, parent) => {
     // localStorage.setItem('search_city_selected_id', id)
     // localStorage.setItem('search_city_selected_name', name)
-    // localStorage.setItem('search_city_selected_parent', parent)
-
-
+    // localStorage.setItem('search_city_selected_parent', parent
     router.push('/tailored-travel?search_text='+name)
   }
+
+
+  console.log(props.hotlocations)
+
   let locations=[];
     if(props.hotlocations){
         for(var i=0; i<props.hotlocations.length; i++){
@@ -83,7 +85,7 @@ const Locations= (props) => {
             let parent = props.hotlocations[i].state.name;
             let slug = props.hotlocations[i].slug
             locations.push(
-                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+                <LocationContainer className='border-thin' onClick={() => _handleLocationClick(slug)}>
                 {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
                 <ImageLoader
                         url={props.hotlocations[i].image}
@@ -108,7 +110,7 @@ const Locations= (props) => {
         for(var i=0; i<6; i++){
           
             locations.push(
-                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+                <LocationContainer className='border-thin'>
                <ImageLoader
                         url={'media/website/grey.png'}
                         borderRadius='50%'

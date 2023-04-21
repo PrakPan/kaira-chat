@@ -19,7 +19,7 @@ width: 100%;
 `;
 
 const Section = styled.div`
-margin-bottom: 1.5rem;
+margin-bottom: 0.5rem;
 `;
 const SlideOne = (props) =>{
 
@@ -39,7 +39,7 @@ const SlideOne = (props) =>{
            setShowSearchStarting={props.setShowSearchStarting} showCities={props.showCities} setShowCities={props.setShowCities} destination={props.destination}  CITIES={props.cities ? props.cities : CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}></Destinations>
       </Section>
       <Section>
-        <Question style={{visibility: props.showCities ? 'hidden' : 'visible'}} margin="0 0 1rem 0" >Your travel dates?</Question>
+        <Question style={{visibility: props.showCities ? 'hidden' : 'visible'}} margin="0 0 1rem 0" >When are you planning to travel?</Question>
 {/* <Dates 
 showCities={props.showCities}
  valueStart={props.valueStart}
