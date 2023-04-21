@@ -40,7 +40,26 @@ const NewItenaryMain = (props) => {
 
   const items = [];
   const itemsDays = [];
+  // function makeCounter(initialCount = 0, initialDate = 1) {
+  //   let date = initialDate;
+  //   let count = initialCount;
 
+  //   return function() {
+  //     if (count === initialCount) {
+  //       initialDate++;
+  //       count--;
+  //       return 0;
+  //     } else {
+  //       initialDate++;
+  //       count--;
+  //       return count;
+  //     }
+  //   };
+  // }
+  // const counter1 = makeCounter(
+  //   props.city_slabs[1].duration,
+  //   props.itinerary.day_slabs[i].slab.split('/')[0]
+  // );
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -48,8 +67,10 @@ const NewItenaryMain = (props) => {
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
         break;
       else {
-        const itenaryId = props.itinerary.day_slabs[i - 1];
-
+        const itenaryId =
+          i % props.city_slabs[i].duration
+            ? props.itinerary.day_slabs[i - 1]
+            : props.itinerary.day_slabs[i];
         // console.log(itenaryId !== undefined);
         // console.log('idssss' + props.city_slabs[i].city_name);
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
