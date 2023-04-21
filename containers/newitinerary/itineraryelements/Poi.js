@@ -122,11 +122,14 @@ const ItineraryPoiElement = (props) => {
 
               {props.poi !== undefined ? (
                 props.poi.experience_filters ? (
-                  <div className={`flex gap-4 flex-row`}>
+                  <div className={`flex gap-2 flex-row`}>
                     {props.poi.experience_filters.map((element, index) =>
                       element.toString() != 'Hidden Gem' ? (
                         <div className="flex flex-row items-end">
-                          <span className="font-bold text-xl pr-1">.</span>
+                          {index != 0 && (
+                            <span className="font-bold text-xl pr-1">.</span>
+                          )}
+
                           <div
                             className="flex  items-center text-sm  font-bold"
                             key={index}

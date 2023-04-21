@@ -51,7 +51,7 @@ const ItineraryElementM = (props) => {
           <div
             style={{
               flexGrow: '1',
-              justifyContent: 'flex-end',
+              justifyContent: 'flex-start',
               display: 'flex',
             }}
           >

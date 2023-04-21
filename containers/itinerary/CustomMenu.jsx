@@ -37,7 +37,7 @@ const MenuItem = styled.div`
   }
 `;
 const RoundMenuItem = styled.div`
-  padding: 2px 3px 2px 3px;
+  padding: 4px 6px 6px 3px;
   cursor: pointer;
   width: ${({ Isvertical }) => (Isvertical ? '95px' : 'max-content')};
  

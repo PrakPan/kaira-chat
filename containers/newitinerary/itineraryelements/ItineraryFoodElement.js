@@ -48,11 +48,16 @@ const Line = styled.div`
 `;
 export const RecommendationGridContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   grid-template-rows: ${(props) =>
-    props.Norows > 2 ? 'repeat(2, 1fr)' : 'auto'};
+    props.Norows > 2 ? 'repeat(1, 1fr)' : 'auto'};
   grid-column-gap: 20px;
   grid-row-gap: 27px;
+  @media screen and (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: ${(props) =>
+      props.Norows > 2 ? 'repeat(2, 1fr)' : 'auto'};
+  }
 `;
 export const TInfoContainer = styled.div`
   @media screen and (min-width: 768px) {

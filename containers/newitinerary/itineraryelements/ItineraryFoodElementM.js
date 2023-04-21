@@ -75,11 +75,12 @@ const ItineraryFoodElementM = (props) => {
             ></IoMdRestaurant>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="flex flex-col ">
             <Heading className="font-bold">{props.heading}</Heading>
+            <Text>{props.text}</Text>
           </div>
         </GridContainer>
-        {props.recomendation ? (
+        {/* {props.recomendation ? (
           <>
             <Text>{props.text}</Text>
             {!isJson(props.recomendation)
@@ -93,7 +94,7 @@ const ItineraryFoodElementM = (props) => {
                   ></FoodItem>
                 ))}
           </>
-        ) : null}
+        ) : null} */}
       </Container>
       <Line></Line>
     </>

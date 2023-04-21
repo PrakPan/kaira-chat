@@ -111,25 +111,30 @@ const ItineraryPoiElementM = (props) => {
             <Heading>{props.heading}</Heading>
             <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
-          <StarRating initialRating={4}></StarRating>
+          {props?.rating && <StarRating initialRating={4}></StarRating>}
+
           {/* <Rating margin="0.25rem 0"></Rating> */}
           {props.poi !== undefined ? (
             props.poi.experience_filters ? (
               <div
                 className={`grid grid-flow-col grid-rows-${Math.ceil(
                   props.poi.experience_filters.length / 2
-                )} gap-2`}
+                )} gap-0`}
               >
                 {props.poi.experience_filters.map((element, index) =>
                   element.toString() != 'Hidden Gem' ? (
-                    <div
-                      className="flex max-w-min text-sm  font-bold"
-                      key={index}
-                    >
-                      {' '}
-                      {element.split(' ').length > 2
-                        ? element.split(' ')[0]
-                        : element}{' '}
+                    <div className="flex flex-row items-end min-w-max">
+                      <span className="font-bold text-xl pr-1">.</span>
+
+                      <div
+                        className="flex  items-center text-sm  font-bold"
+                        key={index}
+                      >
+                        {' '}
+                        {element.split(' ').length > 2
+                          ? element.split(' ')[0]
+                          : element}{' '}
+                      </div>
                     </div>
                   ) : (
                     <div className="flex font-bold" key={index}>

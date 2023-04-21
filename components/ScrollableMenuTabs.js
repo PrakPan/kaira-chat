@@ -63,7 +63,7 @@ const ScrollableMenuTabs = ({
   Iterable = 'label',
   vertical = false,
 }) => {
-  const [activeItem, setActiveItem] = useState(1);
+  const [activeItem, setActiveItem] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [activeTabPosition, setActiveTabPosition] = useState(0);
   /// hooks

@@ -6,7 +6,7 @@ import { TransportIconFetcher } from '../../../../helper/TransportIconFetcher';
 const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
-  min-height: 10vw;
+  min-height: 8rem;
 `;
 // const Heading = styled.div`
 //     font-weight: 600;

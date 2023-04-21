@@ -51,16 +51,18 @@ const HotelsBooking = (props) => {
                     <div className="text-lg font-bold ">{booking?.name}</div>
                     <div className="flex flex-col gap-1">
                       <div className="text-sm font-medium">{booking?.city}</div>
-                      <div className="gap-1 flex flex-row items-center">
-                        <StarRating
-                          initialRating={booking?.user_rating}
-                        ></StarRating>
-                        {booking.number_of_reviews && (
-                          <div className="text-sm text-[#7A7A7A] font-medium underline">
-                            {booking.number_of_reviews} Google reviews
-                          </div>
-                        )}
-                      </div>
+                      {booking?.user_rating && (
+                        <div className="gap-1 flex flex-row items-center">
+                          <StarRating
+                            initialRating={booking?.user_rating}
+                          ></StarRating>
+                          {booking.number_of_reviews && (
+                            <div className="text-sm text-[#7A7A7A] font-medium underline">
+                              {booking.number_of_reviews} Google reviews
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-row gap-2 items-center">
                       <BsCalendar2 className="text-md text-[#7A7A7A]" />
@@ -112,4 +114,4 @@ const HotelsBooking = (props) => {
   );
 };
 
-export default HotelsBooking;
+export default React.memo(HotelsBooking);
