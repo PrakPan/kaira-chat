@@ -49,6 +49,7 @@ const NewItenaryMain = (props) => {
         break;
       else {
         const itenaryId = props.itinerary.day_slabs[i - 1];
+
         // console.log(itenaryId !== undefined);
         // console.log('idssss' + props.city_slabs[i].city_name);
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
@@ -75,6 +76,7 @@ const NewItenaryMain = (props) => {
       }
     }
   }
+  console.log(items);
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -122,6 +124,22 @@ const NewItenaryMain = (props) => {
     } else {
       return year1;
     }
+  };
+  const IdPauser = (duration = 1) => {
+    let counter = duration - 1;
+
+    return function() {
+      if (counter === duration - 1) {
+        counter--;
+        return true;
+      } else if (counter === 0) {
+        counter = duration;
+        return true;
+      } else {
+        counter--;
+        return false;
+      }
+    };
   };
   return (
     <Wrapper>

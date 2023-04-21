@@ -90,9 +90,9 @@ const ItineraryFoodElement = (props) => {
 
   return (
     <>
-      <Container className="font-poppins">
+      <Container className="font-poppins pt-3">
         {/* <div>{props.time}</div> */}
-        <div className="flex flex-row pt-2">
+        <div className="flex flex-row ">
           <div>
             <ImageLoader
               url={props.icon}

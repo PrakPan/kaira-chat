@@ -34,7 +34,7 @@ const RecomendationComponent = (props) => {
 
         <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-4'}`}>
           {props.recomendation ? (
-            <div className="pb-2">
+            <div className="pb-3">
               {!isJson(props.recomendation) ? (
                 <Text className="text-base font-medium">
                   {props.recomendation}

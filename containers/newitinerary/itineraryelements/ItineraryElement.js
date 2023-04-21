@@ -63,12 +63,12 @@ const ItineraryElement = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container style={{ fontSize: '14px', fontWeight: '500' }}>
+    <Container style={{ fontSize: '14px', fontWeight: '500' }} className="pt-3">
       {/* <div>{props.time}</div> */}
       {/* <SectionOneText>{props.time}</SectionOneText> */}
       {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
-      <div className="flex flex-row pt-8">
+      <div className="flex flex-row ">
         <div className=" flex justify-center items-center">
           <ImageLoader
             url={props.icon}

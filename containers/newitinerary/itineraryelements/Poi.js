@@ -89,7 +89,7 @@ const ItineraryPoiElement = (props) => {
   return (
     <Container>
       {/* <div>{props.time}</div> */}
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row items-center pt-3">
         <div className="bg-white w-[6rem]">
           {props.image ? (
             <ImageLoader
@@ -109,7 +109,7 @@ const ItineraryPoiElement = (props) => {
         </div>
 
         <div className="pl-6">
-          <div className="w-full pt-4">
+          <div className="w-full ">
             <div className="w-full">
               <div
                 className="flex flex-row w-full  justify-start items-center"
