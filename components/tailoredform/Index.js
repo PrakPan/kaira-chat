@@ -1,7 +1,6 @@
  
 import React, {useState , useEffect} from "react";
 import styled , {keyframes}from 'styled-components';
-  import Grid from '@material-ui/core/Grid';
 import Button from '../ui/button/Index';
  
   import * as ga from '../../services/ga/Index';
@@ -18,7 +17,6 @@ import Flickity from './Flickity';
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from 'react-animations'
 import Popup from "../ErrorPopup";
-import { CompressOutlined } from "@mui/icons-material";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -404,7 +402,7 @@ const Enquiry = (props) => {
              </div>
            )
          ) : null}
-         <Grid container spacing={2}>
+         {/* <Grid container spacing={2}> */}
            {/* <Grid item xs={12}>
                     {!loading ? 
                     <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
@@ -416,7 +414,7 @@ const Enquiry = (props) => {
 
                     }
                     </Grid> */}
-         </Grid>
+         {/* </Grid> */}
 
          {/* </Modal.Body> */}
          {/* </Modal> */}

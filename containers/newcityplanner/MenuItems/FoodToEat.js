@@ -57,10 +57,10 @@ const FoodToEat = (props) => {
     <>
       <div className="hidden-mobile">
         <Carousel
-          initialIndex
+          initialIndex={0}
           hideSides
           numberOfCards={4}
-          groupCells={2}
+          groupCells={4}
           cards={cards}
         />
       </div>

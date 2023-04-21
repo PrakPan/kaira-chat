@@ -51,31 +51,6 @@ flex-grow: 1;
 
 }
 `
-const LogosContainer = styled.div`
-display: grid;
-grid-template-columns: max-content max-content;
-width: max-content;
-margin: auto;
- grid-gap: 0.5rem;
- padding-bottom: 0.5rem;
-
-
-@media screen and (min-width: 768px){
- }
-`
-;
-const LogoText = styled.div`
-font-size: 12px;
-color: black; 
-display : flex;
- align-items: center;
-
- font-weight: 800;
-@media screen and (min-width: 768px){
-    font-size: 18px;
-
-}
-`;
 
 const IconText = styled.div`
 font-size: 12px;
@@ -129,10 +104,10 @@ const FullImgContent = (props) => {
            {isPageWide?<SubHeading>Bid farewell to generic holiday packages.<br/>
 Craft AI-personalized itineraries.</SubHeading> : <SubHeading>Say goodbye to packages.<br />
 Craft AI-personalized itineraries.</SubHeading>}
-            <div className='hidden-mobile'>
-            {/* <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button> */}
+            {/* <div className='hidden-mobile'>
+            <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button>
 
-            </div>
+            </div> */}
             {/* <SubText>As per your 
                 <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
             </SubText> */}
@@ -142,15 +117,15 @@ Craft AI-personalized itineraries.</SubHeading>}
             {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
-                <div className='hidden-desktop'>
+            {!isPageWide && <div>
                 <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="500" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props._startPlanningFunction()} margin="1rem auto 1rem auto">Start Planning</Button>
-             </div>
+             </div>}
                 </PaddingContianer>
                {/* <Banner></Banner> */}
-               <div className='hidden-mobile' style={{ }}>
+               {isPageWide && <div>
                 <TailoredForm destinationType={props.destinationType} page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities} HeroBanner></TailoredForm>
                 
-                </div>
+                </div>}
               
                 {/* <div className='hidden-desktpo'>
                     <div style={{backgroundColor: 'white', zIndex:'2', height: '100vh', width: '100vw', position: 'fixed', top: '0'}}>

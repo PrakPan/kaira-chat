@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import Externallinkbutton from "./Externallinkbutton";
 import Generalbutton from "./Generallinkbutton";
-// import Generalbutton from "./Generalbutton";
-
 import Internallinkbutton from "./Internallinkbutton";
 
 const Index = (props) => {

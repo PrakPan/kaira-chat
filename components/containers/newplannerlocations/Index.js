@@ -117,7 +117,8 @@ setCardsToShowJSXmobile(MobileCardsArr)
         {/* <Container >  
                {cardsToShowJSX}
       </Container> */}
-      <Carousel initialIndex hideSides groupCells={6} numberOfCards={6} cards={cardsToShowJSX}></Carousel>
+      <Carousel initialIndex={0} hideSides groupCells={6} numberOfCards={6} cards={cardsToShowJSX}></Carousel>
+      {/* <Carousel hideSides initialIndex={0} groupCells={6} numberOfCards={6} cards={cards}></Carousel> */}
 
        {/* {props.locations && !props.planner ? props.locations.length > offset ?
         <Button   onclick={_showMoreLocations} fontSizeDesktop="16px" fontWeight="600" hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="0rem auto" padding="0.5rem 2rem" >View More</Button> : 
@@ -128,7 +129,7 @@ setCardsToShowJSXmobile(MobileCardsArr)
  
     <div className='hidden-desktop'>       
           <div style={{ padding: "1rem 0"}}>
-            <PageDotsFlickity initialIndex cards={cardsToShowJSXmobile}></PageDotsFlickity>
+            <PageDotsFlickity initialIndex={0} cards={cardsToShowJSXmobile}></PageDotsFlickity>
     </div>
     {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
   </div>

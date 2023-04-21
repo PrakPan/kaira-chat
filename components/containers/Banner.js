@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import Button from '../ui/button/Index';
 import Link from 'next/link'
-import Spinner from '../Spinner';
 /* Bottom floating banner for Desktop only
   Inputs: text, onclick
 */

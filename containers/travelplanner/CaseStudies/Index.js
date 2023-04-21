@@ -1,9 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Button from '../../components/ui/button/Index';
-import ImageLoader from '../../../components/ImageLoader';
-import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
 import Card from './Card';
 import TRAVELERS from '../../../public/content/travelers';

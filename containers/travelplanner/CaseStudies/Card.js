@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
-import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from './Flickity/Index';
 import { useRouter } from 'next/router';
 import {AiFillStar} from 'react-icons/ai'
  
@@ -39,11 +37,6 @@ const CardListItem = styled.p`
      display: grid;
      grid-template-columns: 1fr 1.5fr; 
      grid-gap: 1rem;
- `;
- const ButtonContainer = styled.div`
-      &:hover{
-        background-color: black;
-     }
  `;
  const RatingContainer = styled.div`
  margin-bottom: 0.75rem;

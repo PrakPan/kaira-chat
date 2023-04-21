@@ -131,7 +131,7 @@ const Mobile = (props) => {
             router.push('/');
        }
 
-       const LinksArr = [
+       var LinksArr = [
             {type : 'main' , link : '/' , text : 'Home' , icon : 'media/icons/navigation/home-page.png'},
             {type : 'main' , link : '/dashboard' , text : 'My Plans' , icon : 'media/icons/navigation/clipboard.png'},
             {type : 'main' , onclick : ()=>_handleNotifications() , text : 'Notifications', icon: 'media/icons/navigation/bell.png' },
@@ -142,6 +142,7 @@ const Mobile = (props) => {
             {type : 'others' ,link : '/contact' , text : 'Contact Us' , icon : 'media/icons/navigation/call.png'},
             {type : 'others' ,link : '/covid-19-safe-travel-india' , text : 'Covid 19 Safety' , icon : 'media/icons/navigation/health-insurance.png' },
         ] 
+        if(!props.token) LinksArr = LinksArr.filter(e=>e.link != '/dashboard')
         const MainLinksDiv = LinksArr.map((e)=>{
             if(e.type === 'main')
         return <ListItem onClick={e.onclick && e.onclick} style={router.pathname===e.link ? {backgroundColor :  "#ffff4a45"} : {}} >

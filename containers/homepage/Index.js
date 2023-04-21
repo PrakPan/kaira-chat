@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, createRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
@@ -15,7 +15,6 @@ import axiomyplansinstance from '../../services/sales/MyPlans';
 import AsSeenIn from '../../containers/testimonial/AsSeenIn';
 // import Heading from '../../components/newheading/heading/Index';
 import Heading from '../../components/newheading/heading/Index';
-import WhyUs from '../../components/containers/WhyUs';
 import TravelStyles from '../../components/containers/TravelStyles';
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
@@ -202,15 +201,10 @@ useEffect(() => {
 
       <HeroBanner
                    image={isPageWide?'media/website/homepage-banner-desktop.png' :'media/website/homepage-banner-mobile.png'}
-                  //  page_id={props.cityData.id}
                    destinationType={'city-planner'}
-                  //  destination={props.cityData.name}
-                  //  cities={props.reccomendedCitiesData}
-                   //  children_cities={props.experienceData.children}
                    title={<p>Travel planning a chore,<br/>
                    Let our AI Explore.</p>}
                   _startPlanningFunction={()=>_handleTailoredRedirect()}
-
                  />
 
 
@@ -269,10 +263,7 @@ useEffect(() => {
     
  
 
- <div className='hidden-desktop'><PersonaliseBox ></PersonaliseBox ></div> 
-
-    
-
+ {!isPageWide && <div><PersonaliseBox ></PersonaliseBox ></div>} 
       <SetWidthContainer>
 
       {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
@@ -284,7 +275,7 @@ useEffect(() => {
 
             <br></br>
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-      <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
+     {!isPageWide &&  <div><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
       {/* <Chatbot history={props.history}/>     */}
       </div>
       <WhatsappFloating message="Hey, I need help planning my trip." />
