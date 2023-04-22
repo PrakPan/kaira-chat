@@ -85,7 +85,9 @@ const ItineraryElement = (props) => {
           <div className="flex flex-col">
             <div className="text-base font-bold">{props.heading}</div>
             <div>
-              <Text>{props.text ? props.text : null}</Text>
+              <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+                {props.text ? props.text : null}
+              </div>
             </div>
           </div>
           <Line></Line>

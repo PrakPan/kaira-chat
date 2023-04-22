@@ -16,9 +16,7 @@ const StyledButton = styled.button`
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
-  @media screen and (min-width: 768px) {
-    width: 40%;
-  }
+
   &:hover {
     background-color: #f8e000;
     transform: scale(2);

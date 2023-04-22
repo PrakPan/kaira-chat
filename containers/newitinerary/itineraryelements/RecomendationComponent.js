@@ -36,9 +36,9 @@ const RecomendationComponent = (props) => {
           {props.recomendation ? (
             <div className="pb-3">
               {!isJson(props.recomendation) ? (
-                <Text className="text-base font-medium">
+                <div className="pt-1 line-clamp-3 font-normal text-sm">
                   {props.recomendation}
-                </Text>
+                </div>
               ) : (
                 <RecommendationGridContainer>
                   {JSON.parse(props.recomendation)?.map((item, index) => (

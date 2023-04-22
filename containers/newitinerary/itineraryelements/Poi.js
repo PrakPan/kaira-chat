@@ -143,7 +143,7 @@ const ItineraryPoiElement = (props) => {
                       ) : (
                         <div className="flex font-bold" key={index}>
                           <div
-                            className="border-solid  border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
+                            className="border-solid text-center flex justify-center items-center   border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
                             style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
                           >
                             {element}
@@ -157,7 +157,9 @@ const ItineraryPoiElement = (props) => {
             </div>
           </div>
 
-          <Text>{props.text}</Text>
+          <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+            {props.text}
+          </div>
           <Line></Line>
         </div>
       </div>
