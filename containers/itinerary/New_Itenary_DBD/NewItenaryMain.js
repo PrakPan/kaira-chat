@@ -16,6 +16,7 @@ const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
     display: flex;
     width: 60vw;
+    margin: 0 -2rem 0 0;
     flex-direction: column;
   `;
   const CitiesContainer = styled.div`
