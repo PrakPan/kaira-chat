@@ -1,12 +1,20 @@
 import { Children } from 'react';
 
-export const SplitScreen = ({ leftWidth, rightWidth, className, children }) => {
+export const SplitScreen = ({
+  isPageWide,
+  leftWidth,
+  rightWidth,
+  classStyle,
+  children,
+}) => {
   const [left, right] = Children.toArray(children);
-  return (
-    <div className={`flex w-full ${className}`}>
+  return isPageWide ? (
+    <div className={`flex w-full ${classStyle}`}>
       <div style={{ flex: `${leftWidth}` }}>{left}</div>
       <div style={{ flex: `${rightWidth}` }}>{right}</div>
     </div>
+  ) : (
+    { children }
   );
 };
 

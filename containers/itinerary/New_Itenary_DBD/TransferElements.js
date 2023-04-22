@@ -83,7 +83,9 @@ const TransferElements = ({
               </TransportContainer>
             ) : null}
 
-            <Text className="pt-1">{text}</Text>
+            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+              {text}
+            </div>
             <Line></Line>
           </div>
         </TInfoContainer>

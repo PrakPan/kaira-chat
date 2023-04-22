@@ -37,9 +37,7 @@ const SummaryContainer = styled.div`
   padding: 1rem;
   margin: 1rem 0;
   @media screen and (min-width: 768px) {
-    margin: 0;
-    position: sticky;
-    top: 8vh;
+    margin: 3.6rem -2rem 0 1rem;
   }
 `;
 // &:after{

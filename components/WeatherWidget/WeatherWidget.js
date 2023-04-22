@@ -78,9 +78,9 @@ const WeatherWidget = ({
         {weather.icon && <IconsFetcher iconId={weather.icon} />}
         <div>
           {weather.minTemp && weather.maxTemp && (
-            <TextBold>
+            <div className="font-medium">
               {weather.minTemp}°C - {weather.maxTemp}°C
-            </TextBold>
+            </div>
           )}
           {weather.description && (
             <p style={{ fontWeight: '500' }}>{weather.description}</p>

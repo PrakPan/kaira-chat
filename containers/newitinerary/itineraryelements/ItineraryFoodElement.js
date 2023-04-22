@@ -104,7 +104,9 @@ const ItineraryFoodElement = (props) => {
           </div>
           <div className="pl-[3.3rem] flex justify-center flex-col">
             <div className="text-base font-bold">{props.heading}</div>
-            <Text>{props.text}</Text>
+            <div className="pt-1 line-clamp-3 font-normal text-sm">
+              {props.text}
+            </div>
           </div>
         </div>
 
@@ -131,7 +133,9 @@ const ItineraryFoodElement = (props) => {
             </div>
             {props.recomendation ? (
               <>
-                <Text>{props.text}</Text>
+                <div className="pt-1 line-clamp-3 font-normal text-sm">
+                  {props.text}
+                </div>
                 {!isJson(props.recomendation) ? (
                   `${props.recomendation}`
                 ) : (

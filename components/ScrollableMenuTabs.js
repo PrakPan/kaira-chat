@@ -62,6 +62,7 @@ const ScrollableMenuTabs = ({
   Mstyle = 'simple',
   Iterable = 'label',
   vertical = false,
+  classStyle,
 }) => {
   const [activeItem, setActiveItem] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -144,6 +145,7 @@ const ScrollableMenuTabs = ({
     <NavbarContainer
       style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
       Isvertical={vertical}
+      className={classStyle}
     >
       {icons ? (
         <IoIosArrowBack
