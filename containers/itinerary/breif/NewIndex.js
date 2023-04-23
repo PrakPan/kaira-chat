@@ -192,13 +192,13 @@ const Details = (props) => {
           </div>
         ) : null}
       </DetailsContainer>
-      <ContainerBt style={{ padding: '30px 0px' }}>
+      {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
       </ContainerBt>
       <InclusionExclusion payment={props.payment} />
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View All Bookings</ButtonYellow>
-      </ContainerBt>
+      </ContainerBt> */}
       {props.traveleritinerary ? (
         <DesktopBanner
           onclick={_handleTailoredRedirect}

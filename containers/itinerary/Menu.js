@@ -481,32 +481,7 @@ const SimpleTabs = (props) => {
           // blur={blurItinerary}
         ></Breif>
       </div>
-      {isPageWide ? (
-        <div id={items[1].link}>
-          <NewItenaryMain
-            // is_registration_needed={
-            //   props.payment ? props.payment.is_registration_needed : false
-            // }
-            // selectedPoi={selectedPoi}
-            // user_email={props.user_email}
-            // is_preview={props.preview}
-            // is_stock={props.is_stock}
-            // setShowPoiModal={_handlePoiEditModalOpen}
-            // traveleritinerary={props.traveleritinerary}
-            // hideTimer={minimiseTimer}
-            // timeRequired={props.timeRequired}
-            // itineraryReleased={props.itineraryReleased}
-            // itineraryDate={props.itineraryDate}
-            // showTimer={false}
-            // _hideTimerHandler={_minimiseTimerHandler}
-            // blur={false}
-            city_slabs={props.breif.city_slabs}
-            itinerary={props.itinerary}
-            // newData={props.newData}
-            // demoitinerary={props.demoitinerary}
-          ></NewItenaryMain>
-        </div>
-      ) : (
+      {isPageWide ? null : (
         <div id={items[1].link}>
           <NewItenaryDBDMob
             // is_registration_needed={
@@ -728,7 +703,7 @@ const SimpleTabs = (props) => {
             )}
           </div>
 
-          <div className="sticky top-[10.3rem] mt-8">
+          <div className="sticky top-[10.8rem] mt-16">
             <BookingContainer
               payment={props.payment}
               plan={props.plan}
@@ -762,7 +737,7 @@ const SimpleTabs = (props) => {
         </SplitScreen>
       ) : null}
 
-      {isGroup ? (
+      {/* {isGroup ? (
         <div id={items[2].link}>
           <Register></Register>
         </div>
@@ -833,7 +808,7 @@ const SimpleTabs = (props) => {
             booking={props.booking}
           ></Booking>
         </div>
-      )}
+      )} */}
       <div id={items[3].link}></div>
       {!props.preview ? (
         <PoiEditModal
