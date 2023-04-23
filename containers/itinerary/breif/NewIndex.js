@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import Row from '../../../components/experiencecity/info/Row';
+import React, { useState, useEffect } from "react";
+import Row from "../../../components/experiencecity/info/Row";
 
-import Overview from './overview/Index';
-import axiosPoiCityInstance from '../../../services/poi/city';
+import Overview from "./overview/Index";
+import axiosPoiCityInstance from "../../../services/poi/city";
 
 // import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
 // import RouteData from './Locations';
 
 // import InclusionsData from './Inclusions';
 
-import styled from 'styled-components';
-import { Element } from 'react-scroll';
+import styled from "styled-components";
+import { Element } from "react-scroll";
 //  import Faqs from '../../components/experiencecity/info/faqs/Index';
 // import Banner from './Banner/Index';
 // import Howtoreach from '../../components/experiencecity/info/Howtoreach';
-import { useRef } from 'react';
-import media from '../../../components/media';
-import { useRouter } from 'next/router';
+import { useRef } from "react";
+import media from "../../../components/media";
+import { useRouter } from "next/router";
 // import Footer from '../../components/footer/Index';
 // import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
-import DesktopBanner from '../../../components/containers/Banner';
-import Banner from '../../homepage/banner/Mobile';
-import Route from '../../newitinerary/breif/route/Index';
-import ButtonYellow from '../../../components/ButtonYellow';
-import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
-import Map from '../../../components/Map';
+import DesktopBanner from "../../../components/containers/Banner";
+import Banner from "../../homepage/banner/Mobile";
+import Route from "../../newitinerary/breif/route/Index";
+import ButtonYellow from "../../../components/ButtonYellow";
+import InclusionExclusion from "../../../components/InclusionExclusion/InclusionExclusion";
+import Map from "../../../components/Map";
 
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -95,9 +95,9 @@ const Details = (props) => {
   //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   //   }
   const router = useRouter();
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel');
+    router.push("/tailored-travel");
   };
   const Locationlatlong = [];
 
@@ -137,7 +137,7 @@ const Details = (props) => {
   );
   const MapCaller = ({ location }) => <LeafMap location={location} />;
   const LeafMap = dynamic(
-    () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
+    () => import("../../../components/LeafMap"), // replace '@components/map' with your component's location
     {
       loading: () => <p>A map is loading now</p>,
 
@@ -157,23 +157,16 @@ const Details = (props) => {
               breif={props.breif}
               setPlaceID={setActive}
               active={active}
-            ></Route>
+            />
           </div>
 
-          {/* <div className='svg-container'>
-        <MapCaller
-          // Data={MapData1}
-          // Data2={MapData2}
-          // SData={visibilities}
-          location={Locationlatlong}
-        />
-        </div> */}
+          <div className="svg-container"></div>
 
           <div id="MapcontainerRoute">
             <Map
               locations={Locationlatlong}
               defaultZoom={12}
-              height={isPageWide ? '350px' : '230px'}
+              height={isPageWide ? "350px" : "230px"}
               InfoWindowContainer={InfoWindowContainer}
               active={active}
             ></Map>
@@ -199,6 +192,19 @@ const Details = (props) => {
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View All Bookings</ButtonYellow>
       </ContainerBt> */}
+      <div
+        id="MapContanier"
+        name="MapContanierElement"
+        className="z-0 h-Onsiteheight"
+      >
+        <MapCaller
+          // Data={MapData1}
+          // Data2={MapData2}
+          // SData={visibilities}
+          location={Locationlatlong}
+        />
+      </div>
+
       {props.traveleritinerary ? (
         <DesktopBanner
           onclick={_handleTailoredRedirect}

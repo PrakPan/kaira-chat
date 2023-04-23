@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MapContainer } from 'react-leaflet';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 // import 'leaflet/dist/leaflet.css';
 
@@ -23,14 +23,23 @@ import styled from 'styled-components';
 // import { useStateContext } from '../../context/StateContext';
 // import NearestLocation from '../../function/NearestLocation';
 // import useMediaQuery from '../../Hooks/CustomMediaQuery';
+const fillBlueOptions = { fillColor: "#0484D6" };
+const [map, setMap] = useState(null);
 
+// useEffect(() => {
+//    if (map) {
+//       setInterval(function () {
+//          map.invalidateSize();
+//       }, 100);
+//    }
+// }, [map]);
 const MapInside = styled.div`
   flex: 3;
-  width: 50%;
+  width: 100%;
 
-  z-index: 8;
+  zindex: 8;
   @media screen and (max-width: 768px) {
-    height: 20% !important;
+    height: 100% !important;
   }
 `;
 // // function style(feature) {
@@ -183,22 +192,32 @@ const LeafMap = ({location}) => {
   //     behavior: 'smooth',
   //   });
   // }
-
+  const position = [51.505, -0.09]
   return (
     <MapInside id="map">
       <MapContainer
-      
+      whenCreated={setMap}
         // ref={setMaps}
         // dragging={!Browser.mobile}
         // // whenCreated={(map) => setMaps(map)}
         center={[40.8054, -99.0241]}
-        zoom={ 13 }
-        // ZoomControl={false}
-        // scrollWheelZoom={false}
-        className="lg:h-mapheightFull h-mapheightMob "
+        zoom={ 4}
+        ZoomControl={false}
+        scrollWheelZoom={false}
+        className="lg:h-mapheightFull h-mapheightMob"
         style={{ width: '100%' }}
       >
-          <ReactLeafletGoogleLayer apiKey='AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E' type={'satellite'} />
+      <TileLayer
+          url={`
+       https://api.mapbox.com/styles/v1/ssoam/cl77qs9yq000c14uk4kv9ecog/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3NvYW0iLCJhIjoiY2w3N3J5ZTgyMDJwZzNwb3gzYWtxdWttciJ9.g2IBgPyHpz_bDNTAe3g2fw`}
+          // attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+        />
+    <Marker position={position}>
+      <Popup>
+        A pretty CSS3 popup. <br /> Easily customizable.
+      </Popup>
+    </Marker>
+          {/* <ReactLeafletGoogleLayer apiKey='AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E' type={'satellite'} /> */}
       </MapContainer>
     </MapInside>
   );
