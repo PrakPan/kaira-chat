@@ -23,7 +23,7 @@ import styled from 'styled-components';
 // import { useStateContext } from '../../context/StateContext';
 // import NearestLocation from '../../function/NearestLocation';
 // import useMediaQuery from '../../Hooks/CustomMediaQuery';
-const fillBlueOptions = { fillColor: "#0484D6" };
+const fillBlueOptions = { fillColor: '#0484D6' };
 const [map, setMap] = useState(null);
 
 // useEffect(() => {
@@ -72,7 +72,7 @@ const MapInside = styled.div`
 //     'https://raw.githubusercontent.com/Kalfreight-In/KalTires_new/478d02cff59c0d7439d979755f5172ea0a32fc9b/Assets/Images/userIcon.svg',
 //   iconSize: [25, 25],
 // });
-const LeafMap = ({location}) => {
+const LeafMap = ({ location }) => {
   // const isDesktop = useMediaQuery('(min-width:1148px)');
   // const { typeAddress, Currentlatlong } = useStateContext();
   // // console.log(
@@ -192,32 +192,32 @@ const LeafMap = ({location}) => {
   //     behavior: 'smooth',
   //   });
   // }
-  const position = [51.505, -0.09]
+  const position = [51.505, -0.09];
   return (
     <MapInside id="map">
       <MapContainer
-      whenCreated={setMap}
+        whenCreated={setMap}
         // ref={setMaps}
         // dragging={!Browser.mobile}
         // // whenCreated={(map) => setMaps(map)}
         center={[40.8054, -99.0241]}
-        zoom={ 4}
+        zoom={4}
         ZoomControl={false}
         scrollWheelZoom={false}
         className="lg:h-mapheightFull h-mapheightMob"
         style={{ width: '100%' }}
       >
-      <TileLayer
+        <TileLayer
           url={`
        https://api.mapbox.com/styles/v1/ssoam/cl77qs9yq000c14uk4kv9ecog/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3NvYW0iLCJhIjoiY2w3N3J5ZTgyMDJwZzNwb3gzYWtxdWttciJ9.g2IBgPyHpz_bDNTAe3g2fw`}
           // attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
         />
-    <Marker position={position}>
-      <Popup>
-        A pretty CSS3 popup. <br /> Easily customizable.
-      </Popup>
-    </Marker>
-          {/* <ReactLeafletGoogleLayer apiKey='AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E' type={'satellite'} /> */}
+        <Marker position={position}>
+          <Popup>
+            A pretty CSS3 popup. <br /> Easily customizable.
+          </Popup>
+        </Marker>
+        {/* <ReactLeafletGoogleLayer apiKey='AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E' type={'satellite'} /> */}
       </MapContainer>
     </MapInside>
   );

@@ -4,7 +4,7 @@ import ImageLoader from '../../../../components/ImageLoader';
 import TruncatedText from '../../../../helper/TruncatedText';
 import WeatherWidget from '../../../../components/WeatherWidget/WeatherWidget';
 import { FaBed } from 'react-icons/fa';
-const Container = styled.div``;
+
 const Heading = styled.p`
   font-size: 23px;
   font-weight: 600;
@@ -77,19 +77,19 @@ const City = (props) => {
     });
   }
   return (
-    <Container className="font-poppins">
-      <Heading className="font-poppins">
+    <div className="font-lexend ">
+      <div className="font-bold text-2xl pb-3">
         {props.cityData.city_name + ' - ' + props.cityData.duration} Nights
-      </Heading>
+      </div>
       <GridContainer>
         <ImageLoader
           borderRadius="8px"
           url={props.cityData.image}
-          height={235}
+          height={200}
           heightMobile="auto"
           dimensionsMobile={{ width: 180, height: 180 }}
         ></ImageLoader>
-        <CityText className="font-poppins">
+        <div>
           <div className="flex flex-row">
             <div className="flex justify-center items-center bg-slate-100 rounded-lg px-3 py-3 mr-2">
               <FaBed />
@@ -104,7 +104,7 @@ const City = (props) => {
             </div>
           </div>
           <div className="flex flex-col py-2">
-            <div className="text-sm">Things to do</div>
+            {/* <div className="text-sm">Things to do</div> */}
             <div className="font-semibold text-sm">
               Tours · Wildlife · Museums · Historic Sites
             </div>
@@ -134,17 +134,17 @@ const City = (props) => {
             {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
       <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}
           </div>
-        </CityText>
+        </div>
       </GridContainer>
 
       <div
         style={{
           border: '1px solid #F0F0F0',
-          marginBottom: '1.5rem',
+          marginBottom: '0.75rem',
           marginTop: '0.75rem',
         }}
       ></div>
-    </Container>
+    </div>
   );
 };
 

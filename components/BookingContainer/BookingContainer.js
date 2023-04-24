@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { RiArrowDropDownLine } from 'react-icons/ri';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
@@ -11,6 +11,7 @@ const font = styled.div`
   font-family: 'Lexend';
 `;
 const BookingContainer = (props) => {
+  const [iscouponApplied, setiscouponApplied] = useState(true);
   console.log(props.payment);
 
   return (
@@ -28,9 +29,11 @@ const BookingContainer = (props) => {
                   )}
                 </div>
               </div>
-              <div className="bg-[#EB5757] font-bold text-sm px-2 py-1 text-white">
-                20% OFF
-              </div>
+              {iscouponApplied && (
+                <div className="bg-[#EB5757] font-bold text-sm px-2 py-1 text-white">
+                  20% OFF
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col">
@@ -58,25 +61,28 @@ const BookingContainer = (props) => {
         </div>
 
         <div className="px-3 ">
-          <div>
-            <div className="relative  rounded-md shadow-sm">
-              <input
-                class="w-full px-3 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Having a coupon code?"
-              />
-              <div className="pointer-events-none absolute inset-y-0 right-2 top-4 flex items-center pr-3 cursor-pointer">
-                <div
-                  className=" font-bold text-black cursor-pointer"
-                  aria-hidden="true"
-                >
-                  Apply
+          {props.allow_coupon_discount ?? (
+            <div>
+              <div className="relative  rounded-md shadow-sm">
+                <input
+                  class="w-full px-3 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Having a coupon code?"
+                />
+                <div className="pointer-events-none absolute inset-y-0 right-2 top-4 flex items-center pr-3 cursor-pointer">
+                  <div
+                    className=" font-bold text-black cursor-pointer"
+                    aria-hidden="true"
+                  >
+                    Apply
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
           <div className="border-y-2 border-[#F0F0F0] my-3">
             <div className="flex flex-row gap-3 items-center py-[0.7rem]">
               <BsCalendar2 className="text-md text-[#7A7A7A]" />

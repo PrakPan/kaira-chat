@@ -636,6 +636,13 @@ const SimpleTabs = (props) => {
             ) : (
               <div id={items[2].link}>
                 <HotelsBooking
+                  hasUserPaid={
+                    props.payment
+                      ? props.payment.paid_user
+                        ? true
+                        : false
+                      : false
+                  }
                   // itinerary={props.itinerary}
                   // _updateStayBookingHandler={props._updateStayBookingHandler}
                   // _updateFlightBookingHandler={props._updateFlightBookingHandler}
@@ -708,7 +715,7 @@ const SimpleTabs = (props) => {
               payment={props.payment}
               plan={props.plan}
             ></BookingContainer>
-            {/* <GITSummaryContainer
+            <GITSummaryContainer
               hasUserPaid={
                 props.payment ? (props.payment.paid_user ? true : false) : false
               }
@@ -732,7 +739,7 @@ const SimpleTabs = (props) => {
               experienceId={props.experienceId}
               token={props.token}
               // setShowLoginModal={setShowLoginModal}
-            ></GITSummaryContainer> */}
+            ></GITSummaryContainer>
           </div>
         </SplitScreen>
       ) : null}

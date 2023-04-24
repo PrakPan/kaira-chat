@@ -16,17 +16,19 @@ const Container = styled.div`
 //     align-items: center;
 // `;
 const Line = styled.hr`
+  /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
+  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+    linear-gradient(87deg, #0d6efd, #00fff0, #d4ff00, #ff7000, #f00);
+  background-size: 20px 3px, 100% 3px;
 
-background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000);
-background-size: 20px 3px,100% 3px;
-color: #C80000;
--webkit-transform: rotate(90deg);
-position: absolute;
-width: 8rem;
-height: 4px;
-top: 46px;
-right: -48px;
-border: 2px;
+  color: #c80000;
+  -webkit-transform: rotate(90deg);
+  position: absolute;
+  width: 8rem;
+  height: 4px;
+  top: 46px;
+  right: -48px;
+  border: 2px;
 `;
 const Text = styled.div`
   color: #111;
@@ -44,7 +46,7 @@ const MidSection = (props) => {
   return (
     <Container className="font-poppins">
       <div style={{ position: 'relative' }}>
-        <Line/>
+        <Line />
       </div>
       <Text>
         <TransportIconFetcher
