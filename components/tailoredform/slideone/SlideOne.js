@@ -19,7 +19,7 @@ width: 100%;
 `;
 
 const Section = styled.div`
-margin-bottom: 0.5rem;
+margin-bottom: 1rem;
 `;
 const SlideOne = (props) =>{
 

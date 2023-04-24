@@ -200,7 +200,7 @@ useEffect(() => {
       </FullImage> */}
 
       <HeroBanner
-                   image={isPageWide?'media/website/homepage-banner-desktop.png' :'media/website/homepage-banner-mobile.png'}
+                   image={isPageWide?'media/website/homepage-banner-desktop-crop.png' :'media/website/homepage-banner-mobile.png'}
                    destinationType={'city-planner'}
                    title={<p>Travel planning a chore,<br/>
                    Let our AI Explore.</p>}

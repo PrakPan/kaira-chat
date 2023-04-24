@@ -22,8 +22,8 @@ to {
 
 const ModalContainer = styled.div`
   position: fixed;
-  top: ${props=>props.mobileTop? props.mobileTop : '25%'};
-  left: ${props=>props.mobileLeft? props.mobileLeft : '25%'};
+  top: ${props=>props.mobileTop? props.mobileTop : '50%'};
+  left: ${props=>props.mobileLeft? props.mobileLeft : '50%'};
   background: ${props=>props.bgColor? props.bgColor : 'white'};
   border-radius : ${props=>props.borderRadius? props.borderRadius : '0px'};
   ${props=>props.width && `width : ${props.width}`};
@@ -37,11 +37,11 @@ const ModalContainer = styled.div`
   overscroll-behavior: contain;
   margin : ${props=>props.margin? props.margin : '0px'};
   @media screen and (min-width: 768px) {
-    top: ${props=>props.top? props.top : '25%'};
-    left: ${props=>props.left? props.left : '25%'};
-  ${props=>props.centered && 'top: 50%;left:50%'};
+    top: ${props=>props.top? props.top : '50%'};
+    left: ${props=>props.left? props.left : '50%'};
+  // ${props=>props.centered && 'top: 50%;left:50%'};
   };
-  ${props=>props.centered && 'top: 50%;left:50%'};
+  // ${props=>props.centered && 'top: 50%;left:50%'};
 `;
 const BlackContainer = styled.div`
   background: ${(props) =>

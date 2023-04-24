@@ -44,7 +44,7 @@ color: white;
 
 const PaddingContianer = styled.div`
 padding: 5vh 0 0 0;
-flex-grow: 1;
+flex-grow: 1;z
 @media screen and (min-width: 768px){
     padding: 1vh 0 0 0;
 

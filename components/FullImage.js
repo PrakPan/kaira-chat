@@ -9,9 +9,9 @@ const Container = styled.div`
 
     padding: 0;
     margin-top : 70px;
-    height: ${(props) => (props.heightmobile ? props.heightmobile : "60vh")};
+    height: ${(props) => (props.heightmobile ? props.heightmobile : "37rem")};
     @media screen and (min-width: 768px){
-        height: ${(props) => (props.height ? props.height : "85vh")};
+        height: ${(props) => (props.height ? props.height : "37rem")};
         padding: 0;
     }
 
@@ -32,7 +32,7 @@ const fullimage = (props) =>{
         return(
         <Container height={props.height} heightmobile={props.heightmobile} className="center-dv">
 
- <BackgroundImageLoader padding={props.padding}  filter={props.filter} url={props.url} dimensions={{width: 1200, height: 400}} dimensionsMobile={{width: 900, height: 1200}} className="center-dv">{props.children}</BackgroundImageLoader>       
+ <BackgroundImageLoader padding={props.padding}  filter={props.filter} url={props.url} dimensions={{width: 1806, height: 592}} dimensionsMobile={{width: 900, height: 1200}} className="center-dv">{props.children}</BackgroundImageLoader>       
   </Container>
     );
     }

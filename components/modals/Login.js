@@ -78,7 +78,7 @@ const Enquiry = (props) => {
   if(isPageWide)
   return(
       <div className='font-poppins'>
-        <Modal centered closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width={modalWidth + '%'} left={(100-modalWidth)/2 + '%'}>
+        <Modal centered closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width={modalWidth + '%'} >
             {/* <Modal.Body style={{padding: "0"}} > */}
                 <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
                   <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
@@ -98,7 +98,7 @@ const Enquiry = (props) => {
   );
   else return(
   <div>
-    <Modal centered backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} width={modalWidth + '%'} mobileLeft={(100-modalWidth)/2 + '%'} mobileTop='7%' borderRadius={'12px'}>
+    <Modal centered backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} width={modalWidth + '%'} borderRadius={'12px'}>
         {/* <Modal.Body style={{padding: "0"}} > */}
         <div style={{padding : '20px'}}><Login onhide={props.onhide}></Login></div>
         {/* </Modal.Body> */}
