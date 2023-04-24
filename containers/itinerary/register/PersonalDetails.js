@@ -147,7 +147,7 @@ export default function SignIn(props) {
           /> */}
           <div style={{display: "grid", gridTemplateColumns: "max-content auto"}}>
             <Checkbox value="remember" color="primary" checked={termsAccepted} onChange={_handleTermsChange}/>
-            <div style={{display: "flex", alignItems: "center" , fontSize: "1rem"}} className="font-opensans"><p style={{margin: "0"}}>I agree to the <a style={{color: "blue", textDecoration: "underline"}} href="https://drive.google.com/file/d/1TKbGccatSPfmZRee0ybwYGmvSK12eY2M/view?usp=sharing" target="_blank"> terms & conditions</a></p></div>
+            <div style={{display: "flex", alignItems: "center" , fontSize: "1rem"}} className="font-lexend"><p style={{margin: "0"}}>I agree to the <a style={{color: "blue", textDecoration: "underline"}} href="https://drive.google.com/file/d/1TKbGccatSPfmZRee0ybwYGmvSK12eY2M/view?usp=sharing" target="_blank"> terms & conditions</a></p></div>
           </div>
           <Button
             fullWidth

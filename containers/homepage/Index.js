@@ -116,25 +116,25 @@ else{
 //JSX for How it works 
 const HowitWorksHeadingsArr=[
 
-  <HowItWorksHeading className="font-opensans">Select your preferences</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Select your preferences</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">Let our AI plan your itinerary</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Let our AI plan your itinerary</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
 
 ];
 
 const HowitWorksContentsArr = [
 
-  <HowItWorksText className="font-opensans">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
+  <HowItWorksText className="font-lexend">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
 
-    <HowItWorksText  className="font-opensans">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
+    <HowItWorksText  className="font-lexend">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
 
-  <HowItWorksText  className="font-opensans">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
+  <HowItWorksText  className="font-lexend">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
 
-  <HowItWorksText  className="font-opensans">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
+  <HowItWorksText  className="font-lexend">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
 
 
 
@@ -192,7 +192,7 @@ useEffect(() => {
 },[]);
   return (
     
-    <div className={  "Homepage font-poppins" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
+    <div className={  "Homepage font-lexend" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       {/* <Snowflakes></Snowflakes> */}
    
       {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >

@@ -24,7 +24,7 @@ const Index = (props) => {
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Mainheading
             className={
-              props.blur ? "blurry-text font-opensans" : "font-opensans"
+              props.blur ? "blurry-text font-lexend" : "font-lexend"
             }
             color={props.color}
             fontWeight={props.fontWeight}
@@ -53,7 +53,7 @@ const Index = (props) => {
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Simpleheading
             className={
-              props.blur ? "blurry-text font-opensans" : "font-opensans"
+              props.blur ? "blurry-text font-lexend" : "font-lexend"
             }
             color={props.color}
             fontWeight={props.fontWeight}//
@@ -82,7 +82,7 @@ const Index = (props) => {
         <Container2>
           <Bannerheading
             className={
-              props.blur ? "blurry-text font-opensans" : "font-opensans"
+              props.blur ? "blurry-text font-lexend" : "font-lexend"
             }
             fontSize={props.fontSize}
             fontWeight={props.fontWeight}
@@ -99,7 +99,7 @@ const Index = (props) => {
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Defaultheading
             className={
-              props.blur ? "blurry-text font-opensans" : "font-opensans"
+              props.blur ? "blurry-text font-lexend" : "font-lexend"
             }
             fontSize={props.fontSize}
             padding={props.padding}

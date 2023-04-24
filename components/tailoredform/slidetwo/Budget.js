@@ -44,7 +44,7 @@ const IOSSlider = styled(Slider)(({ theme }) => ({
  const marks = [
   {
     value: 0,
-    label: <div style={{marginLeft: '50%', fontWeight: '600'}} className="font-opensans" >{'₹3,000'}<div style={{fontSize: '0.65rem', fontWeight: '300'}}>per day or less</div></div>
+    label: <div style={{marginLeft: '50%', fontWeight: '600'}} className="font-lexend" >{'₹3,000'}<div style={{fontSize: '0.65rem', fontWeight: '300'}}>per day or less</div></div>
   },
   {
     value: 33,
@@ -56,7 +56,7 @@ const IOSSlider = styled(Slider)(({ theme }) => ({
   },
   {
     value: 100,
-    label: <div style={{position: 'relative', left: '-50%', textAlign: 'right', fontWeight: '600'}} className="font-opensans">{'₹10,000'}<div style={{textAlign: 'right', fontWeight: '300', fontSize: '0.65rem'}}>per day or more</div></div>
+    label: <div style={{position: 'relative', left: '-50%', textAlign: 'right', fontWeight: '600'}} className="font-lexend">{'₹10,000'}<div style={{textAlign: 'right', fontWeight: '300', fontSize: '0.65rem'}}>per day or more</div></div>
   },
 ];
 
@@ -115,7 +115,7 @@ const  DiscreteSliderValues = (props) =>  {
   }
   return (
     <Box>
-      {/* <div className='font-opensans text-center' style={{margin: '0.5rem 0', fontSize: '0.85rem'}}><span style={{fontWeight: '600'}}>Estimated Cost:</span> ₹1,23,00 /-</div> */}
+      {/* <div className='font-lexend text-center' style={{margin: '0.5rem 0', fontSize: '0.85rem'}}><span style={{fontWeight: '600'}}>Estimated Cost:</span> ₹1,23,00 /-</div> */}
       <IOSSlider
         aria-label="Budget per day"
         defaultValue={0}

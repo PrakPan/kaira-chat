@@ -54,13 +54,13 @@ const Privacy = (props) => {
     for (var i = 0; i < content.length; i++) {
       if (content[i].heading) {
         cards.push(
-          <Heading key={content[i].heading} className="font-opensans">{content[i].heading}</Heading>
+          <Heading key={content[i].heading} className="font-lexend">{content[i].heading}</Heading>
         );
       } else {
         cards.push(
           <SubHeading
           key={content[i].subheading}
-            className="font-opensans"
+            className="font-lexend"
             margin="2rem auto "
             font-weight="400"
             text-align="center"
@@ -74,14 +74,14 @@ const Privacy = (props) => {
         if (content[i].content[j].array) {
           for (var k = 0; k < content[i].content[j].array.length; k++) {
             cards.push(
-              <StyleListItem key={content[i].content[j].array[k]} className="font-opensans">
+              <StyleListItem key={content[i].content[j].array[k]} className="font-lexend">
                 {content[i].content[j].array[k]}
               </StyleListItem>
             );
           }
         } else {
           cards.push(
-            <TextContainer key={content[i].content[j].text} className="font-opensans">
+            <TextContainer key={content[i].content[j].text} className="font-lexend">
               {content[i].content[j].text}
             </TextContainer>
           );
@@ -206,12 +206,12 @@ export default Privacy;
 //     for (var i = 0; i < content.length; i++) {
 //       if (content[i].heading) {
 //         cards.push(
-//           <Heading className="font-opensans">{content[i].heading}</Heading>
+//           <Heading className="font-lexend">{content[i].heading}</Heading>
 //         );
 //       } else {
 //         cards.push(
 //           <SubHeading
-//             className="font-opensans"
+//             className="font-lexend"
 //             margin="2rem auto "
 //             font-weight="400"
 //             text-align="center"
@@ -225,14 +225,14 @@ export default Privacy;
 //         if (content[i].content[j].array) {
 //           for (var k = 0; k < content[i].content[j].array.length; k++) {
 //             cards.push(
-//               <StyleListItem className="font-opensans">
+//               <StyleListItem className="font-lexend">
 //                 {content[i].content[j].array[k]}
 //               </StyleListItem>
 //             );
 //           }
 //         } else {
 //           cards.push(
-//             <TextContainer className="font-opensans">
+//             <TextContainer className="font-lexend">
 //               {content[i].content[j].text}
 //             </TextContainer>
 //           );

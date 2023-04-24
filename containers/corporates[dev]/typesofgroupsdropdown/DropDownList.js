@@ -131,7 +131,7 @@ const DropDownList = ()=>{
     return(
         <div>           
             <WidthContainer>
-               <HeadingContainer className="font-opensans" rotate={rotate1}>
+               <HeadingContainer className="font-lexend" rotate={rotate1}>
                  <Heading>For Old Age</Heading>                       
                  {/* <ArrowIcon rotate={rotate1} src={arrow} onClick={toggler1} />         */}
                </HeadingContainer>
@@ -143,7 +143,7 @@ const DropDownList = ()=>{
             </Paragraph>
 
             <WidthContainer>      
-               <HeadingContainer className="font-opensans" rotate={rotate2}   >
+               <HeadingContainer className="font-lexend" rotate={rotate2}   >
                  <Heading>For Startups </Heading>
                  {/* <ArrowIcon rotate={rotate2}  src={arrow} onClick={toggler2}/> */}
                </HeadingContainer> 
@@ -155,7 +155,7 @@ const DropDownList = ()=>{
             </Paragraph>
 
             <WidthContainer>      
-               <HeadingContainer className="font-opensans" rotate={rotate3}    >
+               <HeadingContainer className="font-lexend" rotate={rotate3}    >
                  <Heading>For Corporates </Heading>
                  {/* <ArrowIcon rotate={rotate3} src={arrow} onClick={toggler3}/> */}
                </HeadingContainer>
@@ -167,7 +167,7 @@ const DropDownList = ()=>{
             </Paragraph>
      
             <WidthContainer>      
-                <HeadingContainer className="font-opensans" rotate={rotate4}    >
+                <HeadingContainer className="font-lexend" rotate={rotate4}    >
                  <Heading>For Institutions </Heading>
                  {/* <ArrowIcon rotate={rotate4} src={arrow} onClick={toggler4}/>             */}
                 </HeadingContainer>

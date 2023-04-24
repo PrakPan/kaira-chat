@@ -86,7 +86,7 @@ useEffect(() => {
   for(var i = 0; i < props.brief.city_slabs.length ; i++){
     if(!props.brief.city_slabs[i].is_trip_terminated){
       locationsArr.push(
-        <Location  id={i} className={"font-opensans border-top " + (location == i ? "bg-yellow font-bold" : 'bg-white')} onClick={(event) => _setLocationHandler(event)}>{props.brief.city_slabs[i].city_name}</Location>
+        <Location  id={i} className={"font-lexend border-top " + (location == i ? "bg-yellow font-bold" : 'bg-white')} onClick={(event) => _setLocationHandler(event)}>{props.brief.city_slabs[i].city_name}</Location>
       )
     }
   }

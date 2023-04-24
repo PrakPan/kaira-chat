@@ -132,7 +132,7 @@ const FullImgContent = (props) => {
 // console.log('', props.children_cities)
     return (
 
-        <Container className='font-opensans center-di text-cente'>
+        <Container className='font-lexend center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.title}</Heading>
            {isPageWide?<SubHeading>Bid farewell to generic holiday packages.<br/>

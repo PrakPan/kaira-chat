@@ -25,12 +25,12 @@ const RegistrationModal = (props) => {
          <Modal.Header style={{   height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-start', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
          <TbArrowBack onClick={props.hide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
 
-            <p style={{fontWeight: '800', margin: '0', fontSize: '19px', }} className="font-opensans">Terms & Conditions</p>
+            <p style={{fontWeight: '800', margin: '0', fontSize: '19px', }} className="font-lexend">Terms & Conditions</p>
 
              </Modal.Header>
 
-             <Body className="font-opensans">
-                 {/* <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p> */}
+             <Body className="font-lexend">
+                 {/* <p className='font-lexend text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Traveler Details</p> */}
              <ol>
               <li>Only PW members can avail the discount.</li>
               <li>Minimum 2 members are required to book one trip.</li>

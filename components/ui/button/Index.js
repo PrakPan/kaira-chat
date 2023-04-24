@@ -10,7 +10,7 @@ const Index = (props) => {
     if (props.onclick) {
        setJSX(
           <Generalbutton
-          className="font-poppins"
+          className="font-lexend"
             onclick={() => props.onclick(props.onclickparam)}
             color={props.color}
             borderRadius={props.borderRadius}
@@ -43,7 +43,7 @@ const Index = (props) => {
        setJSX(
           <>
             <Internallinkbutton
-            className="font-poppins"
+            className="font-lexend"
               link={props.link}
               color={props.color}
               borderRadius={props.borderRadius}
@@ -76,7 +76,7 @@ const Index = (props) => {
       } else if (props.external_link) {
        setJSX(
           <Externallinkbutton
-          className="font-poppins"
+          className="font-lexend"
             external_link={props.external_link}
             color={props.color}
             borderRadius={props.borderRadius}
@@ -137,7 +137,7 @@ export default Index;
 //   if (props.onclick) {
 //     return (
 //       <Generalbutton
-//       className="font-opensans"
+//       className="font-lexend"
 //         onclick={() => props.onclick(props.onclickparam)}
 //         color={props.color}
 //         borderRadius={props.borderRadius}
@@ -167,7 +167,7 @@ export default Index;
 //     return (
 //       <>
 //         <Internallinkbutton
-//         className="font-opensans"
+//         className="font-lexend"
 //           link={props.link}
 //           color={props.color}
 //           borderRadius={props.borderRadius}
@@ -197,7 +197,7 @@ export default Index;
 //   } else if (props.external_link) {
 //     return (
 //       <Externallinkbutton
-//       className="font-opensans"
+//       className="font-lexend"
 //         external_link={props.external_link}
 //         color={props.color}
 //         borderRadius={props.borderRadius}

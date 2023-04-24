@@ -98,7 +98,7 @@ const Person = (props) => {
         id="itinerary-booking-summary-accordio"
     style={{padding: '1rem'}}
       >
-         <p content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && id && verified?  'green' : 'black'}} >{  email && id && verified? email : 'Member '+props.index}</p> 
+         <p content={'span'} className="font-lexend" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && id && verified?  'green' : 'black'}} >{  email && id && verified? email : 'Member '+props.index}</p> 
  
       </AccordionSummary>
        <AccordionDetails style={{padding : '0.5rem'}}>

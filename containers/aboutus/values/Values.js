@@ -16,19 +16,19 @@ import classes from './Values.module.css';
 const ContentArr = [
     <div>
        <div className={classes.CardHeadingContainerLeft}>
-            <p className="font-opensans" style={{fontSize: '2rem'}}>Innovate</p>
+            <p className="font-lexend" style={{fontSize: '2rem'}}>Innovate</p>
         </div>
         <p className={classes.Text} style={{textAlign: "center"}} className="font-nunito">We aim to create a highly intelligent and user-friendly platform that helps every traveler to understand, plan, and book a travel experience and interact with fellow travelers and guides.</p>
     </div>,
      <div>
        <div className={classes.CardHeadingContainerLeft}>
-                        <p className="font-opensans" style={{fontSize: '2rem'}}>Improve</p>
+                        <p className="font-lexend" style={{fontSize: '2rem'}}>Improve</p>
         </div>
         <p className={classes.Text} style={{textAlign: "center"}}  className="font-nunito">We aim to improve a traveler’s journey by giving them a one-stop solution for each of their travel needs with complete transparency of prices.</p>
     </div>, 
     <div>
        <div className={classes.CardHeadingContainerLeft}>
-            <p className="font-opensans" style={{fontSize: '2rem'}}>Interact</p>
+            <p className="font-lexend" style={{fontSize: '2rem'}}>Interact</p>
         </div>
         <p className={classes.Text} style={{textAlign: "center"}}  className="font-nunito">We aim to interact and connect with every traveler and to build diverse experiences for everyone irrespective of their age, gender, financial conditions, or disabilities.</p>
     </div>
@@ -38,7 +38,7 @@ const Values=()=>{
     if(isPageWide)
     return(
         <>
-        <Heading aligndesktop="center" className="font-opensans text-center" align="center" bold  margin="3.5rem">Our Values</Heading>
+        <Heading aligndesktop="center" className="font-lexend text-center" align="center" bold  margin="3.5rem">Our Values</Heading>
         <div className={classes.Container}>
         <div className="text-center">
             <div className={classes.ImageHeadingContainer}>
@@ -78,7 +78,7 @@ const Values=()=>{
     );
     else return(
     <div>
-        <Heading className="font-opensans text-center" bold align="center" margin="1.5rem">Our Values</Heading>
+        <Heading className="font-lexend text-center" bold align="center" margin="1.5rem">Our Values</Heading>
         <div style={{padding: "1.5rem 0 0 0"}}><Slideshow  vertical images={[img1, img2, img3]} content={ContentArr}></Slideshow></div>
     </div>
     );

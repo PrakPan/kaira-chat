@@ -152,9 +152,9 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
       <div>
          <Modal backdrop closeIcon show={props.show} onHide={props.hide} style={{padding : '1rem' , borderRadius : '1.5rem'}}>
         <div>
-            <Heading className="font-opensans">Confirm and Pay</Heading>
+            <Heading className="font-lexend">Confirm and Pay</Heading>
               <Cart setShowTermsModal={setShowTermsModal} cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>
-                <p className='font-opensans text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Member Details</p>
+                <p className='font-lexend text-center' style={{fontWeight: '800', margin: '1rem 0', fontSize: '19px'}}>Member Details</p>
                 <Form formFailedError={formFailedError} setFormFailedError={setFormFailedError}  formNotFilledError={formNotFilledError} number_of_adults={props.number_of_adults} verificationCount={verificationCount} setVerificationCount={setVerificationCount} email={props.email} paymentLoading={paymentLoading} token={props.token} id={props.id} onSuccess={_cloneHandler} pax={props.pax}></Form>
               </div>
       </Modal>

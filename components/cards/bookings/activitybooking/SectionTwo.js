@@ -50,23 +50,23 @@ const Section= (props) => {
     }
    if(props.data)
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
                 {/* <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem'}}> */}
                     {/* <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader> */}
                     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr'}}> 
                         {props.data.check_in &&  props.isDatePresent  &&  !props.is_registration_needed ? <div style={{display: 'flex', gap: '0.5rem'}}>
                             <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                             <div>
-                            <Heading className='font-opensans'>Date</Heading>
-                            <Text className='font-opensans'>{getDate(props.data.check_in)}</Text>
+                            <Heading className='font-lexend'>Date</Heading>
+                            <Text className='font-lexend'>{getDate(props.data.check_in)}</Text>
                             </div>
                         </div> : null}
                         {props.data.ideal_duration_hours_text ? <div style={{display: 'flex', gap: '0.5rem'}}>
                         <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                         <div>
 
-                            <Heading className='font-opensans'>Duration</Heading>
-                            <Text className='font-opensans'>{props.data.ideal_duration_hours_text}</Text>
+                            <Heading className='font-lexend'>Duration</Heading>
+                            <Text className='font-lexend'>{props.data.ideal_duration_hours_text}</Text>
                             </div>
 
                         </div> : null}
@@ -74,8 +74,8 @@ const Section= (props) => {
                         <ImageLoader url="media/icons/bookings/tourist.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                         <div>
 
-                            {/* <Heading className='font-opensans'>Number o</Heading> */}
-                            <Text className='font-opensans'>{props.data.costings_breakdown.no_of_tickets +" Person(s)"}</Text>
+                            {/* <Heading className='font-lexend'>Number o</Heading> */}
+                            <Text className='font-lexend'>{props.data.costings_breakdown.no_of_tickets +" Person(s)"}</Text>
                             </div>
 
                         </div> : null : null}
@@ -88,9 +88,9 @@ const Section= (props) => {
                      
                         { rooms.length ? 
                             <div className='' style={{display: 'flex'}}>
-                                <Text className='font-opensans'>{rooms[0].number_of_adults > 1 ?  rooms[0].number_of_adults + " Adults " : "1 Adult"}</Text>
-                                <Text className='font-opensans' style={{marginLeft: '0.25rem'}}>{rooms[0].number_of_children ? rooms[0].number_of_children > 1 ? rooms[0].number_of_adults + " Children" : "1 Child" : null}</Text>
-                                <Text className='font-opensans' style={{marginLeft: '0.25rem'}}>{rooms[0].number_of_infants ? rooms[0].number_of_infants > 1 ? rooms[0].number_of_infants + " Children" : "1 Child" : null}</Text>
+                                <Text className='font-lexend'>{rooms[0].number_of_adults > 1 ?  rooms[0].number_of_adults + " Adults " : "1 Adult"}</Text>
+                                <Text className='font-lexend' style={{marginLeft: '0.25rem'}}>{rooms[0].number_of_children ? rooms[0].number_of_children > 1 ? rooms[0].number_of_adults + " Children" : "1 Child" : null}</Text>
+                                <Text className='font-lexend' style={{marginLeft: '0.25rem'}}>{rooms[0].number_of_infants ? rooms[0].number_of_infants > 1 ? rooms[0].number_of_infants + " Children" : "1 Child" : null}</Text>
 
                             </div>
                       : null }

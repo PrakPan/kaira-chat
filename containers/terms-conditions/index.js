@@ -104,14 +104,14 @@ padding:0.5rem 1rem 1rem 1rem;
      
     return(
       <>
-      <Heading className='font-poppins' >
+      <Heading className='font-lexend' >
           Terms And Conditions
       </Heading>
      
         
         
            
-        <Container className='font-poppins'>
+        <Container className='font-lexend'>
         {isPageWide && <Linkcardstyle 
         // className='border-thin'
            ><Navbar/></Linkcardstyle>}

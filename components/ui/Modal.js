@@ -89,7 +89,7 @@ export default function Modal(props) {
     <div>
       {props.show && (
         <div
-          className="font-poppins"
+          className="font-lexend"
           style={{ position: "relative", ...props.style }}
         >
           <BlackContainer

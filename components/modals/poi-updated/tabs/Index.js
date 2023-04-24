@@ -85,16 +85,16 @@ const Tabscomponent= (props) => {
   return(
       <Container>
        {/* <GridContainer>
-            <Tab onClick={() => setSelectedState(0)} className="font-opensans center-div" style={{fontWeight: selectedState === 0 ? '700' : '400', backgroundColor: selectedState === 0 ? '#f7e700' : 'white'}}>
+            <Tab onClick={() => setSelectedState(0)} className="font-lexend center-div" style={{fontWeight: selectedState === 0 ? '700' : '400', backgroundColor: selectedState === 0 ? '#f7e700' : 'white'}}>
                 <Icon src={aboutimg}/>
                 <Heading>About</Heading>
             </Tab>
-            <Tab onClick={() => setSelectedState(1)} className="font-opensans center-div" style={{fontWeight: selectedState === 1 ? '700' : '400', backgroundColor: selectedState === 1 ? '#f7e700' : 'white', borderStyle: 'none solid none solid', borderWidth: '1px', borderColor: "#e4e4e4"}}>
+            <Tab onClick={() => setSelectedState(1)} className="font-lexend center-div" style={{fontWeight: selectedState === 1 ? '700' : '400', backgroundColor: selectedState === 1 ? '#f7e700' : 'white', borderStyle: 'none solid none solid', borderWidth: '1px', borderColor: "#e4e4e4"}}>
                 <Icon src={gettingimg}/>
                 <Heading>Getting Around</Heading>
 
             </Tab>
-            <Tab onClick={() => setSelectedState(2)} className="font-opensans center-div" style={{fontWeight: selectedState === 2 ? '700' : '400', backgroundColor: selectedState === 2 ? '#f7e700' : 'white'}}>
+            <Tab onClick={() => setSelectedState(2)} className="font-lexend center-div" style={{fontWeight: selectedState === 2 ? '700' : '400', backgroundColor: selectedState === 2 ? '#f7e700' : 'white'}}>
                 <Icon src={tipsimg}/>
                 <Heading>Tips</Heading>
 
@@ -115,11 +115,11 @@ const Tabscomponent= (props) => {
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
-        <Tab   icon={<Icon src={gettingimg}></Icon>} label="Getting Around"  className="poi-tab font-opensans"></Tab>
-       <Tab   icon={<Icon src={entryimg}/>} label="Entry Fees"  className="poi-tab font-opensans"></Tab>
+        <Tab   icon={<Icon src={gettingimg}></Icon>} label="Getting Around"  className="poi-tab font-lexend"></Tab>
+       <Tab   icon={<Icon src={entryimg}/>} label="Entry Fees"  className="poi-tab font-lexend"></Tab>
 
-       <Tab   icon={<Icon src={tipsimg}></Icon>} label="Tips"  className="poi-tab font-opensans"></Tab>
-       <Tab   icon={<Icon src={timingimg}></Icon>}label="Timings"  className="poi-tab font-opensans"></Tab>
+       <Tab   icon={<Icon src={tipsimg}></Icon>} label="Tips"  className="poi-tab font-lexend"></Tab>
+       <Tab   icon={<Icon src={timingimg}></Icon>}label="Timings"  className="poi-tab font-lexend"></Tab>
        {/* <Tab label="About"></Tab> */}
       </Tabs>
         

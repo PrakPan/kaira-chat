@@ -86,7 +86,7 @@ const CountryCodeDropdown = (props) => {
     };
   }, []);
   return (
-      <Container ref={ref} zIndex={props.zIndex} className='font-poppins' width={props.width}>
+      <Container ref={ref} zIndex={props.zIndex} className='font-lexend' width={props.width}>
         <SelectBox error={props.error} labelCenter={props.labelCenter} height={props.height} onClick={() => setOpen(!open)} width={props.width} style={props.labelStyle}>
 <Label error={props.error} selected={selected}>{props.label}</Label>
     {selected}

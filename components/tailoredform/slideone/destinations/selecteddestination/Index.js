@@ -71,7 +71,7 @@ const SelectedDestination = (props) => {
     // : props.openCities
   //  : setShowDestinationInput(!showDestinationInput)
   : ()=>{setShowDestination(false);_handleFocusSearch()}
-   }  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
+   }  className=' font-lexend hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer'>
           {!props.selectlocation  ? 
                   <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', marginRight: '10px'}}></MdOutlineLocationOn>

@@ -71,7 +71,7 @@ const TravellerCounter = () => {
   }, [counter]);
 
   return (
-    <div className="font-opensans center-div text-center">    
+    <div className="font-lexend center-div text-center">    
       <Container>
         <LeafContainer>
         <Leaf src={leaf}/>

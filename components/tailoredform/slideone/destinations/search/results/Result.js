@@ -52,7 +52,7 @@ const Result = (props) => {
     props.setFocusSearch(false)
   }
   return (
-    <Container className='font-poppins'  onClick={(e)=>{_handleClick(e) , props._updateDestinationHandler(props.inbox_id,props.result)}}>
+    <Container className='font-lexend'  onClick={(e)=>{_handleClick(e) , props._updateDestinationHandler(props.inbox_id,props.result)}}>
                 {/* <div style={{fontWeight: '600'}}>{props.name}</div> */}
                 {/* <div style={{flexGrow: '1', textAlign: 'right', fontWeight: '300'}}>{props.type}</div> */}
 

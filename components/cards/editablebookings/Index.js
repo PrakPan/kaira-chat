@@ -177,11 +177,11 @@ const getDate = (date) => {
         for(var i=0; i < props.rooms.length; i++){
             if(props.rooms[i].number_of_rooms)
             roomsJSX.push(
-                 <Detail key={i} className='font-opensans'>{ props.rooms[i].room_type ? props.rooms[i].number_of_rooms + " x " + props.rooms[i].room_type : props.rooms[i].number_of_rooms + ' x Private Room'  }</Detail>
+                 <Detail key={i} className='font-lexend'>{ props.rooms[i].room_type ? props.rooms[i].number_of_rooms + " x " + props.rooms[i].room_type : props.rooms[i].number_of_rooms + ' x Private Room'  }</Detail>
             )
             else 
             roomsJSX.push(
-                <Detail key={i} className='font-opensans'>{ props.rooms[i].room_type ?  props.rooms[i].room_type : 'Private Room'  }</Detail>
+                <Detail key={i} className='font-lexend'>{ props.rooms[i].room_type ?  props.rooms[i].room_type : 'Private Room'  }</Detail>
            )
         }
         setRoomsJSX(roomsJSX)
@@ -201,24 +201,24 @@ const getDate = (date) => {
                         <FontAwesomeIcon icon={faStar} style={{fontSize: '0.75rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null}
-                    <Heading className="font-opensans">Details</Heading>
+                    <Heading className="font-lexend">Details</Heading>
                     {props.type === "Accommodation" ? 
                     <div>
-                        {props.check_in && !props.experience? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
-                        {props.check_out && !props.experience? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
-                        {props.duration && props.experience? <Detail  className='font-opensans'>{props.duration + " Night(s)"}</Detail>:null}
+                        {props.check_in && !props.experience? <Detail  className='font-lexend'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
+                        {props.check_out && !props.experience? <Detail  className='font-lexend'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
+                        {props.duration && props.experience? <Detail  className='font-lexend'>{props.duration + " Night(s)"}</Detail>:null}
 
                         {RoomsJSX}
                         {props.plan?  
                             <div style={{fontSize: '0.75rem', marginBottom: '0.25rem'}}>
                             <FontAwesomeIcon icon={faMale} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                            <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_adults}</p>
+                            <p className='font-lexend' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_adults}</p>
                             <FontAwesomeIcon icon={faChild} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                            <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_children}</p>
+                            <p className='font-lexend' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_children}</p>
                             <FontAwesomeIcon icon={faBaby} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                        <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_infants}</p>
+                        <p className='font-lexend' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_infants}</p>
                         </div>    : null}
-                        <Detail  className='font-opensans'>{mealplan}</Detail>
+                        <Detail  className='font-lexend'>{mealplan}</Detail>
                         <FontAwesomeIcon icon={faWifi} style={{fontSize: '0.75rem', fontWeight: '300'}}></FontAwesomeIcon>
                         </div>
                  : detailsarr.length ?  <ul style={{padding: '0', marginLeft: '0.5rem'}}>{detailsarr}</ul> : null}
@@ -228,10 +228,10 @@ const getDate = (date) => {
 
                 {!props.experience ? <ButtonContainer>
                 {props.is_selected? 
-                <Selected className='font-opensans'>
+                <Selected className='font-lexend'>
                     <BsCheckLg style={{fontSize: '0.75rem', marginRight: '0.25rem'}}></BsCheckLg>
                     Selected</Selected> : 
-                    <Select className='font-opensans' onClick={_handleTaxiSelection}>
+                    <Select className='font-lexend' onClick={_handleTaxiSelection}>
                         {props.cardUpdateLoading === props.booking_id ? <Spinner display="inline" size={12} margin="0 0.25rem 0 0"></Spinner> : <AiOutlinePlus style={{fontSize: '1rem', marginRight: '0.25rem'}}></AiOutlinePlus>}
                         {/* <BiPlus style={{fontSize: '1rem', marginRight: '0.25rem', marginTop: '-0.1rem'}}></BiPlus> */}
                         Select</Select>
@@ -260,31 +260,31 @@ const getDate = (date) => {
 
                     {props.rating ? props.rating+ " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                      </RatingContainer> : null}
-                <Heading className="font-opensans">Details</Heading>
+                <Heading className="font-lexend">Details</Heading>
                 {props.type === "Accommodation" ? 
                 <div>
-                {props.check_in && !props.experience  ? <Detail  className='font-opensans'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
-                        {props.check_out && !props.experience? <Detail  className='font-opensans'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
-                {props.experience && props.duration ? <Detail  className='font-opensans'>{props.duration}</Detail>: null }
+                {props.check_in && !props.experience  ? <Detail  className='font-lexend'>{ 'Check in: ' + getDate(props.check_in)}</Detail>:null}
+                        {props.check_out && !props.experience? <Detail  className='font-lexend'>{ 'Check out: ' + getDate(props.check_out) }</Detail>:null}
+                {props.experience && props.duration ? <Detail  className='font-lexend'>{props.duration}</Detail>: null }
                 {RoomsJSX}
                 {props.plan? <div>
                   <FontAwesomeIcon icon={faMale} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                  <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_adults}</p>
+                  <p className='font-lexend' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_adults}</p>
                   <FontAwesomeIcon icon={faChild} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                  <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_children}</p>
+                  <p className='font-lexend' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_children}</p>
                   <FontAwesomeIcon icon={faBaby} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                  <p className='font-opensans' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_infants}</p>
+                  <p className='font-lexend' style={{marginRight: '1rem', display: 'inline', fontWeight: '100'}}>{props.plan.number_of_infants}</p>
 
                 </div> : null}
-               <Detail  className='font-opensans'>{mealplan}</Detail>
+               <Detail  className='font-lexend'>{mealplan}</Detail>
                 <FontAwesomeIcon icon={faWifi} style={{fontSize: '0.75rem', fontWeight: '300'}}></FontAwesomeIcon>
                 </div>:<ul style={{padding: '0', marginLeft: '0.5rem'}}>{detailsarr}</ul>}
                 {!props.experience ? <ButtonContainer>
                 {props.is_selected && !props.experience  ? 
-                <Selected className='font-opensans'>
+                <Selected className='font-lexend'>
                     <BsCheckLg style={{fontSize: '0.75rem', marginRight: '0.25rem'}}></BsCheckLg>
                     Selected</Selected> : !props.experience ?
-                    <Select className='font-opensans' onClick={_handleTaxiSelection}>
+                    <Select className='font-lexend' onClick={_handleTaxiSelection}>
                         {props.cardUpdateLoading === props.booking_id ? <Spinner display="inline" size={12} margin="0 0.25rem 0 0"></Spinner> : <AiOutlinePlus style={{fontSize: '1rem', marginRight: '0.25rem'}}></AiOutlinePlus>}
                         {/* <BiPlus style={{fontSize: '1rem', marginRight: '0.25rem', marginTop: '-0.1rem'}}></BiPlus> */}
                         Select</Select> : null

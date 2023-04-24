@@ -76,7 +76,7 @@ const Banner = (props) => {
       <CostContainer >
           {true ? <DiscountContainer>
             <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.starting_price/100)*1.15))}</StrikedCost>
-           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+ " /-"}</Cost>
+           <Cost className='font-lexend'>{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+ " /-"}</Cost>
           </DiscountContainer> : null}
            <Button onclick={props.openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 0.5rem 0 0" padding="0.25rem 1rem">Buy Now</Button>
     </CostContainer> 

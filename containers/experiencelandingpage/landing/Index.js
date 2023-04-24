@@ -91,14 +91,14 @@ const BlackContainer = (props) => {
  
       {/* <IconListContainer>
         
-        <ExperienceName className='font-opensans'>{props.title}</ExperienceName>
+        <ExperienceName className='font-lexend'>{props.title}</ExperienceName>
 
       </IconListContainer> */}
         
        <Gallery setGalleryOpen={props.setGalleryOpen} images={props.images} ></Gallery>
         <IconListContainer>
         <DetailsContainer>
-            <ExperienceName className='font-opensans' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
+            <ExperienceName className='font-lexend' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
             <Rating className="font-nunito">
              {typeof window!=='undefined' ? <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>: null}
              {typeof window!=='undefined' ? <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>: null}

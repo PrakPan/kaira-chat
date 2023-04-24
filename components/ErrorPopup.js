@@ -4,7 +4,7 @@ import {ImCross} from 'react-icons/im'
 const Container = styled.div`
 // display : ${props=>props.show? 'block' : 'none'};
   font-size: 14px;
-  font-family: 'Poppins';
+  // font-family: 'Poppins';
   font-weight: 500;
     position: absolute;
     line-height: 20px;

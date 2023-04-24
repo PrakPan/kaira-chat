@@ -71,7 +71,7 @@ font-weight: 800;
 const Rolodex = (props) => {
     
   return(
-    <Container className="font-opensans">
+    <Container className="font-lexend">
     <Text>
       As per your
     </Text>

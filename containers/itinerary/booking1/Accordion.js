@@ -82,12 +82,12 @@ catch{
       for(var i = 0 ; i < props.payment.summary[key].bookings.length; i++){
          try{
         bookingslist.push(
-          <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem',}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{bookings[props.payment.summary[key].bookings[i].id].name}</p>
+          <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem',}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{bookings[props.payment.summary[key].bookings[i].id].name}</p>
         )
         bookinglistwithcost.push(
           <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', margin: '0.5rem 0', gridGap: '1rem'}}>
-            <p style={{ fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{bookings[props.payment.summary[key].bookings[i].id].name}</p>
-            {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
+            <p style={{ fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{bookings[props.payment.summary[key].bookings[i].id].name}</p>
+            {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
         </div>
       )
         }catch{}
@@ -104,8 +104,8 @@ catch{
         style={{zIndex: '1', minHeight: 'max-content'}}
 
       >
-        <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0'}} >{key}</Typography>
-        <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{!props.payment.are_prices_hidden ? "₹ "+ getIndianPrice(Math.round(props.payment.summary[key].cost/100)) : null}</Typography>
+        <Typography content={'span'} className="font-lexend" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0'}} >{key}</Typography>
+        <Typography content={'span'} className="font-lexend" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{!props.payment.are_prices_hidden ? "₹ "+ getIndianPrice(Math.round(props.payment.summary[key].cost/100)) : null}</Typography>
 
       </AccordionSummary>
          <div style={{margin: '0 1rem', borderStyle: 'none none none none', borderWidth: '1px', borderColor: "#F7e700", position: 'relative', top: '-0.5rem'}}></div>

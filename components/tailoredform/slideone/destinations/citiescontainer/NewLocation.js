@@ -24,7 +24,7 @@ font-weight : 600;
 `
 const NewLocation  = (props)=>{
     return (
-        <Container className='font-poppins' onClick={()=>{props.setDestination(props.text) 
+        <Container className='font-lexend' onClick={()=>{props.setDestination(props.text) 
          props.setShowCities(false)
          props.onclick(props.onclickparam)
         }}

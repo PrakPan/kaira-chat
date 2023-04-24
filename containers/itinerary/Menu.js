@@ -277,7 +277,7 @@ const [selectedPoi, setSelectedPoi] = useState({name: 'Kasol'});
   for(var i = 0; i < props.breif.city_slabs.length ; i++){
     if(!props.breif.city_slabs[i].is_trip_terminated){
       locationsArr.push(
-        <Location id={i} style={{minWidth: locationtabwidth}} className={"font-opensans center-div border-top " + (location == i ? "bg-yellow font-bold" : 'bg-white')} onClick={(event) => _setLocationHandler(event)}>{props.breif.city_slabs[i].city_name}</Location>
+        <Location id={i} style={{minWidth: locationtabwidth}} className={"font-lexend center-div border-top " + (location == i ? "bg-yellow font-bold" : 'bg-white')} onClick={(event) => _setLocationHandler(event)}>{props.breif.city_slabs[i].city_name}</Location>
       )
     }
   }
@@ -341,18 +341,18 @@ const _handleFlightModalClose=()=> {
     <div className={classes.root}>
       <AppBar position="sticky" className={classes.appbar}>
         <Tabs id="itinerary-tabs" value={value} onChange={handleChange}  aria-label="simple tabs example" centered  style={{zIndex: "2"}}  indicatorColor="">
-          <Tab label="Brief" className="font-opensans experience-tab" />
-          <Tab label="Itinerary" className="font-opensans experience-tab" />
-          {!isGroup ? <Tab label="Booking" className="font-opensans experience-tab"/> : <Tab label="Register" className="font-opensans experience-tab"/>}
+          <Tab label="Brief" className="font-lexend experience-tab" />
+          <Tab label="Itinerary" className="font-lexend experience-tab" />
+          {!isGroup ? <Tab label="Booking" className="font-lexend experience-tab"/> : <Tab label="Register" className="font-lexend experience-tab"/>}
         </Tabs>
         {value!==2 && props.payment ? <CostContainer >
           {true? <DiscountContainer>
             <div style={{display: 'flex'}}>
               {props.payment ? props.payment.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost/100)*2))}</StrikedCost> : null : null}
           
-          { props.payment? !props.payment.is_registration_needed ? <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost>
+          { props.payment? !props.payment.is_registration_needed ? <Cost className='font-lexend'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</Cost>
            :
-           <GITCost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</GITCost>
+           <GITCost className='font-lexend'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+ " /-"}</GITCost>
           : null}
            </div>
            

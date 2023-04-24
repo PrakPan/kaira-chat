@@ -114,7 +114,7 @@ const Banner = (props) => {
            {!props.paymentLoading ? 
            <div style={{display: 'flex'}}>
             {props.payment ? props.payment.is_registration_needed ? <StrikedCost>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100)*2)}</StrikedCost> : null : null}
-            <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+"/-"}</Cost></div>
+            <Cost className='font-lexend'>{"₹ "+getIndianPrice(Math.round(props.payment.per_person_total_cost/100))+"/-"}</Cost></div>
             
             :<Spinner display="inline" color="white" size={16} padding="0"></Spinner>}
             

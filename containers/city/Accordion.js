@@ -77,8 +77,8 @@ const Accordions = (props) => {
     
   return(
       <Container className='borde'>
-        <MainHeading className='font-opensans text-center'>Overview</MainHeading>
-        <ContentContainer className='font-opensans text-center'>
+        <MainHeading className='font-lexend text-center'>Overview</MainHeading>
+        <ContentContainer className='font-lexend text-center'>
             {props.overview}
         </ContentContainer>
 
@@ -92,7 +92,7 @@ const Accordions = (props) => {
 
       >
   
-        <StyledTypo content={'div'} className="font-opensans" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
+        <StyledTypo content={'div'} className="font-lexend" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
             {'Things to do'}
             <BsChevronDown style={{marginLeft: '4px'}}></BsChevronDown>
             </StyledTypo>
@@ -115,7 +115,7 @@ const Accordions = (props) => {
 
       >
   
-        <StyledTypo content={'div'} className="font-opensans" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
+        <StyledTypo content={'div'} className="font-lexend" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
             {'Getting around'}
             <BsChevronDown style={{marginLeft: '4px'}}></BsChevronDown>
             </StyledTypo>
@@ -138,7 +138,7 @@ const Accordions = (props) => {
 
       >
   
-        <StyledTypo content={'div'} className="font-opensans" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
+        <StyledTypo content={'div'} className="font-lexend" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
             {'What to eat'}
             <BsChevronDown style={{marginLeft: '4px'}}></BsChevronDown>
             </StyledTypo>
@@ -161,7 +161,7 @@ const Accordions = (props) => {
 
       >
   
-        <StyledTypo content={'div'} className="font-opensans" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
+        <StyledTypo content={'div'} className="font-lexend" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
             {'Survival Tips & Tricks'}
             <BsChevronDown style={{marginLeft: '4px'}}></BsChevronDown>
             </StyledTypo>
@@ -185,7 +185,7 @@ const Accordions = (props) => {
 
       >
   
-        <StyledTypo content={'div'} className="font-opensans" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
+        <StyledTypo content={'div'} className="font-lexend" style={{fontWeight: '600', fontSize: '1.5rem', textAlign: 'center', width: '100%'}} >
             {'Folklore or Story'}
             <BsChevronDown style={{marginLeft: '4px'}}></BsChevronDown>
             </StyledTypo>

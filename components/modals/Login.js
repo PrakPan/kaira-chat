@@ -77,7 +77,7 @@ const Enquiry = (props) => {
 
   if(isPageWide)
   return(
-      <div className='font-poppins'>
+      <div className='font-lexend'>
         <Modal centered closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width={modalWidth + '%'} >
             {/* <Modal.Body style={{padding: "0"}} > */}
                 <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
@@ -86,7 +86,7 @@ const Enquiry = (props) => {
                       <ImageLoader url={'media/website/login-background.png'} height="100%" width="100%" onload={() => setShowImage(true)} ></ImageLoader>
 
                     <ImgTagsContainer>
-                    {TagsContent.map((e,i)=><TagItem key={i}><ImageLoader borderRadius={'0.4rem 0 0 0.4rem'} url={e.icon} dimensions={{width : 200 , height : 200}}/><p className='font-poppins'>{e.text}</p></TagItem>)}
+                    {TagsContent.map((e,i)=><TagItem key={i}><ImageLoader borderRadius={'0.4rem 0 0 0.4rem'} url={e.icon} dimensions={{width : 200 , height : 200}}/><p className='font-lexend'>{e.text}</p></TagItem>)}
                     </ImgTagsContainer>
                 
                   </ImgContainer>

@@ -19,7 +19,7 @@ const  Icon= (props) => {
         return( 
             <Container>
                     <ImageLoader url={props.icon.image ? props.icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
-                    <IconTagLine className="font-opensans">{props.icon.name}</IconTagLine>
+                    <IconTagLine className="font-lexend">{props.icon.name}</IconTagLine>
             </Container>
           );
     }

@@ -54,7 +54,7 @@ const CardContainer = (props) => {
                 <GridContainer>
                 <div style={{display : 'flex' , flexDirection : 'column' , justifyContent : 'space-between' }}>
                 <ImageLoader borderRadius="8px" width="100%" widthMobile="100%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
-                <CardHeading className='font-opensans'>{props.heading}</CardHeading>
+                <CardHeading className='font-lexend'>{props.heading}</CardHeading>
                 
                 <RatingContainer>
                     <div>
@@ -66,7 +66,7 @@ const CardContainer = (props) => {
 
                     </div>
                     <div style={{display: 'flex', alignItems: 'center'}}>
-                    <CardSubHeading className='font-opensans'>{props.duration + " • " + props.destination}</CardSubHeading>
+                    <CardSubHeading className='font-lexend'>{props.duration + " • " + props.destination}</CardSubHeading>
 
                     </div>
                 </RatingContainer>
@@ -76,12 +76,12 @@ const CardContainer = (props) => {
                 </div>
                 <div>
 
-                {/* <CardHeading className='font-opensans'>{props.heading}</CardHeading> */}
+                {/* <CardHeading className='font-lexend'>{props.heading}</CardHeading> */}
                 
                 
 
                 {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
-                <CardListItem className='font-opensans' >{props.text}</CardListItem>
+                <CardListItem className='font-lexend' >{props.text}</CardListItem>
                 </div>
                 </GridContainer>
                

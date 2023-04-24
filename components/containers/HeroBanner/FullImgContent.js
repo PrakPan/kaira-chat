@@ -43,7 +43,7 @@ color: white;
 `;
 
 const PaddingContianer = styled.div`
-padding: 5vh 0 0 0;
+padding: 0 0 0 0;
 flex-grow: 1;z
 @media screen and (min-width: 768px){
     padding: 1vh 0 0 0;
@@ -58,7 +58,7 @@ display : flex;
  align-items: center;
  text-align : center;
 color : black;
-    font-weight: 500;
+    font-weight: 400;
     margin-top : 7px;
 @media screen and (min-width: 768px){
     font-size: 16px;
@@ -70,7 +70,7 @@ color : black;
 const SubHeading = styled.div`
     font-size : 16px;
     line-height : 20px;
-    font-weight : 400;
+    font-weight : 200;
     @media screen and (min-width: 768px){
     font-size: 25px;
     line-height : 35px;
@@ -98,7 +98,7 @@ const FullImgContent = (props) => {
 // console.log('', props.children_cities)
     return (
 
-        <Container className='font-poppins center-di text-cente'>
+        <Container className='font-lexend center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.title}</Heading>
            {isPageWide?<SubHeading>Bid farewell to generic holiday packages.<br/>

@@ -42,7 +42,7 @@ const SearchResult = (props) => {
      return(
         <Container className="border-thin" onClick={() => props._addCityHandler(props.city_id, {"name": props.location, "parent": props.parent, "city_id": props.city_id, "type": props.type})}>
             <div  >
-            <Name className="font-opensans">{props.location}</Name>
+            <Name className="font-lexend">{props.location}</Name>
             <Parent>{!props.newcity ? props.parent : 'Add new city' }</Parent>
             </div>
             <div className="center-div">

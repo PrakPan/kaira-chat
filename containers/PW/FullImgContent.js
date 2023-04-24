@@ -103,7 +103,7 @@ const FullImgContent = (props) => {
 
     return (
 
-        <Container className='font-opensans center-di text-center'>
+        <Container className='font-lexend center-di text-center'>
            <PaddingContianer >
             <Heading>Physics Wallah Holidays</Heading>
             <SubText style={{fontWeight:  '600'}}>

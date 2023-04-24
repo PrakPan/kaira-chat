@@ -132,7 +132,7 @@ const redirect = () => {
        </ImageContainer>  
        <ContentContainer className="text-center">
            <HeadingContainer>
-             <Heading className="font-opensans">{props.experience}</Heading>
+             <Heading className="font-lexend">{props.experience}</Heading>
            </HeadingContainer>
            {typeof window !== 'undefined' ? <Rating className="font-nunito">
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
@@ -145,7 +145,7 @@ const redirect = () => {
                 <Text>{textstr}</Text>
             </TextContainer>
             <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center", margin: '0 0.5rem'}}>
-            <Price className="font-opensans">{ "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}</Price>
+            <Price className="font-lexend">{ "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}</Price>
                 <Link passHref={true} href ={urls.EXPERIENCES+props.id}>
                   <Button display="inline-block" onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">Check Out!  
                   {loading  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>

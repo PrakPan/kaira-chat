@@ -23,7 +23,7 @@ export default function CheckboxLabels(props) {
       <Container>
         <FormGroup>
           { 
-          props.filters.map(filter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, filter, props.heading)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={filter === props.default ? true : false} />} label={<Label className="font-opensans">{filter}</Label>}/>)
+          props.filters.map(filter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, filter, props.heading)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={filter === props.default ? true : false} />} label={<Label className="font-lexend">{filter}</Label>}/>)
           }
       </FormGroup>
     </Container>

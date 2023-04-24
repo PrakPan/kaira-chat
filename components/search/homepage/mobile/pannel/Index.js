@@ -118,7 +118,7 @@ const SearchPannel= (props) => {
        <TopContainer>
             <RxCross2 onClick={props.setPannelClose} style={{fontSize: '1.8rem',textAlign: 'left', fontWeight: '500', margin: 'auto 0.7rem'}}/>
             <SearchContainer>
-                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-poppins" placeholder="Search Locations">
+                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-lexend" placeholder="Search Locations">
                     </Search>
                     <ImSearch style={{position : 'absolute' , top : '27px' , left : '73px', color : '#B0BABF' , pointerEvents : 'none'}} />
                     {inputValue !== '' &&<MdCancel onClick={()=>{setInputValue(''); setShowResults(false)}} style={{position : 'absolute' , top : '25px' , right : '25px',fontSize : '1.1rem', color : '#7A7A7A'}} />}

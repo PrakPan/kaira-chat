@@ -76,7 +76,7 @@ const Carousel = (props) => {
     return(
     <Modal className="edit-modal" show={props.show}  size="xl" centered onHide={props.hide}>
         <Modal.Body style={{padding: "2rem", borderStyle: "solid", borderColor: "#f7e700", borderRadius: "5px", borderWidth: '10px'}}>
-            <h1 style={{fontSize: "32px", textAlign: "left"}} className="font-opensans">Hi Maria,</h1>
+            <h1 style={{fontSize: "32px", textAlign: "left"}} className="font-lexend">Hi Maria,</h1>
             <h2 style={{fontSize: "24px", fontWeight: "200"}} className="font-nunito">Thanks for joining our little community.</h2>
             <h2 style={{fontSize: "24px", fontWeight: "600", textAlign: "center", margin: "2rem 0"}} className="font-nunito">Pick activities you like</h2>
             <GridContainer>

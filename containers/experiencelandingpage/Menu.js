@@ -206,14 +206,14 @@ const EnquireButton = styled.div`
       </DesktopBanner> : null} */}
       <AppBar position="sticky" className='black-mui-navbar'>
         <Tabs id="experience-tabs" textColor="white" value={value} onChange={handleChange} aria-label="simple tabs example" centered  style={{zIndex: "2"}}  indicatorColor="">
-            <Tab  label="Overview" className="font-opensans experience-tab" />
-            <Tab   label="Itinerary" className="font-opensans experience-tab"  />
-            <Tab label="Booking" className="font-opensans experience-tab"  /> 
+            <Tab  label="Overview" className="font-lexend experience-tab" />
+            <Tab   label="Itinerary" className="font-lexend experience-tab"  />
+            <Tab label="Booking" className="font-lexend experience-tab"  /> 
         </Tabs>
           {value!==2 ? <CostContainer >
           {props.data.starting_price ? <DiscountContainer>
             <StrikedCost>{"₹ "+getIndianPrice(Math.round(Math.round(props.data.starting_price/100)*1.15))}</StrikedCost>
-           <Cost className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.data.starting_price/100))+ " /-"}</Cost>
+           <Cost className='font-lexend'>{"₹ "+getIndianPrice(Math.round(props.data.starting_price/100))+ " /-"}</Cost>
           </DiscountContainer> : null}
            <Button onclick={openBooking} hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 2rem 0 0" padding="0.25rem 1rem">Buy Now</Button>
         </CostContainer> : null}

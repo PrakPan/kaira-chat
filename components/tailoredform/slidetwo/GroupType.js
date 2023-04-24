@@ -53,7 +53,7 @@ const GroupType = (props) => {
         <Container className='font-opesans'>
             <GridContainer>
                 <div className='text-center'>
-                <OptionContainer className=' center-div font-opensans hover-pointer' is_selected={props.groupType === 'Solo'} onClick={() => props._handleShowPax('Solo')}>
+                <OptionContainer className=' center-div font-lexend hover-pointer' is_selected={props.groupType === 'Solo'} onClick={() => props._handleShowPax('Solo')}>
                   <ImageLoader width="2rem" widthmobile="12vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/solo.png"></ImageLoader>
                     
                 </OptionContainer>
@@ -61,7 +61,7 @@ const GroupType = (props) => {
                 </div>
                 <div className='text-center'>
 
-                <OptionContainer  className='center-div   font-opensans hover-pointer' is_selected={props.groupType === 'Couple'} onClick={() => props._handleShowPax('Couple')}>
+                <OptionContainer  className='center-div   font-lexend hover-pointer' is_selected={props.groupType === 'Couple'} onClick={() => props._handleShowPax('Couple')}>
                     <ImageLoader width="2rem" widthmobile="12vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/couple.png"></ImageLoader>
 
                    
@@ -70,20 +70,20 @@ const GroupType = (props) => {
                 </div>
                 <div className='text-center'>
 
-                <OptionContainer    className=' center-div  font-opensans hover-pointer' is_selected={props.groupType === 'Friends'}  onClick={() => props._handleShowPax('Friends')}>
+                <OptionContainer    className=' center-div  font-lexend hover-pointer' is_selected={props.groupType === 'Friends'}  onClick={() => props._handleShowPax('Friends')}>
                     <ImageLoader width="2rem" widthmobile="12vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/friends.png"></ImageLoader>
                  </OptionContainer>
                 Friends
                 </div>
                 <div className='text-center'>
 
-                <OptionContainer   className='  center-div  font-opensans hover-pointer' is_selected={props.groupType === 'Family'} onClick={() => props._handleShowPax('Family')}>
+                <OptionContainer   className='  center-div  font-lexend hover-pointer' is_selected={props.groupType === 'Family'} onClick={() => props._handleShowPax('Family')}>
                     <ImageLoader width="2rem" widthmobile="12vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/planner-box/grouptype/family.png"></ImageLoader>
                     
                 </OptionContainer>
                 Family
                 </div>
-                {/* <OptionContainer className='border-thin font-opensans'>
+                {/* <OptionContainer className='border-thin font-lexend'>
                     <ImageLoader width="2rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url="media/icons/Questionnaire/Group Type/friends.png"></ImageLoader>
                     Large group
                 </OptionContainer> */}

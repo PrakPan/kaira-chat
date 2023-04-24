@@ -154,19 +154,19 @@ const CityContainer = (props) =>{
           }
         }
     TabsElements.push(
-      <Tab  style={{textTransform: 'none'  ,  padding: '0.25rem 1rem', color: 'white !important'      }} label={getHumanDate(props.day_slabs[j].slab)}   className="itinerary-day-tab font-opensans" >
+      <Tab  style={{textTransform: 'none'  ,  padding: '0.25rem 1rem', color: 'white !important'      }} label={getHumanDate(props.day_slabs[j].slab)}   className="itinerary-day-tab font-lexend" >
         </Tab>
     )
     TabsContainers.push(
         <TabPanel value={value} index={i} ref={ref}>
             <div>{DayElements[props.day_slabs[j].slab]}</div>
             <div style={{display: 'flex'}}>
-              {i ? <StyledLink to={props.id} id={i} smooth={true} duration={500} style={{margin: '0'}} onClick={(event) => _handlePrevClick(event)} className="font-opensans">
+              {i ? <StyledLink to={props.id} id={i} smooth={true} duration={500} style={{margin: '0'}} onClick={(event) => _handlePrevClick(event)} className="font-lexend">
                     <StyledPrevIcon ></StyledPrevIcon> 
                     Previous Day
                     </StyledLink> 
               : null}
-              { j === props.endingslab ? null: <StyledLink to={props.id} id={i} smooth={true} duration={500} style={{}} onClick={(event) => _handleNextClick(event)} className="font-opensans">
+              { j === props.endingslab ? null: <StyledLink to={props.id} id={i} smooth={true} duration={500} style={{}} onClick={(event) => _handleNextClick(event)} className="font-lexend">
                     Next Day
                   <StyledNextIcon ></StyledNextIcon> 
                 </StyledLink>}
@@ -190,10 +190,10 @@ const CityContainer = (props) =>{
         scrollButtons={  true  }
         allowScrollButtonsMobile>
                {TabsElements}
-               {/* <Tab   label="About" className="poi-tab font-opensans"></Tab>
-               <Tab   label="About" className="poi-tab font-opensans"></Tab>
-               <Tab   label="About" className="poi-tab font-opensans"></Tab>
-               <Tab   label="About" className="poi-tab font-opensans"></Tab> */}
+               {/* <Tab   label="About" className="poi-tab font-lexend"></Tab>
+               <Tab   label="About" className="poi-tab font-lexend"></Tab>
+               <Tab   label="About" className="poi-tab font-lexend"></Tab>
+               <Tab   label="About" className="poi-tab font-lexend"></Tab> */}
 
 
             </Tabs ></div> :<StyledTabs  position="sticky" id="day-tabs" value={value}  onChange={handleChange} indicatorColor="false" disableRippled>

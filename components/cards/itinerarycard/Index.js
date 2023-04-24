@@ -205,7 +205,7 @@ useEffect(() => {
        </ImageContainer>  
        <ContentContainer className="text-center">
            <HeadingContainer>
-             <Heading className="font-opensans">{props.name}</Heading>
+             <Heading className="font-lexend">{props.name}</Heading>
            </HeadingContainer>
        
             <TextContainer className="font-nunito" >
@@ -215,14 +215,14 @@ useEffect(() => {
                 {/* </ShortText> */}
             </TextContainer>
             <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center", margin: '0 0.5rem'}}>
-            {/* <Price className="font-opensans">{"INR "+props.starting_cost+"/-"}</Price> */}
+            {/* <Price className="font-lexend">{"INR "+props.starting_cost+"/-"}</Price> */}
                 {/* <Link passHref={true} href ={'/experiences/'+props.id}>
                   <Button onclick={_handleRedirect} margin="auto" hoverBgColor="black" bgColor='transparent' borderWidth="1px" borderRadius="2rem" padding="0.25rem 1.25rem" borderStyle="solid" hoverColor="white">{cta}
                   </Button>
                   </Link> */}
             </div>
        </ContentContainer>
-       {/* <Status className="font-opensans" style={{backgroundColor: statusColor, color: props.status === 'ITINERARY_UNDER_PREPARATION' ? 'black' : 'white'}}>
+       {/* <Status className="font-lexend" style={{backgroundColor: statusColor, color: props.status === 'ITINERARY_UNDER_PREPARATION' ? 'black' : 'white'}}>
          {statusText}
          {props.status ==="ITINERARY_UNDER_PREPARATION" ? <Timer hours={hours} minutes={minutes} seconds={seconds}/>:null}
          </Status> */}

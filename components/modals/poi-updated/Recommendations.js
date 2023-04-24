@@ -58,13 +58,13 @@ return(
 <div>{props.recommendations ? <Container>
     <GridContainer>
         <div style={{width: "100%", overflow: "scroll"}}>
-            <Heading className="font-opensans">Do's and Dont's</Heading>
+            <Heading className="font-lexend">Do's and Dont's</Heading>
             <UL className="font-nunito" style={{margin: "1rem 0"}}>
                 {tips}
             </UL>
         </div>
         <div>
-            <Heading className="font-opensans">Recommendations</Heading>
+            <Heading className="font-lexend">Recommendations</Heading>
             <ul className="font-nunito">
                 {recommendations}
               

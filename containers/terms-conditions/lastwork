@@ -159,7 +159,7 @@ padding:1rem;
      
     return(
       <>
-      <Heading className='font-opensans' >
+      <Heading className='font-lexend' >
           Terms And Conditions
       </Heading>
      

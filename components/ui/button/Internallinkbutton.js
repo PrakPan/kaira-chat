@@ -66,7 +66,7 @@ const Internallinkbutton = (props) => {
   return (
     <Link href={props.link ? props.link : "/404"} passHref={true}>
       <Internalbuttonstyle
-      className="font-poppins"
+      className="font-lexend"
         color={props.color}
         borderRadius={props.borderRadius}
         bgColor={props.bgColor}

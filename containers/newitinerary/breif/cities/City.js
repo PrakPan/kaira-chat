@@ -47,13 +47,13 @@ const City = (props) => {
     },[]);
 
     return(
-        <Container className='font-poppins'>
-             <Heading className='font-poppins'>{props.city + " - " + props.duration}</Heading>
+        <Container className='font-lexend'>
+             <Heading className='font-lexend'>{props.city + " - " + props.duration}</Heading>
              <GridContainer>
              <ImageLoader
                     borderRadius="8px" url="media/website/grey.png" height="auto" heightMobile="auto" dimensionsMobile={{width: 118, height: 80}}
                     ></ImageLoader>
-                    <CityText className='font-poppins'>
+                    <CityText className='font-lexend'>
                     Known as the "Pink City" because of the color of the stone used ...
                     </CityText>
              </GridContainer>

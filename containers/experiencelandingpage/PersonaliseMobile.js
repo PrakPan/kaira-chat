@@ -67,7 +67,7 @@ const Banner = (props) => {
                 <Container>
                   <GridContainer>
                     <div className="center-div">
-                      <Text className="font-opensans">{props.text}</Text>
+                      <Text className="font-lexend">{props.text}</Text>
                     </div>
               <div className="center-div">
                 {/* <Button  onClick={props.onclick} hoverBgColor="#F7e700" bgColor="#F7e700" width="max-content" borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem"><StyledLink href='/tailored-travel'>Start Now</StyledLink></Button> */}

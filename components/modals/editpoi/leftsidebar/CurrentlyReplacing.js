@@ -80,7 +80,7 @@ const CurrentlyReplacing = (props) =>{
             <TextContainer>
                 <div>
                 <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-                <Name className="font-opensans" >
+                <Name className="font-lexend" >
                     {props.replacing}
                  </Name>
                 
@@ -89,11 +89,11 @@ const CurrentlyReplacing = (props) =>{
             {/* <GridContainer>
                 <IconContainer className={!isPageWide ? 'center-div' : ''}>
                     <StyledTimeIcon></StyledTimeIcon>
-                    <IconText className='font-opensans' style={{margin: '0'}}>2 hours</IconText>
+                    <IconText className='font-lexend' style={{margin: '0'}}>2 hours</IconText>
                 </IconContainer>
                 <IconContainer className={!isPageWide ? 'center-div' : ''}>
                     <StyledTimeIcon></StyledTimeIcon>
-                    <IconText className='font-opensans' style={{margin: '0'}}>2 hours</IconText>
+                    <IconText className='font-lexend' style={{margin: '0'}}>2 hours</IconText>
 
                 </IconContainer>
 

@@ -46,12 +46,12 @@ const Section= (props) => {
     }
     if(props.data)
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
                 <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     {props.data.check_in && !props.is_registration_needed? <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>: null}
                     <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gridGap: '1rem'}}> 
                         {props.data.check_in  &&  props.isDatePresent && !props.is_registration_needed? <div>
-                            <Heading className='font-opensans'>Trip Start</Heading>
+                            <Heading className='font-lexend'>Trip Start</Heading>
                             <Text className='font-nunito'>{getTime(props.data.check_in)}</Text>
                             <Text className='font-nunito'>{getDate(props.data.check_in)}</Text>
 
@@ -60,14 +60,14 @@ const Section= (props) => {
                         </div> : null}  
                         {props.data.costings_breakdown  ? props.data.costings_breakdown.duration ?  <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                         <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                             <div><Heading className='font-opensans'>Duration</Heading>
+                             <div><Heading className='font-lexend'>Duration</Heading>
                             {/* <Text className='font-nunito'>{getTime(props.data.check_out)}</Text> */}
                             <Text className='font-nunito'>{props.data.costings_breakdown.duration.text }</Text></div>
                              {/* <Text className='font-nunito'>10:00AM</Text> */}
                          </div> : null : null }
                     </div>
                     {/* <div style={{display: 'flex', flexGrow: '1', flexDirection: 'column', alignItems: 'flex-end'}}>
-                            <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? props.data.costings_breakdown.no_of_seats :null  : null}</Heading>
+                            <Heading className='font-lexend'>{props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? props.data.costings_breakdown.no_of_seats :null  : null}</Heading>
                             <Text style={{textAlign: 'right'}} className='font-nunito'>Person(s)</Text>
                         </div> */}
                 </div>
@@ -78,7 +78,7 @@ const Section= (props) => {
 
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>
-                          <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
+                          <Heading className='font-lexend'>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
                             <Text   className='font-nunito'>Included</Text>
                         </div>
                      
@@ -87,7 +87,7 @@ const Section= (props) => {
                     <ImageLoader url="media/icons/bookings/car-seat.svg" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>
-                        <Heading className='font-opensans'>{props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? props.data.costings_breakdown.no_of_seats + " Seats (s)": null  : null}</Heading>
+                        <Heading className='font-lexend'>{props.data.costings_breakdown ? props.data.costings_breakdown.no_of_seats ? props.data.costings_breakdown.no_of_seats + " Seats (s)": null  : null}</Heading>
                             <Text   className='font-nunito'>Included</Text>
                            
                         </div>

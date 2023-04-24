@@ -153,12 +153,12 @@ const Option = (props) => {
         <OptionContainer className="center-div border-thin" key={props.index} onClick={ () => _selectOptionHandler()} style={{ backgroundColor: !selectedState  ? "white": "rgba(247, 231, 0, 0.3)"}} >
                 <ImageLoader url={props.img} dimensions={{width: 400, height: 400}} src={`${imgUrlEndPoint}/${btoa(imageRequest)}`}  width="40%"  widthmobile="40%"></ImageLoader>
                 {props.heading && props.text? 
-                    <p style={{textAlign: "center", margin: "0.5rem 0 0 0", fontSize: "0.85rem"}} className="font-opensans"><b>{props.heading}</b></p>
+                    <p style={{textAlign: "center", margin: "0.5rem 0 0 0", fontSize: "0.85rem"}} className="font-lexend"><b>{props.heading}</b></p>
                 :null}
                  {props.heading && !props.text? 
-                    <p style={{textAlign: "center", margin: "0.5rem 0 0 0", fontSize: "0.85rem", fontWeight: '500'}} className="font-opensans">{props.heading}</p>
+                    <p style={{textAlign: "center", margin: "0.5rem 0 0 0", fontSize: "0.85rem", fontWeight: '500'}} className="font-lexend">{props.heading}</p>
                 :null}
-                <p style={{textAlign: "center", margin: "0.75rem 0 0 0", fontWeight: '300', letterSpacing: '1px', fontSize: '0.75rem'}} className="font-opensans">{props.text}</p>
+                <p style={{textAlign: "center", margin: "0.75rem 0 0 0", fontWeight: '300', letterSpacing: '1px', fontSize: '0.75rem'}} className="font-lexend">{props.text}</p>
         </OptionContainer>
     );
     else return null;

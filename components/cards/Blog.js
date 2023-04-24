@@ -103,7 +103,7 @@ display: -webkit-box;
       <Container className="center-div">  
         {/* <img style={{ width: "40%", margin: "auto", borderRadius: "50%"}} src={img}></img> */}
         <ImageLoader width={props.location ? '30%' : "40%"} margin="auto" borderRadius="50%" widthmobile="50%" dimensions={{width: 600, height: 600}} url={props.img}></ImageLoader>  
-          <Name  onClick={props.page || props.link? _onClickHandler : null}  className="font-opensans text-center hover-pointer"><b>{props.heading}</b></Name>
+          <Name  onClick={props.page || props.link? _onClickHandler : null}  className="font-lexend text-center hover-pointer"><b>{props.heading}</b></Name>
           <Review             onClick={props.page || props.link? _onClickHandler : null}  className="text-center font-nunito hover-pointer" dangerouslySetInnerHTML={props.text ? { __html: props.text } : { __html: +"Looks like there was a problem loading this..." }}></Review>
           
      <Button

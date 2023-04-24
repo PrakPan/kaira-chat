@@ -124,38 +124,38 @@ return(
     <OverviewContainer>
     <div className="center-div">
         {/* <DP src={img}></DP> */}
-        <Name className="font-opensans"><b>Shikhar Chadha</b></Name>
+        <Name className="font-lexend"><b>Shikhar Chadha</b></Name>
     </div>        
     {/* <CountContainer>
     <div className="center-div" >
-        <Count className="font-opensans">10</Count>
+        <Count className="font-lexend">10</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Saved</p>
     </div>
     <div className="center-div" >
-        <Count className="font-opensans">24</Count>
+        <Count className="font-lexend">24</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Taken</p>
     </div>
     <div className="center-div" >
-        <Count className="font-opensans">10</Count>
+        <Count className="font-lexend">10</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Plans Created</p>
     </div>
     </CountContainer> */}
     <DetailsContainer>
-        <SectionHeading className="font-opensans" style={{fontWeight: '700', marginBottom: "2rem"}}>Your Profile</SectionHeading>
-        <DetailHeading className="font-opensans">
+        <SectionHeading className="font-lexend" style={{fontWeight: '700', marginBottom: "2rem"}}>Your Profile</SectionHeading>
+        <DetailHeading className="font-lexend">
             Contact Number
         </DetailHeading>
         <DetailText style={{marginBottom: "2rem"}}>+91 9643158060
         </DetailText>
         <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}} onClick={props.onSetProfilePic} />    
-        <DetailHeading className="font-opensans" style={{clear: "both"}}>Email</DetailHeading>
+        <DetailHeading className="font-lexend" style={{clear: "both"}}>Email</DetailHeading>
         <DetailText>devansh@thetarzanway.com</DetailText>
         <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}}/>    
     </DetailsContainer>
     </OverviewContainer>
     <hr/>
     <PreferencesContainer>
-        <SectionHeading className="font-opensans" style={{margin: "0 auto 2rem auto", textAlign: "center", fontWeight: '700'}}>Your Preferences</SectionHeading>
+        <SectionHeading className="font-lexend" style={{margin: "0 auto 2rem auto", textAlign: "center", fontWeight: '700'}}>Your Preferences</SectionHeading>
         <SlidersContainer>
                <div className="center-div" style={{textAlign: 'right'}}>
                 <div>Adventure

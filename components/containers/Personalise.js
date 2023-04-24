@@ -55,7 +55,7 @@ const Personalise= (props) => {
 
         <div className="center-div">
 
-        <Text className="font-opensans" style={{margin: '1rem auto 2rem auto', fontWeight: '300'}}>
+        <Text className="font-lexend" style={{margin: '1rem auto 2rem auto', fontWeight: '300'}}>
             Just answer a few questions and craft your own experience.
         </Text>
         <Button boxShadow link={urls.TAILORED_TRAVEL}  borderRadius="2rem" padding="0.5rem 2rem" margin="auto" borderWidth="1px">Craft Now</Button>

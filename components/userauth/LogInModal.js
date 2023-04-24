@@ -352,7 +352,7 @@ const LogIn = (props) => {
   const googleResponse = (response) => {};
   // if(!props.loadingsocial)
   return (
-    <div className="font-poppins">
+    <div className="font-lexend">
       {!props.noheading ? (
         <h1
           style={{
@@ -361,7 +361,7 @@ const LogIn = (props) => {
             margin: "1rem 0rem 1rem 0.5rem ",
             fontWeight: "700",
           }}
-          className="font-poppins"
+          className="font-lexend"
         >
           {props.loginmessage ? props.loginmessage : "Login to your account"}
         </h1>
@@ -370,7 +370,7 @@ const LogIn = (props) => {
       (props.token && props.phone === "null") ? (
         <p
           style={{ margin: "0 1rem 4rem 1rem", fontWeight: "100" }}
-          className="font-poppins text-center"
+          className="font-lexend text-center"
         >
           This is where your experience captain can reach you to personalize
           your plan.
@@ -617,7 +617,7 @@ const LogIn = (props) => {
                         fontSize: "1rem",
                         display: "inline",
                       }}
-                      className="font-poppins"
+                      className="font-lexend"
                     >
                       Sign in with Google
                     </p>

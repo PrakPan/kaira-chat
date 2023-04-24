@@ -95,7 +95,7 @@ font-size : 14px;
 font-weight : 600;
 `
 const Heading = styled.p`
-font-family: 'Poppins';
+// font-family: 'Poppins';
 font-style: normal;
 font-weight: 500;
 font-size: 14px;

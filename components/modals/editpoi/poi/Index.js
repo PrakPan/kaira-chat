@@ -56,8 +56,8 @@ const Accommodation = (props) => {
                   {/* {isPageWide ? <ImageLoader url={props.images[0].image} borderRadius="50%" width="75%" height="auto"   dimensions={{width: 1600, height: 1600}}></ImageLoader>
                 : <ImageLoader url={props.images[0].image} borderRadius="50%" width="60%" height="auto"   dimensions={{width: 1600, height: 1600}}></ImageLoader>    
             } */}
-                    {/* <AllPhotos onClick={openPhotosHandler}className='font-opensans'>All Photos</AllPhotos> */}
-              {/* <ViewAll className='font-opensans' style={{margin: '0.5rem 0', fontSize: '0.75rem'}}>View All</ViewAll> */}
+                    {/* <AllPhotos onClick={openPhotosHandler}className='font-lexend'>All Photos</AllPhotos> */}
+              {/* <ViewAll className='font-lexend' style={{margin: '0.5rem 0', fontSize: '0.75rem'}}>View All</ViewAll> */}
                 {/* <Gallery images={props.images} review_score={props.review_score} review_count={props.review_count}></Gallery> */}
                 <ImageLoader url={props.data.icon} borderRadius="50%" width="100%" height="auto"   dimensions={{width: 500, height: 500}}></ImageLoader>    
               </ImageContainer>

@@ -186,7 +186,7 @@ const countryicons = {
     <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
     <Card style={{minHeight: Card1Height+"px"}} ref={Card1Ref}  onClick={ (event) => _flipHandler(event, true)} onMouseEnter={(event) => _flipHandler(event, true)}   className="font-nunito text-center center-div">
             <ImageLoader widthmobile="60%" widthtab="40%" fit="cover" url={props.url} dimensions={{width: 400, height: 400}} dimensionsMobile={{width: 400, height: 400}} borderRadius="50%" width="50%"  />     
-        <Name className="font-opensans">{props.name}</Name>
+        <Name className="font-lexend">{props.name}</Name>
         <Country src={countryicons[props.location]}></Country>
         <ReviewContainer style={{position: 'relative'}}>
             <ReviewFront className="font-nunito"><em>{props.text}</em> </ReviewFront>
@@ -195,7 +195,7 @@ const countryicons = {
         </ReviewContainer>
     </Card>
     <Card2 style={{minHeight: Card2Height+"px"}} ref={Card2Ref} onClick={(event) => _flipHandler(event, false)}  onMouseLeave={(event) => _flipHandler(event, false)} >
-        <Name className="font-opensans" >{props.name +"'s story"}</Name>
+        <Name className="font-lexend" >{props.name +"'s story"}</Name>
         <ReviewContainer style={{position: 'relative', maxHeight: (Card1Height-50)+'px'}}>
             <ReviewBack className="font-nunito">
                 {props.review.length < stringlength ? props.review : props.review.substring(0,stringlength)+'...'}

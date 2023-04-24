@@ -33,7 +33,7 @@ const Progress = (props) => {
 
             <p className="font-nunito" style={{textAlign: 'center', fontWeight: '300', letterSpacing: '1px'}}>
               {/* <span className="font-quote" style={{margin: '0rem 0.25rem 0 0', fontSize: '1.25rem'}}>&#8220;</span> */}
-            {load ? <em className="font-opensans">{messages[progress]}</em> : null}
+            {load ? <em className="font-lexend">{messages[progress]}</em> : null}
             {/* <span className="font-quote"  style={{margin: '-1rem 0 0 0.25rem', fontSize: '1.25rem'}}>&#8221;</span> */}
             </p>
       </ProgressContainer>

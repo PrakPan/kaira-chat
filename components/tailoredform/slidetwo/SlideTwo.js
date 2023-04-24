@@ -52,7 +52,7 @@ const SlideTwo = (props) =>{
         <GroupType setShowPax={setShowPax} _handleShowPax={_handleShowPax} groupType={props.groupType}></GroupType>}
         </Section>
         <Section>
-         <Question className="font-opensans">Budget per person?</Question>
+         <Question className="font-lexend">Budget per person?</Question>
          <Budget setShowPax={setShowPax}
          setBudget ={props.setBudget }
           ></Budget>

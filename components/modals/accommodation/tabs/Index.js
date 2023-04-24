@@ -79,16 +79,16 @@ const Tabscomponent= (props) => {
   return(
       <Container>
        {/* <GridContainer>
-            <Tab onClick={() => setSelectedState(0)} className="font-opensans center-div" style={{fontWeight: selectedState === 0 ? '700' : '400', backgroundColor: selectedState === 0 ? '#f7e700' : 'white'}}>
+            <Tab onClick={() => setSelectedState(0)} className="font-lexend center-div" style={{fontWeight: selectedState === 0 ? '700' : '400', backgroundColor: selectedState === 0 ? '#f7e700' : 'white'}}>
                 <Icon src={aboutimg}/>
                 <Heading>About</Heading>
             </Tab>
-            <Tab onClick={() => setSelectedState(1)} className="font-opensans center-div" style={{fontWeight: selectedState === 1 ? '700' : '400', backgroundColor: selectedState === 1 ? '#f7e700' : 'white', borderStyle: 'none solid none solid', borderWidth: '1px', borderColor: "#e4e4e4"}}>
+            <Tab onClick={() => setSelectedState(1)} className="font-lexend center-div" style={{fontWeight: selectedState === 1 ? '700' : '400', backgroundColor: selectedState === 1 ? '#f7e700' : 'white', borderStyle: 'none solid none solid', borderWidth: '1px', borderColor: "#e4e4e4"}}>
                 <Icon src={gettingimg}/>
                 <Heading>Getting Around</Heading>
 
             </Tab>
-            <Tab onClick={() => setSelectedState(2)} className="font-opensans center-div" style={{fontWeight: selectedState === 2 ? '700' : '400', backgroundColor: selectedState === 2 ? '#f7e700' : 'white'}}>
+            <Tab onClick={() => setSelectedState(2)} className="font-lexend center-div" style={{fontWeight: selectedState === 2 ? '700' : '400', backgroundColor: selectedState === 2 ? '#f7e700' : 'white'}}>
                 <Icon src={tipsimg}/>
                 <Heading>Tips</Heading>
 
@@ -109,12 +109,12 @@ const Tabscomponent= (props) => {
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
-       <Tab  label="Rooms" className="accommodationdetail-tab font-opensans"></Tab>
-       <Tab label="Amenities"  className="accommodationdetail-tab font-opensans"></Tab>
-       {props.data.addr1 ? <Tab label="Location"  className="accommodationdetail-tab font-opensans"></Tab> : null}
+       <Tab  label="Rooms" className="accommodationdetail-tab font-lexend"></Tab>
+       <Tab label="Amenities"  className="accommodationdetail-tab font-lexend"></Tab>
+       {props.data.addr1 ? <Tab label="Location"  className="accommodationdetail-tab font-lexend"></Tab> : null}
 
-       {/* <Tab  label="Policies"  className="accommodationdetail-tab font-opensans"></Tab> */}
-       {props.data.description ? <Tab label="Description"  className="accommodationdetail-tab font-opensans"></Tab> : null}
+       {/* <Tab  label="Policies"  className="accommodationdetail-tab font-lexend"></Tab> */}
+       {props.data.description ? <Tab label="Description"  className="accommodationdetail-tab font-lexend"></Tab> : null}
        {/* <Tab label="About"></Tab> */}
       </Tabs>
       <TabPanel value={value} index={0} >
@@ -135,7 +135,7 @@ const Tabscomponent= (props) => {
        <TabPanel value={value} index={3} >
             {/* <Timings weekdays={props.weekdays}></Timings> */}
             {/* <p>HeadLine : In Chennai (Chromepet)</p><p>Location : With a stay at Accord Chrome, you ll be centrally located in Chennai, steps from Dr. Rela Institute & Medical Centre - Chennai and within a 5-minute walk of Sree Balaji Medical College And Hospital.  This 4-star hotel is 0.4 mi (0.7 km) from Super Saravana Stores - Chrompet and 5.1 mi (8.2 km) from Kishkinta.</p><p>Rooms : Make yourself at home in one of the 96 guestrooms featuring minibars and LED televisions. Complimentary wireless Internet access keeps you connected, and digital programming is available for your entertainment. Bathrooms have showers and complimentary toiletries. Conveniences include desks, and housekeeping is provided daily.</p><p>Dining : Satisfy your appetite at the hotel s coffee shop/café, or stay in and take advantage of the 24-hour room service.</p><p>CheckIn Instructions : <ul>  <li>Extra-person charges may apply and vary depending on property policy</li><li>Government-issued photo identification and a credit card, debit card, or cash deposit may be required at check-in for incidental charges</li><li>Special requests are subject to availability upon check-in and may incur additional charges; special requests cannot be guaranteed</li><li>This property accepts credit cards, debit cards, and cash</li>  </ul></p><p>Special Instructions : Front desk staff will greet guests on arrival.</p> */}
-            {props.data.description ? <div className='font-opensans' dangerouslySetInnerHTML={{__html: props.data.description}}></div> : null}
+            {props.data.description ? <div className='font-lexend' dangerouslySetInnerHTML={{__html: props.data.description}}></div> : null}
        </TabPanel>
       
       

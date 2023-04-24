@@ -66,7 +66,7 @@ const ExperienceIndexLoading = (props) => {
         {/* <ImageLoader width="5vw" url="media/gifs/loadergif.gif"></ImageLoader> */}
         {/* <Spinner></Spinner> */}
         <img src={gif} style={{width: '3rem', height: '3rem'}}/>
-        <DidYouKnow className="font-opensans">Did you know?</DidYouKnow>
+        <DidYouKnow className="font-lexend">Did you know?</DidYouKnow>
     <Quote style={{color: "black"}} className="font-nunito"><em>{quotes[Math.floor(Math.random() * 16)]}</em></Quote>
     </Container>
 

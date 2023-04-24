@@ -50,10 +50,10 @@ const NotFound = (props) => {
   return(
     <Container className="center-div">
         <Heading className="font-opensnans">
-            <div className="font-opensans" style={{margin: '0', display: 'inline', height: 'max-content', lineHeight: '1'}}>4</div>
+            <div className="font-lexend" style={{margin: '0', display: 'inline', height: 'max-content', lineHeight: '1'}}>4</div>
         {/* <Icon src={alien}></Icon> */}
         <ImageLoader display="inline" url="media/website/404.svg" widthMobile='25vw' heightMobile="25vw" height="15vw" width="15vw" dimensions={{width: 800, height: 800}}></ImageLoader>
-        <div className="font-opensans" style={{margin: '0',  display: 'inline', height: 'max-content',  lineHeight: '1'}}>4</div>
+        <div className="font-lexend" style={{margin: '0',  display: 'inline', height: 'max-content',  lineHeight: '1'}}>4</div>
 
         </Heading>
         <Tagline className="font-nunito">We’re not on the same page, really.</Tagline>

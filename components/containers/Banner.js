@@ -75,7 +75,7 @@ const Banner = (props) => {
                 <Container>
                   <GridContainer>
                     <div className="center-div">
-                      <Text className="font-opensans">{props.text}</Text>
+                      <Text className="font-lexend">{props.text}</Text>
                     </div>
               {/* <div className="center-div"> */}
                 <Button display="inline-block" boxShadow onclick={props.onclick}  hoverColor="white" hoverBgColor="black" bgColor="#F7e700"  borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem">

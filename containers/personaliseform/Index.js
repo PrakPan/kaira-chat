@@ -413,8 +413,8 @@ const _addCityHandler = (city_id, city) => {
         <SelectedCitiesContainer questionIndex={questionIndex} goToStart={() => setQuestionIndex(0)} selectedCities={selectedCities} _removeCityHandler={_removeCityHandler} ></SelectedCitiesContainer>
         </div>: questionIndex ? <SelectedCitiesContainer questionIndex={questionIndex} goToStart={() => setQuestionIndex(0)} selectedCities={selectedCities} _removeCityHandler={_removeCityHandler} ></SelectedCitiesContainer> : null }
           {/* <StatusBar questionIndex={questionIndex} totalQuestions={questions.questions.length}></StatusBar> */}
-        {questionIndex ? <Question className="font-opensans">{Questions.questions[questionIndex]}</Question>
-        : isPageWide ? <Question className="font-opensans">{Questions.questions[questionIndex]}</Question> : null}
+        {questionIndex ? <Question className="font-lexend">{Questions.questions[questionIndex]}</Question>
+        : isPageWide ? <Question className="font-lexend">{Questions.questions[questionIndex]}</Question> : null}
           <div style={{ minHeight: '24vw', paddingBottom: '0rem'}}>
             {option}
             </div>
@@ -431,7 +431,7 @@ const _addCityHandler = (city_id, city) => {
         {/* </div> */}
         </ButtonContainer> : null}
         {!questionIndex && !selectedCities.length ? <ButtonContainer style={{gridTemplateColumns: '1fr'}}><Button padding="0.2rem" borderColor="#f7e700" borderRadius="2rem" onclick={_nextQuestionHandler} bgColor='#f7e700' fontWeight="500" color="black" width="100%" bold>Don't know where to go</Button></ButtonContainer> : null}
-        {/* {questionIndex === 5 ? <div style={{width: "max-content", margin: "0 auto"}}><Button className="font-opensans" onClick={_submitHandler}><b>Submit</b></Button></div> : null} */}
+        {/* {questionIndex === 5 ? <div style={{width: "max-content", margin: "0 auto"}}><Button className="font-lexend" onClick={_submitHandler}><b>Submit</b></Button></div> : null} */}
         {questionIndex === 6 && props.token && props.phone && props.phone !== 'null'? <LoadingPage></LoadingPage>: null}
         {/* <LoginModal
           show={props.showLogin}

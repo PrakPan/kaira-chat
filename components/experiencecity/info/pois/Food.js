@@ -45,7 +45,7 @@ const Icon = (props) => {
         location={props.location}
         icon={props.icon}
       ></ImageLoader>
-      <IconTagLine className="font-opensans">{props.icon.name}</IconTagLine>
+      <IconTagLine className="font-lexend">{props.icon.name}</IconTagLine>
       <POIModal show={showModal} onHide={() => setShowModal(false)} />
       <POIDetailsDrawer
         show={showDrawer}

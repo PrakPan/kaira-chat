@@ -34,9 +34,9 @@ const Section= (props) => {
   
    if(props.data)
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
                 {/* <div onClick={() => props._deselectBookingHandler(props.data)} style={{height: 'max-content',display: 'flex', fontSize: '13px', alignItems: 'center', fontWeight: '700', padding: '0.25rem', backgroundColor: '#f7e700', borderRadius: '5px'}} >
-                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
+                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-lexend">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : <IoCheckboxOutline style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline>}
                     </div>
@@ -46,7 +46,7 @@ const Section= (props) => {
                 <div></div>
                 {/* <div></div> */}
                 <div >
-                <Cost className='font-opensans'>
+                <Cost className='font-lexend'>
                 {props.data.Fare ? props.data.Fare.OfferedFare ?  "₹ "+ getIndianPrice(Math.round(props.data.Fare.OfferedFare))+" /-" : null : null}
                 </Cost>
                 <Pax>{"For "+props.selectedBooking.pax.number_of_adults + " Adult(s)" + (props.selectedBooking.pax.number_of_children ? ", " + props.selectedBooking.pax.number_of_children + " Child(s)" : "")}</Pax>

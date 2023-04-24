@@ -64,7 +64,7 @@ const  Overview = (props) =>{
     {/* <GridContainer> */}
       <div>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 3.5rem 0"}  bold>{props.overview_heading}</Heading>        
-      <Text more={more} className='font-opensans'>
+      <Text more={more} className='font-lexend'>
         <p>{props.overview_text}</p>
         {!more ? <div className='hover-pointer' onClick={()=> setMore(true)} style={{position: 'absolute', right: '0', bottom: '0', backgroundColor: 'white', zIndex: '2', paddingLeft: '0.25rem', fontWeight: '600'}}>more
         <BiChevronDown style={{fontSize: '1rem'}}></BiChevronDown>

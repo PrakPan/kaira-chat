@@ -114,7 +114,7 @@ position: relative;
 `;
     return(
         <Container ref={Component} style={{height: height+"px"}}>
-            {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
+            {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
             <BackgroundImageLoader height={height+"px"} url={props.image} filter="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)"></BackgroundImageLoader>
             {/* <IconsContainer>
              <IconTextContainer style={{}}><IconHoverContainer><div><FontAwesomeIcon icon={faMapMarkerAlt} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.location}</IconHoverContainer> </IconTextContainer>
@@ -126,29 +126,29 @@ position: relative;
               <div><TagContainer>
                   <FontAwesomeIcon icon={faMapMarkerAlt} style={{fontSize: "1rem", margin: "0rem 0.5rem 0 0"}}/>
                   <div >
-                    <TagHeading className="font-opensans">
+                    <TagHeading className="font-lexend">
                     LOCATIONS
                     </TagHeading>
-                  <TagText  className="font-opensans">{props.locations.join(" ")}</TagText>
+                  <TagText  className="font-lexend">{props.locations.join(" ")}</TagText>
                   </div>
               </TagContainer>
               <TagContainer>
                  <FontAwesomeIcon icon={faCalendarWeek} style={{fontSize: "1rem", margin: "0rem 0.5rem 0 0"}}/>
                   <div  >
-                    <TagHeading className="font-opensans">
+                    <TagHeading className="font-lexend">
                     DURATION
                     </TagHeading>
-                  <TagText  className="font-opensans">{props.duration}</TagText>
+                  <TagText  className="font-lexend">{props.duration}</TagText>
                   </div>
               </TagContainer>
               </div>
               <TagContainer style={{height: 'max-content'}}>
                 <FontAwesomeIcon icon={faWallet} style={{fontSize: "1rem", margin: "0rem 0.5rem 0 0"}}/> 
                   <div  >
-                    <TagHeading className="font-opensans">
+                    <TagHeading className="font-lexend">
                     BUDGET
                     </TagHeading>
-                  <TagText  className="font-opensans">{props.budget}</TagText>
+                  <TagText  className="font-lexend">{props.budget}</TagText>
                   </div>
               </TagContainer>
   </TagsContainer>

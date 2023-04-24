@@ -36,7 +36,7 @@ const MidSection = (props) => {
     },[]);
 
     return(
-        <Container className='font-poppins'>
+        <Container className='font-lexend'>
            <div style={{position: 'relative'}}>
                 <Line></Line>
            </div>

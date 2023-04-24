@@ -101,7 +101,7 @@ const Booking = (props) =>{
         <Container className="">
             <ImageContainer>
                 <ImageLoader fit="cover" url={props.images.length ? props.images[0].image : 'media/website/grey.png'} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} width="100%"></ImageLoader>
-                {props.images.length ?<PhotosButton onClick={() => props.setImagesHandler(imagesarr)} className="font-opensans" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", bottom: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>
+                {props.images.length ?<PhotosButton onClick={() => props.setImagesHandler(imagesarr)} className="font-lexend" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", bottom: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>
                      <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
                     All Photos
                     </PhotosButton> : null}
@@ -114,7 +114,7 @@ const Booking = (props) =>{
                     id="panel1a-header"
                     >
                         <div>
-                            <Typography className={props.blur ? classes.heading+'font-opensans blurry-text' : classes.heading+" font-opensans"}>{props.heading}</Typography>
+                            <Typography className={props.blur ? classes.heading+'font-lexend blurry-text' : classes.heading+" font-lexend"}>{props.heading}</Typography>
                             {detailsarr}
                         </div>
                     </AccordionSummary>
@@ -130,14 +130,14 @@ const Booking = (props) =>{
             <ImageContainer>
             {/* <ImageLoader fit="cover" url={props.images[0].image} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} widthmobile="100%" height="20vh" ></ImageLoader> */}
                 <ImageLoader blur={props.blur} url={props.images.length ? props.images[0].image : 'media/website/grey.png'} dimensionsMobile={{ width: 1600, height: 900 }}  fit="cover" width="100%" height="25vh" />
-                <PhotosButton onClick={() => props.setImagesHandler(imagesarr)} className="font-opensans" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", bottom: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>                <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
+                <PhotosButton onClick={() => props.setImagesHandler(imagesarr)} className="font-lexend" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", bottom: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>                <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
                 All Photos</PhotosButton>
             </ImageContainer>
             <div style={{padding: "1rem"}}>
            
                 <div>
-                <Typography className={props.blur ? classes.heading+'font-opensans blurry-text' : classes.heading+" font-opensans"}>{props.heading}</Typography>
-                    <p style={{fontSize: "0.75rem", margin: "0.5rem 0", fontWeight: "300"}} className="font-opensans">{props.details1}</p>
+                <Typography className={props.blur ? classes.heading+'font-lexend blurry-text' : classes.heading+" font-lexend"}>{props.heading}</Typography>
+                    <p style={{fontSize: "0.75rem", margin: "0.5rem 0", fontWeight: "300"}} className="font-lexend">{props.details1}</p>
                 </div>
                 {detailsarr}
              {/* <IconsContainer>

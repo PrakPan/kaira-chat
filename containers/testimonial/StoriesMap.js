@@ -313,7 +313,7 @@ const StoriesMap = () => {
         return(
             <div>
            
-            <StoriesHeading className="font-opensans">
+            <StoriesHeading className="font-lexend">
                 Our Stories
             </StoriesHeading>
  
@@ -360,7 +360,7 @@ const StoriesMap = () => {
 
         <div>
            
-        <StoriesHeading className="font-opensans">
+        <StoriesHeading className="font-lexend">
             Our Stories
         </StoriesHeading>
    

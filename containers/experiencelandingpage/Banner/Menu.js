@@ -29,7 +29,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Overview</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Overview</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -37,7 +37,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>{props.locations.length > 1 ? 'Route' : 'Location'}</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>{props.locations.length > 1 ? 'Route' : 'Location'}</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -45,7 +45,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>How to reach</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>How to reach</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -53,7 +53,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans " style={{fontWeight: '300'}} onClick={props.hideMenu}>What's Inlcuded?</MenuItem>
+                <MenuItem className="font-lexend " style={{fontWeight: '300'}} onClick={props.hideMenu}>What's Inlcuded?</MenuItem>
             </Link>    
             <Link
             activeClass='active'
@@ -61,7 +61,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-            <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>What's Excluded?</MenuItem>
+            <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>What's Excluded?</MenuItem>
             </Link>       
        </MenuContainer>
   );

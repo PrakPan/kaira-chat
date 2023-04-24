@@ -625,7 +625,7 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={props.payment.paid_user ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color: props.payment.paid_user ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment.paid_user ?  props.is_registration_needed ?  REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO : TAILORED_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO  : REGISTRATION_PAYMENT_MESSAGES.FAILURE}
+                  <div style={{lineHeight: '2'}} className="font-lexend">{props.payment.paid_user ?  props.is_registration_needed ?  REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO : TAILORED_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO  : REGISTRATION_PAYMENT_MESSAGES.FAILURE}
                   {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                    </CopyLink>: null} */}
                     </div>
@@ -639,7 +639,7 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">
+                  <div style={{lineHeight: '2'}} className="font-lexend">
                   { props.is_registration_needed ? 
                    REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
                 :  
@@ -661,15 +661,15 @@ const Booking = (props) => {
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
-            <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
-        <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab> : <Tab label={"Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights" style={{display: 'none'}}></Tab> : <Tab label={"Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights" style={{display: 'none'}}></Tab>}
+            <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-lexend"></Tab>
+        <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-lexend" id="bookingdetail-tab-transfers"></Tab>
+       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-lexend" id="bookingdetail-tab-flights"></Tab> : <Tab label={"Flights"}  className="bookingdetail-tab font-lexend" id="bookingdetail-tab-flights" style={{display: 'none'}}></Tab> : <Tab label={"Flights"}  className="bookingdetail-tab font-lexend" id="bookingdetail-tab-flights" style={{display: 'none'}}></Tab>}
 
-       {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-opensans"></Tab> :  <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab>: <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab> }
+       {props.activityBookings ? props.activityBookings.length ?  <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities"} className="bookingdetail-tab font-lexend"></Tab> :  <Tab label={"Activities"} className="bookingdetail-tab font-lexend" style={{display: 'none'}}></Tab>: <Tab label={"Activities"} className="bookingdetail-tab font-lexend" style={{display: 'none'}}></Tab> }
       </Tabs>
       <TabPanel value={value} index={0} >
             {props.stayBookings ?  props.stayBookings.length ?bookingsAccommodationsDesktopJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
-            {!props.stayBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            {!props.stayBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
 
        </TabPanel>
        <TabPanel value={value} index={2} >
@@ -678,7 +678,7 @@ const Booking = (props) => {
             {/* {bookingsTransfersDesktopJSX} */}
 
             </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> }        
-            {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+            {/* {!props.flightBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={1} >
@@ -687,12 +687,12 @@ const Booking = (props) => {
             {bookingsTransfersDesktopJSX}
 
             </DesktopCardContainer>    :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader> }        
-            {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+            {/* {!props.transferBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={3} >
            {true ? true ? bookingsAcivityDesktopJSX :  <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="30%" widthmobile="50%"></ImageLoader>}
-           {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+           {/* {!props.activityBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
             </BookingsContainer>
@@ -726,7 +726,7 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={props.payment.paid_user ?  "media/icons/bookings/payment/success-green.svg" :  "media/icons/bookings/payment/fail-red.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color: props.payment.paid_user ?  'green' : 'red'}}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">{props.payment.paid_user?  props.payment.is_registration_needed ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO:  TAILORED_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO : REGISTRATION_PAYMENT_MESSAGES.FAILURE}                    </div>
+                  <div style={{lineHeight: '2'}} className="font-lexend">{props.payment.paid_user?  props.payment.is_registration_needed ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO:  TAILORED_PAYMENT_MESSAGES.CREATED_ONE + getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO : REGISTRATION_PAYMENT_MESSAGES.FAILURE}                    </div>
                   {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                    </CopyLink>: null } */}
 
@@ -739,7 +739,7 @@ const Booking = (props) => {
             <div className='center-div'><ImageLoader url={ "media/icons/bookings/payment/success-green.svg"}  height="max-content" margin="0" widthmobile="100%
   margin-left: 0.5rem;"></ImageLoader></div>
                 <BookingSuccessText style={{color:   'green' }}>
-                  <div style={{lineHeight: '2'}} className="font-opensans">
+                  <div style={{lineHeight: '2'}} className="font-lexend">
                 {props.payment.is_registration_needed ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +  getIndianPrice(Math.round(props.payment.per_person_total_cost/100)) + TAILORED_PAYMENT_MESSAGES.CREATED_TWO }
                     </div>
                  
@@ -757,31 +757,31 @@ const Booking = (props) => {
         indicatorColor="#f7e700"
         id="poimodal-tabs"
       >
-       <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-opensans"></Tab>
-       <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-transfers"></Tab>
-       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>: <Tab label={"Flights"}  style={{display: 'none'}} className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab> :  <Tab label={"Flights"}  style={{display: 'none'}} className="bookingdetail-tab font-opensans" id="bookingdetail-tab-flights"></Tab>}
+       <Tab  label={props.stayBookings ? "Stays" + " ("+props.stayBookings.length+")": "Stays"} className="bookingdetail-tab font-lexend"></Tab>
+       <Tab label={props.transferBookings ? "Transfers" + " ("+props.transferBookings.length+")": "Transfers"}  className="bookingdetail-tab font-lexend" id="bookingdetail-tab-transfers"></Tab>
+       {props.flightBookings ? props.flightBookings.length ?<Tab label={props.flightBookings ? "Flights" : "Flights"}  className="bookingdetail-tab font-lexend" id="bookingdetail-tab-flights"></Tab>: <Tab label={"Flights"}  style={{display: 'none'}} className="bookingdetail-tab font-lexend" id="bookingdetail-tab-flights"></Tab> :  <Tab label={"Flights"}  style={{display: 'none'}} className="bookingdetail-tab font-lexend" id="bookingdetail-tab-flights"></Tab>}
 
-       {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-opensans"></Tab> : <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab> : <Tab label={"Activities"} className="bookingdetail-tab font-opensans" style={{display: 'none'}}></Tab>}
+       {props.activityBookings ? props.activityBookings.length ? <Tab label={props.activityBookings ? "Activities" + " ("+props.activityBookings.length+")": "Activities (0)"} className="bookingdetail-tab font-lexend"></Tab> : <Tab label={"Activities"} className="bookingdetail-tab font-lexend" style={{display: 'none'}}></Tab> : <Tab label={"Activities"} className="bookingdetail-tab font-lexend" style={{display: 'none'}}></Tab>}
       </Tabs>
       <TabPanel value={value} index={0} >
             {props.stayBookings ?  props.stayBookings.length ? bookingsAccommodationsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
-            {!props.stayBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
+            {!props.stayBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.stayBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null }
        </TabPanel>
        <TabPanel value={value} index={2} >
             { props.flightBookings ? props.flightBookings.length?  bookingsFlightsMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
-            {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+            {/* {!props.flightBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
             {/* {bookingsTransfersMobileJSX} */}
        </TabPanel>
        <TabPanel value={value} index={1} >
             {/* {bookingsFlightsMobileJSX} */}
             { props.transferBookings ?  props.transferBookings.length ? bookingsTransfersMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
-            {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+            {/* {!props.transferBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
        <TabPanel value={value} index={3} >
             {props.activityBookings ?  props.activityBookings.length ?  bookingsActivityMobileJSX : <ImageLoader url="media/website/undraw_best_place_re_lne9.svg" width="50%" widthmobile="50%"></ImageLoader> : <ImageLoader  height="auto" width="50%" widthmobile="50%" url="media/website/undraw_best_place_re_lne9.svg"></ImageLoader>}
-            {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+            {/* {!props.activityBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
        </TabPanel>
              {/* <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>

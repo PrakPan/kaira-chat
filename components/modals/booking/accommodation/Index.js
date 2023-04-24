@@ -79,8 +79,8 @@ const Accommodation = (props) => {
                   {/* {isPageWide ? <ImageLoader url={props.images[0].image} borderRadius="50%" width="75%" height="auto"   dimensions={{width: 1600, height: 1600}}></ImageLoader>
                 : <ImageLoader url={props.images[0].image} borderRadius="50%" width="60%" height="auto"   dimensions={{width: 1600, height: 1600}}></ImageLoader>    
             } */}
-                    {/* <AllPhotos onClick={openPhotosHandler}className='font-opensans'>All Photos</AllPhotos> */}
-              {/* <ViewAll className='font-opensans' style={{margin: '0.5rem 0', fontSize: '0.75rem'}}>View All</ViewAll> */}
+                    {/* <AllPhotos onClick={openPhotosHandler}className='font-lexend'>All Photos</AllPhotos> */}
+              {/* <ViewAll className='font-lexend' style={{margin: '0.5rem 0', fontSize: '0.75rem'}}>View All</ViewAll> */}
                 <Gallery images={props.images} review_score={props.review_score} review_count={props.review_count}></Gallery>
               </ImageContainer>
                 <Info  pricing_type={props.pricing_type} selectedBooking={props.selectedBooking} includeBreakfast={props.includeBreakfast} room_type={props.room_type} updateLoadingState={props.updateLoadingState} tailored_id={props.tailored_id} booking_id={props.booking_id} itinerary_id={props.itinerary_id} accommodation_id={props.accommodation_id} _updateBookingHandler={props._updateBookingHandler} type={props.type} name={props.name} description={props.description} location={props.location} star={props.star} cost={props.cost} />

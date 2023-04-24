@@ -158,7 +158,7 @@ const SearchField = (props) => {
         </SearchGrid>
         {!isPageWide ?  <SelectedCitiesContainer questionIndex={props.questionIndex} goToStart={props.goToStart} selectedCities={props.selectedCities} _removeCityHandler={props._removeCityHandler} ></SelectedCitiesContainer>:null}
 
-        <TopLocations className="font-opensans text-center">{!results.length ? 'Top destinations for you' : 'Destinations around '+ "'"+value+"'"}</TopLocations>
+        <TopLocations className="font-lexend text-center">{!results.length ? 'Top destinations for you' : 'Destinations around '+ "'"+value+"'"}</TopLocations>
         {!results.length ? <Locations _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} hotlocations={hotLocationsData} _addCityHandler={props._addCityHandler}></Locations>:null}
         {results.length ? <ResultsContainer className="border-thi">
             

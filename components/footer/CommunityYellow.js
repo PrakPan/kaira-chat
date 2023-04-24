@@ -75,8 +75,8 @@ const Yellow = (props) => {
             <YellowBar>
                 <YellowBarContent>
                     <div className="center-div">
-                        <LinkHeading className="font-opensans">The Tarzan Way</LinkHeading>
-                        <WhyUs className="font-opensans">Join our community</WhyUs>
+                        <LinkHeading className="font-lexend">The Tarzan Way</LinkHeading>
+                        <WhyUs className="font-lexend">Join our community</WhyUs>
                         {typeof window !== 'undefined' ? <div style={{ }}>
                             <a href="https://www.instagram.com/thetarzanway" target="_blank"><FontAwesomeIcon style={{color: "black", fontSize:  isPageWide? '3rem' :'1.5rem', marginRight: isPageWide ? '2rem' : '1rem'}} icon={faInstagram} /></a>
                             <a href="https://www.facebook.com/thetarzanway/" target="_blank"><FontAwesomeIcon style={{color: "black",fontSize:  isPageWide? '3rem' :'1.5rem', marginRight: isPageWide ? '2rem' : '1rem'}} icon={faFacebook} /></a>

@@ -136,7 +136,7 @@ const EnquireButton = styled.div`
   return (
     <div className={classes.root}>
     
-      {isPageWide? <EnquireButton onClick={openBooking} className="center-div font-opensans">Enquire Now</EnquireButton> : null}
+      {isPageWide? <EnquireButton onClick={openBooking} className="center-div font-lexend">Enquire Now</EnquireButton> : null}
  
             <Details  slug={props.slug} _openPoiModal={(poi) => props._openPoiModal(poi)}  experienceLoaded={props.experienceLoaded} data={props.data} payment={props.payment} openBooking={openBooking}></Details>
   

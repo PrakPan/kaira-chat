@@ -96,7 +96,7 @@ const [hotLocationsData, setHotLocationsData] = useState();
        <TopContainer>
             <FontAwesomeIcon icon={faChevronLeft} onClick={props.setPannelClose} style={{textAlign: 'left',fontSize: '1.5rem', fontWeight: '300', margin: '1.5rem'}}></FontAwesomeIcon>
             <SearchContainer>
-                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-poppins" placeholder="Search Locations" ></Search>
+                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-lexend" placeholder="Search Locations" ></Search>
             </SearchContainer>
         </TopContainer>
         {!showResults ? <Locations hotlocations={hotLocationsData}></Locations> : <Results results={results}></Results>}

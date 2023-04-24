@@ -14,7 +14,7 @@ const Heading = styled.p`
 export default function CheckboxLabels(props) {
   return (
    <Container>
-       <Heading className="font-opensans">{props.heading}</Heading>
+       <Heading className="font-lexend">{props.heading}</Heading>
    </Container>
   );
 }

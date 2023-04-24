@@ -38,7 +38,7 @@ const FoodToEat = (props) => {
   const cards = props.foods?.map((icon,index) => 
   <IconContainer>
      <ImageLoader borderRadius='12px' url={icon.image ? icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
-     <IconTagLine className="font-opensans">{icon.name}</IconTagLine>
+     <IconTagLine className="font-lexend">{icon.name}</IconTagLine>
   </IconContainer>)
   const MobileCardsArr = []
   let count = 0

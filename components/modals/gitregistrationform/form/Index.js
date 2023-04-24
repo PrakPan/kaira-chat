@@ -80,7 +80,7 @@ return(
            {props.formFailedError ? <Error>{props.formFailedError}</Error> : null} 
 
         
-           <PayNow className="hover-pointer font-opensans" onClick={() => props.onSuccess(paxList)} >
+           <PayNow className="hover-pointer font-lexend" onClick={() => props.onSuccess(paxList)} >
                 Pay Now
              {props.paymentLoading ? <Spinner color="white" size={16} display="inline" margin=" 0 0 0 0.25rem"></Spinner> : null}
             </PayNow>

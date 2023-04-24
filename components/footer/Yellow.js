@@ -99,16 +99,16 @@ const Yellow = (props) => {
             <YellowBar>
                 <YellowBarContent>
                     <div className="center-div">
-                        <LinkHeading className="font-opensans"><b>The Tarzan Way</b></LinkHeading>
-                        <WhyUs className="font-opensans">What make us different?</WhyUs>
+                        <LinkHeading className="font-lexend"><b>The Tarzan Way</b></LinkHeading>
+                        <WhyUs className="font-lexend">What make us different?</WhyUs>
                         <IconsContainer >
                             <IconContainer style={{borderStyle: "none solid none none", borderWidth: "1px"}}>
                             <ImageLoader  widthtab="25%" width="40%" url="media/icons/general/personalise.svg"></ImageLoader>
-                                <IconText className="font-opensans">Personalization</IconText>
+                                <IconText className="font-lexend">Personalization</IconText>
                             </IconContainer>
                             <IconContainer>
                             <ImageLoader  widthtab="25%"  width="40%" url="media/icons/general/transparency.svg"></ImageLoader>
-                                <IconText className="font-opensans">Transparency</IconText>
+                                <IconText className="font-lexend">Transparency</IconText>
                             </IconContainer>
                         </IconsContainer>
                         {/*<Link to="https://thetarzanway.com/testimonials" style={{textDecoration: "none", color: "black"}}>*/}

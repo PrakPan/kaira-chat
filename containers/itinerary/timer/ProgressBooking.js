@@ -37,7 +37,7 @@ const Progress = (props) => {
       <ProgressContainer>
            {/* <img src={GIF2} style={{width: '8rem', display: 'block', margin: '2rem auto 0.5rem auto'}}></img> */}
             <p className="font-nunito" style={{textAlign: 'center', fontWeight: '300', letterSpacing: '1px'}}>
-            <em className="font-opensans">{'Negotiating for the best pricing'}</em> 
+            <em className="font-lexend">{'Negotiating for the best pricing'}</em> 
             </p>
       </ProgressContainer>
     );
