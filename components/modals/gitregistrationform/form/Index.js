@@ -6,7 +6,7 @@ import Spinner from "../../../Spinner";
 const Container = styled.div`
  
 @media screen and (min-width: 768px){
-    width: 75%;
+    width: 90%;
     margin: auto;
 }
 `;

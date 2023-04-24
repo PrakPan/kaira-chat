@@ -1,6 +1,7 @@
 import styled, { keyframes } from "styled-components";
 import { RxCross2 } from "react-icons/rx";
 import { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 const TopSlideIn = keyframes`
 from { 
   transform: translate(-50%,-100%);
@@ -20,6 +21,7 @@ to {
 
 `;
 
+
 const ModalContainer = styled.div`
   position: fixed;
   top: ${props=>props.mobileTop? props.mobileTop : '50%'};
@@ -35,6 +37,7 @@ const ModalContainer = styled.div`
   transition: opacity 0.8s linear;
   overflow : auto;
   overscroll-behavior: contain;
+  max-height : 95vh;
   margin : ${props=>props.margin? props.margin : '0px'};
   @media screen and (min-width: 768px) {
     top: ${props=>props.top? props.top : '50%'};
@@ -54,7 +57,14 @@ const BlackContainer = styled.div`
   height: 100vh;
   transition: background 0.6s linear;
 `;
+
+
+
 export default function Modal(props) {
+  const [_document, set_document] = useState(null)
+  useEffect(() => {
+    set_document(document)
+}, [])
   const [fade, setFade] = useState("out");
   function onCLose() {
     setFade("out");
@@ -75,8 +85,8 @@ export default function Modal(props) {
 
 
 
-  return (
-    <>
+  return _document ? ReactDOM.createPortal(
+    <div>
       {props.show && (
         <div
           className="font-poppins"
@@ -116,6 +126,7 @@ export default function Modal(props) {
           </ModalContainer>
         </div>
       )}
-    </>
-  );
+    </div>
+  ,_document.getElementById('modal-portal'))
+  : null
 }

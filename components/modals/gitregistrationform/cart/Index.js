@@ -7,7 +7,7 @@ import BackgroundImageLoader from '../../../BackgroundImageLoader';
 
 const Container = styled.div`
 @media screen and (min-width: 768px){
-    width: 85%;
+    width: 90%;
     margin: auto;
 }
 `;

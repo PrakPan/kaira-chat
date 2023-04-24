@@ -8,7 +8,7 @@ const Container = styled.div`
   border-radius: 8px;
   height: ${(props) => props.ContainerHeight + "px"};
   transition: all 0.25s;
-  overflow: hidden;
+  overflow: clip;
 `;
 const DownIcon = styled.div`
   position: absolute;
