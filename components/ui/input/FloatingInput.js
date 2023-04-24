@@ -1,4 +1,4 @@
-import React , {forwardRef, useState} from "react";
+import React , {forwardRef} from "react";
 import styled from "styled-components";
 import {BiError} from 'react-icons/bi'
 
@@ -46,7 +46,7 @@ const Label = styled.label`
   }
   ${(props) =>
     props.filled &&
-    "top: -5px; left: 10px; font-size: 11px; padding-inline: 5px; background: white;"};
+    "top: -4px; left: 10px; font-size: 11px; padding-inline: 5px; background: white;"};
   sup{
     top: -0.3em;
     left: -0.2em;
@@ -59,7 +59,6 @@ const Error = styled.div`
   display : flex;
 `;
 const FloatingInput = forwardRef((props,ref) => {
-  const [value,setValue] = useState('')
  return <div style={{marginBottom : '2px' , margin : props.margin}}>  
  <Container
     style={props.ContainerStyle}
@@ -74,11 +73,13 @@ const FloatingInput = forwardRef((props,ref) => {
       placeholder={""}
       onChange={(e) => {
         props.onChange && props.onChange(e);
-        setValue(e.target.value);
       }}
       ref={ref} 
     />
-    <Label filled={value !== ""} fontSize={props.fontSize || props.style?.fontSize || '1rem'} error={props.error} style={props.labelStyle}>{props.label || props.placeholder} {props.required && <sup>*</sup>}</Label>
+    <Label filled={
+      (props.value !== 0)? !!props.value
+      : true
+    } fontSize={props.fontSize || props.style?.fontSize || '1rem'} error={props.error} style={props.labelStyle}>{props.label || props.placeholder} {props.required && <sup>*</sup>}</Label>
   </Container>
   {props.error && props.helperText && <Error><BiError style={{fontSize : '1rem' , marginTop : '2px'}} /><span style={{marginLeft : '2px'}}>{props.helperText}</span></Error>}
   </div>

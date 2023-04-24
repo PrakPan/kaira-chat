@@ -1,46 +1,21 @@
 import React, {useState, useEffect} from 'react';
-  
- import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MuiAccordion from '@material-ui/core/Accordion';
-import { withStyles } from '@material-ui/styles';
+import Accordion , {AccordionSummary , AccordionDetails} from '../../../../ui/Accordion';
 import Email from './Email';
 import Id from './Id';
-import Grid from '@material-ui/core/Grid';
 import axiosgitregisterinstance from '../../../../../services/sales/git/register';
 import Button from '../../../../ui/button/Index';
 import Spinner from '../../../../Spinner';
 import styled from  'styled-components';
-import {AiOutlinePlusSquare} from 'react-icons/ai';
 import media from '../../../../media';
-
-const StyledTypo = styled(Typography)`
-margin: 0.25rem 0;
+const GridContainer = styled.div`
+display : grid;
+row-gap : 0.5rem;
 @media screen and (min-width: 768px){
-  font-size: 0.5rem;
-  margin: 0.75rem 0; 
-}
-`;
-const StyledGridContainer = styled(Grid)`
-padding: 0.25rem;
-@media screen and (min-width: 768px){
-  padding: 0.75rem;
-}
-`;
-const Accordion = withStyles({
+gap : 1rem;
+grid-template-columns : 1fr 1fr;
 
-    root: {
-     marginBottom: 10,
-     border: '0px solid #e4e4e4',
-     boxShadow: 'none',
-     zIndex: '1'
-  
-    },
-   
-    expanded: {},
-  })(MuiAccordion);
+}
+`
   
 const Person = (props) => {
   let isPageWide = media('(min-width: 768px)')
@@ -117,47 +92,34 @@ const Person = (props) => {
       }
     
   return(
-      <div className='border'>
-         <Accordion expanded={expanded}        
- onChange={() => setExpanded(!expanded)}>
+      
+         <Accordion>
        <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
         id="itinerary-booking-summary-accordio"
-        style={{zIndex: '1', minHeight: 'max-content'}}
-
+    style={{padding: '1rem'}}
       >
-         <StyledTypo content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && id && verified?  'green' : 'black'}} >{  email && id && verified? email : 'Member '+props.index}</StyledTypo> 
+         <p content={'span'} className="font-opensans" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && id && verified?  'green' : 'black'}} >{  email && id && verified? email : 'Member '+props.index}</p> 
  
-        <Typography content={'span'} className="font-opensans" style={{fontWeight:'600', fontSize: '0.75rem', margin: '0', flexGrow:  '1', textAlign: 'right'}} >{''}</Typography>
-
       </AccordionSummary>
-         <div style={{margin: '0 1rem', borderStyle: 'none none none none', borderWidth: '1px', borderColor: "#F7e700", position: 'relative', top: '-0.5rem'}}></div>
-       <AccordionDetails style={{display: 'block', padding: '0'}}>
+       <AccordionDetails style={{padding : '0.5rem'}}>
        
-        <StyledGridContainer container spacing={2}>
-                <Grid style={{width: !isPageWide ? '100%' : 'auto'}} item md={6} xs={12}>
+        <GridContainer container spacing={2}>
                  <Email verified={verified} setVerified={setVerified} token={props.token} email={email} setEmail={setEmail} verificationfailed={verificationfailed} setVerificationFailed={setVerificationFailed} id={props.id}></Email>
-               </Grid>
-               <Grid style={{width: !isPageWide ? '100%' : 'auto'}}  item md={6} xs={12}>
                   <Id  verificationfailedmessage={verificationfailedmessage} verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
-               </Grid>
-        </StyledGridContainer> 
+        </GridContainer> 
             <div className='hidden-desktop'><Button onclick={verified ? _handleChange : _handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
               {verified ? 'Change' : 'Add Member'}
-              {/* <GrAdd></GrAdd> */}
               {verificationLoading ? 
                 <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
               </Button></div>
               <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={!verified ? _handleClose : _handleChange} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" hoverBgColor="#f7e700" hoverColor="black" borderRadius="10px">
               {verified ? 'Change' : 'Add Member'}
-              {/* <GrAdd></GrAdd> */}
               {verificationLoading ? 
                 <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
               </Button></div>
        </AccordionDetails>
      </Accordion>
-      </div>
+      
   );
 
 }

@@ -1,9 +1,7 @@
 import React, {useState} from "react";
  
 import styled from 'styled-components';
-import Grid from '@material-ui/core/Grid';
 import Person from './person/Index';
-import Button from '../../../ui/button/Index';
 import Spinner from "../../../Spinner";
 const Container = styled.div`
  
@@ -12,6 +10,9 @@ const Container = styled.div`
     margin: auto;
 }
 `;
+const PaxContainer = styled.div`
+width : 100%;
+`
  
  const PayNow = styled.div`
     padding: 0.75rem;
@@ -61,9 +62,9 @@ const Enquiry = (props) => {
      let pax = []
     for(var i = 0 ; i < props.pax ; i++){
         pax.push(
-        <Grid item xs={12}>
+        <div style={{marginBlock : '1rem'}}>
             <Person id={props.id} _removePersonHandler={_removePersonHandler} verificationCount={props.verificationCount} setVerificationCount={props.setVerificationCount}  token={props.token} email={props.email} _addPersonHandler={_addPersonHandler}  index={i+1} first={!(i)}></Person>
-        </Grid> 
+        </div>
         )
     }
      // setPaxJSX(pax);
@@ -72,11 +73,9 @@ return(
               <div>
             </div>
             
-            <Grid container spacing={3}>
+            <PaxContainer>
                 {pax}
-               
-            </Grid> 
-           {/* <div onClick={null}></div> */}
+            </PaxContainer> 
            {props.formNotFilledError ? <Error>{'Please fill all traveler details'}</Error> : null} 
            {props.formFailedError ? <Error>{props.formFailedError}</Error> : null} 
 

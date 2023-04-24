@@ -2,10 +2,6 @@ import React, {useRef, useState, useEffect} from 'react';
 import { useRouter } from 'next/router'
 
 import styled from 'styled-components'
-import FullImg from '../fullimg/FullImg';
-import FullImgContainer from '../fullimg/FullImgContent';
-
-
 import Menu from '../Menu';
 import axios from 'axios';
 import Spinner from '../../../containers/loaderbar/Index';
@@ -14,7 +10,6 @@ import OldSpinner from '../../../components/LoadingPage';
 import axiosdaybydayinstance from '../../../services/itinerary/daybyday/preview';
 import axiosbreifinstance from '../../../services/itinerary/brief/preview';
 import {MIS_SERVER_HOST} from '../../../services/constants';
- 
 import * as authaction from '../../../store/actions/auth';
 import {connect} from 'react-redux';
  import { ITINERARY_STATUSES } from '../../../services/constants';
@@ -588,7 +583,7 @@ useEffect(() => {
            </FullImg>  */}
            <Landing title={itinerary.name} images={itinerary.images} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}></Landing>
             <div id="itinerary-anchor">
-              <Menu  hasUserPaid={hasUserPaid} plan={plan} isDatePresent={isDatePresent} _updateTaxiBookingHandler={_updateTaxiBookingHandler} showTaxiModal={showTaxiModal}  setShowTaxiModal={setShowTaxiModal}paymentLoading={paymentLoading} budget={plan ? plan.budget : null} _deselectActivityBookingHandler={_deselectActivityBookingHandler} activityFlickityIndex={activityFlickityIndex} transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getPaymentHandler={getPaymentHandler}  flightBookings={flightBookings} noFlightBookings={noFlightBookings}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _updateFlightBookingHandler={_updateFlightBookingHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler}  _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
+              <Menu  hasUserPaid={hasUserPaid} plan={plan} isDatePresent={isDatePresent} _updateTaxiBookingHandler={_updateTaxiBookingHandler} showTaxiModal={showTaxiModal}  setShowTaxiModal={setShowTaxiModal}paymentLoading={paymentLoading} budget={plan ? plan.budget : null} _deselectActivityBookingHandler={_deselectActivityBookingHandler} activityFlickityIndex={activityFlickityIndex} transferFlickityIndex={transferFlickityIndex}  flightLoading={flightLoading} stayFlickityIndex={stayFlickityIndex} setStayFlickityIndex={setStayFlickityIndex} selectingBooking={selectingBooking} _deselectTransferBookingHandler={_deselectTransferBookingHandler} _deselectFlightBookingHandler={_deselectFlightBookingHandler} flightFlickityIndex={flightFlickityIndex} _deselectStayBookingHandler={_deselectStayBookingHandler} getPaymentHandler={getPaymentHandler}  flightBookings={flightBookings} noFlightBookings={noFlightBookings}  cardUpdateLoading={cardUpdateLoading} _selectTaxiHandler={_selectTaxiHandler} _updateTransferHandler={_updateTransferBookingHandler } _updateStayBookingHandler={_updateStayBookingHandler} activityBookings={activityBookings} transferBookings={transferBookings} stayBookings={stayBookings}  user_email={userEmail} no_bookings={noBookings} setItinerary={setItinerary} traveleritinerary={isPastTravelerItinerary} id={props.id} is_stock={is_stock} _updatePaymentHandler={_updatePaymentHandler} setHidePoiModal={setHidePoiModal} setHideBookingModal={setHideBookingModal} setShowPoiModal={setShowPoiModal} setShowBookingModal={setShowBookingModal} _updateFlightBookingHandler={_updateFlightBookingHandler} showFlightModal={showFlightModal} setShowFlightModal={setShowFlightModal} showPoiModal={showPoiModal} showBookingModal={showBookingModal} _updateBookingHandler={_updateBookingHandler} timeRequired={timeRequired} itineraryReleased={itineraryReleased} itineraryDate={itineraryDate} showbooking={showbooking}  payment={payment} itinerary={itinerary} breif={breif} booking={booking}></Menu>
               {/* <ItineraryMobile></ItineraryMobile> */}
               {/* <Cities></Cities> */}
             </div>

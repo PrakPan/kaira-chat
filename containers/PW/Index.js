@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect, createRef} from 'react';
 import { useRouter } from 'next/router';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
 import FullImage from '../../components/FullImage';
 import Republic from './FullImgContentRepublic';
