@@ -32,7 +32,7 @@ const LocationsBlog= (props) => {
     
     axiospagelistinstance
       .get(
-        ``
+        `?country=${props.country?props.country: 'India'}`
       )
       .then((res) => {
 let cardsArr = []

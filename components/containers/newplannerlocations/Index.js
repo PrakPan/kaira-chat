@@ -55,7 +55,6 @@ const LocationsBlog= (props) => {
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
     const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
-
     useEffect(() => {
        let cardsarr = [];
 let MobileCardsArr = []

@@ -266,7 +266,6 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
 //JSX for How it works 
 
  
- 
 
 const router = useRouter()
 
@@ -298,7 +297,12 @@ useEffect(() => {
   setOverviewHeading(props.experienceData.overview_heading)
 }, [router.query.link, props.experienceData])
 
-
+var country
+if(props.experienceData.ancestors){
+  if(props.experienceData.ancestors.length && props.experienceData.ancestors[0].level == 'Country' && props.experienceData.ancestors[0].name){
+    country = props.experienceData.ancestors[0].name
+  }
+}
 const InfoWindowContainer = (location)=><MapInfo>
 <b>{location.name}</b>
 <div>{location.most_popular_for.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
@@ -444,6 +448,7 @@ const InfoWindowContainer = (location)=><MapInfo>
           <OldLocations
             locations={PLANNER_PAGES}
             viewall
+            country={country}
             planner
           ></OldLocations>
 
