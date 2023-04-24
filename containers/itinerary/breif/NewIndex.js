@@ -108,6 +108,7 @@ const Details = (props) => {
     // console.log(`lat,long${citydetails.lat}`);
     if (!postion.is_departure_only && !postion.is_trip_terminated) {
       Locationlatlong.push({
+        cityData: postion,
         id: postion.gmaps_place_id,
         city_id: postion.city_id,
         lat: postion.lat,
@@ -191,11 +192,11 @@ const Details = (props) => {
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View All Bookings</ButtonYellow>
       </ContainerBt> */}
-      {/* <div className="relative w-[64rem] h-[64rem]">
+      <div className="relative w-[64rem] h-[64rem]">
         <div className="absolute w-[60%] h-[60%]">
           <MapWithNoSSR locations={Locationlatlong} />
         </div>
-      </div> */}
+      </div>
       {/* <div className="relative h-[12rem] w-[12rem]">
         <div
           id="MapContanier"

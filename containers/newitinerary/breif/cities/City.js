@@ -38,7 +38,7 @@ const TextLight = styled.p`
   line-height: 24px;
   margin: 0;
 `;
-const ITbutton = styled.button`
+export const ITbutton = styled.button`
   /* Background/Primary */
   margin-top: 10px;
   display: flex;
@@ -94,6 +94,7 @@ const City = (props) => {
             <div className="flex justify-center items-center bg-slate-100 rounded-lg px-3 py-3 mr-2">
               <FaBed />
             </div>
+
             <div className="flex flex-col">
               <div className="text-xl font-semibold">
                 Lemon Tree Premium Hotel
@@ -104,10 +105,10 @@ const City = (props) => {
             </div>
           </div>
           <div className="flex flex-col py-2">
-            {/* <div className="text-sm">Things to do</div> */}
+            {/* <div className="text-sm">Things to do</div>
             <div className="font-semibold text-sm">
               Tours · Wildlife · Museums · Historic Sites
-            </div>
+            </div> */}
           </div>
           {/* <TruncatedText
             text={props.cityData.short_description}

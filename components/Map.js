@@ -13,6 +13,7 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { useRouter } from 'next/router';
+
 import axiosPoiCityInstance from '../services/poi/city';
 function Map(props) {
   const [center, setCenter] = useState({
