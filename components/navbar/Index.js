@@ -94,7 +94,7 @@ const _openAllNotificationsHandler = () => {
  
     return(
       <div className='font-lexend'>
-      <div className='hidden-desktop'><NewMobile _openAllNotificationsHandler={_openAllNotificationsHandler} hidecta={props.hidecta} ctaonclick={props.ctaonclick} _deleteNotificationHandler={_deleteNotificationHandler} notifications={notifications} hideNav={hideNav} notOpenCount={notOpenCount} ></NewMobile></div>
+      <div className='hidden-desktop'><NewMobile PW={props.PW} _openAllNotificationsHandler={_openAllNotificationsHandler} hidecta={props.hidecta} ctaonclick={props.ctaonclick} _deleteNotificationHandler={_deleteNotificationHandler} notifications={notifications} hideNav={hideNav} notOpenCount={notOpenCount} ></NewMobile></div>
       <div   className='hidden-mobile'>
         <div style={{display: hideNav? 'none !important' : 'initial !important'}}>
           <IndexDesktop PW={props.PW} ctaonclick={props.ctaonclick} hidehomecta={props.hidehomecta} hidecta={props.hidecta} _deleteNotificationHandler={_deleteNotificationHandler} _openAllNotificationsHandler={_openAllNotificationsHandler} notOpenCount={notOpenCount} notifications={notifications} token={props.token}  style={{}}></IndexDesktop>

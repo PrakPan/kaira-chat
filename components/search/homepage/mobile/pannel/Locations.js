@@ -71,7 +71,8 @@ const Locations= (props) => {
 
   let isPageWide = media('(min-width: 768px)')
   const _handleLocationClick = (slug) => {
-    router.push('/travel-guide/city/'+slug)
+    // if(slug)router.push('/travel-guide/city/'+slug)
+   if(slug) window.location.href='https://thetarzanway.com/travel-guide/city/'+slug    
 
   }
   const _handlePersonaliseRedirect = (id, name, parent) => {

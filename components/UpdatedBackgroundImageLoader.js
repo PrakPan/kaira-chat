@@ -199,10 +199,10 @@ useEffect(() => {
         <>
         <SmallContainer
         className={props.center ? "center-div" : ""}
-        style={{display: !fullLoaded ? "flex" : "none",width: props.width ? props.width : '100%',  maxWidth: '100%',height:props.height ? props.height : "max-content", padding: props.padding ? props.padding : '0', }}
+        style={{display: !fullLoaded ? "flex" : "none",width: props.width ? props.width : '100%',  maxWidth: '100%',height:props.height ? props.height : "100%", padding: props.padding ? props.padding : '0', }}
         >
           <BackgroundImageContainer  style={{backgroundImage : props.filter ?props.filter+ `,url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`:(props.position? `linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`:`linear-gradient(180deg, rgba(0, 0, 0,0) 0%, rgba(0, 0, 0, 0.8) 100%), url(${`${imgUrlEndPoint}/${Buffer.from(smallImageRequest).toString('base64')}`})`),width: props.width ? props.width : '100%', padding: props.padding ? props.padding : '10vh 0 0 0', maxWidth: '100%',height:props.height ? props.height : "100%",backgroundRepeat: 'no-repeat',backgroundSize:'cover',zIndex:props.position ? "0":"-1"}}></BackgroundImageContainer>
-          <ContentContainer padding={props.padding} style={{width: props.width ? props.width : '100%', maxWidth: '100%',height:props.height ? props.height : "max-content", visibility: 'hidden'}}  >
+          <ContentContainer padding={props.padding} style={{width: props.width ? props.width : '100%', maxWidth: '100%',height:props.height ? props.height : "100%", visibility: 'hidden'}}  >
 
            {props.children}
            </ContentContainer>

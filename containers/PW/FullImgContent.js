@@ -35,7 +35,7 @@ font-size: 2rem;
 `;
 const SubText = styled.h3`
 color: white;
-    font-weight: 100;
+    font-weight: 200;
     width: 99%;
     font-size: 1.2rem;
      @media screen and (min-width: 768px){

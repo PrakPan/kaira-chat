@@ -127,8 +127,8 @@ const SearchPannel= (props) => {
         <div style={{marginTop  :'85px'}}>
         {showP && (inputValue != '') &&  <Text>We couldn't find anything for '{inputValue}'</Text>}
 
-        {showResults ? <NewResults results={results} />:
-        <Locations hotlocations={hotLocationsData}></Locations>}
+        {showResults ? <NewResults setPannelClose={props.setPannelClose} results={results} />:
+        <Locations setPannelClose={props.setPannelClose} hotlocations={hotLocationsData}></Locations>}
         </div>
         </Container>
     );

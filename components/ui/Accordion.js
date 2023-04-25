@@ -29,16 +29,16 @@ export default function Accordion(props) {
   const SummaryRef = useRef();
   const [height, setHeight] = useState(0);
   const [expanded, setExpanded] = useState(false);
-
+  useEffect(()=>{
+    if(props.initialOpen) setExpanded(true)
+  },[])
   useEffect(() => {
     if (expanded)
       setHeight(
         DetailsRef.current.clientHeight + SummaryRef.current.clientHeight
       );
     else setHeight(SummaryRef.current.clientHeight);
-  }, [expanded]);
-
-
+  }, [expanded,props.children]);
   return (
     <Container ContainerHeight={height} {...props}>
       <Summary ref={SummaryRef} onClick={() => setExpanded(!expanded)}>

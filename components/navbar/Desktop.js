@@ -256,15 +256,15 @@ const Navbar = (props) => {
           </TTWLogoContainer>
           
           {/* <input /> */}
-          <div style={{position: 'absolute', left: '32%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
+         {!props.hidecta &&  <div style={{position: 'absolute', left: '32%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
           <TopContainer>
             <SearchContainer>
                     <Search placeholder="Search by destination (country, region or city)" ></Search>
                     <ImSearch style={{position : 'absolute' , top : '17px' , left : '13px', color : '#B0BABF' , pointerEvents : 'none'}} />
             </SearchContainer>
         </TopContainer>
-          </div>
-      {toggleSearch ? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : <div></div>}
+          </div>}
+      {toggleSearch? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : <div></div>}
           {/* <SearchBar />  */}
           <NavItemsContainer style={{ marginRight: props.token ? '0rem' : '0'}}>
             

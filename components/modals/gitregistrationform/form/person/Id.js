@@ -25,7 +25,7 @@ const Person = (props) => {
         key="id"
         required
         fullWidth
-        name="email"
+        // name="email"
         label="Employee ID"
         id="id"
       />
