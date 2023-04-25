@@ -1,4 +1,4 @@
-import React , {forwardRef} from "react";
+import React , {useState,useEffect,forwardRef} from "react";
 import styled from "styled-components";
 import {BiError} from 'react-icons/bi'
 
@@ -59,6 +59,11 @@ const Error = styled.div`
   display : flex;
 `;
 const FloatingInput = forwardRef((props,ref) => {
+  const [valueState,setValueState] = useState(null)
+  useEffect(()=>{
+  setValueState(props.value)
+  },[props.value])
+
  return <div style={{marginBottom : '2px' , margin : props.margin}}>  
  <Container
     style={props.ContainerStyle}
@@ -73,11 +78,12 @@ const FloatingInput = forwardRef((props,ref) => {
       placeholder={""}
       onChange={(e) => {
         props.onChange && props.onChange(e);
+        setValueState(e.target.value)
       }}
       ref={ref} 
     />
     <Label filled={
-      (props.value !== 0)? !!props.value
+      (valueState !== 0)? !!valueState
       : true
     } fontSize={props.fontSize || props.style?.fontSize || '1rem'} error={props.error} style={props.labelStyle}>{props.label || props.placeholder} {props.required && <sup>*</sup>}</Label>
   </Container>

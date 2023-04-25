@@ -17,6 +17,7 @@ import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
 import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
+import LoginLoadingIcon from '../ui/LoadingLoginIcon'
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -123,6 +124,10 @@ const CountryCodeOption = styled.div`
 `;
 
 const LogIn = (props) => {
+
+if(props.loadingsocial) return <LoginLoadingIcon /> 
+
+
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
@@ -349,6 +354,7 @@ const LogIn = (props) => {
 
   const googleResponse = (response) => {};
   // if(!props.loadingsocial)
+
   return (
     <div className="font-lexend">
       {!props.noheading ? (
