@@ -47,7 +47,7 @@ const ListItem = styled.div`
   display: flex;
   gap: 13px;
   align-items: center;
-  font-family: Poppins;
+  font-family: lexend;
 `;
 const StyledLink = styled.a`
   text-decoration: none;

@@ -7,8 +7,13 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto auto;
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: auto;
   grid-gap: 1rem;
+  white-space: nowrap;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
   @media screen and (min-width: 768px) {
     grid-template-columns: max-content max-content max-content max-content max-content max-content;
     grid-column-gap: 2.5rem;
@@ -16,7 +21,7 @@ const Container = styled.div`
 `;
 const convertDFormat = (dt) => {
   const date = parseISO(dt);
-  const formattedDate = format(date, 'MMMM d yyyy');
+  const formattedDate = format(date, 'MMMM do');
   return formattedDate;
 };
 const Heading = styled.p`
@@ -34,7 +39,18 @@ const Details = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container className="font-poppins">
+    <Container className="font-lexend">
+      {props.travellerType[0] != null ? (
+        <div style={{ width: 'max-content' }}>
+          <Heading>Type of Travel</Heading>
+          <Text>
+            {props.travellerType[0]}{' '}
+            {props.travellerType.length - 1 <= 0
+              ? null
+              : `+${props.travellerType.length - 1}`}
+          </Text>
+        </div>
+      ) : null}
       {props.group_type !== null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Group Type</Heading>
@@ -54,23 +70,13 @@ const Details = (props) => {
           <Text>{props.duration_time} Nights</Text>
         </div>
       ) : null} */}
-      {props.travellerType[0] != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Type of Travel</Heading>
-          <Text>
-            {props.travellerType[0]}{' '}
-            {props.travellerType.length - 1 <= 0
-              ? null
-              : `+${props.travellerType.length - 1}`}
-          </Text>
-        </div>
-      ) : null}
+
       {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
-          <Heading>Date of travelling ({props.duration})</Heading>
+          <Heading>Date({props.duration})</Heading>
           {props.start_date && (
             <Text>
-              {convertDFormat(props.start_date)} -
+              {convertDFormat(props.start_date)} -{' '}
               {convertDFormat(props.end_date)}
             </Text>
           )}

@@ -44,7 +44,7 @@ const MidSection = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container className="font-poppins">
+    <Container className="font-lexend">
       <div style={{ position: 'relative' }}>
         <Line />
       </div>

@@ -7,7 +7,7 @@ const Container = styled.div``;
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
-  margin-Top: 2rem;
+  margin-top: 2rem;
   margin-bottom: 0.5rem;
 `;
 const Heading = styled.h1`
@@ -25,20 +25,17 @@ const Line = styled.div`
   }
 `;
 const toTitleCase = (str) => {
-  return str.replace(
-    /\w\S*/g,
-    function(txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    }
-  );
-}
+  return str.replace(/\w\S*/g, function(txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+  });
+};
 const Overview = (props) => {
   useEffect(() => {}, []);
 
   return (
     <Container>
       <GridContainer>
-        <Heading className="font-poppins">{toTitleCase(props.title)}</Heading>
+        <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
         {/* <div className="center-div">
           <div className="hidden-desktop">
             <Button
@@ -61,10 +58,9 @@ const Overview = (props) => {
       ></Details>
 
       {/* <Line></Line> */}
-        <div className='pt-8 pb-1'>
+      <div className="pt-8 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
-        </div>
-      
+      </div>
     </Container>
   );
 };

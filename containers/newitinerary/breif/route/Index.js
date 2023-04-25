@@ -123,7 +123,7 @@ const Route = (props) => {
     }
   return (
     <Container>
-      <Heading className="font-poppins">Route</Heading>
+      <Heading className="font-lexend">Route</Heading>
 
       <PinSection
         city={props.nostartinglocation ? 'Your Location' : startingcity}

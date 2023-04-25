@@ -12,7 +12,7 @@ import { useIsComponentInView } from '../hooks/useComponentInView';
 const Navbar = styled.div`
   /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
   
-  font-family: Lexend;
+  font-family: lexend;
   display: flex;
   ::-webkit-scrollbar {
     display: none;

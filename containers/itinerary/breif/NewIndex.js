@@ -180,7 +180,7 @@ const Details = (props) => {
             ></Map>
           </div> */}
           <div
-            className="relative w-[30rem] h-[30rem] rounded-xl"
+            className="relative lg:w-[30rem] lg:h-[30rem]  w-[23rem] h-[23rem]  rounded-xl"
             id="MapcontainerRoute"
           >
             <div className="absolute w-[100%] h-[100%] rounded-xl">

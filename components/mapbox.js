@@ -154,14 +154,18 @@ const Mapbox = ({ locations }) => {
           draggable={false}
           icon={divIcon({
             className: 'icon',
-            html: `<div class=" rounded-full w-[20px] h-[20px] flex justify-center items-center" style="background-color: ${location.color};">
-            <div class="text-white rounded-full w-[8px] h-[8px]"></div>
-            </div>`,
+            html: `<div class=" rounded-full w-[20px] h-[20px] flex justify-center items-center" style="background-color: ${
+              location.color
+            };">
+            <span class="text-white text-xs font-extrabold animate-bounce mt-1">  ${index +
+              1}</span>
+         
+          `,
             iconSize: 20,
           })}
         >
           <Popup className="w-[26rem]">
-            <div className="flex flex-row w-[26rem]">
+            <div className="flex flex-row w-[26rem] ">
               <div>
                 <ImageLoader
                   borderRadius="8px"

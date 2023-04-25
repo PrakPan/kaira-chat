@@ -78,7 +78,7 @@ const ImagesMobile = (props) => {
           >
             View 10+ photos
           </div> */}
-            {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
+            {/* <MoreText className='font-lexend'>View 10+ photos</MoreText> */}
           </MoreContainer>
         </GridContainer>
       ) : null}

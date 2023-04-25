@@ -156,7 +156,7 @@ const NewItenaryDBDMob = (props) => {
         <City className="border-thin">Jaisalmer (2N)</City>
       </CitiesContainer> */}
       <div className="itenaryContainer">
-        {props.itinerary.day_slabs.map((element, index) => (
+        {props?.itinerary?.day_slabs?.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
             <Day_I_ContainerM
               Days={element}

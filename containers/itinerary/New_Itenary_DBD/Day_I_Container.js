@@ -143,7 +143,7 @@ const Day_I_Container = (props) => {
   divide(props.Days.slab_elements, Arslab_elements);
 
   return (
-    <Container className="font-poppins">
+    <Container className="font-lexend">
       {/* {props.Days.slab && <Date>{convertDateFormat(props.Days.slab)}</Date>} */}
 
       <DivDayContainerRow>

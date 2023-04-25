@@ -64,7 +64,7 @@ const ItineraryPoiElementM = (props) => {
     return elem === undefined || elem === null || !elem;
   }
   return (
-    <Container className="font-poppins">
+    <Container className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
         <SectionOneText>{props.time}</SectionOneText>
         <AiFillCar

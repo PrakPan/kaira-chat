@@ -90,7 +90,7 @@ const ItineraryFoodElement = (props) => {
 
   return (
     <>
-      <Container className="font-poppins pt-3">
+      <Container className="font-lexend pt-3">
         {/* <div>{props.time}</div> */}
         <div className="flex flex-row ">
           <div>

@@ -63,7 +63,7 @@ const ItineraryFoodElementM = (props) => {
 
   return (
     <>
-      <Container className="font-poppins">
+      <Container className="font-lexend">
         {/* <div style={{ display: 'flex', alignItems: 'center' }}>
           <SectionOneText>{props.time}</SectionOneText>
         </div> */}

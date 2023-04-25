@@ -136,7 +136,7 @@ const Day_I_ContainerM = (props) => {
   divide(props.Days.slab_elements, Arslab_elements);
 
   return (
-    <Container className="font-poppins">
+    <Container className="font-lexend">
       <div
         style={{ paddingTop: '4px', display: 'flex', alignItems: 'center' }}
         className="pb-4"
