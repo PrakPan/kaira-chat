@@ -100,7 +100,14 @@ const Details = (props) => {
     router.push('/tailored-travel');
   };
   const Locationlatlong = [];
-
+  const getdayId = (id) => {
+    return props.itinerary?.day_slabs[id]?.slab_id;
+  };
+  async function getCityDetails(cityname) {
+    const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
+    const data = res.data;
+    return data;
+  }
   for (var i = 0; i < props.breif.city_slabs.length; i++) {
     var postion = props.breif.city_slabs[i];
 
@@ -108,11 +115,12 @@ const Details = (props) => {
     // console.log(`lat,long${citydetails.lat}`);
     if (!postion.is_departure_only && !postion.is_trip_terminated) {
       Locationlatlong.push({
+        dayId: getdayId(postion.day_slab_location.start_day_slab_index),
         cityData: postion,
         id: postion.gmaps_place_id,
         city_id: postion.city_id,
-        lat: postion.lat,
-        long: postion.long,
+        lat: postion.lat ?? '18.5204',
+        long: postion.long ?? '73.8567',
         name: postion.city_name,
         duration: postion.duration,
         color: postion.color,
@@ -162,7 +170,7 @@ const Details = (props) => {
 
           <div className="svg-container"></div>
 
-          <div id="MapcontainerRoute">
+          {/* <div id="MapcontainerRoute">
             <Map
               locations={Locationlatlong}
               defaultZoom={12}
@@ -170,7 +178,7 @@ const Details = (props) => {
               InfoWindowContainer={InfoWindowContainer}
               active={active}
             ></Map>
-          </div>
+          </div> */}
         </RouteComponent>
         {isPageWide ? (
           <div>

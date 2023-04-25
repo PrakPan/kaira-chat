@@ -6,7 +6,8 @@ import {
   Polygon,
   Polyline,
 } from 'react-leaflet';
-import { DivIcon } from 'leaflet';
+import { divIcon } from 'leaflet';
+
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
@@ -98,7 +99,23 @@ const Mapbox = ({ locations }) => {
     console.log('useEffect location');
     // console.log(locations);
   }, []);
+  function scrollToTargetAdjusted(id) {
+    // if (window.location.pathname === '/') {
+    //   router.push({ pathname: '/locations', query: { scroll: target } });
+    //   return;
+    // }
+    // console.log(`lool${target}`);
+    console.log(`clicked id ${id}`);
+    const element = document.getElementById(id);
+    const headerOffset = 117;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    });
+  }
   console.log(polylines);
   return (
     <MapContainer
@@ -131,23 +148,31 @@ const Mapbox = ({ locations }) => {
           animate
           position={[location.lat ?? 0, location.long ?? 0]}
           draggable={false}
-          // icon={<MyIcon color={location.color} />}
+          icon={divIcon({
+            className: 'icon',
+            html: `<div class=" rounded-full w-[20px] h-[20px] flex justify-center items-center" style="background-color: ${location.color};">
+            <div class="text-white rounded-full w-[8px] h-[8px]"></div>
+            </div>`,
+            iconSize: 20,
+          })}
         >
-          <Popup className="w-[34rem]">
-            <div className="flex flex-row justify-between ">
+          <Popup className="w-[26rem]">
+            <div className="flex flex-row w-[26rem]">
               <div>
                 <ImageLoader
                   borderRadius="8px"
                   url={location.cityData.image}
-                  height={200}
-                  width={200}
+                  height={150}
+                  width={150}
                   heightMobile="auto"
-                  dimensionsMobile={{ width: 180, height: 180 }}
+                  dimensionsMobile={{ width: 150, height: 150 }}
                 ></ImageLoader>
               </div>
 
-              <div className="flex flex-col gap-2 pr-2">
-                <div className="font-bold text-lg">{location.name}</div>
+              <div className="flex flex-col gap-2 pl-3">
+                <div className={`font-bold text-lg text-[#270e0e]`}>
+                  {location.name}
+                </div>
                 <div className="flex flex-row gap-2">
                   <span>Ideal duration</span>:
                   <div>{location.duration} days</div>
@@ -156,17 +181,35 @@ const Mapbox = ({ locations }) => {
                 <div className="font-bold text-md">
                   Tours · Wildlife · Museums
                 </div>
-                <ITbutton
+                {/* <a
+                  href="#_"
+                  class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
+                >
+                  View {location.cityData.city_name} in your Itinerary
+                  <span class="relative flex h-3 w-3">
+                    <span
+                      className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400  opacity-75`}
+                    ></span>
+                    <span
+                      className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
+                    ></span>
+                  </span>
+                </a> */}
+                <div
+                  className={`relative rounded min-w-fit flex flex-row cursor-pointer bg-slate-600 px-2 py-2 text-xs font-semibold text-white shadow-sm  hover:bg-[#BF3535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
                   onClick={() => scrollToTargetAdjusted(location.dayId)}
                 >
                   View {location.cityData.city_name} in your Itinerary
-                </ITbutton>
+                  <span class="absolute -right-1 -top-2 flex h-3 w-3">
+                    <span
+                      className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75`}
+                    ></span>
+                    <span
+                      className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
+                    ></span>
+                  </span>
+                </div>
               </div>
-
-              <span class="relative flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
-              </span>
             </div>
           </Popup>
         </Marker>
