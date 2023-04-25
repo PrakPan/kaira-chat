@@ -93,7 +93,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
     rzp1.open();
 
     }
-    const _saleCreateHATBBuAeCtUXRf2PhDScnNdPhAAgG578450EEandler = (id) => {
+    const _saleCreateHandler = (id) => {
   axiossalecreateinstance.post("/", 
         {
             "itinerary_id": id,
