@@ -30,7 +30,11 @@ const MyIcon = ({ color }) => {
   const customIcon = new DivIcon(iconOptions);
   return customIcon;
 };
-const limeOptions = { color: 'lime' };
+const limeOptions = {
+  color: 'black',
+  dashArray: '10, 5', // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
+  dashOffset: '10',
+};
 const Mapbox = ({ locations }) => {
   // function createTripPointsGeoJson({ locations } = {}) {
   //   return {
@@ -122,7 +126,7 @@ const Mapbox = ({ locations }) => {
       center={[locations[0].lat, locations[0].long]}
       zoom={5}
       scrollWheelZoom={false}
-      style={{ height: '100%', width: '100%' }}
+      style={{ height: '100%', width: '100%', borderRadius: '1rem' }}
     >
       {/* <TileLayer
         url={`

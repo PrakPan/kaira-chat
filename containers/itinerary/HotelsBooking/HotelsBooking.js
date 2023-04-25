@@ -16,13 +16,29 @@ const ClippathComp = styled.div`
 `;
 const HotelsBooking = (props) => {
   console.log(props.stayBookings);
+  function Addons(Shorthand) {
+    switch (Shorthand) {
+      case 'EP':
+        return 'Room Only';
+      case 'CP':
+        return 'Complementary Breakfast Included';
+      case 'MAP':
+        return 'Breakfast/Lunch Included';
+      case 'AP':
+        return 'All Meals Included';
+      case 'TBO':
+        return null;
+      default:
+        return null;
+    }
+  }
   return (
     <div className="w-[60vw]">
       {props.stayBookings
         ? props.stayBookings.map((booking) => (
             <div className="flex gap-1 pt-8  flex-col justify-start">
               <div className="font-bold text-2xl pb-3 text-[#01202B]">
-                {booking?.city}: <span>(1N)</span>
+                {booking?.city}: <span>({booking?.duration}N)</span>
               </div>
               <div className=" shadow-md rounded-lg  border-2 border-[#ECEAEA] shadow-[#ECEAEA] p-4">
                 <div className="relative flex lg:flex-row flex-col gap-4">
@@ -76,7 +92,7 @@ const HotelsBooking = (props) => {
                     <div className="flex flex-row gap-3">
                       <div className="text-md font-medium gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                        <div className="text-md font-medium">
+                        <div className="text-md font-medium min-w-fit">
                           {booking.number_of_adults} Adults
                         </div>
                       </div>
@@ -87,12 +103,15 @@ const HotelsBooking = (props) => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-row gap-2 items-center">
-                      <ImSpoonKnife className="text-md text-[#7A7A7A]" />
-                      <div className="text-md font-medium">
-                        Complimentary Breakfast is available
+                    {Addons(booking.costings_breakdown[0].pricing_type) ? (
+                      <div className="flex flex-row gap-2 items-center">
+                        <ImSpoonKnife className="text-md text-[#7A7A7A]" />
+                        <div className="text-md font-medium">
+                          {Addons(booking.costings_breakdown[0].pricing_type)}
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
+
                     <div className="flex flex-row gap-3 items-center">
                       <ButtonYellow>
                         <div className="text-[#01202B] ">View Detail</div>
@@ -102,9 +121,11 @@ const HotelsBooking = (props) => {
                       </ButtonYellow>
                     </div>
                   </div>
-                  <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-0 -m-6">
-                    TTW Recommendation
-                  </ClippathComp>
+                  {booking.costings_breakdown && (
+                    <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-0 -m-6">
+                      TTW Recommendation
+                    </ClippathComp>
+                  )}
                 </div>
               </div>
             </div>

@@ -6,7 +6,7 @@ import ButtonYellow from '../ButtonYellow';
 import { getIndianPrice } from '../../services/getIndianPrice';
 import { getHumanDate } from '../../services/getHumanDate';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { RiWhatsappFill } from 'react-icons/ri';
 const font = styled.div`
   font-family: 'Lexend';
 `;
@@ -124,10 +124,7 @@ const BookingContainer = (props) => {
             }
           >
             <div className="flex flex-row justify-center items-center">
-              <FontAwesomeIcon
-                icon={faWhatsapp}
-                style={{ marginRight: '0.5rem' }}
-              />
+              <RiWhatsappFill className="text-[#4da750] mr-2" />
               <div className="text-[#01202B] ">Chat on Whatsapp</div>
             </div>
           </ButtonYellow>

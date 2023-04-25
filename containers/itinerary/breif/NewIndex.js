@@ -179,6 +179,14 @@ const Details = (props) => {
               active={active}
             ></Map>
           </div> */}
+          <div
+            className="relative w-[30rem] h-[30rem] rounded-xl"
+            id="MapcontainerRoute"
+          >
+            <div className="absolute w-[100%] h-[100%] rounded-xl">
+              <MapWithNoSSR locations={Locationlatlong} />
+            </div>
+          </div>
         </RouteComponent>
         {isPageWide ? (
           <div>
@@ -200,11 +208,7 @@ const Details = (props) => {
       <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View All Bookings</ButtonYellow>
       </ContainerBt> */}
-      <div className="relative w-[64rem] h-[64rem]">
-        <div className="absolute w-[60%] h-[60%]">
-          <MapWithNoSSR locations={Locationlatlong} />
-        </div>
-      </div>
+
       {/* <div className="relative h-[12rem] w-[12rem]">
         <div
           id="MapContanier"
