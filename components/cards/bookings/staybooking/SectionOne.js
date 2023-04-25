@@ -52,7 +52,6 @@ const Section= (props) => {
     let color="rgba(18, 105, 4, 1)";
      try{
     if(props.data.user_rating){
-        // console.log(props.rating)
 
     if(props.data.user_rating < 3.8 && props.data.user_rating > 3) color="orange";
     else if(props.data.user_rating < 3) color="red";

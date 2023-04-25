@@ -23,7 +23,6 @@ font-weight : 700;
 
 const RegistrationModal = (props) => {
 
-  console.log(props.show, 'props.show')
    const router = useRouter();
   const [verificationCount, setVerificationCount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -45,7 +44,6 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
     }, [props.show]);
   
     const _startRazorpayHandler = (data) => {
-// console.log('rz', );
     
       //Razorpay payload
       let razorpayOptions = {
@@ -150,7 +148,7 @@ const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
   if(!rzVerificationLoading)
   return(
       <div>
-         <Modal backdrop closeIcon show={props.show} onHide={props.hide} style={{padding : '1rem' , borderRadius : '1.5rem'}}>
+         <Modal width='35rem' mobileWidth='90%' backdrop closeIcon show={props.show} onHide={props.hide} style={{padding : '1rem' , borderRadius : '1.5rem'}}>
         <div>
             <Heading className="font-lexend">Confirm and Pay</Heading>
               <Cart setShowTermsModal={setShowTermsModal} cost={props.payment ? props.payment.per_person_total_cost : null} date={props.date} pax={props.pax} plan={props.plan}></Cart>

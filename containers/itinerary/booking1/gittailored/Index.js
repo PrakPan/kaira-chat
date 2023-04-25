@@ -241,7 +241,6 @@ const _startRazorpayHandler = (data) => {
   
           })
       }
-      // console.log('p', props.payment)
     return(
     <SummaryContainer className="border-thin" style={{marginBottom: props.traveleritinerary ? '12.5vh' : '0'}}>
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}

@@ -58,7 +58,6 @@ const  Overview = (props) =>{
 
   let isPageWide = media('(min-width: 768px)');
   const [more, setMore] = useState(false);
-  console.log(props.locations)
   return (
    <Container>
     {/* <GridContainer> */}

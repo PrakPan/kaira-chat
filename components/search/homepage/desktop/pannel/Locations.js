@@ -75,7 +75,6 @@ const Locations= (props) => {
   }
 
 
-  console.log(props.hotlocations)
 
   let locations=[];
     if(props.hotlocations){

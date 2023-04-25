@@ -70,7 +70,6 @@ const getDate = (date) => {
     return(getHumanDate(day+"/"+month+"/"+year) + " " + year);
 
 }
-// console.log('pri', props.price_type)
      let roomsJSX=[];
     const [RoomsJSX, setRoomsJSX] = useState([]);
     useEffect(() => {

@@ -73,7 +73,6 @@ const Accordions = (props) => {
       const handleChange = () => {
       
       }
-    //   console.log(props.conveyance_available)
     
   return(
       <Container className='borde'>

@@ -170,7 +170,6 @@ const _populateResultsHandelr = (filters) => {
    }).then(res => {
     setLoading(false);
 
-    // console.log(res)
     for(var i =0 ; i<res.data.length; i++){
       itineraries.push(
       <ExperienceCard 

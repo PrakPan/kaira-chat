@@ -28,8 +28,8 @@ const ModalContainer = styled.div`
   left: ${props=>props.mobileLeft? props.mobileLeft : '50%'};
   background: ${props=>props.bgColor? props.bgColor : 'white'};
   border-radius : ${props=>props.borderRadius? props.borderRadius : '0px'};
-  ${props=>props.width && `width : ${props.width}`};
-  ${props=>props.height && `width : ${props.height}`};
+  ${props=>props.mobileWidth && `width : ${props.mobileWidth}`};
+  ${props=>props.height && `height : ${props.height}`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)} forwards;
   z-index: 1600;
@@ -40,11 +40,17 @@ const ModalContainer = styled.div`
   max-height : 95vh;
   margin : ${props=>props.margin? props.margin : '0px'};
   @media screen and (min-width: 768px) {
+  ${props=>props.width && `width : ${props.width}`};
     top: ${props=>props.top? props.top : '50%'};
     left: ${props=>props.left? props.left : '50%'};
-  // ${props=>props.centered && 'top: 50%;left:50%'};
   };
-  // ${props=>props.centered && 'top: 50%;left:50%'};
+
+&::-webkit-scrollbar {
+    display: none;
+};
+-ms-overflow-style: none;
+scrollbar-width: none;
+
 `;
 const BlackContainer = styled.div`
   background: ${(props) =>
@@ -62,6 +68,16 @@ const BlackContainer = styled.div`
 
 export default function Modal(props) {
   const [_document, set_document] = useState(null)
+
+  function getScrollBarWidth() {
+    let el = document.createElement("div");
+    el.style.cssText = "overflow:scroll; visibility:hidden; position:absolute;";
+    document.body.appendChild(el);
+    let width = el.offsetWidth - el.clientWidth;
+    el.remove();
+    return width;
+  }
+
   useEffect(() => {
     set_document(document)
 }, [])
@@ -72,12 +88,15 @@ export default function Modal(props) {
       // props.setShow(false);
       if (props.onHide) props.onHide();
       document.body.style.overflowY = 'scroll'
+      document.body.style.paddingRight = '0px'
     }, 800);
   }
 
   useEffect(() => {
     if (props.show === true){
     document.body.style.overflowY = 'hidden';
+    // document.body.style.overflow = 'scroll'
+    document.body.style.paddingRight = getScrollBarWidth() + 'px'
     setFade("in")
   }
     else onCLose();
@@ -106,6 +125,7 @@ export default function Modal(props) {
             mobileLeft={props.mobileLeft}
             borderRadius={props.borderRadius}
             width={props.width}
+            mobileWidth={props.mobileWidth}
             height={props.height}
             bgColor={props.bgColor}
             centered={props.centered}

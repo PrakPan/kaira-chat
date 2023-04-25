@@ -86,7 +86,6 @@ const Experience = (props) => {
 
  
   }, []);
-console.log(props , 'rrprops')
 
   const closeGalleryHandler = () => {
     let images = [];

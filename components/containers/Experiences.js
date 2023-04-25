@@ -204,7 +204,6 @@ const Experiences = [
     setCards(experiencecards)
 
     },[])
-console.log(cards)
 
       // if(isPageWide)
     return(

@@ -144,9 +144,7 @@ const getPaymentHandler = ( ) => {
       let email = localStorage.getItem('email');
       if(props.token)
       for(var i=0; i < res.data.registered_users.length ; i++){
-        // console.log(props.email)
 
-        // console.log(res.data.registered_users[i])
         if(res.data.registered_users[i].email === email){
           if(res.data.registered_users[i].payment_status)
            if(res.data.registered_users[i].payment_status === 'captured') setHasUserPaid(true);
@@ -231,7 +229,7 @@ useEffect(() => {
      useEffect(() => {
       // if(router.query.payment_status) window.location.reload();
       //  props.checkAuthState();
-      //  console.log('itinerary token',props.token)
+      //  'itinerary token',props.token)
 
          window.scrollTo(0,0);
         if(TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);

@@ -129,7 +129,6 @@ width : 40%;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
     // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
-// console.log('', props.children_cities)
     return (
 
         <Container className='font-lexend center-di text-cente'>

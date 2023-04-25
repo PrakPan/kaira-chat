@@ -211,7 +211,6 @@ const [selectedPoi, setSelectedPoi] = useState({name: 'Kasol'});
 
 
   const handleChange = (event, newValue) => {
-    // console.log('nw', event, newValue)
     const tabs = ['brief', 'itinerary', 'booking']
     ga.event({
       action: "Itinerary-tabs-"+tabs[newValue],

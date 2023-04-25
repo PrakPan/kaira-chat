@@ -68,7 +68,6 @@ const Person = (props) => {
           }catch{
 
           }
-            // console.log(res.data)
      }).catch(err => {
        try{
          setVerificationFailed(err.response.data.registered_users[0].invalid_field);

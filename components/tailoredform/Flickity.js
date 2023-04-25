@@ -33,7 +33,6 @@ const FlickityComp = (props) => {
  
    
   // props.setStartingLocation(true)
-  console.log(props.selectedCities , 'selectedCities')
 
   
       return (

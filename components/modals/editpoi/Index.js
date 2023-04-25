@@ -156,7 +156,6 @@ const Booking = (props) => {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                 }}).then(res => {
                     
-                    //  console.log(res.data)
                     setUpdatePoiState(false);
                      props.setItinerary(res.data);
                     props.setHidePoiModal();

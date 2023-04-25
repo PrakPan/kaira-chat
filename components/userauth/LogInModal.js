@@ -123,7 +123,6 @@ const CountryCodeOption = styled.div`
 `;
 
 const LogIn = (props) => {
-  console.log(props.otpFail, "props.otpFail");
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
@@ -195,7 +194,6 @@ const LogIn = (props) => {
   const checkNewUserData = () => {
     return 1;
   };
-  console.log(props.otpFail, "props.otpFail");
   //Submit OTP
   const submitOtpHandler = (event) => {
     event.preventDefault();

@@ -22,7 +22,6 @@ border-width: 1px;
 const Section= (props) => {
 
     // let isPageWide = media('(min-width: 768px)')
-// console.log(props.data)
     if(props.data)
     return(
       <Container className='font-lexend'>  

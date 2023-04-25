@@ -118,7 +118,6 @@ const Booking = (props) => {
         if(!props.alternates){ 
            
             
-            // console.log(FILTERS);
   let params = null;
  try{
  if(props.selectedBooking.transfer_type === "Intercity one-way"){

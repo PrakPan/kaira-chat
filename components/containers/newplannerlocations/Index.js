@@ -34,7 +34,6 @@ grid-template-columns: 1fr 1fr ;
 
 
 const LocationsBlog= (props) => {
-  console.log(props)
   let isPageWide = media('(min-width: 768px)')
 
     const router = useRouter();

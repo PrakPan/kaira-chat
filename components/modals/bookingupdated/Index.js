@@ -147,7 +147,6 @@ const Booking = (props) => {
                 type: [],
                 star_category: [],
             };
-            // console.log(FILTERS);
                         let filters=_generateFilterKeys(FILTERS_KEY);
  
         axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset="+offset, 
@@ -559,7 +558,6 @@ setUpdateLoadingState(true);
 
          let options = moreOptionsJSX.slice();
               for(var i = 0; i < res.data.results.length; i++){
-                // console.log(res.data.results[i])
                 try{
                  if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
                 options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler} token={props.token} _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
