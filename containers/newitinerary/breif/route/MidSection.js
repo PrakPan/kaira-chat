@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 // import Pin from './Pin';
 import { MdOutlineFlightTakeoff } from 'react-icons/md';
 import { TransportIconFetcher } from '../../../../helper/TransportIconFetcher';
+import ImageLoader from '../../../../components/ImageLoader';
 const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
@@ -49,6 +50,14 @@ const MidSection = (props) => {
         <Line />
       </div>
       <Text>
+        {/* <ImageLoader
+          borderRadius="8px"
+          url={props.image}
+          height={50}
+          width={50}
+          heightMobile="auto"
+          dimensionsMobile={{ width: 50, height: 50 }}
+        ></ImageLoader> */}
         <TransportIconFetcher
           TransportMode={props.transportMode}
           Instyle={{

@@ -715,7 +715,8 @@ const SimpleTabs = (props) => {
               payment={props.payment}
               plan={props.plan}
             ></BookingContainer>
-            <GITSummaryContainer
+            <GITSummaryCo
+              ntainer
               hasUserPaid={
                 props.payment ? (props.payment.paid_user ? true : false) : false
               }
@@ -739,7 +740,7 @@ const SimpleTabs = (props) => {
               experienceId={props.experienceId}
               token={props.token}
               // setShowLoginModal={setShowLoginModal}
-            ></GITSummaryContainer>
+            ></GITSummaryCo>
           </div>
         </SplitScreen>
       ) : null}

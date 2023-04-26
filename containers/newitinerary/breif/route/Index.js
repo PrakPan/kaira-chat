@@ -110,6 +110,7 @@ const Route = (props) => {
                 props.breif.city_slabs[i].color,
                 props.breif.city_slabs[i].color,
               ]}
+              image={props.breif.city_slabs[i].image}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
             ></MidSection>

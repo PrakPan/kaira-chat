@@ -3,7 +3,7 @@ import Row from '../../../components/experiencecity/info/Row';
 
 import Overview from './overview/Index';
 import axiosPoiCityInstance from '../../../services/poi/city';
-
+import axiosPoiRoutes from '../../../services/itinerary/brief/route';
 // import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
 // import RouteData from './Locations';
 
@@ -64,8 +64,37 @@ const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
+  const [routes, setRoutes] = useState(false);
 
   console.log(`id mapp${active}`);
+  async function getRoutes(itinaryId) {
+    const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
+    const data = res.data;
+    return data;
+  }
+  const routesData = [];
+  useEffect(() => {
+    getRoutes(props.breif.tailor_made_id)
+      .then((res) => {
+        for (var i = 0; i < res.length; i++) {
+          // console.log(`response city data${JSON.stringify(citydetails)}`);
+          // console.log(`lat,long${citydetails.lat}`);
+          if (res[i].long) {
+            routesData.push(res[i]);
+          }
+        }
+
+        console.log(routesData);
+        setRoutes(routesData);
+      })
+      .catch((err) => {
+        console.log(`error in routes${err}`);
+      });
+  }, []);
+  if (routes) {
+    console.log('routesData');
+    console.log(routes);
+  }
   // useEffect(()=> {
 
   //         window.addEventListener('scroll', _handleScroll);
@@ -108,26 +137,29 @@ const Details = (props) => {
     const data = res.data;
     return data;
   }
-  for (var i = 0; i < props.breif.city_slabs.length; i++) {
-    var postion = props.breif.city_slabs[i];
+  if (routes) {
+    for (var i = 0; i < routes.length; i++) {
+      var postion = props.breif.city_slabs[i];
 
-    // console.log(`response city data${JSON.stringify(citydetails)}`);
-    // console.log(`lat,long${citydetails.lat}`);
-    if (!postion.is_departure_only && !postion.is_trip_terminated) {
+      // console.log(`response city data${JSON.stringify(citydetails)}`);
+      // console.log(`lat,long${citydetails.lat}`);
+
       Locationlatlong.push({
-        dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+        dayId: getdayId(routes[i].start_day_slab_index),
         cityData: postion,
-        id: postion.gmaps_place_id,
-        city_id: postion.city_id,
-        lat: postion.lat ?? '18.5204',
-        long: postion.long ?? '73.8567',
-        name: postion.city_name,
-        duration: postion.duration,
+        id: routes[i].gmaps_place_id,
+        city_id: routes[i].city_id,
+        lat: routes[i].lat,
+        long: routes[i].long,
+        name: routes[i].city_name,
+        duration: routes[i].duration,
         color: postion.color,
       });
     }
   }
 
+  console.log('routes after route');
+  console.log(routes);
   // props.breif.city_slabs.map(
   //   (postion) =>
 
@@ -165,7 +197,12 @@ const Details = (props) => {
       <DetailsContainer>
         <RouteComponent>
           <div id="route">
-            <Route breif={props.breif} setPlaceID={setActive} active={active} />
+            <Route
+              breif={props.breif}
+              routes={routes}
+              setPlaceID={setActive}
+              active={active}
+            />
           </div>
 
           <div className="svg-container"></div>
@@ -179,14 +216,16 @@ const Details = (props) => {
               active={active}
             ></Map>
           </div> */}
-          <div
-            className="relative lg:w-[30rem] lg:h-[30rem]  w-[23rem] h-[23rem]  rounded-xl"
-            id="MapcontainerRoute"
-          >
-            <div className="absolute w-[100%] h-[100%] rounded-xl">
-              <MapWithNoSSR locations={Locationlatlong} />
+          {routes && (
+            <div
+              className="relative lg:w-[30rem] lg:h-[30rem]  w-[23rem] h-[23rem]  rounded-xl"
+              id="MapcontainerRoute"
+            >
+              <div className="absolute w-[100%] h-[100%] rounded-xl">
+                <MapWithNoSSR locations={Locationlatlong} />
+              </div>
             </div>
-          </div>
+          )}
         </RouteComponent>
         {isPageWide ? (
           <div>

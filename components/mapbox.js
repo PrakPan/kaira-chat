@@ -157,7 +157,7 @@ const Mapbox = ({ locations }) => {
             html: `<div class=" rounded-full w-[20px] h-[20px] flex justify-center items-center" style="background-color: ${
               location.color
             };">
-            <span class="text-white text-xs font-extrabold animate-bounce mt-1">  ${index +
+            <span class="text-white text-xs font-bold animate-bounce mt-1">  ${index +
               1}</span>
          
           `,
