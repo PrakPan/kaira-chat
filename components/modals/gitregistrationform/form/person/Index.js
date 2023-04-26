@@ -19,7 +19,7 @@ grid-template-columns : 1fr 1fr;
   
 const Person = (props) => {
   let isPageWide = media('(min-width: 768px)')
-
+  const [open , setOpen] = useState(false)
     const [expanded, setExpanded] = useState(false);
     const [verificationfailed, setVerificationFailed] = useState(false);
     const [verificationfailedmessage, setVerificationFailedMessage] = useState(null);
@@ -68,6 +68,7 @@ const Person = (props) => {
           }catch{
 
           }
+          setOpen(false)
      }).catch(err => {
        try{
          setVerificationFailed(err.response.data.registered_users[0].invalid_field);
@@ -89,9 +90,8 @@ const Person = (props) => {
           employee_id: id,
         })
       }
-    
   return(
-         <Accordion initialOpen={props.index == 1?true:false}>
+         <Accordion initialOpen={props.index == 1?true:false} open={open} setOpen={setOpen}>
        <AccordionSummary
         id="itinerary-booking-summary-accordio"
     style={{padding: '1rem'}}

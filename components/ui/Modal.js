@@ -77,7 +77,6 @@ export default function Modal(props) {
     el.remove();
     return width;
   }
-
   useEffect(() => {
     set_document(document)
 }, [])
@@ -85,7 +84,6 @@ export default function Modal(props) {
   function onCLose() {
     setFade("out");
     setTimeout(() => {
-      // props.setShow(false);
       if (props.onHide) props.onHide();
       document.body.style.overflowY = 'scroll'
       document.body.style.paddingRight = '0px'
@@ -95,7 +93,6 @@ export default function Modal(props) {
   useEffect(() => {
     if (props.show === true){
     document.body.style.overflowY = 'hidden';
-    // document.body.style.overflow = 'scroll'
     document.body.style.paddingRight = getScrollBarWidth() + 'px'
     setFade("in")
   }

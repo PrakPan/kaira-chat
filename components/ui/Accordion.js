@@ -28,22 +28,24 @@ export default function Accordion(props) {
   const DetailsRef = useRef();
   const SummaryRef = useRef();
   const [height, setHeight] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  // const [expanded, setExpanded] = useState(props.open)
+
   useEffect(()=>{
-    if(props.initialOpen) setExpanded(true)
+    if(props.initialOpen) props.setOpen(true)
   },[])
+
   useEffect(() => {
-    if (expanded)
+    if (props.open)
       setHeight(
         DetailsRef.current.clientHeight + SummaryRef.current.clientHeight
       );
     else setHeight(SummaryRef.current.clientHeight);
-  }, [expanded,props.children]);
+  }, [props.open,props.children]);
   return (
     <Container ContainerHeight={height} {...props}>
-      <Summary ref={SummaryRef} onClick={() => setExpanded(!expanded)}>
+      <Summary ref={SummaryRef} onClick={() => props.setOpen(!props.open)}>
         {props.children[0]}
-        <DownIcon rotate={expanded}>
+        <DownIcon rotate={props.open}>
         <BiChevronDown   />
       </DownIcon>
       </Summary>

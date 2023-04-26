@@ -83,8 +83,8 @@ const  Homepage = (props) =>{
   useEffect(() => {
     
     if(props.token){
-    const MyPlans = JSON.parse(localStorage.getItem('MyPlans'))
-if(MyPlans){
+const MyPlans = JSON.parse(localStorage.getItem('MyPlans'))
+if(MyPlans && MyPlans.access_token === props.token){
 setMyPlansArr(MyPlans.plans)
 setPlansCount(MyPlans.count)
 setPlansLoading(false)
@@ -102,7 +102,7 @@ else{
           
         }
         setMyPlansArr(plansarr.slice());
-        localStorage.setItem('MyPlans' , JSON.stringify({plans : plansarr , count : res.data.count}))
+        localStorage.setItem('MyPlans' , JSON.stringify({plans : plansarr , count : res.data.count , access_token : props.token}))
         setPlansCount(res.data.count);
         setPlansLoading(false);
     }).catch(err => {
