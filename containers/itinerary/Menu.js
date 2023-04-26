@@ -714,9 +714,12 @@ const SimpleTabs = (props) => {
             <BookingContainer
               payment={props.payment}
               plan={props.plan}
+              stayBookings={props.stayBookings}
+              flightBookings={props.flightBookings}
+              activityBookings={props.activityBookings}
+              transferBookings={props.transferBookings}
             ></BookingContainer>
-            <GITSummaryCo
-              ntainer
+            {/* <GITSummaryContainer
               hasUserPaid={
                 props.payment ? (props.payment.paid_user ? true : false) : false
               }
@@ -740,7 +743,7 @@ const SimpleTabs = (props) => {
               experienceId={props.experienceId}
               token={props.token}
               // setShowLoginModal={setShowLoginModal}
-            ></GITSummaryCo>
+            ></GITSummaryContainer> */}
           </div>
         </SplitScreen>
       ) : null}
