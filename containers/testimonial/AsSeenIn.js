@@ -226,7 +226,7 @@ const AsSeenIn = (props) => {
             </MarqueeContainer> */}
             <InnerContainer>
                    <div>
-                        <HeadingNew className="font-opensans" margin={props.margin} >What They Say</HeadingNew>
+                        <HeadingNew className="font-lexend" margin={props.margin} >What They Say</HeadingNew>
                        <HeadingContainer>
                         </HeadingContainer>
                     </div>
@@ -238,10 +238,10 @@ const AsSeenIn = (props) => {
                         {isPageWide ? <LogoOuterContainer className="center-div" onMouseEnter={() => setSelected(4)} style={{borderColor: selected === 4 ? '#F7e700' : 'transparent'}} ><LogoContainer className="center-div"><NewImg src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/yourstory.png'}/></LogoContainer></LogoOuterContainer> : null}
                     </GridContainer>
                     <ContentContainer>
-                        <ReviewHeading className="font-opensans">
+                        <ReviewHeading className="font-lexend">
                             {Quotes[selected]}
                         </ReviewHeading>
-                        {!props.disablelinks ? <ReadFull href={Urls[selected]} target="_blank" className="font-opensans">Full Article</ReadFull> : null}
+                        {!props.disablelinks ? <ReadFull href={Urls[selected]} target="_blank" className="font-lexend">Full Article</ReadFull> : null}
                     </ContentContainer>
             </InnerContainer>
         </Container>

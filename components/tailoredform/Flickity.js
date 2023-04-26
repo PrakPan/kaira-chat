@@ -33,7 +33,6 @@ const FlickityComp = (props) => {
  
    
   // props.setStartingLocation(true)
-  console.log(props.selectedCities , 'selectedCities')
 
   
       return (
@@ -75,7 +74,7 @@ const FlickityComp = (props) => {
                             {/* <Card><SlideOne></SlideOne></Card> */}
 
         
-        {/* <div  style={{backgroundColor: 'black', width: '100%'}} className="text-center font-opensans" onClick={() => this.flkty.next()}>next button</div> */}
+        {/* <div  style={{backgroundColor: 'black', width: '100%'}} className="text-center font-lexend" onClick={() => this.flkty.next()}>next button</div> */}
         </div>
       )
     

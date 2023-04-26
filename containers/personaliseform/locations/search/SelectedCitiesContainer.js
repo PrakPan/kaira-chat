@@ -42,7 +42,7 @@ const SelectedCitiesContainer = (props) => {
       }
      return(
         <Container className='border-thi'>
-                    <div className=" center-div font-opensans" style={{opacity: '1', marginRight: '0rem', letterSpacing: '2px', fontWeight: '300'}}>YOUR TRAVEL PLAN FOR</div>
+                    <div className=" center-div font-lexend" style={{opacity: '1', marginRight: '0rem', letterSpacing: '2px', fontWeight: '300'}}>YOUR TRAVEL PLAN FOR</div>
            {selectedcitiesarr.length ? selectedcitiesarr : 
                        <SelectedCity questionIndex={props.questionIndex} _removeCityHandler={props._removeCityHandler}  name={null} parent={null} city_id={null}></SelectedCity>
            }

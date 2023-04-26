@@ -54,10 +54,10 @@ export default function TemporaryDrawer(props) {
     <div>
         <React.Fragment key={'bottom'}>
             {/* <FiltersContainer>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-opensans center-div text-center'>Budget</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-opensans center-div text-center'>Type</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-opensans center-div text-center'>User Rating</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-opensans center-div text-center'>Star Category</Filter>
+                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Budget</Filter>
+                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Type</Filter>
+                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>User Rating</Filter>
+                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Star Category</Filter>
 
             </FiltersContainer> */}
              <Tabs
@@ -70,9 +70,9 @@ export default function TemporaryDrawer(props) {
    className="filters-mobile-tabs"
    id="filter-tab" 
   >
-            <Tab  id="filter-budget" key="filter-budget" label={"Stops"} className={"booking-filter-tab font-opensans"}></Tab>
-            <Tab  id="filter-type" key="filter-type" label={"Airline"} className={"booking-filter-tab font-opensans"}></Tab>
-            <Tab  id="filter-starcategory" key="filter-starcategory" label={"Arrival"} className={"booking-filter-tab font-opensans"}></Tab>
+            <Tab  id="filter-budget" key="filter-budget" label={"Stops"} className={"booking-filter-tab font-lexend"}></Tab>
+            <Tab  id="filter-type" key="filter-type" label={"Airline"} className={"booking-filter-tab font-lexend"}></Tab>
+            <Tab  id="filter-starcategory" key="filter-starcategory" label={"Arrival"} className={"booking-filter-tab font-lexend"}></Tab>
 
   </Tabs>
           <Drawer

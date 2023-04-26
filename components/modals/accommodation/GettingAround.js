@@ -33,7 +33,7 @@ useEffect(() => {
  
 return( 
 <div>{props.getting_around ? <Container>
-    <Heading className="font-opensans">Getting Around</Heading>
+    <Heading className="font-lexend">Getting Around</Heading>
     <Description className="font-nunito" >{showMore ? props.getting_around.substring(0,250) : props.getting_around}</Description>
     {showMore ? <Description style={{margin: '0'}} className="font-nunito">...</Description> : null}
     {showMore ? <Description style={{margin: '0', textDecoration:'underline'}} className="font-nunito" onClick={() => setShowMore(false)}>Read More</Description>: null}

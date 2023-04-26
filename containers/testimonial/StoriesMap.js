@@ -354,12 +354,10 @@ const StoriesMap = () => {
     if (isPageWide) {
       return (
         <div>
-          <StoriesHeading className="font-opensans">Our Stories</StoriesHeading>
+          <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
 
           <Container>
-            <PinIcon style={{ left: '86%', top: '78.9%' }}>
-              <Image objectFit="cover" height={80} src={MapPin}></Image>
-            </PinIcon>
+            <PinIcon style={{ left: '86%', top: '78.9%' }} src={MapPin} />
             <OverlayTrigger placement="top" overlay={Tooltip1}>
               <UserIcon style={{ left: '86%', top: '77.5%' }}>
                 <Image objectFit="cover" height={50} src={dieter}></Image>
@@ -422,13 +420,10 @@ const StoriesMap = () => {
     } else {
       return (
         <div>
-          <StoriesHeading className="font-opensans">Our Stories</StoriesHeading>
+          <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
 
           <Container>
-            <PinIcon style={{ left: '47.3rem', top: '40.9%' }}>
-              <Image objectFit="cover" src={MapPin}></Image>
-            </PinIcon>
-
+            <PinIcon style={{ left: '47.3rem', top: '40.9%' }} src={MapPin} />
             <OverlayTrigger placement="top" overlay={Tooltip1}>
               <UserIcon
                 style={{ left: '47.3rem', top: '39.5%' }}

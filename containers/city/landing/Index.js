@@ -206,7 +206,7 @@ const BlackContainer = (props) => {
  
       {/* <IconListContainer>
         
-        <ExperienceName className='font-opensans'>{props.title}</ExperienceName>
+        <ExperienceName className='font-lexend'>{props.title}</ExperienceName>
 
       </IconListContainer> */}
         

@@ -46,7 +46,7 @@ const Button =  React.forwardRef((props, ref) => {
     if(props.onclick){
         if(!isPageWide)
     return(
-        <Container onMouseEnter={() => setHover(true)}  onMouseOut={() => setHover(false)} className="font-opensans center-dv" onClick={() => props.onclick(props.onclickparam)}
+        <Container onMouseEnter={() => setHover(true)}  onMouseOut={() => setHover(false)} className="font-lexend center-dv" onClick={() => props.onclick(props.onclickparam)}
         style={{
             color: hover ? hovercolor : color,
             display: props.display ? props.display : "block",
@@ -67,7 +67,7 @@ const Button =  React.forwardRef((props, ref) => {
         </Container>
     );
     else return(
-        <Container onMouseEnter={() => setHover(true)} onMouseOut={() => setHover(false)} className="font-opensans center-dv" onClick={() => props.onclick(props.onclickparam)}
+        <Container onMouseEnter={() => setHover(true)} onMouseOut={() => setHover(false)} className="font-lexend center-dv" onClick={() => props.onclick(props.onclickparam)}
         style={{
             color: hover ? hovercolor : color,
             display: props.display ? props.display : "block",
@@ -92,7 +92,7 @@ const Button =  React.forwardRef((props, ref) => {
     else{
         if(!isPageWide)
         return(
-        <Container onMouseEnter={() => setHover(true)} onMouseOut={() => setHover(false)} className={props.blur ? "font-opensans blurry-text": "font-opensanss"}
+        <Container onMouseEnter={() => setHover(true)} onMouseOut={() => setHover(false)} className={props.blur ? "font-lexend blurry-text": "font-lexends"}
         style={{
             color: hover ? hovercolor : color,
             display: props.display ? props.display : "block",
@@ -113,7 +113,7 @@ const Button =  React.forwardRef((props, ref) => {
     );
     else
     return(
-    <Container onMouseEnter={() => setHover(true)} onMouseOut={() => setHover(false)} className={props.blur ? "font-opensans blurry-text": "font-opensans"}
+    <Container onMouseEnter={() => setHover(true)} onMouseOut={() => setHover(false)} className={props.blur ? "font-lexend blurry-text": "font-lexend"}
     style={{
         color: hover ? hovercolor : color,
         display: props.display ? props.display : "block",

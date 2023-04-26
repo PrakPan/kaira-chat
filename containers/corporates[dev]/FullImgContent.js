@@ -51,8 +51,8 @@ const FullImgContent = (props) => {
 
     return (
 
-        <Container className='font-opensans'>
-            {isPageWide ? <CompanyName className='font-opensans'>TheTarzanWay
+        <Container className='font-lexend'>
+            {isPageWide ? <CompanyName className='font-lexend'>TheTarzanWay
             <span style={{fontWeight: '100'}}> For Business</span>
             </CompanyName> : null}
             <Heading>Business Travel made productive</Heading>

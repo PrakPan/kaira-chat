@@ -44,7 +44,7 @@ const HorizontalTestimonialCard = (props) =>{
         <Container className="border">
                 <ImgContainer className="center-div">
                     {/* <Img src={img}></Img> */}
-                    <Name className="font-opensans"><b>Dieter Arnold</b></Name>
+                    <Name className="font-lexend"><b>Dieter Arnold</b></Name>
                     <Location>GERMANY</Location>
                 </ImgContainer>
                 <ContentContainer className="font-nunito center-div">

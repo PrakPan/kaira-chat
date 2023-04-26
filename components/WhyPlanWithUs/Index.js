@@ -77,8 +77,8 @@ const WhyPlanWithUs = (props)=>{
             {/* <ImageLoader widthmobile='55px' width='55px' height='55px' url={ImagesArr[0]}></ImageLoader> */}
             <Icon>{ImagesArr[i]}</Icon>
             <div>
-                <Heading className="font-opensans">{HeadingArr[i]}</Heading>
-                <Text className="font-opensans">{TextArr[i]}</Text>
+                <Heading className="font-lexend">{HeadingArr[i]}</Heading>
+                <Text className="font-lexend">{TextArr[i]}</Text>
             </div>
             </Flex>
         )

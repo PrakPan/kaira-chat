@@ -80,7 +80,7 @@ const Cost = (props) => {
         <Container className='center-di' >
            {props.starting_cost ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
             {props.PW ? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : null}
-            <div style={{display: 'flex', justifyContent: 'flex-end'}}><Text className='font-opensans'>
+            <div style={{display: 'flex', justifyContent: 'flex-end'}}><Text className='font-lexend'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
             </Text></div></div></div>: null}
         </Container>

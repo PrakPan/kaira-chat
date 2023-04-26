@@ -8,6 +8,14 @@ import styled from 'styled-components';
 
 
 const Container = styled.input`
+    width: 92%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding-left: 2.6rem;
+    background-color: transparent;
+    cursor : pointer;
  &:focus{
     border: none;
     outline: none;
@@ -69,7 +77,7 @@ useEffect(() => {
   }
 
   return (
-   <Container onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : _resetSelectedCities } disabled={false} placeholder='Search destination' className='font-opensans' value={value} autoFocus onChange={(e) => _handleKey(e)}>
+   <Container onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : _resetSelectedCities } disabled={false} placeholder='Search destination' className='font-lexend' value={value} autoFocus onChange={(e) => _handleKey(e)}>
     
     </Container>
   );

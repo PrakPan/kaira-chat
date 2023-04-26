@@ -255,7 +255,7 @@ const PlanAsPerTheme = (props) => {
       {!props.nostart ? (
         <Button
           onclick={props.onclick ? props.onclick : _handleTailoredClick}
-          fontWeight="600"
+          fontWeight="500"
           boxShadow
           borderRadius="8px"
           bgColor="#F7E700"

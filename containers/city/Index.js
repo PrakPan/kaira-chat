@@ -91,7 +91,7 @@ else router.push('/tailored-travel')
                    cities={props.reccomendedCitiesData}
                    //  children_cities={props.experienceData.children}
                    title={`${props.cityData.name} Trip Planner`}
-                  setShowMobilePlanner={setShowMobilePlanner}
+                   _startPlanningFunction={()=>setShowMobilePlanner(true)}
 
                  />
 

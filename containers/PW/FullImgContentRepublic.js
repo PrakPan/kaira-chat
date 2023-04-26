@@ -112,7 +112,7 @@ const FullImgContent = (props) => {
 
     return (
 
-        <Container className='font-opensans center-di '>
+        <Container className='font-lexend center-di '>
            <PaddingContianer >
            <Heading style={{fontWeight:  '800'}}>
                  HOLI SPECIALS

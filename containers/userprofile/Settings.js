@@ -42,7 +42,7 @@ const Settings = (props) => {
     }
     return(
         <Container>
-                <Heading className="font-opensans">Account Settings</Heading>
+                <Heading className="font-lexend">Account Settings</Heading>
                 <Grid container spacing={4}>
                     <Grid item xs={6}>
                         <Subheading className="font-nunito">Name</Subheading>
@@ -51,7 +51,7 @@ const Settings = (props) => {
                         <Button boxShadow onclick={() => changeDetailsHandler("name")} borderRadius="2rem" borderWidth="1px" margin="1rem auto">Change Data</Button>
                     </Grid>
                     <Grid item xs={6}>
-                        <Subheading className="font-opensans">Email</Subheading>
+                        <Subheading className="font-lexend">Email</Subheading>
                         <TextField id="outlined-basic"  variant="outlined" fullWidth  placeholder={props.email} onChange={event => {_userDetailsOnChangeHandler(event,'email')}}/>   
                         {/* <Button onclick={() => changeDetailsHandler("email")} borderRadius="2rem" borderWidth="1px" margin="1rem auto">Change Data</Button> */}
                         <Button boxShadow onclick={() => changeDetailsHandler("email")} borderRadius="2rem" borderWidth="1px" margin="1rem auto">Change Data</Button>

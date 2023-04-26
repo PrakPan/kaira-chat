@@ -71,7 +71,7 @@ const Index = () => {
     for (var i = 0; i < content.length; i++) {
       if (content[i].heading) {
         cards.push(
-          <Heading2 className="font-opensans">{content[i].heading}</Heading2>
+          <Heading2 className="font-lexend">{content[i].heading}</Heading2>
         );
       }
     }
@@ -103,11 +103,15 @@ const Index = () => {
   return (
     <Container1 className="center-div">
       {/* <Heading1 className='center-div'> Ready to make memories!</Heading1> */}
-      <LottieAnimation></LottieAnimation>
-      {/* <Logo style={{ margin: '1rem 0 4rem 0' }} className='center-div' src={img1} ></Logo> */}
-      {/* <Linecirclecontainer/> */}
-      <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
-      <Heading2 className=" font-opensans font-medium text-lg">
+
+      <Logo
+        style={{ margin: '1rem 0 4rem 0' }}
+        className="center-div"
+        src={img1}
+      ></Logo>
+      <Linecirclecontainer />
+
+      <Heading2 className="center-di font-lexend">
         {' '}
         {content[currentStep - 1].heading}{' '}
       </Heading2>

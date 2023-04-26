@@ -165,9 +165,12 @@ const SearchPannel = (props) => {
         )}
 
         {showResults ? (
-          <NewResults results={results} />
+          <NewResults setPannelClose={props.setPannelClose} results={results} />
         ) : (
-          <Locations hotlocations={hotLocationsData}></Locations>
+          <Locations
+            setPannelClose={props.setPannelClose}
+            hotlocations={hotLocationsData}
+          ></Locations>
         )}
       </div>
     </Container>

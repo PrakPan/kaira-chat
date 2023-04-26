@@ -60,8 +60,8 @@ const Info = (props) => {
 
     
     return(
-        <Container className='font-opensans'>
-         <Heading className='font-opensans'>{props.name}</Heading>
+        <Container className='font-lexend'>
+         <Heading className='font-lexend'>{props.name}</Heading>
           <Locations>{LOCATIONS_TO_SHOW}</Locations>
           {props.PW  ? <TourType>Tour Type: <b style={{fontWeight: '500'}}>Customisable</b></TourType>
   : 

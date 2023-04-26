@@ -18,20 +18,17 @@ const MarkerContainer = styled.div`
   padding-top: 5px;
 `;
 const Text = styled.div`
-  font-weight: 600;
-  // margin-block : 5px;
-`;
-const NewLocation = (props) => {
-  return (
-    <Container
-      className="font-lexend"
-      onClick={() => {
-        props.setDestination(props.text);
-        props.setShowCities(false);
-        props.onclick(props.onclickparam);
-      }}
-    >
-      <MarkerContainer>
+font-weight : 600;
+// margin-block : 5px;
+`
+const NewLocation  = (props)=>{
+    return (
+        <Container className='font-lexend' onClick={()=>{props.setDestination(props.text) 
+         props.setShowCities(false)
+         props.onclick(props.onclickparam)
+        }}
+         >
+        <MarkerContainer>
         <FaMapMarkerAlt />
       </MarkerContainer>
       <Text>{props.text}</Text>

@@ -331,31 +331,33 @@ const Navbar = (props) => {
             </TTWLogoContainer>
 
             {/* <input /> */}
-            <div
-              style={{
-                position: 'absolute',
-                left: '32%',
-                height: '100%',
-                width: '37%',
-              }}
-              className="center-div"
-              onClick={() => setToggleSearch(true)}
-            >
-              <TopContainer>
-                <SearchContainer>
-                  <Search placeholder="Search by destination (country, region or city)"></Search>
-                  <ImSearch
-                    style={{
-                      position: 'absolute',
-                      top: '17px',
-                      left: '13px',
-                      color: '#B0BABF',
-                      pointerEvents: 'none',
-                    }}
-                  />
-                </SearchContainer>
-              </TopContainer>
-            </div>
+            {!props.hidecta && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: '32%',
+                  height: '100%',
+                  width: '37%',
+                }}
+                className="center-div"
+                onClick={() => setToggleSearch(true)}
+              >
+                <TopContainer>
+                  <SearchContainer>
+                    <Search placeholder="Search by destination (country, region or city)"></Search>
+                    <ImSearch
+                      style={{
+                        position: 'absolute',
+                        top: '17px',
+                        left: '13px',
+                        color: '#B0BABF',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </SearchContainer>
+                </TopContainer>
+              </div>
+            )}
             {toggleSearch ? (
               <DesktopSearch
                 onclose={() => setToggleSearch(false)}
@@ -383,15 +385,15 @@ const Navbar = (props) => {
 
               {!props.hidecta ? (
                 <Button
-                  fontWeight="600"
-                  boxShadow
-                  hoverBgColor="white"
-                  hoverColor="black"
+                  fontWeight="500"
+                  borderColor="black"
+                  borderWidth="1px"
+                  hoverBgColor="black"
+                  hoverColor="white"
                   bgColor="#F7e700"
-                  borderStyle="none"
-                  borderRadius="5px"
+                  borderRadius="6px"
                   margin="0 1.5rem 0 0"
-                  padding="0.75rem 0.75rem"
+                  padding="0.5rem 0.75rem"
                   onclick={
                     props.ctaonclick ? props.ctaonclick : _handleTailoredClick
                   }

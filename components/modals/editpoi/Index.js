@@ -156,7 +156,6 @@ const Booking = (props) => {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                 }}).then(res => {
                     
-                    //  console.log(res.data)
                     setUpdatePoiState(false);
                      props.setItinerary(res.data);
                     props.setHidePoiModal();
@@ -182,7 +181,7 @@ const Booking = (props) => {
             <div style={{padding: '0.25rem'}}>
                 {!isPageWide ? <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                     {showPoiDetails ?  <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={() => setShowPoiDetails(false)} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> : <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHidePoiModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> }
-                     {showPoiDetails ? <div onClick={() => setShowPoiDetails(false)} className='font-opensans'>Back to results</div>: null}
+                     {showPoiDetails ? <div onClick={() => setShowPoiDetails(false)} className='font-lexend'>Back to results</div>: null}
                     </div> : 
                     <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHidePoiModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon>
                 }
@@ -191,7 +190,7 @@ const Booking = (props) => {
                 {/* {!isPageWide && !showPoiDetails ? <MobileFilters></MobileFilters> : null} */}
                <div style={{display: showPoiDetails ? 'none' : 'block'}}><ContentContainer style={{position: 'relative'}}>
                 {loading ? <HeightContainer className='center-div'><div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching activity recommendations for you</div></HeightContainer> : null }
-                {updatePoiState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="text-center font-opensans center-div"><Spinner></Spinner>Please wait while we update your plan</div> : null }
+                {updatePoiState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="text-center font-lexend center-div"><Spinner></Spinner>Please wait while we update your plan</div> : null }
                { !noResults && !loading && !updatePoiState ?  <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                    {optionsJSX.length ? optionsJSX : null}
@@ -201,7 +200,7 @@ const Booking = (props) => {
                     {/* {viewMoreStatus ? <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null} */}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
-               {noResults ? <p  className='font-opensans text-center' >Oops, we couldn't find what you were searching but we are already adding new activities to our database everyday!</p>  : null}
+               {noResults ? <p  className='font-lexend text-center' >Oops, we couldn't find what you were searching but we are already adding new activities to our database everyday!</p>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
                {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
@@ -214,7 +213,7 @@ const Booking = (props) => {
                </ContentContainer></div>
                 {showPoiDetails ? <PoiDetailsContainer style={{display: showPoiDetails? 'block':'none'}}>
                     {isPageWide ? 
-                    <BackToResults onClick={() => setShowPoiDetails(false)} className='font-opensans'>
+                    <BackToResults onClick={() => setShowPoiDetails(false)} className='font-lexend'>
                         <FontAwesomeIcon style={{marginRight: '0.5rem'}} icon={faChevronLeft}></FontAwesomeIcon>
                     Back to results 
                     </BackToResults>

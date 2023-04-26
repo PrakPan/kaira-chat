@@ -57,9 +57,8 @@ const Navigator = (props) => {
   return (
     <Container>
       <TitleContainer>
-        {points.map((e, i) => (
+        {points.map((e) => (
           <Title
-            key={i}
             style={selectedPoint == e ? selectedStyle : null}
             onClick={() => changeData(e)}
           >
@@ -70,7 +69,7 @@ const Navigator = (props) => {
       <div className="hidden-mobile">
         <Button
           onclick={() => console.log('clicked')}
-          fontWeight="600"
+          fontWeight="500"
           hoverBgColor="white"
           fontSize="14px"
           hoverColor="black"

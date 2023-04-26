@@ -51,8 +51,8 @@ const Testimonial = (props) => {
         
             <Card className='border center-v text-cener'>
                 <ImageLoader borderRadius="50%" width="60%" widthMobile="40%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
-                <CardHeading className='font-opensans text-center'>{props.heading}</CardHeading>
-                <CardSubHeading className='font-opensans text-center'>{props.duration + " | " + props.destination}</CardSubHeading>
+                <CardHeading className='font-lexend text-center'>{props.heading}</CardHeading>
+                <CardSubHeading className='font-lexend text-center'>{props.duration + " | " + props.destination}</CardSubHeading>
                 {props.review ? <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> : null}
                 <CardListItem className='text-center' ><em>{props.text}</em></CardListItem>
                 <div style={{display: 'flex', height: '100%', alignItems: 'flex-end'}}>

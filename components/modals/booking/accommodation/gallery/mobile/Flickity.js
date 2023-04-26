@@ -57,17 +57,17 @@ const FlickityCarousel = (props) => {
                 <StyledCarouselItem  className='center-div'   >
                 <ImageLoader borderRadius="50%" url={props.images[i].image}   width='12.5vw' widthmobile="100%" height="auto"   dimensions={{width: 800, height: 800}} dimensionsMobile={{width: 1800, height: 1200}}></ImageLoader>
                 <Carousel.Caption style={{bottom: '0', left: '0',  padding: '0', width: '100%'}}>
-                    {/* <RatingContainer className='font-opensans' style={{backgroundColor: color}}>
+                    {/* <RatingContainer className='font-lexend' style={{backgroundColor: color}}>
                         <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
                             {props.review_score+"/10"} 
                     </RatingContainer>  */}
-                    {/* <ReviewCount className='font-opensans'>{props.review_count + " Reviews"}</ReviewCount> */}
+                    {/* <ReviewCount className='font-lexend'>{props.review_count + " Reviews"}</ReviewCount> */}
                </Carousel.Caption>
-               {/* <RatingContainer className='font-opensans'>
+               {/* <RatingContainer className='font-lexend'>
                         <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
                             8.5/10 
                     </RatingContainer> 
-                    <ReviewCount className='font-opensans'>326 Reviews</ReviewCount> */}
+                    <ReviewCount className='font-lexend'>326 Reviews</ReviewCount> */}
             </StyledCarouselItem>
             )
         }

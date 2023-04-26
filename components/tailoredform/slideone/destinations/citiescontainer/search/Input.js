@@ -45,7 +45,7 @@ const SearchInput = (props) => {
   // const [selectedCities, setSelectedCities] = useState([]);
 
   return (
-   <Container placeholder='Search cities' className='font-opensans' autoFocus onChange={(event) => _handleKey(event)} >
+   <Container placeholder='Search cities' className='font-lexend' autoFocus onChange={(event) => _handleKey(event)} >
     
     </Container>
   );

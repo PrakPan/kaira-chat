@@ -103,20 +103,54 @@ const Navbar = (props) => {
         .catch((err) => {});
   };
 
+  //             setNotifications(res.data)
+  //         }).catch(err => {
+  //     })
+
+  // }
+  // const _openAllNotificationsHandler = () => {
+  //   if(props.token)
+  //   axiosnotificationsinstance.patch("", {},  {headers: {
+  //       'Authorization': `Bearer ${props.token}`
+  //       }}).then(res => {
+  //         setNotOpenCount(0);
+  //       }).catch(err => {
+  //   })
+  // }
+
   return (
-    <div>
+    <div className="font-lexend">
       <div className="hidden-desktop">
         <NewMobile
+          PW={props.PW}
           _openAllNotificationsHandler={_openAllNotificationsHandler}
-          hidecta={Isitenary}
+          hidecta={props.hidecta}
           ctaonclick={props.ctaonclick}
           _deleteNotificationHandler={_deleteNotificationHandler}
           notifications={notifications}
-          _deleteNotificationHandler={_deleteNotificationHandler}
-          headerColor={headerColor}
-          hideNav={false}
+          hideNav={hideNav}
           notOpenCount={notOpenCount}
         ></NewMobile>
+      </div>
+      <div className="hidden-mobile">
+        <div
+          style={{
+            display: hideNav ? 'none !important' : 'initial !important',
+          }}
+        >
+          <IndexDesktop
+            PW={props.PW}
+            ctaonclick={props.ctaonclick}
+            hidehomecta={props.hidehomecta}
+            hidecta={props.hidecta}
+            _deleteNotificationHandler={_deleteNotificationHandler}
+            _openAllNotificationsHandler={_openAllNotificationsHandler}
+            notOpenCount={notOpenCount}
+            notifications={notifications}
+            token={props.token}
+            style={{}}
+          ></IndexDesktop>
+        </div>
       </div>
       <div className="hidden-mobile">
         <div

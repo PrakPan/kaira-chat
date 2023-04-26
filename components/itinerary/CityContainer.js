@@ -1,16 +1,16 @@
-import React, { useState, useRef } from "react";
-import styled from "styled-components";
+import React, { useState, useRef } from 'react';
+import styled from 'styled-components';
 
-import IconElement from "./element/Index";
-import { Link, animateScroll as scroll } from "react-scroll";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
-import { makeStyles } from "@material-ui/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import media from "../media";
-import { getHumanDate } from "../../services/getHumanDate";
-import Button from "../Button";
-import { isJson } from "../../services/isJSON";
+import IconElement from './element/Index';
+import { Link, animateScroll as scroll } from 'react-scroll';
+import { FaChevronRight, FaChevronLeft } from 'react-icons/fa';
+import { makeStyles } from '@material-ui/styles';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import media from '../media';
+import { getHumanDate } from '../../services/getHumanDate';
+import Button from '../Button';
+import { isJson } from '../../services/isJSON';
 const Container = styled.div`
   width: 100%;
   padding: 0 0 5rem 0;
@@ -84,7 +84,7 @@ function TabPanel(props) {
   );
 }
 const CityContainer = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const ref = useRef();
@@ -94,15 +94,15 @@ const CityContainer = (props) => {
   };
 
   let DayElements = {
-    "Day 0": [],
-    "Day 1": [],
-    "Day 2": [],
-    "Day 3": [],
-    "Day 4": [],
-    "Day 5": [],
-    "Day 6": [],
-    "Day 7": [],
-    "Day 8": [],
+    'Day 0': [],
+    'Day 1': [],
+    'Day 2': [],
+    'Day 3': [],
+    'Day 4': [],
+    'Day 5': [],
+    'Day 6': [],
+    'Day 7': [],
+    'Day 8': [],
   };
   let TabsElements = [];
   let TabsContainers = [];
@@ -114,8 +114,8 @@ const CityContainer = (props) => {
   ) => {
     if (day_slab in DayElements) {
     } else DayElements[day_slab] = [];
-    if (day_element.element_type !== "newcity") {
-      if (day_element.icon.slice(day_element.icon.length - 4) === ".svg")
+    if (day_element.element_type !== 'newcity') {
+      if (day_element.icon.slice(day_element.icon.length - 4) === '.svg')
         DayElements[day_slab].push(
           <div>
             <IconElement
@@ -126,12 +126,12 @@ const CityContainer = (props) => {
               is_auth={props.is_auth}
               traveleritinerary={props.traveleritinerary}
               is_poi_rec={
-                day_element.type === "POI/Activity Recommendation"
+                day_element.type === 'POI/Activity Recommendation'
                   ? true
                   : false
               }
               is_food={
-                day_element.type === "Food Recommendation" &&
+                day_element.type === 'Food Recommendation' &&
                 isJson(day_element.text)
                   ? true
                   : false
@@ -169,12 +169,12 @@ const CityContainer = (props) => {
               is_auth={props.is_auth}
               traveleritinerary={props.traveleritinerary}
               is_poi_rec={
-                day_element.type === "POI/Activity Recommendation"
+                day_element.type === 'POI/Activity Recommendation'
                   ? true
                   : false
               }
               is_food={
-                day_element.type === "Food Recommendation" &&
+                day_element.type === 'Food Recommendation' &&
                 isJson(day_element.text)
                   ? true
                   : false
@@ -237,27 +237,27 @@ const CityContainer = (props) => {
     TabsElements.push(
       <Tab
         style={{
-          textTransform: "none",
-          padding: "0.25rem 1rem",
-          color: "white !important",
+          textTransform: 'none',
+          padding: '0.25rem 1rem',
+          color: 'white !important',
         }}
         label={getHumanDate(props.day_slabs[j].slab)}
-        className="itinerary-day-tab font-opensans"
+        className="itinerary-day-tab font-lexend"
       ></Tab>
     );
     TabsContainers.push(
       <TabPanel value={value} index={i} ref={ref}>
         <div>{DayElements[props.day_slabs[j].slab]}</div>
-        <div style={{ display: "flex" }}>
+        <div style={{ display: 'flex' }}>
           {i ? (
             <StyledLink
               to={props.id}
               id={i}
               smooth={true}
               duration={500}
-              style={{ margin: "0" }}
+              style={{ margin: '0' }}
               onClick={(event) => _handlePrevClick(event)}
-              className="font-opensans"
+              className="font-lexend"
             >
               <StyledPrevIcon></StyledPrevIcon>
               Previous Day
@@ -271,7 +271,7 @@ const CityContainer = (props) => {
               duration={500}
               style={{}}
               onClick={(event) => _handleNextClick(event)}
-              className="font-opensans"
+              className="font-lexend"
             >
               Next Day
               <StyledNextIcon></StyledNextIcon>
@@ -290,21 +290,21 @@ const CityContainer = (props) => {
     setValue(parseInt(event.target.id, 10) - 1);
   };
   return (
-    <Container className={isPageWide ? "border" : " "}>
+    <Container className={isPageWide ? 'border' : ' '}>
       {!isPageWide ? (
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            position: "sticky",
-            left: "0",
-            top: "0vh",
-            backgroundColor: "white",
-            zIndex: "1000",
+            display: 'flex',
+            alignItems: 'center',
+            position: 'sticky',
+            left: '0',
+            top: '0vh',
+            backgroundColor: 'white',
+            zIndex: '1000',
             padding: props.hideTimer
-              ? "12vh 0.5rem 0 0.5rem"
-              : "0.75rem 0.5rem 0 0.5rem",
-            minHeight: "10vh",
+              ? '12vh 0.5rem 0 0.5rem'
+              : '0.75rem 0.5rem 0 0.5rem',
+            minHeight: '10vh',
           }}
         >
           <Tabs
@@ -313,15 +313,15 @@ const CityContainer = (props) => {
             onChange={handleChange}
             indicatorColor="false"
             disableRippled
-            variant={"scrollable"}
+            variant={'scrollable'}
             scrollButtons={true}
             allowScrollButtonsMobile
           >
             {TabsElements}
-            {/* <Tab   label="About" className="poi-tab font-opensans"></Tab>
-               <Tab   label="About" className="poi-tab font-opensans"></Tab>
-               <Tab   label="About" className="poi-tab font-opensans"></Tab>
-               <Tab   label="About" className="poi-tab font-opensans"></Tab> */}
+            {/* <Tab   label="About" className="poi-tab font-lexend"></Tab>
+               <Tab   label="About" className="poi-tab font-lexend"></Tab>
+               <Tab   label="About" className="poi-tab font-lexend"></Tab>
+               <Tab   label="About" className="poi-tab font-lexend"></Tab> */}
           </Tabs>
         </div>
       ) : (
@@ -336,7 +336,7 @@ const CityContainer = (props) => {
           {TabsElements}
         </StyledTabs>
       )}
-      <TabContainersContainer style={{ width: "100%", margin: "auto" }}>
+      <TabContainersContainer style={{ width: '100%', margin: 'auto' }}>
         {TabsContainers}
       </TabContainersContainer>
     </Container>

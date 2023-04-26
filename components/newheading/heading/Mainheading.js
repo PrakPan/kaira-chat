@@ -56,7 +56,7 @@ const Mainheadingstyle = styled.div`
 const Mainheading = (props) => {
   return (
     <Mainheadingstyle
-      className="font-opensans"
+      className="font-lexend"
       color={props.color} //6
       fontWeight={props.fontWeight} //1
       borderColor={props.borderColor} //8

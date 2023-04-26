@@ -93,9 +93,9 @@ const SearchFullImg= (props) => {
     return(
         <Container className="center-dv"> 
         <ContentContainer>
-        <Tagline className="font-opensans">{props.tagline}</Tagline>
+        <Tagline className="font-lexend">{props.tagline}</Tagline>
 
-            <SubText className="font-nunito">{props.text}</SubText>
+            <SubText className="font-lexend">{props.text}</SubText>
              {/* <div className='hidden-deskto'><Button onclick={props._handleTailoredClick} margin="3rem 0 0 0vw" bgColor="#f7e700" color="black" bold  fontWeight="600" borderRadius="5px" borderWidth="0" fontSizeDesktop="1.25rem">Create a Trip</Button></div> */}
 
              </ContentContainer>

@@ -4,7 +4,7 @@ import {ImCross} from 'react-icons/im'
 const Container = styled.div`
 // display : ${props=>props.show? 'block' : 'none'};
   font-size: 14px;
-  font-family: 'Poppins';
+  // font-family: 'Poppins';
   font-weight: 500;
     position: absolute;
     line-height: 20px;
@@ -21,6 +21,7 @@ const Container = styled.div`
     left : ${props=>props.left};
     bottom : ${props=>props.bottom};
     right: ${props=>props.right};
+    z-index : 1;
 
 @media screen and (max-width: 768px){
 top : ${props=>props.mobiletop};

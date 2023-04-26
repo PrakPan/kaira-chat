@@ -40,54 +40,27 @@ const Details = (props) => {
 
   return (
     <Container className="font-lexend">
-      {props.travellerType[0] != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Type of Travel</Heading>
-          <Text>
-            {props.travellerType[0]}{' '}
-            {props.travellerType.length - 1 <= 0
-              ? null
-              : `+${props.travellerType.length - 1}`}
-          </Text>
-        </div>
-      ) : null}
-      {props.group_type !== null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Group Type</Heading>
-          <Text>{props.group_type}</Text>
-        </div>
-      ) : null}
-
-      {props.duration_time != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Duration</Heading>
-          <Text>{props.duration_time} Nights</Text>
-        </div>
-      ) : null}
-      {/* {props.duration_time != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Duration</Heading>
-          <Text>{props.duration_time} Nights</Text>
-        </div>
-      ) : null} */}
-
-      {props.travellerType != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Date({props.duration})</Heading>
-          {props.start_date && (
-            <Text>
-              {convertDFormat(props.start_date)} -{' '}
-              {convertDFormat(props.end_date)}
-            </Text>
-          )}
-        </div>
-      ) : null}
-
-      {/* <div style={{ width: 'max-content' }}>
+      <div style={{ width: 'max-content' }}>
         <Heading>Destination</Heading>
         <Text>Rajasthan</Text>
-      </div> */}
-      {/* <div className="hidden-mobile">
+      </div>
+      <div style={{ width: 'max-content' }}>
+        <Heading>Type of Travel</Heading>
+        <Text>Adventure</Text>
+      </div>
+      <div style={{ width: 'max-content' }}>
+        <Heading>Group Type</Heading>
+        <Text>Friends</Text>
+      </div>
+      <div style={{ width: 'max-content' }}>
+        <Heading>Duration</Heading>
+        <Text>5 Nights</Text>
+      </div>
+      <div style={{ width: 'max-content' }}>
+        <Heading>Destination</Heading>
+        <Text>Rajasthan</Text>
+      </div>
+      <div className="hidden-mobile">
         <Button
           borderRadius="6px"
           borderWidth="1.5px"
@@ -95,7 +68,7 @@ const Details = (props) => {
         >
           Trip Settings
         </Button>
-      </div> */}
+      </div>
     </Container>
   );
 };

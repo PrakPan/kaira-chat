@@ -118,7 +118,6 @@ const Booking = (props) => {
         if(!props.alternates){ 
            
             
-            // console.log(FILTERS);
   let params = null;
  try{
  if(props.selectedBooking.transfer_type === "Intercity one-way"){
@@ -261,7 +260,7 @@ catch{
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                <ContentContainer style={{position: 'relative'}}>
                 {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-opensans'><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your bookings</div> : null }
+                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-lexend'><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your bookings</div> : null }
                { !noResults  && !updateBookingState ? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                    <TaxiSelected  _setImagesHandler={props._setImagesHandler} selectedBooking={props.selectedBooking}></TaxiSelected>
@@ -279,7 +278,7 @@ catch{
                     {viewMoreStatus && !optionsJSX.length? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
-               {noResults ? <OptionsContainer  className='font-opensans center-div text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodations to our database everyday!</OptionsContainer>  : null}
+               {noResults ? <OptionsContainer  className='font-lexend center-div text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodations to our database everyday!</OptionsContainer>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
                {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null

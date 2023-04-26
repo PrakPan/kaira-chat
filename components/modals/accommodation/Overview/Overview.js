@@ -119,9 +119,9 @@ const Overview = (props) => {
 }
    return(
       <Container>
-        <Name align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.data.name}</Name>
+        <Name align="center" aligndesktop="center" margin="0" className="font-lexend" bold noline>{props.data.name}</Name>
         {/* <ImageContainer>
-        {props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)} className="font-opensans" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", top: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>
+        {props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)} className="font-lexend" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", top: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>
                      <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
                     All Photos
                     </PhotosButton> : null}
@@ -131,14 +131,14 @@ const Overview = (props) => {
         </ImageContainer> */}
           <ImageContainer>
                  <ImageLoader url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} height="30vh" width="100%"></ImageLoader> 
-                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(images)}  className="font-opensans">
+                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(images)}  className="font-lexend">
                      {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
                     All Photos
                     </PhotosButton> : null : null}
                   
                     <div style={{position: 'absolute', bottom: '0.25rem', right: '0.25rem', display: 'flex', }}>
-                            {props.data.accommodation_type ? <EditButton className="font-opensans" style={{marginRight: '0.5rem'}}>{props.data.accommodation_type}</EditButton> : null}
-                            {/* <EditButton className="font-opensans">5 star</EditButton> */}
+                            {props.data.accommodation_type ? <EditButton className="font-lexend" style={{marginRight: '0.5rem'}}>{props.data.accommodation_type}</EditButton> : null}
+                            {/* <EditButton className="font-lexend">5 star</EditButton> */}
 
                     </div>
                     {props.tag ? <Tag star_category={props.star_category} tag={props.tag}></Tag> : null}
@@ -146,20 +146,20 @@ const Overview = (props) => {
         
         <DetailsContainer>
             {props.data.location ? <Location data={props.data}></Location> : null}
-            {/* {props.data.rooms_available? props.data.rooms_available.length && props.data.rooms_available[0].prices.min_price  ? <Cost className='font-opensans'>{ "₹ "+getIndianPrice(Math.round(props.data.rooms_available[0].prices.min_price/100))}</Cost> : null : null} */}
-            {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-opensans'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
+            {/* {props.data.rooms_available? props.data.rooms_available.length && props.data.rooms_available[0].prices.min_price  ? <Cost className='font-lexend'>{ "₹ "+getIndianPrice(Math.round(props.data.rooms_available[0].prices.min_price/100))}</Cost> : null : null} */}
+            {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-lexend'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
            <div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', gridGap: '1rem'}}>
            {props.data.check_in ? 
-           <div className='font-opensans text-center'>
-            <CheckIn style={{fontWeight: '600', fontSize: '0.9rem'}}  className='font-opensans'>{"Check in"}</CheckIn>
-            <CheckIn style={{fontWeight: '300', fontSize: '0.75rem'}}  className='font-opensans'>{getHumanTime(props.data.check_in.slice(0,-3))}</CheckIn>
+           <div className='font-lexend text-center'>
+            <CheckIn style={{fontWeight: '600', fontSize: '0.9rem'}}  className='font-lexend'>{"Check in"}</CheckIn>
+            <CheckIn style={{fontWeight: '300', fontSize: '0.75rem'}}  className='font-lexend'>{getHumanTime(props.data.check_in.slice(0,-3))}</CheckIn>
 
            </div>
             : null}
             {props.data.check_in ? 
-           <div className='font-opensans text-center'>
-            <CheckIn style={{fontWeight: '600', fontSize: '0.9rem'}} className='font-opensans'>{"Check in"}</CheckIn>
-            <CheckIn style={{fontWeight: '300', fontSize: '0.75rem'}}  className='font-opensans'>{getHumanTime(props.data.check_in.slice(0,-3))}</CheckIn>
+           <div className='font-lexend text-center'>
+            <CheckIn style={{fontWeight: '600', fontSize: '0.9rem'}} className='font-lexend'>{"Check in"}</CheckIn>
+            <CheckIn style={{fontWeight: '300', fontSize: '0.75rem'}}  className='font-lexend'>{getHumanTime(props.data.check_in.slice(0,-3))}</CheckIn>
 
            </div>
             : null}
@@ -168,7 +168,7 @@ const Overview = (props) => {
         </DetailsContainer>
         {/* <Filters data={props.data}></Filters> */}
         {/* <Icons></Icons> */}
-        {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-opensans'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
+        {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-lexend'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
       </Container>
   );
 

@@ -47,10 +47,10 @@ catch{
 return(
     
     <Container className="borer ">
-        {/* <div style={{fontWeight: '600', padding: '1rem', borderStyle: 'solid none solid none', borderWidth: '1px',  borderRadius:  '10px 0 0 0', backgroundColor: 'rgba(247,231,0,0.3)'}} className="font-opensans center-div">
+        {/* <div style={{fontWeight: '600', padding: '1rem', borderStyle: 'solid none solid none', borderWidth: '1px',  borderRadius:  '10px 0 0 0', backgroundColor: 'rgba(247,231,0,0.3)'}} className="font-lexend center-div">
             Member
         </div>
-        <div style={{fontWeight: '600',  padding: '1rem',  borderStyle: 'solid solid solid none', borderWidth: '1px',  borderRadius:  '0 10px 0 0'}} className="font-opensans center-div">
+        <div style={{fontWeight: '600',  padding: '1rem',  borderStyle: 'solid solid solid none', borderWidth: '1px',  borderRadius:  '0 10px 0 0'}} className="font-lexend center-div">
             Status
         </div> */}
        <div>

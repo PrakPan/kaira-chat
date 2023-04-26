@@ -83,7 +83,11 @@ const FAQs = (props) => {
                 letterSpacing: '1px',
                 marginBottom: '0.25rem',
               }}
-              className={props.className}
+              className={
+                props.blur
+                  ? 'font-lexend text-enter blurry-text'
+                  : 'font-lexend text-enter'
+              }
             >
               {bookings[props.payment.summary[key].bookings[i].id].name}
             </p>
@@ -96,7 +100,6 @@ const FAQs = (props) => {
                 margin: '0.5rem 0',
                 gridGap: '1rem',
               }}
-              className={props.className}
             >
               <p
                 style={{
@@ -107,13 +110,13 @@ const FAQs = (props) => {
                 }}
                 className={
                   props.blur
-                    ? 'font-opensans text-enter blurry-text'
-                    : 'font-opensans text-enter'
+                    ? 'font-lexend text-enter blurry-text'
+                    : 'font-lexend text-enter'
                 }
               >
                 {bookings[props.payment.summary[key].bookings[i].id].name}
               </p>
-              {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
+              {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
             </div>
           );
         } catch {}
@@ -122,24 +125,23 @@ const FAQs = (props) => {
         // );
       }
       HeadingsJSX.push(
-        <Accordion key={key} className={props.className}>
+        <Accordion key={key}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            className={props.className}
             aria-controls="panel1a-content"
             id="itinerary-booking-summary-accordion"
             style={{ zIndex: '1', minHeight: 'max-content' }}
           >
             <Typography
-              className={props.className}
               content={'span'}
+              className="font-lexend"
               style={{ fontWeight: '600', fontSize: '0.75rem', margin: '0' }}
             >
               {key}
             </Typography>
             <Typography
-              className={props.className}
               content={'span'}
+              className="font-lexend"
               style={{
                 fontWeight: '600',
                 fontSize: '0.75rem',
@@ -166,10 +168,7 @@ const FAQs = (props) => {
               top: '-0.5rem',
             }}
           ></div>
-          <AccordionDetails
-            className={props.className}
-            style={{ display: 'block', padding: '0' }}
-          >
+          <AccordionDetails style={{ display: 'block', padding: '0' }}>
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}

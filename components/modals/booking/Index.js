@@ -476,7 +476,7 @@ setViewMoreStatus(false);
                     {viewMoreStatus ? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
-               {noResults ? <p  className='font-opensans text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodation to our database everyday!</p>  : null}
+               {noResults ? <p  className='font-lexend text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodation to our database everyday!</p>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
                {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null

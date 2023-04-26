@@ -19,7 +19,7 @@ const Container = styled.div`
 const FullImgContent = (props) => {
     return (
 
-        <Container className='font-opensans'>
+        <Container className='font-lexend'>
             <div className='center-div'><ImageLoader
             url="media/website/b2b/PricewaterhouseCoopers_Logo.png" 
             /></div>

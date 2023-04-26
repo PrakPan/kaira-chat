@@ -52,13 +52,13 @@ const Howtoreach = (props) => {
     return(
         <Container>
             <P>{props.text}</P>
-            <Subheading className="font-opensans"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700", borderRadius: '50%'}}><Icon src={icon1}/></div> By Air</Subheading>
+            <Subheading className="font-lexend"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700", borderRadius: '50%'}}><Icon src={icon1}/></div> By Air</Subheading>
             <P>{props.air}</P>
-            <Subheading className="font-opensans"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700", borderRadius: '50%'}}><Icon  src={icon2}/></div> By Train</Subheading>
+            <Subheading className="font-lexend"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700", borderRadius: '50%'}}><Icon  src={icon2}/></div> By Train</Subheading>
             <P>{props.train}</P>
-            <Subheading className="font-opensans"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700",   borderRadius: '50%'}}><Icon src={icon3}/></div> By Road</Subheading>
+            <Subheading className="font-lexend"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700",   borderRadius: '50%'}}><Icon src={icon3}/></div> By Road</Subheading>
             <P>{props.road}</P>
-            <Subheading className="font-opensans"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700",   borderRadius: '50%'}}><Icon src={icon4}/></div> By Public Transport</Subheading>
+            <Subheading className="font-lexend"><div style={{display: "inline", width: 'max-content', padding: '0.5rem', backgroundColor: "#F7e700",   borderRadius: '50%'}}><Icon src={icon4}/></div> By Public Transport</Subheading>
             <P>{props.public}</P>
         </Container>
   ); 

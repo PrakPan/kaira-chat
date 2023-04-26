@@ -89,10 +89,14 @@ const SearchPannel = (props) => {
     <Container className="border" ref={ref}>
       <TopContainer>
         <FontAwesomeIcon
-          style={{ textAlign: 'left' }}
           icon={faChevronLeft}
           onClick={props.setPannelClose}
-          style={{ fontSize: '1.5rem', fontWeight: '300', margin: '1.5rem' }}
+          style={{
+            textAlign: 'left',
+            fontSize: '1.5rem',
+            fontWeight: '300',
+            margin: '1.5rem',
+          }}
         ></FontAwesomeIcon>
         <SearchContainer>
           <Search

@@ -12,7 +12,6 @@ export default class MyDocument extends Document {
   // }
   componentDidMount() {
     // mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true, ignore_dnt: true});
-    // console.log('testong')
   }
 
   static async getInitialProps({ renderPage }) {
@@ -138,6 +137,7 @@ export default class MyDocument extends Document {
         </Head>
         <body>
           <Main />
+          <div id="modal-portal" />
           <NextScript />
         </body>
       </Html>

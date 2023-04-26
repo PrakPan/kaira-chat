@@ -102,7 +102,7 @@ const CompanyName = styled.div`
   font-weight: 600;
 `;
 const Heading = styled.p`
-  font-family: 'Poppins';
+  // font-family: 'Poppins';
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -138,13 +138,14 @@ const Mobile = (props) => {
   useEffect(() => {}, [props.notOpenCount]);
 
   const _handleHomepageRedirect = () => {
-    router.push('/');
+    if (props.PW) router.push('/corporates/physicswallah');
+    else router.push('/');
   };
 
-  const LinksArr = [
+  var LinksArr = [
     {
       type: 'main',
-      link: '/',
+      onclick: () => _handleHomepageRedirect(),
       text: 'Home',
       icon: 'media/icons/navigation/home-page.png',
     },
@@ -192,11 +193,11 @@ const Mobile = (props) => {
       icon: 'media/icons/navigation/health-insurance.png',
     },
   ];
-  const MainLinksDiv = LinksArr.map((e, index) => {
+  if (!props.token) LinksArr = LinksArr.filter((e) => e.link != '/dashboard');
+  const MainLinksDiv = LinksArr.map((e) => {
     if (e.type === 'main')
       return (
         <ListItem
-          key={index}
           onClick={e.onclick && e.onclick}
           style={
             router.pathname === e.link ? { backgroundColor: '#ffff4a45' } : {}
@@ -290,7 +291,7 @@ const Mobile = (props) => {
           }}
         >
           {showLogo && (
-            <Link href="/">
+            <Link href={!props.PW ? '/' : '/corporates/physicswallah'}>
               <ImageLoader
                 dimensions={{ width: 200, height: 200 }}
                 dimensionsMobile={{ width: 200, height: 200 }}
@@ -330,6 +331,7 @@ const Mobile = (props) => {
           onClose={() => setToggleMenu(false)}
           className="mobile-header-menu"
           width="250px"
+          style={{ zIndex: '1200 !important' }}
         >
           <DrawerContainer>
             <ListContainer>

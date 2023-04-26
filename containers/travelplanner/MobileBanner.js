@@ -40,7 +40,7 @@ const BannerMobile = (props) => {
     }
   return(
     <Container className="" style={{borderRadius: '0'}}>
-        {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
+        {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-lexend" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
        
         {/* <Button fontWeight="600" onclick={props.handleClick} hoverColor="black" onclickparam={null} borderWidth='1px' hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderRadius="2rem" margin="0" width="100%" >
         {props.city ? validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!') : 'Craft a trip now!'}

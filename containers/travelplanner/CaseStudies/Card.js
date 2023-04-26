@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
-import { ImQuotesLeft } from 'react-icons/im';
-import Flickity from './Flickity/Index';
 import { useRouter } from 'next/router';
 import { AiFillStar } from 'react-icons/ai';
 
@@ -38,11 +36,6 @@ const GridContainer = styled.div`
   grid-template-columns: 1fr 1.5fr;
   grid-gap: 1rem;
 `;
-const ButtonContainer = styled.div`
-  &:hover {
-    background-color: black;
-  }
-`;
 const RatingContainer = styled.div`
   margin-bottom: 0.75rem;
   @media screen and (min-width: 768px) {
@@ -70,10 +63,10 @@ const CardContainer = (props) => {
             dimensionsMobile={{ width: 600, height: 600 }}
             dimensions={{ width: 900, height: 900 }}
           ></ImageLoader>
-          <CardHeading className="font-opensans">{props.heading}</CardHeading>
+          <CardHeading className="font-lexend">{props.heading}</CardHeading>
 
           <RatingContainer>
-            <div className="flex flex-row">
+            <div>
               <AiFillStar
                 style={{
                   color: '#FFD201',
@@ -107,13 +100,13 @@ const CardContainer = (props) => {
               ></AiFillStar>
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <CardSubHeading className="font-opensans">
+              <CardSubHeading className="font-lexend">
                 {props.duration + ' • ' + props.destination}
               </CardSubHeading>
             </div>
           </RatingContainer>
           <Button
-            fontWeight="600"
+            fontWeight="500"
             borderRadius="6px"
             onclick={() => router.push('/itinerary/' + props.id)}
             fontSizeDesktop="12px"
@@ -125,10 +118,10 @@ const CardContainer = (props) => {
           </Button>
         </div>
         <div>
-          {/* <CardHeading className='font-opensans'>{props.heading}</CardHeading> */}
+          {/* <CardHeading className='font-lexend'>{props.heading}</CardHeading> */}
 
           {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
-          <CardListItem className="font-opensans">{props.text}</CardListItem>
+          <CardListItem className="font-lexend">{props.text}</CardListItem>
         </div>
       </GridContainer>
     </Card>

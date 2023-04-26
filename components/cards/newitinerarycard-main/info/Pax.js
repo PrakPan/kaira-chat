@@ -33,7 +33,7 @@ const Pax = (props) => {
     return(
         <Container  >
             <ImageLoader url={"media/icons/bookings/user (1).png" } leftalign  width="2rem" widthmobile="2rem" height="auto" ></ImageLoader>
-        <div className='font-opensans'>
+        <div className='font-lexend'>
             <PaxText>{props.number_of_adults}</PaxText>
             <PaxSubtext>Travelers</PaxSubtext>
 

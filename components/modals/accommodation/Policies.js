@@ -22,7 +22,7 @@ const Policies= (props) => {
             for(var i=0; i<props.data.hotel_rules.length; i++){
                 if(props.data.hotel_rules[i] === "") null;
                 else policies_arr.push(
-                    <li className='font-opensans'>{props.data.hotel_rules[i]}</li>
+                    <li className='font-lexend'>{props.data.hotel_rules[i]}</li>
                 );
             }
             setPolicies(policies_arr)

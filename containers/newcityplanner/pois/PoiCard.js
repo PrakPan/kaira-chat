@@ -1,9 +1,7 @@
 import styled ,{keyframes} from "styled-components"
 import ImageLoader from "../../../components/ImageLoader"
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { useState } from "react";
+import {MdNavigateNext} from 'react-icons/md'
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
-import axiosPOIdetailsInstance from '../../../services/poi/poidetails'
 
 
 const LeftSlideIn = keyframes`
@@ -111,7 +109,6 @@ export default function PoiCard(props){
       >
         <ImageContainer>
           <ImageLoader
-            // height="100%"
             url={props.data.image}
             dimensions={{ height: 250, width: 500 }}
             dimensionsMobile={{ width: 500, height: 350 }}
@@ -122,7 +119,7 @@ export default function PoiCard(props){
           <Typography>
             <p className="AnimateLeft">{props.data.name}</p>{" "}
             <div>
-              <NavigateNextIcon className="AnimateRight" />
+              <MdNavigateNext style={{fontSize : '1.8rem'}} className="AnimateRight" />
             </div>
           </Typography>
         )}

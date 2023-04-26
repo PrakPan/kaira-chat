@@ -66,9 +66,9 @@ const FullImgContent = (props) => {
     return (
 
         <Container className='center-di'>
-            <Heading className="font-opensans">{props.heading}</Heading>
-            <SubText className="font-opensans">{props.subheading}</SubText>
-            <Button onClick={_handleTailoredRedirect} className="font-opensans">Start Planning</Button>
+            <Heading className="font-lexend">{props.heading}</Heading>
+            <SubText className="font-lexend">{props.subheading}</SubText>
+            <Button onClick={_handleTailoredRedirect} className="font-lexend">Start Planning</Button>
         </Container>
     );
 }

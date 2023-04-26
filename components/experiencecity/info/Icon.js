@@ -41,7 +41,7 @@ const  Icon= (props) => {
             <Container className="border-thin">
                 <IconLine >
                     <S3Icon location={props.location} icon={props.icon}></S3Icon>
-                    <IconTagLine className="font-opensans">{props.icon.toUpperCase()}</IconTagLine>
+                    <IconTagLine className="font-lexend">{props.icon.toUpperCase()}</IconTagLine>
                 </IconLine>
             </Container>
           );

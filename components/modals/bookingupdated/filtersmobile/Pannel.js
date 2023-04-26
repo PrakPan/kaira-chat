@@ -47,12 +47,12 @@ const Pannel = (props) =>{
             <div className="hidden-mobile" style={{display: 'flex', justifyContent: 'flex-end'}}><GrFormClose onClick={() => props.onclose()} className="hover-pointer"  style={{ fontSize: '1.5rem' , textAlign: 'right', marginBottom:  '0.5rem'}} ></GrFormClose></div>
 
             {/* <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon> */}
-            <Heading className='font-opensans hidden-desktop'>{props.heading}</Heading>
+            <Heading className='font-lexend hidden-desktop'>{props.heading}</Heading>
             {props.heading!=='Star Category' ?<div style={{margin: '0 auto'}}>
            
             <FormGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: '0.5rem', margin: '0 0.5rem 1.5rem 0.5rem' }}>
           { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={props.filtersState ? props.filtersState.budget ? props.filtersState.budget.includes(currentfilter) ? true : false : false : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
+          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={props.filtersState ? props.filtersState.budget ? props.filtersState.budget.includes(currentfilter) ? true : false : false : false} />} label={<Label className="font-lexend">{currentfilter}</Label>}/>)
           }
       </FormGroup>   
       

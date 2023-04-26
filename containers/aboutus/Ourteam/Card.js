@@ -56,19 +56,19 @@ const Card = (props) => {
 if(window.innerWidth < 768 )
   return(<Container className="border-thin">
         <ImageLoader dimensionsMobile={{ width: 900, height: 900 }}  fit="cover" url={props.url} borderRadius="50%" widthmobile="40%"/>
-        <Name className="font-opensans">{props.name}</Name>
-        <Designation className="font-opensans">{props.tagline}</Designation>
-        <Designation className="font-opensans">{props.designation}</Designation>
+        <Name className="font-lexend">{props.name}</Name>
+        <Designation className="font-lexend">{props.tagline}</Designation>
+        <Designation className="font-lexend">{props.designation}</Designation>
         <Description className="font-nunito">{props.text}</Description>
    </Container>
   );
   else return(
     <Container>
         <ImageLoader widthtab="50%" dimensions={{ width: 900, height: 900 }} fit="cover" width="40%" borderRadius="50%" url={props.url}/>
-        <Name className="font-opensans">{props.name}</Name>
-        {/* <Tagline className="font-opensans"> The "I have an idea" guy</Tagline> */}
-        <Designation className="font-opensans">{props.tagline}</Designation>
-        <Designation className="font-opensans">{props.designation}</Designation>
+        <Name className="font-lexend">{props.name}</Name>
+        {/* <Tagline className="font-lexend"> The "I have an idea" guy</Tagline> */}
+        <Designation className="font-lexend">{props.tagline}</Designation>
+        <Designation className="font-lexend">{props.designation}</Designation>
         <Description className="font-nunito">{props.text}.</Description>
     </Container>
   )

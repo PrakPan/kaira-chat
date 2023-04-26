@@ -22,7 +22,7 @@ const TopContainer = styled.div`
   border-style: none none solid none;
   border-width: 1px;
   border-color: #e4e4e4;
-  width: 100%;
+  width: 98%;
   margin: auto;
   margin-left: 5px;
   height: 50px;
@@ -137,9 +137,16 @@ const SearchPannel = (props) => {
         <Text>We couldn't find anything for '{inputValue}'</Text>
       )}
       {showResults ? (
-        <NewResults results={results} inputValue={inputValue} />
+        <NewResults
+          setPannelClose={props.setPannelClose}
+          results={results}
+          inputValue={inputValue}
+        />
       ) : (
-        <Locations hotlocations={props.hotlocations}></Locations>
+        <Locations
+          setPannelClose={props.setPannelClose}
+          hotlocations={props.hotlocations}
+        ></Locations>
       )}
     </Container>
   );

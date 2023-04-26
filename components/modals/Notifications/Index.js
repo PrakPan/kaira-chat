@@ -89,9 +89,7 @@ const Enquiry = (props) => {
             minHeight: isPageWide ? '90vh' : '95vh',
           }}
         >
-          <Cross onClick={_handleClose}>
-            <Image src={cross} width={50} height={50} objectFit="none" />
-          </Cross>
+          <Cross src={cross} onClick={_handleClose} />
           <Heading
             noline
             align="center"
@@ -111,7 +109,7 @@ const Enquiry = (props) => {
             />
           )}
           {notificationsArr.length > 1 ? (
-            <ClearAll className="font-opensans" onClick={_clearAllHandler}>
+            <ClearAll className="font-lexend" onClick={_clearAllHandler}>
               Clear All
             </ClearAll>
           ) : null}

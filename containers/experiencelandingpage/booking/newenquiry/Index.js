@@ -297,8 +297,8 @@ return(
 </LocalizationProvider>
                  </Grid>
                  {props.starting_price ? <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%'}}>
-                    <div style={{alignItems: 'center', display: 'flex', paddingLeft: '8px', fontWeight: '600'}} className="font-opensans">Experience Cost</div>
-                 <Cost className="font-opensans">{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+" /-"}</Cost>
+                    <div style={{alignItems: 'center', display: 'flex', paddingLeft: '8px', fontWeight: '600'}} className="font-lexend">Experience Cost</div>
+                 <Cost className="font-lexend">{"₹ "+getIndianPrice(Math.round(props.starting_price/100))+" /-"}</Cost>
                  </div> : null}
                 <Grid item xs={12}>
                     {!loading ? 
@@ -314,10 +314,10 @@ return(
             <div>
                 {/* <Cost>Rs 1000/-</Cost> */}
                 <ImageLoader url="media/illustrations/undraw_happy_news_re_tsbd.svg" width="50%" widthmobile="50%"></ImageLoader>
-                <Heading className="font-opensans">
+                <Heading className="font-lexend">
                     We've received your request to book this experience
                 </Heading>
-                <Subheading className="font-opensans">
+                <Subheading className="font-lexend">
                 Our travel experts will get in touch with you in the next 2 hours to complete your plan                </Subheading>
                 {/* <BsFillCheckCircleFill></BsFillCheckCircleFill> */}
             </div>

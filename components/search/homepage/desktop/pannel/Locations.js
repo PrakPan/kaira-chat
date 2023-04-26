@@ -64,6 +64,13 @@ const Locations = (props) => {
   const _handleLocationClick = (id, name, parent, slug) => {
     router.push('/travel-guide/city/' + slug);
   };
+  // const _handleLocationClick = (slug) => {
+  //   // props.setPannelOpen(false)
+  //   //    if(slug) router.push('/travel-guide/city/'+slug)
+  //   if (slug)
+  //     window.location.href =
+  //       'https://thetarzanway.com/travel-guide/city/' + slug;
+  // };
   const _handlePersonaliseRedirect = (id, name, parent) => {
     // localStorage.setItem('search_city_selected_id', id)
     // localStorage.setItem('search_city_selected_name', name)

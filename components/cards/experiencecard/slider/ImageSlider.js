@@ -57,7 +57,7 @@ const ImageSlider = (props) => {
     
     return(
         <Container  props={props} ref={Component} >
-            {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
+            {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
             <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)"></BackgroundImageLoader>
             {typeof window !== 'undefined' ? <IconsContainer>
              <IconTextContainer style={{}}><IconHoverContainer><div><FontAwesomeIcon icon={faMapMarkerAlt} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.location}</IconHoverContainer> </IconTextContainer>

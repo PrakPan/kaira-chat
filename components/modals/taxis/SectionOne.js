@@ -20,7 +20,7 @@ const Section= (props) => {
     // let isPageWide = media('(min-width: 768px)')
   
      return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
       {/* <div></div> */}
                    <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideTaxiModal} style={{margin: '0.5rem', position: 'sticky', top: '0', visibility: 'hidden'}} ></FontAwesomeIcon>
                    <FontAwesomeIcon className="hover-pointer" icon={faSearch} onClick={props.setHideTaxiModal} style={{margin: '0.5rem', position: 'sticky', top: '0', fontSize: '1.5rem', visibility: 'hidden'}} ></FontAwesomeIcon>

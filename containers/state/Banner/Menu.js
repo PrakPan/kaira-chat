@@ -29,7 +29,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Overview</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Overview</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -37,7 +37,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>{"Survival Tips & Tricks"}</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>{"Survival Tips & Tricks"}</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -45,7 +45,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Folklore or Story</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Folklore or Story</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -53,7 +53,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Things to Do</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Things to Do</MenuItem>
             </Link>
             <Link
             activeClass='active'
@@ -61,7 +61,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans " style={{fontWeight: '300'}} onClick={props.hideMenu}>What to Eat</MenuItem>
+                <MenuItem className="font-lexend " style={{fontWeight: '300'}} onClick={props.hideMenu}>What to Eat</MenuItem>
             </Link>    
             <Link
             activeClass='active'
@@ -69,7 +69,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-            <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Getting Around</MenuItem>
+            <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Getting Around</MenuItem>
             </Link>       
        </MenuContainer>
   );

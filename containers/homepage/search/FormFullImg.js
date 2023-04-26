@@ -88,10 +88,9 @@ display : flex;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
     const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
-// console.log('', props.children_cities)
     return (
 
-        <Container className='font-opensans center-di text-cente'>
+        <Container className='font-lexend center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.tagline}</Heading>
              

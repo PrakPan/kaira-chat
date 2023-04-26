@@ -16,7 +16,7 @@ const BannerMobile = (props) => {
   return (
     <Container className="" style={{ borderRadius: "0" }}>
       <Button
-        fontWeight="600"
+        fontWeight="500"
         onclick={() => props.onClick()}
         hovercolor="white"
         hoverbgcolor="black"
@@ -27,7 +27,7 @@ const BannerMobile = (props) => {
         margin="0"
         width="100%"
       >
-        <p className="font-opensans" style={{ margin: "0", fontWeight: "600" }}>
+        <p className="font-lexend" style={{ margin: "0", fontWeight: "500" }}>
           {validateTextSize(
             `Craft a trip to ${props.cityName} now!`,
             7,

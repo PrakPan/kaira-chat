@@ -146,16 +146,18 @@ const Poi = (props) => {
               lat={props.data.lat}
               lon={props.data.long}
             />
-            {props.data.elevation[0]?.elevation && (
-              <div style={{ marginTop: '20px' }}>
-                <TextBold>Altitude</TextBold>
-                <p style={{ fontWeight: '300', marginBottom: '0' }}>
-                  {Math.floor(props.data.elevation[0]?.elevation)} metres (
-                  {Math.floor(props.data.elevation[0]?.elevation * 3.281)} feet)
-                  above sea level
-                </p>
-              </div>
-            )}
+            {props.data.elevation &&
+              props.data.elevation.length &&
+              props.data.elevation[0]?.elevation && (
+                <div style={{ marginTop: '20px' }}>
+                  <TextBold>Altitude</TextBold>
+                  <p style={{ fontWeight: '300', marginBottom: '0' }}>
+                    {Math.floor(props.data.elevation[0]?.elevation)} metres (
+                    {Math.floor(props.data.elevation[0]?.elevation * 3.281)}{' '}
+                    feet) above sea level
+                  </p>
+                </div>
+              )}
           </WeatherContainer>
         )}
 

@@ -26,7 +26,7 @@ const  Icon= (props) => {
          return( 
             <Container onClick={(event) => setShowModal(true)} className="hover-pointer"  >
                     <ImageLoader url={props.icon.image} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} location={props.location} icon={props.icon}></ImageLoader>
-                    <IconTagLine className="font-opensans">{props.icon.name}</IconTagLine>
+                    <IconTagLine className="font-lexend">{props.icon.name}</IconTagLine>
                     <POIModal poi={props.data} show={showModal} onHide={() => setShowModal(false)} />
             </Container>
           );

@@ -206,10 +206,8 @@ const TestimonialCard = (props) => {
           borderRadius="50%"
           width="50%"
         />
-        <Name className="font-opensans">{props.name}</Name>
-        <Country>
-          <Image height={60} src={countryicons[props.location]}></Image>
-        </Country>
+        <Name className="font-lexend">{props.name}</Name>
+        <Country src={countryicons[props.location]}></Country>
         <ReviewContainer style={{ position: 'relative' }}>
           <ReviewFront className="font-nunito">
             <em>{props.text}</em>{' '}
@@ -237,7 +235,7 @@ const TestimonialCard = (props) => {
         onClick={(event) => _flipHandler(event, false)}
         onMouseLeave={(event) => _flipHandler(event, false)}
       >
-        <Name className="font-opensans">{props.name + "'s story"}</Name>
+        <Name className="font-lexend">{props.name + "'s story"}</Name>
         <ReviewContainer
           style={{ position: 'relative', maxHeight: Card1Height - 50 + 'px' }}
         >

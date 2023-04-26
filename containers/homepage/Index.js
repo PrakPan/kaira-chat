@@ -15,7 +15,6 @@ import axiomyplansinstance from '../../services/sales/MyPlans';
 import AsSeenIn from '../../containers/testimonial/AsSeenIn';
 // import Heading from '../../components/newheading/heading/Index';
 import Heading from '../../components/newheading/heading/Index';
-import WhyUs from '../../components/containers/WhyUs';
 import TravelStyles from '../../components/containers/TravelStyles';
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
@@ -36,6 +35,7 @@ import CaseStudies from '../travelplanner/CaseStudies/Index';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
+import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;

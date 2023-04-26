@@ -45,8 +45,8 @@ const Experiences= (props) => {
     return(
       <Container onClick={props.onclick ? props.onclick : null} >  
           <BackroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   padding="0" zoomonhover center dimensions={{width: 900, height: 1800}} height={isPageWide ? "50vh" : '60vh'} filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"  url={props.img}>
-              <Name className="font-opensans">{props.heading}</Name>
-              <Name className="font-opensans" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
+              <Name className="font-lexend">{props.heading}</Name>
+              <Name className="font-lexend" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
           </BackroundImageLoader>
           {/* <ImageLoader borderRadius="10px" url={props.img} dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}></ImageLoader> */}
       </Container>

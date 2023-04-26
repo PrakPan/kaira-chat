@@ -58,7 +58,7 @@ const Simpleheadingstyle = styled.div`
 const Simpleheading = (props) => {
   return (
     <Simpleheadingstyle
-      className="font-opensans"
+      className="font-lexend"
       color={props.color} //6
       fontWeight={props.fontWeight} //1
       borderColor={props.borderColor} //8

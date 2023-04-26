@@ -72,17 +72,17 @@ const Element = (props) =>{
         {props.type === "image" ? <ImageLoader blur={props.blur} url={props.image} dimensions={{width: 400, height: 400}} width="80%" widthMobile="100%" borderRadius="50%"></ImageLoader> : <ImageLoader  url={props.image} dimensions={{width: 400, height: 400}} widthMobile="100%" width="40%" blur={props.blur}></ImageLoader>}
             <div>
                 
-                    <Name className={props.blur ? "font-opensans blurry-text" : "font-opensans"}>{props.name}
+                    <Name className={props.blur ? "font-lexend blurry-text" : "font-lexend"}>{props.name}
                     {/* {props.element_type === ITINERARY_ELEMENT_TYPES.activity ?  <StyledDetailIcon onClick={props.setShowPoiModal}></StyledDetailIcon> : null} */}
                     {props.element_type === ITINERARY_ELEMENT_TYPES.activity && props.enablepoiedit && !props.is_stock && !props.is_experience && !props.is_preview && !props.traveleritinerary && props.is_auth && !props.is_registration_needed ?  <StyledEditIcon  onClick={() => props.setShowPoiModal({name: props.poi_name, city_id: props.city_id, day_slab_index: props.day_slab_index, slab_element_index: props.slab_element_index, element_index: props.element_index})}></StyledEditIcon> : null}
                     </Name>
                       
-                {props.text && !props.is_food && !props.is_poi_rec? <Description className={props.blur ? "font-opensans blurry-text" : "font-opensans"}>{props.text}</Description> : null}
+                {props.text && !props.is_food && !props.is_poi_rec? <Description className={props.blur ? "font-lexend blurry-text" : "font-lexend"}>{props.text}</Description> : null}
                 {props.is_food ? <Food text={props.text}></Food> : null}
                 {props.meta   ? <Notes blur={props.blur} meta={props.meta} transfer={props.element_type === ITINERARY_ELEMENT_TYPES.transfer}></Notes> : null}
                 {props.is_poi_rec ? <Poi text={props.text}></Poi> : null}
                 {props.activity_data ? props.activity_data.poi ? props.activity_data.poi.tips ?  props.activity_data.poi.tips.length ? 
-                 <div className='font-opensans' style={{fontSize: '0.75rem', margin: '0.5rem 0'}}>
+                 <div className='font-lexend' style={{fontSize: '0.75rem', margin: '0.5rem 0'}}>
                     <div style={{fontWeight: '600'}}>Tips & Tricks</div>
                     <ul>
                         <li style={{fontWeight: '300'}}>{props.activity_data.poi.tips[0]}</li>

@@ -93,7 +93,12 @@ const Locations = (props) => {
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (slug) => {
-    router.push('/travel-guide/city/' + slug);
+    if (slug) {
+      // props.setPannelClose()
+      // router.push('/travel-guide/city/'+slug)
+      window.location.href =
+        'https://thetarzanway.com/travel-guide/city/' + slug;
+    }
   };
   const _handlePersonaliseRedirect = (id, name, parent) => {
     // localStorage.setItem('search_city_selected_id', id)
@@ -146,7 +151,6 @@ const Locations = (props) => {
       );
     }
   }
-
   return (
     <div>
       <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>

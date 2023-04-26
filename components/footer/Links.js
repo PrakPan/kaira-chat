@@ -79,7 +79,7 @@ const Footer = (props) => {
             <LinksContainer>
 
                 <Column className="font-nunito">
-                    <LinkHeading className="font-opensans">Travellers</LinkHeading>
+                    <LinkHeading className="font-lexend">Travellers</LinkHeading>
                     <UL>
                     {/* <Link href="/tailored-travel" <Link href="/travel-experiences" <Link href="/travel-experiences"  */}
                         <li><Link href={urls.travel_experiences.BASE} style={{textDecoration: "none", color: "white"}}><StyledA>Travel Experiences</StyledA></Link></li>
@@ -90,7 +90,7 @@ const Footer = (props) => {
                     </UL>
                 </Column>
                 <Column className="font-nunito">
-                <LinkHeading className="font-opensans">Organisations</LinkHeading>
+                <LinkHeading className="font-lexend">Organisations</LinkHeading>
                     <UL>
                         <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Individuals</StyledA></Link></li>
                         <li><StyledA href={urls.supplier_thetarzanway.BASE}>Tour Operators</StyledA></li>
@@ -110,7 +110,7 @@ const Footer = (props) => {
                     </UL>
                 </Column>
                 <Column className="font-nunito">
-                <LinkHeading className="font-opensans">Community</LinkHeading>
+                <LinkHeading className="font-lexend">Community</LinkHeading>
                     <UL>
                         <li><StyledA href="http://blog.thetarzanway.com/" >Travel Feed</StyledA></li>
                         <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Subscribe</StyledA></Link></li>

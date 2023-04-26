@@ -124,11 +124,11 @@ const PartnerWith = (props) => {
       </Card>
       <Card className='center-div' style={{padding: '1rem'}}>
          <div>
-            <ImageHeading className="font-opensans">{props.content[i].name}</ImageHeading>
+            <ImageHeading className="font-lexend">{props.content[i].name}</ImageHeading>
             <QuoteContainer>
                <QuoteImg src={quote}></QuoteImg>
             </QuoteContainer>
-            <Text className="font-opensans">
+            <Text className="font-lexend">
               {props.content[i].review}
             </Text>
             <PlanDetails className='font-nunito'>{props.content[i].text}</PlanDetails>
@@ -152,11 +152,11 @@ const PartnerWith = (props) => {
          </Card>
          <Card className='center-div'>
             <div>
-               <ImageHeading className="font-opensans">{props.content[1].name}</ImageHeading>
+               <ImageHeading className="font-lexend">{props.content[1].name}</ImageHeading>
                <ReviewContainer><QuoteContainer>
                   <QuoteImg src={quote}></QuoteImg>
                </QuoteContainer>
-               <Text className="font-opensans">
+               <Text className="font-lexend">
                   {props.content[1].review}
                </Text></ReviewContainer>
                <PlanDetails className='font-nunito'>{props.content[1].text}</PlanDetails>
@@ -167,11 +167,11 @@ const PartnerWith = (props) => {
          </Card>
          <Card className='center-div'>
             <div>
-               <ImageHeading className="font-opensans">{props.content[0].name}</ImageHeading>
+               <ImageHeading className="font-lexend">{props.content[0].name}</ImageHeading>
                <ReviewContainer><QuoteContainer>
                   <QuoteImg src={quote}></QuoteImg>
                </QuoteContainer>
-               <Text className="font-opensans">
+               <Text className="font-lexend">
                   {props.content[0].review}
                </Text></ReviewContainer>
                <PlanDetails className='font-nunito'>{props.content[0].text}</PlanDetails>
@@ -195,11 +195,11 @@ const PartnerWith = (props) => {
          </Card>
          <Card className='center-div'>
             <div>
-               <ImageHeading className="font-opensans">{props.content[2].name}</ImageHeading>
+               <ImageHeading className="font-lexend">{props.content[2].name}</ImageHeading>
                <ReviewContainer><QuoteContainer>
                   <QuoteImg src={quote}></QuoteImg>
                </QuoteContainer>
-               <Text className="font-opensans">
+               <Text className="font-lexend">
                   {props.content[2].review}
                </Text></ReviewContainer>
                <PlanDetails className='font-nunito'>{props.content[2].text}</PlanDetails>
@@ -210,11 +210,11 @@ const PartnerWith = (props) => {
          </Card>
          <Card className='center-div'>
             <div>
-               <ImageHeading className="font-opensans">{props.content[3].name}</ImageHeading>
+               <ImageHeading className="font-lexend">{props.content[3].name}</ImageHeading>
                <ReviewContainer><QuoteContainer>
                   <QuoteImg src={quote}></QuoteImg>
                </QuoteContainer>
-               <Text className="font-opensans">
+               <Text className="font-lexend">
                   {props.content[3].review}
                </Text></ReviewContainer>
                <PlanDetails className='font-nunito'>{props.content[3].text}</PlanDetails>

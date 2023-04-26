@@ -217,7 +217,7 @@ const TestimonialReviews = () => {
       return (
         <div style={{ background: '#F7e700', padding: '1rem 0' }}>
           <div className="center-div">
-            <Heading className="font-opensans" margin="0" padding="0">
+            <Heading className="font-lexend" margin="0" padding="0">
               Stories from around the world
             </Heading>
           </div>
@@ -331,7 +331,7 @@ const TestimonialReviews = () => {
               style={{ flexDirection: 'row', marginBottom: '0.5rem' }}
             >
               <FontAwesomeIcon icon={faStar} style={{ fontSize: '1rem' }} />
-              <Heading className="font-opensans" style={{ margin: '0' }}>
+              <Heading className="font-lexend" style={{ margin: '0' }}>
                 Read more
               </Heading>
               <FontAwesomeIcon icon={faStar} style={{ fontSize: '1rem' }} />
@@ -355,7 +355,7 @@ const TestimonialReviews = () => {
           >
             <FontAwesomeIcon icon={faStar} style={{ fontSize: '1rem' }} />
             <Heading
-              className="font-opensans"
+              className="font-lexend"
               style={{ margin: '0 0.5rem 0 0.5rem' }}
             >
               {' '}

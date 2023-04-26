@@ -127,7 +127,7 @@ const Timer = (props) =>{
                     }}
                     className="borde center-div"
                     >
-                        <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-opensans">
+                        <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-lexend">
                             Time Remaining
                         </TimeRemaining>
                         <Time>{timer}</Time>
@@ -162,7 +162,7 @@ const Timer = (props) =>{
       }}
       className="borde center-div"
       >
-          <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-opensans">
+          <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-lexend">
               Time Remaining
           </TimeRemaining>
           <Time>{timer}</Time>

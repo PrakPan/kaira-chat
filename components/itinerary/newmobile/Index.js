@@ -1,15 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
-import styled from "styled-components";
-import CityContainer from "../CityContainer";
-import Timer from "../../../containers/itinerary/timer/Index";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import IconElement from "../element/Index";
-import Locations from "./Locations";
+import React, { useRef, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import CityContainer from '../CityContainer';
+import Timer from '../../../containers/itinerary/timer/Index';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import IconElement from '../element/Index';
+import Locations from './Locations';
 // import {ITINERARY_ELEMENT_TYPES} from '../../../services/constants';
-import { connect } from "react-redux";
-import { getHumanDate } from "../../../services/getHumanDate";
-import { isJson } from "../../../services/isJSON";
+import { connect } from 'react-redux';
+import { getHumanDate } from '../../../services/getHumanDate';
+import { isJson } from '../../../services/isJSON';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -87,13 +87,13 @@ const Itinerary = (props) => {
       getCityFromDay(newValue, props.day_slabs, props.city_slabs)
     );
     setValue(newValue);
-    if (typeof window !== "undefined" && !props.experience)
+    if (typeof window !== 'undefined' && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const hadleLocationChange = (event, newValue) => {
     setLocationValue(newValue);
     setValue(props.city_slabs[newValue].day_slab_location.start_day_slab_index);
-    if (typeof window !== "undefined" && !props.experience)
+    if (typeof window !== 'undefined' && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const [hideTimer, setHideTimer] = useState(false);
@@ -112,13 +112,13 @@ const Itinerary = (props) => {
         day_tabs_jsx.push(
           <Tab
             style={{
-              textTransform: "none",
-              marginRight: "0.5rem",
-              padding: "0.25rem 1rem",
-              color: "white !important",
+              textTransform: 'none',
+              marginRight: '0.5rem',
+              padding: '0.25rem 1rem',
+              color: 'white !important',
             }}
             label={getHumanDate(props.day_slabs[i].slab)}
-            className="itinerary-day-tab font-opensans"
+            className="itinerary-day-tab font-lexend"
           ></Tab>
         );
         //push an empty array since day is present
@@ -133,7 +133,7 @@ const Itinerary = (props) => {
 
           // const city_id=props.day_slabs[i].slab_elements[j];
           //Push element if not newcity
-          if (props.day_slabs[i].slab_elements[j].element_type !== "newcity")
+          if (props.day_slabs[i].slab_elements[j].element_type !== 'newcity')
             day_slabs_jsx[i].push(
               <div>
                 <IconElement
@@ -146,13 +146,13 @@ const Itinerary = (props) => {
                   traveleritinerary={props.traveleritinerary}
                   is_poi_rec={
                     props.day_slabs[i].slab_elements[j].type ===
-                    "POI/Activity Recommendation"
+                    'POI/Activity Recommendation'
                       ? true
                       : false
                   }
                   is_food={
                     props.day_slabs[i].slab_elements[j].type ===
-                      "Food Recommendation" &&
+                      'Food Recommendation' &&
                     isJson(props.day_slabs[i].slab_elements[j].text)
                       ? true
                       : false
@@ -187,7 +187,7 @@ const Itinerary = (props) => {
         }
         day_pannesl_jsx.push(
           <TabPanel ref={ref} value={value} index={i}>
-            <div style={{ marginBottom: "10vh" }}>{day_slabs_jsx[i]}</div>
+            <div style={{ marginBottom: '10vh' }}>{day_slabs_jsx[i]}</div>
           </TabPanel>
         );
       }
@@ -204,7 +204,7 @@ const Itinerary = (props) => {
   return (
     <Container
       id="kochi-anchor"
-      style={{ marginTop: props.showTimer && !props.hideTimer ? "-50vh" : "0" }}
+      style={{ marginTop: props.showTimer && !props.hideTimer ? '-50vh' : '0' }}
     >
       {props.showTimer ? (
         <Timer
@@ -225,7 +225,7 @@ const Itinerary = (props) => {
         onChange={handleChange}
         indicatorColor="false"
         disableRippled
-        variant={"scrollable"}
+        variant={'scrollable'}
         scrollButtons={true}
         allowScrollButtonsMobile
       >

@@ -61,7 +61,7 @@ const LocationsBlog= (props) => {
   if(isPageWide) {
   if(props.experiences.length)
   return(
-    <Flickity cards={experiencecards} ></Flickity>
+    <Flickity cards={experiencecards} initialIndex={0} ></Flickity>
   ); 
   else return null;
   } 

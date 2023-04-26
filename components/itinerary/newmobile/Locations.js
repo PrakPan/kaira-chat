@@ -45,7 +45,7 @@ const Locations = (props) =>{
       if(props.city_slabs)
        for(var i = 0; i<props.city_slabs.length; i++){
          city_tabs_jsx.push(
-            <Tab  style={{textTransform: 'none'  ,  padding: '0.25rem 1rem', color: 'white !important'      }} label={props.city_slabs[i].city_name}   className="itinerary-city-tab font-opensans" >
+            <Tab  style={{textTransform: 'none'  ,  padding: '0.25rem 1rem', color: 'white !important'      }} label={props.city_slabs[i].city_name}   className="itinerary-city-tab font-lexend" >
         </Tab>
         )
        }

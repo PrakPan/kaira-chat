@@ -40,12 +40,12 @@ const Filters = (props) => {
   
     // return(
     //     <div style={{backgroundColor: "hsl(0,0%,97%)", borderRadius: "5px", padding:"1rem"}} >
-    //     <p className="font-opensans" style={{fontSize: "1rem"}}><b>COST</b></p>
+    //     <p className="font-lexend" style={{fontSize: "1rem"}}><b>COST</b></p>
     //     <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
     //         <div style={{border: "1px solid black", width: "90%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Free</div>                   
     //         <div style={{border: "1px solid black", width: "90%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}}>Paid</div>                   
     //     </div>
-    //     <p className="font-opensans" style={{fontSize: "1rem"}}><b>EXPERIENCE TYPE</b></p>
+    //     <p className="font-lexend" style={{fontSize: "1rem"}}><b>EXPERIENCE TYPE</b></p>
     //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Adventure</div>
     //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", marginBottom: "1rem"}} className="font-nunito">Culture</div>                   
     //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", marginBottom: "1rem"}} className="font-nunito">Heritage</div>                   
@@ -91,7 +91,7 @@ const Filters = (props) => {
       };
     return(
     <div className={classes.root}>
-        <Typography id="continuous-slider" gutterBottom className="font-opensans" style={{fontSize: "1rem", fontWeight: "600"}}>
+        <Typography id="continuous-slider" gutterBottom className="font-lexend" style={{fontSize: "1rem", fontWeight: "600"}}>
           COST
         </Typography>
         <Grid container spacing={2} style={{textAlign: "center"}}>
@@ -100,7 +100,7 @@ const Filters = (props) => {
           </Grid>
         </Grid>
         <Grid className={classes.gridSlab} spacing={0}>
-        <Typography id="continuous-slider" gutterBottom className="font-opensans" style={{fontSize: "1rem", fontWeight: "600"}}>
+        <Typography id="continuous-slider" gutterBottom className="font-lexend" style={{fontSize: "1rem", fontWeight: "600"}}>
           EXPERIENCE FILTERS
         </Typography>
         <Grid item xs spacing={0}>
@@ -138,7 +138,7 @@ const Filters = (props) => {
         </Grid>
         </Grid>
         <Grid>
-        <Typography id="continuous-slider" gutterBottom className="font-opensans" style={{fontSize: "1rem", fontWeight: "600"}}>
+        <Typography id="continuous-slider" gutterBottom className="font-lexend" style={{fontSize: "1rem", fontWeight: "600"}}>
           GROUP TYPE
         </Typography>
         <Grid item>

@@ -6,6 +6,7 @@ import Pannel from './pannel/Index';
 import axioslocationsinstance from '../../../../services/poi/hotlocations';
 
 import { fadeIn } from 'react-animations'
+import { useRouter } from 'next/router';
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -31,7 +32,9 @@ const MobileSearch= (props) => {
   let isPageWide = media('(min-width: 768px)')
     const [pannelOpen, setPannelOpen] = useState(false);
     const [hotLocationsData, setHotLocationsData] = useState();
-    
+    var pathChange = false;
+
+    const router = useRouter()    
     useEffect(() => {
          axioslocationsinstance.get("").then(response => {
                   setHotLocationsData(response.data);

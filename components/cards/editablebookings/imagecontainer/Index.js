@@ -70,7 +70,7 @@ const Booking = (props) =>{
         <Container className="">
             <ImageContainer>
                 <div style={{minHeight: '25vh'}}><ImageLoader borderRadius="10px 10px 0 0" fit="cover" url={props.images ? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} dimensions={{width: 800, height: 450}} dimensionsMobile={{width: 800, height: 450}} height="25vh" width="100%"></ImageLoader></div>
-                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)} className="font-opensans" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", top: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>
+                {props.images ? props.images.length ?<PhotosButton onClick={() => props._setImagesHandler(imagesarr)} className="font-lexend" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", top: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>
                      <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
                     All Photos
                     </PhotosButton> : null : null}
@@ -88,7 +88,7 @@ const Booking = (props) =>{
             <ImageContainer>
             {/* <ImageLoader fit="cover" url={props.images[0].image} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} widthmobile="100%" height="20vh" ></ImageLoader> */}
                 <ImageLoader blur={props.blur} url={props.images? props.images.length ? props.images[0].image : 'media/website/grey.png' : 'media/website/grey.png'} dimensionsMobile={{ width: 1600, height: 900 }}  fit="cover" width="100%" height="25vh"  borderRadius="10px 10px 0 0"/>
-                <PhotosButton onClick={() => props._setImagesHandler(imagesarr)} className="font-opensans" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", top: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>                <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
+                <PhotosButton onClick={() => props._setImagesHandler(imagesarr)} className="font-lexend" style={{backgroundColor: "white", opacity: '0.7', borderRadius: "5px", position: "absolute", right: "0.5rem", top: "0.5rem", padding: "0.5rem", fontSize: "0.75rem" }}>                <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon>
                 All Photos</PhotosButton>
                 <YellowContainer duration={props.duration} are_prices_hidden={props.are_prices_hidden} city={props.city} check_in={props.check_in} check_out={props.check_out} price={props.price} heading={props.heading}></YellowContainer>
                 {/* {props.type==="Accommodation" ? <EditButton className="center-div" onClick={props.setShowBookingModal}>

@@ -7,7 +7,7 @@ import BackgroundImageLoader from '../../../BackgroundImageLoader';
 
 const Container = styled.div`
 @media screen and (min-width: 768px){
-    width: 85%;
+    width: 90%;
     margin: auto;
 }
 `;
@@ -62,9 +62,9 @@ const Cart = (props) => {
                 borderRadius="5px"
                 height={'100%'}
                 ></ImageLoader>
-                <AbsoluteContainer className='font-opensans center-div text-center'>
-                    <Heading className='font-opensans'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading>
-                    <Subheading className='font-opensans'>{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Subheading>
+                <AbsoluteContainer className='font-lexend center-div text-center'>
+                    <Heading className='font-lexend'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading>
+                    <Subheading className='font-lexend'>{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Subheading>
                 </AbsoluteContainer>
                 </RelativeContainer>
                 {/* <BackgroundImageLoader height={'20vh'}

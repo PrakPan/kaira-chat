@@ -44,44 +44,42 @@ const ImagesMobile = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container ConImg={props.images[1]}>
+    <Container>
       <ImageLoader
         borderRadius="12px"
-        dimensions={{ width: 922, height: 331 }}
-        url={props.images[0]}
+        dimensions={{ width: 912, height: 331 }}
+        url="media/website/grey.png"
         height="auto"
         heightMobile="auto"
         dimensionsMobile={{ width: 328, height: 141 }}
       ></ImageLoader>
-      {props.images[1] ? (
-        <GridContainer>
+      <GridContainer>
+        <ImageLoader
+          borderRadius="12px"
+          url="media/website/grey.png"
+          dimensions={{ width: 456, height: 150 }}
+          height="100%"
+          heightMobile="auto"
+          dimensionsMobile={{ width: 160, height: 90 }}
+        ></ImageLoader>
+        <MoreContainer className="center-div">
           <ImageLoader
             borderRadius="12px"
-            url={props.images[1]}
-            dimensions={{ width: 436, height: 150 }}
+            url="media/website/grey.png"
+            dimensions={{ width: 456, height: 150 }}
             height="100%"
             heightMobile="auto"
             dimensionsMobile={{ width: 160, height: 90 }}
           ></ImageLoader>
-          <MoreContainer className="center-div">
-            <ImageLoader
-              borderRadius="12px"
-              url={props.images[2]}
-              dimensions={{ width: 436, height: 150 }}
-              height="100%"
-              heightMobile="auto"
-              dimensionsMobile={{ width: 160, height: 90 }}
-            ></ImageLoader>
-            {/* <div
+          <div
             className="center-div"
             style={{ position: 'absolute', height: '100%', color: 'white' }}
           >
             View 10+ photos
-          </div> */}
-            {/* <MoreText className='font-lexend'>View 10+ photos</MoreText> */}
-          </MoreContainer>
-        </GridContainer>
-      ) : null}
+          </div>
+          {/* <MoreText className='font-lexend'>View 10+ photos</MoreText> */}
+        </MoreContainer>
+      </GridContainer>
     </Container>
   );
 };

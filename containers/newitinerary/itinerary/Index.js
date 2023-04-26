@@ -40,6 +40,9 @@ const Itinerary = (props) => {
         <City className="border-thin">Jaisalmer (2N)</City>
       </CitiesContainer>
       <DayContainer></DayContainer>
+      <DayContainer></DayContainer>
+      <DayContainer></DayContainer>
+      <DayContainer></DayContainer>
     </Container>
   );
 };

@@ -11,7 +11,7 @@ const Container = styled.div`
 const CardTimer = (props) => {
 
     return (
-      < Container className="font-opensans">
+      < Container className="font-lexend">
         <div>{props.hours+""}</div>
         <div> : </div>
         <div>{props.minutes+""}</div>

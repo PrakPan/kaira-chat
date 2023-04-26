@@ -290,7 +290,7 @@ const Booking = (props) => {
         {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : null}
         <Container>
             <BookingsContainer style={{marginTop :   '0' }}>
-              <MessageContainer className='border-thin font-opensans'>
+              <MessageContainer className='border-thin font-lexend'>
               Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
               </MessageContainer>
                 {bookingDesktopJSX}
@@ -311,7 +311,7 @@ const Booking = (props) => {
       <Container  style={{marginTop :  '0' }}>
             {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>}
             {!showpayment ? <BookingsContainer style={{marginTop : props.showTimer ? '-50vh' : '0' }}>
-            <MessageContainer className='border-thin font-opensans'>
+            <MessageContainer className='border-thin font-lexend'>
               Here are a few recommendations for booking your travel experience that you can completely edit on your own. Our experience captain will get in touch with you to help you out. 🙂
               </MessageContainer>
              {bookingMobileJSX}

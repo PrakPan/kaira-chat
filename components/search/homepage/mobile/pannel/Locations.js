@@ -70,8 +70,11 @@ const Locations = (props) => {
   const router = useRouter();
 
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (id, name, parent, slug) => {
-    router.push('/travel-guide/city/' + slug);
+  const _handleLocationClick = (slug) => {
+    // if(slug)router.push('/travel-guide/city/'+slug)
+    if (slug)
+      window.location.href =
+        'https://thetarzanway.com/travel-guide/city/' + slug;
   };
   const _handlePersonaliseRedirect = (id, name, parent) => {
     // localStorage.setItem('search_city_selected_id', id)
@@ -89,9 +92,7 @@ const Locations = (props) => {
       let parent = props.hotlocations[i].state.name;
       let slug = props.hotlocations[i].slug;
       locations.push(
-        <LocationContainer
-          onClick={() => _handlePersonaliseRedirect(id, name, parent)}
-        >
+        <LocationContainer onClick={() => _handleLocationClick(slug)}>
           <MarkerContainer>
             <FaMapMarkerAlt />
           </MarkerContainer>
@@ -128,7 +129,7 @@ const Locations = (props) => {
   }
   return (
     <div>
-      <Heading className="font-lexend">POPULAR DESTINATION</Heading>
+      <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
       <Container>{locations}</Container>
     </div>
   );

@@ -279,7 +279,7 @@ const Itinerary = (props) => {
               <div
                 style={{ backgroundColor: '#F7e700', padding: '0.75rem' }}
                 className={
-                  props.blur ? 'font-opensans blurry-text' : 'font-opensans'
+                  props.blur ? 'font-lexend blurry-text' : 'font-lexend'
                 }
               >
                 <b>Locations Covered</b>

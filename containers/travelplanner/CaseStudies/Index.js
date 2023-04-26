@@ -1,9 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Button from '../../components/ui/button/Index';
-import ImageLoader from '../../../components/ImageLoader';
-import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
 import Card from './Card';
 import TRAVELERS from '../../../public/content/travelers';
@@ -41,7 +37,7 @@ const FullImgContent = (props) => {
          <Container>
             {cards.map((e)=>(e))}
         </Container>
-        <Button link={'/testimonials'} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View All</Button>
+        <Button link={'/testimonials'} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="500" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View All</Button>
          </>}
          
         {!isPageWide &&<PageDotsFlickity padding={'1rem 0.2rem'} cards={cards}></PageDotsFlickity>}

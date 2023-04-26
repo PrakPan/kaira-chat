@@ -48,7 +48,7 @@ const SelectedCity = (props) => {
      return(
         <Container className={props.city_id ? 'border-thin' : ''} style={{borderRadius: props.city_id ? '5px' : '0', backgroundColor: props.city_id ? 'hsl(0,0%,98%)' : 'transparent', borderColor: props.city_id ? "#e4e4e4" : 'transparent transparent #f7e700 transparent'}}>
             <div style={{display: 'inline'}}>
-            <Name style={{visibility : props.city_id ? 'visible' : 'hidden'}} className="font-opensans">{props.name ? props.name : 'L'}</Name>
+            <Name style={{visibility : props.city_id ? 'visible' : 'hidden'}} className="font-lexend">{props.name ? props.name : 'L'}</Name>
             {/* <Parent>{props.parent ? props.parent : 'New City'}</Parent> */}
             </div>
             <div className="center-di" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginLeft: '0.5rem'}}>

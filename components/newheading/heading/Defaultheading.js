@@ -66,7 +66,7 @@ const Defaultheadingstyle = styled.div`
 const Defaultheading = (props) => {
   return (
     <Defaultheadingstyle
-    className="font-opensans"
+    className="font-lexend"
      
       fontSize={props.fontSize}//1
     //   marginBottom={marginBottom}//2
