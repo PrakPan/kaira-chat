@@ -89,10 +89,15 @@ const RedDot = styled.div`
 
 const CompanyName =styled.div`
 position: absolute;
-left: 34px;
-top: 23px;
+left: 33px;
+top: 18px;
 font-size : 14px;
 font-weight : 600;
+@media screen and (min-width: 768px) {
+  left: 34px;
+  top: 23px;
+  
+}
 `
 const Heading = styled.p`
 // font-family: 'Poppins';
@@ -180,7 +185,7 @@ const Mobile = (props) => {
         </div>
 
          <div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}}>
-             {showLogo && <Link  href={!props.PW? '/' : '/corporates/physicswallah'}><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="55px" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
+             {showLogo && <Link  href={!props.PW? '/' : '/corporates/physicswallah'}><ImageLoader  dimensions={{width: 122, height: 100}} dimensionsMobile={{width: 122, height: 100}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="52px" url={'media/website/logo-only.svg'} ></ImageLoader></Link>}
             {!props.hidecta &&<CompanyName>thetarzanway</CompanyName>}
             </div>
             {  !props.hidecta  ?

@@ -1,7 +1,7 @@
 import React, {useRef, useEffect, useState} from 'react';
 // import {Modal} from 'react-bootstrap';
 import Modal from '../ui/Modal'
-import Login from '../userauth/LogInModal';
+import Login from '../userauth/LogInModal'
 import styled from 'styled-components';
 import {connect} from 'react-redux';
 import ImageLoader from '../ImageLoader';
@@ -46,7 +46,7 @@ const TagsContent = [{icon : 'media/icons/login/tag.png' ,  text : 'Better price
 
 const Enquiry = (props) => {
   let isPageWide = media('(min-width: 768px)')
-  const [modalWidth , setModalWidth] = useState(50)
+  const [modalWidth , setModalWidth] = useState(!isPageWide? 90 :50)
     let myref = useRef(null);
     const [showImage, setShowImage] = useState(false);
     let height='100px'
@@ -73,7 +73,7 @@ const Enquiry = (props) => {
       findModalWidth()
       return ()=> window.removeEventListener("resize", findModalWidth)  
   },[])
-
+console.log(modalWidth)
 
   if(isPageWide)
   return(

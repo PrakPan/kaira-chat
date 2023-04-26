@@ -122,7 +122,7 @@ export default function Modal(props) {
             mobileLeft={props.mobileLeft}
             borderRadius={props.borderRadius}
             width={props.width}
-            mobileWidth={props.mobileWidth}
+            mobileWidth={props.mobileWidth || props.width}
             height={props.height}
             bgColor={props.bgColor}
             centered={props.centered}
