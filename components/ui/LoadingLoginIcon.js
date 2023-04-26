@@ -2,10 +2,11 @@ import styled from 'styled-components';
 import Lottie from 'react-lottie'
 import animationData from '../../public/assets/icons/junction-loader.json'
 
-export default function SkeletonCard({width,height,mt,mb,ml,mr,margin,borderRadius,lottieDimension}){
+export default function SkeletonCard(props){
     const LoadingBox = styled.div`
-    height : 100%;
-    width:100%
+    height : ${props=>props.height || '100%'};
+    width:${props=>props.width || '100%'};
+    margin : auto;
   `;
     const defaultOptions = {
         loop : true,
@@ -14,8 +15,8 @@ export default function SkeletonCard({width,height,mt,mb,ml,mr,margin,borderRadi
       }
 
     return (
-        <LoadingBox width={width} height={height} ml={ml} mr={mr} mt={mt} margin={margin} mb={mb} borderRadius={borderRadius}>
-        <Lottie options={defaultOptions} width='100%' height='100%'   />
+        <LoadingBox width={props.width} height={props.width}>
+        <Lottie options={defaultOptions} width={props.width} height={props.width} margin='auto'  />
         </LoadingBox>
     )
 }

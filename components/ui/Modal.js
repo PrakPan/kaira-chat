@@ -2,6 +2,7 @@ import styled, { keyframes } from "styled-components";
 import { RxCross2 } from "react-icons/rx";
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import media from '../media'
 const TopSlideIn = keyframes`
 from { 
   transform: translate(-50%,-100%);
@@ -68,6 +69,7 @@ const BlackContainer = styled.div`
 
 export default function Modal(props) {
   const [_document, set_document] = useState(null)
+  let isPageWide = media('(min-width: 768px)')
 
   function getScrollBarWidth() {
     let el = document.createElement("div");
@@ -86,14 +88,14 @@ export default function Modal(props) {
     setTimeout(() => {
       if (props.onHide) props.onHide();
       document.body.style.overflowY = 'scroll'
-      document.body.style.paddingRight = '0px'
+      if(isPageWide) document.body.style.paddingRight = '0px'
     }, 800);
   }
 
   useEffect(() => {
     if (props.show === true){
     document.body.style.overflowY = 'hidden';
-    document.body.style.paddingRight = getScrollBarWidth() + 'px'
+  if(isPageWide) document.body.style.paddingRight = getScrollBarWidth() + 'px'
     setFade("in")
   }
     else onCLose();
