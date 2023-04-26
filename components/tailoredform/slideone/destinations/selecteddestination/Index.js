@@ -30,8 +30,9 @@ position : relative;
 const LeftContent = styled.div`
 line-height: 1;
 font-size: 0.85rem;
-display: flex;
-align-items: center;
+display: grid;
+grid-template-columns : 1fr max-content;
+align-items : center;
 `;
 const RightContainer = styled.div`
 line-height: 1;
@@ -70,13 +71,13 @@ const SelectedDestination = (props) => {
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() 
     // : props.openCities
   //  : setShowDestinationInput(!showDestinationInput)
-  : ()=>{setShowDestination(false);_handleFocusSearch()}
+  : ()=>{setShowDestination(false);_handleFocusSearch();}
    }  className=' font-lexend hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
-    <LeftContent className='hover-pointer'>
+    <LeftContent className='hover-pointer' selectlocation={props.selectlocation}>
           {!props.selectlocation  ? 
-                  <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', marginRight: '10px'}}></MdOutlineLocationOn>
+                  <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.25rem' , marginRight : '13px'}}></MdOutlineLocationOn>
                   :
-                  <BiTargetLock style={{lineHeight: '1', fontSize: '1.25rem' , marginRight: '13px'}}></BiTargetLock>
+                  <BiTargetLock style={{lineHeight: '1', fontSize: '1.25rem' , marginRight: '13px'}} ></BiTargetLock>
 
 
           }
