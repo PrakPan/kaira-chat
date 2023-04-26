@@ -8,6 +8,14 @@ import styled from 'styled-components';
 
 
 const Container = styled.input`
+    width: 92%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding-left: 2.6rem;
+    background-color: transparent;
+    cursor : pointer;
  &:focus{
     border: none;
     outline: none;
