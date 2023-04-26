@@ -74,7 +74,7 @@ const Enquiry = (props) => {
             <Cross src={cross} onClick={_handleClose} />
             <Heading noline align="center" aligndesktop="center" margin={ !isPageWide ? "2rem" : '5rem auto'}  bold>Notifications</Heading>
                 {notificationsArr.length ? notificationsArr : <ImageLoader  width="60%" widthmobile="70%" url={'media/website/nonotifications.svg'}/>}
-                {notificationsArr.length > 1 ?<ClearAll className="font-opensans" onClick={_clearAllHandler}>Clear All</ClearAll> : null}
+                {notificationsArr.length > 1 ?<ClearAll className="font-lexend" onClick={_clearAllHandler}>Clear All</ClearAll> : null}
 
             </Modal.Body>
       </Modal>

@@ -256,15 +256,15 @@ const Navbar = (props) => {
           </TTWLogoContainer>
           
           {/* <input /> */}
-          <div style={{position: 'absolute', left: '32%', height: '100%' , width : '30%'}} className="center-div" onClick={() => setToggleSearch(true)}>
+         {!props.hidecta &&  <div style={{position: 'absolute', left: '32%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
           <TopContainer>
             <SearchContainer>
                     <Search placeholder="Search by destination (country, region or city)" ></Search>
                     <ImSearch style={{position : 'absolute' , top : '17px' , left : '13px', color : '#B0BABF' , pointerEvents : 'none'}} />
             </SearchContainer>
         </TopContainer>
-          </div>
-      {toggleSearch ? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : <div></div>}
+          </div>}
+      {toggleSearch? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : <div></div>}
           {/* <SearchBar />  */}
           <NavItemsContainer style={{ marginRight: props.token ? '0rem' : '0'}}>
             
@@ -283,7 +283,7 @@ const Navbar = (props) => {
             </NavItem>
       
           {  !props.hidecta  ? 
-                        <Button fontWeight="600" boxShadow  hoverBgColor="white" hoverColor="black" bgColor="#F7e700" borderStyle="none" borderRadius="5px" margin="0 1.5rem 0 0" padding="0.75rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
+                        <Button fontWeight="500" borderColor='black' borderWidth='1px' hoverBgColor="black" hoverColor="white" bgColor="#F7e700"  borderRadius="6px" margin="0 1.5rem 0 0" padding="0.5rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
           : null}
           {props.token ? 
           <ProfilDropDown

@@ -33,7 +33,7 @@ const DayContainer = (props) => {
 
         <Container
      
-        className='font-poppins'>
+        className='font-lexend'>
 
       
             <Date>Feb 3, 2023</Date>

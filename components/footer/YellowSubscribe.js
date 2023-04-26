@@ -113,17 +113,17 @@ const SubscribeDrawer = (props) =>  {
               <Heading>Subscribe (It's Free)</Heading>
               <GridContainer>
                 <ContentContainer>
-                    <Subheading className="font-opensans"> Latest Travel Content </Subheading>
+                    <Subheading className="font-lexend"> Latest Travel Content </Subheading>
                     <Icon src={content}/>
                     {isPageWide ? <P>We will keep you updated with interesting travel tips, breath-taking places, travel facts and so much more.</P> : null}
                 </ContentContainer>
                 <ContentContainer style={{borderStyle: isPageWide ? "none solid none solid" : 'none', borderWidth: "1px"}}>
-                    <Subheading className="font-opensans"> Exciting Offers </Subheading>
+                    <Subheading className="font-lexend"> Exciting Offers </Subheading>
                     <Icon src={offers}/>
                      {isPageWide ? <P>Want to find a trip and get 30% off? Along with our partners, we will keep you up to date with the latest offers and travel deals.</P>: null}
                 </ContentContainer>
                 <ContentContainer>
-                    <Subheading className="font-opensans">Community Support</Subheading>
+                    <Subheading className="font-lexend">Community Support</Subheading>
                     <Icon src={community}/>
                      {isPageWide ? <P>Become a part of our community? Want to travel? Have a question? Confused? We're always there and available for you.</P>: null}
                 </ContentContainer>

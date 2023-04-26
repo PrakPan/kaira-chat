@@ -38,7 +38,7 @@ const FoodToEat = (props) => {
   const cards = props.foods?.map((icon,index) => 
   <IconContainer>
      <ImageLoader borderRadius='12px' url={icon.image ? icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
-     <IconTagLine className="font-opensans">{icon.name}</IconTagLine>
+     <IconTagLine className="font-lexend">{icon.name}</IconTagLine>
   </IconContainer>)
   const MobileCardsArr = []
   let count = 0
@@ -57,10 +57,10 @@ const FoodToEat = (props) => {
     <>
       <div className="hidden-mobile">
         <Carousel
-          initialIndex
+          initialIndex={0}
           hideSides
           numberOfCards={4}
-          groupCells={2}
+          groupCells={4}
           cards={cards}
         />
       </div>

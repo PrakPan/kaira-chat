@@ -94,7 +94,7 @@ const Accommodation = (props) => {
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center', marginBottom: '1rem'}}>
-            <Name className='font-opensans'>
+            <Name className='font-lexend'>
              {props.heading}
             </Name>
             <StyledInfoIcon  onClick={() => props._openPoiModal(props.data.activity_data.poi)} ></StyledInfoIcon>
@@ -113,7 +113,7 @@ const Accommodation = (props) => {
                     {props.type}
                 </Tag>
         </TagsContainer> */}
-        {props.text ? <Description className='font-opensans' onClick={() => props._openPoiModal(props.data.activity_data.poi)}>
+        {props.text ? <Description className='font-lexend' onClick={() => props._openPoiModal(props.data.activity_data.poi)}>
          
             {isPageWide && props.text.length? props.text.substring(0,250)+"...": props.text.substring(0,80)+"..."}
             
@@ -121,17 +121,17 @@ const Accommodation = (props) => {
         {/* <GridContainer>
                 <IconContainer >
                     <StyledTimeIcon></StyledTimeIcon>
-                    <p className='font-opensans' style={{margin: '0'}}>2 hours</p>
+                    <p className='font-lexend' style={{margin: '0'}}>2 hours</p>
                 </IconContainer>
                 <IconContainer >
                     <StyledTimeIcon></StyledTimeIcon>
-                    <p className='font-opensans' style={{margin: '0'}}>2 hours</p>
+                    <p className='font-lexend' style={{margin: '0'}}>2 hours</p>
 
                 </IconContainer>
 
             </GridContainer> */}
         <RightBottomContainer>
-        {/* <Cost className='font-opensans'>{ "₹ "+getIndianPrice(props.cost)+" /-"  }</Cost> */}
+        {/* <Cost className='font-lexend'>{ "₹ "+getIndianPrice(props.cost)+" /-"  }</Cost> */}
 
             <Button
              onclick={props._updatePoiHandler}

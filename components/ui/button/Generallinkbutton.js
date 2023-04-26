@@ -69,7 +69,7 @@ text-align: ${(props)=> (props.textAlign ? props.textAlign : "center")};
 const Generalbutton = (props) => {
   return (
     <Generalbuttonstyle
-    className="font-opensans"
+    className="font-lexend"
       onClick={() => props.onclick(props.onclickparam)}
       color={props.color}
       borderRadius={props.borderRadius}

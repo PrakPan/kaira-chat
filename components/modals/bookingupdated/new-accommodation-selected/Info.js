@@ -111,7 +111,7 @@ const Accommodation = (props) => {
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}}>
-            <Name className='font-opensans hover-pointer' onClick={props.setShowDetails}>
+            <Name className='font-lexend hover-pointer' onClick={props.setShowDetails}>
              {props.selectedBooking ? props.selectedBooking.name : null}
             </Name>
             
@@ -131,12 +131,12 @@ const Accommodation = (props) => {
                     <ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         {props.selectedBooking.check_in ? <div>
-                            <p  style={{fontWeight: '600', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>Check In</p>
-                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>{getDate(props.selectedBooking.check_in)}</p>
+                            <p  style={{fontWeight: '600', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>Check In</p>
+                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>{getDate(props.selectedBooking.check_in)}</p>
                         </div> : null}
                         {props.selectedBooking.check_out ? <div> 
-                            <p  style={{fontWeight: '600', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>Check Out</p>
-                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>{getDate(props.selectedBooking.check_out)}</p>
+                            <p  style={{fontWeight: '600', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>Check Out</p>
+                            <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>{getDate(props.selectedBooking.check_out)}</p>
                         </div> : null}
                     </div>
                 </div>
@@ -147,8 +147,8 @@ const Accommodation = (props) => {
                         { rooms.length ? 
                         rooms.map(room => 
                             <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
-                                 <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>{room.number_of_rooms + " x "}</p>
-                                 <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0.25rem'}} className='font-opensans'>{room.room_type_name}</p>
+                                 <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>{room.number_of_rooms + " x "}</p>
+                                 <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0.25rem'}} className='font-lexend'>{room.room_type_name}</p>
                             </div>
                         )
                       : null }
@@ -158,25 +158,25 @@ const Accommodation = (props) => {
                     <ImageLoader url="media/icons/bookings/tourist.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='center-div'>
-                             <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-opensans'>2 Adults , 1 Child(s)</p>
+                             <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>2 Adults , 1 Child(s)</p>
                         </div>
                       
                     </div>
                 </div> */}
                 </div>
-            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-opensans'>AMMENITEIS</p> */}
-            <div style={{display: 'flex', alignItems: 'center'}}>{props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-mobile" style={{backgroundColor: color, lineHeight: '1'}}>
+            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-lexend'>AMMENITEIS</p> */}
+            <div style={{display: 'flex', alignItems: 'center'}}>{props.rating &&  color!=='red'? <RatingContainer className="font-lexend hidden-mobile" style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null}</div>
         </DesktopGridContainer>
-      {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
+      {props.rating &&  color!=='red'? <RatingContainer className="font-lexend hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null}
         <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems:  isPageWide ? 'center' : 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
-                {/* <Cost  className='font-opensans'>{"₹ "+getIndianPrice(props.selectedBooking.cost)+" /-"}</Cost> */}
+                {/* <Cost  className='font-lexend'>{"₹ "+getIndianPrice(props.selectedBooking.cost)+" /-"}</Cost> */}
         </div>
         <div className='hidden-mobile'><Button fontSizeDesktop="1.25rem" onclick={() => console.log('')} bgColor="black" color="white" borderRadius="10px" fontWeight="600" borderWidth="0px" padding="0.25rem 1.5rem">Selected</Button></div>
 </div>

@@ -91,15 +91,15 @@ const Contact = () => {
         <Heading align="center" aligndesktop="center" margin="1.5rem">Want to meet us?</Heading>
         <GridContainer>
             <AddressContainer>
-                <HeadingSmall className="font-opensans" align="center">Address</HeadingSmall>
+                <HeadingSmall className="font-lexend" align="center">Address</HeadingSmall>
                 <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">D-14 First Floor, Sector 20,  Noida, Uttar Pradesh 201301</p>
                 <br></br>
-                <HeadingSmall className="font-opensans" align="center" style={{marginTop: '1rem'}}>Call Us</HeadingSmall>
+                <HeadingSmall className="font-lexend" align="center" style={{marginTop: '1rem'}}>Call Us</HeadingSmall>
                 <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">+91 9354665989, +91 87872 00342</p>
            
             </AddressContainer>
             <NumberContainer>
-            <HeadingSmall className="font-opensans" align="center">Reach Out</HeadingSmall>
+            <HeadingSmall className="font-lexend" align="center">Reach Out</HeadingSmall>
             {/* <ReachOutHelper>Email us on</ReachOutHelper> */}
             <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center", color: '#0066b2'}} className="font-nunito">info@thetarzanway.com</p>
             {/* <ReachOutHelper>or</ReachOutHelper> */}
@@ -124,7 +124,7 @@ const Contact = () => {
            
         </GridContainer>
          <AddressContainer style={{border: 'none'}}>
-                <HeadingSmall className="font-opensans" align="center">Social Media</HeadingSmall>
+                <HeadingSmall className="font-lexend" align="center">Social Media</HeadingSmall>
                  <SocialContainer>
                     <a href="https://www.instagram.com/thetarzanway" target="_blank"><SocialIcon src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/Instagramcolor_1.webp'}  /></a>
                     <a href="https://www.facebook.com/thetarzanway" target="_blank"><SocialIcon style={{margin: '0 3rem'}} src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/facebookcolor.webp'}  /></a>

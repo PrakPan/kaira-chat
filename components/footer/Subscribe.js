@@ -47,7 +47,7 @@ const Footer = (props) => {
   
     return(
         <div>
-            <Heading className="font-opensans">
+            <Heading className="font-lexend">
                <b>Subscribe Now (It's free) </b>
                 <I src={i} onClick={props.openpannel}></I>
             </Heading>

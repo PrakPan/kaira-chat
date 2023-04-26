@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, createRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
@@ -15,7 +15,6 @@ import axiomyplansinstance from '../../services/sales/MyPlans';
 import AsSeenIn from '../../containers/testimonial/AsSeenIn';
 // import Heading from '../../components/newheading/heading/Index';
 import Heading from '../../components/newheading/heading/Index';
-import WhyUs from '../../components/containers/WhyUs';
 import TravelStyles from '../../components/containers/TravelStyles';
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
@@ -36,6 +35,7 @@ import media from '../../components/media';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
+import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -83,8 +83,8 @@ const  Homepage = (props) =>{
   useEffect(() => {
     
     if(props.token){
-    const MyPlans = JSON.parse(localStorage.getItem('MyPlans'))
-if(MyPlans){
+const MyPlans = JSON.parse(localStorage.getItem('MyPlans'))
+if(MyPlans && MyPlans.access_token === props.token){
 setMyPlansArr(MyPlans.plans)
 setPlansCount(MyPlans.count)
 setPlansLoading(false)
@@ -102,7 +102,7 @@ else{
           
         }
         setMyPlansArr(plansarr.slice());
-        localStorage.setItem('MyPlans' , JSON.stringify({plans : plansarr , count : res.data.count}))
+        localStorage.setItem('MyPlans' , JSON.stringify({plans : plansarr , count : res.data.count , access_token : props.token}))
         setPlansCount(res.data.count);
         setPlansLoading(false);
     }).catch(err => {
@@ -116,25 +116,25 @@ else{
 //JSX for How it works 
 const HowitWorksHeadingsArr=[
 
-  <HowItWorksHeading className="font-opensans">Select your preferences</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Select your preferences</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">Let our AI plan your itinerary</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Let our AI plan your itinerary</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-opensans">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
 
 ];
 
 const HowitWorksContentsArr = [
 
-  <HowItWorksText className="font-opensans">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
+  <HowItWorksText className="font-lexend">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
 
-    <HowItWorksText  className="font-opensans">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
+    <HowItWorksText  className="font-lexend">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
 
-  <HowItWorksText  className="font-opensans">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
+  <HowItWorksText  className="font-lexend">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
 
-  <HowItWorksText  className="font-opensans">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
+  <HowItWorksText  className="font-lexend">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
 
 
 
@@ -192,12 +192,22 @@ useEffect(() => {
 },[]);
   return (
     
-    <div className={  "Homepage font-poppins" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
+    <div className={  "Homepage font-lexend" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
       {/* <Snowflakes></Snowflakes> */}
-      <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
-
+   
+      {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
        <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
-      </FullImage>
+      </FullImage> */}
+
+      <HeroBanner
+                   image={isPageWide?'media/website/homepage-herobanner.jpg' :'media/website/homepage-banner-mobile.png'}
+                   destinationType={'city-planner'}
+                   title={<p>Travel planning a chore,<br/>
+                   Let our AI Explore.</p>}
+                  _startPlanningFunction={()=>_handleTailoredRedirect()}
+                 />
+
+
        <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
     <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
@@ -214,7 +224,7 @@ useEffect(() => {
               props.token && myPlansArr.length ? 
               <>
               <Experiences  margin="2.5rem 0" experiences={myPlansArr} ></Experiences>
-             <Button  link='/dashboard'  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="600" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button>
+             <Button  link='/dashboard'  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="500" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button>
               
               </>
 : null
@@ -253,10 +263,7 @@ useEffect(() => {
     
  
 
- <div className='hidden-desktop'><PersonaliseBox ></PersonaliseBox ></div> 
-
-    
-
+ {!isPageWide && <div><PersonaliseBox ></PersonaliseBox ></div>} 
       <SetWidthContainer>
 
       {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
@@ -268,7 +275,7 @@ useEffect(() => {
 
             <br></br>
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-      <div className='hidden-desktop'><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
+     {!isPageWide &&  <div><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
       {/* <Chatbot history={props.history}/>     */}
       </div>
       <WhatsappFloating message="Hey, I need help planning my trip." />

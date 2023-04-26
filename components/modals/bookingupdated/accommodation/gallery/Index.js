@@ -64,7 +64,7 @@ const Gallery = (props) => {
         {/* {isPageWide ? <RightCrossContainer className='center-div' style={{top: isPageWide ? '6.25vw' : '20vw'}}>
               <FontAwesomeIcon icon={faAngleRight}></FontAwesomeIcon>
           </RightCrossContainer> : null} */}
-        {/* {!isPageWide ? <RatingContainer className='font-opensans'>
+        {/* {!isPageWide ? <RatingContainer className='font-lexend'>
             <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
             8.5/10 (376)
         </RatingContainer> : null} */}

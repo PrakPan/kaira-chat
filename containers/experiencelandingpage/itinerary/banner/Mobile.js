@@ -24,7 +24,7 @@ const BannerMobile = (props) => {
     }
   return(
     <Container className="border" style={{borderRadius: '0'}}>
-        {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-opensans" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
+        {/* <Button  onclick={_handleRedirect} hovercolor="white" hoverbgcolor="black" padding="0.75rem" bgColor="#F7e700" borderWidth="0" borderRadius="2rem" margin="0" width="100%" ><p className="font-lexend" style={{margin: '0', fontWeight: '400'}}>Craft your own experience</p></Button> */}
         <Button  link={urls.TAILORED_TRAVEL} boxShadow width="100%" borderRadius="5px" borderWidth="0px" bgColor="#F7e700" color="black" >View Itinerary</Button>
         
    </Container>

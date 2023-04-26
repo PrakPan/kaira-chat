@@ -87,11 +87,11 @@ const Menu = (props) => {
     <Container className="" style={{}}>
         <SetWidthContainer>
        {/* <FiltersContainer style={{ }}> */}
-        {/* <DropDown className='font-opensans hover-pointer'>Duration</DropDown>
-        <DropDown className='font-opensans hover-pointer'>Budget</DropDown>
-        <DropDown className='font-opensans hover-pointer'>Treks</DropDown> */}
+        {/* <DropDown className='font-lexend hover-pointer'>Duration</DropDown>
+        <DropDown className='font-lexend hover-pointer'>Budget</DropDown>
+        <DropDown className='font-lexend hover-pointer'>Treks</DropDown> */}
         {/* <FilterContainer className='hover-pointer' onClick={props.token ? () => props._deselectBookingHandler() : () => props.setShowLoginModal(true)}  >
-                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
+                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-lexend">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : true?  <IoCheckboxOutline  style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline    style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
                     </div>
@@ -99,7 +99,7 @@ const Menu = (props) => {
             
                 </FilterContainer > */}
         {/* <FilterContainer  className='hover-pointer'  onClick={() => props._toggleFilterHandler("Treks")}  >
-                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
+                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-lexend">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : props.filters["Trek"]?  <IoCheckboxOutline  style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline    style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
                     </div>
@@ -107,7 +107,7 @@ const Menu = (props) => {
             
                 </FilterContainer  >
                 <FilterContainer  className='hover-pointer' onClick={() => props._toggleFilterHandler("Road Trips")}  >
-                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
+                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-lexend">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : props.filters["Road Trip"]?  <IoCheckboxOutline  style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline    style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
                     </div>
@@ -115,7 +115,7 @@ const Menu = (props) => {
             
                 </FilterContainer  >  */}
                 {/* <FilterContainer className='hover-pointer'  onClick={true ? () => props._deselectBookingHandler() : () => props.setShowLoginModal(true)}   >
-                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-opensans">
+                    <div style={{lineHeight: '1', fontSize: '13px', }} className="font-lexend">
                         {props.is_selecting ? <Spinner   size={16} margin="0 0 0 0.25rem"></Spinner>
                        : true?  <IoCheckboxOutline  style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoCheckboxOutline> : <IoMdSquareOutline    style={{lineHeight: '1', fontSize: '20px', fontWeight: '700', marginTop: '0px'}}></IoMdSquareOutline>}
                     </div>
@@ -124,19 +124,19 @@ const Menu = (props) => {
                 </FilterContainer  >  */}
 
         {/* </FiltersContainer> */}
-        <div className='font-opensans  hover-pointer' style={{color: 'white', display: 'flex',}} onClick={() => setShowTerms(true)}>
+        <div className='font-lexend  hover-pointer' style={{color: 'white', display: 'flex',}} onClick={() => setShowTerms(true)}>
                     <div className='center-div'><ImageLoader center hoverpointer leftalign  onclick={props.openWhatsapp} url="media/icons/bookings/information.png" width="1.5rem" height="1.5rem" widthmobile="1.5rem"  ></ImageLoader></div>
 
             <div style={{display: 'flex', alignItems: 'center', marginLeft: '4px'}}>Terms & Conditions</div>
         </div>
         {/* <div></div> */}
         <div className='hidden-mobile' style={{color: 'white', display: 'flex', flexGrow: '1',paddingRight: '1rem'}} onClick={()=> window.location.href=urls.WHATSAPP+"?text="+message}>
-            <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
+            <div className='font-lexend hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
             <ImageLoader onclick={props.openWhatsapp} url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
         </div>
    
         <div className='hidden-desktop' style={{color: 'white', display: 'flex', width: '100%', justifyContent: 'flex-end', paddingRight: '1rem'}} onClick={()=> window.location.href=urls.WHATSAPP+"?text="+message}>
-            <div className='font-opensans hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
+            <div className='font-lexend hidden-mobile hover-pointer center-div'style={{marginRight: '0.5rem', lineHeight: '1'}}>Connect on WhatsApp</div>
             <ImageLoader onclick={props.openWhatsapp} leftalign url="media/icons/bookings/whatsapp.svg" width="2rem" height="2rem" widthmobile="2rem"  ></ImageLoader>
         </div>
         </SetWidthContainer>

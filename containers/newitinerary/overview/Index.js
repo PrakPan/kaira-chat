@@ -37,7 +37,7 @@ const Overview = (props) => {
     return(
         <Container>
                 <GridContainer>
-                    <Heading className='font-poppins'>Gateway to Rajasthan</Heading>
+                    <Heading className='font-lexend'>Gateway to Rajasthan</Heading>
                     <div className='center-div'>
                     <div className='hidden-desktop'><Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
                         Trip Settings

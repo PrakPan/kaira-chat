@@ -32,7 +32,7 @@ const CardContainer = (props) => {
             <Card className='border center-v text-cener'>
                 <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-1.25rem'}}></ImQuotesLeft>
                 <CardListItem >{props.text}</CardListItem>
-                <CardHeading className='font-opensans'>{props.heading}</CardHeading>
+                <CardHeading className='font-lexend'>{props.heading}</CardHeading>
 
             </Card>
         

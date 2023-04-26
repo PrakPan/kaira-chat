@@ -38,7 +38,7 @@ const Itinerary = (props) => {
 
         <Container
      
-        className='font-poppins'>
+        className='font-lexend'>
                 <CitiesContainer>
         <City className='border-thin' style={{backgroundColor: 'black', color: 'white'}}>Jaipur (2N)</City>
         <City className='border-thin' >Jodhpur (2N)</City>

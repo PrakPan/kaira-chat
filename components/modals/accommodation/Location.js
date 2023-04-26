@@ -21,9 +21,9 @@ const Location = (props) => {
 return( 
  <Container className='center-di'>
     <Address>
-        <p className='font-opensans' style={{fontWeight: '600'}}>Address</p>
-        <p className='font-opensans' style={{fontWeight: '300'}}>{props.data.addr1}</p>
-        <p className='font-opensans' style={{fontWeight: '300'}}>{props.data.addr2}</p>
+        <p className='font-lexend' style={{fontWeight: '600'}}>Address</p>
+        <p className='font-lexend' style={{fontWeight: '300'}}>{props.data.addr1}</p>
+        <p className='font-lexend' style={{fontWeight: '300'}}>{props.data.addr2}</p>
     </Address>
 </Container>
 );

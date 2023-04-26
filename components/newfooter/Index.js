@@ -136,13 +136,13 @@ const NewFooter = (props) => {
           <Box>
             <LogoContainer>
               <ImageLoader
-                dimensions={{ width: 100, height: 100 }}
+                dimensions={{ width: 120, height: 110 }}
                 dimensionsMobile={{ width: 120, height: 100 }}
                 url="media/website/logowhite.svg"
                 widthmobile="60px"
                 leftalign
                 height="50px"
-                width="3.5rem"
+                width="3.8rem"
               ></ImageLoader>
               <CompanyName className="CompanyName">thetarzanway</CompanyName>
             </LogoContainer>

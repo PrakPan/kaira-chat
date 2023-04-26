@@ -95,7 +95,7 @@ font-size : 14px;
 font-weight : 600;
 `
 const Heading = styled.p`
-font-family: 'Poppins';
+// font-family: 'Poppins';
 font-style: normal;
 font-weight: 500;
 font-size: 14px;
@@ -128,11 +128,13 @@ const Mobile = (props) => {
        },[ props.notOpenCount]);
 
        const _handleHomepageRedirect = () => {
-            router.push('/');
+        if(props.PW) router.push('/corporates/physicswallah')
+        else router.push('/');
        }
 
-       const LinksArr = [
-            {type : 'main' , link : '/' , text : 'Home' , icon : 'media/icons/navigation/home-page.png'},
+
+       var LinksArr = [
+            {type : 'main' , onclick : ()=>_handleHomepageRedirect() , text : 'Home' , icon : 'media/icons/navigation/home-page.png'},
             {type : 'main' , link : '/dashboard' , text : 'My Plans' , icon : 'media/icons/navigation/clipboard.png'},
             {type : 'main' , onclick : ()=>_handleNotifications() , text : 'Notifications', icon: 'media/icons/navigation/bell.png' },
             // {type : 'main' ,link : '/travel-guide' , text : 'Travel Guide' },
@@ -142,6 +144,7 @@ const Mobile = (props) => {
             {type : 'others' ,link : '/contact' , text : 'Contact Us' , icon : 'media/icons/navigation/call.png'},
             {type : 'others' ,link : '/covid-19-safe-travel-india' , text : 'Covid 19 Safety' , icon : 'media/icons/navigation/health-insurance.png' },
         ] 
+        if(!props.token) LinksArr = LinksArr.filter(e=>e.link != '/dashboard')
         const MainLinksDiv = LinksArr.map((e)=>{
             if(e.type === 'main')
         return <ListItem onClick={e.onclick && e.onclick} style={router.pathname===e.link ? {backgroundColor :  "#ffff4a45"} : {}} >
@@ -177,7 +180,7 @@ const Mobile = (props) => {
         </div>
 
          <div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}}>
-             {showLogo && <Link  href='/'><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="55px" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
+             {showLogo && <Link  href={!props.PW? '/' : '/corporates/physicswallah'}><ImageLoader  dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="55px" url={'media/website/logoblack.svg'} ></ImageLoader></Link>}
             {!props.hidecta &&<CompanyName>thetarzanway</CompanyName>}
             </div>
             {  !props.hidecta  ?
@@ -192,6 +195,7 @@ const Mobile = (props) => {
       onClose={() => setToggleMenu(false)}
       className="mobile-header-menu"
       width='250px'
+      style={{zIndex : '1200 !important'}}
     >
       <DrawerContainer>
           <ListContainer>

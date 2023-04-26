@@ -150,38 +150,38 @@ return(
     <OverviewContainer>
     <ImageNameContainer className="center-div">
         <ImageLoader dimesions={{ width: 400, height: 400}} dimensionsMobile={{width: 1600, height: 1600}} url={props.image!=='null' && props.image!==null ? props.image : 'media/website/user.svg'} width="40%" borderRadius="50%" widthmobile="40%"></ImageLoader>
-        <Name className="font-opensans">{props.name}</Name>
+        <Name className="font-lexend">{props.name}</Name>
     </ImageNameContainer>        
     {/* <CountContainer>
     <div className="center-div" >
-        <Count className="font-opensans">10</Count>
+        <Count className="font-lexend">10</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Saved</p>
     </div>
     <div className="center-div" >
-        <Count className="font-opensans">24</Count>
+        <Count className="font-lexend">24</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Taken</p>
     </div>
     <div className="center-div" >
-        <Count className="font-opensans">10</Count>
+        <Count className="font-lexend">10</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Plans Created</p>
     </div>
     </CountContainer> */}
     {!isPageWide ? <hr style={{margin: '0'}}/> : null}
     <DetailsContainer>
-        {isPageWide ? <SectionHeading className="font-opensans" style={{fontWeight: '700', marginBottom: "2rem"}}>Your Profile</SectionHeading> : null}
-        <DetailHeading className="font-opensans">
+        {isPageWide ? <SectionHeading className="font-lexend" style={{fontWeight: '700', marginBottom: "2rem"}}>Your Profile</SectionHeading> : null}
+        <DetailHeading className="font-lexend">
             Contact Number
         </DetailHeading>
         <DetailText style={{marginBottom: !isPageWide ? '2rem' : '2rem'}}>{props.phone}
         </DetailText>
         {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}} onClick={props.onSetProfilePic} />     */}
-        <DetailHeading className="font-opensans" style={{clear: "both"}}>Email</DetailHeading>
+        <DetailHeading className="font-lexend" style={{clear: "both"}}>Email</DetailHeading>
         <DetailText style={{marginBottom: '0'}}>{props.email}</DetailText>
         {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}}/>     */}
     </DetailsContainer>
     </OverviewContainer>
     {/* <PreferencesContainer>
-        <SectionHeading className="font-opensans" style={{margin: "0 auto 2rem auto", textAlign: "center", fontWeight: '700'}}>Your Preferences</SectionHeading>
+        <SectionHeading className="font-lexend" style={{margin: "0 auto 2rem auto", textAlign: "center", fontWeight: '700'}}>Your Preferences</SectionHeading>
         <SlidersContainer>
                <div className="center-div" style={{textAlign: 'right'}}>
                 <div>Adventure

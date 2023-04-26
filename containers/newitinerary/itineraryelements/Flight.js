@@ -55,7 +55,7 @@ const ItineraryFlightElement = (props) => {
 
         <Container
      
-        className='font-poppins'>
+        className='font-lexend'>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
                  

@@ -25,7 +25,6 @@ const NearbyLocations = (props) => {
         `/?slug=`+props.data.slug
       )
       .then((res) => {
-        console.log(res,'resres')
 let cardsArr = []
 let MobileCardsArr = []
 let count = 0

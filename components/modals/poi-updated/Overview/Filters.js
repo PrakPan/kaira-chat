@@ -32,7 +32,7 @@ const Filters= (props) => {
     if(props.experience_filters) if(props.experience_filters.length)
     for(var i = 0; i < props.experience_filters.length ; i++){
         filters.push(
-            <Filter  className="font-opensans border-thin">{props.experience_filters[i]}</Filter>
+            <Filter  className="font-lexend border-thin">{props.experience_filters[i]}</Filter>
         )
     }
 

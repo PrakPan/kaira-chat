@@ -139,12 +139,12 @@ const EnquireButton = styled.div`
     
       {/* <AppBar position="sticky" className={ isPageWide? classes.appbar : classes.appbarmobile}>
         <Tabs textColor="white" value={value} onChange={handleChange} aria-label="simple tabs example" centered  style={{zIndex: "2"}}  indicatorColor="">
-            <Tab  label="Overview" className="font-opensans experience-tab" />
-            <Tab   label="Itinerary" className="font-opensans experience-tab"  />
-            <Tab label="Booking" className="font-opensans experience-tab"  /> 
+            <Tab  label="Overview" className="font-lexend experience-tab" />
+            <Tab   label="Itinerary" className="font-lexend experience-tab"  />
+            <Tab label="Booking" className="font-lexend experience-tab"  /> 
         </Tabs>
       </AppBar> */}
-      {isPageWide? <EnquireButton onClick={openBooking} className="center-div font-opensans">Enquire Now</EnquireButton> : null}
+      {isPageWide? <EnquireButton onClick={openBooking} className="center-div font-lexend">Enquire Now</EnquireButton> : null}
       {/* <HeaderExtraPadding>
       </HeaderExtraPadding> */}
 

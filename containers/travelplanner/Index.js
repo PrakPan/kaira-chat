@@ -266,7 +266,6 @@ for(var i = 0 ; i < props.experienceData.locations.length; i++ ){
 //JSX for How it works 
 
  
- 
 
 const router = useRouter()
 
@@ -298,7 +297,12 @@ useEffect(() => {
   setOverviewHeading(props.experienceData.overview_heading)
 }, [router.query.link, props.experienceData])
 
-
+var country
+if(props.experienceData.ancestors){
+  if(props.experienceData.ancestors.length && props.experienceData.ancestors[0].level == 'Country' && props.experienceData.ancestors[0].name){
+    country = props.experienceData.ancestors[0].name
+  }
+}
 const InfoWindowContainer = (location)=><MapInfo>
 <b>{location.name}</b>
 <div>{location.most_popular_for.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
@@ -316,7 +320,7 @@ const InfoWindowContainer = (location)=><MapInfo>
           cities={props.experienceData.locations}
           children_cities={props.experienceData.children}
           title={props.experienceData.banner_heading}
-          setShowMobilePlanner={setShowMobilePlanner}
+          _startPlanningFunction={()=>setShowMobilePlanner(true)}
           destinationType={'travel-planner'}
         />
         <SetWidthContainer>
@@ -339,7 +343,7 @@ const InfoWindowContainer = (location)=><MapInfo>
             link={isPageWide ? "/tailored-travel" : null}
             onclick={!isPageWide ? () => setShowMobilePlanner(true) : null}
             borderWidth="1px"
-            fontWeight="600"
+            fontWeight="500"
             borderRadius="6px"
             margin="2rem auto"
             padding="0.5rem 2rem"
@@ -392,7 +396,7 @@ const InfoWindowContainer = (location)=><MapInfo>
             link={isPageWide ? "/tailored-travel" : null}
             onclick={!isPageWide ? () => setShowMobilePlanner(true) : null}
             borderWidth="1px"
-            fontWeight="600"
+            fontWeight="500"
             borderRadius="6px"
             margin="2rem auto"
             padding="0.5rem 2rem"
@@ -444,6 +448,7 @@ const InfoWindowContainer = (location)=><MapInfo>
           <OldLocations
             locations={PLANNER_PAGES}
             viewall
+            country={country}
             planner
           ></OldLocations>
 

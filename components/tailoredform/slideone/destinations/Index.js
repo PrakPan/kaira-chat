@@ -65,7 +65,7 @@ const [updatedData , setUpdatedData] = useState({id : null , data : null})
 
   return (
    <Container>
-    {/* <p className="font-opensans">Where do  you want to go?</p> */}
+    {/* <p className="font-lexend">Where do  you want to go?</p> */}
     <SelectedDestination startingLocation={props.startingLocation} setStartingLocation={props.setStartingLocation} showSearchStarting={props.showSearchStarting}
             setShowSearchStarting={props.setShowSearchStarting} setShowCities={props.setShowCities} selectlocation selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities} ></SelectedDestination>
         {
@@ -74,7 +74,7 @@ const [updatedData , setUpdatedData] = useState({id : null , data : null})
         {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */} 
         
         <div style={{display : 'flex' , alignItems : 'center' , justifyContent : 'space-between' , marginLeft : '33%' , marginRight : '10px'}}>
-        {!props.selectedCities.slice(1).some((e)=>!e.name) &&  <p onClick={_addDestinationHandler} className='text-center font-opensans hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>}
+        {!props.selectedCities.slice(1).some((e)=>!e.name) &&  <p onClick={_addDestinationHandler} className='text-center font-lexend hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>}
         {/* {destinations.length>1 && 
         <AiFillDelete onClick={()=>{_removeDestinationHandler()}} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete>        
         } */}
@@ -89,7 +89,7 @@ const [updatedData , setUpdatedData] = useState({id : null , data : null})
 
 
 
-        {/* <p className='font-opensans text-center hover-pointer' style={{fontSize: '0.85rem', color: '#1360D3'}}>+ Add More</p> */}
+        {/* <p className='font-lexend text-center hover-pointer' style={{fontSize: '0.85rem', color: '#1360D3'}}>+ Add More</p> */}
 
     </Container>
   );

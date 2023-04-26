@@ -31,8 +31,8 @@ const Filters= (props) => {
   return(
       <Container>
       <FlexContainer>
-         {props.data.accommodation_type ? <Filter  className="font-opensans border-thin">{props.data.accommodation_type}</Filter>:null}
-         {props.data.star_category ? <Filter  className="font-opensans border-thin">{props.data.star_category +" Star"}</Filter> : null}
+         {props.data.accommodation_type ? <Filter  className="font-lexend border-thin">{props.data.accommodation_type}</Filter>:null}
+         {props.data.star_category ? <Filter  className="font-lexend border-thin">{props.data.star_category +" Star"}</Filter> : null}
 
       </FlexContainer></Container>
   );

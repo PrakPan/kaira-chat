@@ -19,17 +19,17 @@ import media from '../../components/media';
 import Button from '../../components/ui/button/Index';
 import * as ga from '../../services/ga/Index';
 import {format } from  "date-fns";
-import Spinner from '../../components/Spinner';
 
 // import questions from './questions';
 import questioncontansts from './questioncontansts';
 const Container = styled.div`
 min-height: 100vh;
-padding-top: 22vw;
+// padding-top: 22vw;
+padding: 2rem 0 0 0;
 box-sizing: border-box;
-@media screen and (min-width: 768px){
-  padding: 15vh 0 0 0;
-}
+// @media screen and (min-width: 768px){
+//   padding: 2rem 0 0 0;
+// }
 `;
 
 
@@ -303,7 +303,6 @@ const _addCityHandler = (city_id, city) => {
         }
         const cityids =[];
         const citynames=[];
-        console.log(selectedCities)
         let state_ids = [];
          for(var i =0 ; i < selectedCities.length; i++){
           if(selectedCities[i].type === 'State') state_ids.push(selectedCities[i].city_id)
@@ -413,8 +412,8 @@ const _addCityHandler = (city_id, city) => {
         <SelectedCitiesContainer questionIndex={questionIndex} goToStart={() => setQuestionIndex(0)} selectedCities={selectedCities} _removeCityHandler={_removeCityHandler} ></SelectedCitiesContainer>
         </div>: questionIndex ? <SelectedCitiesContainer questionIndex={questionIndex} goToStart={() => setQuestionIndex(0)} selectedCities={selectedCities} _removeCityHandler={_removeCityHandler} ></SelectedCitiesContainer> : null }
           {/* <StatusBar questionIndex={questionIndex} totalQuestions={questions.questions.length}></StatusBar> */}
-        {questionIndex ? <Question className="font-opensans">{Questions.questions[questionIndex]}</Question>
-        : isPageWide ? <Question className="font-opensans">{Questions.questions[questionIndex]}</Question> : null}
+        {questionIndex ? <Question className="font-lexend">{Questions.questions[questionIndex]}</Question>
+        : isPageWide ? <Question className="font-lexend">{Questions.questions[questionIndex]}</Question> : null}
           <div style={{ minHeight: '24vw', paddingBottom: '0rem'}}>
             {option}
             </div>
@@ -430,8 +429,8 @@ const _addCityHandler = (city_id, city) => {
           {NextArrowJSX}
         {/* </div> */}
         </ButtonContainer> : null}
-        {!questionIndex && !selectedCities.length ? <ButtonContainer style={{gridTemplateColumns: '1fr'}}><Button padding="0.2rem" borderColor="#f7e700" borderRadius="2rem" onclick={_nextQuestionHandler} bgColor='#f7e700' fontWeight="600" color="black" width="100%" bold>Don't know where to go</Button></ButtonContainer> : null}
-        {/* {questionIndex === 5 ? <div style={{width: "max-content", margin: "0 auto"}}><Button className="font-opensans" onClick={_submitHandler}><b>Submit</b></Button></div> : null} */}
+        {!questionIndex && !selectedCities.length ? <ButtonContainer style={{gridTemplateColumns: '1fr'}}><Button padding="0.2rem" borderColor="#f7e700" borderRadius="2rem" onclick={_nextQuestionHandler} bgColor='#f7e700' fontWeight="500" color="black" width="100%" bold>Don't know where to go</Button></ButtonContainer> : null}
+        {/* {questionIndex === 5 ? <div style={{width: "max-content", margin: "0 auto"}}><Button className="font-lexend" onClick={_submitHandler}><b>Submit</b></Button></div> : null} */}
         {questionIndex === 6 && props.token && props.phone && props.phone !== 'null'? <LoadingPage></LoadingPage>: null}
         {/* <LoginModal
           show={props.showLogin}

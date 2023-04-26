@@ -35,7 +35,7 @@ const Details = (props) => {
     },[]);
 
     return(
-        <Container className='font-poppins'>
+        <Container className='font-lexend'>
                <div style={{width: 'max-content'}} >
                 <Heading>Destination</Heading>
                 <Text>Rajasthan</Text>

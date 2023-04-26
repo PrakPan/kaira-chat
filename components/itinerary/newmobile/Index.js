@@ -115,7 +115,7 @@ const Itinerary = (props) =>{
           if(props.day_slabs)
         for(var i = 0; i<props.day_slabs.length; i++){
             day_tabs_jsx.push(
-                <Tab  style={{textTransform: 'none'  , marginRight: '0.5rem', padding: '0.25rem 1rem', color: 'white !important'      }} label={getHumanDate(props.day_slabs[i].slab)}   className="itinerary-day-tab font-opensans" >
+                <Tab  style={{textTransform: 'none'  , marginRight: '0.5rem', padding: '0.25rem 1rem', color: 'white !important'      }} label={getHumanDate(props.day_slabs[i].slab)}   className="itinerary-day-tab font-lexend" >
         </Tab>
             )
             //push an empty array since day is present

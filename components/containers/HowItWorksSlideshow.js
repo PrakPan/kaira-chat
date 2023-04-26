@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import left from '../../public/assets/icons/navigation/leftcolor.svg';
-import right from '../../public/assets/icons/navigation/rightcolor.svg';
 import media from '../../components/media';
 import Button from '../ui/button/Index';
 import * as ga from '../../services/ga/Index';
@@ -58,16 +56,7 @@ margin-block : 15px;
     
 const HowItWorksSlideshow = (props) =>{
     const router=useRouter();
-    let isPageWide = media('(min-width: 768px)');
-    // const Image = styled.img`
-    // width: ${props.vertical ? '40%' : '60%'};
-    // margin: auto;
-    // display: block;
-    // @media screen and (min-width: 768px){
-    //     width: 50%;
-    // }
-    // `;
-    
+    let isPageWide = media('(min-width: 768px)');    
     let touchstart = null;
     const [slideSelected, setSlideSelected] = useState(0);
     const _prevSlideHandler = (val) => {
@@ -187,19 +176,10 @@ const HowItWorksSlideshow = (props) =>{
       }
     return(
     <div>
-    {/* <Container className='hidden-desktop' draggable="true"  onDragStart={_handleDragStart} onDragEnd={_handleDragEnd}>
-        <div className="center-div">
-            <Arrow src={left} onClick={_prevSlideHandler}/>
-        </div>
-        {slidesmobile[slideSelected]}
-        <div className="center-div">
-            <Arrow src={right} onClick={_nextSlideHandler}/>
-        </div>
-    </Container> */}
-        <Container className='hidden-mobil'>
+        <Container>
             {slidesdesktop}
         </Container>
-        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='600' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem' padding="0.5rem 2rem" borderWidth="1px">
+        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem' padding="0.5rem 2rem" borderWidth="1px">
             {isPageWide? 'Create your free itinerary' :'Start Now'}
             {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button> : null}

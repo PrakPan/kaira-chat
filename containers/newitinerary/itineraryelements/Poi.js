@@ -75,7 +75,7 @@ const ItineraryPoiElement = (props) => {
 
         <Container
      
-        className='font-poppins'>
+        className='font-lexend'>
             <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
                 <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>

@@ -14,7 +14,7 @@ const Layout = (props) => {
     return (
       <div className='layout'>
         <Header PW={props.PW} ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} />
-        {props.children}
+        <div style={{marginTop : '72px'}}>{props.children}</div>
         <LoginModal
           show={props.showLogin}
           onhide={props.token && !props.phone ? null : props.authCloseLogin}>

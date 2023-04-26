@@ -88,7 +88,7 @@ const Index = () => {
       if (content[i].heading) {
         cards.push(
 
-          <Heading2 className='font-opensans'>
+          <Heading2 className='font-lexend'>
             {content[i].heading}
           </Heading2>
         )
@@ -124,7 +124,7 @@ const Index = () => {
       <Logo style={{ margin: '1rem 0 4rem 0' }} className='center-div' src={img1} ></Logo>
      <Linecirclecontainer/>
 
-      <Heading2 className='center-di font-opensans' > {content[currentStep - 1].heading} </Heading2>
+      <Heading2 className='center-di font-lexend' > {content[currentStep - 1].heading} </Heading2>
 
     </Container1>
 

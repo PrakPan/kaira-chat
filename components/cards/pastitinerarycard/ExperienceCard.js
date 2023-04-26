@@ -141,7 +141,7 @@ const _handlePersonaliseClick = () => {
        </ImageContainer>  
        <ContentContainer className="text-center">
            <HeadingContainer>
-             <Heading className="font-opensans">{props.experience}</Heading>
+             <Heading className="font-lexend">{props.experience}</Heading>
            </HeadingContainer>
            {/* {typeof window !== 'undefined' ? <Rating className="font-nunito">
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
@@ -158,7 +158,7 @@ const _handlePersonaliseClick = () => {
                   {loadingItinerary  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
                   : 'View Itinerary'}
                   </Button>
-            {/* <Price className="font-opensans">{ "₹ "+getIndianPrice(props.starting_cost/100)+"/-"}</Price> */}
+            {/* <Price className="font-lexend">{ "₹ "+getIndianPrice(props.starting_cost/100)+"/-"}</Price> */}
                   <Button display="inline-block"  width='100%' onclickparams={null} onclick={_handlePersonaliseClick}   boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
                   {loadingPlanning  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
                   : 'Start Planning'}

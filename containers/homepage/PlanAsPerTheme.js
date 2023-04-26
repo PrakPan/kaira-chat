@@ -216,7 +216,7 @@ useEffect(()=>{
         
     </Container>
 
-    {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='600' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
+    {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
             {isPageWide? 'Create your free itinerary' :'Create your personalised Itinerary'}
             {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button> : null}

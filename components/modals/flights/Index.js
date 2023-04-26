@@ -472,7 +472,7 @@ if(props.token)
                 {/* <Flight></Flight> */}
                 {/* {!loading && !updateBookingState? optionsJSX : !optionsJSX ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching flights for you</div>  : null} */}
                 {updateLoadingState && !updateBookingState? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching best fares</div> : null }
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-opensans"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your flight</div> : null }
+                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-lexend"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your flight</div> : null }
                { !noResults && !updateLoadingState && !unauthorized? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                     {/* <FlightSelected data={props.selectedBooking}></FlightSelected> */}
@@ -486,7 +486,7 @@ if(props.token)
                </OptionsContainer> : null}
                {unauthorized ? <div style={{width: '100%', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div text-center">Oops, this action is not allowed on another user's itinerary</div>  : null}
 
-               {noResults && !unauthorized? <p  className='font-opensans text-center' >Oops, we couldn't find what you were searching!</p>  : null}
+               {noResults && !unauthorized? <p  className='font-lexend text-center' >Oops, we couldn't find what you were searching!</p>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
                {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null

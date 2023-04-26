@@ -17,7 +17,7 @@ const Vision = (props) => {
            <ImageLoader url="media/website/About us picture.jpeg" fit="cover" dimensions={{width: 1600, height: 900}}></ImageLoader>
        </div>
        <div className={classes.TextContainer} style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-           <Heading className="font-opensans" aligndesktop="center" bold noline margin="0" align="center">Our Vision</Heading>
+           <Heading className="font-lexend" aligndesktop="center" bold noline margin="0" align="center">Our Vision</Heading>
            <p className={classes.Text}>Innovating and simplifying travel through:</p>
            <div className={classes.IconsContainer}>
                <div>

@@ -68,8 +68,8 @@ const Experiences= (props) => {
 //     return(
 //       <Container onClick={props.onclick ? props.onclick : null} >  
 //           <BackroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   padding="0.25rem" zoomonhover center dimensions={{width: 900, height: 900}} height={isPageWide ? "40vh" : '60vh'} filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"  url={props.img}>
-//               <Name className="font-opensans">{props.heading}</Name>
-//               <Name className="font-opensans" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
+//               <Name className="font-lexend">{props.heading}</Name>
+//               <Name className="font-lexend" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
 //           </BackroundImageLoader>
 //       </Container>
 //   ); 
@@ -83,7 +83,7 @@ return(
             dimensionsMobile={{width: 800, height: 800}}
             height="35vh"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>{props.location}</Heading>
                 <Subheading>{props.heading}</Subheading>
 

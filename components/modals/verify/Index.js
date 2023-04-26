@@ -144,7 +144,7 @@ const RegistrationModal = (props) => {
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>
              <Body className="">
-                <p className='font-opensans text-center'>You're not authorized to purchase this, verify email</p>
+                <p className='font-lexend text-center'>You're not authorized to purchase this, verify email</p>
                 <Email otpSent={otpSent} email={email} setEmail={setEmail} emailError={emailError} setEmailError={setEmailError}></Email>
                 {otpSent ?  <Otp otp={otp} setOtp={setOtp} otpVerificationFailed={otpVerificationFailed} setEmailError={setEmailError}></Otp>:
     <div style={{visibility: 'hidden'}}> <Otp otp={otp} setOtp={setOtp} otpVerificationFailed={otpVerificationFailed} setEmailError={setEmailError}></Otp></div>

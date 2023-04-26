@@ -127,7 +127,7 @@ const Booking = (props) =>{
                         <FontAwesomeIcon icon={faStar} style={{fontSize: '0.75rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? Math.round(props.rating * 10) / 10+ " / 10" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
-                    {/* <Heading className="font-opensans">Details</Heading> */}
+                    {/* <Heading className="font-lexend">Details</Heading> */}
                     <GridContainer>
                         <LogoContainer>
                                 {/* <ImageLoader
@@ -140,43 +140,43 @@ const Booking = (props) =>{
                                  {props.data.costings_breakdown? props.data.costings_breakdown.Segments?  
                                 <img onError={() => setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/flight.webp")} width={"40px"}  alt="airline logo" height={"40px"} src={url}></img>
                                     :null : null }
-                                {props.data.costings_breakdown? props.data.costings_breakdown.Segments?     <div className='font-opensans text-center' style={{fontWeight: '300', fontSize: '0.75rem', margin: '0rem'}}>{props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode + " " + props.data.costings_breakdown.Segments[0][0].Airline.FlightNumber}</div> : null : null}
+                                {props.data.costings_breakdown? props.data.costings_breakdown.Segments?     <div className='font-lexend text-center' style={{fontWeight: '300', fontSize: '0.75rem', margin: '0rem'}}>{props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode + " " + props.data.costings_breakdown.Segments[0][0].Airline.FlightNumber}</div> : null : null}
                         </LogoContainer>
                         <DetailsGridContainer>
                             <div style={{display: 'flex', gap: '0.25rem'}}>
-                                {props.data.check_in ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.85rem'}} className='font-opensans'>{getTime(props.data.check_in)}</div>: <div></div>}
-                                {props.data.origin_city_iata_code? <div style={{ margin: '0', fontWeight: '300', fontSize: '0.85rem'}} className='font-opensans'>{"("+props.data.origin_city_iata_code+")"}</div>  : null}
+                                {props.data.check_in ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.85rem'}} className='font-lexend'>{getTime(props.data.check_in)}</div>: <div></div>}
+                                {props.data.origin_city_iata_code? <div style={{ margin: '0', fontWeight: '300', fontSize: '0.85rem'}} className='font-lexend'>{"("+props.data.origin_city_iata_code+")"}</div>  : null}
                             </div>
                             <div style={{margin: '0'}}>
                                 <img  height='1rem' src={right} style={{height: '1.25rem', width: '100%', margin: 'auto', display: 'block'}}></img>
                             </div>
                             <div style={{display: 'flex', gap: '0.25rem'}}>
-                                {props.data.check_out ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.85rem'}} className='font-opensans'>{getTime(props.data.check_out)}</div> : <div></div>}
-                                {props.data.destination_city_iata_code? <div style={{ margin: '0', fontWeight: '300', fontSize: '0.85rem'}} className='font-opensans'>{"("+props.data.destination_city_iata_code+")"}</div> : null}
+                                {props.data.check_out ? <div style={{ margin: '0', fontWeight: '700' , fontSize: '0.85rem'}} className='font-lexend'>{getTime(props.data.check_out)}</div> : <div></div>}
+                                {props.data.destination_city_iata_code? <div style={{ margin: '0', fontWeight: '300', fontSize: '0.85rem'}} className='font-lexend'>{"("+props.data.destination_city_iata_code+")"}</div> : null}
                             </div>
                             <div>
-                                {props.data.check_in ? <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300'}}>{getDate(props.data.check_in)}</div> : <div></div>}
-                                {props.data.costings_breakdown? props.data.costings_breakdown.Segments ? props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal !=="" ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal}</div> : null : null : null}
+                                {props.data.check_in ? <div className='font-lexend' style={{fontSize: '0.75rem', fontWeight: '300'}}>{getDate(props.data.check_in)}</div> : <div></div>}
+                                {props.data.costings_breakdown? props.data.costings_breakdown.Segments ? props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal !=="" ?  <div className='font-lexend' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal}</div> : null : null : null}
                             </div>
                             <div >
-                            {props.data.costings_breakdown ? props.data.costings_breakdown.Segments ? props.data.costings_breakdown.Segments[0].length > 1 ? <div className='font-opensans text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>{'via '+props.data.costings_breakdown.Segments[0][1].Origin.Airport.CityName}</div> : null: null : null}
-                            {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length > 1 ? <div className='font-opensans text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>{minuteToHours(props.data.costings_breakdown.Segments[0][1].GroundTime)}</div> : null : null : null}
+                            {props.data.costings_breakdown ? props.data.costings_breakdown.Segments ? props.data.costings_breakdown.Segments[0].length > 1 ? <div className='font-lexend text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>{'via '+props.data.costings_breakdown.Segments[0][1].Origin.Airport.CityName}</div> : null: null : null}
+                            {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length > 1 ? <div className='font-lexend text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>{minuteToHours(props.data.costings_breakdown.Segments[0][1].GroundTime)}</div> : null : null : null}
 
 
                             </div>
                             <div>
-                                {props.data.check_out ? <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300'}}>{getDate(props.data.check_out)}</div> : <div></div>}
-                                {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length ?  props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal !=="" ?  <div className='font-opensans' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal}</div> : null : null : null : null}
+                                {props.data.check_out ? <div className='font-lexend' style={{fontSize: '0.75rem', fontWeight: '300'}}>{getDate(props.data.check_out)}</div> : <div></div>}
+                                {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length ?  props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal !=="" ?  <div className='font-lexend' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal}</div> : null : null : null : null}
                             </div>
                         </DetailsGridContainer>
                     </GridContainer>
 
                     <ButtonContainer>
                     {props.is_selected? 
-                <Selected className='font-opensans'>
+                <Selected className='font-lexend'>
                     <BsCheckLg style={{fontSize: '0.75rem', marginRight: '0.25rem'}}></BsCheckLg>
                     Selected</Selected> : !props.is_stock ?
-                    <Select className='font-opensans'>
+                    <Select className='font-lexend'>
                         <BiPlus style={{fontSize: '1rem', marginRight: '0.25rem', marginTop: '-0.1rem'}}></BiPlus>
                         Select</Select> : null}
                 {!props.is_stock && isPageWide? <Button boxShadow onclick={props.setShowFlightModal} onclickparams={null} fontSizeDesktop="0.75rem" borderRadius="2rem" borderWidth='1px' padding="0.25rem 1rem" hoverBgColor="#f7e700" hoverBorderColor="#f7e700" hoverColor='black'>Change</Button> : null}

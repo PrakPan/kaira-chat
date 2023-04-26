@@ -69,6 +69,13 @@ border-radius : 50px;
 
 }
 `;
+const SkeletonContainer = styled.div`
+padding: 0.3rem;
+max-width: 100%;
+display : grid;
+grid-template-columns : 1fr 5fr;
+gap : 2px;
+`
 
 const MarkerContainer= styled.div`
 background : #dfdfdf;
@@ -91,7 +98,12 @@ const Locations= (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (slug) => {
-    router.push('/travel-guide/city/'+slug)
+   if(slug) {
+    // props.setPannelClose()
+    // router.push('/travel-guide/city/'+slug)
+window.location.href='https://thetarzanway.com/travel-guide/city/'+slug    
+
+}
   }
   const _handlePersonaliseRedirect = (id, name, parent) => {
     // localStorage.setItem('search_city_selected_id', id)
@@ -102,60 +114,38 @@ const Locations= (props) => {
     router.push('/tailored-travel?search_text='+name)
   }
   let locations=[];
-  console.log(props.hotlocations , 'locations')
     if(props.hotlocations){
         for(var i=0; i<props.hotlocations.length; i++){
-            let id = props.hotlocations[i].id;
-            let name=props.hotlocations[i].name;
-            let parent = props.hotlocations[i].state.name;
             let slug = props.hotlocations[i].slug
             locations.push(
                 <LocationContainer onClick={() => _handleLocationClick(slug)}>
-                {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
-                {/* <ImageLoader
-                        url={props.hotlocations[i].image}
-                        borderRadius='50%'
-                        height='100%'
-                        width="100%"
-                        heighttab="100%"
-                        dimensions={{width: 600, height: 600}}
-                        dimensionsMobile={{width: 600, height: 600}}
-                        fit="cover"
-                        // onclick={_handlePersonaliseRedirect}
-                        // onclickparams={{id, name, parent}}
-                        hoverpointer/> */}
-                        {/* <ImageText className='center-div text-center font-poppins'>{props.hotlocations[i].name}</ImageText> */}
-
             <Text>
               <div>{props.hotlocations[i].name}</div>
             <p>{props.hotlocations[i].state?.name}</p>            
             </Text>
-                {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}
-           {/* </ImageContainer> */}
            </LocationContainer>
             )
         }
+
     }
     else {
         for(var i=0; i<8; i++){
           
             locations.push(
-                <LocationContainer>
-            <div style={{display:'flex' }}>
-  <SkeletonCard borderRadius='100%' width='95px' ml='1px'></SkeletonCard>
+                <SkeletonContainer>
+  <SkeletonCard borderRadius='100%' width='44px' ml='1px'></SkeletonCard>
   <div style={{marginBlock : 'auto'}}>
   <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
   <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
   </div>
-  </div>
-           </LocationContainer>
+           </SkeletonContainer>
             )
         }
     }
     return(
         <div>
-        <Heading className="font-poppins">POPULAR DESTINATION</Heading>
+        <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
         <Container>
         {locations}
         </Container>

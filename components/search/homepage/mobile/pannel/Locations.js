@@ -46,6 +46,13 @@ grid-gap: 0.5rem;
     cursor: pointer;
 }
 `;
+const SkeletonContainer = styled.div`
+padding: 0.5rem;
+max-width: 100%;
+display : grid;
+grid-template-columns : 1fr 7fr;
+`
+
 const Heading = styled.p`
 font-weight: 500;
 font-style: normal;
@@ -63,8 +70,9 @@ const Locations= (props) => {
     const router = useRouter()
 
   let isPageWide = media('(min-width: 768px)')
-  const _handleLocationClick = (id, name, parent, slug) => {
-    router.push('/travel-guide/city/'+slug)
+  const _handleLocationClick = (slug) => {
+    // if(slug)router.push('/travel-guide/city/'+slug)
+   if(slug) window.location.href='https://thetarzanway.com/travel-guide/city/'+slug    
 
   }
   const _handlePersonaliseRedirect = (id, name, parent) => {
@@ -84,7 +92,7 @@ const Locations= (props) => {
             let parent = props.hotlocations[i].state.name;
             let slug = props.hotlocations[i].slug;
             locations.push(
-                <LocationContainer  onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+                <LocationContainer  onClick={() => _handleLocationClick(slug)}>
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
             <Text>
               <div>{props.hotlocations[i].name}</div>
@@ -98,21 +106,19 @@ const Locations= (props) => {
         for(var i=0; i<5; i++){
           
             locations.push(
-             <div style={{display:'flex' , marginBlock : '0.7rem' }}>
-                <div>
-  <SkeletonCard borderRadius='100%' width='50px' ml='8px'></SkeletonCard>
-  </div>
-  <div style={{marginBlock : 'auto'}}>
-  <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
-  <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
-  </div>
-  </div>    
+                <SkeletonContainer>
+                <SkeletonCard borderRadius='100%' width='46px'></SkeletonCard>
+                <div style={{marginBlock : 'auto'}}>
+                <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
+                <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
+                </div>
+                         </SkeletonContainer>
             )
         }
     }
     return(
         <div>
-        <Heading className="font-poppins">POPULAR DESTINATION</Heading>
+        <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
         <Container>      
             {locations}  
         

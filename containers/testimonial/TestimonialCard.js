@@ -58,8 +58,8 @@ const TestimonialCard = (props) =>{
     return(
         <Container className="border">
             {/* <Img src={img}></Img> */}
-            <Name className="font-opensans">Daniel Arnold</Name>
-            <Location className="font-opensans">AUSTRALIA</Location>
+            <Name className="font-lexend">Daniel Arnold</Name>
+            <Location className="font-lexend">AUSTRALIA</Location>
             <Content  className="font-nunito">{props.text}</Content>
         </Container>
     );

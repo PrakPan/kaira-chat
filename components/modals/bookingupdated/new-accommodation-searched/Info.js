@@ -128,7 +128,7 @@ const Accommodation = (props) => {
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center'}} onClick={props.setShowDetails}>
-            <Name className='font-opensans hover-pointer'  >
+            <Name className='font-lexend hover-pointer'  >
              {props.name}
             </Name>
             
@@ -147,26 +147,26 @@ const Accommodation = (props) => {
             <div style={{display: 'grid', gridTemplateColumns: 'max-content auto', gridGap: '0.5rem'}}>
                 <ImageLoader hoverpointer leftalign url="media/icons/bookings/bed.png" width="2rem" widthmobile="2rem"></ImageLoader>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                <RoomText  className='font-opensans'>
+                <RoomText  className='font-lexend'>
                 <span>{props.number_of_rooms ? props.number_of_rooms +" x " : "1 x "}</span>
                 {room.length ? ''+ room[0] : ' Standard Room'}</RoomText>
       
                 </div>
                
             </div>
-          {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-mobile" style={{backgroundColor: color, lineHeight: '1'}}>
+          {props.rating &&  color!=='red'? <RatingContainer className="font-lexend hidden-mobile" style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} 
             
         </DesktopGridContainer>
-        {/* {props.rating &&  color!=='red'? <RatingContainer className="font-opensans hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
+        {/* {props.rating &&  color!=='red'? <RatingContainer className="font-lexend hidden-desktop" style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white'}}/>
                         {props.rating ? props.rating + " / 5" : RANDOM_RATING[Math.floor(Math.random() * 10)]}
                     </RatingContainer> : null} */}
         <div style={{flexDirection: 'row', gap: '0.5rem', display: 'flex', flexGrow : '1', justifyContent: 'flex-end' , alignItems: 'flex-end'}}><div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row', margin: '0 0 0 0'}}>
                 {/* <BsArrowDown style={{color: 'green', fontSize: '1.5rem'}}></BsArrowDown> */}
-                {props.accommodation.price_lower_range_ext ? <Cost  className='font-opensans'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))+" /-"}</Cost> : null}
+                {props.accommodation.price_lower_range_ext ? <Cost  className='font-lexend'>{"₹ "+getIndianPrice(Math.round(props.accommodation.price_lower_range_ext/100))+" /-"}</Cost> : null}
         </div>
         {props.alternates ? <div className='hidden-mobile'><Button fontSize="1rem" fontSizeDesktop="1.25rem" onclick={props._updateSearchedAccommodation} 
         onclickparam={{

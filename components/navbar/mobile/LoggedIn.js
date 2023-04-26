@@ -61,7 +61,7 @@ const LoggedIn = (props) =>{
                     <StyledLink onClick={props._handleNotifications}>
                         Notifications
                     </StyledLink>
-                    {props.notifications.length && props.notOpenCount ? <div style={{fontSize: '0.75rem', width: '1.5rem', height: '1.5rem', backgroundColor: "#f7e700", marginLeft: '0.25rem', borderRadius: '50%', fontWeight: '600'}} className="font-opensans center-div">{props.notOpenCount}</div>:null}
+                    {props.notifications.length && props.notOpenCount ? <div style={{fontSize: '0.75rem', width: '1.5rem', height: '1.5rem', backgroundColor: "#f7e700", marginLeft: '0.25rem', borderRadius: '50%', fontWeight: '600'}} className="font-lexend center-div">{props.notOpenCount}</div>:null}
             </ListItem>
           
             <ListItem>

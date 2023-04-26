@@ -94,7 +94,7 @@ const Accommodation = (props) => {
    return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center', marginBottom: '1rem'}}>
-            <Name className='font-opensans'>
+            <Name className='font-lexend'>
              {props.name}
              <BsInfoCircle style={{marginLeft: '0.25rem'}}></BsInfoCircle>
             </Name>
@@ -115,21 +115,21 @@ const Accommodation = (props) => {
                 </Tag> */}
         </TagsContainer>
         <div style={{marginBottom: '0rem'}}>
-            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-opensans'>AMMENITEIS</p> */}
-            <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.25rem 0'}} className='font-opensans'>
+            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-lexend'>AMMENITEIS</p> */}
+            <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.25rem 0'}} className='font-lexend'>
                 <span>{props.number_of_rooms ? props.number_of_rooms +" x " : "1 x "}</span>
                 {props.room_type ? ''+ props.room_type : ' Standard Room'}</p>
-            {props.pricing_type === 'CP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast Included</p> : null}
-            {props.pricing_type === 'EP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Room Only</p> : null}
-            {props.pricing_type === 'MAP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast and Lunch / Dinner Included</p> : null}
-            {props.pricing_type === 'AP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast , Lunch and Dinner Included</p> : null}
-            {props.pricing_type !== 'AP' && props.pricing_type !== 'MAP' && props.pricing_type !== 'EP' && props.pricing_type !== 'CP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Room Only</p> : null}
+            {props.pricing_type === 'CP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-lexend'>Breakfast Included</p> : null}
+            {props.pricing_type === 'EP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-lexend'>Room Only</p> : null}
+            {props.pricing_type === 'MAP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-lexend'>Breakfast and Lunch / Dinner Included</p> : null}
+            {props.pricing_type === 'AP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-lexend'>Breakfast , Lunch and Dinner Included</p> : null}
+            {props.pricing_type !== 'AP' && props.pricing_type !== 'MAP' && props.pricing_type !== 'EP' && props.pricing_type !== 'CP' ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-lexend'>Room Only</p> : null}
 
             <FontAwesomeIcon icon={faWifi} style={{width: '1rem', display: 'block'}}></FontAwesomeIcon>
         
         </div>
         <RightBottomContainer>
-        <Cost className='font-opensans'>
+        <Cost className='font-lexend'>
             {props.cost - props.selectedBooking.cost > 0 ? <FaArrowUp style={{fontWeight: '600', color: 'red', fontSize: '1.25rem', marginRight: '0.25rem'}}></FaArrowUp> : <FaArrowDown style={{fontWeight: '600', color: 'green', fontSize: '1.25rem', marginRight: '0.25rem'}}></FaArrowDown> }
             <BiRupee style={{fontWeight: '300'}}></BiRupee>
             {props.cost - props.selectedBooking.cost > 0 ?  " "+getIndianPrice(props.cost - props.selectedBooking.cost)+" /-" : " "+getIndianPrice((-1 * (props.cost - props.selectedBooking.cost)))+" /-"  }</Cost>

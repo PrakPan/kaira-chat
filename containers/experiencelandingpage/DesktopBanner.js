@@ -102,7 +102,7 @@ const CityCard = (props) => {
                 <FontAwesomeIcon style={{marginRight: '0.5rem'}} icon={faRupeeSign}/>
                 {props.payment && props.payment.payment_info[0] ? props.payment.payment_info[0].base_price/100+' /-' : '/-'}
             </StartingFrom> */}
-            <BuyNow className="font-opensans" onClick={props.openBooking}>Enquire Now</BuyNow>
+            <BuyNow className="font-lexend" onClick={props.openBooking}>Enquire Now</BuyNow>
        </CostContainer>
    </Container>
 

@@ -61,7 +61,7 @@ const Details = (props) => {
   }
   const [offset, setOffset] = useState(null);
   const inputRef = useRef()
-  const howtoreach = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eros enim, lobortis quis velit in, commodo maximus risus. Morbi fringilla dui neque, eu ultrices tortor auctor in. <br></br> <p class='font-opensans'><b>By Air</b></p>How to reach by air<p class='font-opensans'><b>By Air</b></p>How to reach by air"
+  const howtoreach = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eros enim, lobortis quis velit in, commodo maximus risus. Morbi fringilla dui neque, eu ultrices tortor auctor in. <br></br> <p class='font-lexend'><b>By Air</b></p>How to reach by air<p class='font-lexend'><b>By Air</b></p>How to reach by air"
   const DetailsContainer = styled.div`
     width: 100%;
     margin: 0 auto 10vh auto;

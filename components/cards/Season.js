@@ -22,10 +22,10 @@ const Season= (props) => {
     return(
       <Container className="border-thi">
           <Icon src={img}></Icon>  
-          <p className="font-opensans" style={{fontWeight: "600", textAlign: "center", margin: "1rem auto 0.5rem auto"}}>{props.season}</p>
-          <p className="font-opensans" style={{fontWeight: "300", textAlign: "center", fontSize: "0.75rem"}}>{props.time_interval}</p>
+          <p className="font-lexend" style={{fontWeight: "600", textAlign: "center", margin: "1rem auto 0.5rem auto"}}>{props.season}</p>
+          <p className="font-lexend" style={{fontWeight: "300", textAlign: "center", fontSize: "0.75rem"}}>{props.time_interval}</p>
           <hr></hr>
-          <p className="font-opensans" style={{fontWeight: "300", textAlign: "center", fontSize: "0.75rem"}}>{props.text}</p>
+          <p className="font-lexend" style={{fontWeight: "300", textAlign: "center", fontSize: "0.75rem"}}>{props.text}</p>
       </Container>
   ); 
 }

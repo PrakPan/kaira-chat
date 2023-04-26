@@ -76,7 +76,6 @@ padding: 10px 13px 10px 13px;
 `
 const Text = styled.div`
 font-weight : 500;
-// margin-block : 5px;
 p{
 font-weight : 400;
 margin-bottom : 0rem;
@@ -97,16 +96,23 @@ margin: 1rem;
 const NewResults = (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (id, name, parent, slug) => {
-    router.push('/travel-guide/city/'+slug)
+  const _handleLocationClick = (data) => {
+    if(data.cta){
+        // props.setPannelClose()
+        // if(data.type == 'Location') router.push('/travel-guide/city/'+data.cta)
+        // else router.push('/travel-planner/'+data.cta)    
+
+        if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
+        else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
+    }
   }
   const _handlePersonaliseRedirect = (name) => {
     router.push('/tailored-travel?search_text='+name)
   }
   let results=[];
   
-  const skeleton = <div style={{display:'flex' , padding : '0.3rem'}}>
-  <SkeletonCard borderRadius='100%' width='95px' ml='1px'></SkeletonCard>
+  const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '1fr 5fr'}}>
+  <SkeletonCard borderRadius='100%' width='45px'></SkeletonCard>
   <div style={{marginBlock : 'auto'}}>
   <SkeletonCard height='14px' ml='8px' width={'70%'} borderRadius={'2px'}></SkeletonCard>
   <SkeletonCard height='12px' ml='8px' mt='4px' width={'55%'} borderRadius={'2px'}></SkeletonCard>
@@ -115,13 +121,14 @@ const NewResults = (props) => {
 
 
   
-  if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
+  if(!props.results) return <SkeletonContainer>{[skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton,skeleton]}</SkeletonContainer>
 
 
     return(      
+        <>
         <Container>
         {props.results.map((e)=>
-        <LocationContainer key={e["_source"].resource_id} onClick={() => {_handlePersonaliseRedirect(e['_source'].name)}}>
+        <LocationContainer key={e["_source"].resource_id} onClick={() => {_handleLocationClick(e['_source'])}}>
             
             <MarkerContainer><ImSearch /></MarkerContainer>
             <Text>
@@ -131,7 +138,8 @@ const NewResults = (props) => {
         </LocationContainer>
         )}
         </Container>
-        
+        </>
+
     );
 }
 

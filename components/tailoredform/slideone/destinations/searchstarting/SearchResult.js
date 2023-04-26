@@ -29,7 +29,7 @@ font-weight : 500;
 const SearchResult = (props) => {
 
   return (
-   <Container className='font-poppins hover-pointer' onClick={(event) => props.selectResult(event,props.text, props.place_id)}>
+   <Container className='font-lexend hover-pointer' onClick={(event) => props.selectResult(event,props.text, props.place_id)}>
          <MarkerContainer>
             <FaMapMarkerAlt />
             </MarkerContainer>

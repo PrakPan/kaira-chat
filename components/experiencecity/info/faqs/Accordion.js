@@ -46,7 +46,7 @@ const FAQs = (props) =>   {
           style={{zIndex: '1'}}
 
         >
-          <Typography content={'span'} className="font-opensans" style={{fontWeight:'600'}}>{props.faqs[i].question}</Typography>
+          <Typography content={'span'} className="font-lexend" style={{fontWeight:'600'}}>{props.faqs[i].question}</Typography>
         </AccordionSummary>
           <div style={{margin: '0 1rem', borderStyle: 'none none solid none', borderWidth: '1px', borderColor: "#F7e700", position: 'relative', top: '-0.5rem'}}></div>
         <AccordionDetails>

@@ -38,7 +38,7 @@ const Socials = (props) => {
    
 
     return (
-      <Container className="font-poppins">
+      <Container className="font-lexend">
         <IconContainer
           hoverBg={"#1D9BF0"}
           onClick={() =>

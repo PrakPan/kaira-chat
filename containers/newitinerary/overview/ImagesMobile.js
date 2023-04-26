@@ -60,7 +60,7 @@ const ImagesMobile = (props) => {
                     borderRadius="12px" url="media/website/grey.png" dimensions={{width: 456, height: 150}} height="100%" heightMobile="auto" dimensionsMobile={{width: 160, height: 90}}
                     ></ImageLoader>
                     <div className='center-div' style={{position: 'absolute', height: '100%', color: 'white'}}>View 10+ photos</div>
-                    {/* <MoreText className='font-poppins'>View 10+ photos</MoreText> */}
+                    {/* <MoreText className='font-lexend'>View 10+ photos</MoreText> */}
                     </MoreContainer>
                 </GridContainer>
         </Container>

@@ -105,14 +105,14 @@ const SearchInput = (props) => {
    return (
     <Container>
    {props.showSearchStarting ? 
-   <div style={{display: 'flex'}}><InputContainer  onFocus={props.onfocus} onBlur={_handleBlur} placeholder='Departing from' className='font-opensans' autoFocus onChange={(e) => _getResults(e.target.value)}>
+   <div style={{display: 'flex'}}><InputContainer  onFocus={props.onfocus} onBlur={_handleBlur} placeholder='Departing from' className='font-lexend' autoFocus onChange={(e) => _getResults(e.target.value)}>
     {/* ed */}
     </InputContainer>
     {loading ? <Spinner size={16} margin="0"></Spinner> : null}
     </div>
     : null}
     {
-      !props.showSearchStarting && props.startingLocation ? <div className='font-opensans' onClick={_handleClearResults}>
+      !props.showSearchStarting && props.startingLocation ? <div className='font-lexend' onClick={_handleClearResults}>
       {props.startingLocation.name}
       </div> : null 
     }

@@ -22,7 +22,7 @@ const Section= (props) => {
      const [showFareRules, setShowFareRules] = useState(false);
 //    if(props.data)
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
       <GridContainer>
             <Button fontSize="0.85rem" width="100%" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => setShowFareRules(true)} borderRadius="0 0 0 10px">Fare Rules</Button>
             <Button fontSize="0.85rem" fontWeight="600" 

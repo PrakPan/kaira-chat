@@ -24,9 +24,9 @@ color: white;
 width: 99%;
 font-weight: 800;
 margin-bottom: 1rem;
-font-size: 35px;
+font-size: 26px;
 @media screen and (min-width: 768px){
-  font-size: 55px;
+  font-size: 48px;
   font-weight: 700;
 
 }
@@ -43,39 +43,14 @@ color: white;
 `;
 
 const PaddingContianer = styled.div`
-padding: 5vh 0 0 0;
-flex-grow: 1;
+padding: 0 0 0 0;
+flex-grow: 1;z
 @media screen and (min-width: 768px){
     padding: 1vh 0 0 0;
 
 
 }
 `
-const LogosContainer = styled.div`
-display: grid;
-grid-template-columns: max-content max-content;
-width: max-content;
-margin: auto;
- grid-gap: 0.5rem;
- padding-bottom: 0.5rem;
-
-
-@media screen and (min-width: 768px){
- }
-`
-;
-const LogoText = styled.div`
-font-size: 12px;
-color: black; 
-display : flex;
- align-items: center;
-
- font-weight: 800;
-@media screen and (min-width: 768px){
-    font-size: 18px;
-
-}
-`;
 
 const IconText = styled.div`
 font-size: 12px;
@@ -83,7 +58,7 @@ display : flex;
  align-items: center;
  text-align : center;
 color : black;
-    font-weight: 600;
+    font-weight: 400;
     margin-top : 7px;
 @media screen and (min-width: 768px){
     font-size: 16px;
@@ -95,9 +70,9 @@ color : black;
 const SubHeading = styled.div`
     font-size : 16px;
     line-height : 20px;
-    font-weight : 400;
+    font-weight : 200;
     @media screen and (min-width: 768px){
-    font-size: 28px;
+    font-size: 25px;
     line-height : 35px;
 
 }
@@ -120,19 +95,18 @@ width : 40%;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
     // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
-// console.log('', props.children_cities)
     return (
 
-        <Container className='font-opensans center-di text-cente'>
+        <Container className='font-lexend center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.title}</Heading>
            {isPageWide?<SubHeading>Bid farewell to generic holiday packages.<br/>
 Craft AI-personalized itineraries.</SubHeading> : <SubHeading>Say goodbye to packages.<br />
 Craft AI-personalized itineraries.</SubHeading>}
-            <div className='hidden-mobile'>
-            {/* <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button> */}
+            {/* <div className='hidden-mobile'>
+            <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button>
 
-            </div>
+            </div> */}
             {/* <SubText>As per your 
                 <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
             </SubText> */}
@@ -142,15 +116,15 @@ Craft AI-personalized itineraries.</SubHeading>}
             {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                 <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
                 View Trips</Button> */}
-                <div className='hidden-desktop'>
-                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="600" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props.setShowMobilePlanner(true)} margin="1rem auto 1rem auto">Start Planning</Button>
-             </div>
+            {!isPageWide && <div>
+                <Button padding="0.75rem 1rem" fontSize="14px" fontWeight="500" bgColor="#f7e700" borderRadius="10px" color="black" borderWidth="1px" onclick={() => props._startPlanningFunction()} margin="1rem auto 1rem auto">Start Planning</Button>
+             </div>}
                 </PaddingContianer>
                {/* <Banner></Banner> */}
-               <div className='hidden-mobile' style={{ }}>
-                <TailoredForm destinationType={props.destinationType} page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+               {isPageWide && <div>
+                <TailoredForm destinationType={props.destinationType} page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities} HeroBanner></TailoredForm>
                 
-                </div>
+                </div>}
               
                 {/* <div className='hidden-desktpo'>
                     <div style={{backgroundColor: 'white', zIndex:'2', height: '100vh', width: '100vw', position: 'fixed', top: '0'}}>

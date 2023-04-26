@@ -41,7 +41,7 @@ const Tag= (props) => {
   
 
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
         <Span>{ props.tag.toUpperCase()}</Span>
       </Container>
   ); 

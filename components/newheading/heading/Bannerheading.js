@@ -15,7 +15,7 @@ const Bannerheadingstyle = styled.div`
 const Bannerheading = (props) => {
   return (
     <Bannerheadingstyle
-      className="font-opensans"
+      className="font-lexend"
       fontSize={props.fontSize}
       fontWeight={props.fontWeight}
       textAlign={props.textAlign}

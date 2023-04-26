@@ -147,7 +147,6 @@ const Booking = (props) => {
                 type: [],
                 star_category: [],
             };
-            // console.log(FILTERS);
                         let filters=_generateFilterKeys(FILTERS_KEY);
  
         axiosaccommodationinstance.post("/?show_rooms=true&limit="+limit+"&offset="+offset, 
@@ -559,7 +558,6 @@ setUpdateLoadingState(true);
 
          let options = moreOptionsJSX.slice();
               for(var i = 0; i < res.data.results.length; i++){
-                // console.log(res.data.results[i])
                 try{
                  if(res.data.results[i].name !== props.selectedBooking.name  && res.data.results[i].rooms_available[0].prices.min_price)
                 options.push(<AccommodationSearched _setImagesHandler={props._setImagesHandler} token={props.token} _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
@@ -623,14 +621,14 @@ setUpdateLoadingState(true);
 
            </Modal.Header>
             <Modal.Body style={{padding: "0rem", backgroundColor: 'white', }} >
-            {unauthorized ? <p style={{borderRadius: '5px', padding: '0.25rem', backgroundColor: 'rgba(255,0,0,0.1)' ,color: 'red', margin: '1rem'}} className='text-center font-opensans' >You're not authorized to take this action, please contact your experience captain.</p> : null}
+            {unauthorized ? <p style={{borderRadius: '5px', padding: '0.25rem', backgroundColor: 'rgba(255,0,0,0.1)' ,color: 'red', margin: '1rem'}} className='text-center font-lexend' >You're not authorized to take this action, please contact your experience captain.</p> : null}
             {/* {!unauthorized ? } */}
                  <GridContainer style={{clear: 'right'}}>
                 {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
                 {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                <ContentContainer style={{position: 'relative'}}>
                 {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-opensans'><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your bookings</div> : null }
+                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-lexend'><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your bookings</div> : null }
                { !noResults  && !updateBookingState ? <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                    <AccommodationSelected  _setImagesHandler={props._setImagesHandler} selectedBooking={props.selectedBooking}></AccommodationSelected>
@@ -648,7 +646,7 @@ setUpdateLoadingState(true);
                     {viewMoreStatus && !optionsJSX.length? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
                     {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
-               {noResults ? <OptionsContainer  className='font-opensans center-div text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodations to our database everyday!</OptionsContainer>  : null}
+               {noResults ? <OptionsContainer  className='font-lexend center-div text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodations to our database everyday!</OptionsContainer>  : null}
                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
                {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null

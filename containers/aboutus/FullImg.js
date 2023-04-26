@@ -71,7 +71,7 @@ const FullImg = () => {
 <div className={classes.Container}>
 <div className={classes.BackgroundImg}></div>
 <TextContainer>
-  <Heading className="font-opensans">About Us</Heading>
+  <Heading className="font-lexend">About Us</Heading>
   <Text className="font-nunito">What started as a way to do something during college turned into a venture to revolutionize the travel industry by becoming a travel buddy for every traveler.</Text>
   <br></br>
   <Text className="font-nunito">  Celebrating the uniqueness of every traveler and recognizing their independent needs, we took a step forward by proffering authentic, immersive and personalized travel experience to globetrotters around the world.</Text>

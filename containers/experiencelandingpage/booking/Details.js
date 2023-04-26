@@ -88,8 +88,8 @@ const Details = (props) => {
      {window.innerWidth > 768 ? null :  <FontAwesomeIcon icon={faTimes} onClick={props.hide} style={{textAlign: 'right'}}/>}
     <Heading bold margin="0 auto 1.5rem auto" align="center">Enquire Now</Heading>
         <div style={{display: "grid", gridTemplateColumns: "1fr 1fr", gridGap: "1rem"}}>
-                <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-opensans text-enter">STARTING POINT?</p>
-                <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-opensans text-enter">HOW MANY PEOPLE?</p>
+                <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-lexend text-enter">STARTING POINT?</p>
+                <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-lexend text-enter">HOW MANY PEOPLE?</p>
                  <Dropdown
                 value={details.starting_point}
                 onChangeHandler={handleTypeChange}
@@ -117,10 +117,10 @@ const Details = (props) => {
                 </Dropdown>
         </div>
         <div>
-                <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-opensans text-enter">WHEN WILL YOU LEAVE?</p>
+                <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-lexend text-enter">WHEN WILL YOU LEAVE?</p>
                  {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
             </div>
-        <INR className="font-opensans"><FontAwesomeIcon icon={faRupeeSign}/>{" "+amount/100}</INR>
+        <INR className="font-lexend"><FontAwesomeIcon icon={faRupeeSign}/>{" "+amount/100}</INR>
         {/* <Button width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={props.setShowEnquiry} >Proceed</Button> */}
         {/* <Button onclick={()=> window.location.href="https://wa.me/9625509382?text=Hi%20The%20Tarzan%20Way!%20I%27d%20like%20to%20ask%20you%20something%20"} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
           <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>

@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
-import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from './Flickity/Index';
 import { useRouter } from 'next/router';
 import {AiFillStar} from 'react-icons/ai'
  
@@ -40,11 +38,6 @@ const CardListItem = styled.p`
      grid-template-columns: 1fr 1.5fr; 
      grid-gap: 1rem;
  `;
- const ButtonContainer = styled.div`
-      &:hover{
-        background-color: black;
-     }
- `;
  const RatingContainer = styled.div`
  margin-bottom: 0.75rem;
  @media screen and (min-width: 768px){
@@ -61,7 +54,7 @@ const CardContainer = (props) => {
                 <GridContainer>
                 <div style={{display : 'flex' , flexDirection : 'column' , justifyContent : 'space-between' }}>
                 <ImageLoader borderRadius="8px" width="100%" widthMobile="100%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
-                <CardHeading className='font-opensans'>{props.heading}</CardHeading>
+                <CardHeading className='font-lexend'>{props.heading}</CardHeading>
                 
                 <RatingContainer>
                     <div>
@@ -73,22 +66,22 @@ const CardContainer = (props) => {
 
                     </div>
                     <div style={{display: 'flex', alignItems: 'center'}}>
-                    <CardSubHeading className='font-opensans'>{props.duration + " • " + props.destination}</CardSubHeading>
+                    <CardSubHeading className='font-lexend'>{props.duration + " • " + props.destination}</CardSubHeading>
 
                     </div>
                 </RatingContainer>
-                <Button fontWeight="600" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700">View Details</Button>
+                <Button fontWeight="500" borderRadius="6px" onclick={() => router.push('/itinerary/'+props.id)} fontSizeDesktop="12px" borderWidth="1px" width="100%" bgColor="#f7e700">View Details</Button>
 
 
                 </div>
                 <div>
 
-                {/* <CardHeading className='font-opensans'>{props.heading}</CardHeading> */}
+                {/* <CardHeading className='font-lexend'>{props.heading}</CardHeading> */}
                 
                 
 
                 {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
-                <CardListItem className='font-opensans' >{props.text}</CardListItem>
+                <CardListItem className='font-lexend' >{props.text}</CardListItem>
                 </div>
                 </GridContainer>
                

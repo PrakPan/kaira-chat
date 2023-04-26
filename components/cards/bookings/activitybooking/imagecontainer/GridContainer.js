@@ -14,9 +14,9 @@ const Booking = (props) =>{
   
     return(
         <GridContainer>
-            <div className="center-div font-opensans text-center" style={{fontSize: '0.75rem', fontWeight: '600'}}>Private Room</div>
-            <div  className="center-div font-opensans text-center" style={{fontSize: '0.75rem', fontWeight: '600', borderStyle: 'none solid none solid', borderWidth: '1px'}}>2 Nights</div>
-            <div  className="center-div font-opensans text-center" style={{fontSize: '0.75rem', fontWeight: '600'}}>One More</div>
+            <div className="center-div font-lexend text-center" style={{fontSize: '0.75rem', fontWeight: '600'}}>Private Room</div>
+            <div  className="center-div font-lexend text-center" style={{fontSize: '0.75rem', fontWeight: '600', borderStyle: 'none solid none solid', borderWidth: '1px'}}>2 Nights</div>
+            <div  className="center-div font-lexend text-center" style={{fontSize: '0.75rem', fontWeight: '600'}}>One More</div>
 
         </GridContainer>
     );

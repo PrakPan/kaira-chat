@@ -174,7 +174,7 @@ const ImageSlider = (props) => {
     
     return(
         <Container  props={props} ref={Component} >
-            {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
+            {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
             <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
             {!props.PW ? 
         
@@ -183,19 +183,19 @@ const ImageSlider = (props) => {
             <PWContainer style={{display: 'none'}}>
 
             </PWContainer> }
-            {/* <RatingContainer className='font-opensans'>
+            {/* <RatingContainer className='font-lexend'>
             <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
             {props.rating + '/5'}
              </RatingContainer> */}
-             {/* <DurationContainer className='font-opensans'>
+             {/* <DurationContainer className='font-lexend'>
              {!props.duration  ? props.duration_unit && props.duration_number ? props.duration_number+ " " + props.duration_unit.toUpperCase() : null : props.duration ? props.duration.toUpperCase() : null}
              </DurationContainer> */}
-            <CustomizableContainer className='font-opensans'>
+            <CustomizableContainer className='font-lexend'>
             100% CUSTOMISABLE
             </CustomizableContainer> 
 <HeadingContainer>
-  <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>
-  <Subheading className='font-opensans'>{LOCATIONS_TO_SHOW}</Subheading>
+  <Heading className='font-lexend' locations={props.locations}>{props.experience}</Heading>
+  <Subheading className='font-lexend'>{LOCATIONS_TO_SHOW}</Subheading>
 </HeadingContainer>
         </Container>
     );

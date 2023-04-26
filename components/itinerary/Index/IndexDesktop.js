@@ -143,7 +143,7 @@ const Itinerary = (props) =>{
 
     <Container id="kochi-anchor" style={{marginTop : props.showTimer && !props.hideTimer  ? '-50vh' : '0' }}>
         <div style={{textAlign: "center", position: 'sticky', top: '66px', height: 'max-content'}}>
-            <div    style={{fontSize: theme.fontsizes.desktop.text.three}}><div style={{backgroundColor: "#F7e700", padding: "0.75rem"}} className={props.blur? "font-opensans blurry-text" : "font-opensans"}><b>Locations Covered</b></div>
+            <div    style={{fontSize: theme.fontsizes.desktop.text.three}}><div style={{backgroundColor: "#F7e700", padding: "0.75rem"}} className={props.blur? "font-lexend blurry-text" : "font-lexend"}><b>Locations Covered</b></div>
                 {LinksArr}
             </div>
         </div>

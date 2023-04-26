@@ -30,7 +30,7 @@ const RegistrationModal = (props) => {
          <Modal.Header style={{   height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-start', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
          <TbArrowBack onClick={props.hide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
 
-            <p style={{fontWeight: '800', margin: '0', fontSize: '19px', }} className="font-opensans">Registered Travelers</p>
+            <p style={{fontWeight: '800', margin: '0', fontSize: '19px', }} className="font-lexend">Registered Travelers</p>
 
               {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
             </Modal.Header>

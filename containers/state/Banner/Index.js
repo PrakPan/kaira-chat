@@ -111,11 +111,11 @@ const MenuItem = styled.p`
     <div>
         {/* <FontAwesomeIcon icon={faSortUp} style={{margin: "0"}}/> */}
         <MenuButton   handleClick={handleMenuClick}></MenuButton>
-        <NavigationHeading className="font-opensans">{heading}</NavigationHeading>
+        <NavigationHeading className="font-lexend">{heading}</NavigationHeading>
     </div>    
     <div>
-        {/* <StartingFrom className="font-opensans">Starting from</StartingFrom> */}
-        {/* <Price className="font-opensans"><FontAwesomeIcon icon={faRupeeSign}/>{props.payment  ? props.payment.payment_info[0].base_price/100+' /-' : '/-'}</Price> */}
+        {/* <StartingFrom className="font-lexend">Starting from</StartingFrom> */}
+        {/* <Price className="font-lexend"><FontAwesomeIcon icon={faRupeeSign}/>{props.payment  ? props.payment.payment_info[0].base_price/100+' /-' : '/-'}</Price> */}
     </div>
      <div>
             {/* <Button borderRadius="5px" borderWidth="0px" bgColor="#F7e700" color="black" padding="0.5rem 1rem" margin="0.5rem 0" onclick={props.openBooking}>Start Planning</Button> */}

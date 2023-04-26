@@ -83,7 +83,6 @@ const NewItinerary = (props) => {
                 // el can be null - see https://reactjs.org/docs/refs-and-the-dom.html#caveats-with-callback-refs
                 if (!el) return;
         
-                // console.log(el.getBoundingClientRect().top); // prints 200px
               }}
             >
             <Brief></Brief>

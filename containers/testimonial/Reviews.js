@@ -192,7 +192,7 @@ const TestimonialReviews = () => {
         return (
         <div style={{background: "#F7e700", padding: "1rem 0"}}>
             <div className="center-div">
-                <Heading className="font-opensans" margin="0" padding="0">Stories from around the world</Heading>
+                <Heading className="font-lexend" margin="0" padding="0">Stories from around the world</Heading>
             </div>
             {/* <Flickity twocards borderRadius="10px" cards={[<ReviewCard  text={reviews[0].review} name={reviews[0].name}></ReviewCard>, <ReviewCard text={reviews[0].review} name={reviews[0].name}></ReviewCard>, <ReviewCard  text={reviews[0].review} name={reviews[0].name}></ReviewCard>, <ReviewCard  text={reviews[0].review} name={reviews[0].name}></ReviewCard>]}></Flickity> */}
         </div>
@@ -229,7 +229,7 @@ const TestimonialReviews = () => {
             <ReviewGridContainer>
             <div className="center-div" style={{flexDirection: 'row', marginBottom: '0.5rem'}}>
                 <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
-                <Heading className="font-opensans" style={{margin: '0'}}>Read more</Heading>
+                <Heading className="font-lexend" style={{margin: '0'}}>Read more</Heading>
                 <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
                 </div>
                 <ReviewLogo src={"https://d31aoa0ehgvjdi.cloudfront.net/media/website/googlereviews.png"}></ReviewLogo>
@@ -244,7 +244,7 @@ const TestimonialReviews = () => {
             <ReviewGridContainer>
                 <div className="center-div" style={{flexDirection: 'row', marginBottom: '0.5rem'}}>
                 <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
-                <Heading className="font-opensans" style={{margin: '0 0.5rem 0 0.5rem'}}> Read more </Heading>
+                <Heading className="font-lexend" style={{margin: '0 0.5rem 0 0.5rem'}}> Read more </Heading>
                 <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
                 </div>
                 <ReviewLogo src={"https://d31aoa0ehgvjdi.cloudfront.net/media/website/googlereviews.png"}></ReviewLogo>

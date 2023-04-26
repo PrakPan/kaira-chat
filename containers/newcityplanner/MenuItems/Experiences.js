@@ -165,9 +165,7 @@ const Experiences= (props) => {
       {/* <GridContainer columns={props.cols} className="netflix-containe">
          {!more ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
       </GridContainer> */}
-      <div>
-      <Carousel initialIndex hideSides numberOfCards={3} cards={experiencecards} />
-      </div>
+      <Carousel initialIndex={0} hideSides numberOfCards={3} groupCells={3} cards={experiencecards} />
       {/* <div style={{width:'100%', marginInline : 'auto'}}>
       <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
       </div> */}

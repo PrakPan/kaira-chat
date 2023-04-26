@@ -84,7 +84,7 @@ const Accommodation = (props) => {
   return(
       <Container className=''>
         <div style={{display: 'flex', alignItems: 'center', marginBottom: '1rem'}}>
-            <Name className='font-opensans'>
+            <Name className='font-lexend'>
              {props.name}
              <BsInfoCircle style={{marginLeft: '0.25rem'}}></BsInfoCircle>
             </Name>
@@ -105,14 +105,14 @@ const Accommodation = (props) => {
                 </Tag>
         </TagsContainer>
         <div style={{marginBottom: '0rem'}}>
-            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-opensans'>AMMENITEIS</p> */}
-            <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.25rem 0'}} className='font-opensans'>{''+ props.room_type}</p>
-            {props.includeBreakfast ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-opensans'>Breakfast Included</p> : null}
+            {/* <p style={{color: 'hsl(0,0%,60%)', fontSize: '0.75rem', letterSpacing: '2px', fontWeight: '500', margin: '0 0 0.25rem 0'}} className='font-lexend'>AMMENITEIS</p> */}
+            <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.25rem 0'}} className='font-lexend'>{''+ props.room_type}</p>
+            {props.includeBreakfast ?  <p style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0.5rem 0'}} className='font-lexend'>Breakfast Included</p> : null}
             <FontAwesomeIcon icon={faWifi} style={{width: '1rem', display: 'block'}}></FontAwesomeIcon>
         
         </div>
         <RightBottomContainer>
-        <Cost className='font-opensans'>
+        <Cost className='font-lexend'>
             <FaArrowUp style={{fontWeight: '600', color: 'red', fontSize: '1.25rem', marginRight: '0.25rem'}}></FaArrowUp>
             <BiRupee style={{fontWeight: '300'}}></BiRupee>
             { " "+getIndianPrice(props.cost)+" /-"  }</Cost>

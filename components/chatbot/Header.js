@@ -36,7 +36,7 @@ const Header = (props) =>{
         <Container >
             <div style={{display: 'flex', alignItems: 'center'}}><FontAwesomeIcon style={{fontSize: '1.5rem', margin: '0 0.5rem'}} icon={faTimes} onClick={props.onhide}/></div>
                 <ContentContainer className="center-div">
-                    <P className="font-opensans">Travel Support</P>
+                    <P className="font-lexend">Travel Support</P>
                     {/* <P2 className="font-nunito">Chatting with Shikhar...</P2> */}
                 </ContentContainer>
             <Logo src={logo} onClick={props.onhide} style={{float: 'right'}}></Logo>

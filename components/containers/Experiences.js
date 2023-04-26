@@ -5,6 +5,7 @@ import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
 import PastItineraryCard from '../cards/Testimonial';
 import Carousel from '../FlickityCarousel';
 import media from '../media';
+import PageDotsFlickity from '../PageDotsFlickity'
 
 const Container = styled.div`
 @media screen and (min-width: 768px){
@@ -203,7 +204,6 @@ const Experiences = [
     setCards(experiencecards)
 
     },[])
-console.log(cards)
 
       // if(isPageWide)
     return(
@@ -211,16 +211,14 @@ console.log(cards)
       <Container className='hidden-mobile'>        
           {/* <GridContainer columns={props.cols} className="netflix-containe">
              {props.three ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
-          </GridContainer> */}
-          <div>
-          <Carousel initialIndex hideSides numberOfCards={3} cards={experiencecards}></Carousel>
-          </div>
-
+          </GridContainer> */}   
+          <Carousel initialIndex={0} hideSides numberOfCards={3} groupCells={3} cards={experiencecards}></Carousel>
+      {/* <Carousel hideSides initialIndex={0} groupCells={6} numberOfCards={6} cards={cards}></Carousel> */}
       </Container>
 
     <div className='hidden-desktop'>       
            <div style={{ padding: "1rem 0"}}>
-            {typeof window !=='undefined' ? <Carousel initialIndex experience cards={experiencecards}></Carousel> :null }
+            {typeof window !=='undefined' ? <PageDotsFlickity initialIndex={0} experience cards={experiencecards}></PageDotsFlickity> :null }
     </div>
   </div></>
   );

@@ -91,7 +91,7 @@ const KeyBenefits = (props) => {
                1
             </ImageNumber>
             <ImageText >
-               <ImageHeading className="font-opensans">Unique and Immersive</ImageHeading>
+               <ImageHeading className="font-lexend">Unique and Immersive</ImageHeading>
                <br />
                <Text className="font-nunito">
                   Unique Experiences highly unique UI write write write lorem ipsum text
@@ -106,7 +106,7 @@ const KeyBenefits = (props) => {
                2
             </ImageNumber>
             <ImageText>
-               <ImageHeading className="font-opensans">Unique and Immersive</ImageHeading>
+               <ImageHeading className="font-lexend">Unique and Immersive</ImageHeading>
                <br />
                <Text className="font-nunito">
                   Unique Experiences highly unique UI write write write lorem ipsum text
@@ -121,7 +121,7 @@ const KeyBenefits = (props) => {
                3
             </ImageNumber>
             <ImageText>
-               <ImageHeading className="font-opensans">Feedback and reports</ImageHeading>
+               <ImageHeading className="font-lexend">Feedback and reports</ImageHeading>
                <br />
                <Text className="font-nunito">
                   Unique Experiences highly unique UI write write write lorem ipsum text

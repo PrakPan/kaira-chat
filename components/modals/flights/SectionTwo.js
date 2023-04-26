@@ -20,7 +20,7 @@ const Section= (props) => {
         "type": ["Hotel", "Stay", "Hotel", "Stay", "Hotel", "Stay", "Hotel", "Stay",]
     }
      return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
             <FiltersMobile filters={FILTERS}></FiltersMobile>
       </Container>
   ); 

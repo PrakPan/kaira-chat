@@ -54,8 +54,8 @@ const Booking = (props) =>{
     //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
-       <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Taxi Booking'}</div>
-        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-opensans'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
+       <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-lexend'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Taxi Booking'}</div>
+        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-lexend'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
 
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data} rental={props.rental}></SectionOne>

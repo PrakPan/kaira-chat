@@ -53,7 +53,7 @@ const points = ['Brief','Itinerary','Things to do','How to reach','Food to eat',
         </TitleContainer>
         <div className="hidden-mobile">
         <Button onclick={()=>console.log('clicked')}
-        fontWeight="600" hoverBgColor="white" fontSize='14px' hoverColor="black" bgColor="#F7e700" borderRadius="8px" borderWidth='1px'  borderColor='black' width = '210px' height='44px' padding='10px 0px' margin='10px 0px'
+        fontWeight="500" hoverBgColor="white" fontSize='14px' hoverColor="black" bgColor="#F7e700" borderRadius="8px" borderWidth='1px'  borderColor='black' width = '210px' height='44px' padding='10px 0px' margin='10px 0px'
         >Get Customised Package</Button>
         </div>
         

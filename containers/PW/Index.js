@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect, createRef} from 'react';
 import { useRouter } from 'next/router';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
 import FullImage from '../../components/FullImage';
 import Republic from './FullImgContentRepublic';
@@ -170,7 +170,6 @@ const _populateResultsHandelr = (filters) => {
    }).then(res => {
     setLoading(false);
 
-    // console.log(res)
     for(var i =0 ; i<res.data.length; i++){
       itineraries.push(
       <ExperienceCard 
@@ -294,14 +293,14 @@ const _toggleFilterHandler = (filter_text) => {
 //JSX for How it works 
 
 const HowitWorksHeadingsArr=[
-  <HowItWorksHeading className="font-opensans">You select</HowItWorksHeading>,
-  <HowItWorksHeading className="font-opensans">We prepare</HowItWorksHeading>,
-  <HowItWorksHeading className="font-opensans">You make memories</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">You select</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">We prepare</HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">You make memories</HowItWorksHeading>,
 ];
 const HowitWorksContentsArr = [
-  <HowItWorksText className="font-opensans">A short trek, a long honeymoon, a workcation, or personalize your own</HowItWorksText>,
-    <HowItWorksText  className="font-opensans">A completely personalized plan by our travel experts and software</HowItWorksText>,
-  <HowItWorksText  className="font-opensans">Enough planning, time to travel and make unforgettable memories</HowItWorksText>
+  <HowItWorksText className="font-lexend">A short trek, a long honeymoon, a workcation, or personalize your own</HowItWorksText>,
+    <HowItWorksText  className="font-lexend">A completely personalized plan by our travel experts and software</HowItWorksText>,
+  <HowItWorksText  className="font-lexend">Enough planning, time to travel and make unforgettable memories</HowItWorksText>
 
 ];
 const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
