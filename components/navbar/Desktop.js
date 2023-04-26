@@ -98,7 +98,7 @@ box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
 const CompanyName = styled.p`
 position: absolute;
     left: 30px;
-    top: 37px;
+    top: 40px;
     font-size : 14px;
 }
   &:hover{
@@ -235,8 +235,8 @@ const Navbar = (props) => {
           
           <TTWLogoContainer>
         {props.hidehomecta ? 
- <ImageLoader   hoverpointer  leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader> : 
-        props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="55px" widthmobile="55px"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logoblack.svg'}></ImageLoader></Link> 
+ <ImageLoader   hoverpointer  leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logo-only.svg'}></ImageLoader> : 
+        props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="55px" widthmobile="55px"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logo-only.svg'}></ImageLoader></Link> 
         }           <div>
 
         {props.hidehomecta ?  

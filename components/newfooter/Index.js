@@ -38,9 +38,13 @@ const Box = styled.div`
 `;
  const LogoContainer = styled.div`
    position: relative;
+   top : -5px;
+   img{
+    filter  :invert(1);
+   }
    .CompanyName {
      position: absolute;
-     top: 18px;
+     top: 22px;
      left: 40px;
    }
  `;
@@ -136,9 +140,9 @@ const NewFooter = (props) => {
           <Box>
             <LogoContainer>
               <ImageLoader
-                dimensions={{ width: 120, height: 110 }}
+                dimensions={{ width: 122, height: 100 }}
                 dimensionsMobile={{ width: 120, height: 100 }}
-                url="media/website/logowhite.svg"
+                url="media/website/logo-only.svg"
                 widthmobile="60px"
                 leftalign
                 height="50px"
