@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Layout from '../../components/Layout'
 import { useState, useEffect } from 'react';
 import axiosTravelPlannerInstance from '../../services/pages/travel-planner'
+import axiospagelistinstance from '../../services/pages/list'
 const TravelPlanner = (props) => {
 	const [data, setData] = useState({
 		page_title: null,
@@ -24,7 +25,7 @@ const TravelPlanner = (props) => {
           <meta property="og:description" content={props.Data.social_media_description} />
           <meta property="og:image" content="/logoblack.svg" />
           <meta property='keywords' content={props.Data.meta_keywords}></meta>
-</Head><LadakhContainer experienceData={props.Data}></LadakhContainer>
+</Head><LadakhContainer experienceData={props.Data} locations={props.locations}></LadakhContainer>
 </Layout>
     
 }
@@ -40,7 +41,7 @@ export async function getStaticPaths(){
           if(data[i].id!==1){
                 paths.push({
                       params: {
-                            link: data[i].link
+                            link: data[i].link,
                       }
                 })
           }
@@ -57,6 +58,20 @@ export async function getStaticProps(context){
 //     const data = await res.json()
 const res = await axiosTravelPlannerInstance.get(`/?link=${context.params.link}`)
 const data = res.data
+var locations = []
+var country = 'India'
+      if(data.ancestors){
+        if(data.ancestors && data.ancestors[0].level == 'Country' && data.ancestors[0].name){
+          country = data.ancestors[0].name
+        }
+      }
+try{
+      const loc = await axiospagelistinstance.get(`?country=${country}`)
+       locations = loc.data
+}
+catch(e){
+      locations = []
+}
     if (!data) {
           return {
             notFound: true,
@@ -64,7 +79,8 @@ const data = res.data
         }
     return{
           props: {
-                Data: data
+                Data: data,
+                locations
           }
     }
 }

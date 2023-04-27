@@ -40,7 +40,7 @@ background-position: center;
 background-repeat: no-repeat;
 background-size: cover;
 height: 30rem;
-padding: ${props => props.padding ? props.padding : '20vw 0 0 0'};
+padding: ${props => props.padding ? props.padding : '2rem 0 0 0'};
 
 @media screen and (min-width: 768px){
   height: 37rem;

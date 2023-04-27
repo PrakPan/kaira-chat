@@ -21,7 +21,7 @@ const Heading = styled.p`
 
 const Text = styled.p`
 font-size: 0.75rem;
-font-weight: 100;
+font-weight: 200;
 margin : 0.25rem 0;
 @media screen and (min-width: 768px){
     font-size: 0.75rem;

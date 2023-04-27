@@ -38,11 +38,11 @@ margin-top: 0;
 
 `;
 const Description = styled.p`
-font-size: 0.85rem;
-font-weight: 100;
+font-size: 1rem;
+font-weight: 200;
 margin : 0.25rem 0;
 @media screen and (min-width: 768px){
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 `;
 const Icon = styled.img`
@@ -82,11 +82,11 @@ const Element = (props) =>{
                 {props.meta   ? <Notes blur={props.blur} meta={props.meta} transfer={props.element_type === ITINERARY_ELEMENT_TYPES.transfer}></Notes> : null}
                 {props.is_poi_rec ? <Poi text={props.text}></Poi> : null}
                 {props.activity_data ? props.activity_data.poi ? props.activity_data.poi.tips ?  props.activity_data.poi.tips.length ? 
-                 <div className='font-lexend' style={{fontSize: '0.75rem', margin: '0.5rem 0'}}>
+                 <div className='font-lexend' style={{fontSize: '1rem', margin: '0.5rem 0'}}>
                     <div style={{fontWeight: '600'}}>Tips & Tricks</div>
                     <ul>
-                        <li style={{fontWeight: '300'}}>{props.activity_data.poi.tips[0]}</li>
-                        {props.activity_data.poi.tips.length > 1 ? <li style={{fontWeight: '300'}}>{props.activity_data.poi.tips[1]}</li> : null}
+                        <li style={{fontWeight: '200'}}>{props.activity_data.poi.tips[0]}</li>
+                        {props.activity_data.poi.tips.length > 1 ? <li style={{fontWeight: '200'}}>{props.activity_data.poi.tips[1]}</li> : null}
 
                         </ul>
                 </div>

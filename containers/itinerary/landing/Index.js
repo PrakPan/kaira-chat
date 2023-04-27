@@ -10,7 +10,7 @@ import media from '../../../components/media';
 const Wrapper = styled.div`
   height: max-content;
   color: black;
-  padding-top: 10vh;
+  padding-top: 0.5rem;
   position: sticky;
   background-color: wihte;
   @media screen and (min-width: 768px) {

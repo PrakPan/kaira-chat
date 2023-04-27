@@ -16,6 +16,7 @@ const Container = styled.input`
     padding-left: 2.6rem;
     background-color: transparent;
     cursor : pointer;
+    height :100%;
  &:focus{
     border: none;
     outline: none;

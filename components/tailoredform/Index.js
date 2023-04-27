@@ -9,6 +9,7 @@ import media from '../media';
 
  import axiostailoredinstance from '../../services/leads/tailored';
 import Spinner from '../Spinner';
+import LoadingLottie from '../ui/LoadingLottie'
 //  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
 import {connect} from 'react-redux';
@@ -223,7 +224,6 @@ const Enquiry = (props) => {
         setShowSearchStarting(false);
       }
   let isPageWide = media('(min-width: 768px)');
-
   const _SlideOneSubmitHandler = ()=>{
     if (!selectedCities[0].destination_id &&  !selectedCities[0].id) return setShowPopup({...showPopup , InputOne : true})
     if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
@@ -240,6 +240,7 @@ const Enquiry = (props) => {
     setSlideIndex(slideIndex + 1)
   }
 
+  
 
     if(!loading && !submitted)
  return (
@@ -423,13 +424,13 @@ const Enquiry = (props) => {
    </div>
  );
 else return(
-    <div>
-                        {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
+  <div>
+                      {showBlack ? <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer> : null}
 
-    <Container className="border center-div">
-        <Spinner></Spinner>
-    </Container>
-    </div>
+  <Container className="border center-div">
+      <LoadingLottie height='50%' width='50%'></LoadingLottie>
+  </Container>
+  </div>
 )
 }
 

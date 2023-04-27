@@ -6,11 +6,9 @@ import Carousel from '../../FlickityCarousel';
 import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
-import urls from '../../../services/urls';
 import PageDotsFlickity from '../../PageDotsFlickity';
 import DesktopSkeleton,{MobileSkeleton} from './LocationSkeleton'
 import * as ga from '../../../services/ga/Index';
-import axiospagelistinstance from '../../../services/pages/list';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -29,45 +27,36 @@ const LocationsBlog= (props) => {
     const [cards,setCards] = useState([])
 
   useEffect(() => {
-    
-    axiospagelistinstance
-      .get(
-        `?country=${props.country?props.country: 'India'}`
-      )
-      .then((res) => {
-let cardsArr = []
-let MobileCardsArr = []
-let count = 0
-for(let i = 0;i<res.data.length;i++){
-  if(i%4==0 && i!=0){
-      let n = cardsArr.length;
-      const el = cardsArr.slice(n-4,n)
-      MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
-    count++
+    if(props.locations){
+      let cardsArr = []
+      let MobileCardsArr = []
+      let count = 0
+      for(let i = 0;i<props.locations.length;i++){
+        if(i%4==0 && i!=0){
+            let n = cardsArr.length;
+            const el = cardsArr.slice(n-4,n)
+            MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+          count++
+          }
+        cardsArr.push(
+          <Card
+          key={props.locations[i].id}
+          location={props.locations[i].destination}
+          heading={props.locations[i].tagline}
+          img={props.locations[i].image}
+          slug={props.locations[i].link}
+          link={props.locations[i].link}
+           >
+          </Card>
+        )
+      }
+      if(count%4 !=0){
+        const el = cardsArr.slice(count*4,cardsArr.length)
+        MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+      }
+      setCards(cardsArr)
+      setMobileCardsToShowJSX(MobileCardsArr)
     }
-  cardsArr.push(
-    <Card
-    key={res.data[i].id}
-    location={res.data[i].destination}
-    heading={res.data[i].tagline}
-    img={res.data[i].image}
-    slug={res.data[i].link}
-    link={res.data[i].link}
-     >
-    </Card>
-  )
-}
-if(count%4 !=0){
-  const el = cardsArr.slice(count*4,cardsArr.length)
-  MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
-}
-setCards(cardsArr)
-setMobileCardsToShowJSX(MobileCardsArr)
-
-      })
-      .catch((error) => {
-      });
-
   }, []);
 
 // const router  = useRouter();
