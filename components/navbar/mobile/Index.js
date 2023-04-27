@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import Drawer from '@material-ui/core/Drawer';
 import  Link  from 'next/link';
-import {CgMenuLeftAlt} from 'react-icons/cg'
 import { useRouter } from 'next/router'
 import LoggedInMenu from './LoggedIn';
 import * as authaction from '../../../store/actions/auth';
@@ -111,6 +110,12 @@ margin-block: 1rem;
 padding-inline: 1rem;
 `
 
+const HamburgerIcon = <div style={{opacity : 0.9}}>
+<div style={{borderBottom : '2px solid',width : '1.7rem' , marginBottom : '0.3rem'}}></div>
+<div style={{borderBottom : '2px solid',width : '1rem', marginBottom : '0.3rem'}}></div>
+<div style={{borderBottom : '2px solid',width : '1.2rem'}}></div>
+</div>
+
 const Mobile = (props) => {
     const [toggleMenu, setToggleMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
@@ -153,7 +158,7 @@ const Mobile = (props) => {
         const MainLinksDiv = LinksArr.map((e)=>{
             if(e.type === 'main')
         return <ListItem onClick={e.onclick && e.onclick} style={router.pathname===e.link ? {backgroundColor :  "#ffff4a45"} : {}} >
-            {e.icon && <ImageLoader leftalign url={e.icon} height='20px' width='20px' dimensions={{height : 20 , width : 20}} widthmobile='20px' />}
+            {e.icon && <ImageLoader leftalign url={e.icon} height='20px' width='20px' dimensions={{height : 50 , width : 50}} dimensionsMobile={{height : 50 , width : 50}} widthmobile='20px' />}
            {e.link &&  <Link href={e.link} className='next-link' passHref={true}>
             <StyledLink>{e.text}</StyledLink>
             </Link>}
@@ -177,17 +182,17 @@ const Mobile = (props) => {
     <Container hidecta={props.hidecta} style={{ backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white'}}>
     <div style={{display:'flex', alignItems: 'center' , marginRight : '-10px'}}>
         {props.notifications.length && props.notOpenCount ? <RedDot className="center-div ">{props.notOpenCount}</RedDot> : null}
-            {typeof window !=='undefined' ? <div>
-
-                <CgMenuLeftAlt style={{fontSize: '1.5rem', fontWeight: '900'}} onClick={() => setToggleMenu(!toggleMenu)} />
+            {typeof window !=='undefined' ? <div onClick={() => setToggleMenu(!toggleMenu)}>
+                {HamburgerIcon}
+                
                 </div> : null}
                 
         </div>
 
-         <div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}}>
-             {showLogo && <Link  href={!props.PW? '/' : '/corporates/physicswallah'}><ImageLoader  dimensions={{width: 122, height: 100}} dimensionsMobile={{width: 122, height: 100}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="52px" url={'media/website/logo-only.svg'} ></ImageLoader></Link>}
+         {showLogo?<div style={{position : 'relative', marginLeft : '-20%' , marginBlock : 'auto'}} onClick={_handleHomepageRedirect} >
+              <Link  href={!props.PW? '/' : '/corporates/physicswallah'}><ImageLoader  dimensions={{width: 122, height: 100}} dimensionsMobile={{width: 122, height: 100}}  hoverpointer  onclick={_handleHomepageRedirect} width="3rem" leftalign widthmobile="52px" url={'media/website/logo-only.svg'} ></ImageLoader></Link>
             {!props.hidecta &&<CompanyName>thetarzanway</CompanyName>}
-            </div>
+            </div>:<div></div>}
             {  !props.hidecta  ?
             <div style={{background : '#F0F0F0' , padding : '10px' , marginBlock : 'auto' , borderRadius : '50%'}} className="center-div" onClick={() => setToggleSearch(true)}>
             <FaSearch style={{ color: props.headerColor === 'black' ? 'white': 'black'}}></FaSearch> 

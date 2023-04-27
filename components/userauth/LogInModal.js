@@ -17,7 +17,7 @@ import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
 import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
-import LoginLoadingIcon from '../ui/LoadingLoginIcon'
+import LoginLoadingIcon from '../ui/LoadingLottie'
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;

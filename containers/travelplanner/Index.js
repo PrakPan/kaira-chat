@@ -444,13 +444,13 @@ const InfoWindowContainer = (location)=><MapInfo>
           />
         </div>
         <SetWidthContainer>
-          <Heading>Other Destinations</Heading>
+         {props.locations && props.locations.length ? <> <Heading>Other Destinations</Heading>
           <OldLocations
-            locations={PLANNER_PAGES}
+            locations={props.locations}
             viewall
             country={country}
             planner
-          ></OldLocations>
+          ></OldLocations></> : null}
 
           {/* <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading> */}
           {/* <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}

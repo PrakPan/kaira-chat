@@ -5,7 +5,7 @@ import {FiPhoneCall} from 'react-icons/fi';
 import {HiOutlineMail} from 'react-icons/hi';
 import Subscribe from './Subscribe';
 import Link from 'next/link'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import linksArr from './Links';
 
  const Container = styled.div`
@@ -113,6 +113,10 @@ const SubscribeBox = styled.div`
 
 const NewFooter = (props) => {
   const [shadow, setShadow] = useState(false)
+  const [showLogo , setShowLogo] = useState(false)
+  useEffect(()=>{
+    setShowLogo(true)
+  },[])
  const LinksComponent = linksArr.map((e) => (
    <div>
      <Heading>{e.heading}</Heading>
@@ -138,7 +142,7 @@ const NewFooter = (props) => {
       <Container className="font-lexend">
         <SubContainer>
           <Box>
-            <LogoContainer>
+           {showLogo ? <LogoContainer>
               <ImageLoader
                 dimensions={{ width: 122, height: 100 }}
                 dimensionsMobile={{ width: 120, height: 100 }}
@@ -149,7 +153,7 @@ const NewFooter = (props) => {
                 width="3.8rem"
               ></ImageLoader>
               <CompanyName className="CompanyName">thetarzanway</CompanyName>
-            </LogoContainer>
+            </LogoContainer> : <div></div>}
             <CompanyText>
               The Tarzan Way is a travel based startup with the vision to
               simplify travel and build immersive travel programs across India.

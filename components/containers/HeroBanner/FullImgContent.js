@@ -43,8 +43,8 @@ color: white;
 `;
 
 const PaddingContianer = styled.div`
-padding: 0 0 0 0;
-flex-grow: 1;z
+padding: 5rem 0 0 0;
+flex-grow: 1;
 @media screen and (min-width: 768px){
     padding: 1vh 0 0 0;
 

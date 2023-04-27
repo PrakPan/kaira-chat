@@ -73,7 +73,6 @@ const Enquiry = (props) => {
       findModalWidth()
       return ()=> window.removeEventListener("resize", findModalWidth)  
   },[])
-console.log(modalWidth)
 
   if(isPageWide)
   return(

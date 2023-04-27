@@ -13,9 +13,14 @@ const Container = styled.div`
     text-align: left;
     position: absolute;
 width: 37%;
+
 top : 15px;
-left : 32%;
 z-index: 2;
+left : 26%;
+@media screen and (min-width: 950px){
+    left : 32%;
+
+}
     `;
 
 const TopContainer = styled.div`

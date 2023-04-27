@@ -200,7 +200,7 @@ const _addCityHandler = (city_id, city) => {
       });
       let duration;
       if(questionIndex === 4){
-        duration = ( (endDate.getTime()- startDate.getTime() ) / (1000*60*60*24) ) + 1
+        duration = endDate.diff(startDate , 'days')
         if(duration > WORKCATION_MIN_DURATION) setQuestionIndex(questionIndex+1);
         else 
         setQuestionIndex(questionIndex+2)
@@ -214,7 +214,7 @@ const _addCityHandler = (city_id, city) => {
     const _prevQuestionHandler = () => {
       let duration;
       if(questionIndex === 6){
-        duration = ( (endDate.getTime()- startDate.getTime() ) / (1000*60*60*24) ) + 1
+        duration = endDate.diff(startDate , 'days')
         if(duration > WORKCATION_MIN_DURATION) setQuestionIndex(questionIndex-1);
         else
          setQuestionIndex(questionIndex-2)
@@ -288,8 +288,8 @@ const _addCityHandler = (city_id, city) => {
       }
 
         else{
-          start_date=format(startDate,  "yyyy-MM-dd")
-          end_date=format(endDate,  "yyyy-MM-dd")
+          start_date=startDate.format("YYYY-MM-DD")
+          end_date=endDate.format("YYYY-MM-DD")
         }
         if(!newAnswers[questioncontansts.BUDGET].length) budget = '';
         else{
@@ -368,7 +368,7 @@ const _addCityHandler = (city_id, city) => {
        option = <Locations questionIndex={questionIndex} selectedCities={selectedCities} _removeCityHandler={(city) =>_removeCityHandler(city)} _addCityHandler={(city_id,city) =>_addCityHandler(city_id,city)}  setSelectedCities={setSelectedCities} ></Locations>
     }
     else if(Questions.questions[questionIndex]  === questioncontansts.DURATION){
-      option=<Dates startDate={startDate}  endDate={endDate}  _setDatesHandler={_setDatesHandler} questionIndex={questionIndex}></Dates>
+      option=<Dates startDate={startDate}  endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} _setDatesHandler={_setDatesHandler} questionIndex={questionIndex}></Dates>
     }
    
     //Show contact form

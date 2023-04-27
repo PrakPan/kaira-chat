@@ -8,7 +8,7 @@ const Container = styled.div`
     width: 100%;
 
     padding: 0;
-    margin-top : 70px;
+    // margin-top : 70px;
     height: ${(props) => (props.heightmobile ? props.heightmobile : "37rem")};
     @media screen and (min-width: 768px){
         height: ${(props) => (props.height ? props.height : "37rem")};

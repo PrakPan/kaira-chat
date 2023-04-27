@@ -139,7 +139,7 @@ let isPageWide = media('(min-width: 768px)');
 
 return (
   <>
-    <TextContainer>
+    <TextContainer className={'TextContainer'}>
       <p>Start Date</p>
       <p>End Date</p>
     </TextContainer>
@@ -147,6 +147,7 @@ return (
     
     <DateRangePicker
     displayFormat='DD/MM/YYYY'
+    readOnly={true}
         startDate={props.valueStart}
         startDateId="startDate"
         startDatePlaceholderText='DD/MM/YYYY'
@@ -167,7 +168,7 @@ return (
         // navPrev={<FaChevronLeft />}
         // navNext={<FaChevronRight />}
       />
-      <CalenderIcons>
+      <CalenderIcons className='CalentderIcons'>
       <BiCalendarAlt />
       <BiCalendarAlt />
       </CalenderIcons>

@@ -15,6 +15,7 @@ import ImageLoader from '../ImageLoader';
 import * as ga from '../../services/ga/Index';
 import DesktopSearch from '../search/header/desktop/Index';
 import { ImSearch } from 'react-icons/im';
+import media from '../media'
 const NavItemsContainer = styled.div`
   display: none;
 
@@ -154,7 +155,7 @@ const Search = styled.input`
 `;
 const Navbar = (props) => {
   const router = useRouter()
-
+  const isTablet = media('(min-width: 950px)')
 
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
 
@@ -256,7 +257,7 @@ const Navbar = (props) => {
           </TTWLogoContainer>
           
           {/* <input /> */}
-         {!props.hidecta &&  <div style={{position: 'absolute', left: '32%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
+         {!props.hidecta &&  <div style={{position: 'absolute', left: isTablet?'32%' : '26%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
           <TopContainer>
             <SearchContainer>
                     <Search placeholder="Search by destination (country, region or city)" ></Search>

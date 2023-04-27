@@ -35,6 +35,7 @@ import media from '../../components/media';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
+import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
 import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 const SetWidthContainer = styled.div`
 width: 100%;
@@ -79,6 +80,8 @@ const  Homepage = (props) =>{
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading ] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
+const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+
   let isPageWide = media('(min-width: 768px)');
   useEffect(() => {
     
@@ -148,7 +151,6 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
 
 
 const router = useRouter()
-
 const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 const [experienceMore,setExperieceMore] = useState(false)
 
@@ -204,7 +206,7 @@ useEffect(() => {
                    destinationType={'city-planner'}
                    title={<p>Travel planning a chore,<br/>
                    Let our AI Explore.</p>}
-                  _startPlanningFunction={()=>_handleTailoredRedirect()}
+                  _startPlanningFunction={()=>setShowMobilePlanner(true)}
                  />
 
 
@@ -234,10 +236,8 @@ useEffect(() => {
    
 
       <SetWidthContainer style={{}}>
-      <Heading  noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>        
-
-    
-       <Locations locations={PLANNER_PAGES} viewall></Locations>
+      {props.locations && props.locations.length ?<><Heading  noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>
+       <Locations locations={props.locations} viewall></Locations></> : null}
 
       {
         props.ThemeData && props.ThemeData.length ? <>
@@ -275,9 +275,14 @@ useEffect(() => {
 
             <br></br>
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-     {!isPageWide &&  <div><Banner text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
+     {!isPageWide &&  <div><Banner onclick={()=>setShowMobilePlanner(true)} text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
       {/* <Chatbot history={props.history}/>     */}
       </div>
+      <TailoredFormMobileModal
+        destinationType={'city-planner'}
+          onHide={() => setShowMobilePlanner(false)}
+          show={showMoiblePlanner}
+        ></TailoredFormMobileModal>
       <WhatsappFloating message="Hey, I need help planning my trip." />
     </div>
   );
