@@ -14,7 +14,8 @@ const font = styled.div`
   font-family: 'Lexend';
 `;
 const BookingContainer = (props) => {
-  const [iscouponApplied, setiscouponApplied] = useState(true);
+  const [iscouponApplied, setiscouponApplied] = useState(false);
+  const [percentoff, setPercentoff] = useState(0);
   const router = useRouter();
 
   const [showTerms, setShowTerms] = useState(false);
@@ -26,6 +27,25 @@ const BookingContainer = (props) => {
   const [showVerification, setShowVerification] = useState(false);
   const [showRegistration, setShowRegistartion] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+
+  // const handleInputChange = (event) => {
+  //   setInputValue(event.target.value);
+  //   console.log(inputValue);
+  // };
+
+  const handleSubmit = () => {
+    console.log(`input value ${inputValue}`);
+    if (inputValue.length > 0) {
+      if (props.payment.coupon.code == inputValue) {
+        setiscouponApplied(true);
+        setPercentoff(props.payment.coupon.discount_value);
+      }
+
+      setShowVerification(true);
+      setShowRegistartion(false);
+    }
+  };
   let bookingslist = [];
   let bookinglistwithcost = [];
   //Date on which agoda changes made to box
@@ -292,7 +312,7 @@ const BookingContainer = (props) => {
               </div>
               {iscouponApplied && (
                 <div className="bg-[#EB5757] font-bold text-sm px-2 py-1 text-white">
-                  20% OFF
+                  {percentoff}% OFF
                 </div>
               )}
             </div>
@@ -419,27 +439,32 @@ const BookingContainer = (props) => {
         </div>
 
         <div className="px-3 ">
-          {props.allow_coupon_discount ?? (
-            <div>
-              <div className="relative  rounded-md shadow-sm">
+          {props.payment.coupon ? (
+            <form>
+              <div className="relative  rounded-md shadow-sm cursor-pointer">
                 <input
-                  class="w-full px-3 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+                  class=" px-3 w-9/12 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
                   type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                   id="name"
                   name="name"
                   placeholder="Having a coupon code?"
                 />
-                <div className="pointer-events-none absolute inset-y-0 right-2 top-4 flex items-center pr-3 cursor-pointer">
+                <button
+                  className="pointer-events-none absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+                  onClick={handleSubmit}
+                >
                   <div
                     className=" font-bold text-black cursor-pointer"
                     aria-hidden="true"
                   >
                     Apply
                   </div>
-                </div>
+                </button>
               </div>
-            </div>
-          )}
+            </form>
+          ) : null}
 
           <div className="border-y-2 border-[#F0F0F0] my-3">
             <div className="flex flex-row gap-3 items-center py-[0.7rem]">
@@ -482,7 +507,7 @@ const BookingContainer = (props) => {
             }
           >
             <div className="flex flex-row justify-center items-center">
-              <RiWhatsappFill className="text-[#4da750] mr-2" />
+              <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
               <div className="text-[#01202B] ">Chat on Whatsapp</div>
             </div>
           </ButtonYellow>
@@ -507,4 +532,4 @@ const BookingContainer = (props) => {
   );
 };
 
-export default BookingContainer;
+export default React.memo(BookingContainer);

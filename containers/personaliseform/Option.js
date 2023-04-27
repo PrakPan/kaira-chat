@@ -8,28 +8,27 @@ import * as ga from '../../services/ga/Index';
 import questions from './questions';
 import questioncontansts from './questioncontansts';
 const OptionContainer = styled.button`
-    background-color: white;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 5px;
+
+  @media screen and (min-width: 768px) {
+    min-height: 12.5vw;
+    &:hover {
+      cursor: pointer;
+    }
+    display: inline-flex !important;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
     padding: 1rem;
-    border-radius: 5px;
-    }
-    @media screen and (min-width: 768px){
-        min-height: 12.5vw;
-        &:hover{
-            cursor: pointer;
-        }
-        display: inline-flex !important;
-        margin-right: 1rem;
-        margin-bottom: 1rem;
-        padding: 1rem;
-        width: 100%;
-    }
-    @media screen and (min-width: 768px) and (min-height: 1024px) {
-    
-    }
-    &:focus{
-        outline:0;
-    }
-    `;
+    width: 100%;
+  }
+  @media screen and (min-width: 768px) and (min-height: 1024px) {
+  }
+  &:focus {
+    outline: 0;
+  }
+`;
 
 const Option = (props) => {
   const btoa = function(str) {
@@ -162,29 +161,73 @@ const Option = (props) => {
       }
       setSelectedState(true);
     }
-    let imageRequest = JSON.stringify({
-        bucket: "thetarzanway-web",
-        key: props.img,
-        edits: {
-          resize: {
-            width: 400,
-            height: 400,
-            fit: "cover"
-          }
-        }
-    })
-    if(questions.questions[props.questionIndex] !== questioncontansts.LOCATIONS)
-    return(
-        <OptionContainer className="center-div border-thin" key={props.index} onClick={ () => _selectOptionHandler()} style={{ backgroundColor: !selectedState  ? "white": "rgba(247, 231, 0, 0.3)"}} >
-                <ImageLoader url={props.img} dimensions={{width: 400, height: 400}} src={`${imgUrlEndPoint}/${btoa(imageRequest)}`}  width="40%"  widthmobile="40%"></ImageLoader>
-                {props.heading && props.text? 
-                    <p style={{textAlign: "center", margin: "0.5rem 0 0 0", fontSize: "0.85rem"}} className="font-lexend"><b>{props.heading}</b></p>
-                :null}
-                 {props.heading && !props.text? 
-                    <p style={{textAlign: "center", margin: "0.5rem 0 0 0", fontSize: "0.85rem", fontWeight: '500'}} className="font-lexend">{props.heading}</p>
-                :null}
-                <p style={{textAlign: "center", margin: "0.75rem 0 0 0", fontWeight: '300', letterSpacing: '1px', fontSize: '0.75rem'}} className="font-lexend">{props.text}</p>
-        </OptionContainer>
+  };
+  let imageRequest = JSON.stringify({
+    bucket: 'thetarzanway-web',
+    key: props.img,
+    edits: {
+      resize: {
+        width: 400,
+        height: 400,
+        fit: 'cover',
+      },
+    },
+  });
+  if (questions.questions[props.questionIndex] !== questioncontansts.LOCATIONS)
+    return (
+      <OptionContainer
+        className="center-div border-thin"
+        key={props.index}
+        onClick={() => _selectOptionHandler()}
+        style={{
+          backgroundColor: !selectedState ? 'white' : 'rgba(247, 231, 0, 0.3)',
+        }}
+      >
+        <ImageLoader
+          url={props.img}
+          dimensions={{ width: 400, height: 400 }}
+          src={`${imgUrlEndPoint}/${btoa(imageRequest)}`}
+          width="40%"
+          widthmobile="40%"
+        ></ImageLoader>
+        {props.heading && props.text ? (
+          <p
+            style={{
+              textAlign: 'center',
+              margin: '0.5rem 0 0 0',
+              fontSize: '0.85rem',
+            }}
+            className="font-lexend"
+          >
+            <b>{props.heading}</b>
+          </p>
+        ) : null}
+        {props.heading && !props.text ? (
+          <p
+            style={{
+              textAlign: 'center',
+              margin: '0.5rem 0 0 0',
+              fontSize: '0.85rem',
+              fontWeight: '500',
+            }}
+            className="font-lexend"
+          >
+            {props.heading}
+          </p>
+        ) : null}
+        <p
+          style={{
+            textAlign: 'center',
+            margin: '0.75rem 0 0 0',
+            fontWeight: '300',
+            letterSpacing: '1px',
+            fontSize: '0.75rem',
+          }}
+          className="font-lexend"
+        >
+          {props.text}
+        </p>
+      </OptionContainer>
     );
   else return null;
 };

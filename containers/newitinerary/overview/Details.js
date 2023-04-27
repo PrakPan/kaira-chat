@@ -40,7 +40,7 @@ const Details = (props) => {
 
   return (
     <Container className="font-lexend">
-      {props.travellerType[0] != null ? (
+      {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>
