@@ -96,7 +96,7 @@ const Locations= (props) => {
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
             <Text>
               <div>{props.hotlocations[i].name}</div>
-            <p>{props.hotlocations[i].state?.name}</p>  
+            {props.hotlocations[i].parent?<p>{props.hotlocations[i].parent}</p>:<p>{props.hotlocations[i].state?.name}</p>}  
             </Text>
            </LocationContainer>
             )

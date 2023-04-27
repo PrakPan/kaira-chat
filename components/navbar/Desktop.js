@@ -226,6 +226,7 @@ const Navbar = (props) => {
   
   }
   const [toggleSearch, setToggleSearch] = useState(false);
+  console.log(props , 'props.props')
      return (
     <div>
     <Header changeHeight={Height} >
