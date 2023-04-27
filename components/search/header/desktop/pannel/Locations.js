@@ -97,11 +97,13 @@ color : #7e7e7e;
 const Locations= (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (slug) => {
-   if(slug) {
+  const _handleLocationClick = (data) => {
+    console.log(data , 'data')
+   if(data.cta) {
     // props.setPannelClose()
     // router.push('/travel-guide/city/'+slug)
-window.location.href='https://thetarzanway.com/travel-guide/city/'+slug    
+    if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta    
+    if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta    
 
 }
   }
@@ -116,9 +118,10 @@ window.location.href='https://thetarzanway.com/travel-guide/city/'+slug
   let locations=[];
     if(props.hotlocations){
         for(var i=0; i<props.hotlocations.length; i++){
-            let slug = props.hotlocations[i].slug
+            console.log(props.hotlocations[i] , 'response.data' , i)
+            const data = props.hotlocations[i]
             locations.push(
-                <LocationContainer onClick={() => _handleLocationClick(slug)}>
+                <LocationContainer onClick={() => _handleLocationClick(data)}>
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
             <Text>
               <div>{props.hotlocations[i].name}</div>

@@ -7,7 +7,7 @@ import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
 import Results from './results/Index';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
-import axioslocationsinstance from '../../../../../services/poi/hotlocations'
+import axioslocationsinstance from '../../../../../services/search/search'
 const Container = styled.div`
     background-color: white;
     border-radius: 2rem !important;
@@ -85,7 +85,7 @@ const [hotLocationsData, setHotLocationsData] = useState();
 
 
     useEffect(() => {
-      axioslocationsinstance.get("").then(response => {
+      axioslocationsinstance.get("hot_destinations").then(response => {
         setHotLocationsData(response.data);
    });
        },[]);

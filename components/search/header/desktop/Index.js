@@ -3,7 +3,7 @@ import styled , {keyframes} from 'styled-components';
 import media from '../../../media';
 import Bar from './Bar';
 import Pannel from './pannel/Index';
-import axioslocationsinstance from '../../../../services/poi/hotlocations';
+import axioslocationsinstance from '../../../../services/search/search';
 
 import { fadeIn } from 'react-animations'
 import { useRouter } from 'next/router';
@@ -36,8 +36,9 @@ const MobileSearch= (props) => {
 
     const router = useRouter()    
     useEffect(() => {
-         axioslocationsinstance.get("").then(response => {
+         axioslocationsinstance.get("hot_destinations").then(response => {
                   setHotLocationsData(response.data);
+                  console.log(response.data , 'response.data')
              });
        },[]);
     return(

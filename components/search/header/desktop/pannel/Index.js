@@ -105,7 +105,7 @@ const SearchPannel= (props) => {
         <Container className="border"  ref={ref}>
        <TopContainer>
             <SearchContainer>
-                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-lexend" placeholder="Search by destination (country, region or city)" ></Search>
+                    <Search autoFocus onChange={_onChangeHandler} value={inputValue} className="font-lexend" placeholder="Where do you want to go?" ></Search>
                     <ImSearch style={{position : 'absolute' , top : '17px' , left : '8px', color : '#B0BABF' , pointerEvents : 'none'}} />
                     {inputValue !== '' &&<MdCancel onClick={()=>{setInputValue(''); setShowResults(false)}} style={{position : 'absolute' , top : '13px' , right : '35px',fontSize : '1.4rem', color : '#7A7A7A', cursor : 'pointer'}} />}
             </SearchContainer>
