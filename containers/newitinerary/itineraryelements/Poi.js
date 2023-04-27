@@ -82,34 +82,109 @@ const ColorTags = styled.span`
 `;
 const ItineraryPoiElement = (props) => {
   useEffect(() => {}, []);
-
+  function stringCompare(arr, str) {}
+  function ErrorNotDef(elem) {
+    return elem === undefined || elem === null || !elem;
+  }
   return (
-    <Container className="font-lexend">
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <SectionOneText>{props.time}</SectionOneText>
-        <AiFillCar style={{ margin: '-2px 0  0 0.5rem' }}></AiFillCar>
-        {props.booking ? (
-          <div
-            style={{
-              flexGrow: '1',
-              justifyContent: 'flex-end',
-              display: 'flex',
-            }}
-          >
-            <Button
+    <Container>
+      {/* <div>{props.time}</div> */}
+      <div className="flex flex-row items-center pt-3">
+        <div className="bg-white w-[6rem]">
+          {props.image ? (
+            <ImageLoader
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 300, height: 300 }}
               borderRadius="8px"
-              fontWeight="700"
-              fontSize="12px"
-              borderWidth="1.5px"
-              padding="0.5rem 0.5rem"
+              hoverpointer
               onclick={() => console.log('')}
-            >
-              View Booking
-            </Button>
+              width="6rem"
+              leftalign
+              widthmobile="6rem"
+              url={props.image}
+            ></ImageLoader>
+          ) : (
+            <div className="w-[6rem]"></div>
+          )}
+        </div>
+
+        <div className="pl-6">
+          <div className="w-full ">
+            <div className="w-full">
+              <div
+                className="flex flex-row w-full  justify-start items-center"
+                style={{ lineHeight: '1' }}
+              >
+                <div className="text-base font-semibold ">{props.heading}</div>
+                <HiPencil className="text-lg min-w-max pl-3"></HiPencil>
+              </div>
+              {props.rating && <StarRating initialRating={4}></StarRating>}
+
+              {props.poi !== undefined ? (
+                props.poi.experience_filters ? (
+                  <div className={`flex gap-2 flex-row`}>
+                    {props.poi.experience_filters.map((element, index) =>
+                      element.toString() != 'Hidden Gem' ? (
+                        <div className="flex flex-row items-end">
+                          {index != 0 && (
+                            <span className="font-bold text-xl pr-1">.</span>
+                          )}
+
+                          <div
+                            className="flex  items-center text-sm  font-bold"
+                            key={index}
+                          >
+                            {' '}
+                            {element.split(' ').length > 2
+                              ? element.split(' ')[0]
+                              : element}{' '}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex font-bold" key={index}>
+                          <div
+                            className="border-solid text-center flex justify-center items-center   border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
+                            style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
+                          >
+                            {element}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : null
+              ) : null}
+            </div>
           </div>
-        ) : null}
-      </div>{' '}
-      */}
+
+          <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+            {props.text}
+          </div>
+          <Line></Line>
+        </div>
+      </div>
+
+      {/* <div style={{display: 'flex', alignItems: 'center'}}>
+                <SectionOneText>{props.time}</SectionOneText>
+                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
+                {
+                    props.booking ? 
+                    <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>
+                         
+                        <Button
+                        borderRadius="8px"
+                        fontWeight="700"
+                        fontSize="12px"
+                        borderWidth="1.5px"
+                        padding="0.5rem 0.5rem"
+                        onclick={() => console.log('')}
+                        >
+                        View Booking
+                        </Button>
+                        </div>
+                    : null
+                }
+            </div> */}
     </Container>
   );
 };

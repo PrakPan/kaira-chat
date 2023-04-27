@@ -445,13 +445,14 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
-
-      <ScrollableMenuTabs
-        icons={false}
-        offset={isDesktop ? '80px' : '0px'}
-        items={items}
-        BarName="TabsName"
-      />
+      <div className="border-b-2 border-yellow  z-10 sticky lg:top-[80px] top[0px]">
+        <ScrollableMenuTabs
+          icons={false}
+          offset={isDesktop ? '80px' : '0px'}
+          items={items}
+          BarName="TabsName"
+        />
+      </div>
 
       {/* {!isPageWide && value !== 2 ? (
         <PriceBannerMobile

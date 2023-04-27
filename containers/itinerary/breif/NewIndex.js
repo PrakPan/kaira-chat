@@ -139,7 +139,7 @@ const Details = (props) => {
   }
   if (routes) {
     for (var i = 0; i < routes.length; i++) {
-      var postion = props.breif.city_slabs[i];
+      var postion = props.breif.city_slabs[i + 1];
 
       // console.log(`response city data${JSON.stringify(citydetails)}`);
       // console.log(`lat,long${citydetails.lat}`);

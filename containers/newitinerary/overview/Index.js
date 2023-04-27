@@ -35,8 +35,8 @@ const Overview = (props) => {
   return (
     <Container>
       <GridContainer>
-        <Heading className="font-lexend">Gateway to Rajasthan</Heading>
-        <div className="center-div">
+        <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
+        {/* <div className="center-div">
           <div className="hidden-desktop">
             <Button
               borderRadius="6px"
@@ -46,10 +46,16 @@ const Overview = (props) => {
               Trip Settings
             </Button>
           </div>
-        </div>
+        </div> */}
       </GridContainer>
-      <Details></Details>
-      <Line></Line>
+      <Details
+        group_type={props.group_type}
+        duration_time={props.duration_time}
+        travellerType={props.travellerType}
+        start_date={props.start_date}
+        end_date={props.end_date}
+        duration={props.duration}
+      ></Details>
 
       {/* <Line></Line> */}
       <div className="pt-8 pb-1">

@@ -47,13 +47,30 @@ const MidSection = (props) => {
   return (
     <Container className="font-lexend">
       <div style={{ position: 'relative' }}>
-        <Line></Line>
+        <Line />
       </div>
       <Text>
-        <MdOutlineFlightTakeoff
-          style={{ fontSize: '1.75rem', marginRight: '0.5rem' }}
+        {/* <ImageLoader
+          borderRadius="8px"
+          url={props.image}
+          height={50}
+          width={50}
+          heightMobile="auto"
+          dimensionsMobile={{ width: 50, height: 50 }}
+        ></ImageLoader> */}
+        <TransportIconFetcher
+          TransportMode={props.transportMode}
+          Instyle={{
+            fontSize: '1.75rem',
+            marginRight: '0.8rem',
+            color: 'black',
+          }}
         />
-        Fly: 2h 30m
+        {/* <MdOutlineFlightTakeoff
+          style={{  }}
+        /> */}
+        {props.transportMode ? props.transportMode : 'Taxi'}: {props.duration}h
+        30m
       </Text>
       {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
     </Container>
