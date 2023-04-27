@@ -34,7 +34,7 @@ export async function getStaticPaths(){
 
 //     const res = await fetch(`https://apis.tarzanway.com/page/list?country=india`)
 //     const data = await res.json();
-      const res = await axiosTravelPlannerInstance.get('/list?country=India')
+      const res = await axiosTravelPlannerInstance.get('/list')
       const data = res.data
       let paths = [];
     for(var i = 0 ; i<data.length ; i++){
@@ -66,7 +66,7 @@ var country = 'India'
         }
       }
 try{
-      const loc = await axiospagelistinstance.get(`?country=${country}`)
+      const loc = await axiospagelistinstance.get(``)
        locations = loc.data
 }
 catch(e){
