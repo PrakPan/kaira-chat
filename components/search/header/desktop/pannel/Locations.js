@@ -98,7 +98,6 @@ const Locations= (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (data) => {
-    console.log(data , 'data')
    if(data.cta) {
     // props.setPannelClose()
     // router.push('/travel-guide/city/'+slug)
@@ -118,14 +117,13 @@ const Locations= (props) => {
   let locations=[];
     if(props.hotlocations){
         for(var i=0; i<props.hotlocations.length; i++){
-            console.log(props.hotlocations[i] , 'response.data' , i)
             const data = props.hotlocations[i]
             locations.push(
                 <LocationContainer onClick={() => _handleLocationClick(data)}>
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
             <Text>
               <div>{props.hotlocations[i].name}</div>
-            <p>{props.hotlocations[i].state?.name}</p>            
+              {props.hotlocations[i].parent?<p>{props.hotlocations[i].parent}</p>:<p>{props.hotlocations[i].state?.name}</p>}              
             </Text>
            </LocationContainer>
             )

@@ -38,7 +38,6 @@ const MobileSearch= (props) => {
     useEffect(() => {
          axioslocationsinstance.get("hot_destinations").then(response => {
                   setHotLocationsData(response.data);
-                  console.log(response.data , 'response.data')
              });
        },[]);
     return(
