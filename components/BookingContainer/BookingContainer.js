@@ -230,7 +230,7 @@ const BookingContainer = (props) => {
         'https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480',
       order_id: data.order_id,
       //Payment successfull handler passed to razorpay
-      handler: function(response) {
+      handler: function (response) {
         setPaymentLoading(true);
         axios
           .post(
@@ -440,7 +440,7 @@ const BookingContainer = (props) => {
 
         <div className="px-3 ">
           {props.payment.coupon ? (
-            <form>
+            <form onSubmit={(e) => handleSubmit(e)}>
               <div className="relative  rounded-md shadow-sm cursor-pointer">
                 <input
                   class=" px-3 w-9/12 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
@@ -453,6 +453,7 @@ const BookingContainer = (props) => {
                 />
                 <button
                   className="pointer-events-none absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+                  type="submit"
                   onClick={handleSubmit}
                 >
                   <div
