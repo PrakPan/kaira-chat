@@ -160,7 +160,7 @@ return (
         }}
         focusedInput={focusedInput}
         onFocusChange={setFocusedInput}
-        isOutsideRange={day => day.startOf('day').isBefore(moment().add(2,'day')) }
+        isOutsideRange={day => day.startOf('day').isBefore(moment().add(0,'day')) }
           initialVisibleMonth={() => moment().subtract(0, "month")}
         numberOfMonths={isPageWide?2:1}
         orientation={"horizontal"}
