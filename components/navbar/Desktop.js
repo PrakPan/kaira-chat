@@ -260,7 +260,7 @@ const Navbar = (props) => {
          {!props.hidecta &&  <div style={{position: 'absolute', left: isTablet?'32%' : '26%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
           <TopContainer>
             <SearchContainer>
-                    <Search placeholder="Search by destination (country, region or city)" ></Search>
+                    <Search placeholder="Where do you want to go?" ></Search>
                     <ImSearch style={{position : 'absolute' , top : '17px' , left : '13px', color : '#B0BABF' , pointerEvents : 'none'}} />
             </SearchContainer>
         </TopContainer>
