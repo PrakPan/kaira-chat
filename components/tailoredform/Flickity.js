@@ -39,6 +39,9 @@ const FlickityComp = (props) => {
         <div style={{width: '100%'}}>
                             {!props.slideIndex ? <Card><SlideOne 
                             initialInputId={props.initialInputId}
+                            focusedDate={props.focusedDate}
+                            setFocusedDate={props.setFocusedDate}
+                            tailoredFormModal={props.tailoredFormModal}
                              startingLocation={props.startingLocation} 
                              setStartingLocation={props.setStartingLocation}
                             children_cities={props.children_cities}

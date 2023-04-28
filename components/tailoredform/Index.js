@@ -26,13 +26,14 @@ const Container = styled.div`
   z-index: ${(props) => props.showBlack?'1006' : '2'};
   position: relative;
   background-color: ${(props) =>
-    props.slideIndex ? "white" : "rgba(255,255,255,0.9)"};
+    props.slideIndex  || props.tailoredFormModal? "white" : "rgba(255,255,255,0.9)"};
   width: 100%;
   border: none !important;
 
   @media screen and (min-width: 768px) {
+    ${props=>props.tailoredFormModal && 'height : 100%'};
     margin: auto 0;
-    border-radius: 8px !important;
+    border-radius: ${props=>props.tailoredFormModal ? '0px' : '8px !important'};
 
     min-height: 400px;
   }
@@ -225,41 +226,50 @@ const Enquiry = (props) => {
       }
   let isPageWide = media('(min-width: 768px)');
   const _SlideOneSubmitHandler = ()=>{
-    if (!selectedCities[0].destination_id &&  !selectedCities[0].id) return setShowPopup({...showPopup , InputOne : true})
-    if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
-    if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
-    setSlideIndex(slideIndex + 1)
-    // window.scrollBy(0, -200 , 'smooth');
-    // ContainerRef.current.scrollIntoView(0,-150)
-    if(props.HeroBanner && isPageWide) window.scrollTo({top: 0,
-      behavior: "smooth"})
-  }
+      console.log('slide one submitted')
+      if (!selectedCities[0].destination_id &&  !selectedCities[0].id) return setShowPopup({...showPopup , InputOne : true})
+      if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
+      if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
+      setSlideIndex(slideIndex + 1)
+      // window.scrollBy(0, -200 , 'smooth');
+      // ContainerRef.current.scrollIntoView(0,-150)
+      if(props.HeroBanner && isPageWide) window.scrollTo({top: 0,
+        behavior: "smooth"})
+    }
 
   const _SlideTwoSubmitHandler = ()=>{
     if(!submitSecondSlide) return setShowPopup({...showPopup ,group : true })
     setSlideIndex(slideIndex + 1)
   }
 
+  const getHeading = ()=>{
+    if(props.tailoredFormModal && props.focusedDate) 
+    if(props.focusedDate == 'startDate') return 'Please Select Start Date.'
+    if(props.focusedDate == 'endDate') return 'Please Select End Date.'
+    if(!slideIndex) return 'Get your free travel plan now'
+    return 'Trip Planner'
+  }
   
 
     if(!loading && !submitted)
  return (
    <div style={{}}>
-     {showBlack ? (
+     {showBlack && !props.tailoredFormModal? (
        <BlackContainer onClick={_handleHideBlack}></BlackContainer>
      ) : null}
 
      <Container
        showBlack={showBlack}
+       tailoredFormModal={props.tailoredFormModal}
        slideIndex={slideIndex}
        className={isPageWide ? "border center-di" : "center-div"}
        onClick={() => setShowBlack(true)}
       //  ref={ContainerRef}
      >
 
-      {showPopup.InputOne && <Popup setShowPopup={setShowPopup} top='12.6rem'  left='10px' text='Please select your destination!' />}
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem'  left='10px' text='Please select starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.2rem' left='170px' mobileleft={'135px'} text='Please select ending date!' />}
+      {showPopup.InputOne && <Popup setShowPopup={setShowPopup} top='12.2rem' mobileTop='14rem'  left='10px' text='Please select your destination!' />}
+      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem' mobileBottom='5.6rem'  left='10px' text='Please select starting date!' />}
+      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.6rem' mobileBottom='5.6rem' left='170px' mobileleft={'135px'} text='Please select ending date!' />}
       {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}
       
 
@@ -287,8 +297,8 @@ const Enquiry = (props) => {
          ) : (
            <div></div>
          )}
-         <Heading style={{ textAlign: !slideIndex ? "left" : "center" }}>
-           {!slideIndex ? "Get your free travel plan now" : "Trip Planner"}
+         <Heading style={(props.tailoredFormModal && props.focusedDate)?{textAlign : 'center' , fontSize : '1.4rem'} :{ textAlign: !slideIndex ? "left" : "center" }}>
+           {getHeading()}
          </Heading>
        </div>
        {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
@@ -307,6 +317,9 @@ const Enquiry = (props) => {
 
          <Flickity
          initialInputId={initialInputId}
+         focusedDate={props.focusedDate}
+         setFocusedDate={props.setFocusedDate}
+         tailoredFormModal={props.tailoredFormModal}
            startingLocation={startingLocation}
            setStartingLocation={setStartingLocation}
            children_cities={props.children_cities}
@@ -344,6 +357,7 @@ const Enquiry = (props) => {
             </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
             Submit
             </Button> } */}
+          
          {slideIndex === 0 ? (
            <div
              style={{
@@ -354,7 +368,7 @@ const Enquiry = (props) => {
               //  props.cities ? "hidden" : "visible",
              }}
            >
-             <Button
+            <Button
                width="100%"
                padding="0.5rem 2rem"
                fontWeight="500"
@@ -362,7 +376,7 @@ const Enquiry = (props) => {
                borderRadius="5px"
                borderWidth="1px"
                bgColor="#f7e700"
-               onclick={_SlideOneSubmitHandler}
+               onclick={()=>_SlideOneSubmitHandler()}
              >
                Continue
              </Button>

@@ -212,7 +212,7 @@ useEffect(() => {
 
        <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
-    <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={()=>setShowMobilePlanner(true)} text="Want to personalize your own experience?"></DesktopBanner>
 
     <SetWidthContainer>
     <Heading textAlign='left' bold noline  fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        

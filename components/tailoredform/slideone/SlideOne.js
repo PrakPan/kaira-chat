@@ -48,6 +48,9 @@ showCities={props.showCities}
  setValueEnd={props.setValueEnd}
 ></Dates> */}
 <NewDatePicker
+ focusedDate={props.focusedDate}
+ setFocusedDate={props.setFocusedDate}
+ tailoredFormModal={props.tailoredFormModal}
  valueStart={props.valueStart}
  valueEnd={props.valueEnd}
  setValueStart={props.setValueStart}

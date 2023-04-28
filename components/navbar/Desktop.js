@@ -84,7 +84,7 @@ const NavItem = styled.div`
 
 const Header = styled.div`
   position: fixed !important;
-  z-index: 900;   
+  z-index: 1003;   
   height : 80px;
 
   transition: height ease-out 0.5s;

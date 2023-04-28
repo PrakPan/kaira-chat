@@ -9,6 +9,7 @@ import Router from 'next/router'
 import { useEffect } from 'react';
 import axiosTravelPlannerInstance from '../services/pages/travel-planner'
 import axiospagelistinstance from '../services/pages/list'
+import axios from 'axios'
 const  Home = (props) =>  {
   useEffect(() => {
     props.checkAuthState();
@@ -48,7 +49,7 @@ export async function getStaticProps(){
 var data = []
 var locations = []
   try{
-    const res = await axiosTravelPlannerInstance.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
+    const res = await axios.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
     data = res.data
   }
   catch(e){

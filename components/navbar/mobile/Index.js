@@ -168,7 +168,7 @@ const Mobile = (props) => {
 
         const OtherLinksDiv = LinksArr.map((e)=>
         {if(e.type == 'others') return <ListItem onClick={e.onclick && e.onclick} style={router.pathname===e.link ? {backgroundColor :  "#ffff4a45"} : {}}>
-            {e.icon && <ImageLoader leftalign url={e.icon} height='20px' width='20px' dimensions={{height : 20 , width : 20}} widthmobile='20px' />}
+            {e.icon && <ImageLoader leftalign url={e.icon} height='20px' width='20px' dimensions={{height : 50 , width : 50}} dimensionsMobile={{height : 50 , width : 50}} widthmobile='20px' />}
            {e.link &&  <Link href={e.link} className='next-link' passHref={true}>
             <StyledLink>{e.text}</StyledLink>
             </Link>}
@@ -219,7 +219,7 @@ const Mobile = (props) => {
             {OtherLinksDiv}
 
            {props.token &&  <ListItem onClick={props.onLogout}>
-            {<ImageLoader leftalign url={'media/icons/navigation/logout.png'} height='20px' width='20px' dimensions={{height : 20 , width : 20}} widthmobile='20px' />}
+            {<ImageLoader leftalign url={'media/icons/navigation/logout.png'} height='20px' width='20px' dimensions={{height : 50 , width : 50}} dimensionsMobile={{height : 50 , width : 50}} widthmobile='20px' />}
             <StyledLink>Logout</StyledLink>
             </ListItem>}
 

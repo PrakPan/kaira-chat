@@ -37,7 +37,7 @@ import ImageLoader from '../ImageLoader';
 
 const IconsFetcher = ({iconId}) => {
   return (  
-    <ImageLoader url={WeatherIcon(iconId)} height="50px" width="100%"></ImageLoader> 
+    <ImageLoader url={WeatherIcon(iconId)} height="50px" width="50px"></ImageLoader> 
   )
 }
 

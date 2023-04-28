@@ -37,10 +37,12 @@ margin-block : auto;
 }
 `
 
-const TagsContent = [{icon : 'media/icons/login/tag.png' ,  text : 'Better prices'} ,
-{icon : 'media/icons/login/officer.png' , text : 'Get an experience captain'} ,
-{icon : 'media/icons/login/24-hours.png' , text : '24x7 live support for your trips'} ,{
-  icon : 'media/icons/login/discount.png' , text : 'Exclusive discounts'} ]
+const TagsContent = [
+  {icon : 'media/icons/login/free-travel.png' , text : 'Unlimited travel plans for free!'} ,
+  {icon : 'media/icons/login/discount.png' , text : 'Exclusive deals: Upto 70% off!'},
+{icon : 'media/icons/login/officer.png' , text : 'Expert support, 24x7!'} ,
+{icon : 'media/icons/login/night-stay.png' , text : 'Free night stay on selected properties!'} ]
+
 
 
 
@@ -78,7 +80,6 @@ const Enquiry = (props) => {
   return(
       <div className='font-lexend'>
         <Modal centered closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width={modalWidth + '%'} >
-            {/* <Modal.Body style={{padding: "0"}} > */}
                 <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
                   <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
                   <ImgContainer style={{display: showImage ? 'block' : 'none'}}>

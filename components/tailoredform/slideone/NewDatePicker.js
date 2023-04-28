@@ -5,6 +5,7 @@ import {BiCalendarAlt} from 'react-icons/bi'
 import moment from "moment";
 import media from '../../media'
 import {FaChevronLeft , FaChevronRight} from 'react-icons/fa'
+import Button from '../../ui/button/Index'
 import {
     DateRangePicker,
     isInclusivelyBeforeDay
@@ -21,6 +22,7 @@ position : relative;
   border : none;
   display: flex;
   gap: 22px;
+  ${props=>props.tailoredFormModal && 'gap : 10px'};
   background : initial;
 }
 .DateInput{
@@ -37,6 +39,8 @@ overflow : hidden;
   font-size : 1rem;
 }
  .DayPicker__withBorder{
+  ${props=>props.tailoredFormModal && 'border : none;-webkit-box-shadow : none;box-shadow :none;'};
+
   @media screen and (max-width: 768px){
 border : none;
 -webkit-box-shadow : none;
@@ -49,39 +53,17 @@ margin : auto;
   display : none !important;
 }
 
-//  Customized navigation button
-
-// @media screen and (max-width: 768px){
-//   .DayPickerNavigation{  
-//         display: flex;
-//         height: 20px;
-//         width: fit-content;
-//         margin-inline : 37%;
-//         margin-bottom : 10px;
-//       }
-//       .DayPickerNavigation>.DayPickerNavigation_button{
-//       height: 32px;
-//       width:32px;
-//       border-radius: 100%;
-//       margin-inline : 5px;
-//       padding : 2px;
-//       }
-//       .DayPickerNavigation>.DayPickerNavigation_button > svg{
-//         height:10px;
-//         width: 10px;
-//       }
-// }
 
 .DateRangePicker_picker_1{
   left : 0px;
   top : 48px !important;
-  @media screen and (max-width: 768px){
-    right : 0px !important;
-  }
   @media screen and (min-width: 768px){
     left : -210px !important;
+    right : 0px !important;
     top : 55px !important;
+  ${props=>props.tailoredFormModal && 'position : fixed ; top : 0 ; left : 50% !important ; right : 0; bottom : 0px !important; display : flex; justify-content: center'};
   }
+  ${props=>props.tailoredFormModal && 'position : fixed ; top : 0 ; left : 0 !important; right : 0; bottom : 0px !important'};
 }
   .CalendarDay{
     border : 0px;
@@ -116,14 +98,17 @@ margin : auto;
 
 const CalenderIcons = styled.div`
 position: absolute;
-top: 27%;
-right: 2%;
+top: 0;
+// right: 2%;
 pointer-events: none;
 font-size: 20px;
 z-index: 0;
 display: flex;
 justify-content: space-between;
-width: 59%;
+width: 100%;
+height : 3rem;
+gap : ${props=>props.tailoredFormModal ? '10px' : '22px'};
+
 `
 const TextContainer = styled.div`
 display : flex;
@@ -131,19 +116,58 @@ justify-content : space-between;
 font-weight: 400;
 font-size: 14px;
 height: 25px;
-width: 70%;
+width: 100%;
+gap : 22px;
+${props=>props.tailoredFormModal && 'gap : 10px'};
+`
+const Text = styled.p`
+width : 100%;
+`
+const Icon = styled.div`
+width : 100%;
+text-align : right;
+width: 100%;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-right : 5px;
+margin-top : -5px;
+    `
+const ButtonContainer = styled.div`
+z-index : 2 ;
+position : fixed ;
+bottom : 0 ;
+width : 273px ;
+margin : auto ;
+left : 0;
+right : 0;
+@media screen and (min-width: 768px){
+
+  left : 50%;
+}
+
 `
 const DatePicker = (props) => {
-const [focusedInput, setFocusedInput] = useState(null);
+const [focusedInput, setFocusedInput] = useState(props.focusedDate || null);
+
+useEffect(()=>{
+  if(props.setFocusedDate) props.setFocusedDate(focusedInput)
+},[focusedInput])
+
+useEffect(()=>{
+  if(props.setFocusedDate) setFocusedInput(props.inputDate) 
+},[props.inputDate])
+
 let isPageWide = media('(min-width: 768px)');
 
 return (
   <>
-    <TextContainer className={'TextContainer'}>
-      <p>Start Date</p>
-      <p>End Date</p>
+    <TextContainer tailoredFormModal={props.tailoredFormModal} className={'TextContainer'}>
+      <Text>Start Date</Text>
+      <Text>End Date</Text>
     </TextContainer>
-   <Container>
+   <Container tailoredFormModal={props.tailoredFormModal}>
     
     <DateRangePicker
     displayFormat='DD/MM/YYYY'
@@ -162,16 +186,33 @@ return (
         onFocusChange={setFocusedInput}
         isOutsideRange={day => day.startOf('day').isBefore(moment().add(0,'day')) }
           initialVisibleMonth={() => moment().subtract(0, "month")}
-        numberOfMonths={isPageWide?2:1}
+        numberOfMonths={isPageWide && !props.tailoredFormModal?2:1}
         orientation={"horizontal"}
         noBorder={true}
         // navPrev={<FaChevronLeft />}
         // navNext={<FaChevronRight />}
       />
-      <CalenderIcons className='CalentderIcons'>
-      <BiCalendarAlt />
-      <BiCalendarAlt />
+      <CalenderIcons tailoredFormModal={props.tailoredFormModal} className='CalentderIcons'>
+      <Icon><BiCalendarAlt /></Icon>
+      <Icon><BiCalendarAlt /></Icon>
       </CalenderIcons>
+
+      {
+        (props.tailoredFormModal && !!focusedInput)? 
+        <ButtonContainer>
+
+        <Button 
+        
+        width="100%"
+        padding="0.5rem 2rem"
+        fontWeight="500"
+        margin="1rem 0"
+        borderRadius="5px"
+        borderWidth="1px"
+        bgColor="#f7e700"
+        onclick={()=>setFocusedInput(null)}
+        >Continue</Button></ButtonContainer> : null
+      }
    </Container>
   </>
 
