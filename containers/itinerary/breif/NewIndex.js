@@ -131,6 +131,9 @@ const Details = (props) => {
   const getdayId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab_id;
   };
+  const getdateId = (id) => {
+    return props.itinerary?.day_slabs[id]?.slab;
+  };
   async function getCityDetails(cityname) {
     const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
     const data = res.data;
@@ -153,6 +156,7 @@ const Details = (props) => {
         name: routes[i].city_name,
         duration: routes[i].duration,
         color: routes[i].color,
+        date: getdateId(routes[i].start_day_slab_index),
       });
     }
   } else {

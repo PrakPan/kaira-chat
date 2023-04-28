@@ -7,7 +7,7 @@ import {
   Polyline,
 } from 'react-leaflet';
 import { divIcon } from 'leaflet';
-
+import { format, parseISO } from 'date-fns';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
 import 'leaflet-defaulticon-compatibility';
@@ -94,7 +94,11 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   //   };
   // }
   const [polylines, setPolylines] = useState();
-
+  const convertDFormat = (dt) => {
+    const date = parseISO(dt);
+    const formattedDate = format(date, 'MMMM do');
+    return formattedDate;
+  };
   useEffect(() => {
     const updatedPolylines = locations.map((element) => [
       element.lat,
@@ -184,8 +188,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
                   {location.name}
                 </div>
                 <div className="flex flex-row gap-2">
-                  <span>Ideal duration</span>:
-                  <div>{location.duration} days</div>
+                  <span>Date</span>:<div>{location.date}</div>
                 </div>
                 <div>Things to do</div>
                 <div className="font-bold text-md">
@@ -251,8 +254,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
                 {currentPopup[0].name}
               </div>
               <div className="flex flex-row gap-2">
-                <span>Ideal duration</span>:
-                <div>{currentPopup[0].duration} days</div>
+                <span>Date</span>:<div>{currentPopup[0].date} </div>
               </div>
               <div>Things to do</div>
               <div className="font-bold text-md">

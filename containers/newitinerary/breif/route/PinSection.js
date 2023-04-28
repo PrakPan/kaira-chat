@@ -35,8 +35,10 @@ const PinSection = ({
 }) => {
   const [pinhover, isPinhover] = useHover();
   const getdayId = (id) => {
-    console.log(`cityid ${id}`);
     return dayslab[id]?.slab_id;
+  };
+  const getdateId = (id) => {
+    return dayslab[id]?.slab;
   };
   useEffect(() => {
     if (isPinhover) {
@@ -44,7 +46,7 @@ const PinSection = ({
         setCurrentPopup([
           {
             dayId: getdayId(dayId),
-
+            date: getdateId(dayId),
             cityData: cityData,
             id: Mapid,
             city_id: cityId,
