@@ -80,7 +80,7 @@ const NavItem = styled.div`
 `;
 
 const Header = styled.div`
-  position: fixed !important;
+  position: static !important;
   z-index: 900;
   height: 80px;
 

@@ -152,7 +152,7 @@ const Navbar = (props) => {
           ></IndexDesktop>
         </div>
       </div>
-      <div className="hidden-mobile">
+      {/* <div className="hidden-mobile">
         <div
           style={{
             display: hideNav ? 'none !important' : 'initial !important',
@@ -172,7 +172,7 @@ const Navbar = (props) => {
             style={{}}
           ></IndexDesktop>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

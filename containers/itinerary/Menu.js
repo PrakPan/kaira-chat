@@ -445,10 +445,10 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
-      <div className="border-b-2 border-yellow  z-10 sticky md:top-[80px] top-[1px]">
+      <div className="border-b-2 border-yellow  z-10 sticky md:top-[0px] top-[1px]">
         <ScrollableMenuTabs
           icons={false}
-          offset={isDesktop ? '80px' : '0px'}
+          offset={isDesktop ? '0px' : '0px'}
           items={items}
           BarName="TabsName"
         />

@@ -27,7 +27,7 @@ const Container = styled.div`
   margin: 0vw auto 0 auto;
   @media screen and (min-width: 768px) {
     width: 85%;
-    margin: 15vh auto 0 auto;
+    margin: 0px auto 0 auto;
   }
 `;
 

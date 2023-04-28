@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Link } from 'react-scroll';
-import styled, { keyframes } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 const slideIn = keyframes`
 
@@ -26,14 +26,31 @@ const MenuItem = styled.div`
   margin-left: 4px;
   background-color: ${({ isActive }) => (isActive ? '#262626' : 'none')};
   color: ${({ isActive }) => (isActive ? '#F7E700' : '#7A7A7A')};
+  position: relative;
+  /* ${({ isActive }) =>
+    isActive &&
+    css`
+      ::after {
+        content: '';
+        position: absolute;
+
+        bottom: -4px;
+        width: 100%;
+        height: 4px;
+        background: #f7e700;
+        transition: all ease 0.3s;
+      }
+    `}; */
   border-radius: ${({ isActive }) =>
     isActive ? '10% 10% 0 0' : '10% 10% 0 0'};
   transition: border-color 0.3s ease;
   font-weight: 600;
-  border-bottom: ${({ isActive }) => (isActive ? '4px solid #F7E700' : 'none')};
-  &:hover {
-    background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};
-    color: white;
+  border-bottom: ${({ isActive }) =>
+    isActive ? '4px solid #F7E700' : '4px solid transparent'};
+  :hover {
+    background-color: ${({ isActive }) => (isActive ? '#262626' : 'none')};
+    color: '#F7E700';
+    border-bottom: '2px solid #F7E700';
   }
 `;
 const RoundMenuItem = styled.div`
@@ -57,6 +74,15 @@ const RoundMenuItem = styled.div`
   &:hover {
     background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};
     color: white;
+  }
+`;
+const Label = styled.div`
+  transition: all ease 0.3s;
+  color: ${({ isActive }) => (isActive ? '#fff' : '#3d3c3b')};
+  white-space: nowrap;
+
+  :hover {
+    color: ${({ isActive }) => (isActive ? '#fff' : '#010700')};
   }
 `;
 const AnimatedMenuItem = styled(MenuItem)`
@@ -121,7 +147,7 @@ const CustomMenu = ({
           isActive={activeItem === item.id}
           onClick={() => onSelect(item.id)}
         >
-          {item[Iterable]}
+          <Label isActive={activeItem === item.id}> {item[Iterable]}</Label>
         </MenuItem>
       )}
     </Link>

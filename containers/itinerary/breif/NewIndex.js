@@ -32,7 +32,7 @@ const DetailsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 10;
-  flex-direction: column;
+  flex-direction: column-reverse;
   margin: 0 auto 2vh auto;
   padding: 0 1rem;
   @media screen and (min-width: 768px) {
@@ -145,19 +145,20 @@ const Details = (props) => {
 
       // console.log(`response city data${JSON.stringify(citydetails)}`);
       // console.log(`lat,long${citydetails.lat}`);
-
-      Locationlatlong.push({
-        dayId: getdayId(routes[i].start_day_slab_index),
-        cityData: postion,
-        id: routes[i].gmaps_place_id,
-        city_id: routes[i].city_id,
-        lat: routes[i].lat,
-        long: routes[i].long,
-        name: routes[i].city_name,
-        duration: routes[i].duration,
-        color: routes[i].color,
-        date: getdateId(routes[i].start_day_slab_index),
-      });
+      if (routes[i].duration && routes[i].duration !== '0') {
+        Locationlatlong.push({
+          dayId: getdayId(routes[i].start_day_slab_index),
+          cityData: postion,
+          id: routes[i].gmaps_place_id,
+          city_id: routes[i].city_id,
+          lat: routes[i].lat,
+          long: routes[i].long,
+          name: routes[i].city_name,
+          duration: routes[i].duration,
+          color: routes[i].color,
+          date: getdateId(routes[i].start_day_slab_index),
+        });
+      }
     }
   } else {
     for (var i = 0; i < props.breif.city_slabs.length; i++) {
@@ -165,7 +166,12 @@ const Details = (props) => {
 
       // console.log(`response city data${JSON.stringify(citydetails)}`);
       // console.log(`lat,long${citydetails.lat}`);
-      if (!postion.is_departure_only && !postion.is_trip_terminated) {
+      if (
+        !postion.is_departure_only &&
+        !postion.is_trip_terminated &&
+        postion.duration &&
+        postion.duration !== '0'
+      ) {
         Locationlatlong.push({
           dayId: getdayId(postion.day_slab_location.start_day_slab_index),
           cityData: postion,
@@ -207,7 +213,7 @@ const Details = (props) => {
   //   />
   // );
   const MapWithNoSSR = dynamic(() => import('../../../components/Mapbox'), {
-    ssr: false,
+    ssr: true,
   });
   // const LeafMap = dynamic(
   //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
@@ -226,6 +232,18 @@ const Details = (props) => {
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
 
       <DetailsContainer>
+        <div
+          className="sticky md:top-[70px] lg:w-[60vw] lg:h-[85vh]  w-[23rem] h-[23rem] mt-20  rounded-xl"
+          id="MapcontainerRoute"
+        >
+          <div className="absolute w-[100%] h-[100%] rounded-xl">
+            <MapWithNoSSR
+              locations={Locationlatlong}
+              currentPopup={currentPopup}
+              setCurrentPopup={setCurrentPopup}
+            />
+          </div>
+        </div>
         <RouteComponent>
           <div id="route">
             <Route
@@ -260,19 +278,6 @@ const Details = (props) => {
             </div>
           )} */}
         </RouteComponent>
-
-        <div
-          className="sticky md:top-[140px] lg:w-[48rem] lg:h-[39rem]  w-[23rem] h-[23rem] mt-20  rounded-xl"
-          id="MapcontainerRoute"
-        >
-          <div className="absolute w-[100%] h-[100%] rounded-xl">
-            <MapWithNoSSR
-              locations={Locationlatlong}
-              currentPopup={currentPopup}
-              setCurrentPopup={setCurrentPopup}
-            />
-          </div>
-        </div>
 
         {/* {isPageWide ? (
           <div>
