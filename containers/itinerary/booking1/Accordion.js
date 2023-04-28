@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 const Accordion = withStyles({
   root: {
     marginBottom: 10,
-    border: '0px solid #e4e4e4',
+    border: '0px solid #F7E70033',
     boxShadow: 'none',
     zIndex: '1',
   },
@@ -127,12 +127,14 @@ const FAQs = (props) => {
       HeadingsJSX.push(
         <Accordion key={key}>
           <AccordionSummary
+            className={props.className}
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="itinerary-booking-summary-accordion"
             style={{ zIndex: '1', minHeight: 'max-content' }}
           >
             <Typography
+              className={props.className}
               content={'span'}
               className="font-lexend"
               style={{ fontWeight: '600', fontSize: '0.75rem', margin: '0' }}
@@ -140,6 +142,7 @@ const FAQs = (props) => {
               {key}
             </Typography>
             <Typography
+              className={props.className}
               content={'span'}
               className="font-lexend"
               style={{
@@ -159,6 +162,7 @@ const FAQs = (props) => {
             </Typography>
           </AccordionSummary>
           <div
+            className={props.className}
             style={{
               margin: '0 1rem',
               borderStyle: 'none none none none',
@@ -168,7 +172,10 @@ const FAQs = (props) => {
               top: '-0.5rem',
             }}
           ></div>
-          <AccordionDetails style={{ display: 'block', padding: '0' }}>
+          <AccordionDetails
+            className={props.className}
+            style={{ display: 'block', padding: '0' }}
+          >
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}

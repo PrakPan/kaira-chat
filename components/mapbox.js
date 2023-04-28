@@ -16,6 +16,7 @@ import { useState } from 'react';
 import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import ImageLoader from './ImageLoader';
 import { ITbutton } from '../containers/newitinerary/breif/cities/City';
+import WeatherWidget from './WeatherWidget/WeatherWidget';
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
@@ -35,7 +36,7 @@ const limeOptions = {
   dashArray: '10, 5', // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
   dashOffset: '10',
 };
-const Mapbox = ({ locations }) => {
+const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   // function createTripPointsGeoJson({ locations } = {}) {
   //   return {
   //     type: 'FeatureCollection',
@@ -133,6 +134,7 @@ const Mapbox = ({ locations }) => {
        https://api.mapbox.com/styles/v1/ssoam/cl77qs9yq000c14uk4kv9ecog/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3NvYW0iLCJhIjoiY2w3N3J5ZTgyMDJwZzNwb3gzYWtxdWttciJ9.g2IBgPyHpz_bDNTAe3g2fw`}
         // attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
       /> */}
+
       <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
       {polylines ? (
         <Polyline pathOptions={limeOptions} positions={polylines} />
@@ -189,6 +191,11 @@ const Mapbox = ({ locations }) => {
                 <div className="font-bold text-md">
                   Tours · Wildlife · Museums
                 </div>
+                {/* <WeatherWidget
+                  city={location.city_name}
+                  lat={location.lat}
+                  lon={location.long}
+                /> */}
                 {/* <a
                   href="#_"
                   class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
@@ -222,6 +229,72 @@ const Mapbox = ({ locations }) => {
           </Popup>
         </Marker>
       ))}
+      {currentPopup ? (
+        <Popup
+          className="w-[26rem]"
+          position={[currentPopup[0].lat, currentPopup[0].long]}
+        >
+          <div className="flex flex-row w-[26rem] ">
+            <div>
+              <ImageLoader
+                borderRadius="8px"
+                url={currentPopup[0].cityData.image}
+                height={150}
+                width={150}
+                heightMobile="auto"
+                dimensionsMobile={{ width: 150, height: 150 }}
+              ></ImageLoader>
+            </div>
+
+            <div className="flex flex-col gap-2 pl-3">
+              <div className={`font-bold text-lg text-[#270e0e]`}>
+                {currentPopup[0].name}
+              </div>
+              <div className="flex flex-row gap-2">
+                <span>Ideal duration</span>:
+                <div>{currentPopup[0].duration} days</div>
+              </div>
+              <div>Things to do</div>
+              <div className="font-bold text-md">
+                Tours · Wildlife · Museums
+              </div>
+              {/* <WeatherWidget
+                city={currentPopup[0].city_name}
+                lat={currentPopup[0].lat}
+                lon={currentPopup[0].long}
+              /> */}
+              {/* <a
+            href="#_"
+            class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
+          >
+            View {currentPopup[0].cityData.city_name} in your Itinerary
+            <span class="relative flex h-3 w-3">
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400  opacity-75`}
+              ></span>
+              <span
+                className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
+              ></span>
+            </span>
+          </a> */}
+              <div
+                className={`relative rounded min-w-fit flex flex-row cursor-pointer bg-slate-600 px-2 py-2 text-xs font-semibold text-white shadow-sm  hover:bg-[#BF3535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+                onClick={() => scrollToTargetAdjusted(currentPopup[0].dayId)}
+              >
+                View {currentPopup[0].cityData.city_name} in your Itinerary
+                <span class="absolute -right-1 -top-2 flex h-3 w-3">
+                  <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75`}
+                  ></span>
+                  <span
+                    className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
+                  ></span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </Popup>
+      ) : null}
     </MapContainer>
   );
 };

@@ -46,8 +46,7 @@ const RouteComponent = styled.div`
   display: flex;
   flex-direction: column;
   @media screen and (min-width: 768px) {
-    width: 32%;
-    margin-left: 5vw;
+    width: 30%;
   }
 `;
 const ContainerBt = styled.div`
@@ -65,7 +64,7 @@ const Details = (props) => {
   const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
   const [routes, setRoutes] = useState(false);
-
+  const [currentPopup, setCurrentPopup] = useState(false);
   console.log(`id mapp${active}`);
   async function getRoutes(itinaryId) {
     const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
@@ -153,8 +152,28 @@ const Details = (props) => {
         long: routes[i].long,
         name: routes[i].city_name,
         duration: routes[i].duration,
-        color: postion.color,
+        color: routes[i].color,
       });
+    }
+  } else {
+    for (var i = 0; i < props.breif.city_slabs.length; i++) {
+      var postion = props.breif.city_slabs[i];
+
+      // console.log(`response city data${JSON.stringify(citydetails)}`);
+      // console.log(`lat,long${citydetails.lat}`);
+      if (!postion.is_departure_only && !postion.is_trip_terminated) {
+        Locationlatlong.push({
+          dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+          cityData: postion,
+          id: postion.gmaps_place_id,
+          city_id: postion.city_id,
+          lat: postion.lat ?? '18.5204',
+          long: postion.long ?? '73.8567',
+          name: postion.city_name,
+          duration: postion.duration,
+          color: postion.color,
+        });
+      }
     }
   }
 
@@ -176,32 +195,42 @@ const Details = (props) => {
       {location.duration && <p>Ideal duration : {location.duration} days</p>}
     </MapInfo>
   );
-  const MapCaller = ({ location }) => <LeafMap location={location} />;
+  // const MapCaller = ({ location, currentPopup, setCurrentPopup }) => (
+  //   <LeafMap
+  //     location={location}
+  //     currentPopup={currentPopup}
+  //     setCurrentPopup={setCurrentPopup}
+  //   />
+  // );
   const MapWithNoSSR = dynamic(() => import('../../../components/Mapbox'), {
     ssr: false,
   });
-  const LeafMap = dynamic(
-    () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
-    {
-      loading: () => <p>A map is loading now</p>,
-      suspense: true,
-      ssr: false, // This line is important. It's what prevents server-side render
-    }
-  );
-
+  // const LeafMap = dynamic(
+  //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
+  //   {
+  //     loading: () => <p>A map is loading now</p>,
+  //     suspense: true,
+  //     ssr: false, // This line is important. It's what prevents server-side render
+  //   }
+  // );
+  console.log('currentPopup');
+  console.log(currentPopup);
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
       {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
+
       <DetailsContainer>
         <RouteComponent>
           <div id="route">
             <Route
+              dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
               routes={routes}
               setPlaceID={setActive}
               active={active}
+              setCurrentPopup={setCurrentPopup}
             />
           </div>
 
@@ -216,7 +245,7 @@ const Details = (props) => {
               active={active}
             ></Map>
           </div> */}
-          {routes && (
+          {/* {routes && (
             <div
               className="relative lg:w-[30rem] lg:h-[30rem]  w-[23rem] h-[23rem]  rounded-xl"
               id="MapcontainerRoute"
@@ -225,9 +254,23 @@ const Details = (props) => {
                 <MapWithNoSSR locations={Locationlatlong} />
               </div>
             </div>
-          )}
+          )} */}
         </RouteComponent>
-        {isPageWide ? (
+
+        <div
+          className="sticky md:top-[140px] lg:w-[48rem] lg:h-[39rem]  w-[23rem] h-[23rem] mt-20  rounded-xl"
+          id="MapcontainerRoute"
+        >
+          <div className="absolute w-[100%] h-[100%] rounded-xl">
+            <MapWithNoSSR
+              locations={Locationlatlong}
+              currentPopup={currentPopup}
+              setCurrentPopup={setCurrentPopup}
+            />
+          </div>
+        </div>
+
+        {/* {isPageWide ? (
           <div>
             <div>
               {true ? (
@@ -238,7 +281,7 @@ const Details = (props) => {
               ) : null}
             </div>
           </div>
-        ) : null}
+        ) : null} */}
       </DetailsContainer>
       {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>

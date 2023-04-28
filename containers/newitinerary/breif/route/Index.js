@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PinSection from './PinSection';
 import MidSection from './MidSection';
 const Container = styled.div`
@@ -9,7 +9,7 @@ const Container = styled.div`
   margin-bottom: 1.5rem;
 `;
 const Heading = styled.p`
-  font-size: 25px;
+  font-size: 40px;
   font-weight: 600;
 `;
 
@@ -63,6 +63,7 @@ const Route = (props) => {
     scrollToTargetAdjusted();
     console.log(`id mapp${props.active}`);
   }
+
   const _moveUpHandler = (index) => {
     if (index === 1) {
       //First item, disable button
@@ -91,30 +92,76 @@ const Route = (props) => {
           props.breif.city_slabs[i].duration &&
           props.breif.city_slabs[i].duration !== '0'
         ) {
-          locationsArr.push(
-            <PinSection
-              handlemap={handlemap}
-              Mapid={props.breif.city_slabs[i].gmaps_place_id}
-              city={props.breif.city_slabs[i].city_name}
-              duration={props.breif.city_slabs[i].duration + ' Nights'}
-              pinColour={props.breif.city_slabs[i].color}
-              data={order[i]}
-              _moveDownHandler={_moveDownHandler}
-              _moveUpHandler={_moveUpHandler}
-              index={i}
-            ></PinSection>
-          );
-          locationsArr.push(
-            <MidSection
-              pinColour={[
-                props.breif.city_slabs[i].color,
-                props.breif.city_slabs[i].color,
-              ]}
-              image={props.breif.city_slabs[i].image}
-              transportMode={props.breif.city_slabs[i].intracity_transport}
-              duration={props.breif.city_slabs[i].duration}
-            ></MidSection>
-          );
+          if (props.routes) {
+            locationsArr.push(
+              <PinSection
+                setCurrentPopup={props.setCurrentPopup}
+                handlemap={handlemap}
+                dayId={
+                  props.routes[i - 1].day_slab_location.start_day_slab_index
+                }
+                cityData={props.routes[i - 1]}
+                dayslab={props.dayslab}
+                lat={props.routes[i - 1].lat}
+                long={props.routes[i - 1].long}
+                Mapid={props.routes[i - 1].gmaps_place_id}
+                city={props.routes[i - 1].city_name}
+                cityId={props.routes[i - 1].city_id}
+                duration={props.routes[i - 1].duration + ' Nights'}
+                pinColour={props.routes[i - 1].color}
+                data={order[i - 1]}
+                _moveDownHandler={_moveDownHandler}
+                _moveUpHandler={_moveUpHandler}
+                index={i - 1}
+              ></PinSection>
+            );
+            locationsArr.push(
+              <MidSection
+                pinColour={[
+                  props.breif.city_slabs[i].color,
+                  props.breif.city_slabs[i].color,
+                ]}
+                image={props.breif.city_slabs[i].image}
+                transportMode={props.breif.city_slabs[i].intracity_transport}
+                duration={props.breif.city_slabs[i].duration}
+              ></MidSection>
+            );
+          } else {
+            locationsArr.push(
+              <PinSection
+                setCurrentPopup={props.setCurrentPopup}
+                handlemap={handlemap}
+                dayId={
+                  props.breif.city_slabs[i].day_slab_location
+                    .start_day_slab_index
+                }
+                cityData={props.breif.city_slabs[i]}
+                dayslab={props.dayslab}
+                lat={props.breif.city_slabs[i].lat}
+                long={props.breif.city_slabs[i].long}
+                Mapid={props.breif.city_slabs[i].gmaps_place_id}
+                city={props.breif.city_slabs[i].city_name}
+                cityId={props.breif.city_slabs[i].city_id}
+                duration={props.breif.city_slabs[i].duration + ' Nights'}
+                pinColour={props.breif.city_slabs[i].color}
+                data={order[i]}
+                _moveDownHandler={_moveDownHandler}
+                _moveUpHandler={_moveUpHandler}
+                index={i}
+              ></PinSection>
+            );
+            locationsArr.push(
+              <MidSection
+                pinColour={[
+                  props.breif.city_slabs[i].color,
+                  props.breif.city_slabs[i].color,
+                ]}
+                image={props.breif.city_slabs[i].image}
+                transportMode={props.breif.city_slabs[i].intracity_transport}
+                duration={props.breif.city_slabs[i].duration}
+              ></MidSection>
+            );
+          }
         }
       }
       if (!startingcity) startingcity = props.breif.city_slabs[0].city_name;
@@ -127,6 +174,19 @@ const Route = (props) => {
       <Heading className="font-lexend">Route</Heading>
 
       <PinSection
+        setCurrentPopup={props.setCurrentPopup}
+        cityData={props.breif.city_slabs[0]}
+        dayId={props.breif.city_slabs[0].day_slab_location.start_day_slab_index}
+        cityData={props.breif.city_slabs[0]}
+        dayslab={props.dayslab}
+        lat={props.breif.city_slabs[0].lat}
+        long={props.breif.city_slabs[0].long}
+        Mapid={props.breif.city_slabs[0].gmaps_place_id}
+        city={props.breif.city_slabs[0].city_name}
+        cityId={props.breif.city_slabs[0].city_id}
+        duration={props.breif.city_slabs[0].duration + ' Nights'}
+        pinColour={props.breif.city_slabs[0].color}
+        dayslab={props.dayslab}
         city={props.nostartinglocation ? 'Your Location' : startingcity}
       ></PinSection>
       <MidSection
@@ -142,10 +202,21 @@ const Route = (props) => {
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
              <MidSection></MidSection> */}
       <PinSection
+        setCurrentPopup={props.setCurrentPopup}
+        dayId={props.breif.city_slabs[0].day_slab_location.start_day_slab_index}
+        cityData={props.breif.city_slabs[0]}
+        dayslab={props.dayslab}
+        lat={props.breif.city_slabs[0].lat}
+        long={props.breif.city_slabs[0].long}
+        Mapid={props.breif.city_slabs[0].gmaps_place_id}
+        city={props.breif.city_slabs[0].city_name}
+        cityId={props.breif.city_slabs[0].city_id}
+        duration={props.breif.city_slabs[0].duration + ' Nights'}
+        pinColour={props.breif.city_slabs[0].color}
         city={props.nostartinglocation ? 'Your Location' : endingcity}
       ></PinSection>
     </Container>
   );
 };
 
-export default Route;
+export default React.memo(Route);
