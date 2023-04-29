@@ -212,8 +212,10 @@ const Details = (props) => {
   //     setCurrentPopup={setCurrentPopup}
   //   />
   // );
-  const MapWithNoSSR = dynamic(() => import('../../../components/Mapbox'), {
-    ssr: true,
+  const MapWithNoSSR = dynamic(() => import('../../../components/mapbox.js'), {
+    loading: () => <p>A map is loading now</p>,
+
+    ssr: false, // This line is important. It's what prevents server-side render
   });
   // const LeafMap = dynamic(
   //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
@@ -223,8 +225,7 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
-  console.log('currentPopup');
-  console.log(currentPopup);
+
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}

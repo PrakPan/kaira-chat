@@ -3,14 +3,12 @@ import {
   TileLayer,
   Marker,
   Popup,
-  Polygon,
   Polyline,
 } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 import { format, parseISO } from 'date-fns';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css';
-import 'leaflet-defaulticon-compatibility';
+
 import { useEffect } from 'react';
 import { useState } from 'react';
 import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
@@ -32,7 +30,7 @@ const MyIcon = ({ color }) => {
   return customIcon;
 };
 const limeOptions = {
-  color: '#004d69c7',
+  color: '#004d6994',
   dashArray: '10, 5', // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
   dashOffset: '15',
 };
@@ -133,13 +131,13 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
       scrollWheelZoom={false}
       style={{ height: '100%', width: '100%', borderRadius: '1rem' }}
     >
-      {/* <TileLayer
+      <TileLayer
         url={`
        https://api.mapbox.com/styles/v1/ssoam/cl77qs9yq000c14uk4kv9ecog/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3NvYW0iLCJhIjoiY2w3N3J5ZTgyMDJwZzNwb3gzYWtxdWttciJ9.g2IBgPyHpz_bDNTAe3g2fw`}
         // attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-      /> */}
+      />
 
-      <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
+      {/* <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" /> */}
       {polylines ? (
         <Polyline pathOptions={limeOptions} positions={polylines} />
       ) : null}
@@ -300,4 +298,4 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   );
 };
 
-export default Mapbox;
+export default React.memo(Mapbox);

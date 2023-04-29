@@ -130,7 +130,7 @@ const CustomMenu = ({
       id={`${BarName} ${item.id}`}
       style={{ textDecoration: 'none' }}
       spy={true}
-      duration={500}
+      // duration={500}
       offset={-150}
       onSetActive={() => onSelect(item.id)}
     >
