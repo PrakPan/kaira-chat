@@ -107,7 +107,11 @@ const Route = (props) => {
                 Mapid={props.routes[i - 1].gmaps_place_id}
                 city={props.routes[i - 1].city_name}
                 cityId={props.routes[i - 1].city_id}
-                duration={props.routes[i - 1].duration + ' Nights'}
+                duration={
+                  props.breif.city_slabs[i - 1].duration
+                    ? props.breif.city_slabs[i - 1].duration + ' Nights'
+                    : null
+                }
                 pinColour={props.routes[i - 1].color}
                 data={order[i - 1]}
                 _moveDownHandler={_moveDownHandler}
@@ -117,10 +121,7 @@ const Route = (props) => {
             );
             locationsArr.push(
               <MidSection
-                pinColour={[
-                  props.breif.city_slabs[i].color,
-                  props.breif.city_slabs[i].color,
-                ]}
+                pinColour={props.breif.city_slabs[i].color}
                 image={props.breif.city_slabs[i].image}
                 transportMode={props.breif.city_slabs[i].intracity_transport}
                 duration={props.breif.city_slabs[i].duration}
@@ -142,7 +143,11 @@ const Route = (props) => {
                 Mapid={props.breif.city_slabs[i].gmaps_place_id}
                 city={props.breif.city_slabs[i].city_name}
                 cityId={props.breif.city_slabs[i].city_id}
-                duration={props.breif.city_slabs[i].duration + ' Nights'}
+                duration={
+                  props.breif.city_slabs[i].duration
+                    ? props.breif.city_slabs[i].duration + ' Night'
+                    : null
+                }
                 pinColour={props.breif.city_slabs[i].color}
                 data={order[i]}
                 _moveDownHandler={_moveDownHandler}
@@ -152,10 +157,7 @@ const Route = (props) => {
             );
             locationsArr.push(
               <MidSection
-                pinColour={[
-                  props.breif.city_slabs[i].color,
-                  props.breif.city_slabs[i].color,
-                ]}
+                pinColour={props.breif.city_slabs[i].color}
                 image={props.breif.city_slabs[i].image}
                 transportMode={props.breif.city_slabs[i].intracity_transport}
                 duration={props.breif.city_slabs[i].duration}
@@ -184,13 +186,17 @@ const Route = (props) => {
         Mapid={props.breif.city_slabs[0].gmaps_place_id}
         city={props.breif.city_slabs[0].city_name}
         cityId={props.breif.city_slabs[0].city_id}
-        duration={props.breif.city_slabs[0].duration + ' Nights'}
+        duration={
+          props.breif.city_slabs[0].duration
+            ? props.breif.city_slabs[0].duration + ' Night'
+            : null
+        }
         pinColour={props.breif.city_slabs[0].color}
         dayslab={props.dayslab}
         city={props.nostartinglocation ? 'Your Location' : startingcity}
       ></PinSection>
       <MidSection
-        pinColour={'#f7e700'}
+        pinColour={props.breif.city_slabs[0].color}
         transportMode={'taxi'}
         duration={'2'}
       ></MidSection>
@@ -211,7 +217,11 @@ const Route = (props) => {
         Mapid={props.breif.city_slabs[0].gmaps_place_id}
         city={props.breif.city_slabs[0].city_name}
         cityId={props.breif.city_slabs[0].city_id}
-        duration={props.breif.city_slabs[0].duration + ' Nights'}
+        duration={
+          props.breif.city_slabs[0].duration
+            ? props.breif.city_slabs[0].duration + ' Night'
+            : null
+        }
         pinColour={props.breif.city_slabs[0].color}
         city={props.nostartinglocation ? 'Your Location' : endingcity}
       ></PinSection>

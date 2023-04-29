@@ -64,7 +64,7 @@ const PinSection = ({
   return (
     <Container className="cursor-pointer" ref={pinhover}>
       <Pin duration={duration} pinColour={pinColour}></Pin>
-      <Heading>{duration ? city + ' (' + duration + ')' : city}</Heading>
+      <Heading>{duration ? city + `- ${duration}` : city}</Heading>
     </Container>
   );
 };

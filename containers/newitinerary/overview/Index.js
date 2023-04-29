@@ -48,17 +48,23 @@ const Overview = (props) => {
           </div>
         </div> */}
       </GridContainer>
-      <Details
-        group_type={props.group_type}
-        duration_time={props.duration_time}
-        travellerType={props.travellerType}
-        start_date={props.start_date}
-        end_date={props.end_date}
-        duration={props.duration}
-      ></Details>
+      <div>
+        <Details
+          group_type={props.group_type}
+          duration_time={props.duration_time}
+          travellerType={props.travellerType}
+          start_date={props.start_date}
+          end_date={props.end_date}
+          duration={props.duration}
+        ></Details>
+        <div
+          className="border-b-[0.8px] border-slate-300 mt-2 -mx-5 block lg:hidden
+        "
+        ></div>
+      </div>
 
       {/* <Line></Line> */}
-      <div className="pt-8 pb-1">
+      <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
       </div>
     </Container>

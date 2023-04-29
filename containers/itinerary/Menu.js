@@ -36,6 +36,7 @@ import NewBooking from './HotelsBooking/HotelsBooking';
 import HotelsBooking from './HotelsBooking/HotelsBooking';
 import { SplitScreen } from '../../components/SplitScreen';
 import BookingContainer from '../../components/BookingContainer/BookingContainer';
+import ButtonYellow from '../../components/ButtonYellow';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -445,13 +446,17 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
-      <div className="border-b-2 border-yellow  z-10 sticky md:top-[0px] top-[1px]">
+      <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
         <ScrollableMenuTabs
           icons={false}
           offset={isDesktop ? '0px' : '0px'}
           items={items}
           BarName="TabsName"
         />
+        <div
+          className="border-b-[0.8px] border-slate-300 mt-[0px] z-50 -mx-5 block lg:hidden
+        "
+        ></div>
       </div>
 
       {/* {!isPageWide && value !== 2 ? (
@@ -711,7 +716,7 @@ const SimpleTabs = (props) => {
             )}
           </div>
 
-          <div className="sticky top-[10.8rem] mt-16">
+          <div className="sticky top-[6rem] mt-40">
             <BookingContainer
               payment={props.payment}
               plan={props.plan}
@@ -821,6 +826,27 @@ const SimpleTabs = (props) => {
           ></Booking>
         </div>
       )} */}
+      <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
+        <div className="flex flex-row justify-between mx-3">
+          <div className="flex flex-col">
+            <div>Package start from</div>
+            <div>
+              <span className="font-bold">
+                ₹{' '}
+                {getIndianPrice(
+                  Math.round(
+                    Math.round(props.payment.per_person_total_cost) / 100
+                  )
+                )}
+              </span>{' '}
+              per person
+            </div>
+          </div>
+          <div className="">
+            <ButtonYellow>Book now</ButtonYellow>
+          </div>
+        </div>
+      </div>
       <div id={items[3].link}></div>
       {!props.preview ? (
         <PoiEditModal

@@ -54,7 +54,8 @@ const MenuItem = styled.div`
   }
 `;
 const RoundMenuItem = styled.div`
-  padding: 4px 6px 6px 3px;
+  padding: ${({ Isvertical }) =>
+    Isvertical ? '4px 9px 6px 9px' : '2px 20px 4px 20px'};
   cursor: pointer;
   width: ${({ Isvertical }) => (Isvertical ? '95px' : 'max-content')};
  
@@ -129,7 +130,6 @@ const CustomMenu = ({
       id={`${BarName} ${item.id}`}
       style={{ textDecoration: 'none' }}
       spy={true}
-      smooth={true}
       duration={500}
       offset={-150}
       onSetActive={() => onSelect(item.id)}

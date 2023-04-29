@@ -24,7 +24,7 @@ import Overview from '../../newitinerary/overview/Index';
 
 const Container = styled.div`
   width: 90%;
-  margin: 0vw auto 0 auto;
+  margin: -5vh auto 0 auto;
   @media screen and (min-width: 768px) {
     width: 85%;
     margin: 0px auto 0 auto;

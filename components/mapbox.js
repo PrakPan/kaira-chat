@@ -32,9 +32,9 @@ const MyIcon = ({ color }) => {
   return customIcon;
 };
 const limeOptions = {
-  color: 'black',
+  color: '#004d69c7',
   dashArray: '10, 5', // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
-  dashOffset: '10',
+  dashOffset: '15',
 };
 const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   // function createTripPointsGeoJson({ locations } = {}) {
@@ -169,7 +169,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
             iconSize: 20,
           })}
         >
-          <Popup className="w-[26rem]">
+          <Popup className="w-[26rem] ">
             <div className="flex flex-row w-[26rem] ">
               <div>
                 <ImageLoader

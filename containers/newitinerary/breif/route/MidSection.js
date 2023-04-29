@@ -7,7 +7,10 @@ import ImageLoader from '../../../../components/ImageLoader';
 const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
-  min-height: 8rem;
+  min-height: 5rem;
+  @media screen and (min-width: 768px) {
+    min-height: 8rem;
+  }
 `;
 // const Heading = styled.div`
 //     font-weight: 600;
@@ -19,17 +22,40 @@ const Container = styled.div`
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-    linear-gradient(87deg, #0d6efd, #00fff0, #d4ff00, #ff7000, #f00);
-  background-size: 20px 3px, 100% 3px;
+  ${(props) =>
+    props.pinColour
+      ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+      : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+   
+  background-size: 15px 3px, 100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
-  width: 8rem;
-  height: 4px;
+  width: 5rem;
+    height: 2px;
+    top: 23px;
+    right: -25px;
+ 
+  border: 2px;
+  opacity: initial;
+  
+  @media screen and (min-width: 768px){
+    width: 8rem;
+  height: 2px;
   top: 46px;
   right: -48px;
-  border: 2px;
+}
+  /* border-style: dashed;
+  border-width: 1.4px;
+  position: absolute;
+  left: 50%;
+  
+
+  border-color: ${(props) => (props.pinColour ? props.pinColour : 'black')};
+  min-height: 10vw;
+  height: 100%;
+  margin: 0rem 0 0rem 0rem; */
 `;
 const Text = styled.div`
   color: #111;
@@ -47,7 +73,7 @@ const MidSection = (props) => {
   return (
     <Container className="font-lexend">
       <div style={{ position: 'relative' }}>
-        <Line />
+        <Line pinColour={props.pinColour} />
       </div>
       <Text>
         {/* <ImageLoader
