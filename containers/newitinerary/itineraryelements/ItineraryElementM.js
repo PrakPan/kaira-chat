@@ -68,25 +68,30 @@ const ItineraryElementM = (props) => {
           </div>
         ) : null}
       </div>
-      <GridContainer image={props.image}>
-        {props.image ? (
-          <ImageLoader
-            dimensions={{ width: 200, height: 200 }}
-            dimensionsMobile={{ width: 250, height: 200 }}
-            borderRadius="8px"
-            hoverpointer
-            onclick={() => console.log('')}
-            width="100%"
-            leftalign
-            widthmobile="100%"
-            url={props.image}
-          ></ImageLoader>
-        ) : null}
-        <div>
+      <div>
+        <div className="flex flex-row">
+          {props.icon ? (
+            <div className="mr-4">
+              <ImageLoader
+                dimensions={{ width: 90, height: 90 }}
+                dimensionsMobile={{ width: 90, height: 90 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log('')}
+                width="22px"
+                leftalign
+                widthmobile="40px"
+                url={props.icon}
+              ></ImageLoader>
+            </div>
+          ) : null}
           <Heading>{props.heading}</Heading>
+        </div>
+
+        <div>
           <Text>{props.text ? props.text : null}</Text>
         </div>
-      </GridContainer>
+      </div>
 
       <Line></Line>
     </Container>

@@ -70,9 +70,21 @@ const ItineraryFoodElementM = (props) => {
 
         <GridContainer>
           <div className="text-center">
-            <IoMdRestaurant
-              style={{ fontSize: '2rem', textAlign: 'center' }}
-            ></IoMdRestaurant>
+            {props.icon ? (
+              <div className="mr-4">
+                <ImageLoader
+                  dimensions={{ width: 90, height: 90 }}
+                  dimensionsMobile={{ width: 90, height: 90 }}
+                  borderRadius="8px"
+                  hoverpointer
+                  onclick={() => console.log('')}
+                  width="22px"
+                  leftalign
+                  widthmobile="40px"
+                  url={props.icon}
+                ></ImageLoader>
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-col ">
@@ -96,7 +108,6 @@ const ItineraryFoodElementM = (props) => {
           </>
         ) : null} */}
       </Container>
-      <Line></Line>
     </>
   );
 };

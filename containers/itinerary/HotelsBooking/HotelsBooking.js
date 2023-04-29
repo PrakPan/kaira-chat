@@ -34,6 +34,7 @@ const HotelsBooking = (props) => {
   }
   return (
     <div className="w-[60vw]">
+      <div className="text-4xl font-bold mt-4">Stays</div>
       {props.stayBookings
         ? props.stayBookings.map((booking) => (
             <div className="flex gap-1 pt-8  flex-col justify-start">
