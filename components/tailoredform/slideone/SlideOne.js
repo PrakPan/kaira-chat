@@ -24,8 +24,8 @@ margin-bottom: 1rem;
 const SlideOne = (props) =>{
   const getHeading = () => {
     if (props.tailoredFormModal && props.focusedDate) {
-      if (props.focusedDate == "startDate") return "Please Select Start Date.";
-      if (props.focusedDate == "endDate") return "Please Select End Date.";
+      if (props.focusedDate == "startDate") return "Please select start date.";
+      if (props.focusedDate == "endDate") return "Please select end date.";
     }
     else return "What do you want to explore?";
   };

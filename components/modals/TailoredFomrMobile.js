@@ -56,7 +56,7 @@ const TailoredFormMobileModal = (props) => {
   useEffect(()=>{
     function findModalWidth(){
       // if(window.innerWidth >= 1800) setModalWidth(50)
-      if(window.innerWidth >= 1400) setModalWidth(50)
+      if(window.innerWidth >= 1400) setModalWidth(25)
       else if(window.innerWidth >= 1100) setModalWidth(70)
       else if(window.innerWidth >= 768) setModalWidth(90)
       else if(window.innerWidth >= 600) setModalWidth(60)
@@ -68,25 +68,25 @@ const TailoredFormMobileModal = (props) => {
         return ()=> window.removeEventListener("resize", findModalWidth)  
     },[])
     const [focusedDate , setFocusedDate] = useState(null)
-    if(!isPageWide) return <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={modalWidth + '%'}>
+    return <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={isPageWide? '400px' : '335px'}>
       <TailoredForm tailoredFormModal focusedDate={focusedDate} setFocusedDate={setFocusedDate}  destinationType={props.destinationType}  page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
 </Modal>
-  return(
-      <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={modalWidth + '%'}>
-            <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
-                  <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
-                  <ImgContainer style={{display: showImage ? 'block' : 'none'}}>
-                      <ImageLoader url={'media/website/login-background.png'} height="100%" width="100%" onload={() => setShowImage(true)} ></ImageLoader>
+//   return(
+//       <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={modalWidth + '%'}>
+//             <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
+//                   <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
+//                   <ImgContainer style={{display: showImage ? 'block' : 'none'}}>
+//                       <ImageLoader url={'media/website/login-background.png'} height="100%" width="100%" onload={() => setShowImage(true)} ></ImageLoader>
 
-                    <ImgTagsContainer>
-                    {TagsContent.map((e,i)=><TagItem key={i}><ImageLoader borderRadius={'0.4rem 0 0 0.4rem'} url={e.icon} dimensions={{width : 200 , height : 200}}/><p className='font-lexend'>{e.text}</p></TagItem>)}
-                    </ImgTagsContainer>
+//                     <ImgTagsContainer>
+//                     {TagsContent.map((e,i)=><TagItem key={i}><ImageLoader borderRadius={'0.4rem 0 0 0.4rem'} url={e.icon} dimensions={{width : 200 , height : 200}}/><p className='font-lexend'>{e.text}</p></TagItem>)}
+//                     </ImgTagsContainer>
                 
-                  </ImgContainer>
-              <TailoredForm tailoredFormModal focusedDate={focusedDate} setFocusedDate={setFocusedDate}  destinationType={props.destinationType}  page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
-              </div>
-    </Modal>
-);
+//                   </ImgContainer>
+//               <TailoredForm tailoredFormModal focusedDate={focusedDate} setFocusedDate={setFocusedDate}  destinationType={props.destinationType}  page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
+//               </div>
+//     </Modal>
+// );
 
   // return(
   //     <div>

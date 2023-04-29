@@ -78,7 +78,7 @@ useEffect(() => {
   }
 
   return (
-   <Container onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : _resetSelectedCities } disabled={false} placeholder='Search destination' className='font-lexend' value={value} autoFocus onChange={(e) => _handleKey(e)}>
+   <Container onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : _resetSelectedCities } disabled={false} placeholder='Search destination' className='font-lexend' value={value}  onChange={(e) => _handleKey(e)}>
     
     </Container>
   );
