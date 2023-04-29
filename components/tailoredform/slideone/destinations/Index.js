@@ -32,12 +32,6 @@ const [updatedData , setUpdatedData] = useState({id : null , data : null})
     }
   },[deletedId])
 
-  function _removeDestinationHandler(id) {
-// destinations.pop()
-// props.selectedCities.pop()
-// props.setSelectedCities(props.selectedCities)    
-// setDestinations(destinations.slice());
-   }
    const _addDestinationHandler= () => {
     let dest = destinations.slice();
     const id = Date.now()
@@ -75,9 +69,6 @@ const [updatedData , setUpdatedData] = useState({id : null , data : null})
         
         <div style={{display : 'flex' , alignItems : 'center' , justifyContent : 'space-between' , marginLeft : '33%' , marginRight : '10px'}}>
         {!props.selectedCities.slice(1).some((e)=>!e.name) &&  <p onClick={_addDestinationHandler} className='text-center font-lexend hover-pointer' style={{color: '#1360D3', margin: '0.5rem', fontSize: '0.85rem'}}>+ Add Destination</p>}
-        {/* {destinations.length>1 && 
-        <AiFillDelete onClick={()=>{_removeDestinationHandler()}} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete>        
-        } */}
         </div>
         
         

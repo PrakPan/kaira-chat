@@ -6,7 +6,8 @@ import media from '../../../../../media';
 import styled from 'styled-components';
  
 const Container = styled.div`
-display : flex;
+display : grid;
+grid-template-columns : 34px 1fr;
 gap : 12px;
 align-items : center;
 margin-block : 1rem;
@@ -43,7 +44,7 @@ const Result = (props) => {
     e.stopPropagation()
     props.setSearchFinalized({name: props.name, type: props.type});
     props.setDestination(props.name)
-    props.setShowResults(false)
+   if(props.setShowResults) props.setShowResults(false)
   //  const selected = props.selectedCities.map(e=>{
   //     if(e.input_id == props.inbox_id) return {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
   //     return e

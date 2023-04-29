@@ -226,7 +226,6 @@ const Enquiry = (props) => {
       }
   let isPageWide = media('(min-width: 768px)');
   const _SlideOneSubmitHandler = ()=>{
-      console.log('slide one submitted')
       if (!selectedCities[0].destination_id &&  !selectedCities[0].id) return setShowPopup({...showPopup , InputOne : true})
       if (!valueStart) return  setShowPopup({...showPopup , dateStart : true})
       if (!valueEnd) return setShowPopup({...showPopup , dateEnd : true})
