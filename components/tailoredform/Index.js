@@ -39,14 +39,19 @@ const Container = styled.div`
   }
 `;
  const Heading = styled.p`
-    font-size: 1.5rem;
-    margin: 0.25rem 0 0.25rem 0;
-    text-align: left;
-    font-weight: 600;
-    color: black;
-    line-height: normal;
+   font-size: 1.2rem;
+   margin: 0.25rem 0 0.25rem 0;
+   text-align: left;
+   font-weight: 600;
+   color: black;
+   line-height: normal;
 
-`;
+   @media screen and (min-width: 815px) {
+     font-size: 1.5rem;
+     height: 1.8rem;
+     overflow: hidden;
+   }
+ `;
 const CountryCodeOption = styled.div`
   &:hover{
     cursor: pointer;
@@ -241,19 +246,13 @@ const Enquiry = (props) => {
     setSlideIndex(slideIndex + 1)
   }
 
-  const getHeading = ()=>{
-    if(props.tailoredFormModal && props.focusedDate) 
-    if(props.focusedDate == 'startDate') return 'Please Select Start Date.'
-    if(props.focusedDate == 'endDate') return 'Please Select End Date.'
-    if(!slideIndex) return 'Get your free travel plan now'
-    return 'Trip Planner'
-  }
+
   
 
     if(!loading && !submitted)
  return (
    <div style={{}}>
-     {showBlack && !props.tailoredFormModal? (
+     {showBlack && !props.tailoredFormModal ? (
        <BlackContainer onClick={_handleHideBlack}></BlackContainer>
      ) : null}
 
@@ -263,14 +262,45 @@ const Enquiry = (props) => {
        slideIndex={slideIndex}
        className={isPageWide ? "border center-di" : "center-div"}
        onClick={() => setShowBlack(true)}
-      //  ref={ContainerRef}
+       //  ref={ContainerRef}
      >
-
-      {showPopup.InputOne && <Popup setShowPopup={setShowPopup} top='12.2rem' mobileTop='14rem'  left='10px' text='Please select your destination!' />}
-      {showPopup.dateStart && <Popup setShowPopup={setShowPopup} bottom='5.2rem' mobileBottom='5.6rem'  left='10px' text='Please select starting date!' />}
-      {showPopup.dateEnd && <Popup setShowPopup={setShowPopup} bottom='5.6rem' mobileBottom='5.6rem' left='170px' mobileleft={'135px'} text='Please select ending date!' />}
-      {showPopup.group && <Popup setShowPopup={setShowPopup} top='190px' left='20%' tipLeft='45%' text='Please select your group type!' />}
-      
+       {showPopup.InputOne && (
+         <Popup
+           setShowPopup={setShowPopup}
+           top="12.2rem"
+           mobileTop="14rem"
+           left="10px"
+           text="Please select your destination!"
+         />
+       )}
+       {showPopup.dateStart && (
+         <Popup
+           setShowPopup={setShowPopup}
+           bottom="5.2rem"
+           mobileBottom="5.6rem"
+           left="10px"
+           text="Please select starting date!"
+         />
+       )}
+       {showPopup.dateEnd && (
+         <Popup
+           setShowPopup={setShowPopup}
+           bottom="5.6rem"
+           mobileBottom="5.6rem"
+           left="170px"
+           mobileleft={"135px"}
+           text="Please select ending date!"
+         />
+       )}
+       {showPopup.group && (
+         <Popup
+           setShowPopup={setShowPopup}
+           top="190px"
+           left="20%"
+           tipLeft="45%"
+           text="Please select your group type!"
+         />
+       )}
 
        {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
        {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
@@ -296,8 +326,13 @@ const Enquiry = (props) => {
          ) : (
            <div></div>
          )}
-         <Heading style={(props.tailoredFormModal && props.focusedDate)?{textAlign : 'center' , fontSize : '1.4rem'} :{ textAlign: !slideIndex ? "left" : "center" }}>
-           {getHeading()}
+         <Heading
+           style={
+            
+                { textAlign: !slideIndex ? "left" : "center" }
+           }
+         >
+           {!slideIndex ? 'Get your free travel plan now' : 'Trip Planner'}
          </Heading>
        </div>
        {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
@@ -310,15 +345,14 @@ const Enquiry = (props) => {
              height: "1px",
              width: "100%",
              marginBottom: "1rem",
-             
            }}
          ></div>
 
          <Flickity
-         initialInputId={initialInputId}
-         focusedDate={props.focusedDate}
-         setFocusedDate={props.setFocusedDate}
-         tailoredFormModal={props.tailoredFormModal}
+           initialInputId={initialInputId}
+           focusedDate={props.focusedDate}
+           setFocusedDate={props.setFocusedDate}
+           tailoredFormModal={props.tailoredFormModal}
            startingLocation={startingLocation}
            setStartingLocation={setStartingLocation}
            children_cities={props.children_cities}
@@ -356,18 +390,18 @@ const Enquiry = (props) => {
             </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
             Submit
             </Button> } */}
-          
+
          {slideIndex === 0 ? (
            <div
              style={{
                display: "flex",
                justifyContent: "flex-end",
-              //  visibility: 
-              //  showCities && 
-              //  props.cities ? "hidden" : "visible",
+               //  visibility:
+               //  showCities &&
+               //  props.cities ? "hidden" : "visible",
              }}
            >
-            <Button
+             <Button
                width="100%"
                padding="0.5rem 2rem"
                fontWeight="500"
@@ -375,7 +409,7 @@ const Enquiry = (props) => {
                borderRadius="5px"
                borderWidth="1px"
                bgColor="#f7e700"
-               onclick={()=>_SlideOneSubmitHandler()}
+               onclick={() => _SlideOneSubmitHandler()}
              >
                Continue
              </Button>
@@ -417,7 +451,7 @@ const Enquiry = (props) => {
            )
          ) : null}
          {/* <Grid container spacing={2}> */}
-           {/* <Grid item xs={12}>
+         {/* <Grid item xs={12}>
                     {!loading ? 
                     <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
                         : 

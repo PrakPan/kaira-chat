@@ -63,9 +63,9 @@ const SearchResults = (props) => {
       className={props.results.length && "border"}
       top={props.top}
     >
-      {props.hotLocations && props.results.length && (
+      {props.hotLocations && props.results.length ? (
         <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
-      )}
+      ) : null}
       {props.results.length
         ? props.results.map((result, i) => {
             if (i < 5)

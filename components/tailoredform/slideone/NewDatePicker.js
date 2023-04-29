@@ -13,88 +13,97 @@ import {
 import styled from "styled-components";
 
 const Container = styled.div`
-position : relative;
+  position: relative;
 
-.DateRangePicker{
-  width : 100%;
-}
-.DateRangePickerInput_1{
-  border : none;
-  display: flex;
-  gap: 22px;
-  ${props=>props.tailoredFormModal && 'gap : 10px'};
-  background : initial;
-}
-.DateInput{
-  width : 100%;
-
-  border: 1px solid #D0D5DD;
-box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-border-radius: 8px;
-overflow : hidden;
-}
-.DateInput>input{
-  font-family : poppins;
-  font-weight : 400;
-  font-size : 1rem;
-}
- .DayPicker__withBorder{
-  ${props=>props.tailoredFormModal && 'border : none;-webkit-box-shadow : none;box-shadow :none;'};
-
-  @media screen and (max-width: 768px){
-border : none;
--webkit-box-shadow : none;
-box-shadow :none;
-width:320px;
-margin : auto;
+  .DateRangePicker {
+    width: 100%;
   }
-}
-.DateRangePickerInput_arrow , .DayPickerKeyboardShortcuts_buttonReset{
-  display : none !important;
-}
+  .DateRangePickerInput_1 {
+    border: none;
+    display: flex;
+    gap: 22px;
+    ${(props) => props.tailoredFormModal && "gap : 10px"};
+    background: initial;
+  }
+  .DateInput {
+    width: 100%;
 
+    border: 1px solid #d0d5dd;
+    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .DateInput > input {
+    font-family: poppins;
+    font-weight: 400;
+    font-size: 1rem;
+  }
+  .DayPicker__withBorder {
+    ${(props) =>
+      props.tailoredFormModal &&
+      "border : none;-webkit-box-shadow : none;box-shadow :none;"};
 
-.DateRangePicker_picker_1{
-  left : 0px;
-  top : 48px !important;
-  @media screen and (min-width: 768px){
-    left : -210px !important;
-    right : 0px !important;
-    top : 55px !important;
-  ${props=>props.tailoredFormModal && 'position : fixed ; top : 0 ; left : 50% !important ; right : 0; bottom : 0px !important; display : flex; justify-content: center'};
+    @media screen and (max-width: 768px) {
+      border: none;
+      -webkit-box-shadow: none;
+      box-shadow: none;
+      width: 320px;
+      margin: auto;
+    }
   }
-  ${props=>props.tailoredFormModal && 'position : fixed ; top : 0 ; left : 0 !important; right : 0; bottom : 0px !important'};
-}
-  .CalendarDay{
-    border : 0px;
+  .DateRangePickerInput_arrow,
+  .DayPickerKeyboardShortcuts_buttonReset {
+    display: none !important;
   }
-  .CalendarDay__selected , .CalendarDay__selected:hover{
-    background-color : #F7E700;
-    border:0px;
-    color : black;
+
+  .DateRangePicker_picker_1 {
+    left: 0px;
+    top: 48px !important;
+    @media screen and (min-width: 768px) {
+      left: -210px !important;
+      right: 0px !important;
+      top: 55px !important;
+      ${(props) =>
+        props.tailoredFormModal &&
+        "position : fixed ; top : 90px !important ; left : 50% !important ; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10"};
+    }
+    ${(props) =>
+      props.tailoredFormModal &&
+      "position : fixed ; top : 90px !important; left : 0 !important; right : 0; bottom : 0px !important ; z-index : 10"};
   }
-  .CalendarDay__selected_span , .CalendarDay__hovered_span , .CalendarDay__hovered_span_3 {
-    background-color : #F7E70033;
-    color : black;
-    &:active{
-      background-color : #F7E700;
-      opacity:0.7;
-      border : none;
-      }
-    &:hover{
-    color : black;
-    background-color : #F7E7004A;
-    border : none;
+  .CalendarDay {
+    border: 0px;
+  }
+  .CalendarDay__selected,
+  .CalendarDay__selected:hover {
+    background-color: #f7e700;
+    border: 0px;
+    color: black;
+  }
+  .CalendarDay__selected_span,
+  .CalendarDay__hovered_span,
+  .CalendarDay__hovered_span_3 {
+    background-color: #f7e70033;
+    color: black;
+    &:active {
+      background-color: #f7e700;
+      opacity: 0.7;
+      border: none;
+    }
+    &:hover {
+      color: black;
+      background-color: #f7e7004a;
+      border: none;
     }
   }
 
-.DateInput_input__focused {
-  border-bottom : 2px solid #F7E700
-}
-.DayPickerKeyboardShortcuts_show__topRight{
-  display : none;
-}
-`
+  .DateInput_input__focused {
+    border-bottom: 2px solid #f7e700;
+  }
+  .DayPickerKeyboardShortcuts_show__topRight {
+    display: none;
+  }
+`;
 
 const CalenderIcons = styled.div`
 position: absolute;
@@ -138,6 +147,7 @@ const ButtonContainer = styled.div`
 z-index : 2 ;
 position : fixed ;
 bottom : 0 ;
+z-index:11;
 width : 273px ;
 margin : auto ;
 left : 0;
@@ -211,7 +221,7 @@ return (
         borderWidth="1px"
         bgColor="#f7e700"
         onclick={()=>setFocusedInput(null)}
-        >Continue</Button></ButtonContainer> : null
+        >Back</Button></ButtonContainer> : null
       }
    </Container>
   </>

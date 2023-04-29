@@ -55,8 +55,8 @@ const TailoredFormMobileModal = (props) => {
   }, [props.id, props.show]);
   useEffect(()=>{
     function findModalWidth(){
-      if(window.innerWidth >= 1800) setModalWidth(50)
-      else if(window.innerWidth >= 1400) setModalWidth(60)
+      // if(window.innerWidth >= 1800) setModalWidth(50)
+      if(window.innerWidth >= 1400) setModalWidth(50)
       else if(window.innerWidth >= 1100) setModalWidth(70)
       else if(window.innerWidth >= 768) setModalWidth(90)
       else if(window.innerWidth >= 600) setModalWidth(60)
@@ -67,7 +67,6 @@ const TailoredFormMobileModal = (props) => {
         findModalWidth()
         return ()=> window.removeEventListener("resize", findModalWidth)  
     },[])
-    console.log(props.show , 'show')
     const [focusedDate , setFocusedDate] = useState(null)
     if(!isPageWide) return <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={modalWidth + '%'}>
       <TailoredForm tailoredFormModal focusedDate={focusedDate} setFocusedDate={setFocusedDate}  destinationType={props.destinationType}  page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
