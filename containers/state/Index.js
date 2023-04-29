@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Transition from 'react-transition-group/Transition';
 import axios from 'axios';
 import Loading from '../../components/LoadingPage';
-import ChatBot from '../../components/chatbot/Experience';
 import ExperienceGallery from './landing/Index';
 import Menu from './Menu';
 import FullScreenGallery from '../../components/fullscreengallery/Index';
@@ -106,8 +105,7 @@ const Experience = (props) => {
           <div>
           <ExperienceGallery  filter={'Adveture & Test'}  experienceLoaded={experienceLoaded} title={experienceData.data.name} region={'Himachal Test'} duration={'Test'}  setGalleryOpen={setGalleryOpen} images={experienceData.data.images}  />
             <Menu  setGalleryOpen={() => setGalleryOpen(true)} title={experienceData.data.name} data={experienceData.data} experienceLoaded={experienceLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={experienceData.data.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
-          <ChatBot history={props.history} />
-        </div>
+         </div>
         {/* <Loading hide={experienceLoaded}></Loading> */}
           <Transition in={!experienceLoaded} timeout={1000} unmountOnExit>
               { state => 

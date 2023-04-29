@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Transition from 'react-transition-group/Transition';
  import Loading from '../../components/LoadingPage';
-import ChatBot from '../../components/chatbot/Experience';
- import FullImageContent from '../homepage/search/SearchFullImgContent';
+  import FullImageContent from '../homepage/search/SearchFullImgContent';
 import FullImage from '../../components/FullImage';
 import Menu from './Menu';
 import FullScreenGallery from '../../components/fullscreengallery/Index';
