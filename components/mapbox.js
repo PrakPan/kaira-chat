@@ -9,7 +9,7 @@ import { divIcon } from 'leaflet';
 import { format, parseISO } from 'date-fns';
 import 'leaflet/dist/leaflet.css';
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import ImageLoader from './ImageLoader';

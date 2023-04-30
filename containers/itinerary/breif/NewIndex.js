@@ -64,6 +64,8 @@ const Details = (props) => {
   const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
   const [routes, setRoutes] = useState(false);
+  const [transfers, setTransfers] = useState(false);
+
   const [currentPopup, setCurrentPopup] = useState(false);
   console.log(`id mapp${active}`);
   async function getRoutes(itinaryId) {
@@ -72,6 +74,8 @@ const Details = (props) => {
     return data;
   }
   const routesData = [];
+  const TransfersData = [];
+
   useEffect(() => {
     getRoutes(props.breif.tailor_made_id)
       .then((res) => {
@@ -80,11 +84,14 @@ const Details = (props) => {
           // console.log(`lat,long${citydetails.lat}`);
           if (res[i].long) {
             routesData.push(res[i]);
+          } else {
+            TransfersData.push(res[i]);
           }
         }
 
         console.log(routesData);
         setRoutes(routesData);
+        setTransfers(TransfersData);
       })
       .catch((err) => {
         console.log(`error in routes${err}`);
@@ -213,9 +220,7 @@ const Details = (props) => {
   //   />
   // );
   const MapWithNoSSR = dynamic(() => import('../../../components/mapbox.js'), {
-    loading: () => <p>A map is loading now</p>,
-
-    ssr: false, // This line is important. It's what prevents server-side render
+    ssr: true,
   });
   // const LeafMap = dynamic(
   //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
@@ -225,7 +230,8 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
-
+  console.log('currentPopup');
+  console.log(currentPopup);
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
@@ -251,6 +257,7 @@ const Details = (props) => {
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
               routes={routes}
+              transfers={transfers}
               setPlaceID={setActive}
               active={active}
               setCurrentPopup={setCurrentPopup}

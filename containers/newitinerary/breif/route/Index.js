@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import PinSection from './PinSection';
 import MidSection from './MidSection';
+import { TaxiAlert } from '@mui/icons-material';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 30vw;
@@ -122,7 +123,8 @@ const Route = (props) => {
             locationsArr.push(
               <MidSection
                 pinColour={props.breif.city_slabs[i].color}
-                image={props.breif.city_slabs[i].image}
+                image={props?.transfers[i]?.icon}
+                modes={props?.transfers[i]?.modes[0]}
                 transportMode={props.breif.city_slabs[i].intracity_transport}
                 duration={props.breif.city_slabs[i].duration}
               ></MidSection>
@@ -158,7 +160,8 @@ const Route = (props) => {
             locationsArr.push(
               <MidSection
                 pinColour={props.breif.city_slabs[i].color}
-                image={props.breif.city_slabs[i].image}
+                modes={'Taxi'}
+                image={null}
                 transportMode={props.breif.city_slabs[i].intracity_transport}
                 duration={props.breif.city_slabs[i].duration}
               ></MidSection>
@@ -197,6 +200,8 @@ const Route = (props) => {
       ></PinSection>
       <MidSection
         pinColour={props.breif.city_slabs[0].color}
+        modes={''}
+        image={props?.transfers[0]?.icon}
         transportMode={'taxi'}
         duration={'2'}
       ></MidSection>

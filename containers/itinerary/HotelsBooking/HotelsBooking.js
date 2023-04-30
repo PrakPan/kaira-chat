@@ -2,7 +2,7 @@ import React from 'react';
 import ImageLoader from '../../../components/ImageLoader';
 import StarRating from '../../../components/StarRating';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
-import { FaBed } from 'react-icons/fa';
+import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { ImSpoonKnife } from 'react-icons/im';
 import ButtonYellow from '../../../components/ButtonYellow';
 import styled from 'styled-components';
@@ -32,6 +32,15 @@ const HotelsBooking = (props) => {
         return null;
     }
   }
+  const starRating = (rating) => {
+    var stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<FaStar />);
+    }
+    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
+    return stars;
+  };
+
   return (
     <div className="w-[60vw]">
       <div className="text-4xl font-bold mt-4">Stays</div>
@@ -69,10 +78,11 @@ const HotelsBooking = (props) => {
                     <div className="flex flex-col gap-1">
                       <div className="text-sm font-medium">{booking?.city}</div>
                       {booking?.user_rating && (
-                        <div className="gap-1 flex flex-row items-center">
-                          <StarRating
-                            initialRating={booking?.user_rating}
-                          ></StarRating>
+                        <div className="gap-1 flex flex-row  items-center">
+                          <div className="flex flex-row text-[#ffa500]">
+                            {starRating(booking?.user_rating)}
+                          </div>
+                          <div>{booking?.user_rating}</div>
                           {booking.number_of_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-medium underline">
                               {booking.number_of_reviews} Google reviews

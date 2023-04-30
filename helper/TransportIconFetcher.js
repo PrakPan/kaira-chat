@@ -14,7 +14,7 @@ export function TransportIconFetcher({ TransportMode, Instyle }) {
   //   mist: mist,
   // };
   switch (TransportMode) {
-    case 'Plane':
+    case 'Flight':
       return <MdOutlineFlightTakeoff style={Instyle} />;
 
     case 'Taxi':
