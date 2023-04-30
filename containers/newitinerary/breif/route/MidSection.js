@@ -86,14 +86,14 @@ const MidSection = (props) => {
             dimensionsMobile={{ width: 50, height: 50 }}
           ></ImageLoader>
         )}
-        <TransportIconFetcher
+        {/* <TransportIconFetcher
           TransportMode={props.transportMode}
           Instyle={{
             fontSize: '1.75rem',
             marginRight: '0.8rem',
             color: 'black',
           }}
-        />
+        /> */}
         {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}

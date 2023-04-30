@@ -76,46 +76,15 @@ const FAQs = (props) => {
       for (var i = 0; i < props.payment.summary[key].bookings.length; i++) {
         try {
           bookingslist.push(
-            <p
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '400',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
+            <div className="text-sm font-normal">
               {bookings[props.payment.summary[key].bookings[i].id].name}
-            </p>
+            </div>
           );
           bookinglistwithcost.push(
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'auto max-content',
-                margin: '0.5rem 0',
-                gridGap: '1rem',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '300',
-                  letterSpacing: '1px',
-                  marginBottom: '0.25rem',
-                }}
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text'
-                    : 'font-lexend text-enter'
-                }
-              >
+            <div>
+              <div className="text-sm font-normal">
                 {bookings[props.payment.summary[key].bookings[i].id].name}
-              </p>
+              </div>
               {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
             </div>
           );
@@ -125,62 +94,26 @@ const FAQs = (props) => {
         // );
       }
       HeadingsJSX.push(
-        <Accordion key={key}>
-          <AccordionSummary
-            className={props.className}
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="itinerary-booking-summary-accordion"
-            style={{ zIndex: '1', minHeight: 'max-content' }}
-          >
-            <Typography
-              className={props.className}
-              content={'span'}
-              className="font-lexend"
-              style={{ fontWeight: '600', fontSize: '0.75rem', margin: '0' }}
-            >
-              {key}
-            </Typography>
-            <Typography
-              className={props.className}
-              content={'span'}
-              className="font-lexend"
-              style={{
-                fontWeight: '600',
-                fontSize: '0.75rem',
-                margin: '0',
-                flexGrow: '1',
-                textAlign: 'right',
-              }}
-            >
+        <div key={key}>
+          <div className="flex flex-row justify-between w-full">
+            <div>{key}</div>
+
+            <div>
               {!props.payment.are_prices_hidden
                 ? '₹ ' +
                   getIndianPrice(
                     Math.round(props.payment.summary[key].cost / 100)
                   )
                 : null}
-            </Typography>
-          </AccordionSummary>
-          <div
-            className={props.className}
-            style={{
-              margin: '0 1rem',
-              borderStyle: 'none none none none',
-              borderWidth: '1px',
-              borderColor: '#F7e700',
-              position: 'relative',
-              top: '-0.5rem',
-            }}
-          ></div>
-          <AccordionDetails
-            className={props.className}
-            style={{ display: 'block', padding: '0' }}
-          >
+            </div>
+          </div>
+
+          <div style={{ display: 'block', padding: '0' }}>
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}
-          </AccordionDetails>
-        </Accordion>
+          </div>
+        </div>
       );
     }
   }
