@@ -16,14 +16,21 @@ const FlickityCarousel = (props) => {
   const containerRef = useRef()
   const [containerWidth , setContainerWidth] = useState(props.numberOfCards ? `${100/+props.numberOfCards -1}%` : '80%')
   useEffect(() => {
-     setTimeout(() => {
-       if (props.numberOfCards && containerRef.current) {
-         setContainerWidth(
-           `${containerRef.current.offsetWidth / props.numberOfCards - 10}px`
-         );
-       }
-     }, [200]);
-     }, []);
+    function findWidth() {
+      if (props.numberOfCards && containerRef.current) {
+        setContainerWidth(
+          `${containerRef.current.offsetWidth / props.numberOfCards - 10}px`
+        );
+      }
+    }
+
+    window.addEventListener("resize", findWidth);
+    setTimeout(() => {
+      findWidth();
+    }, [200]);
+    return () => window.removeEventListener("resize", findWidth);
+     
+  }, []);
 
   if(props.cards.length<=props.numberOfCards) 
   return (<GridContainer columns={props.numberOfCards}>
