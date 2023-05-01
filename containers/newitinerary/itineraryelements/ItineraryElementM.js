@@ -5,7 +5,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 const Container = styled.div`
-  padding: 10px 0px 20px 0px;
+  padding: 10px 0px 10px 0px;
   @media screen and (min-width: 768px) {
   }
 `;
@@ -80,7 +80,7 @@ const ItineraryElementM = (props) => {
                 onclick={() => console.log('')}
                 width="22px"
                 leftalign
-                widthmobile="40px"
+                widthmobile="35px"
                 url={props.icon}
               ></ImageLoader>
             </div>

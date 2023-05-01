@@ -16,13 +16,8 @@ const Container = styled.div`
 `;
 
 const SectionOneText = styled.span``;
-const GridContainer = styled.div`
-  display: grid;
 
-  grid-template-columns: 0fr 5fr;
-  grid-column-gap: 0.5rem;
-`;
-const Text = styled.p`
+const Text = styled.div`
   margin: 0.65rem 0;
   overflow: hidden;
   line-height: 1.5;
@@ -33,11 +28,7 @@ const Text = styled.p`
   font-size: 14px;
   font-weight: 500;
 `;
-const Heading = styled.p`
-  margin: 0;
 
-  line-height: 1;
-`;
 const Line = styled.div`
   border-style: none none solid none;
   border-color: #e4e4e4;
@@ -68,30 +59,32 @@ const ItineraryFoodElementM = (props) => {
           <SectionOneText>{props.time}</SectionOneText>
         </div> */}
 
-        <GridContainer>
-          <div className="text-center">
-            {props.icon ? (
-              <div className="mr-4">
-                <ImageLoader
-                  dimensions={{ width: 90, height: 90 }}
-                  dimensionsMobile={{ width: 90, height: 90 }}
-                  borderRadius="8px"
-                  hoverpointer
-                  onclick={() => console.log('')}
-                  width="22px"
-                  leftalign
-                  widthmobile="40px"
-                  url={props.icon}
-                ></ImageLoader>
-              </div>
-            ) : null}
+        <div className="flex flex-col">
+          <div className="flex flex-row ">
+            <div className="text-center">
+              {props.icon ? (
+                <div className="mr-4">
+                  <ImageLoader
+                    dimensions={{ width: 90, height: 90 }}
+                    dimensionsMobile={{ width: 90, height: 90 }}
+                    borderRadius="8px"
+                    hoverpointer
+                    onclick={() => console.log('')}
+                    width="22px"
+                    leftalign
+                    widthmobile="35px"
+                    url={props.icon}
+                  ></ImageLoader>
+                </div>
+              ) : null}
+            </div>
+            <div className="font-bold">{props.heading}</div>
           </div>
 
-          <div className="flex flex-col ">
-            <Heading className="font-bold">{props.heading}</Heading>
+          <div className="flex ">
             <Text>{props.text}</Text>
           </div>
-        </GridContainer>
+        </div>
         {/* {props.recomendation ? (
           <>
             <Text>{props.text}</Text>

@@ -60,12 +60,7 @@ a.termsnavunderlinelink {
 
   overflow: hidden !important;
 }
-.Transition-Height-in::-webkit-scrollbar {
-  display: none;
-}
-.Transition-Height-in:hover::-webkit-scrollbar {
-  display: block;
-}
+
 .Hide_scrollBar {
   -ms-overflow-style: none;
   scrollbar-width: thin;

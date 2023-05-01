@@ -13,7 +13,7 @@ align-items: flex-start
   font-size: 12px;
   line-height: 22px;
 
-  padding: px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
   color: #01202b;
     @media screen and (min-width: 768px) {
     flex-direction: row;
