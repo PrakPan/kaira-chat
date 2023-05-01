@@ -27,20 +27,7 @@ const MenuItem = styled.div`
   background-color: ${({ isActive }) => (isActive ? '#262626' : 'none')};
   color: ${({ isActive }) => (isActive ? '#F7E700' : '#7A7A7A')};
   position: relative;
-  /* ${({ isActive }) =>
-    isActive &&
-    css`
-      ::after {
-        content: '';
-        position: absolute;
 
-        bottom: -4px;
-        width: 100%;
-        height: 4px;
-        background: #f7e700;
-        transition: all ease 0.3s;
-      }
-    `}; */
   border-radius: ${({ isActive }) =>
     isActive ? '10% 10% 0 0' : '10% 10% 0 0'};
   transition: border-color 0.3s ease;
@@ -98,6 +85,7 @@ const CustomMenu = ({
   item,
   activeItem,
   onSelect,
+  ...restProps
 }) => {
   // const [activeTabPosition, setActiveTabPosition] = useState(0);
 
@@ -122,6 +110,12 @@ const CustomMenu = ({
   //     setActiveTabPosition(activeTabElement.offsetLeft);
   //   }
   // }, [activeItem,isActiveTabInView]);
+  const ref = useRef(null);
+
+  const handleClick = () => {
+    onClick();
+    onSelect({ ref });
+  };
 
   return (
     <Link
@@ -133,9 +127,11 @@ const CustomMenu = ({
       // duration={500}
       offset={-150}
       onSetActive={() => onSelect(item.id)}
+      {...restProps}
     >
       {Mstyle == 'round' ? (
         <RoundMenuItem
+          {...restProps}
           Isvertical={Isvertical}
           isActive={activeItem === item.id}
           onClick={() => onSelect(item.id)}

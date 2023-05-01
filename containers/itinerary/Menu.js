@@ -37,6 +37,7 @@ import HotelsBooking from './HotelsBooking/HotelsBooking';
 import { SplitScreen } from '../../components/SplitScreen';
 import BookingContainer from '../../components/BookingContainer/BookingContainer';
 import ButtonYellow from '../../components/ButtonYellow';
+import { Navigation } from '../../components/NewNavigation';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -426,6 +427,13 @@ const SimpleTabs = (props) => {
       margin: 0px 0px 0px -50px;
     }
   `;
+  const AppContainer = styled.div`
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+    font-family: sans-serif;
+  `;
+
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       {/* <StackedComponents></StackedComponents> */}
@@ -446,13 +454,19 @@ const SimpleTabs = (props) => {
     ))}
         
       </Navbar> */}
+
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
-        <ScrollableMenuTabs
-          icons={false}
-          offset={isDesktop ? '0px' : '0px'}
-          items={items}
-          BarName="TabsName"
-        />
+        {isPageWide ? (
+          <Navigation items={items} BarName="TabsName" />
+        ) : (
+          <ScrollableMenuTabs
+            icons={false}
+            offset={isDesktop ? '0px' : '0px'}
+            items={items}
+            BarName="TabsName"
+          />
+        )}
+
         <div
           className="border-b-[0.8px] border-slate-300 mt-[0px] z-50 -mx-5 block lg:hidden
         "

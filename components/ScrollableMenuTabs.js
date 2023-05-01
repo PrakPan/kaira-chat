@@ -6,6 +6,10 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import CustomMenu from '../containers/itinerary/CustomMenu';
 import { useDebounce } from '../hooks/debounce';
 import { useIsComponentInView } from '../hooks/useComponentInView';
+import {
+  NavigationMarker,
+  useNavigationMarker,
+} from '../hooks/useNavigationMarker';
 
 ///////// Style
 
@@ -140,7 +144,7 @@ const ScrollableMenuTabs = ({
   );
 
   const debounceFun = useDebounce(handleScroll, 500);
-
+  const { markerPos, ...markerHandlers } = useNavigationMarker();
   return (
     <NavbarContainer
       style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
@@ -167,6 +171,7 @@ const ScrollableMenuTabs = ({
         {items.map((item, index) => (
           <>
             <CustomMenu
+              {...markerHandlers}
               key={index}
               Isvertical={vertical}
               Iterable={Iterable}
@@ -178,6 +183,7 @@ const ScrollableMenuTabs = ({
             />
           </>
         ))}
+        <NavigationMarker x={markerPos.x} width={markerPos.width} />
       </Navbar>
       {icons ? (
         <IoIosArrowForward
