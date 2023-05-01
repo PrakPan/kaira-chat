@@ -279,7 +279,7 @@ const Details = (props) => {
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
 
       <DetailsContainer>
-        {Locationlatlong.length > 2 ? (
+        {Locationlatlong.length >= 1 ? (
           <div
             className="sticky md:top-[70px] lg:w-[60vw] lg:h-[85vh]  w-[88vw] h-[23rem] lg:mt-20 mt-2  rounded-xl"
             id="MapcontainerRoute"

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { useOnWindowResize } from '../../hooks/useOnWindowResize';
+import useOnWindowResize from '../../hooks/useOnWindowResize';
 
 interface Props {
   x: number;

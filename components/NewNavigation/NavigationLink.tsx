@@ -92,7 +92,7 @@ export const NavigationLink = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Container {...restProps} isSelected={isSelected} ref={ref}>
+      <Container isSelected={isSelected} ref={ref}>
         <Label isSelected={isSelected}>{children}</Label>
       </Container>
     </Link>

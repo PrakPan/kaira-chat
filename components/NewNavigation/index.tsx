@@ -27,7 +27,7 @@ const InnerContainer = styled.div`
 `;
 
 export const Navigation = ({ items, BarName }) => {
-  const [selectedTab, setSelectedTab] = useState(1);
+  const [selectedTab, setSelectedTab] = useState('balance');
   const { markerPos, ...markerHandlers } = useNavigationMarker();
 
   return (

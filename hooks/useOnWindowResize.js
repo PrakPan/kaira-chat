@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-export const useOnWindowResize = (fn: () => void, delay = 100) => {
-  const timeoutRef = useRef<number | null>(null);
+const useOnWindowResize = (fn, delay = 100) => {
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -16,5 +16,7 @@ export const useOnWindowResize = (fn: () => void, delay = 100) => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       window.removeEventListener('resize', handleWindowResize);
     };
-  });
+  }, [fn, delay]);
 };
+
+export default useOnWindowResize;
