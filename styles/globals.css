@@ -60,3 +60,79 @@ a.termsnavunderlinelink {
 
   overflow: hidden !important;
 }
+.Hide_scrollBar {
+  -ms-overflow-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* .Hide_scrollBar::-webkit-scrollbar {
+  display: none;
+} */
+/* Track for webkit-based browsers */
+.Hide_scrollBar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Handle for webkit-based browsers */
+.Hide_scrollBar::-webkit-scrollbar-thumb {
+  background-color: black;
+  border-radius: 100vw;
+  height: 1rem !important;
+  width: 0.3rem !important;
+  background-image: linear-gradient(rgba(247, 231, 0, 1));
+}
+
+/* Handle on hover for webkit-based browsers */
+.Hide_scrollBar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  width: 0.5rem;
+}
+
+/* Firefox */
+.Hide_scrollBar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Track for Firefox */
+.Hide_scrollBar::-moz-scrollbar-track {
+  background-color: transparent;
+}
+
+/* Handle for Firefox */
+.Hide_scrollBar::-moz-scrollbar-thumb {
+  background-color: black;
+  border-radius: 100vw;
+  height: 1rem !important;
+  width: 0.3rem !important;
+  border: 0.025em solid #f7e700 !important;
+  background-image: linear-gradient(rgba(247, 231, 0, 1));
+}
+
+/* Handle on hover for Firefox */
+.Hide_scrollBar::-moz-scrollbar-thumb:hover {
+  background: #555;
+  width: 0.5rem;
+}
+
+/* Safari */
+.Hide_scrollBar {
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Firefox Track */
+.Hide_scrollBar-moz-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Firefox Handle */
+.Hide_scrollBar-moz-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Firefox Handle on hover */
+.Hide_scrollBar-moz-scrollbar-thumb:hover {
+  background: #555;
+}

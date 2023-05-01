@@ -108,7 +108,7 @@ const FAQs = (props) => {
             </div>
           </div>
 
-          <div style={{ display: 'block', padding: '0' }}>
+          <div className="max-h-16 overflow-y-auto Hide_scrollBar">
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}
