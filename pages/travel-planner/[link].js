@@ -66,7 +66,7 @@ var country = 'India'
         }
       }
 try{
-      const loc = await axiospagelistinstance.get(``)
+      const loc = await axiospagelistinstance.get(`/?country=${country}`)
        locations = loc.data
 }
 catch(e){

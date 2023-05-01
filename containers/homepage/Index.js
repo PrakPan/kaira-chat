@@ -263,7 +263,7 @@ useEffect(() => {
     
  
 
- {!isPageWide && <div><PersonaliseBox ></PersonaliseBox ></div>} 
+ {/* {!isPageWide && <div><PersonaliseBox ></PersonaliseBox ></div>}  */}
       <SetWidthContainer>
 
       {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}

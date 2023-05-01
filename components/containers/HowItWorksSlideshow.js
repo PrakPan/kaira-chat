@@ -5,11 +5,7 @@ import Button from '../ui/button/Index';
 import * as ga from '../../services/ga/Index';
  import { useRouter } from 'next/router';
 import ImageLoader from '../ImageLoader';
-/* Grid (desktop) / slideshow (mobile)
-    inputs: images, content (JSX array), headings (JSX array)
-    used: homepage, travel support
-*/
-
+import TailoredFormMobileModal from '../modals/TailoredFomrMobile';
 const Container = styled.div`
 margin-top : -50px;
     @media screen and (min-width: 768px){
@@ -157,33 +153,33 @@ const HowItWorksSlideshow = (props) =>{
 
     
     ]
-    // if(!isPageWide )
     const [loading, setLoading] = useState(false);
+    const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+    return (
+      <div>
+        <Container>{slidesdesktop}</Container>
+        {!props.nostart ? (
+          <Button
+            onclick={() => setShowMobilePlanner(true)}
+            fontWeight="500"
+            boxShadow
+            borderRadius="8px"
+            bgColor="#F7E700"
+            margin="1rem auto"
+            width="20rem"
+            padding="0.5rem 2rem"
+            borderWidth="1px"
+          >
+            {isPageWide ? "Create your free itinerary" : "Start Now"}
+          </Button>
+        ) : null}
 
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-      }
-      const _handleTailoredClick = () => {
-        setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Howitworks',
-          
-          callback: _handleTailoredRedirect,
-        })
-      
-      }
-    return(
-    <div>
-        <Container>
-            {slidesdesktop}
-        </Container>
-        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem' padding="0.5rem 2rem" borderWidth="1px">
-            {isPageWide? 'Create your free itinerary' :'Start Now'}
-            {/* {loading ? <Spinner size={16}></Spinner> : null} */}
-        </Button> : null}
-        </div>
+        <TailoredFormMobileModal
+          destinationType={"city-planner"}
+          onHide={() => setShowMobilePlanner(false)}
+          show={showMoiblePlanner}
+        ></TailoredFormMobileModal>
+      </div>
     );
     
 } 

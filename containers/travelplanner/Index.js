@@ -125,7 +125,7 @@ text-align: center;
 }
 `;
 const  Homepage = (props) =>{
-   
+   console.log(props.locations , 'props.locations')
 			
 let isPageWide = media('(min-width: 768px)');
 
