@@ -124,9 +124,7 @@ text-align: center;
 
 }
 `;
-const  Homepage = (props) =>{
-   console.log(props.locations , 'props.locations')
-			
+const  Homepage = (props) =>{			
 let isPageWide = media('(min-width: 768px)');
 
 // const [loading, setLoading] = useState(true);

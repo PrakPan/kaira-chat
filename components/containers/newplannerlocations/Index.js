@@ -110,30 +110,39 @@ setCardsToShowJSXmobile(MobileCardsArr)
       router.push('/tailored-travel')
     }
   
-   return(
-      <><div className='hidden-mobile new-planner-location'>
-        {/* <Container >  
+   return (
+     <>
+       <div className="hidden-mobile new-planner-location">
+         {/* <Container >  
                {cardsToShowJSX}
       </Container> */}
-      <Carousel initialIndex={0} hideSides groupCells={6} numberOfCards={6} cards={cardsToShowJSX}></Carousel>
-      {/* <Carousel hideSides initialIndex={0} groupCells={6} numberOfCards={6} cards={cards}></Carousel> */}
+         <Carousel
+           hideSides
+           initialIndex={0}
+           groupCells={6}
+           numberOfCards={6}
+           cards={cardsToShowJSX}
+         ></Carousel>
+         {/* <Carousel hideSides initialIndex={0} groupCells={6} numberOfCards={6} cards={cards}></Carousel> */}
 
-       {/* {props.locations && !props.planner ? props.locations.length > offset ?
+         {/* {props.locations && !props.planner ? props.locations.length > offset ?
         <Button   onclick={_showMoreLocations} fontSizeDesktop="16px" fontWeight="600" hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="6px" margin="0rem auto" padding="0.5rem 2rem" >View More</Button> : 
         <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null}  borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Build adventure!</Button> 
 
         : null} */}
-      </div>
- 
-    <div className='hidden-desktop'>       
-          <div style={{ padding: "1rem 0"}}>
-            <PageDotsFlickity initialIndex={0} cards={cardsToShowJSXmobile}></PageDotsFlickity>
-    </div>
-    {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
-  </div>
-  </>
-  )
-  ;
+       </div>
+
+       <div className="hidden-desktop">
+         <div style={{ padding: "1rem 0" }}>
+           <PageDotsFlickity
+             initialIndex={0}
+             cards={cardsToShowJSXmobile}
+           ></PageDotsFlickity>
+         </div>
+         {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
+       </div>
+     </>
+   );
 }
 
 export default LocationsBlog;

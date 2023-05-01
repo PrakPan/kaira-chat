@@ -1,9 +1,10 @@
-import React from 'react';
+import React , {useState} from 'react';
 import styled from 'styled-components';
 import Button from '../ui/button/Index';
 import ImageLoader from '../ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
 import { useRouter } from 'next/router';
+import TailoredFormMobileModal from '../modals/TailoredFomrMobile';
   
 const Card = styled.div`
       padding: 2rem 2rem;
@@ -46,27 +47,78 @@ const CardListItem = styled.p`
  `;
 const Testimonial = (props) => {
     const router = useRouter();
-    return (
+const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 
-        
-            <Card className='border center-v text-cener'>
-                <ImageLoader borderRadius="50%" width="60%" widthMobile="40%"  url={props.image} dimensionsMobile={{width: 600, height: 600}} dimensions={{width: 900, height: 900}}></ImageLoader>
-                <CardHeading className='font-lexend text-center'>{props.heading}</CardHeading>
-                <CardSubHeading className='font-lexend text-center'>{props.duration + " | " + props.destination}</CardSubHeading>
-                {props.review ? <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> : null}
-                <CardListItem className='text-center' ><em>{props.text}</em></CardListItem>
-                <div style={{display: 'flex', height: '100%', alignItems: 'flex-end'}}>
-                <GridContainer>
-                        <ButtonContainer className='border center-div' style={{borderRadius: '10px'}} >
-                            <Button display="flex"  height="100%" center fontWeight="500" fontSize="0.85rem" width="100%" onclick={() => router.push('/itinerary/'+props.id)} borderWidth="0" borderRadius="2rem">View Plan</Button>
-                        </ButtonContainer>
-                        <ButtonContainer className='border center-div' style={{borderRadius: '10px'}}>
-                        <Button  fontWeight="500" fontSize="0.85rem" borderWidth="0" width="100%" borderRadius="10px" bgColor="#f7e700" onclick={() => router.push('/tailored-travel')}>Start Planning</Button>
-                        </ButtonContainer>
-                </GridContainer>
-                </div>
-            </Card>
-        
+    return (
+      <Card className="border center-v text-cener">
+        <ImageLoader
+          borderRadius="50%"
+          width="60%"
+          widthMobile="40%"
+          url={props.image}
+          dimensionsMobile={{ width: 600, height: 600 }}
+          dimensions={{ width: 900, height: 900 }}
+        ></ImageLoader>
+        <CardHeading className="font-lexend text-center">
+          {props.heading}
+        </CardHeading>
+        <CardSubHeading className="font-lexend text-center">
+          {props.duration + " | " + props.destination}
+        </CardSubHeading>
+        {props.review ? (
+          <ImQuotesLeft
+            style={{ fontSize: "1.25rem", marginLeft: "-0rem" }}
+          ></ImQuotesLeft>
+        ) : null}
+        <CardListItem className="text-center">
+          <em>{props.text}</em>
+        </CardListItem>
+        <div
+          style={{ display: "flex", height: "100%", alignItems: "flex-end" }}
+        >
+          <GridContainer>
+            <ButtonContainer
+              className="border center-div"
+              style={{ borderRadius: "10px" }}
+            >
+              <Button
+                display="flex"
+                height="100%"
+                center
+                fontWeight="500"
+                fontSize="0.85rem"
+                width="100%"
+                onclick={() => router.push("/itinerary/" + props.id)}
+                borderWidth="0"
+                borderRadius="2rem"
+              >
+                View Plan
+              </Button>
+            </ButtonContainer>
+            <ButtonContainer
+              className="border center-div"
+              style={{ borderRadius: "10px" }}
+            >
+              <Button
+                fontWeight="500"
+                fontSize="0.85rem"
+                borderWidth="0"
+                width="100%"
+                borderRadius="10px"
+                bgColor="#f7e700"
+                onclick={() => setShowMobilePlanner(true)}
+              >
+                Start Planning
+              </Button>
+            </ButtonContainer>
+          </GridContainer>
+        </div>
+        <TailoredFormMobileModal
+          destinationType={"city-planner"}
+          onHide={() => setShowMobilePlanner(false)}
+          show={showMoiblePlanner}
+        ></TailoredFormMobileModal>
+      </Card>
     );
 }
 

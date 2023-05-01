@@ -431,7 +431,7 @@ body.modal-open {
 }
 
 .carousel{
-
+position : static !important;
 }
 .flickity-viewport {
 
@@ -1216,7 +1216,7 @@ margin-left: -25px;
         .flickity-button {
             display: initial;
             position: absolute;
-            background: rgba(1, 32, 43, 1);
+            background: rgba(1, 32, 43, 0.7);
             border: none;
             color: white;
           }
@@ -1252,10 +1252,10 @@ margin-left: -25px;
           }
         
           .flickity-prev-next-button.previous {
-            left: 0;
+            left: -20px;
           }
           .flickity-prev-next-button.next {
-            right: 0;
+            right: -20px;
           }
           
           .flickity-prev-next-button .flickity-button-icon {

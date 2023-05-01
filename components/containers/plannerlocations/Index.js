@@ -81,9 +81,9 @@ const LocationsBlog= (props) => {
 
       </div>
  )
-else return <div>       
+  else return <div>       
           <div style={{ padding: "1rem 0"}}>
-            {MobilecardsToShowJSX.length?<PageDotsFlickity initialIndex cards={MobilecardsToShowJSX}></PageDotsFlickity>:<MobileSkeleton />}
+            {MobilecardsToShowJSX.length?<PageDotsFlickity initialIndex={0} cards={MobilecardsToShowJSX}></PageDotsFlickity>:<MobileSkeleton />}
     </div>
   </div>
   

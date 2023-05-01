@@ -5,12 +5,24 @@ import Footer from './newfooter/Index';
 import LoginModal from '../components/modals/Login';
 import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth'
+import TailoredFormMobileModal from './modals/TailoredFomrMobile';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { closeTailoredModal } from '../services/openTailoredModal';
 const Layout = (props) => {
   useEffect(() => {
       props.checkAuthState();
       window.scrollTo(0,0);
   },[]);
-
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    const queries = router.query
+    if (queries['tailored-travel']) {
+      setShowMobilePlanner(true)
+    }
+    else setShowMobilePlanner(false)
+  },[router.asPath])
     return (
       <div className='layout'>
         <Header PW={props.PW} ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} />
@@ -19,6 +31,11 @@ const Layout = (props) => {
           show={props.showLogin}
           onhide={props.token && !props.phone ? null : props.authCloseLogin}>
         </LoginModal>
+        <TailoredFormMobileModal
+          destinationType={'city-planner'}
+          onHide={() => {setShowMobilePlanner(false); closeTailoredModal(router)}}
+          show={showMoiblePlanner}
+        />
         {!props.itinerary ? <Footer></Footer> : null}
       </div>
     );

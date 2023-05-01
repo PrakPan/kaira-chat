@@ -65,7 +65,7 @@ const Container = styled.div`
       top: 55px !important;
       ${(props) =>
         props.tailoredFormModal &&
-        "position : fixed ; top : 90px !important ; left : 50% !important ; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10"};
+        "position : fixed ; top : 90px !important ; left : 0 !important; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10"};
     }
     ${(props) =>
       props.tailoredFormModal &&
@@ -154,7 +154,7 @@ left : 0;
 right : 0;
 @media screen and (min-width: 768px){
 
-  left : 50%;
+  // left : 50%;
 }
 
 `

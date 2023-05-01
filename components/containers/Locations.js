@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import Button from '../ui/button/Index';
 import urls from '../../services/urls';
 import * as ga from '../../services/ga/Index';
+import TailoredFormMobileModal from '../modals/TailoredFomrMobile';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -23,6 +24,7 @@ height: 60vh;
 
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
+  const [showMoiblePlanner , setShowMobilePlanner] = useState(false)
 
    const router = useRouter();
 
@@ -75,22 +77,51 @@ setCardsJSX(cardsarr);
     
     }
   // if(isPageWide) 
-  return(
-      <><div className='hidden-mobile'>
-        <Container >  
-               {cardsJSX}
-      </Container>
-      {props.viewall ? <Button boxShadow link={urls.travel_guide.BASE} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button> : null}
+  return (
+    <>
+      <div className="hidden-mobile">
+        <Container>{cardsJSX}</Container>
+        {props.viewall ? (
+          <Button
+            boxShadow
+            link={urls.travel_guide.BASE}
+            hoverBgColor="black"
+            hoverColor="white"
+            borderWidth="1px"
+            borderRadius="2rem"
+            margin="1.5rem auto"
+            padding="0.5rem 2rem"
+          >
+            View All
+          </Button>
+        ) : null}
       </div>
- 
-    <div className='hidden-desktop'>       
-          <div style={{ padding: "1rem 0"}}>
-            <Carousel cards={cardsJSX}></Carousel>
-    </div>
-    {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.5rem 2rem" >View All</Button> : null}
-  </div></>
-  )
-  ;
+
+      <div className="hidden-desktop">
+        <div style={{ padding: "1rem 0" }}>
+          <Carousel cards={cardsJSX}></Carousel>
+        </div>
+        {props.viewall ? (
+          <Button
+            onclick={()=>setShowMobilePlanner(true)}
+            onclickparams={null}
+            boxShadow
+            borderWidth="1px"
+            borderRadius="2rem"
+            margin="auto"
+            padding="0.5rem 2rem"
+          >
+            View All
+          </Button>
+        ) : null}
+      </div>
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => setShowMobilePlanner(false)}
+        show={showMoiblePlanner}
+      ></TailoredFormMobileModal>
+    </>
+  );
 }
 
 export default LocationsBlog;

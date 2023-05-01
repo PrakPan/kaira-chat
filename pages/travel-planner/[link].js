@@ -61,7 +61,7 @@ const data = res.data
 var locations = []
 var country = 'India'
       if(data.ancestors){
-        if(data.ancestors && data.ancestors[0].level == 'Country' && data.ancestors[0].name){
+        if(data.ancestors.length && data.ancestors[0].level == 'Country' && data.ancestors[0].name){
           country = data.ancestors[0].name
         }
       }

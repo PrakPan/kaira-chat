@@ -1,4 +1,7 @@
 import React from 'react';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useRef } from 'react';
 import Flickity from 'react-flickity-component';
 import styled from 'styled-components'
 
@@ -10,6 +13,17 @@ gap : 1.5%;
 
 
 const FlickityCarousel = (props) => {
+  const containerRef = useRef()
+  const [containerWidth , setContainerWidth] = useState(props.numberOfCards ? `${100/+props.numberOfCards -1}%` : '80%')
+  useEffect(() => {
+     setTimeout(() => {
+       if (props.numberOfCards && containerRef.current) {
+         setContainerWidth(
+           `${containerRef.current.offsetWidth / props.numberOfCards - 10}px`
+         );
+       }
+     }, [200]);
+     }, []);
 
   if(props.cards.length<=props.numberOfCards) 
   return (<GridContainer columns={props.numberOfCards}>
@@ -42,51 +56,62 @@ const FlickityCarousel = (props) => {
     if(props.twocards){
     props.cards.map( (card,index) => {
       cards.push(
-        <div key={index}  style={{width: "50%", margin: "2px 0.5rem"}}><div>{card}</div></div>
+        <div key={index}  style={{width: "50%", margin: "0px 0.1rem"}}><div>{card}</div></div>
       )
   });
-  return(
+  return (
     <Flickity
-      className={'carousel'}
-      elementType={'div'}
-      options={{...flickityOptions, initialIndex: 1}}
+      ref={containerRef}
+      className={"carousel"}
+      elementType={"div"}
+      options={{ ...flickityOptions, initialIndex: 1 }}
       reloadOnUpdate
       static
     >
-    {cards}
+      {cards}
     </Flickity>
-    );
+  );
   }
   else{
     if(props.experience)
     props.cards.map( (card,index) => {
           cards.push(
-            <div key={index}  style={{width: "95%" , margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div>
+            <div key={index}  style={{width: "95%" , margin: props.experience ? "0px 1rem" : '0px 0.1rem'}} ><div>{card}</div></div>
           )
       });
       else if(props.locations)
       props.cards.map( (card,index)=> {
         cards.push(
-          <div key={index}  style={{width:  '28%', margin: props.experience ? "2px 1rem" : '2px 2px'}} ><div>{card}</div></div>
-        )
+          <div
+            key={index}
+            style={{ width: containerWidth , margin: "0px 12px 0px 0px" }}
+          >
+            <div>{card}</div>
+          </div>
+        );
     });
     else 
     props.cards.map( (card,index) => {
       cards.push(
-        <div key={index}  style={{ width: props.numberOfCards? `${100/+props.numberOfCards -1}%` :'80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}}><div>{card}</div></div>
+        <div key={index} style={{width: containerWidth , margin : '0px 12px 0px 0px'}}><div>{card}</div></div>
       )
   });
-      return(
-        <Flickity
-          className={'carousel'}
-          elementType={'div'}
-          options={props.locations ? flickityOptionsLocations : flickityOptions}
-          reloadOnUpdate
-          static
-        >
-        {cards}
-        </Flickity>
-        );
+      return (
+        <div ref={containerRef} style={{position : 'relative'
+        }}>
+          <Flickity
+            className={"carousel"}
+            elementType={"div"}
+            options={
+              props.locations ? flickityOptionsLocations : flickityOptions
+            }
+            reloadOnUpdate
+            static
+          >
+            {cards}
+          </Flickity>
+        </div>
+      );
   } 
 }
 
