@@ -467,10 +467,10 @@ const SimpleTabs = (props) => {
           />
         )}
 
-        <div
-          className="border-b-[0.8px] border-slate-300 mt-[0px] z-50 -mx-5 block lg:hidden
+        {/* <div
+          className="border-b-[0.8px] border-slate-300 mt-[0px] z-50 -mx-32
         "
-        ></div>
+        ></div> */}
       </div>
 
       {/* {!isPageWide && value !== 2 ? (
@@ -844,17 +844,19 @@ const SimpleTabs = (props) => {
         <div className="flex flex-row justify-between mx-3">
           <div className="flex flex-col">
             <div>Package start from</div>
-            <div>
-              <span className="font-bold">
-                ₹{' '}
-                {getIndianPrice(
-                  Math.round(
-                    Math.round(props.payment.per_person_total_cost) / 100
-                  )
-                )}
-              </span>{' '}
-              per person
-            </div>
+            {props.payment ? (
+              <div>
+                <span className="font-bold">
+                  ₹{' '}
+                  {getIndianPrice(
+                    Math.round(
+                      Math.round(props.payment.per_person_total_cost) / 100
+                    )
+                  )}
+                </span>{' '}
+                per person
+              </div>
+            ) : null}
           </div>
           <div className="">
             <ButtonYellow>Book now</ButtonYellow>

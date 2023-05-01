@@ -59,6 +59,7 @@ const MapInfo = styled.div`
     font-weight: 600;
   }
 `;
+
 const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
@@ -67,7 +68,7 @@ const Details = (props) => {
   const [transfers, setTransfers] = useState(false);
 
   const [currentPopup, setCurrentPopup] = useState(false);
-  console.log(`id mapp${active}`);
+
   async function getRoutes(itinaryId) {
     const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
     const data = res.data;
@@ -75,7 +76,23 @@ const Details = (props) => {
   }
   const routesData = [];
   const TransfersData = [];
-
+  const router = useRouter();
+  let isPageWide = media('(min-width: 768px)');
+  const _handleTailoredRedirect = (e) => {
+    router.push('/tailored-travel');
+  };
+  const Locationlatlong = [];
+  const getdayId = (id) => {
+    return props.itinerary?.day_slabs[id]?.slab_id;
+  };
+  const getdateId = (id) => {
+    return props.itinerary?.day_slabs[id]?.slab;
+  };
+  async function getCityDetails(cityname) {
+    const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
+    const data = res.data;
+    return data;
+  }
   useEffect(() => {
     getRoutes(props.breif.tailor_made_id)
       .then((res) => {
@@ -89,18 +106,58 @@ const Details = (props) => {
           }
         }
 
-        console.log(routesData);
         setRoutes(routesData);
         setTransfers(TransfersData);
+        // for (var i = 0; i < routes.length; i++) {
+        //   var postion = props.breif.city_slabs[i + 1];
+
+        //   // console.log(`response city data${JSON.stringify(citydetails)}`);
+        //   // console.log(`lat,long${citydetails.lat}`);
+        //   if (routes[i].duration && routes[i].duration !== '0') {
+        //     Locationlatlong.push({
+        //       dayId: getdayId(routes[i].start_day_slab_index),
+        //       cityData: postion,
+        //       id: routes[i].gmaps_place_id,
+        //       city_id: routes[i].city_id,
+        //       lat: routes[i].lat,
+        //       long: routes[i].long,
+        //       name: routes[i].city_name,
+        //       duration: routes[i].duration,
+        //       color: routes[i].color,
+        //       date: getdateId(routes[i].start_day_slab_index),
+        //     });
+        //   }
+        // }
       })
       .catch((err) => {
         console.log(`error in routes${err}`);
+        // for (var i = 0; i < props.breif.city_slabs.length; i++) {
+        //   var postion = props.breif.city_slabs[i];
+
+        //   // console.log(`response city data${JSON.stringify(citydetails)}`);
+        //   // console.log(`lat,long${citydetails.lat}`);
+        //   if (
+        //     !postion.is_departure_only &&
+        //     !postion.is_trip_terminated &&
+        //     postion.duration &&
+        //     postion.duration !== '0'
+        //   ) {
+        //     Locationlatlong.push({
+        //       dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+        //       cityData: postion,
+        //       id: postion.gmaps_place_id,
+        //       city_id: postion.city_id,
+        //       lat: postion.lat ?? '18.5204',
+        //       long: postion.long ?? '73.8567',
+        //       name: postion.city_name,
+        //       duration: postion.duration,
+        //       color: postion.color,
+        //     });
+        //   }
+        // }
       });
   }, []);
-  if (routes) {
-    console.log('routesData');
-    console.log(routes);
-  }
+
   // useEffect(()=> {
 
   //         window.addEventListener('scroll', _handleScroll);
@@ -129,24 +186,9 @@ const Details = (props) => {
   //           if(typeof window !== 'undefined')
   //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   //   }
-  const router = useRouter();
-  let isPageWide = media('(min-width: 768px)');
-  const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel');
-  };
-  const Locationlatlong = [];
-  const getdayId = (id) => {
-    return props.itinerary?.day_slabs[id]?.slab_id;
-  };
-  const getdateId = (id) => {
-    return props.itinerary?.day_slabs[id]?.slab;
-  };
-  async function getCityDetails(cityname) {
-    const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
-    const data = res.data;
-    return data;
-  }
+
   if (routes) {
+    console.log('itsrendering');
     for (var i = 0; i < routes.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
 
@@ -194,8 +236,6 @@ const Details = (props) => {
     }
   }
 
-  console.log('routes after route');
-  console.log(routes);
   // props.breif.city_slabs.map(
   //   (postion) =>
 
@@ -221,6 +261,7 @@ const Details = (props) => {
   // );
   const MapWithNoSSR = dynamic(() => import('../../../components/mapbox.js'), {
     ssr: true,
+    suspense: true,
   });
   // const LeafMap = dynamic(
   //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
@@ -230,8 +271,7 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
-  console.log('currentPopup');
-  console.log(currentPopup);
+
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
@@ -239,30 +279,35 @@ const Details = (props) => {
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
 
       <DetailsContainer>
-        <div
-          className="sticky md:top-[70px] lg:w-[60vw] lg:h-[85vh]  w-[88vw] h-[23rem] lg:mt-20 mt-2  rounded-xl"
-          id="MapcontainerRoute"
-        >
-          <div className="absolute w-[100%] h-[100%] rounded-xl">
-            <MapWithNoSSR
-              locations={Locationlatlong}
-              currentPopup={currentPopup}
-              setCurrentPopup={setCurrentPopup}
-            />
+        {Locationlatlong.length > 2 ? (
+          <div
+            className="sticky md:top-[70px] lg:w-[60vw] lg:h-[85vh]  w-[88vw] h-[23rem] lg:mt-20 mt-2  rounded-xl"
+            id="MapcontainerRoute"
+          >
+            <div className="absolute w-[100%] h-[100%] rounded-xl">
+              <MapWithNoSSR
+                locations={Locationlatlong}
+                currentPopup={currentPopup}
+                setCurrentPopup={setCurrentPopup}
+              />
+            </div>
           </div>
-        </div>
+        ) : null}
+
         <RouteComponent>
-          <div id="route">
-            <Route
-              dayslab={props.itinerary?.day_slabs}
-              breif={props.breif}
-              routes={routes}
-              transfers={transfers}
-              setPlaceID={setActive}
-              active={active}
-              setCurrentPopup={setCurrentPopup}
-            />
-          </div>
+          {routes || props.itinerary?.day_slabs ? (
+            <div id="route">
+              <Route
+                dayslab={props.itinerary?.day_slabs}
+                breif={props.breif}
+                routes={routes}
+                transfers={transfers}
+                setPlaceID={setActive}
+                active={active}
+                setCurrentPopup={setCurrentPopup}
+              />
+            </div>
+          ) : null}
 
           <div className="svg-container"></div>
 

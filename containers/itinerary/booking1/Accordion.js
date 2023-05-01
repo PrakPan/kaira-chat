@@ -95,10 +95,10 @@ const FAQs = (props) => {
       }
       HeadingsJSX.push(
         <div key={key}>
-          <div className="flex flex-row justify-between w-full">
+          <div className="flex flex-row justify-between w-full font-bold">
             <div>{key}</div>
 
-            <div>
+            <div className="text-lg">
               {!props.payment.are_prices_hidden
                 ? '₹ ' +
                   getIndianPrice(

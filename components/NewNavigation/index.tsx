@@ -36,8 +36,8 @@ export const Navigation = ({ items, BarName }) => {
         {items.map((item, index) => (
           <NavigationLink
             {...markerHandlers}
-            onClick={() => setSelectedTab(`${item.label}`)}
-            isSelected={selectedTab === `${item.label}`}
+            onClick={() => setSelectedTab(`${item.id}`)}
+            isSelected={selectedTab === `${item.id}`}
             item={item}
             BarName={BarName}
           >

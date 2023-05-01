@@ -47,3 +47,16 @@ a.termsnavunderlinelink {
     width: 40%;
   }
 }
+.Transition-Height-out {
+  max-height: 0;
+  transition: max-height 0.65s ease-out;
+
+  background: #d5d5d5;
+}
+
+.Transition-Height-in {
+  max-height: 450px;
+  transition: max-height 0.95s ease-in;
+
+  overflow: hidden !important;
+}

@@ -76,24 +76,25 @@ const MidSection = (props) => {
         <Line pinColour={props.pinColour} />
       </div>
       <Text>
-        {props.image ?? (
+        {/* {props.icon ?? (
           <ImageLoader
-            borderRadius="8px"
-            url={props.image}
-            height={50}
-            width={50}
-            heightMobile="auto"
-            dimensionsMobile={{ width: 50, height: 50 }}
+            url={props.icon}
+            leftalign
+            dimensions={{ width: 200, height: 200 }}
+            width="1.25rem"
+            widthmobile="1.25rem"
           ></ImageLoader>
+        )} */}
+        {props.modes && (
+          <TransportIconFetcher
+            TransportMode={props.modes}
+            Instyle={{
+              fontSize: '1.75rem',
+              marginRight: '0.8rem',
+              color: 'black',
+            }}
+          />
         )}
-        {/* <TransportIconFetcher
-          TransportMode={props.transportMode}
-          Instyle={{
-            fontSize: '1.75rem',
-            marginRight: '0.8rem',
-            color: 'black',
-          }}
-        /> */}
         {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}

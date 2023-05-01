@@ -25,7 +25,7 @@ export interface NavigationMarkerHandlers {
 }
 
 export const ACTIVE_MARKER_HEIGHT_PX = 4;
-export const HOVER_MARKER_HEIGHT_PX = 6;
+export const HOVER_MARKER_HEIGHT_PX = 5;
 
 export const useNavigationMarker = () => {
   const [markerPos, setMarkerPos] = useState<MarkerPos>({

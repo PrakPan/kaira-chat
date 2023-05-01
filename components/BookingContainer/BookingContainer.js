@@ -350,110 +350,91 @@ const BookingContainer = (props) => {
             >
               <div>View breakup</div>
 
-              <RiArrowDropDownLine className="text-2xl animate-bounce mt-1"></RiArrowDropDownLine>
+              <RiArrowDropDownLine
+                className={` text-2xl animate-bounce mt-1 transition-all duration-100 ${
+                  acoordianceOpen ? '-rotate-180' : 'rotate-180'
+                }`}
+              ></RiArrowDropDownLine>
             </div>
-            {acoordianceOpen && (
-              <div>
-                <Accordion
-                  className="bg-[#F7E70033] text-lg font-bold"
-                  stayBookings={props.stayBookings}
-                  flightBookings={props.flightBookings}
-                  activityBookings={props.activityBookings}
-                  transferBookings={props.transferBookings}
-                  payment={props.payment}
-                ></Accordion>
-                {!oldaccommodation && !props.payment.are_prices_hidden ? (
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'auto max-content',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
-                    }}
-                  >
-                    <p
+
+            <div
+              className={`Transition-Height-${acoordianceOpen ? 'in' : 'out'} `}
+            >
+              {acoordianceOpen && (
+                <div>
+                  <Accordion
+                    className="bg-[#F7E70033] text-lg font-bold"
+                    stayBookings={props.stayBookings}
+                    flightBookings={props.flightBookings}
+                    activityBookings={props.activityBookings}
+                    transferBookings={props.transferBookings}
+                    payment={props.payment}
+                  ></Accordion>
+                  {!oldaccommodation && !props.payment.are_prices_hidden ? (
+                    <div
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        display: 'grid',
+                        gridTemplateColumns: 'auto max-content',
+                        margin: '0.5rem 0',
+                        gridGap: '1rem',
                       }}
-                      className={
-                        props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
-                      }
                     >
-                      {'Service Fee'}
-                    </p>
-                    <p
+                      <p
+                        className={
+                          props.blur
+                            ? 'font-opensans text-enter blurry-text'
+                            : 'text-sm font-normal'
+                        }
+                      >
+                        {'Service Fee'}
+                      </p>
+                      <p
+                        className={
+                          props.blur
+                            ? 'font-opensans text-enter blurry-text'
+                            : 'text-sm font-normal'
+                        }
+                      >
+                        {'₹ ' +
+                          getIndianPrice(
+                            Math.round(props.payment.total_service_fee / 100)
+                          )}
+                      </p>
+                    </div>
+                  ) : null}
+                  {!oldaccommodation && !props.payment.are_prices_hidden ? (
+                    <div
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        textAlign: 'right',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
-                        marginRight: '24px',
+                        display: 'grid',
+                        gridTemplateColumns: 'auto max-content',
+                        margin: '0.5rem 0',
+                        gridGap: '1rem',
                       }}
-                      className={
-                        props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
-                      }
                     >
-                      {'₹ ' +
-                        getIndianPrice(
-                          Math.round(props.payment.total_service_fee / 100)
-                        )}
-                    </p>
-                  </div>
-                ) : null}
-                {!oldaccommodation && !props.payment.are_prices_hidden ? (
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'auto max-content',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
-                      }}
-                      className={
-                        props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
-                      }
-                    >
-                      {'GST'}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: '0.75rem',
-                        textAlign: 'right',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
-                        marginRight: '24px',
-                      }}
-                      className={
-                        props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
-                      }
-                    >
-                      {'₹ ' +
-                        getIndianPrice(Math.round(props.payment.gst / 100))}
-                    </p>
-                  </div>
-                ) : null}
-              </div>
-            )}
+                      <p
+                        className={
+                          props.blur
+                            ? 'font-opensans text-enter blurry-text'
+                            : 'text-sm font-normal'
+                        }
+                      >
+                        {'GST'}
+                      </p>
+                      <p
+                        className={
+                          props.blur
+                            ? 'font-opensans text-enter blurry-text'
+                            : 'text-sm font-normal'
+                        }
+                      >
+                        {'₹ ' +
+                          getIndianPrice(Math.round(props.payment.gst / 100))}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
