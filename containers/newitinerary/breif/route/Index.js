@@ -9,10 +9,6 @@ const Container = styled.div`
   }
   margin-bottom: 1.5rem;
 `;
-const Heading = styled.p`
-  font-size: 40px;
-  font-weight: 600;
-`;
 
 const Route = (props) => {
   //Stores initial order of locations
@@ -129,7 +125,11 @@ const Route = (props) => {
                     ? props?.transfers[i]?.modes[1]
                     : props?.transfers[i]?.modes[0]
                 }
-                transportMode={props.breif.city_slabs[i].intracity_transport}
+                transportMode={
+                  props?.transfers[i]?.modes[1]
+                    ? props?.transfers[i]?.modes[1]
+                    : props?.transfers[i]?.modes[0]
+                }
                 duration={props.breif.city_slabs[i].duration}
               ></MidSection>
             );
@@ -180,7 +180,7 @@ const Route = (props) => {
     }
   return (
     <Container>
-      <Heading className="font-lexend">Route</Heading>
+      <div className="font-lexend mb-4 mt-2 font-bold text-4xl">Route</div>
 
       <PinSection
         setCurrentPopup={props.setCurrentPopup}

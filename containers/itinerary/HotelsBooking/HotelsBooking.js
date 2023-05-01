@@ -46,7 +46,7 @@ const HotelsBooking = (props) => {
       <div className="text-4xl font-bold mt-4">Stays</div>
       {props.stayBookings
         ? props.stayBookings.map((booking) => (
-            <div className="flex gap-1 pt-8  flex-col justify-start">
+            <div className="flex gap-1 pt-4  flex-col justify-start">
               <div className="font-bold text-2xl pb-3 text-[#01202B]">
                 {booking?.city}: <span>({booking?.duration}N)</span>
               </div>

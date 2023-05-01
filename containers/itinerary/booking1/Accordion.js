@@ -108,7 +108,7 @@ const FAQs = (props) => {
             </div>
           </div>
 
-          <div className="max-h-16 overflow-y-auto Hide_scrollBar">
+          <div>
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}
@@ -118,7 +118,9 @@ const FAQs = (props) => {
     }
   }
 
-  return <div className={classes.root}>{HeadingsJSX}</div>;
+  return (
+    <div className="max-h-32 overflow-y-auto Hide_scrollBar">{HeadingsJSX}</div>
+  );
 };
 
 export default FAQs;

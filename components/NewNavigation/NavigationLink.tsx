@@ -84,7 +84,7 @@ export const NavigationLink = ({
       style={{ textDecoration: 'none' }}
       spy={true}
       // duration={500}
-      offset={-150}
+      offset={-250}
       onSetActive={() => onSelect(item.id)}
       {...restProps}
       {...variants}

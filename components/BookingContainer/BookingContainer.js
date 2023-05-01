@@ -375,31 +375,31 @@ const BookingContainer = (props) => {
                       style={{
                         display: 'grid',
                         gridTemplateColumns: 'auto max-content',
-                        margin: '0.5rem 0',
+
                         gridGap: '1rem',
                       }}
                     >
-                      <p
+                      <div
                         className={
                           props.blur
                             ? 'font-opensans text-enter blurry-text'
-                            : 'text-sm font-normal'
+                            : 'text-sm font-semibold'
                         }
                       >
                         {'Service Fee'}
-                      </p>
-                      <p
+                      </div>
+                      <div
                         className={
                           props.blur
                             ? 'font-opensans text-enter blurry-text'
-                            : 'text-sm font-normal'
+                            : 'text-sm font-semibold'
                         }
                       >
                         {'₹ ' +
                           getIndianPrice(
                             Math.round(props.payment.total_service_fee / 100)
                           )}
-                      </p>
+                      </div>
                     </div>
                   ) : null}
                   {!oldaccommodation && !props.payment.are_prices_hidden ? (
@@ -407,29 +407,29 @@ const BookingContainer = (props) => {
                       style={{
                         display: 'grid',
                         gridTemplateColumns: 'auto max-content',
-                        margin: '0.5rem 0',
+
                         gridGap: '1rem',
                       }}
                     >
-                      <p
+                      <div
                         className={
                           props.blur
                             ? 'font-opensans text-enter blurry-text'
-                            : 'text-sm font-normal'
+                            : 'text-sm font-semibold'
                         }
                       >
                         {'GST'}
-                      </p>
-                      <p
+                      </div>
+                      <div
                         className={
                           props.blur
                             ? 'font-opensans text-enter blurry-text'
-                            : 'text-sm font-normal'
+                            : 'text-sm font-semibold'
                         }
                       >
                         {'₹ ' +
                           getIndianPrice(Math.round(props.payment.gst / 100))}
-                      </p>
+                      </div>
                     </div>
                   ) : null}
                 </div>
@@ -439,7 +439,7 @@ const BookingContainer = (props) => {
         </div>
 
         <div className="px-3 ">
-          {props.payment.coupon ? (
+          {props.payment.allow_coupon_discount ? (
             <form onSubmit={(e) => handleSubmit(e)}>
               <div className="relative  rounded-md shadow-sm cursor-pointer">
                 <input
