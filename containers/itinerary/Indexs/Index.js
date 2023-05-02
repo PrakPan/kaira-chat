@@ -18,6 +18,7 @@ import * as authaction from '../../../store/actions/auth';
 import { connect } from 'react-redux';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import { TRAVELER_ITINERARIES } from '../../../services/constants';
+import axiosPoiRoutes from '../../../services/itinerary/brief/route';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Landing from '../landing/Index';
 import Overview from '../../newitinerary/overview/Index';
@@ -52,6 +53,8 @@ const Itinerary = (props) => {
     images: ['null'],
   });
   const [breif, setBreif] = useState(defaultbreif);
+  const [routes, setRoutes] = useState(defaultbreif);
+
   const [booking, setBooking] = useState(null);
 
   const [itineraryLoading, setItineraryLoading] = useState(true);
@@ -252,7 +255,11 @@ const Itinerary = (props) => {
     // if(!props.token && !props.otpSent)
     //  props.checkAuthState();
   });
-
+  async function getRoutes(itinaryId) {
+    const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
+    const data = res.data;
+    return data;
+  }
   useEffect(() => {
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
@@ -279,7 +286,13 @@ const Itinerary = (props) => {
         //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
       });
     getBreifHandler();
-
+    getRoutes(props.id)
+      .then((res) => {
+        setRoutes(res);
+      })
+      .catch((err) => {
+        console.log(`error in routes${err}`);
+      });
     axios
       .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
       .then((res) => {
@@ -733,6 +746,7 @@ const Itinerary = (props) => {
             itineraryDate={itineraryDate}
             showbooking={showbooking}
             payment={payment}
+            routes={routes}
             itinerary={itinerary}
             breif={breif}
             booking={booking}

@@ -43,20 +43,21 @@ const PinSection = ({
   useEffect(() => {
     if (isPinhover) {
       if (lat) {
-        setCurrentPopup([
-          {
-            dayId: getdayId(dayId),
-            date: getdateId(dayId),
-            cityData: cityData,
-            id: Mapid,
-            city_id: cityId,
-            lat: lat,
-            long: long,
-            name: city,
-            duration: duration,
-            color: pinColour,
-          },
-        ]);
+        setCurrentPopup ??
+          setCurrentPopup([
+            {
+              dayId: getdayId(dayId),
+              date: getdateId(dayId),
+              cityData: cityData,
+              id: Mapid,
+              city_id: cityId,
+              lat: lat,
+              long: long,
+              name: city,
+              duration: duration,
+              color: pinColour,
+            },
+          ]);
       }
     }
   }, [isPinhover]);

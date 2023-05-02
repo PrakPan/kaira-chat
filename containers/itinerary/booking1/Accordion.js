@@ -1,11 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
-import MuiAccordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { withStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+
+import { Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { withStyles } from '@mui/styles';
 import { getIndianPrice } from '../../../services/getIndianPrice';
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Accordion = withStyles({
+const AccordionSty = withStyles({
   root: {
     marginBottom: 10,
     border: '0px solid #F7E70033',
@@ -27,7 +26,7 @@ const Accordion = withStyles({
   },
 
   expanded: {},
-})(MuiAccordion);
+})(Accordion);
 const FAQs = (props) => {
   const classes = useStyles();
   const HEADINGS = ['Stays', 'Transfers', 'Flights', 'Activities'];

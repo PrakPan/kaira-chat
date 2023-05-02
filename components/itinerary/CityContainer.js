@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import IconElement from './element/Index';
 import { Link, animateScroll as scroll } from 'react-scroll';
 import { FaChevronRight, FaChevronLeft } from 'react-icons/fa';
-import { makeStyles } from '@material-ui/styles';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { makeStyles } from '@mui/styles';
+import { Tabs, Tab } from '@mui/material';
+
 import media from '../media';
 import { getHumanDate } from '../../services/getHumanDate';
 import Button from '../Button';

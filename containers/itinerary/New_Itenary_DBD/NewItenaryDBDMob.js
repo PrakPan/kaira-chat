@@ -4,7 +4,6 @@ import Day_I_ContainerM from './Day_I_ContainerM';
 import HorizontalBar from './Menubar';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
-import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
 import { isJson } from '../../../services/isJSON';
 import { Navbar, NavbarContainer } from './New_itenaryStyled';

@@ -89,7 +89,7 @@ const Route = (props) => {
           props.breif.city_slabs[i].duration &&
           props.breif.city_slabs[i].duration !== '0'
         ) {
-          if (props.routes) {
+          if (props.routes.length >= 1) {
             locationsArr.push(
               <PinSection
                 setCurrentPopup={props.setCurrentPopup}

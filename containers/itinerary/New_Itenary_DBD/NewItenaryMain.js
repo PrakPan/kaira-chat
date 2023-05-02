@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Day_I_Container from './Day_I_Container';
 
-import Tab from '@material-ui/core/Tab';
 import { getHumanDate } from '../../../services/getHumanDate';
 import { Navbar } from './New_itenaryStyled';
 import CustomMenu from '../CustomMenu';

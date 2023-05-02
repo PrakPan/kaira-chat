@@ -64,8 +64,6 @@ const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
-  const [routes, setRoutes] = useState(false);
-  const [transfers, setTransfers] = useState(false);
 
   const [currentPopup, setCurrentPopup] = useState(false);
 
@@ -74,8 +72,7 @@ const Details = (props) => {
     const data = res.data;
     return data;
   }
-  const routesData = [];
-  const TransfersData = [];
+
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
   const _handleTailoredRedirect = (e) => {
@@ -93,119 +90,29 @@ const Details = (props) => {
     const data = res.data;
     return data;
   }
-  useEffect(() => {
-    getRoutes(props.breif.tailor_made_id)
-      .then((res) => {
-        for (var i = 0; i < res.length; i++) {
-          // console.log(`response city data${JSON.stringify(citydetails)}`);
-          // console.log(`lat,long${citydetails.lat}`);
-          if (res[i].long) {
-            routesData.push(res[i]);
-          } else {
-            TransfersData.push(res[i]);
-          }
-        }
 
-        setRoutes(routesData);
-        setTransfers(TransfersData);
-        // for (var i = 0; i < routes.length; i++) {
-        //   var postion = props.breif.city_slabs[i + 1];
-
-        //   // console.log(`response city data${JSON.stringify(citydetails)}`);
-        //   // console.log(`lat,long${citydetails.lat}`);
-        //   if (routes[i].duration && routes[i].duration !== '0') {
-        //     Locationlatlong.push({
-        //       dayId: getdayId(routes[i].start_day_slab_index),
-        //       cityData: postion,
-        //       id: routes[i].gmaps_place_id,
-        //       city_id: routes[i].city_id,
-        //       lat: routes[i].lat,
-        //       long: routes[i].long,
-        //       name: routes[i].city_name,
-        //       duration: routes[i].duration,
-        //       color: routes[i].color,
-        //       date: getdateId(routes[i].start_day_slab_index),
-        //     });
-        //   }
-        // }
-      })
-      .catch((err) => {
-        console.log(`error in routes${err}`);
-        // for (var i = 0; i < props.breif.city_slabs.length; i++) {
-        //   var postion = props.breif.city_slabs[i];
-
-        //   // console.log(`response city data${JSON.stringify(citydetails)}`);
-        //   // console.log(`lat,long${citydetails.lat}`);
-        //   if (
-        //     !postion.is_departure_only &&
-        //     !postion.is_trip_terminated &&
-        //     postion.duration &&
-        //     postion.duration !== '0'
-        //   ) {
-        //     Locationlatlong.push({
-        //       dayId: getdayId(postion.day_slab_location.start_day_slab_index),
-        //       cityData: postion,
-        //       id: postion.gmaps_place_id,
-        //       city_id: postion.city_id,
-        //       lat: postion.lat ?? '18.5204',
-        //       long: postion.long ?? '73.8567',
-        //       name: postion.city_name,
-        //       duration: postion.duration,
-        //       color: postion.color,
-        //     });
-        //   }
-        // }
-      });
-  }, []);
-
-  // useEffect(()=> {
-
-  //         window.addEventListener('scroll', _handleScroll);
-  //          return () => {
-  //         window.removeEventListener('scroll', _handleScroll);
-  //       }
-  // })
-  //   const overviewRef = useRef();
-  //   const routeRef = useRef();
-  //   const locationsRef=useRef();
-  //   const howtoreachRef = useRef();
-  //   const inclusionsRef = useRef();
-  //   const exclusionsRef = useRef();
-  //   const faqsRef = useRef();
-
-  //   const _handleScroll = () => {
-  //     if(overviewRef && routeRef && howtoreachRef && exclusionsRef && inclusionsRef && faqsRef)
-  //     offsets={
-  //             'Overview': overviewRef.current.offsetTop,
-  //             'Route':  routeRef.current.offsetTop,
-  //             'How to reach': howtoreachRef.current.offsetTop,
-  //             'Inclusions' : inclusionsRef.current.offsetTop,
-  //             'Exclusions': exclusionsRef.current.offsetTop,
-  //             'FAQ/s':  faqsRef.current.offsetTop
-  //           }
-  //           if(typeof window !== 'undefined')
-  //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
-  //   }
-
-  if (routes) {
+  if (props.routesData.length >= 1) {
     console.log('itsrendering');
-    for (var i = 0; i < routes.length; i++) {
+    for (var i = 0; i < props.routesData.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
 
       // console.log(`response city data${JSON.stringify(citydetails)}`);
       // console.log(`lat,long${citydetails.lat}`);
-      if (routes[i].duration && routes[i].duration !== '0') {
+      if (
+        props.routesData[i].duration &&
+        props.routesData[i].duration !== '0'
+      ) {
         Locationlatlong.push({
-          dayId: getdayId(routes[i].start_day_slab_index),
+          dayId: getdayId(props.routesData[i].start_day_slab_index),
           cityData: postion,
-          id: routes[i].gmaps_place_id,
-          city_id: routes[i].city_id,
-          lat: routes[i].lat,
-          long: routes[i].long,
-          name: routes[i].city_name,
-          duration: routes[i].duration,
-          color: routes[i].color,
-          date: getdateId(routes[i].start_day_slab_index),
+          id: props.routesData[i].gmaps_place_id,
+          city_id: props.routesData[i].city_id,
+          lat: props.routesData[i].lat,
+          long: props.routesData[i].long,
+          name: props.routesData[i].city_name,
+          duration: props.routesData[i].duration,
+          color: props.routesData[i].color,
+          date: getdateId(props.routesData[i].start_day_slab_index),
         });
       }
     }
@@ -235,6 +142,40 @@ const Details = (props) => {
       }
     }
   }
+  // useEffect(() => {
+  //   console.log('its useeffect');
+  //   console.log(props.routesData);
+
+  // }, []);
+
+  // useEffect(()=> {
+
+  //         window.addEventListener('scroll', _handleScroll);
+  //          return () => {
+  //         window.removeEventListener('scroll', _handleScroll);
+  //       }
+  // })
+  //   const overviewRef = useRef();
+  //   const routeRef = useRef();
+  //   const locationsRef=useRef();
+  //   const howtoreachRef = useRef();
+  //   const inclusionsRef = useRef();
+  //   const exclusionsRef = useRef();
+  //   const faqsRef = useRef();
+
+  //   const _handleScroll = () => {
+  //     if(overviewRef && routeRef && howtoreachRef && exclusionsRef && inclusionsRef && faqsRef)
+  //     offsets={
+  //             'Overview': overviewRef.current.offsetTop,
+  //             'Route':  routeRef.current.offsetTop,
+  //             'How to reach': howtoreachRef.current.offsetTop,
+  //             'Inclusions' : inclusionsRef.current.offsetTop,
+  //             'Exclusions': exclusionsRef.current.offsetTop,
+  //             'FAQ/s':  faqsRef.current.offsetTop
+  //           }
+  //           if(typeof window !== 'undefined')
+  //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
+  //   }
 
   // props.breif.city_slabs.map(
   //   (postion) =>
@@ -295,13 +236,13 @@ const Details = (props) => {
         ) : null}
 
         <RouteComponent>
-          {routes || props.itinerary?.day_slabs ? (
+          {props.routesData.length >= 1 || props.itinerary?.day_slabs ? (
             <div id="route">
               <Route
                 dayslab={props.itinerary?.day_slabs}
                 breif={props.breif}
-                routes={routes}
-                transfers={transfers}
+                routes={props.routesData}
+                transfers={props.transfersData}
                 setPlaceID={setActive}
                 active={active}
                 setCurrentPopup={setCurrentPopup}

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Link } from 'react-scroll';
-import { makeStyles, Theme } from '@material-ui/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import { makeStyles } from '@mui/styles';
+import { AppBar } from '@mui/material';
+import { Tabs, Tab } from '@mui/material';
+
+import { Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import GITSummaryContainer from './booking1/gittailored/Index';
 import Booking from './booking1/CheckLoginWrapper';
 import Register from './register/Index';
@@ -38,6 +38,7 @@ import { SplitScreen } from '../../components/SplitScreen';
 import BookingContainer from '../../components/BookingContainer/BookingContainer';
 import ButtonYellow from '../../components/ButtonYellow';
 import { Navigation } from '../../components/NewNavigation';
+import TransfersContainer from './TransfersContainer/TransfersContainer';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -207,7 +208,9 @@ const SimpleTabs = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
   const [isGroup, setIsGroup] = useState(false);
+
   const router = useRouter();
+
   useEffect(() => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -294,6 +297,8 @@ const SimpleTabs = (props) => {
 
   //Location tabs for mobile
   let locationsArr = [];
+  let RoutesData = [];
+  let TransfersData = [];
   let totalcityslabs = 0;
   if (props.breif)
     if (props.breif.city_slabs)
@@ -305,23 +310,38 @@ const SimpleTabs = (props) => {
   const locationtabwidth = 100 / totalcityslabs + 'vw';
   if (props.breif)
     if (props.breif.city_slabs)
-      for (var i = 0; i < props.breif.city_slabs.length; i++) {
-        if (!props.breif.city_slabs[i].is_trip_terminated) {
-          locationsArr.push(
-            <Location
-              id={i}
-              style={{ minWidth: locationtabwidth }}
-              className={
-                'font-opensans center-div border-top ' +
-                (location == i ? 'bg-yellow font-bold' : 'bg-white')
-              }
-              onClick={(event) => _setLocationHandler(event)}
-            >
-              {props.breif.city_slabs[i].city_name}
-            </Location>
-          );
+      if (props.routes) {
+        console.log('inside routes');
+        console.log(props.routes);
+
+        for (var i = 0; i < props.routes.length; i++) {
+          if (props.routes[i].long) {
+            RoutesData.push(props.routes[i]);
+          } else {
+            TransfersData.push(props.routes[i]);
+          }
         }
+        console.log(' routes finished');
+        console.log(RoutesData);
+        console.log(TransfersData);
       }
+  for (var i = 0; i < props.breif.city_slabs.length; i++) {
+    if (!props.breif.city_slabs[i].is_trip_terminated) {
+      locationsArr.push(
+        <Location
+          id={i}
+          style={{ minWidth: locationtabwidth }}
+          className={
+            'font-opensans center-div border-top ' +
+            (location == i ? 'bg-yellow font-bold' : 'bg-white')
+          }
+          onClick={(event) => _setLocationHandler(event)}
+        >
+          {props.breif.city_slabs[i].city_name}
+        </Location>
+      );
+    }
+  }
 
   useEffect(() => {
     if (props.itineraryReleased) {
@@ -485,6 +505,8 @@ const SimpleTabs = (props) => {
       ) : null} */}
       <div id={items[0].link}>
         <Breif
+          routesData={RoutesData}
+          transfersData={TransfersData}
           payment={props.payment}
           traveleritinerary={props.traveleritinerary}
           // hours={hours}
@@ -728,6 +750,12 @@ const SimpleTabs = (props) => {
                 ></HotelsBooking>
               </div>
             )}
+            <TransfersContainer
+              dayslab={props.itinerary?.day_slabs}
+              breif={props.breif}
+              routes={RoutesData}
+              transfers={TransfersData}
+            />
           </div>
 
           <div className="sticky top-[6rem] mt-40">

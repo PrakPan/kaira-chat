@@ -348,11 +348,14 @@ const BookingContainer = (props) => {
               className=" font-semibold flex gap-0 flex-row cursor-pointer"
               onClick={() => setAcordianOpen(!acoordianceOpen)}
             >
-              <div>View breakup</div>
+              <div>
+                {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{' '}
+                breakup
+              </div>
 
               <RiArrowDropDownLine
-                className={` text-2xl animate-bounce mt-1 transition-all duration-100 ${
-                  acoordianceOpen ? '-rotate-180' : 'rotate-180'
+                className={` text-2xl  mt-1 transition-all duration-100 ${
+                  acoordianceOpen ? '-rotate-180 ' : 'rotate-180 animate-bounce'
                 }`}
               ></RiArrowDropDownLine>
             </div>

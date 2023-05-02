@@ -1,26 +1,22 @@
-
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 // import ImageLoader from '../../../components/ImageLoader';
 import SelectDate from './SelectDate';
 import SelectPax from './SelectPax';
-import Grid from '@material-ui/core/Grid';
+import { Grid } from '@mui/material';
 
 const SelectDetails = (props) => {
-
- 
   return (
- <div>
-    <Grid container spacing={2}>
+    <div>
+      <Grid container spacing={2}>
         <Grid item xs={6}>
-            <SelectDate></SelectDate>
+          <SelectDate></SelectDate>
         </Grid>
         <Grid item xs={6}>
-            <SelectPax></SelectPax>
+          <SelectPax></SelectPax>
         </Grid>
-    </Grid>
+      </Grid>
     </div>
   );
-}
+};
 
 export default SelectDetails;
-

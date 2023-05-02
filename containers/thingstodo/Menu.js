@@ -1,15 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { makeStyles, Theme } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
+import { Tabs, Tab } from '@mui/material';
+
+import { Box } from '@mui/material';
 
 import Details from './Details';
 import Itinerary from './itinerary/Index';
 import media from '../../components/media';
-
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -31,58 +30,51 @@ function TabPanel(props) {
   );
 }
 
-
 const useStyles = makeStyles(() => ({
-  root: {
-    
-  },
+  root: {},
   appbar: {
-      backgroundColor: 'black !important',
-      color: 'white !important',
-      height: '10vh !important',
-      justifyContent: 'center !important',
-      alignItems: 'space-between !important',
-      borderStyle: 'none !important',
-      borderColor: '#e4e4e4 !important',
-      borderWidth: '1px !important',
-      top: '0 !important',
-    
-    },
-    appbarmobile: {
-      backgroundColor: 'black !important',
-      color: 'white !important',
-      height: '10vh !important' ,
-      justifyContent: 'center !important',
-      borderStyle: 'solid none none none !important',
-      borderColor: '#e4e4e4 !important',
-      borderWidth: '1px !important',
-      top: '0'
-    },
-    tabs: {
-      width: '60vw',
-    },
-    tabheading: {
-        fontSize: '1rem',
-    },
+    backgroundColor: 'black !important',
+    color: 'white !important',
+    height: '10vh !important',
+    justifyContent: 'center !important',
+    alignItems: 'space-between !important',
+    borderStyle: 'none !important',
+    borderColor: '#e4e4e4 !important',
+    borderWidth: '1px !important',
+    top: '0 !important',
+  },
+  appbarmobile: {
+    backgroundColor: 'black !important',
+    color: 'white !important',
+    height: '10vh !important',
+    justifyContent: 'center !important',
+    borderStyle: 'solid none none none !important',
+    borderColor: '#e4e4e4 !important',
+    borderWidth: '1px !important',
+    top: '0',
+  },
+  tabs: {
+    width: '60vw',
+  },
+  tabheading: {
+    fontSize: '1rem',
+  },
   nopadding: {
-      padding: '0 !important',
-      overflow: 'hidden',
-  }
+    padding: '0 !important',
+    overflow: 'hidden',
+  },
 }));
 
-
 const HeaderExtraPadding = styled.div`
-height: 3vh;
-background-color: white;
-z-index: 1000; 
-position: sticky;
-top: 7.5vh;
+  height: 3vh;
+  background-color: white;
+  z-index: 1000;
+  position: sticky;
+  top: 7.5vh;
 `;
 
 const SimpleTabs = (props) => {
-
-  let isPageWide = media('(min-width: 768px)')
-
+  let isPageWide = media('(min-width: 768px)');
 
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
@@ -90,60 +82,64 @@ const SimpleTabs = (props) => {
   const [location, setLocation] = useState(0);
   const [showEnquiryDesktop, setShowEnquiryDesktop] = useState(false);
 
-const EnquireButton = styled.div`
-  position: sticky;
-  top:  1.25vh;
-  margin-left: 88vw;
-  width: 10vw;
-  background-color: #f7e700;
-  z-index: 3000 !important;
-  height: 7.5vh;
-  font-size: 1.25vw;
-  border-radius: 10px;
-  visibility: ${showEnquiryDesktop ? 'visible' : 'hidden'};
-  &:hover{
-    cursor: pointer;
-   
-  }
-
-`;
-    useEffect(() => {
-  
-    });
-    
+  const EnquireButton = styled.div`
+    position: sticky;
+    top: 1.25vh;
+    margin-left: 88vw;
+    width: 10vw;
+    background-color: #f7e700;
+    z-index: 3000 !important;
+    height: 7.5vh;
+    font-size: 1.25vw;
+    border-radius: 10px;
+    visibility: ${showEnquiryDesktop ? 'visible' : 'hidden'};
+    &:hover {
+      cursor: pointer;
+    }
+  `;
+  useEffect(() => {});
 
   const handleChange = (event, newValue) => {
-    if( newValue===0 ){
-      if(isPageWide) window.scrollTo(0, window.innerHeight*0.9);
-      else window.scrollTo(0,window.innerHeight)
-    }
-    else if(newValue === 1  ){
-      if(isPageWide) window.scrollTo(0, window.innerHeight*1.15);
-      else window.scrollTo(0,window.innerHeight)
-    }
-    else if(newValue === 2 ) {
-      if(isPageWide)  window.scrollTo(0, window.innerHeight*0.9);
-      else window.scrollTo(0,window.innerHeight);
+    if (newValue === 0) {
+      if (isPageWide) window.scrollTo(0, window.innerHeight * 0.9);
+      else window.scrollTo(0, window.innerHeight);
+    } else if (newValue === 1) {
+      if (isPageWide) window.scrollTo(0, window.innerHeight * 1.15);
+      else window.scrollTo(0, window.innerHeight);
+    } else if (newValue === 2) {
+      if (isPageWide) window.scrollTo(0, window.innerHeight * 0.9);
+      else window.scrollTo(0, window.innerHeight);
     }
     setValue(newValue);
   };
 
   const openBooking = () => {
-   window.scrollTo(0, window.innerHeight*0.9);
+    window.scrollTo(0, window.innerHeight * 0.9);
     setValue(2);
-  }
-  if(props.experienceLoaded)
-  return (
-    <div className={classes.root}>
-    
-      {isPageWide? <EnquireButton onClick={openBooking} className="center-div font-lexend">Enquire Now</EnquireButton> : null}
- 
-            <Details  slug={props.slug} _openPoiModal={(poi) => props._openPoiModal(poi)}  experienceLoaded={props.experienceLoaded} data={props.data} payment={props.payment} openBooking={openBooking}></Details>
-  
-    </div> 
-  );
-  else return <div></div>
-}
+  };
+  if (props.experienceLoaded)
+    return (
+      <div className={classes.root}>
+        {isPageWide ? (
+          <EnquireButton
+            onClick={openBooking}
+            className="center-div font-lexend"
+          >
+            Enquire Now
+          </EnquireButton>
+        ) : null}
 
+        <Details
+          slug={props.slug}
+          _openPoiModal={(poi) => props._openPoiModal(poi)}
+          experienceLoaded={props.experienceLoaded}
+          data={props.data}
+          payment={props.payment}
+          openBooking={openBooking}
+        ></Details>
+      </div>
+    );
+  else return <div></div>;
+};
 
-export default React.memo((SimpleTabs));
+export default React.memo(SimpleTabs);

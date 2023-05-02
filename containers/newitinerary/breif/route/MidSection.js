@@ -75,6 +75,7 @@ const MidSection = (props) => {
       <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} />
       </div>
+
       <Text>
         {/* {props.icon ?? (
           <ImageLoader

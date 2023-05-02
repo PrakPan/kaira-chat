@@ -124,7 +124,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
     });
   }
   console.log(polylines);
-  return (
+  return locations ? (
     <MapContainer
       center={[locations[0]?.lat, locations[0]?.long]}
       zoom={5}
@@ -295,7 +295,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
         </Popup>
       ) : null}
     </MapContainer>
-  );
+  ) : null;
 };
 
 export default React.memo(Mapbox);

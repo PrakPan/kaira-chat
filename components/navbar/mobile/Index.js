@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Drawer from '@material-ui/core/Drawer';
+import { Drawer } from '@mui/material';
 import Link from 'next/link';
 import { CgMenuLeftAlt } from 'react-icons/cg';
 import { useRouter } from 'next/router';

@@ -19,8 +19,8 @@ import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 // import Accommodation from '../../../components/modals/accommodation/Index';
 import DesktopCardContainer from './DesktopCardCotainer';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Tabs, Tab } from '@mui/material';
+
 import { getIndianPrice } from '../../../services/getIndianPrice';
 // import Spinner from '../../../components/Spinner';
 import gif from '../../../public/assets/loader.gif';
