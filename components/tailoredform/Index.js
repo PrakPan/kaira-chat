@@ -86,14 +86,30 @@ const BlackContainer = styled.div`
 
 `;
 const Enquiry = (props) => {
-    const router = useRouter();
+  const router = useRouter();
+  const routerquery = router.query
     const initialInputId = Date.now()
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [selectedCities, setSelectedCities] = useState(props.destinationType == 'travel-planner'? [{destination_id  :props.page_id,input_id : initialInputId}]: [{id : props.page_id , name : props.destination , input_id : initialInputId}]);
+    const [selectedCities, setSelectedCities] = useState(
+      router.pathname.split("/").includes("travel-planner")
+        ? [
+            {
+              destination_id: routerquery.page_id || props.page_id,
+              input_id: initialInputId,
+            },
+          ]
+        : [
+            {
+              id: routerquery.page_id || props.page_id,
+              name: routerquery.destination || props.destination,
+              input_id: initialInputId,
+            },
+          ]
+    );
     const [groupType, setGroupType] = useState(null);
     const [startingLocation, setStartingLocation ] = useState(false);
-    const [destination , setDestination] = useState(props.destination)
+    const [destination, setDestination] = useState(routerquery.destination || props.destination);
     // const ContainerRef = useRef()
 
      const _submitDataHandler = () => {

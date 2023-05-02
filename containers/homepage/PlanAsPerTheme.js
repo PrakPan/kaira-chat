@@ -7,6 +7,7 @@ import media from '../../components/media'
 import ImageLoader from '../../components/ImageLoader';
 import axiosCountInstance from '../../services/itinerary/count';
 import SkeletonCard from '../../components/ui/SkeletonCard'
+import openTailoredModal from '../../services/openTailoredModal';
 const Container = styled.div`
 height : 430px;
   display : grid;
@@ -164,23 +165,7 @@ const PlanAsPerTheme = (props) => {
 
 useEffect(()=>{
   axiosCountInstance.get('').then(res=>setCount(res.data.user))
-},[])
-
-
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-      }
-      const _handleTailoredClick = () => {
-        setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Howitworks',
-          
-          callback: _handleTailoredRedirect,
-        })
-    }
-    
+},[])    
     const _handleTripRedirect = (link)=>{
       router.push(`/travel-planner/${link}`)
     }
@@ -216,7 +201,7 @@ useEffect(()=>{
         
     </Container>
 
-    {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
+    {!props.nostart ? <Button onclick={()=>openTailoredModal(router,props.page_id , props.destination)}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
             {isPageWide? 'Create your free itinerary' :'Create your personalised Itinerary'}
             {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button> : null}

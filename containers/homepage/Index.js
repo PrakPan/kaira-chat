@@ -37,6 +37,7 @@ import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
 import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
 import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
+import openTailoredModal from '../../services/openTailoredModal'
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -154,27 +155,7 @@ const router = useRouter()
 const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 const [experienceMore,setExperieceMore] = useState(false)
 
-// const _handleExperiencesRedirect = (e) => {
-//     router.push('/travel-experiences')
-// }
-const _handleTailoredRedirect = () => {
-  router.push('/tailored-travel')
-}
-const _handleTailoredClick = () => {
-  setDesktopBannerLoading(true);
-  setTimeout(_handleTailoredRedirect, 1000);
-
-  ga.callback_event({
-    action: 'TT-Desktopbanner',
-    
-    callback: _handleTailoredRedirect,
-  })
-
-}
-
-
-
-const _handleExperiencesRedirect = () => {
+  const _handleExperiencesRedirect = () => {
   router.push(urls.travel_experiences.BASE)
 }
 const _handleExperiencesClick = () => {
@@ -206,13 +187,13 @@ useEffect(() => {
                    destinationType={'city-planner'}
                    title={<p>Travel planning a chore,<br/>
                    Let our AI Explore.</p>}
-                  _startPlanningFunction={()=>setShowMobilePlanner(true)}
+                  _startPlanningFunction={()=>openTailoredModal(router)}
                  />
 
 
        <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
 
-    <DesktopBanner loading={desktopBannerLoading} onclick={()=>setShowMobilePlanner(true)} text="Want to personalize your own experience?"></DesktopBanner>
+    <DesktopBanner loading={desktopBannerLoading} onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience?"></DesktopBanner>
 
     <SetWidthContainer>
     <Heading textAlign='left' bold noline  fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        
@@ -242,7 +223,7 @@ useEffect(() => {
       {
         props.ThemeData && props.ThemeData.length ? <>
       <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
-      <PlanAsPerTheme ThemeData={props.ThemeData} />  
+              <PlanAsPerTheme ThemeData={props.ThemeData} />  
         </> : null
       }
       
@@ -275,14 +256,9 @@ useEffect(() => {
 
             <br></br>
       {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-     {!isPageWide &&  <div><Banner onclick={()=>setShowMobilePlanner(true)} text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
+     {!isPageWide &&  <div><Banner onclick={()=>openTailoredModal(router)} text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
       {/* <Chatbot history={props.history}/>     */}
       </div>
-      <TailoredFormMobileModal
-        destinationType={'city-planner'}
-          onHide={() => setShowMobilePlanner(false)}
-          show={showMoiblePlanner}
-        ></TailoredFormMobileModal>
       <WhatsappFloating message="Hey, I need help planning my trip." />
     </div>
   );

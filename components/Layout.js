@@ -17,12 +17,15 @@ const Layout = (props) => {
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false)
   const router = useRouter()
   useEffect(() => {
+    if (router.isReady) {
+       console.log(router,'router')
     const queries = router.query
     if (queries['tailored-travel']) {
       setShowMobilePlanner(true)
     }
     else setShowMobilePlanner(false)
-  },[router.asPath])
+    }
+  },[router.isReady , router.asPath])
     return (
       <div className='layout'>
         <Header PW={props.PW} ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} />

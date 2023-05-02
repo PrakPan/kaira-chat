@@ -36,16 +36,8 @@ grid-template-columns: 1fr 1fr ;
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
-    const router = useRouter();
-
-
-    
-      const _handleTailored = (location) => {
-        //  localStorage.setItem('search_city_selected_id', location.id);
-        // localStorage.setItem('search_city_selected_name', location.name);
-        // localStorage.setItem('search_city_selected_parent', '');
-        router.push('/tailored-travel?search_text='+location.name)
-    }
+  const router = useRouter();
+  
     const _handlePlannerPage = (id,name,parent) => {
       router.push('/travel-planner/'+name)
     }
@@ -82,7 +74,6 @@ let MobileCardsArr = []
             img={props.locations[i].image}
             slug={props.locations[i].slug}
             filters={props.locations[i].most_popular_for}
-            _handleTailored={_handleTailored}
             _handleCityRedirect={_handleCityRedirect}
 
             // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
@@ -105,10 +96,6 @@ setCardsToShowJSX(cardsarr);
 setCardsToShowJSXmobile(MobileCardsArr)
 
   }, [props.locations])
-
-    const _handleTailoredRedirect = () => {
-      router.push('/tailored-travel')
-    }
   
    return (
      <>

@@ -5,7 +5,7 @@ import Button from '../ui/button/Index';
 import * as ga from '../../services/ga/Index';
  import { useRouter } from 'next/router';
 import ImageLoader from '../ImageLoader';
-import TailoredFormMobileModal from '../modals/TailoredFomrMobile';
+import openTailoredModal from '../../services/openTailoredModal';
 const Container = styled.div`
 margin-top : -50px;
     @media screen and (min-width: 768px){
@@ -154,13 +154,12 @@ const HowItWorksSlideshow = (props) =>{
     
     ]
     const [loading, setLoading] = useState(false);
-    const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
     return (
       <div>
         <Container>{slidesdesktop}</Container>
         {!props.nostart ? (
           <Button
-            onclick={() => setShowMobilePlanner(true)}
+            onclick={()=>openTailoredModal(router,props.page_id,props.destination)}
             fontWeight="500"
             boxShadow
             borderRadius="8px"
@@ -173,12 +172,6 @@ const HowItWorksSlideshow = (props) =>{
             {isPageWide ? "Create your free itinerary" : "Start Now"}
           </Button>
         ) : null}
-
-        <TailoredFormMobileModal
-          destinationType={"city-planner"}
-          onHide={() => setShowMobilePlanner(false)}
-          show={showMoiblePlanner}
-        ></TailoredFormMobileModal>
       </div>
     );
     
