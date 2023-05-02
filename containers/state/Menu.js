@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { makeStyles, Theme } from '@material-ui/styles';
-import AppBar from '@material-ui/core/AppBar';
+import { makeStyles, Theme } from '@mui/material/styles';
+import { AppBar } from '@mui/material';
 import { Tabs, Tab } from '@mui/material';
 
 import { Box } from '@mui/material';

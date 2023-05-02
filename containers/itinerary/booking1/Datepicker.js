@@ -7,15 +7,10 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-import {
-  ThemeProvider,
-  withStyles,
-  makeStyles,
-
-} from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
 const StyledTextField = withStyles({
-    root: {
+  root: {
     '& label.Mui-focused': {
       color: 'green',
     },
@@ -37,7 +32,9 @@ const StyledTextField = withStyles({
 })(KeyboardDatePicker);
 export default function MaterialUIPickers(props) {
   // The first commit of Material-UI
-  const [selectedDate, setSelectedDate] = React.useState(new Date('2021-04-20T21:11:54'));
+  const [selectedDate, setSelectedDate] = React.useState(
+    new Date('2021-04-20T21:11:54')
+  );
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -45,20 +42,20 @@ export default function MaterialUIPickers(props) {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDatePicker
-          disableToolbar
-    variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          value={props.selectedDate}
-          onChange={props.handleDateChange}
-          fullWidth
-          autoOk={true}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
+      <KeyboardDatePicker
+        disableToolbar
+        variant="inline"
+        format="MM/dd/yyyy"
+        margin="normal"
+        id="date-picker-inline"
+        value={props.selectedDate}
+        onChange={props.handleDateChange}
+        fullWidth
+        autoOk={true}
+        KeyboardButtonProps={{
+          'aria-label': 'change date',
+        }}
+      />
     </MuiPickersUtilsProvider>
   );
 }

@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@mui/styles';
-import MuiAccordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Accordion from '@mui/material';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { withStyles } from '@mui/styles';
@@ -27,7 +27,7 @@ const Accordion = withStyles({
   },
 
   expanded: {},
-})(MuiAccordion);
+})(Accordion);
 const FAQs = (props) => {
   const classes = useStyles();
 

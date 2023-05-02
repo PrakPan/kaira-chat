@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@mui/styles';
-import Drawer from '@material-ui/core/Drawer';
-import Paper from '@material-ui/core/Paper';
+import Drawer from '@mui/material/Drawer';
+import Paper from '@mui/material/Paper';
 import styled from 'styled-components';
 import SubscribeContent from './YellowSubscribe';
 

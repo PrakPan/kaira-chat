@@ -6,9 +6,9 @@ import { makeStyles } from '@mui/styles';
 import { Grid } from '@mui/material';
 
 import { Typography } from '@mui/material';
-import Slider from '@material-ui/core/Slider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
+import Slider from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 
 const useStyles = makeStyles({
   root: {

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 import { Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MuiAccordion from '@material-ui/core/Accordion';
+import Accordion from '@mui/material/Accordion';
 import { withStyles } from '@mui/styles';
 import styled from 'styled-components';
 import media from '../../components/media';
@@ -37,7 +37,7 @@ const Accordion = withStyles({
   },
 
   expanded: {},
-})(MuiAccordion);
+})(Accordion);
 
 const MainHeading = styled.h2`
   font-weight: 2rem;

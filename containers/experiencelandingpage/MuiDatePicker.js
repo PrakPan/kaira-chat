@@ -6,8 +6,7 @@ import {
   Day,
   Calendar,
 } from '@material-ui/pickers';
-import { createMuiTheme } from '@material-ui/core';
-import { ThemeProvider } from '@mui/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 /*
 Description:
@@ -22,7 +21,7 @@ ThemeProvider, createMuiTheme, MuiPickersUtilsProvider, KeyboardPicker, Day, Dat
 from material-ui
 */
 
-const materialTheme = createMuiTheme({
+const materialTheme = createTheme({
   shape: {
     borderRadius: 5, //adds inputfield & calender border radius
   },

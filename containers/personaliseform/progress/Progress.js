@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { LinearProgress } from '@mui/material';
 import { withStyles } from '@mui/styles';
 
 const Container = styled.div`

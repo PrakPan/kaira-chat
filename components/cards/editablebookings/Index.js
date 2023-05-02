@@ -12,7 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { makeStyles } from '@mui/styles';
-import MuiAccordion from '@material-ui/core/Accordion';
+import Accordion from '@mui/material/Accordion';
 
 import { withStyles } from '@mui/styles';
 import ImageContainer from './imagecontainer/Index';
