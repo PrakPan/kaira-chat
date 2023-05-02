@@ -94,7 +94,6 @@ const ChatWithUs = (props) => {
                 borderWidth="1px"
                 hoverBgColor="black"
                 hoverBorderColor="black"
-                // onclick={() => router.push('/tailored-travel')}
                 link={urls.CONTACT}
                 >
                     {props.button ? props.button : "Contact Us"}

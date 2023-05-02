@@ -16,6 +16,7 @@ import NewMenu from '../newcityplanner/Menu'
 import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
 import MobileBanner from './Banner/Mobile'
 import WhatsappFloating from '../../components/WhatsappFloating';
+import openTailoredModal from '../../services/openTailoredModal';
 
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
@@ -46,7 +47,7 @@ const Experience = (props) => {
     localStorage.setItem('search_city_selected_parent',  props.cityData.state.name)
 
 
-    router.push('/tailored-travel')
+   openTailoredModal(router,props.cityData.id , props.cityData.name)
   }
 
 

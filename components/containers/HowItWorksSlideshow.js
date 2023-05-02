@@ -153,7 +153,6 @@ const HowItWorksSlideshow = (props) =>{
 
     
     ]
-    const [loading, setLoading] = useState(false);
     return (
       <div>
         <Container>{slidesdesktop}</Container>

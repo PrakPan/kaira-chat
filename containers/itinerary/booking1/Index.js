@@ -19,6 +19,7 @@ import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 // import Accommodation from '../../../components/modals/accommodation/Index';
 import FlightCard from '../../../components/cards/editableflights/Index';
+import openTailoredModal from '../../../services/openTailoredModal';
 
 const Container = styled.div`
 width: 90%;
@@ -78,15 +79,11 @@ const MessageContainer = styled.div`
 `;
 const Booking = (props) => {
   const router = useRouter();
-  const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel')
-  }
   
   
   let isPageWide = media('(min-width: 768px)')
     const [alternates, setAlternates] = useState(null);
     const [showpayment, setShowpayment] = useState(false);
-    const [loaded, setLoaded] = useState(false);
     const [images, setImages] = useState(null);
     const [bookingCitiesJSX, setBookingCitiesJSX] = useState([]);
     const [bookingDesktopJSX, setBookingDesktopJSX] = useState([]);
@@ -299,7 +296,7 @@ const Booking = (props) => {
             </BookingsContainer>
           {summaryContainerJSX}
           {props.showBookingModal ? <BookingModal bookings={props.booking} alternates={alternates[selectedBooking.id]} tailored_id={props.booking[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
-          {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
+          {props.traveleritinerary ? <DesktopBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
           {/* {props.showFlightModal ? <FlightModal bookings={props.booking} alternates={alternates[selectedBooking.id]} tailored_id={props.booking[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} setHideFlightModal={props.setHideFlightModal}></FlightModal> : null} */}
 
         </Container>

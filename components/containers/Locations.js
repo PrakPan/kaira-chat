@@ -2,12 +2,11 @@ import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from '../cards/Location';
 import Carousel from '../FlickityCarousel';
-import media from '../media';
 import { useRouter } from 'next/router';
 import Button from '../ui/button/Index';
 import urls from '../../services/urls';
 import * as ga from '../../services/ga/Index';
-import TailoredFormMobileModal from '../modals/TailoredFomrMobile';
+import openTailoredModal from '../../services/openTailoredModal';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -23,22 +22,16 @@ height: 60vh;
 `;
 
 const LocationsBlog= (props) => {
-  let isPageWide = media('(min-width: 768px)')
-  const [showMoiblePlanner , setShowMobilePlanner] = useState(false)
-
    const router = useRouter();
 
-
-    
       const _handlePlanning = (id, name, parent) => {
         localStorage.setItem('search_city_selected_id', id);
         localStorage.setItem('search_city_selected_name', name);
         localStorage.setItem('search_city_selected_parent', parent);
-        router.push('/tailored-travel')
+        openTailoredModal(router,id,name)
     }
-    const _handlePlannerPage = (id,name,parent) => {
-      router.push('/travel-planner/'+name)
-
+    const _handlePlannerPage = (id,name) => {
+              openTailoredModal(router, id, name);
     }
     const [cardsJSX, setCardsJSX] = useState([null, null, null, null , null]);
     useEffect(() => {
@@ -52,7 +45,7 @@ const LocationsBlog= (props) => {
           location={location.name}
           heading={location.tagline}
           img={location.image}
-          onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id, location.slug, location.state.name)}
+          onclick={! props.planner ? () => _handlePlanning(location.id, location.name, location.state.name) : () => _handlePlannerPage(location.id,location.state.name)}
           > 
           </Card>
         )
@@ -61,21 +54,6 @@ const LocationsBlog= (props) => {
 setCardsJSX(cardsarr);
   }, [props.locations]);
 
-// const router  = useRouter();
-    const _handleTailoredRedirect = () => {
-      router.push('/tailored-travel')
-    }
-    const _handleTailoredClick = () => {
-      setLoading(true);
-      setTimeout(_handleTailoredRedirect, 1000);
-    
-      ga.callback_event({
-        action: 'TG-Locations',
-        
-        callback: _handleTailoredRedirect,
-      })
-    
-    }
   // if(isPageWide) 
   return (
     <>
@@ -103,7 +81,7 @@ setCardsJSX(cardsarr);
         </div>
         {props.viewall ? (
           <Button
-            onclick={()=>setShowMobilePlanner(true)}
+            onclick={() => _handlePlannerPage(location.id, location.state.name)}
             onclickparams={null}
             boxShadow
             borderWidth="1px"
@@ -115,11 +93,6 @@ setCardsJSX(cardsarr);
           </Button>
         ) : null}
       </div>
-      <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        onHide={() => setShowMobilePlanner(false)}
-        show={showMoiblePlanner}
-      ></TailoredFormMobileModal>
     </>
   );
 }

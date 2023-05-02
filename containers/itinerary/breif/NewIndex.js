@@ -20,6 +20,7 @@ import { useRouter } from 'next/router';
 // import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
+import openTailoredModal from '../../../services/openTailoredModal';
 const DetailsContainer = styled.div`
 width: 100%;
 margin: 0 auto 10vh auto;
@@ -69,9 +70,6 @@ const Details = (props) => {
 //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
 //   }
 const router = useRouter();
-const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel')
-  }
   
   return (
     <div >
@@ -96,7 +94,7 @@ const _handleTailoredRedirect = (e) => {
     
       
       </DetailsContainer>
-      {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
+      {props.traveleritinerary ? <DesktopBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
       {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
      </div>
   );

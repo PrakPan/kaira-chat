@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
 import Spinner from '../../Spinner'; 
+import openTailoredModal from '../../../services/openTailoredModal';
 const Container = styled.div`
 width: 100%;
 background-color: white;
@@ -104,11 +105,7 @@ const redirectItinerary = () => {
   router.push(urls.itinerary.BASE+props.id)
   // setLoading(false)
 }
-const redirectPersonalise = () => {
-  setLoadingPlanning(true);
-  router.push(urls.TAILORED_TRAVEL)
-  // setLoading(false)
-} 
+
  const _handleItineraryClick = () => {
   setLoadingItinerary(true);
  
@@ -122,18 +119,6 @@ const redirectPersonalise = () => {
 }
 
 
-const _handlePersonaliseClick = () => {
-  setLoadingPlanning(true);
- 
-
-  setTimeout(redirectPersonalise, 1000);
-  
-  ga.callback_event({
-    action: 'CC-T-'+props.experience,
-     
-    callback: redirectPersonalise,
-  })
-}
     return(
       <Container className="netflix-ite">
         <ImageContainer>
@@ -159,7 +144,7 @@ const _handlePersonaliseClick = () => {
                   : 'View Itinerary'}
                   </Button>
             {/* <Price className="font-lexend">{ "₹ "+getIndianPrice(props.starting_cost/100)+"/-"}</Price> */}
-                  <Button display="inline-block"  width='100%' onclickparams={null} onclick={_handlePersonaliseClick}   boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
+                  <Button display="inline-block"  width='100%' onclickparams={null} onclick={()=>openTailoredModal(router)}   boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
                   {loadingPlanning  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
                   : 'Start Planning'}
                   </Button>

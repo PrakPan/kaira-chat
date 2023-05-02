@@ -10,7 +10,6 @@ const HeroBanner = (props) => {
       >
         <FullImgContent
           page_id={props.page_id}
-          destinationType={props.destinationType}
           destination={props.destination}
           cities={props.cities}
           children_cities={props.children_cities}

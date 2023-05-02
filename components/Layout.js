@@ -25,10 +25,11 @@ const Layout = (props) => {
     }
     else setShowMobilePlanner(false)
     }
-  },[router.isReady , router.asPath])
+  }, [router.isReady, router.asPath])
+  
     return (
       <div className='layout'>
-        <Header PW={props.PW} ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} />
+        <Header PW={props.PW} ctaonclick={props.ctaonclick} hidecta={props.hidecta} hidehomecta={props.hidehomecta} id={props.id} destination={props.destination} />
         <div style={{marginTop : '72px'}}>{props.children}</div>
         <LoginModal
           show={props.showLogin}

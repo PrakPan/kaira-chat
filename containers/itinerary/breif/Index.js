@@ -8,6 +8,7 @@ import Timer from '../timer/Index';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 import { useRouter } from 'next/router';
+import openTailoredModal from '../../../services/openTailoredModal';
  const Container = styled.div`
    
   padding: 1rem;
@@ -26,11 +27,6 @@ const RouteSlab = (props) => {
     props._hideTimerHandler();
 
 }
-const _handleTailoredRedirect = (e) => {
-  router.push('/tailored-travel')
-}
-
-
 
   return(
     <div>
@@ -41,7 +37,7 @@ const _handleTailoredRedirect = (e) => {
        {true ? <Heading color="black" margin="2rem 0" align="center" bold>Overview</Heading> : null}
        {true ? <Overview breif={props.breif}></Overview> : null}
       </Container>
-      {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
+      {props.traveleritinerary ? <DesktopBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
       {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
    </div>
   );

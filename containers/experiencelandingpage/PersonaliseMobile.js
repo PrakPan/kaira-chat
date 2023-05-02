@@ -3,6 +3,8 @@ import styled from 'styled-components';
 // import Button from '../../components/Button'
 import Button from '../../components/ui/button/Index'
 import Link from 'next/link';
+import openTailoredModal from '../../services/openTailoredModal'
+import { useRouter } from 'next/router';
 
 const Container = styled.div`
 display: initial;
@@ -43,6 +45,7 @@ const StyledLink = styled(Link)`
     text-decoration: none;
 
   }`;
+  const router = useRouter()
 const Banner = (props) => {
     const [showBanner, setShowBanner ] = useState(false);
 
@@ -70,8 +73,7 @@ const Banner = (props) => {
                       <Text className="font-lexend">{props.text}</Text>
                     </div>
               <div className="center-div">
-                {/* <Button  onClick={props.onclick} hoverBgColor="#F7e700" bgColor="#F7e700" width="max-content" borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem"><StyledLink href='/tailored-travel'>Start Now</StyledLink></Button> */}
-                  <Button boxShadow  onClick={props.onclick} hoverBgColor="#F7e700" bgColor="#F7e700" width="max-content" borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem"><StyledLink href='/tailored-travel'>Start Now</StyledLink></Button>
+                  <Button boxShadow  onclick={props.onclick? props.onclick : openTailoredModal(router)} hoverBgColor="#F7e700" bgColor="#F7e700" width="max-content" borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem"><StyledLink>Start Now</StyledLink></Button>
               </div>
               </GridContainer>
               </Container>

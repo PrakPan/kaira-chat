@@ -142,7 +142,6 @@ const FullImgContent = (props) => {
       {isPageWide && (
         <div>
           <TailoredForm
-            destinationType={props.destinationType}
             page_id={props.page_id}
             children_cities={props.children_cities}
             destination={props.destination}

@@ -313,20 +313,6 @@ const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 // const _handleExperiencesRedirect = (e) => {
 //     router.push('/travel-experiences')
 // }
-const _handleTailoredRedirect = () => {
-  router.push('/tailored-travel?search_text=Rajasthan')
-}
-const _handleTailoredClick = () => {
-  setDesktopBannerLoading(true);
-  setTimeout(_handleTailoredRedirect, 1000);
-
-  ga.callback_event({
-    action: 'TT-Desktopbanner',
-    
-    callback: _handleTailoredRedirect,
-  })
-
-}
 const EXPERIENCE = {  
   "id":"ifgPvZyQcBXXPYdJ",
   "slug": "bedazzling-friendcation-in-andaman",

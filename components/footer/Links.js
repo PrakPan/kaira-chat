@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Link from 'next/link';
 import urls from '../../services/urls';
+import openTailoredModal from '../../services/openTailoredModal';
 const LinksContainer = styled.div`
 display: grid;
 grid-template-columns: 50% 50%;
@@ -81,10 +82,9 @@ const Footer = (props) => {
                 <Column className="font-nunito">
                     <LinkHeading className="font-lexend">Travellers</LinkHeading>
                     <UL>
-                    {/* <Link href="/tailored-travel" <Link href="/travel-experiences" <Link href="/travel-experiences"  */}
                         <li><Link href={urls.travel_experiences.BASE} style={{textDecoration: "none", color: "white"}}><StyledA>Travel Experiences</StyledA></Link></li>
                         <li><Link href={urls.travel_experiences.BASE} style={{textDecoration: "none", color: "white"}}><StyledA>Experience Types</StyledA></Link></li>
-                        <li><Link href={urls.TAILORED_TRAVEL} style={{textDecoration: "none", color: "white"}}><StyledA>Personalise</StyledA></Link></li>
+                    <li onClick={openTailoredModal(router)}><Link style={{ textDecoration: "none", color: "white" }}><StyledA>Personalise</StyledA></Link></li>
                         <li><StyledA href={urls.supplier_thetarzanway.organisation.RESISTER} >Groups</StyledA></li>
                         <li><StyledA href="https://www.thetarzanway.com/contact">FAQs</StyledA></li>
                     </UL>

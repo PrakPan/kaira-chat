@@ -13,9 +13,10 @@ const Experience = (props) => {
       "description": props.cityData.short_description,
     
     };
-     const router = useRouter();
+  const router = useRouter();
+  
     return (
-      <Layout>
+      <Layout destination={props.cityData.name} id={props.cityData.id}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}

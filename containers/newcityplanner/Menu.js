@@ -94,15 +94,10 @@ const Menu = (props)=>{
 
 
   const router = useRouter()
-
-  const _handleTailoredRedirect = () => {
-    router.push('/tailored-travel?search_text='+props.city)
-  }
   let isPageWide = media('(min-width: 768px)')
 
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
-      {/* <Navigator handleClick={handleClick} {...props} /> */}
       {props.data.short_description && !props.thingsToDoPage &&  (
         <MenuItem id="Brief">
           <Brief
@@ -113,8 +108,6 @@ const Menu = (props)=>{
             name={props.data.name}
             elevation={props.data.elevation &&props.data.elevation.length && props.data.elevation[0]?.elevation}
           />
-        {/* <Button onClick={()=>{_handleTailoredRedirect()}}>{validateTextSize(`Craft a trip to ${props.data.name} now!`,8,'Craft a trip now!')}</Button> */}
-
         </MenuItem>
       )}
 
@@ -128,7 +121,7 @@ const Menu = (props)=>{
       {!!props.data.pois.length && (
         <MenuItem id="Places">
           <Heading>Places to visit in {props.data.name}</Heading>
-          <Poi elevation={props.elevation} data={props.data} thingsToDoPage={props.thingsToDoPage} pois={props.data.pois} city={props.data.name} _handleTailoredRedirect={_handleTailoredRedirect} />
+          <Poi elevation={props.elevation} data={props.data} thingsToDoPage={props.thingsToDoPage} pois={props.data.pois} city={props.data.name} />
         </MenuItem>
       )}
 

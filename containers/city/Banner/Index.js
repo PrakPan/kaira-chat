@@ -55,7 +55,8 @@ const  Banner = (props) => {
         localStorage.setItem('search_city_selected_id', props.data.id);
         localStorage.setItem('search_city_selected_name', props.data.name);
         localStorage.setItem('search_city_selected_parent', props.data.state_name);
-        router.push('/tailored-travel');
+          openTailoredModal(router, props.data.id, props.data.name);
+
     }
     const _handleScroll = ( ) => {
         if(props.offsets)

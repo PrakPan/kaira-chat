@@ -7,6 +7,8 @@ import Button from '../../../components/ui/button/Index'
 import styled from 'styled-components'
 import Carousel from '../../../components/FlickityCarousel'
 import PageDotsFlickity from '../../../components/PageDotsFlickity'
+import openTailoredModal from '../../../services/openTailoredModal';
+import { useRouter } from 'next/router';
 const MobileCardsContainer = styled.div`
   display : grid;
 grid-template-columns: 1fr 1fr ;
@@ -63,12 +65,12 @@ setMobileCardsToShowJSX(MobileCardsArr)
 
 
   let isPageWide = media('(min-width: 768px)')
-
+const router = useRouter()
   return (
     <>
     {isPageWide?<>
     {cards.length?<Carousel initialIndex={0} hideSides groupCells={6} numberOfCards={6} cards={cards}></Carousel> : <DesktopSkeleton />}
-   <Button  link={isPageWide? '/tailored-travel' : props.onclick ?  null : '/tailored-travel'}  onclick={!isPageWide ? props.onclick ? props.onclick : null : null} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
+   <Button  onclick={()=>openTailoredModal(router, props.data.id ,props.data.name)} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
 </>
  : 
      <div>

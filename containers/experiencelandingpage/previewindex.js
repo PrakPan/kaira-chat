@@ -21,9 +21,6 @@ const Experience = (props) => {
   const [payment, setPayment] = useState(null);
   
   const router = useRouter();
-  const _handlePersonaliseRedirect = () => {
-    router.push('/tailored-travel')
-  }
   //Close full screen gallery
   
 

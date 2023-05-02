@@ -5,6 +5,8 @@ import Button from '../../components/ui/button/Index'
 
 import Link from 'next/link';
 import urls from '../../services/urls';
+import openTailoredModal from '../../services/openTailoredModal';
+import { useRouter } from 'next/router';
 
 const Container = styled.div`
 display: initial;
@@ -63,22 +65,33 @@ const Banner = (props) => {
         window.removeEventListener('scroll', scrollhandler);
       };
     });
-    
+    const router = useRouter()
     if(showBanner)
-    return(
-                <Container>
-                  <GridContainer>
-                    <div className="center-div">
-                      <Text className="font-lexend">{props.text}</Text>
-                    </div>
-              <div className="center-div">
-                {/* <Button onClick={props.onclick} hoverBgColor="#F7e700" bgColor="#F7e700" width="max-content" borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem"><StyledLink href='/tailored-travel'>Start Now</StyledLink></Button> */}
-                <Button boxShadow onClick={props.onclick} hoverBgColor="#F7e700" bgColor="#F7e700" width="max-content" borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem"><StyledLink href={urls.TAILORED_TRAVEL}>Start Now</StyledLink></Button>
-              </div>
-              </GridContainer>
-              </Container>
-
-  ); 
+    return (
+      <Container>
+        <GridContainer>
+          <div className="center-div">
+            <Text className="font-lexend">{props.text}</Text>
+          </div>
+          <div className="center-div">
+            <Button
+              boxShadow
+              onClick={props.onclick}
+              hoverBgColor="#F7e700"
+              bgColor="#F7e700"
+              width="max-content"
+              borderStyle="none"
+              padding="0.5rem 0.5rem"
+              borderRadius="2rem"
+            >
+              <StyledLink onClick={() => openTailoredModal(router)}>
+                Start Now
+              </StyledLink>
+            </Button>
+          </div>
+        </GridContainer>
+      </Container>
+    ); 
   else return null;
 }
 

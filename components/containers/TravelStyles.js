@@ -174,20 +174,6 @@ const ExperientialTravelStyle = (props) =>{
    localStorage.setItem('experience_filter', experience_filter);
    router.push('/travel-experiences')
  }
-//  const _handleTailoredRedirect = () => {
-//   router.push(urls.TAILORED_TRAVEL)
-// }
-// const _handleTailoredClick = () => {
-//   setLoading(true);
-//   setTimeout(_handleTailoredRedirect, 1000);
-
-//   ga.callback_event({
-//     action: 'TG-Bannerone',
-    
-//     callback: _handleTailoredRedirect,
-//   })
-
-// }
 
  const GridContainer = styled.div`
  display: grid;

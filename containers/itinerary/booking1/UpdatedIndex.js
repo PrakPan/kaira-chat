@@ -38,6 +38,7 @@ import LogInModal from '../../../components/modals/Login';
 import TaxiModal from '../../../components/modals/taxis/Index';
 import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
 import { BsInfoCircleFill } from 'react-icons/bs';
+import openTailoredModal from '../../../services/openTailoredModal';
 
 const Container = styled.div`
 width: 100%;
@@ -180,9 +181,6 @@ function TabPanel(props) {
 
 const Booking = (props) => {
   const router = useRouter();
-  const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel')
-  }
   
    const [value, setValue] = React.useState(0);
 
@@ -696,7 +694,7 @@ const Booking = (props) => {
             </BookingsContainer>
           {summaryContainerJSX}
           {props.showBookingModal ?  <BookingModal _setImagesHandler={_setImagesHandler}  getPaymentHandler={props.getPaymentHandler} _updateStayBookingHandler={props._updateStayBookingHandler} alternates={alternates[selectedBooking.id]} tailored_id={props.stayBookings ? props.stayBookings[0]["tailored_itinerary"] : null} _updatePaymentHandler={props._updatePaymentHandler}   _updateBookingHandler={props._updateBookingHandler} selectedBooking={selectedBooking} setShowBookingModal={props.setShowBookingModal} showBookingModal={props.showBookingModal} setHideBookingModal={props.setHideBookingModal}></BookingModal> : null}
-          {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
+          {props.traveleritinerary ? <DesktopBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
           {props.showFlightModal ? <FlightModal getPaymentHandler={props.getPaymentHandler} _updateFlightBookingHandler={props._updateFlightBookingHandler}_updateBookingHandler={props._updateBookingHandler} itinerary_id={props.stayBookings.length ?  props.flightBookings[0]["itinerary_id"] : null} setHideFlightModal={props.setHideFlightModal}  alternates={alternates[selectedBooking.id]} tailored_id={props.flightBookings[0]["tailored_itinerary"]} _updatePaymentHandler={props._updatePaymentHandler}   _updateFlightHandler={props._updateFlightHandler} selectedBooking={selectedBooking} setShowFlightModal={props.setShowFlightModal} showFlightModal={props.showFlightModal} ></FlightModal> : null}
           {props.showTaxiModal? <TaxiModal getPaymentHandler={props.getPaymentHandler} _updateTaxiBookingHandler={props._updateTaxiBookingHandler}  setHideTaxiModal={() => props.setShowTaxiModal(false)}  showTaxiModal={props.showTaxiModal} _updatePaymentHandler={props._updatePaymentHandler}   selectedBooking={selectedBooking}  ></TaxiModal> : null}
 

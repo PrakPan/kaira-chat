@@ -9,6 +9,7 @@ import Heading from '../newheading/heading/Index';
 import { useRouter } from 'next/router'
 import media from '../media';
 import urls from '../../services/urls';
+import openTailoredModal from '../../services/openTailoredModal';
 
  //Personalisation banner used on homepage and listing page ..
 
@@ -40,9 +41,6 @@ const Text = styled.p`
 const Personalise= (props) => {
     const router = useRouter()
 
-    const _handleRedirect = (e) => {
-        router.push('/tailored-travel')
-    }
     let isPageWide = media('(min-width: 768px)')
 
 
@@ -58,7 +56,7 @@ const Personalise= (props) => {
         <Text className="font-lexend" style={{margin: '1rem auto 2rem auto', fontWeight: '300'}}>
             Just answer a few questions and craft your own experience.
         </Text>
-        <Button boxShadow link={urls.TAILORED_TRAVEL}  borderRadius="2rem" padding="0.5rem 2rem" margin="auto" borderWidth="1px">Craft Now</Button>
+        <Button boxShadow link={()=>openTailoredModal(router)}  borderRadius="2rem" padding="0.5rem 2rem" margin="auto" borderWidth="1px">Craft Now</Button>
         </div>
       </Container>
   ); 
@@ -66,5 +64,3 @@ const Personalise= (props) => {
 }
 
 export default Personalise;
-
-{/* <Button onclick={_handleRedirect} borderRadius="2rem" padding="0.5rem 2rem" margin="auto" borderWidth="1px">Craft Now</Button> */}

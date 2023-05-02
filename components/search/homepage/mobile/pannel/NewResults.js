@@ -98,10 +98,6 @@ const NewResults = (props) => {
     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
   
     }}
-  const _handlePersonaliseRedirect = (name) => {
-    router.push('/tailored-travel?search_text='+name)
-  }
-  let results=[];
   
   const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '0.5fr 5fr'}}>
   <SkeletonCard borderRadius='100%' width='44px'></SkeletonCard>

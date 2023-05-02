@@ -8,17 +8,14 @@ import Spinner from '../../../components/LoadingPage';
 import defaultbreif from '../../itinerary/defaultbrief';
 import DesktopPersonaliseBanner from '../../../components/containers/Banner' 
 import urls from '../../../services/urls';
+import openTailoredModal from '../../../services/openTailoredModal';
 const Container = styled.div`
     width: 100%;
     @media screen and (min-width: 768px) {
       margin-top: 5vh;
     }
 `;
-const _handlePersonaliseRedirect = () => {
-  router.push(urls.TAILORED_TRAVEL);
-}
  
-
 const Itinerary = (props) =>{
   
   const [menuHeading, setMenuHeading] = useState('overview');
@@ -56,17 +53,27 @@ for(var i=0; i<props.brief.city_slabs.length; i++){
   if(props.brief.city_slabs[i].duration) totalduration+=parseInt(props.brief.city_slabs[i].duration);
 }
   if(true)
-    return(
+    return (
       <>
         <Container>
-              <ItineraryContainer is_experience itinerary={props.itinerary} brief={props.brief}></ItineraryContainer>
+          <ItineraryContainer
+            is_experience
+            itinerary={props.itinerary}
+            brief={props.brief}
+          ></ItineraryContainer>
         </Container>
         {/* <div className='hidden-desktop'><Banner></Banner></div> */}
         {/* <div className='hidden-desktop'><Banner  text="Some text here" buttontext="Buy Now" color="black" buttonbgcolor="#F7e700" onclick={props.openBooking}></Banner></div> */}
-      <div className='hidden-mobile'><DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalise this experience?" cta="Start Now"></DesktopPersonaliseBanner></div>
-      {/* <div className='hidden-mobile'><DesktopPersonaliseBanner onclick={props.openItinerary} text="Check out detailed itinerary" cta="Click Here"></DesktopPersonaliseBanner></div>  */}
-      {/* <div className='hidden-desktop'><Banner text="View Itinerary"  buttontext="Click Me" color="black" buttonbgcolor="#f7e700"></Banner></div> */}
-        </>
+        <div className="hidden-mobile">
+          <DesktopPersonaliseBanner
+            onclick={() => openTailoredModal(router)}
+            text="Want to personalise this experience?"
+            cta="Start Now"
+          ></DesktopPersonaliseBanner>
+        </div>
+        {/* <div className='hidden-mobile'><DesktopPersonaliseBanner onclick={props.openItinerary} text="Check out detailed itinerary" cta="Click Here"></DesktopPersonaliseBanner></div>  */}
+        {/* <div className='hidden-desktop'><Banner text="View Itinerary"  buttontext="Click Me" color="black" buttonbgcolor="#f7e700"></Banner></div> */}
+      </>
     );
     else return(
     // <div style={{height: "100vh", width: "100vw", backgroundColor: "#f7e700"}} className="center-div">

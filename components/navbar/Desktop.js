@@ -16,6 +16,7 @@ import * as ga from '../../services/ga/Index';
 import DesktopSearch from '../search/header/desktop/Index';
 import { ImSearch } from 'react-icons/im';
 import media from '../media'
+import openTailoredModal from '../../services/openTailoredModal';
 const NavItemsContainer = styled.div`
   display: none;
 
@@ -156,6 +157,7 @@ const Search = styled.input`
 const Navbar = (props) => {
   const router = useRouter()
   const isTablet = media('(min-width: 950px)')
+  console.log(props, 'props.props')
 
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
 
@@ -170,13 +172,7 @@ const Navbar = (props) => {
     /* toggle mobile profilelist */
   }
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
-  {
-    /* toggle desktop profilelist */
-  }
-  const [hideNav , setHideNav] = useState(false);
-  {
-    /* hide/show navbar on scroll */
-  }
+
   const [Height, setHeight] = useState(false);
 
   const toggleMobileNavItems = () => {
@@ -211,22 +207,8 @@ const Navbar = (props) => {
   const _handlePWRedirect = (  ) => {
     router.push('/corporates/physicswallah')
   }
-  const _handleTailoredRedirect = () => {
-    router.push('/tailored-travel')
-  }
-  const _handleTailoredClick = () => {
-    // setDesktopBannerLoading(true);
-    setTimeout(_handleTailoredRedirect, 1000);
-  
-    ga.callback_event({
-      action: 'TT-Header',
-      
-      callback: _handleTailoredRedirect,
-    })
-  
-  }
+
   const [toggleSearch, setToggleSearch] = useState(false);
-  console.log(props , 'props.props')
      return (
     <div>
     <Header changeHeight={Height} >
@@ -285,7 +267,7 @@ const Navbar = (props) => {
             </NavItem>
       
           {  !props.hidecta  ? 
-                        <Button fontWeight="500" borderColor='black' borderWidth='1px' hoverBgColor="black" hoverColor="white" bgColor="#F7e700"  borderRadius="6px" margin="0 1.5rem 0 0" padding="0.5rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : _handleTailoredClick}>Create a Trip</Button> 
+                        <Button fontWeight="500" borderColor='black' borderWidth='1px' hoverBgColor="black" hoverColor="white" bgColor="#F7e700"  borderRadius="6px" margin="0 1.5rem 0 0" padding="0.5rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : ()=>openTailoredModal(router, props.id , props.destination)}>Create a Trip</Button> 
           : null}
           {props.token ? 
           <ProfilDropDown

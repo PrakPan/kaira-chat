@@ -60,4 +60,3 @@ export default {
     OFFBEAT: "/travel-planner/offbeat-trips-in-india",
   },
 };
-  

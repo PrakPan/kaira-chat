@@ -9,6 +9,7 @@ import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import media from '../../components/media';
 import { useRouter } from 'next/router';
 import axioscityinstance from '../../services/poi/city'
+import openTailoredModal from '../../services/openTailoredModal';
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
 
@@ -27,9 +28,7 @@ const Experience = (props) => {
     },
   });
   const router = useRouter();
-  const _handlePersonaliseRedirect = () => {
-    router.push('/tailored-travel')
-  }
+
   //Close full screen gallery
   
 
@@ -101,7 +100,7 @@ const Experience = (props) => {
       //Open experience page
       else return (
         <div>
-          <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
+          <DesktopPersonaliseBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
           <div>
           <ExperienceGallery  filter={'Adveture & Test'}  experienceLoaded={experienceLoaded} title={experienceData.data.name} region={'Himachal Test'} duration={'Test'}  setGalleryOpen={setGalleryOpen} images={experienceData.data.images}  />
             <Menu  setGalleryOpen={() => setGalleryOpen(true)} title={experienceData.data.name} data={experienceData.data} experienceLoaded={experienceLoaded} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={experienceData.data.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>

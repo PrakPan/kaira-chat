@@ -11,6 +11,7 @@ import * as logout from '../../../store/actions/logout';
 import Notifications from '../../modals/Notifications/Index';
 import SearchMobile from '../../search/homepage/mobile/Index';
 import { FaSearch } from 'react-icons/fa'
+import openTailoredModal from '../../../services/openTailoredModal';
 const Container = styled.div`
 background-color: white;
 padding: 0 5vw;
@@ -149,7 +150,7 @@ const Mobile = (props) => {
             {type : 'main' , onclick : ()=>_handleNotifications() , text : 'Notifications', icon: 'media/icons/navigation/bell.png' },
             // {type : 'main' ,link : '/travel-guide' , text : 'Travel Guide' },
             {type : 'main' ,link : 'http://blog.thetarzanway.com/' , text : 'Travel Feed' , icon : 'media/icons/navigation/chat.png' },
-            {type : 'main' ,link : '/tailored-travel' , text : 'Tailor-made travel' , icon : 'media/icons/navigation/page.png' },
+            {type : 'main' , onclick : ()=>openTailoredModal(router) , text : 'Tailor-made travel' , icon : 'media/icons/navigation/page.png' },
             {type : 'main' ,link : '/testimonials' , text : 'Testimonials' ,icon : 'media/icons/navigation/testimonial.png' },
             {type : 'others' ,link : '/contact' , text : 'Contact Us' , icon : 'media/icons/navigation/call.png'},
             {type : 'others' ,link : '/covid-19-safe-travel-india' , text : 'Covid 19 Safety' , icon : 'media/icons/navigation/health-insurance.png' },

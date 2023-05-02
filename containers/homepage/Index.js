@@ -155,7 +155,8 @@ const router = useRouter()
 const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 const [experienceMore,setExperieceMore] = useState(false)
 
-  const _handleExperiencesRedirect = () => {
+
+const _handleExperiencesRedirect = () => {
   router.push(urls.travel_experiences.BASE)
 }
 const _handleExperiencesClick = () => {

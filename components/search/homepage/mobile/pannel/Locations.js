@@ -79,14 +79,7 @@ const Locations= (props) => {
  
  }
    }
-  const _handlePersonaliseRedirect = (id, name, parent) => {
-    // localStorage.setItem('search_city_selected_id', id)
-    // localStorage.setItem('search_city_selected_name', name)
-    // localStorage.setItem('search_city_selected_parent', parent)
 
-
-    router.push('/tailored-travel?search_text='+name)
-  }
   let locations=[];
     if(props.hotlocations){
         for(var i=0; i<5; i++){

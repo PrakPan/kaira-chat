@@ -73,14 +73,6 @@ const Locations= (props) => {
  
  }
    }
-  const _handlePersonaliseRedirect = (id, name, parent) => {
-    // localStorage.setItem('search_city_selected_id', id)
-    // localStorage.setItem('search_city_selected_name', name)
-    // localStorage.setItem('search_city_selected_parent', parent
-    router.push('/tailored-travel?search_text='+name)
-  }
-
-
 
   let locations=[];
     if(props.hotlocations){
@@ -89,7 +81,6 @@ const Locations= (props) => {
 
             locations.push(
                 <LocationContainer className='border-thin' onClick={() => _handleLocationClick(data)}>
-                {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
                 <ImageLoader
                         url={props.hotlocations[i].image}
                         borderRadius='50%'

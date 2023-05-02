@@ -12,6 +12,7 @@ import Enquiry from './newenquiry/Index';
 import media from '../../../components/media'
 import  { useRouter } from 'next/router';
 import urls from '../../../services/urls';
+import openTailoredModal from '../../../services/openTailoredModal';
 const Container = styled.div`
 width: 90%;
 margin: auto;
@@ -147,20 +148,53 @@ const Booking = (props) => {
          <Enquiry starting_price={props.starting_price} experience={props.experience} itinerary_id={props.itinerary_id} experience_id={props.experienceId} bookings></Enquiry>
         </Container>
   ); 
-  else return(
-      <Container>
-            {showBookingMobile? <BookingsContainer>
-            <Heading align="center" bold margin="0 0 1rem 0">What you get</Heading>
-             <Flickity cards={bookings}></Flickity>
-             <Button hoverBgColor="black" bgColor='#f7e700' width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0.5rem 0 0.5rem 0" onclick={_showMobileEnquiryHandler} >Enquire Now</Button>
-             <Button onclick={()=> router.push(urls.TAILORED_TRAVEL)} width="100%" bgColor="white" hoverBgColor="black"  borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"  margin="0.5rem 0 0.5rem 0" >
-          {/* <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/> */}
-          Craft Experience</Button>
-            </BookingsContainer> : null}
-            {/* {showpayment &&props.payment.payment_info ?
+  else return (
+    <Container>
+      {showBookingMobile ? (
+        <BookingsContainer>
+          <Heading align="center" bold margin="0 0 1rem 0">
+            What you get
+          </Heading>
+          <Flickity cards={bookings}></Flickity>
+          <Button
+            hoverBgColor="black"
+            bgColor="#f7e700"
+            width="100%"
+            bgColor="#F7e700"
+            borderRadius="5px"
+            borderWidth="0px"
+            margin="0.5rem 0 0.5rem 0"
+            onclick={_showMobileEnquiryHandler}
+          >
+            Enquire Now
+          </Button>
+          <Button
+            onclick={() => openTailoredModal(router)}
+            width="100%"
+            bgColor="white"
+            hoverBgColor="black"
+            borderRadius="5px"
+            borderWidth="1px"
+            borderColor="#e4e4e4"
+            margin="0.5rem 0 0.5rem 0"
+          >
+            {/* <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/> */}
+            Craft Experience
+          </Button>
+        </BookingsContainer>
+      ) : null}
+      {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-          {showEnquiry.mobile ?           <Enquiry starting_price={props.starting_price} experience={props.experience} itinerary_id={props.itinerary_id} experience_id={props.experienceId} bookings></Enquiry> : null}
-        </Container>
+      {showEnquiry.mobile ? (
+        <Enquiry
+          starting_price={props.starting_price}
+          experience={props.experience}
+          itinerary_id={props.itinerary_id}
+          experience_id={props.experienceId}
+          bookings
+        ></Enquiry>
+      ) : null}
+    </Container>
   );
     }
     else return(

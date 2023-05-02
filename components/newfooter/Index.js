@@ -7,6 +7,8 @@ import Subscribe from './Subscribe';
 import Link from 'next/link'
 import { useEffect, useState } from 'react';
 import linksArr from './Links';
+import openTailoredModal from '../../services/openTailoredModal';
+import { useRouter } from 'next/router';
 
  const Container = styled.div`
    min-height: 10vw;
@@ -116,7 +118,8 @@ const NewFooter = (props) => {
   const [showLogo , setShowLogo] = useState(false)
   useEffect(()=>{
     setShowLogo(true)
-  },[])
+  }, [])
+  const router = useRouter()
  const LinksComponent = linksArr.map((e) => (
    <div>
      <Heading>{e.heading}</Heading>
@@ -124,10 +127,12 @@ const NewFooter = (props) => {
        <Links>
          {typeof data.link != "string" ? (
            <a href={data.link[0]}>{data.title}</a>
+         ) : data.title == "Personalise" ? (
+           <p onClick={() => openTailoredModal(router)}>{data.title}</p>
          ) : data.title == "Subscribe" ? (
            <p onClick={() => setShadow(!shadow)}>{data.title}</p>
          ) : (
-           <a href={'https://thetarzanway.com'+data.link}>{data.title}</a>
+           <a href={"https://thetarzanway.com" + data.link}>{data.title}</a>
          )}
        </Links>
      ))}

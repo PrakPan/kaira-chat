@@ -17,6 +17,7 @@ import ImageLoader from '../../components/ImageLoader';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import Spinner from '../../components/Spinner';
+import openTailoredModal from '../../services/openTailoredModal';
 
 const Container = styled.div`
     width: 100%;
@@ -97,11 +98,14 @@ const UserDashboard = (props) => {
       },[props.token]);
   
 
-return(
-    <CheckAuthRedirect authRedirectPath="/" redirectOnFail={() => router.push('/')}>
+return (
+  <CheckAuthRedirect
+    authRedirectPath="/"
+    redirectOnFail={() => router.push("/")}
+  >
     <Container>
-        {/* <Heading align="left" margin="1.5rem 0" bold>Your Space</Heading> */}
-        {/* <Tabs defaultActiveKey={props.match.params.selected} className="justify-content-center nav-tabs-profile-main border-thin" style={{borderRadius: "5px"}}>
+      {/* <Heading align="left" margin="1.5rem 0" bold>Your Space</Heading> */}
+      {/* <Tabs defaultActiveKey={props.match.params.selected} className="justify-content-center nav-tabs-profile-main border-thin" style={{borderRadius: "5px"}}>
                 <Tab eventKey="profile" title="Profile" className="font-nunito">
                     <ContentContainer className="border-thin"><Profile></Profile></ContentContainer>
                     <ContentContainer className="border-thin">
@@ -127,25 +131,71 @@ return(
                     <ContentContainer className="border-thin"><Settings></Settings></ContentContainer>
                 </Tab>
             </Tabs> */}
-            <ContentContainer ><Profile></Profile></ContentContainer>
-                    <ContentContainer className="border-thi">
-                        <div style={{display: 'flex'}}>{myPlansArr.length ? <Heading align='left' margin="0 0 2rem 0" bold noline>My Plans</Heading> :
-                         <Heading align='left' margin="0" bold  noline>My Plans
-                         </Heading>}
-                         {
-                            loading ? 
-                            <Spinner></Spinner> : null
-                         }</div>
-                        {isPageWide && !myPlansArr.length  && !loading? <NoPlans className="font-lexend" >You don't have any plans yet. <Link href="/tailored-travel" passHref={true} ><a style={{color: 'black', textDecoration: 'none !important'}}>Start Planning</a></Link></NoPlans> : null}
-                       
-                        {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
-                        {myPlansArr.length ? <Experiences  experiences={myPlansArr}></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null}
-                        {!isPageWide && !myPlansArr.length && !loading ? <NoPlans className="font-lexend" >You don't have any plans yet. </NoPlans> : null}
-                        {!isPageWide && !myPlansArr.length  && !loading? <Link href="/tailored-travel" passHref={true} ><a className="font-nunito" style={{color: 'black', fontWeight: '300', display: 'block', margin: '0.5rem auto', textDecoration: 'none !important', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '1px'}}>Start Planning</a></Link> : null}
-                    </ContentContainer>
-                 
-    </Container></CheckAuthRedirect>
+      <ContentContainer>
+        <Profile></Profile>
+      </ContentContainer>
+      <ContentContainer className="border-thi">
+        <div style={{ display: "flex" }}>
+          {myPlansArr.length ? (
+            <Heading align="left" margin="0 0 2rem 0" bold noline>
+              My Plans
+            </Heading>
+          ) : (
+            <Heading align="left" margin="0" bold noline>
+              My Plans
+            </Heading>
+          )}
+          {loading ? <Spinner></Spinner> : null}
+        </div>
+        {isPageWide && !myPlansArr.length && !loading ? (
+          <NoPlans className="font-lexend">
+            You don't have any plans yet.{" "}
+            <a
+              onClick={() => openTailoredModal(router)}
+              style={{ color: "black", textDecoration: "none !important" }}
+            >
+              Start Planning
+            </a>
+          </NoPlans>
+        ) : null}
 
+        {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
+        {myPlansArr.length ? (
+          <Experiences experiences={myPlansArr}></Experiences>
+        ) : !loading ? (
+          <ImageLoader
+            width="40%"
+            widthmobile="40%"
+            margin="7.5vh auto"
+            url={"media/website/noplans.svg"}
+          ></ImageLoader>
+        ) : null}
+        {!isPageWide && !myPlansArr.length && !loading ? (
+          <NoPlans className="font-lexend">
+            You don't have any plans yet.{" "}
+          </NoPlans>
+        ) : null}
+        {!isPageWide && !myPlansArr.length && !loading ? (
+            <a
+              onClick={() => openTailoredModal(router)}
+              className="font-nunito"
+              style={{
+                color: "black",
+                fontWeight: "300",
+                display: "block",
+                margin: "0.5rem auto",
+                textDecoration: "none !important",
+                textAlign: "center",
+                fontSize: "1.25rem",
+                letterSpacing: "1px",
+              }}
+            >
+              Start Planning
+            </a>
+        ) : null}
+      </ContentContainer>
+    </Container>
+  </CheckAuthRedirect>
 );
 }
 const mapStateToPros = (state) => {

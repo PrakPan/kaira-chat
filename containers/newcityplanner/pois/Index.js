@@ -6,6 +6,8 @@ import PageDotsFlickity from '../../../components/PageDotsFlickity'
 import validateTextSize from "../../../services/textSizeValidator"
 import Map from '../../../components/Map'
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget"
+import openTailoredModal from "../../../services/openTailoredModal"
+import { useRouter } from "next/router"
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
@@ -85,8 +87,8 @@ const Poi = props=>{
   const cards = props.pois?.map((e,i)=>
   <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer} />  
   )
-
-
+  const router = useRouter()
+  
     return (
       <GridContainer>
         <div className="hidden-mobile">            
@@ -95,7 +97,7 @@ const Poi = props=>{
                props.pois.filter((e,i)=>i<more)?.map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer}/>))
             }
             </Items>
-          <Button onClick={()=>{more<props.pois.length?setMore(more+4):props._handleTailoredRedirect()}}>{more<props.pois.length?'View More' : validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!')}</Button>
+          <Button onClick={()=>{more<props.pois.length?setMore(more+4): props.data?openTailoredModal(router, props.data.id , props.data.name) : console.log('')}}>{more<props.pois.length?'View More' : validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!')}</Button>
         </div>
         
         <div className="hidden-desktop">

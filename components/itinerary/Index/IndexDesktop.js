@@ -11,6 +11,7 @@ import Banner from '../../../containers/homepage/banner/Mobile';
 import { useRouter  } from 'next/router';
 import isinview from '../../isinview';
 import {connect} from 'react-redux';
+import openTailoredModal from '../../../services/openTailoredModal';
 
 
 const Container = styled.div`
@@ -46,16 +47,7 @@ const Itinerary = (props) =>{
     const hideModalHandler = () => {
         setShowModal(false);
     }
-    const _handleTailoredRedirect = (e) => {
-        router.push('/tailored-travel')
-      }
       
-    let links=[];
-    const StyledLink = styled(Link)`
-        &:hover{
-            cursor: pointer;
-        }
-    `;
         let classnames="";
         if(props.blur) classnames="blurry-text "
     let LinksArr = [];
@@ -152,7 +144,7 @@ const Itinerary = (props) =>{
         {ContainerArr}
         </div>
      </Container>
-     {props.traveleritinerary ? <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
+     {props.traveleritinerary ? <DesktopBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
       {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
      </div>);
 
