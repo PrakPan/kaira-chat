@@ -63,7 +63,7 @@ const Enquiry = (props) => {
 
   useEffect(()=>{
   function findModalWidth(){
-    if(window.innerWidth >= 1800) setModalWidth(50)
+    if(window.innerWidth >= 1600) setModalWidth(50)
     else if(window.innerWidth >= 1400) setModalWidth(60)
     else if(window.innerWidth >= 1100) setModalWidth(70)
     else if(window.innerWidth >= 768) setModalWidth(90)

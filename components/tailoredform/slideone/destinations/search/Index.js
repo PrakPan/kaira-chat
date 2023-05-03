@@ -52,9 +52,13 @@ const Search = (props) => {
 
         // else props._showSearchedLocations([]);
 
-    }).catch(e=>setLoading(false))
-    
-    ;}
+      }).catch(e => setLoading(false))
+          setShowResults(true);
+    setResults([
+      <div style={{ margin: "1rem" }}>
+        Something went wrong! Please try again later.
+      </div>,
+    ]);}
   }
 
      useEffect(() => {
@@ -67,7 +71,6 @@ const Search = (props) => {
   //   else setShowHotLocations(true)
   // },[showResults])
 // console.log(hotLocationsData, results, "resultsresults", showHotLocations);
-  console.log(showHotLocations, "resultsresults");
   return (
     <Container>
       <div style={{ display: "flex" }}>
@@ -89,6 +92,7 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
           setShowResults={setShowResults}
+          autofocus={props.autofocus}
         ></SearchInput>
 
         {/* {loading ? <Spinner size={16} margin="0"></Spinner> : null} */}

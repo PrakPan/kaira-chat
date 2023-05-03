@@ -36,7 +36,7 @@ const [updatedData , setUpdatedData] = useState({id : null , data : null})
     let dest = destinations.slice();
     const id = Date.now()
     dest.push(
-      <SelectedDestination _updateDestinationHandler={_updateDestinationHandler} setDeletedId={setDeletedId} key={id} inbox_id={id}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
+      <SelectedDestination autofocus _updateDestinationHandler={_updateDestinationHandler} setDeletedId={setDeletedId} key={id} inbox_id={id}  selectedCities={props.selectedCities} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} setDestination={props.setDestination} setSelectedCities={props.setSelectedCities}></SelectedDestination>
     )
     setDestinations(dest.slice());
      props.selectedCities.push({input_id : id })

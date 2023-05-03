@@ -654,7 +654,7 @@ if(props.loadingsocial) return <div style={{ height : '100%' , width : '100%' , 
         </Grid> */}
           </>
           <div
-            className="text-center font-nuntio"
+            className="text-center font-lexend"
             style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
           >
             By signing up you are agreeing with our{" "}
