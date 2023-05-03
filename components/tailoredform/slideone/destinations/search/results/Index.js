@@ -82,6 +82,7 @@ const SearchResults = (props) => {
                   setSearchFinalized={props.setSearchFinalized}
                   setSelectedCities={props.setSelectedCities}
                   selectedCities={props.selectedCities}
+                  key={i}
                 ></Result>
                 
               );

@@ -45,15 +45,15 @@ const Result = (props) => {
     props.setSearchFinalized({name: props.name, type: props.type});
     props.setDestination(props.name)
    if(props.setShowResults) props.setShowResults(false)
-  //  const selected = props.selectedCities.map(e=>{
-  //     if(e.input_id == props.inbox_id) return {input_id : props.inbox_id,...props.result , id : props.result.resource_id}
-  //     return e
-  //   })
-  //   props.setSelectedCities(selected)
     props.setFocusSearch(false)
   }
   return (
-    <Container className='font-lexend'  onClick={(e)=>{_handleClick(e) , props._updateDestinationHandler(props.inbox_id,props.result)}}>
+    <Container className='font-lexend'  onClick={(e)=>{_handleClick(e),
+      props._updateDestinationHandler(
+        props.result.resource_id , props.inbox_id,
+        props.result
+      );
+    }}>
                 {/* <div style={{fontWeight: '600'}}>{props.name}</div> */}
                 {/* <div style={{flexGrow: '1', textAlign: 'right', fontWeight: '300'}}>{props.type}</div> */}
 

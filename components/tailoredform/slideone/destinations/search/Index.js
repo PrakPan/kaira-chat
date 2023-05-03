@@ -70,7 +70,6 @@ const Search = (props) => {
   //   if (showResults) setShowHotLocations(false)
   //   else setShowHotLocations(true)
   // },[showResults])
-// console.log(hotLocationsData, results, "resultsresults", showHotLocations);
   return (
     <Container>
       <div style={{ display: "flex" }}>
