@@ -39,11 +39,11 @@ const Container = styled(motion.div)<{ isSelected?: boolean }>`
 
 const Label = styled.div<{ isSelected?: boolean }>`
   transition: all ease 0.3s;
-  color: ${({ isSelected }) => (isSelected ? '#fff' : '#3d3c3b')};
+  color: ${({ isSelected }) => (isSelected ? '#F7E700' : '#3d3c3b')};
   white-space: nowrap;
 
   :hover {
-    color: ${({ isSelected }) => (isSelected ? '#fff' : '#010700')};
+    color: ${({ isSelected }) => (isSelected ? '#F7E700' : '#010700')};
   }
 `;
 
@@ -84,7 +84,7 @@ export const NavigationLink = ({
       style={{ textDecoration: 'none' }}
       spy={true}
       // duration={500}
-      offset={-250}
+      offset={-50}
       onSetActive={() => onSelect(item.id)}
       {...restProps}
       {...variants}

@@ -138,7 +138,7 @@ const NewItenaryMain = (props) => {
   }
 
   const yearCalc = (days) => {
-    var year1 = days[0].date.split('/')[2];
+    var year1 = days[0]?.date?.split('/')[2];
     var year2 = days[days.length - 1].date.split('/')[2];
     if (year1 != year2) {
       return `${year1}/${year2}`;

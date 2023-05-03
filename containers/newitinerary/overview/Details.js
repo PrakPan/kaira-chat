@@ -40,7 +40,7 @@ const Details = (props) => {
 
   return (
     <Container className="font-lexend">
-      {props.travellerType != null ? (
+      {props.travellerType[0] ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>
@@ -73,7 +73,7 @@ const Details = (props) => {
 
       {props.travellerType != null ? (
         <div style={{ width: 'max-content' }}>
-          <Heading>Date({props.duration})</Heading>
+          <Heading>Dates ({props.duration})</Heading>
           {props.start_date && (
             <Text>
               {convertDFormat(props.start_date)} -{' '}

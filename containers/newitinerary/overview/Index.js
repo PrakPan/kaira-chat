@@ -7,8 +7,11 @@ const Container = styled.div``;
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
-  margin-top: 2rem;
+  margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  @media screen and (min-width: 768px) {
+    margin-top: 0rem;
+  }
 `;
 const Heading = styled.h1`
   font-size: 34px;
@@ -57,10 +60,10 @@ const Overview = (props) => {
           end_date={props.end_date}
           duration={props.duration}
         ></Details>
-        <div
+        {/* <div
           className="border-b-[0.8px] border-slate-300 mt-2 -mx-5 block lg:hidden
         "
-        ></div>
+        ></div> */}
       </div>
 
       {/* <Line></Line> */}

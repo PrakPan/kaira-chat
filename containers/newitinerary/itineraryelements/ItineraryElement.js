@@ -4,6 +4,8 @@ import { AiFillCar } from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import { FaHome } from 'react-icons/fa';
+
 import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 const padding = {
   initialLeft: '60px',
@@ -13,7 +15,7 @@ const Container = styled.div`
   flex-direction: column;
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+
   line-height: 22px;
 
   padding: 0px 0px 0px 0px;
@@ -63,20 +65,21 @@ const ItineraryElement = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container style={{ fontSize: '14px', fontWeight: '500' }} className="pt-3">
+    <Container className="pt-3">
       {/* <div>{props.time}</div> */}
       {/* <SectionOneText>{props.time}</SectionOneText> */}
       {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
       <div className="flex flex-row ">
-        <div className=" flex justify-center items-center">
-          <ImageLoader
+        <div className=" flex justify-center items-center ">
+          <FaHome className="text-black lg:text-[4.05rem]  text-[1.25rem]" />
+          {/* <ImageLoader
             url={props.icon}
             leftalign
             dimensions={{ width: 200, height: 200 }}
             width="4.05rem"
             widthmobile="1.25rem"
-          ></ImageLoader>
+          ></ImageLoader> */}
         </div>
         <div
           style={{ display: 'flex', alignItems: 'center' }}

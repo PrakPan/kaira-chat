@@ -29,10 +29,12 @@ const RecomendationComponent = (props) => {
       <Timecontainer>
         {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
       </Timecontainer>
+
       <TInfoContainer>
         {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
         <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-4'}`}>
+          <div className="text-lg font-bold pb-2"> Recomendation</div>
           {props.recomendation ? (
             <div className="pb-3">
               {!isJson(props.recomendation) ? (

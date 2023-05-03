@@ -182,15 +182,15 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
 
               <div className="flex flex-col gap-2 pl-3">
                 <div className={`font-bold text-lg text-[#270e0e]`}>
-                  {location.name}
+                  {location.name} - {location?.duration} Nights
                 </div>
                 <div className="flex flex-row gap-2">
                   <span>Date</span>:<div>{location.date}</div>
                 </div>
-                <div>Things to do</div>
+                {/* <div>Things to do</div>
                 <div className="font-bold text-md">
                   Tours · Wildlife · Museums
-                </div>
+                </div> */}
                 {/* <WeatherWidget
                   city={location.city_name}
                   lat={location.lat}
@@ -253,10 +253,10 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
               <div className="flex flex-row gap-2">
                 <span>Date</span>:<div>{currentPopup[0].date} </div>
               </div>
-              <div>Things to do</div>
+              {/* <div>Things to do</div>
               <div className="font-bold text-md">
                 Tours · Wildlife · Museums
-              </div>
+              </div> */}
               {/* <WeatherWidget
                 city={currentPopup[0].city_name}
                 lat={currentPopup[0].lat}

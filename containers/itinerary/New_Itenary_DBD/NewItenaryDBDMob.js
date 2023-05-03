@@ -132,7 +132,7 @@ const NewItenaryDBDMob = (props) => {
 
       <ScrollableMenuTabs
         icons={itemsDays.length < 3 ? false : true}
-        offset={'84px'}
+        offset={'80px'}
         items={itemsDays}
         BarName="CityName"
         year={'2023'}

@@ -105,8 +105,8 @@ const Route = (props) => {
                 city={props.routes[i - 1].city_name}
                 cityId={props.routes[i - 1].city_id}
                 duration={
-                  props.breif.city_slabs[i - 1].duration
-                    ? props.breif.city_slabs[i - 1].duration + ' Nights'
+                  props.breif.city_slabs[i].duration
+                    ? props.breif.city_slabs[i].duration + ' Nights'
                     : null
                 }
                 pinColour={props.routes[i - 1].color}

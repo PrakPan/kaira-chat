@@ -77,7 +77,7 @@ const MidSection = (props) => {
       </div>
 
       <Text>
-        {props.icon && (
+        {/* {props.icon && (
           <ImageLoader
             url={props.icon}
             leftalign
@@ -85,8 +85,8 @@ const MidSection = (props) => {
             width="1.25rem"
             widthmobile="1.25rem"
           ></ImageLoader>
-        )}
-        {/* {props.modes && (
+        )} */}
+        {props.modes && (
           <TransportIconFetcher
             TransportMode={props.modes}
             Instyle={{
@@ -95,12 +95,11 @@ const MidSection = (props) => {
               color: 'black',
             }}
           />
-        )} */}
+        )}
         {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}
-        {props.transportMode ? props.transportMode : 'taxi'}: {props.duration}h
-        30m
+        {props.transportMode}: {props.duration}h 30m
       </Text>
       {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
     </Container>

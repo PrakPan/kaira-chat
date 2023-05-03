@@ -120,7 +120,7 @@ const ItineraryPoiElement = (props) => {
               </div>
               {props.rating && <StarRating initialRating={4}></StarRating>}
 
-              {props.poi !== undefined ? (
+              {/* {props.poi !== undefined ? (
                 props.poi.experience_filters ? (
                   <div className={`flex gap-2 flex-row`}>
                     {props.poi.experience_filters.map((element, index) =>
@@ -153,7 +153,7 @@ const ItineraryPoiElement = (props) => {
                     )}
                   </div>
                 ) : null
-              ) : null}
+              ) : null} */}
             </div>
           </div>
 

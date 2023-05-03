@@ -312,7 +312,7 @@ const BookingContainer = (props) => {
         <div className="flex flex-col  bg-[#F7E70033] ">
           <div className="p-3">
             <div className="flex flex-row justify-between">
-              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+              {/* <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                 <span>₹</span>
                 <div>
                   {' '}
@@ -320,7 +320,7 @@ const BookingContainer = (props) => {
                     Math.round(props.payment.per_person_total_cost / 100) * 2
                   )}
                 </div>
-              </div>
+              </div> */}
               {iscouponApplied && (
                 <div className="bg-[#EB5757] font-bold text-sm px-2 py-1 text-white">
                   {percentoff}% OFF

@@ -1,7 +1,7 @@
 import { FaTaxi } from 'react-icons/fa';
 import { MdOutlineFlightTakeoff } from 'react-icons/md';
 
-export function TransportIconFetcher({ TransportMode, Instyle }) {
+export function TransportIconFetcher({ TransportMode, Instyle, classname }) {
   // const Icons = {
   //   "clear sky": clearsky,
   //   "few clouds": fewClouds,
@@ -15,12 +15,12 @@ export function TransportIconFetcher({ TransportMode, Instyle }) {
   // };
   switch (TransportMode) {
     case 'Flight':
-      return <MdOutlineFlightTakeoff style={Instyle} />;
+      return <MdOutlineFlightTakeoff style={Instyle} className={classname} />;
 
     case 'Taxi':
-      return <FaTaxi style={Instyle} />;
+      return <FaTaxi style={Instyle} className={classname} />;
 
     default:
-      return <FaTaxi style={Instyle} />;
+      return <FaTaxi style={Instyle} className={classname} />;
   }
 }

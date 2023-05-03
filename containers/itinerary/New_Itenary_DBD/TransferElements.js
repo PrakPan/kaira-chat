@@ -15,6 +15,7 @@ import {
 import { convertNumToTime } from '../../../helper/convertNumToTime';
 import { formatNumber } from '../../../helper/formatNumber';
 import { Text } from '../../newitinerary/itineraryelements/ItineraryFoodElement';
+import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 const TransferElements = ({
   time,
   heading,
@@ -35,13 +36,19 @@ const TransferElements = ({
           {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
         </Timecontainer>
         <div>
-          <ImageLoader
+          {modes && (
+            <TransportIconFetcher
+              TransportMode={modes}
+              classname="text-black lg:text-[4.05rem] text-[1.25rem]"
+            />
+          )}
+          {/* <ImageLoader
             url={icon}
             leftalign
             dimensions={{ width: 200, height: 200 }}
             width="4.05rem"
             widthmobile="1.25rem"
-          ></ImageLoader>
+          ></ImageLoader> */}
         </div>
         <TInfoContainer>
           {/* <HLine style={{ width: '2rem' }}></HLine> */}
@@ -60,13 +67,23 @@ const TransferElements = ({
             {transfers !== undefined ? (
               <TransportContainer>
                 <div style={{ paddingRight: '10px' }}>
-                  <ImageLoader
+                  {modes && (
+                    <TransportIconFetcher
+                      TransportMode={modes}
+                      Instyle={{
+                        fontSize: '1.75rem',
+                        marginRight: '0.8rem',
+                        color: 'black',
+                      }}
+                    />
+                  )}
+                  {/* <ImageLoader
                     url={icon}
                     leftalign
                     dimensions={{ width: 200, height: 200 }}
                     width="1.25rem"
                     widthmobile="1.25rem"
-                  ></ImageLoader>
+                  ></ImageLoader> */}
                 </div>
                 <div
                   style={{ display: 'flex', flexDirection: 'column' }}

@@ -114,7 +114,7 @@ const ItineraryPoiElementM = (props) => {
           {props?.rating && <StarRating initialRating={4}></StarRating>}
 
           {/* <Rating margin="0.25rem 0"></Rating> */}
-          {props.poi !== undefined ? (
+          {/* {props.poi !== undefined ? (
             props.poi.experience_filters ? (
               <div
                 className={`grid grid-flow-col grid-rows-${Math.ceil(
@@ -149,7 +149,7 @@ const ItineraryPoiElementM = (props) => {
                 )}
               </div>
             ) : null
-          ) : null}
+          ) : null} */}
         </div>
       </GridContainer>
       <Text className="pt-1">{props.text}</Text>

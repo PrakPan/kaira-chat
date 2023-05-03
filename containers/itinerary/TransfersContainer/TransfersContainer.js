@@ -75,7 +75,7 @@ const TransfersContainer = (props) => {
       });
     }
   };
-  const midsectionHandler = (index) => {};
+  const midsectionHandler = (data, prevdata) => {};
   let startingcity = null;
   let endingcity = null;
   if (props.breif)
@@ -120,25 +120,93 @@ const TransfersContainer = (props) => {
                 index={i - 1}
               ></PinSection>
             );
-            locationsArr.push(
-              <TransferModeContainer
-                pinColour={props.breif.city_slabs[i].color}
-                icon={props?.transfers[i]?.icon}
-                modes={
-                  props?.transfers[i]?.modes[1]
-                    ? props?.transfers[i]?.modes[1]
-                    : props?.transfers[i]?.modes[0]
-                }
-                icon={props?.transferBookings[i]?.images?.image}
-                taxi_type={props?.transferBookings[i]?.taxi_type}
-                transportMode={
-                  props?.transfers[i]?.modes[1]
-                    ? props?.transfers[i]?.modes[1]
-                    : props?.transfers[i]?.modes[0]
-                }
-                duration={props.breif.city_slabs[i].duration}
-              ></TransferModeContainer>
+            midsectionHandler(
+              props?.transferBookings[i],
+              props?.transferBookings[i - 1]
             );
+            {
+              props?.transfers[i + 1]?.modes[0] == 'Flight' ||
+              props?.transfers[i + 1]?.modes[1] == 'Flight'
+                ? locationsArr.push(
+                    <div className="flex flex-col gap-4">
+                      <TransferModeContainer
+                        booking_type={
+                          props?.transferBookings[i + 1]?.booking_type
+                        }
+                        pinColour={props.breif.city_slabs[i + 1].color}
+                        costings_breakdown={
+                          props?.transferBookings[i + 1]?.costings_breakdown
+                        }
+                        heading={
+                          props?.transferBookings[i + 1]?.booking_display_name
+                        }
+                        icon={props?.transfers[i + 1]?.icon}
+                        modes={
+                          props?.transfers[i + 1]?.modes[1]
+                            ? props?.transfers[i + 1]?.modes[1]
+                            : props?.transfers[i + 1]?.modes[0]
+                        }
+                        icon={props?.transferBookings[i + 1]?.images?.image}
+                        taxi_type={props?.transferBookings[i + 1]?.taxi_type}
+                        transportMode={
+                          props?.transfers[i + 1]?.modes[1]
+                            ? props?.transfers[i + 1]?.modes[1]
+                            : props?.transfers[i + 1]?.modes[0]
+                        }
+                        duration={props.breif.city_slabs[i].duration}
+                      ></TransferModeContainer>
+                      <TransferModeContainer
+                        booking_type={props?.transferBookings[i]?.booking_type}
+                        pinColour={props.breif.city_slabs[i].color}
+                        costings_breakdown={
+                          props?.transferBookings[i]?.costings_breakdown
+                        }
+                        heading={
+                          props?.transferBookings[i]?.booking_display_name
+                        }
+                        icon={props?.transfers[i]?.icon}
+                        modes={
+                          props?.transfers[i]?.modes[1]
+                            ? props?.transfers[i]?.modes[1]
+                            : props?.transfers[i]?.modes[0]
+                        }
+                        icon={props?.transferBookings[i]?.images?.image}
+                        taxi_type={props?.transferBookings[i]?.taxi_type}
+                        transportMode={
+                          props?.transfers[i]?.modes[1]
+                            ? props?.transfers[i]?.modes[1]
+                            : props?.transfers[i]?.modes[0]
+                        }
+                        duration={props.breif.city_slabs[i].duration}
+                      ></TransferModeContainer>
+                    </div>
+                  )
+                : locationsArr.push(
+                    <TransferModeContainer
+                      booking_type={props?.transferBookings[i]?.booking_type}
+                      pinColour={props.breif.city_slabs[i].color}
+                      costings_breakdown={
+                        props?.transferBookings[i]?.costings_breakdown
+                      }
+                      heading={props?.transferBookings[i]?.booking_display_name}
+                      icon={props?.transfers[i]?.icon}
+                      modes={
+                        props?.transfers[i]?.modes[1]
+                          ? props?.transfers[i]?.modes[1]
+                          : props?.transfers[i]?.modes[0]
+                      }
+                      icon={props?.transferBookings[i]?.images?.image}
+                      taxi_type={props?.transferBookings[i]?.taxi_type}
+                      transportMode={
+                        props?.transfers[i]?.modes[1]
+                          ? props?.transfers[i]?.modes[1]
+                          : props?.transfers[i]?.modes[0]
+                      }
+                      duration={props.breif.city_slabs[i].duration}
+                    ></TransferModeContainer>
+                  );
+            }
+
             // locationsArr.push(
             //   <TransferModeContainer
             //     pinColour={props.breif.city_slabs[i].color}
@@ -230,7 +298,10 @@ const TransfersContainer = (props) => {
       ></PinSection>
 
       <TransferModeContainer
+        booking_type={props?.transferBookings[0]?.booking_type}
         pinColour={props.breif.city_slabs[0].color}
+        heading={props?.transferBookings[0]?.booking_display_name}
+        costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
         modes={'Taxi'}
         icon={props?.transferBookings[0]?.images?.image}
         taxi_type={props?.transferBookings[0]?.taxi_type}

@@ -9,7 +9,7 @@ import { IoMdRestaurant } from 'react-icons/io';
 import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
-
+import { GiKnifeFork } from 'react-icons/gi';
 const padding = {
   initialLeft: '120px',
 };
@@ -18,7 +18,7 @@ const Container = styled.div`
   flex-direction: column;
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
+
   line-height: 22px;
 
   padding: 0px 0px 0px 0px;
@@ -93,7 +93,9 @@ const ItineraryFoodElement = (props) => {
       <Container className="font-lexend pt-3">
         {/* <div>{props.time}</div> */}
         <div className="flex flex-row ">
-          <div>
+          <GiKnifeFork className="text-black lg:text-[4.05rem] text-[1.25rem]" />
+          {/* <div>
+     
             <ImageLoader
               url={props.icon}
               leftalign
@@ -101,10 +103,10 @@ const ItineraryFoodElement = (props) => {
               width="4.05rem"
               widthmobile="1.25rem"
             ></ImageLoader>
-          </div>
+          </div> */}
           <div className="pl-[3.3rem] flex justify-center flex-col">
             <div className="text-base font-bold">{props.heading}</div>
-            <div className="pt-1 line-clamp-3 font-normal text-sm">
+            <div className="pt-1 line-clamp-3 font-normal text-sm pb-4">
               {props.text}
             </div>
           </div>
@@ -131,6 +133,7 @@ const ItineraryFoodElement = (props) => {
                 ></IoMdRestaurant> */}
               </div>
             </div>
+            <Line></Line>
             {props.recomendation ? (
               <>
                 <div className="pt-1 line-clamp-3 font-normal text-sm">

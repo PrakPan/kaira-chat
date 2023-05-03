@@ -53,7 +53,12 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
-  const Facilities = ['4 Seater', 'AC', '2 Luggage bags'];
+  const Facilities = [
+    `${props?.costings_breakdown?.taxi_occupancy ?? '2'} Seater`,
+    `${props?.costings_breakdown?.distance?.text ?? 'Leisure'}`,
+    '2 Luggage bags',
+  ];
+
   return (
     <Container>
       <div style={{ position: 'relative' }}>
@@ -62,30 +67,32 @@ const TransferModeContainer = (props) => {
       <div className="flex flex-row gap-2 w-full py-4">
         {props.modes && (
           <div className="grid bg-[#F4F4F4] place-items-center w-32 rounded-2xl">
-            {/* <TransportIconFetcher
-              TransportMode={props.modes}
-              Instyle={{
-                fontSize: '1.75rem',
-                marginRight: '0.8rem',
-                color: 'black',
-              }}
-            /> */}
-
-            {props.icon && (
-              <ImageLoader
-                url={props.icon}
-                leftalign
-                dimensions={{ width: 800, height: 500 }}
-                width="4rem"
-                widthmobile="4rem"
-              ></ImageLoader>
+            {props.booking_type == 'Flight' ? (
+              <TransportIconFetcher
+                TransportMode={props.booking_type}
+                Instyle={{
+                  fontSize: '2.75rem',
+                  marginRight: '0.8rem',
+                  color: 'black',
+                }}
+              />
+            ) : (
+              props.icon && (
+                <ImageLoader
+                  url={props.icon}
+                  leftalign
+                  dimensions={{ width: 800, height: 500 }}
+                  width="4rem"
+                  widthmobile="4rem"
+                ></ImageLoader>
+              )
             )}
           </div>
         )}
 
         <div className="flex flex-col">
           <div className="text-[#01202B] flex flex-row gap-1 font-medium">
-            <div>Private transfer</div>
+            <div className="font-semibold">{props.heading}</div>
             <div>
               ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
               {props.duration}h 30m)
@@ -94,17 +101,18 @@ const TransferModeContainer = (props) => {
           {props.taxi_type && (
             <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
           )}
+          {props?.costings_breakdown && (
+            <div className="text-[#01202B] font-normal flex flex-row mt-3">
+              <div className="pr-1">Facilities:</div>
+              {Facilities.map((data, index) => (
+                <div className="flex flex-row gap-1">
+                  {index > 0 ? <span className="pl-1">|</span> : null}
 
-          <div className="text-[#01202B] font-normal flex flex-row mt-3">
-            <div className="pr-1">Facilities:</div>
-            {Facilities.map((data, index) => (
-              <div className="flex flex-row gap-1">
-                {index > 0 ? <span className="pl-1">|</span> : null}
-
-                <div>{data}</div>
-              </div>
-            ))}
-          </div>
+                  <div>{data}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Container>

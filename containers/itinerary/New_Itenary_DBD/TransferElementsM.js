@@ -12,6 +12,7 @@ import {
 } from './New_itenaryStyled';
 import { convertNumToTime } from '../../../helper/convertNumToTime';
 import { formatNumber } from '../../../helper/formatNumber';
+import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 const TransferElementsM = ({
   time,
   heading,
@@ -45,13 +46,23 @@ const TransferElementsM = ({
         {transfers !== undefined ? (
           <TransportContainer className="pt-3">
             <div style={{ paddingRight: '10px' }}>
-              <ImageLoader
+              {modes && (
+                <TransportIconFetcher
+                  TransportMode={modes}
+                  Instyle={{
+                    fontSize: '1.75rem',
+                    marginRight: '0.8rem',
+                    color: 'black',
+                  }}
+                />
+              )}
+              {/* <ImageLoader
                 url={icon}
                 leftalign
                 dimensions={{ width: 200, height: 200 }}
                 width="2.05rem"
                 widthmobile="2.05rem"
-              ></ImageLoader>
+              ></ImageLoader> */}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div className="text-base">

@@ -874,7 +874,7 @@ const SimpleTabs = (props) => {
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between mx-3">
           <div className="flex flex-col">
-            <div>Package start from</div>
+            <div>total trip cost</div>
             {props.payment ? (
               <div>
                 <span className="font-bold">

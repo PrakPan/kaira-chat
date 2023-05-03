@@ -144,7 +144,7 @@ const Day_I_ContainerM = (props) => {
         <div className="font-medium text-black text-md">
           Day {props.indexDay + 1}
         </div>
-        {Arslab_elements[0].data[0][0] !== undefined &&
+        {/* {Arslab_elements[0].data[0][0] !== undefined &&
         Arslab_elements[0].data[0][0].transfers !== undefined &&
         Arslab_elements[0].data[0][0].transfers.routes !== undefined ? (
           <div style={{ fontWeight: '600' }}>
@@ -159,7 +159,7 @@ const Day_I_ContainerM = (props) => {
                 .destination.shortName
             }
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       <div>

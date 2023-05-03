@@ -103,7 +103,9 @@ const Details = (props) => {
         props.routesData[i].duration !== '0'
       ) {
         Locationlatlong.push({
-          dayId: getdayId(props.routesData[i].start_day_slab_index),
+          dayId: getdayId(
+            props.routesData[i].day_slab_location.start_day_slab_index
+          ),
           cityData: postion,
           id: props.routesData[i].gmaps_place_id,
           city_id: props.routesData[i].city_id,
@@ -112,7 +114,9 @@ const Details = (props) => {
           name: props.routesData[i].city_name,
           duration: props.routesData[i].duration,
           color: props.routesData[i].color,
-          date: getdateId(props.routesData[i].start_day_slab_index),
+          date: getdateId(
+            props.routesData[i].day_slab_location.start_day_slab_index
+          ),
         });
       }
     }
@@ -138,6 +142,7 @@ const Details = (props) => {
           name: postion.city_name,
           duration: postion.duration,
           color: postion.color,
+          date: getdateId(postion.day_slab_location.start_day_slab_index),
         });
       }
     }

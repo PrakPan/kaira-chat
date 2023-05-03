@@ -4,6 +4,7 @@ import { AiFillCar } from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import { FaHome } from 'react-icons/fa';
 const Container = styled.div`
   padding: 10px 0px 10px 0px;
   @media screen and (min-width: 768px) {
@@ -70,8 +71,10 @@ const ItineraryElementM = (props) => {
       </div>
       <div>
         <div className="flex flex-row">
-          {props.icon ? (
+          <FaHome className="text-black text-[40px] mr-4" />
+          {/* {props.icon ? (
             <div className="mr-4">
+              
               <ImageLoader
                 dimensions={{ width: 90, height: 90 }}
                 dimensionsMobile={{ width: 90, height: 90 }}
@@ -84,12 +87,12 @@ const ItineraryElementM = (props) => {
                 url={props.icon}
               ></ImageLoader>
             </div>
-          ) : null}
+          ) : null} */}
           <Heading>{props.heading}</Heading>
         </div>
 
         <div>
-          <Text>{props.text ? props.text : null}</Text>
+          <div className="pb-[10px]">{props.text ? props.text : null}</div>
         </div>
       </div>
 

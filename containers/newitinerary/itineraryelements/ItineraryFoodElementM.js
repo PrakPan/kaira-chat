@@ -8,6 +8,7 @@ import { MdOutlineFlightTakeoff } from 'react-icons/md';
 import { IoMdRestaurant } from 'react-icons/io';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
+import { GiKnifeFork } from 'react-icons/gi';
 const Container = styled.div`
   padding: 10px 0px 0px 0px;
 
@@ -62,7 +63,8 @@ const ItineraryFoodElementM = (props) => {
         <div className="flex flex-col">
           <div className="flex flex-row ">
             <div className="text-center">
-              {props.icon ? (
+              <GiKnifeFork className="text-black text-[33px] mr-4" />
+              {/* {props.icon ? (
                 <div className="mr-4">
                   <ImageLoader
                     dimensions={{ width: 90, height: 90 }}
@@ -76,7 +78,7 @@ const ItineraryFoodElementM = (props) => {
                     url={props.icon}
                   ></ImageLoader>
                 </div>
-              ) : null}
+              ) : null} */}
             </div>
             <div className="font-bold">{props.heading}</div>
           </div>

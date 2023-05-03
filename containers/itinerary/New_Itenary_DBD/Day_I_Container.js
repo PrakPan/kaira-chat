@@ -77,6 +77,7 @@ const Day_I_Container = (props) => {
             <TransferElements
               time="9:00AM"
               modes={element.modes}
+              // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
               transfers={element.transfers}
               meta={element.meta}
               icon={element.icon}
@@ -151,7 +152,7 @@ const Day_I_Container = (props) => {
           <div className="font-bold text-black text-md">
             {convertDateFormat(props.Days?.slab)}
           </div>
-          {props.Days.slab_elements[0] !== undefined &&
+          {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&
           props.Days.slab_elements[0].transfers.routes !== undefined ? (
             <div style={{ fontWeight: '600' }}>
@@ -166,7 +167,7 @@ const Day_I_Container = (props) => {
                   .destination.shortName
               }
             </div>
-          ) : null}
+          ) : null} */}
         </InnerDayLocationRow>
         {/* <InnerDayLocationRow>
           <GrMapLocation />
