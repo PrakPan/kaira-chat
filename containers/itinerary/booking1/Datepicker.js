@@ -2,11 +2,8 @@ import 'date-fns';
 import React from 'react';
 
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import { DatePicker } from '@mui/lab';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import { makeStyles } from '@mui/styles';
 
 const StyledTextField = withStyles({
@@ -29,7 +26,7 @@ const StyledTextField = withStyles({
       },
     },
   },
-})(KeyboardDatePicker);
+})(DatePicker);
 export default function MaterialUIPickers(props) {
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(
@@ -41,8 +38,8 @@ export default function MaterialUIPickers(props) {
   };
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
+    <LocalizationProvider utils={DateFnsUtils}>
+      <DatePicker
         disableToolbar
         variant="inline"
         format="MM/dd/yyyy"
@@ -56,6 +53,6 @@ export default function MaterialUIPickers(props) {
           'aria-label': 'change date',
         }}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }

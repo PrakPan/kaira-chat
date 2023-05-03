@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-  Day,
-  Calendar,
-} from '@material-ui/pickers';
+import { DatePicker, Day } from '@mui/lab';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 /*
@@ -85,7 +82,7 @@ const MuiDatePicker = () => {
   return (
     <div>
       <ThemeProvider theme={materialTheme}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <LocalizationProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
             style={{
               dialogContent: { width: 1 },
@@ -119,7 +116,7 @@ const MuiDatePicker = () => {
               );
             }}
           />
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       </ThemeProvider>
     </div>
   );
