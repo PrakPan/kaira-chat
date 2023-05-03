@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
+import ImageLoader from '../../../components/ImageLoader';
 
 const Container = styled.div`
   display: grid;
@@ -61,14 +62,24 @@ const TransferModeContainer = (props) => {
       <div className="flex flex-row gap-2 w-full py-4">
         {props.modes && (
           <div className="grid bg-[#F4F4F4] place-items-center w-32 rounded-2xl">
-            <TransportIconFetcher
+            {/* <TransportIconFetcher
               TransportMode={props.modes}
               Instyle={{
                 fontSize: '1.75rem',
                 marginRight: '0.8rem',
                 color: 'black',
               }}
-            />
+            /> */}
+
+            {props.icon && (
+              <ImageLoader
+                url={props.icon}
+                leftalign
+                dimensions={{ width: 800, height: 500 }}
+                width="4rem"
+                widthmobile="4rem"
+              ></ImageLoader>
+            )}
           </div>
         )}
 
@@ -80,7 +91,10 @@ const TransferModeContainer = (props) => {
               {props.duration}h 30m)
             </div>
           </div>
-          <div className="text-[#7A7A7A] font-light">Sedan car</div>
+          {props.taxi_type && (
+            <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
+          )}
+
           <div className="text-[#01202B] font-normal flex flex-row mt-3">
             <div className="pr-1">Facilities:</div>
             {Facilities.map((data, index) => (

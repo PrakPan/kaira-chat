@@ -750,12 +750,15 @@ const SimpleTabs = (props) => {
                 ></HotelsBooking>
               </div>
             )}
-            <TransfersContainer
-              dayslab={props.itinerary?.day_slabs}
-              breif={props.breif}
-              routes={RoutesData}
-              transfers={TransfersData}
-            />
+            {props.transferBookings && (
+              <TransfersContainer
+                dayslab={props.itinerary?.day_slabs}
+                breif={props.breif}
+                routes={RoutesData}
+                transfers={TransfersData}
+                transferBookings={props.transferBookings}
+              />
+            )}
           </div>
 
           <div className="sticky top-[6rem] mt-40">

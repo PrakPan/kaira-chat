@@ -12,6 +12,8 @@ const Container = styled.div`
 `;
 
 const TransfersContainer = (props) => {
+  console.log('transfersBooking');
+  console.log(props.transferBookings);
   //Stores initial order of locations
   const initialorder = {
     0: {
@@ -126,6 +128,8 @@ const TransfersContainer = (props) => {
                     ? props?.transfers[i]?.modes[1]
                     : props?.transfers[i]?.modes[0]
                 }
+                icon={props?.transferBookings[i]?.images?.image}
+                taxi_type={props?.transferBookings[i]?.taxi_type}
                 transportMode={
                   props?.transfers[i]?.modes[1]
                     ? props?.transfers[i]?.modes[1]
@@ -134,23 +138,25 @@ const TransfersContainer = (props) => {
                 duration={props.breif.city_slabs[i].duration}
               ></TransferModeContainer>
             );
-            locationsArr.push(
-              <TransferModeContainer
-                pinColour={props.breif.city_slabs[i].color}
-                icon={props?.transfers[i]?.icon}
-                modes={
-                  props?.transfers[i]?.modes[1]
-                    ? props?.transfers[i]?.modes[1]
-                    : props?.transfers[i]?.modes[0]
-                }
-                transportMode={
-                  props?.transfers[i]?.modes[1]
-                    ? props?.transfers[i]?.modes[1]
-                    : props?.transfers[i]?.modes[0]
-                }
-                duration={props.breif.city_slabs[i].duration}
-              ></TransferModeContainer>
-            );
+            // locationsArr.push(
+            //   <TransferModeContainer
+            //     pinColour={props.breif.city_slabs[i].color}
+            //     icon={props?.transfers[i]?.icon}
+            //     modes={
+            //       props?.transfers[i]?.modes[1]
+            //         ? props?.transfers[i]?.modes[1]
+            //         : props?.transfers[i]?.modes[0]
+            //     }
+            //     icon={props?.transferBookings[i]?.images?.image}
+            //     taxi_type={props?.transferBookings[i]?.taxi_type}
+            //     transportMode={
+            //       props?.transfers[i]?.modes[1]
+            //         ? props?.transfers[i]?.modes[1]
+            //         : props?.transfers[i]?.modes[0]
+            //     }
+            //     duration={props.breif.city_slabs[i].duration}
+            //   ></TransferModeContainer>
+            // );
           } else {
             locationsArr.push(
               <PinSection
@@ -183,7 +189,8 @@ const TransfersContainer = (props) => {
               <TransferModeContainer
                 pinColour={props.breif.city_slabs[i].color}
                 modes={'Taxi'}
-                icon={null}
+                icon={props?.transferBookings[i]?.images?.image}
+                taxi_type={props?.transferBookings[i]?.taxi_type}
                 transportMode={props.breif.city_slabs[i].intracity_transport}
                 duration={props.breif.city_slabs[i].duration}
               ></TransferModeContainer>
@@ -220,10 +227,12 @@ const TransfersContainer = (props) => {
         dayslab={props.dayslab}
         city={props.nostartinglocation ? 'Your Location' : startingcity}
       ></PinSection>
+
       <TransferModeContainer
         pinColour={props.breif.city_slabs[0].color}
         modes={'Taxi'}
-        icon={props?.transfers[0]?.icon}
+        icon={props?.transferBookings[0]?.images?.image}
+        taxi_type={props?.transferBookings[0]?.taxi_type}
         transportMode={'Taxi'}
         duration={'2'}
       ></TransferModeContainer>

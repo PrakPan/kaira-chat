@@ -107,7 +107,7 @@ const ScrollableMenuTabs = ({
   }
   const handleScroll = () => {
     const tabContainer = ref.current;
-    const tabsContainer = ref.current?.querySelectorAll('a') ?? [];
+    const tabsContainer = ref.current?.querySelectorAll('a') && [];
     for (let i = 0; i < tabsContainer.length; i++) {
       if (isActive(tabsContainer[i])) {
         console.log(tabsContainer[i]);

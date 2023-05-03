@@ -43,7 +43,7 @@ const PinSection = ({
   useEffect(() => {
     if (isPinhover) {
       if (lat) {
-        setCurrentPopup ??
+        setCurrentPopup &&
           setCurrentPopup([
             {
               dayId: getdayId(dayId),

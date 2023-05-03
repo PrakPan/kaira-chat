@@ -225,9 +225,12 @@ const Itinerary = (props) => {
                 stay_bookings.push(json.bookings[i]);
               else if (json.bookings[i].booking_type === 'Activity')
                 activity_bookings.push(json.bookings[i]);
-              else if (json.bookings[i].booking_type === 'Flight')
-                flight_bookings.push(json.bookings[i]);
-              else transfer_bookings.push(json.bookings[i]);
+              else {
+                transfer_bookings.push(json.bookings[i]);
+                if (json.bookings[i].booking_type === 'Flight') {
+                  flight_bookings.push(json.bookings[i]);
+                }
+              }
             }
 
             setStayBookings(stay_bookings);

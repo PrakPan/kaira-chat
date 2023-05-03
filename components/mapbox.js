@@ -154,7 +154,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
         <Marker
           key={location.id}
           animate
-          position={[location.lat ?? 0, location.long ?? 0]}
+          position={[location.lat, location.long]}
           draggable={false}
           icon={divIcon({
             className: 'icon',
