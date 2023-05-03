@@ -28,6 +28,7 @@ const Destinations = (props) => {
       for (let i = 0; i < props.selectedCities.length; i++) {
         des.push(
           <SelectedDestination
+            autofocus={i==0 && true}
             _updateDestinationHandler={_updateDestinationHandler}
             key={props.selectedCities[i].input_id}
             inbox_id={props.selectedCities[i].input_id}
