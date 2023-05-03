@@ -75,6 +75,7 @@ const TransfersContainer = (props) => {
       });
     }
   };
+  const midsectionHandler = (index) => {};
   let startingcity = null;
   let endingcity = null;
   if (props.breif)

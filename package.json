@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@date-io/date-fns": "2.16.0",
-    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
