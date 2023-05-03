@@ -11,6 +11,7 @@ import HotLocations from './results/HotLocations';
 import axios from 'axios';
 import Spinner from '../../../../Spinner';
 import axioslocationsinstance from '../../../../../services/search/search'
+import { useRouter } from 'next/router';
 const Container = styled.div`
  
 width: 100%;
@@ -29,7 +30,8 @@ const Search = (props) => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hotLocationsData, setHotLocationsData] = useState([]);
-  const [showHotLocations , setShowHotLocations] = useState(false)
+  const [showHotLocations, setShowHotLocations] = useState(false)
+  const {query} = useRouter()
   // const [selectedCities, setSelectedCities] = useState([]);
   const _handleKey = (e) => {
     setShowResults(true);
@@ -60,11 +62,30 @@ const Search = (props) => {
       </div>,
     ]);}
   }
-
-     useEffect(() => {
-       axioslocationsinstance.get("hot_destinations").then((response) => {
-         setHotLocationsData(response.data);
-       });
+console.log(query.city , 'jiji')
+  useEffect(() => {
+    if (query.city || query.link) {
+      axios
+        .get(
+          `https://apis.tarzanway.com/poi/city/recommended/?slug=${
+            query.city || query.link
+          }`
+        )
+        .then((res) => {
+          if (res.data.length) setHotLocationsData(res.data);
+          else setShowHotLocations(false);
+        })
+        .catch((e) => setShowHotLocations(false));
+    } else
+      axioslocationsinstance
+        .get("hot_destinations")
+        .then((response) => {
+          if (response.data.length) setHotLocationsData(response.data);
+          else setShowHotLocations(false);
+        })
+        .catch((e) => {
+          setShowHotLocations(false);
+        });
      }, []);
   // useEffect(() => {
   //   if (showResults) setShowHotLocations(false)
@@ -80,7 +101,7 @@ const Search = (props) => {
             props.onfocus();
             setTimeout(() => {
             setShowHotLocations(true);
-            },100)
+            },500)
           }}
           onblur={props.onblur}
           searchFinalized={props.searchFinalized}

@@ -36,7 +36,13 @@ const LocationsBlog= (props) => {
         if(i%4==0 && i!=0){
             let n = cardsArr.length;
             const el = cardsArr.slice(n-4,n)
-            MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+            MobileCardsArr.push(
+              <MobileCardsContainer>
+                {el.map((e, i) => (
+                  <div key={i}>{e}</div>
+                ))}
+              </MobileCardsContainer>
+            );
           count++
           }
         cardsArr.push(
@@ -53,7 +59,13 @@ const LocationsBlog= (props) => {
       }
       if(count%4 !=0){
         const el = cardsArr.slice(count*4,cardsArr.length)
-        MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+        MobileCardsArr.push(
+          <MobileCardsContainer>
+            {el.map((e, i) => (
+              <div key={i}>{e}</div>
+            ))}
+          </MobileCardsContainer>
+        );
       }
       setCards(cardsArr)
       setMobileCardsToShowJSX(MobileCardsArr)

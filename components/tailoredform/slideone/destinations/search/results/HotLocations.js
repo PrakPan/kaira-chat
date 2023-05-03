@@ -61,19 +61,21 @@ const HotLocations = (props) => {
         ? props.results.map((result, i) => {
             if (i < 5)
               return (
-                <Result
-                  _updateDestinationHandler={props._updateDestinationHandler}
-                  //   setShowResults={props.setShowResults}
-                  setFocusSearch={props.setFocusSearch}
-                  inbox_id={props.inbox_id}
-                  setDestination={props.setDestination}
-                  name={result.name}
-                  result={result}
-                  type={result.type}
-                  setSearchFinalized={props.setSearchFinalized}
-                  setSelectedCities={props.setSelectedCities}
-                  selectedCities={props.selectedCities}
-                ></Result>
+                <div key={i}>
+                  <Result
+                    _updateDestinationHandler={props._updateDestinationHandler}
+                    //   setShowResults={props.setShowResults}
+                    setFocusSearch={props.setFocusSearch}
+                    inbox_id={props.inbox_id}
+                    setDestination={props.setDestination}
+                    name={result.name}
+                    result={result}
+                    type={result.type}
+                    setSearchFinalized={props.setSearchFinalized}
+                    setSelectedCities={props.setSelectedCities}
+                    selectedCities={props.selectedCities}
+                  ></Result>
+                </div>
               );
           })
         : null}

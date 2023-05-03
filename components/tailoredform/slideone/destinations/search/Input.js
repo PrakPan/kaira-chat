@@ -31,7 +31,7 @@ const Container = styled.input`
 
  
 const SearchInput = (props) => {
-const [value, setValue] = useState(null);
+const [value, setValue] = useState('');
 
 const _handleKey = (e) => {
   setValue(e.target.value)

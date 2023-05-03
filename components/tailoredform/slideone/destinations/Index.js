@@ -117,7 +117,7 @@ const Destinations = (props) => {
         setDestination={props.setDestination}
         setSelectedCities={props.setSelectedCities}
       ></SelectedDestination>
-      {destinations.map((e) => e)}
+      {destinations.map((e,i) => <div key={i}>{e}</div>)}
       {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */}
 
       <div
