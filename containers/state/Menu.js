@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { makeStyles, Theme } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles';
 import { AppBar } from '@mui/material';
 import { Tabs, Tab } from '@mui/material';
 
