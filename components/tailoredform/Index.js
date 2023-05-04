@@ -85,13 +85,13 @@ const BlackContainer = styled.div`
   }
 `;
 const Enquiry = (props) => {
-  console.log(props, "tailored-props");
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
+
   const [selectedCities, setSelectedCities] = useState(
     router.pathname.split("/").includes("travel-planner")
       ? [
@@ -115,7 +115,6 @@ const Enquiry = (props) => {
     routerquery.destination || props.destination
   );
   // const ContainerRef = useRef()
-  console.log(selectedCities, "selectedCities");
 
   const _submitDataHandler = () => {
     const value_start = new Date(valueStart);

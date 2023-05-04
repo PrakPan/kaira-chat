@@ -44,7 +44,7 @@ const Search = (props) => {
       axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
       setLoading(false)  
       if(res.data.length){
-        const resultsData = res.data.map((e)=>e['_source'])
+        const resultsData = res.map((e)=>e['_source'])
             setResults(resultsData)
         }
         else {
@@ -69,6 +69,7 @@ const Search = (props) => {
           `https://apis.tarzanway.com/poi/city/recommended/?slug=${
             query.city || query.link
           }`
+
         )
         .then((res) => {
           if (res.data.length) setHotLocationsData(res.data);
@@ -95,6 +96,7 @@ const Search = (props) => {
       <div style={{ display: "flex" }}>
         <SearchInput
           setShowDestination={props.setShowDestination}
+          showHotLocations={showHotLocations}
           destination={props.destination}
           onfocus={() => {
             props.onfocus();
@@ -146,7 +148,8 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
         ></SearchResults>
-      )}
+      
+      )} 
     </Container>
   );
 }

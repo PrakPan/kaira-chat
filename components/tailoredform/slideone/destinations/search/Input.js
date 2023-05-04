@@ -72,11 +72,14 @@ useEffect(() => {
     _resetSelectedCities()
   }
 
-  function _handleBlur(){
-    props.onblur()
-    if(!value) props.setShowDestination(true)
+  function _handleBlur() {
+    // if (!props.showDestination) {
+    props.onblur();
+    setTimeout(() => {
+      if (!value) props.setShowDestination(true);
+    },250)
+    // }
   }
-
   return (
    <Container autoFocus={props.autofocus} onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : _resetSelectedCities } disabled={false} placeholder='Search destination' className='font-lexend' value={value}  onChange={(e) => _handleKey(e)}>
     

@@ -28,9 +28,10 @@ const Destinations = (props) => {
       for (let i = 0; i < props.selectedCities.length; i++) {
         des.push(
           <SelectedDestination
-            autofocus={i==0 && true}
+            autofocus={i == 0 && true}
             _updateDestinationHandler={_updateDestinationHandler}
             key={props.selectedCities[i].input_id}
+            setDeletedId={(i != 0 || props.selectedCities.length > 1)&& setDeletedId}
             inbox_id={props.selectedCities[i].input_id}
             selectedCities={props.selectedCities}
             destination={props.selectedCities[i].name}
@@ -42,7 +43,7 @@ const Destinations = (props) => {
         );
       }
       setDestinations(des);
-    }, []);
+    }, [JSON.stringify(props.selectedCities)]);
 
   const _addDestinationHandler = () => {
     let dest = destinations.slice();
@@ -75,11 +76,11 @@ const Destinations = (props) => {
 
     if (updatedData.id) {
       const selected = props.selectedCities.map((e) => {
-        if (e.input_id == updatedData.input_id)
+        if (e.input_id  == updatedData.input_id)
           return {
             input_id: updatedData.input_id,
             ...updatedData.data,
-            id: updatedData.data.resource_id,
+            id: updatedData.id,
           };
         return e;
       });
