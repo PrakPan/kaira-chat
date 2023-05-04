@@ -62,7 +62,6 @@ const Search = (props) => {
       </div>,
     ]);}
   }
-console.log(query.city , 'jiji')
   useEffect(() => {
     if (query.city || query.link) {
       axios

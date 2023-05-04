@@ -50,7 +50,7 @@ const Result = (props) => {
   return (
     <Container className='font-lexend'  onClick={(e)=>{_handleClick(e),
       props._updateDestinationHandler(
-        props.result.resource_id , props.inbox_id,
+        props.result.resource_id || props.result.id , props.inbox_id,
         props.result
       );
     }}>

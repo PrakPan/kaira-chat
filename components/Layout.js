@@ -18,7 +18,6 @@ const Layout = (props) => {
   const router = useRouter()
   useEffect(() => {
     if (router.isReady) {
-       console.log(router,'router')
     const queries = router.query
     if (queries['tailored-travel']) {
       setShowMobilePlanner(true)

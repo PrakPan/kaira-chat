@@ -157,7 +157,6 @@ const Search = styled.input`
 const Navbar = (props) => {
   const router = useRouter()
   const isTablet = media('(min-width: 950px)')
-  console.log(props, 'props.props')
 
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
 
