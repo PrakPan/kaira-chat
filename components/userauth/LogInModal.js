@@ -125,7 +125,12 @@ const CountryCodeOption = styled.div`
 
 const LogIn = (props) => {
 
-if(props.loadingsocial) return <div style={{ height : '100%' , width : '100%' , display : 'flex'}}><LoginLoadingIcon width={'7rem'} /></div> 
+if (props.loadingsocial) return (
+    <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
+      <LoginLoadingIcon width={"7rem"} />
+    </div>
+  );
+
 
 
   const mobileRef = useRef();

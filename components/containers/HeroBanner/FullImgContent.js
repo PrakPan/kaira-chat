@@ -94,7 +94,11 @@ const FullImgContent = (props) => {
     <Container className="font-lexend center-di text-cente">
       <PaddingContianer>
         <Heading>{props.title}</Heading>
-        {isPageWide ? (
+        {
+          props.subheading ? 
+            <SubHeading>{props.subheading}</SubHeading>
+            : 
+ isPageWide ? (
           <SubHeading>
             Bid farewell to generic holiday packages.
             <br />
@@ -106,7 +110,9 @@ const FullImgContent = (props) => {
             <br />
             Craft AI-personalized itineraries.
           </SubHeading>
-        )}
+        )
+        }
+       
         {/* <div className='hidden-mobile'>
             <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button>
 
