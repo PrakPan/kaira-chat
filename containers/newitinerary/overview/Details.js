@@ -40,7 +40,7 @@ const Details = (props) => {
 
   return (
     <Container className="font-lexend">
-      {props.travellerType[0] ? (
+      {props?.travellerType && (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>
@@ -50,15 +50,15 @@ const Details = (props) => {
               : `+${props.travellerType.length - 1}`}
           </Text>
         </div>
-      ) : null}
-      {props.group_type !== null ? (
+      )}
+      {props?.group_type !== null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Group Type</Heading>
           <Text>{props.group_type}</Text>
         </div>
       ) : null}
 
-      {props.duration_time != null ? (
+      {props?.duration_time != null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Duration</Heading>
           <Text>{props.duration_time} Nights</Text>

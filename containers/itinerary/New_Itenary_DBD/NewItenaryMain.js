@@ -164,7 +164,7 @@ const NewItenaryMain = (props) => {
   };
   return (
     <Wrapper>
-      <div className="text-4xl font-bold mb-4 mt-4"> Day By Day</div>
+      <div className="text-3xl font-bold mb-8 mt-4"> Day By Day Itinerary</div>
       {/* <ScrollableTabs
         Mstyle={'round'}
         items={items}

@@ -456,25 +456,6 @@ const SimpleTabs = (props) => {
 
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
-      {/* <StackedComponents></StackedComponents> */}
-
-      {/* <Navbar
-        ref={ref}
-        style={{
-          boxShadow: isSticky ? '0 8px 6px -6px rgba(0, 0, 0, 0.1)' : 'none',
-        }}
-        sticky={isSticky & !isDesktop}
-      >
-        {items.map((item) => (
-        <CustomMenu
-        items={items}
-        activeItem={activeItem}
-        onSelect={handleSelect}
-      />
-    ))}
-        
-      </Navbar> */}
-
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
           <Navigation items={items} BarName="TabsName" />
@@ -486,11 +467,6 @@ const SimpleTabs = (props) => {
             BarName="TabsName"
           />
         )}
-
-        {/* <div
-          className="border-b-[0.8px] border-slate-300 mt-[0px] z-50 -mx-32
-        "
-        ></div> */}
       </div>
 
       {/* {!isPageWide && value !== 2 ? (
@@ -524,34 +500,55 @@ const SimpleTabs = (props) => {
         ></Breif>
       </div>
       {isPageWide ? null : (
-        <div id={items[1].link}>
-          <NewItenaryDBDMob
-            // is_registration_needed={
-            //   props.payment ? props.payment.is_registration_needed : false
-            // }
-            // selectedPoi={selectedPoi}
-            // user_email={props.user_email}
-            // is_preview={props.preview}
-            // is_stock={props.is_stock}
-            // setShowPoiModal={_handlePoiEditModalOpen}
-            // traveleritinerary={props.traveleritinerary}
-            // day_slabs={props.itinerary.day_slabs}
-            // hours={hours}
-            // minutes={minutes}
-            // seconds={seconds}
-            // timeRequired={props.timeRequired}
-            // hideTimer={minimiseTimer}
-            // itineraryDate={props.itineraryDate}
-            // showTimer={false}
-            // _hideTimerHandler={_minimiseTimerHandler}
-            // blur={false}
-            // location_selected={location}
-            city_slabs={props.breif.city_slabs}
-            itinerary={props.itinerary}
-            // newData={props.newData}
-            // demoitinerary={props.demoitinerary}
-          ></NewItenaryDBDMob>
-        </div>
+        <>
+          <div id={items[1].link}>
+            <NewItenaryDBDMob
+              // is_registration_needed={
+              //   props.payment ? props.payment.is_registration_needed : false
+              // }
+              // selectedPoi={selectedPoi}
+              // user_email={props.user_email}
+              // is_preview={props.preview}
+              // is_stock={props.is_stock}
+              // setShowPoiModal={_handlePoiEditModalOpen}
+              // traveleritinerary={props.traveleritinerary}
+              // day_slabs={props.itinerary.day_slabs}
+              // hours={hours}
+              // minutes={minutes}
+              // seconds={seconds}
+              // timeRequired={props.timeRequired}
+              // hideTimer={minimiseTimer}
+              // itineraryDate={props.itineraryDate}
+              // showTimer={false}
+              // _hideTimerHandler={_minimiseTimerHandler}
+              // blur={false}
+              // location_selected={location}
+              city_slabs={props.breif.city_slabs}
+              itinerary={props.itinerary}
+              // newData={props.newData}
+              // demoitinerary={props.demoitinerary}
+            ></NewItenaryDBDMob>
+          </div>
+
+          <div id={items[2].link}>
+            <HotelsBooking
+              hasUserPaid={
+                props.payment ? (props.payment.paid_user ? true : false) : false
+              }
+              stayBookings={props.stayBookings}
+            ></HotelsBooking>
+          </div>
+
+          {/* <div id={items[3].link}>
+            <TransfersContainer
+              dayslab={props.itinerary?.day_slabs}
+              breif={props.breif}
+              routes={RoutesData}
+              transfers={TransfersData}
+              transferBookings={props.transferBookings}
+            />
+          </div> */}
+        </>
       )}
       {isPageWide ? (
         <SplitScreen
@@ -752,11 +749,11 @@ const SimpleTabs = (props) => {
             )}
             {props.transferBookings && (
               <TransfersContainer
-                dayslab={props.itinerary?.day_slabs}
-                breif={props.breif}
+                dayslab={props?.itinerary?.day_slabs}
+                breif={props?.breif}
                 routes={RoutesData}
                 transfers={TransfersData}
-                transferBookings={props.transferBookings}
+                transferBookings={props?.transferBookings}
               />
             )}
           </div>
@@ -874,7 +871,7 @@ const SimpleTabs = (props) => {
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between mx-3">
           <div className="flex flex-col">
-            <div>total trip cost</div>
+            <div>Total trip cost</div>
             {props.payment ? (
               <div>
                 <span className="font-bold">

@@ -335,12 +335,12 @@ const BookingContainer = (props) => {
                   <div>
                     {getIndianPrice(
                       Math.round(
-                        Math.round(props.payment.per_person_total_cost) / 100
+                        Math.round(props.payment.discounted_cost) / 100
                       )
                     )}
                   </div>
                 </div>
-                <div className="font-medium text-base self-end">per person</div>
+                <div className="font-medium text-base self-end">Total Cost</div>
               </div>
               <div className="text-[#7A7A7A]">Exclusive applicable taxes</div>
             </div>
@@ -452,7 +452,7 @@ const BookingContainer = (props) => {
                   onChange={(e) => setInputValue(e.target.value)}
                   id="name"
                   name="name"
-                  placeholder="Having a coupon code?"
+                  placeholder="Have a coupon code?"
                 />
                 <button
                   className="pointer-events-none absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "

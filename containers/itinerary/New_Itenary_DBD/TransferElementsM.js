@@ -44,7 +44,7 @@ const TransferElementsM = ({
         </Timecontainer>
 
         {transfers !== undefined ? (
-          <TransportContainer className="pt-3">
+          <TransportContainer className="pt-2">
             <div style={{ paddingRight: '10px' }}>
               {modes && (
                 <TransportIconFetcher

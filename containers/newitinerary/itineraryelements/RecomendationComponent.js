@@ -32,9 +32,9 @@ const RecomendationComponent = (props) => {
 
       <TInfoContainer>
         {/* <HLine style={{ width: '2rem' }}></HLine> */}
-
-        <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-4'}`}>
-          <div className="text-lg font-bold pb-2"> Recomendation</div>
+        {/* <Line></Line> */}
+        <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-2'}`}>
+          <div className="text-lg font-semibold pb-3">{props.heading}</div>
           {props.recomendation ? (
             <div className="pb-3">
               {!isJson(props.recomendation) ? (

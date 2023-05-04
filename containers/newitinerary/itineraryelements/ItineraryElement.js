@@ -72,7 +72,7 @@ const ItineraryElement = (props) => {
 
       <div className="flex flex-row ">
         <div className=" flex justify-center items-center ">
-          <FaHome className="text-black lg:text-[4.05rem]  text-[1.25rem]" />
+          <FaHome className="text-black lg:text-[3.05rem]   text-[1.25rem]" />
           {/* <ImageLoader
             url={props.icon}
             leftalign
@@ -83,7 +83,7 @@ const ItineraryElement = (props) => {
         </div>
         <div
           style={{ display: 'flex', alignItems: 'center' }}
-          className="pl-[3rem]"
+          className="pl-[4.8rem]"
         >
           <div className="flex flex-col">
             <div className="text-base font-bold">{props.heading}</div>
