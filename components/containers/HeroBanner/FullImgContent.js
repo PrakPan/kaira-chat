@@ -140,7 +140,7 @@ const FullImgContent = (props) => {
       </PaddingContianer>
       {/* <Banner></Banner> */}
       {isPageWide && (
-        <div>
+        <div style={{ marginTop : '1.2rem'}}>
           <TailoredForm
             page_id={props.page_id}
             children_cities={props.children_cities}

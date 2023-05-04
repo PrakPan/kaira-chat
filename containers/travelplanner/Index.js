@@ -324,7 +324,6 @@ const Homepage = (props) => {
   //JSX for How it works
 
   const router = useRouter();
-
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
 

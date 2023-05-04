@@ -130,7 +130,7 @@ const Destinations = (props) => {
           marginRight: "10px",
         }}
       >
-        {!props.selectedCities.slice(1).some((e) => !e.name) && (
+        {!props.selectedCities.some((e) => !e.name) && (
           <p
             onClick={_addDestinationHandler}
             className="text-center font-lexend hover-pointer"

@@ -32,7 +32,6 @@ const SlideOne = (props) =>{
   let isPageWide = media('(min-width: 768px)');
   const CITIES = null;
   // const [selectedCities, setSelectedCities] = useState([]);
-  const [flexible, setFlexible] = useState(false);
 
    return (
      <Container>
@@ -88,7 +87,7 @@ showCities={props.showCities}
              marginLeft: "2px",
            }}
          >
-           <div onClick={() => setFlexible(!flexible)}>
+           <div onClick={() => props.setFlexible(!props.flexible)}>
              <div
                className="center-div"
                style={{
@@ -100,16 +99,16 @@ showCities={props.showCities}
                  opacity: "1",
                  height: "20px",
                  width: "20px",
-                 backgroundColor: flexible
+                 backgroundColor: props.flexible
                    ? "rgba(247,231,0,1)"
                    : "transparent",
                }}
              >
-               {flexible ? <BsCheck></BsCheck> : null}
+               {props.flexible ? <BsCheck></BsCheck> : null}
              </div>
            </div>
            <div
-             onClick={() => setFlexible(!flexible)}
+             onClick={() => props.setFlexible(!props.flexible)}
              className="font-lexend"
              style={{ fontSize: "0.85rem" }}
            >
