@@ -78,6 +78,7 @@ const SlideTwo = (props) =>{
       </div>
       {(showPreferences || props.tailoredFormModal) ? (
         <Preferences
+          tailoredFormModal={props.tailoredFormModal}
           selectedPreferences={props.selectedPreferences}
           setSelectedPreferences={props.setSelectedPreferences}
         ></Preferences>

@@ -1,170 +1,246 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { faCheckSquare, faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+// import { useSpring, animated } from 'react-spring';
+
 const COLORS = {
-    black: '#212529',
-    gray: '#757D75',
-    background: '#f7e700',
-    white: 'white',
-  };
+  black: '#212529',
+  gray: '#757D75',
+  background: '#fff',
+  white: 'white',
+};
 
-  const LineCirclecontainer = styled.div`
-width:max-content;
-height:max-content;
-`
+const LineCirclecontainer = styled.div`
+  width: max-content;
+  height: max-content;
+`;
 const CircleWrapper = styled.div`
- display:flex;
- flex-direction:row;
- align-items:center;
- justify-content:center;
- 
-`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
 
-  const Circle1 = styled.div`
-width:38px;
-height:37px;
-margin: 0 2vw 0 0vw;
-top:59vh;
-left:22.5vw;
-left:34.5vw;
-background-color:${COLORS.black};
-border-radius:50%;
-padding:5px 12px;
-color:${COLORS.background};
+const Circle1 = styled.div`
+  width: 38px;
+  height: 37px;
+  margin: 0 2vw 0 0vw;
+  top: 59vh;
+  left: 22.5vw;
+  left: 34.5vw;
+  background-color: ${COLORS.black};
+  border-radius: 50%;
+  padding: 5px 12px;
+  color: ${COLORS.background};
 
-animation:mymove 0.3s linear ;
+  animation: mymove 0.3s linear;
 
-@keyframes mymove {
-    from {transform: scale(1,1); background-color:${COLORS.gray};}
- to {transform: scale(1.1,1.1); background-color:${COLORS.black};}
-     
-  
+  @keyframes mymove {
+    from {
+      transform: scale(1, 1);
+      background-color: ${COLORS.gray};
+    }
+    to {
+      transform: scale(1.1, 1.1);
+      background-color: ${COLORS.black};
+    }
   }
-  @media screen and (min-width: 768px){
-    left:34.5vw;
+  @media screen and (min-width: 768px) {
+    left: 34.5vw;
     margin: 0 0 0 0vw;
   }
-
-
-`
+`;
 const Circle2 = styled.div`
-width:38px;
-height:37px;
-left:38.9vw;
-top:59vh;
-margin: 0 0 0 8.8vw;
-background-color:${COLORS.black};
-border-radius:50%;
-padding:5px 12px;
-color:${COLORS.background};
-animation:mymove 2.25s cubic-bezier(1,.03,1,.04);
+  width: 38px;
+  height: 37px;
+  left: 38.9vw;
+  top: 59vh;
+  margin: 0 0 0 8.8vw;
+  background-color: ${COLORS.black};
+  border-radius: 50%;
+  padding: 5px 12px;
+  color: ${COLORS.background};
+  animation: mymove 2.25s cubic-bezier(1, 0.03, 1, 0.04);
 
-
-@keyframes mymove {
-    from {transform: scale(1,1); background-color:${COLORS.gray};}
- to {transform: scale(1.1,1.1); background-color:${COLORS.black};}
-     
-  
+  @keyframes mymove {
+    from {
+      transform: scale(1, 1);
+      background-color: ${COLORS.gray};
+    }
+    to {
+      transform: scale(1.1, 1.1);
+      background-color: ${COLORS.black};
+    }
   }
-  @media screen and (m-width: 768px){
-    animation:mymove 1.88s cubic-bezier(1,.03,1,.04);
-  left:43.9vw;
-  margin: 0 0 0 6.8vw;
+  @media screen and (m-width: 768px) {
+    animation: mymove 1.88s cubic-bezier(1, 0.03, 1, 0.04);
+    left: 43.9vw;
+    margin: 0 0 0 6.8vw;
   }
-`
+`;
 
 const Circle3 = styled.div`
-width:38px;
-height:37px;
+  width: 38px;
+  height: 37px;
 
-margin: 0 0 0 8.9vw;
-top:59vh;
-left:53vw;
-background-color:${COLORS.black};
-border-radius:50%;
-padding:5px 12px;
-color:${COLORS.background};
-animation:mymove 3.6s cubic-bezier(1,.03,1,.04);
-
-@keyframes mymove {
-    from {transform: scale(1,1); background-color:${COLORS.gray};}
-    to {transform: scale(1.1,1.1); background-color:${COLORS.black};}
-}
-@media screen and (min-width: 768px){
+  margin: 0 0 0 8.9vw;
+  top: 59vh;
   left: 53vw;
-  margin: 0 0 0 6.9vw;
-}
+  background-color: ${COLORS.black};
+  border-radius: 50%;
+  padding: 5px 12px;
+  color: ${COLORS.background};
+  animation: mymove 3.6s cubic-bezier(1, 0.03, 1, 0.04);
 
-`
+  @keyframes mymove {
+    from {
+      transform: scale(1, 1);
+      background-color: ${COLORS.gray};
+    }
+    to {
+      transform: scale(1.1, 1.1);
+      background-color: ${COLORS.black};
+    }
+  }
+  @media screen and (min-width: 768px) {
+    left: 53vw;
+    margin: 0 0 0 6.9vw;
+  }
+`;
 const Circle4 = styled.div`
-width:38px;
-height:37px;
-margin: 0 0 0 8.8vw;
+  width: 38px;
+  height: 37px;
+  margin: 0 0 0 8.8vw;
 
-top:59vh;
-left:67vw;
-background-color:${COLORS.black};
-border-radius:50%;
-padding:5px 12px;
+  top: 59vh;
+  left: 67vw;
+  background-color: ${COLORS.black};
+  border-radius: 50%;
+  padding: 5px 12px;
 
-color:${COLORS.background};
-animation:mymove 5.1s cubic-bezier(1,.03,1,.04) ;
+  color: ${COLORS.background};
+  animation: mymove 5.1s cubic-bezier(1, 0.03, 1, 0.04);
 
-
-@keyframes mymove {
-    from {transform: scale(1,1); background-color:${COLORS.gray};}
- to {transform: scale(1.1,1.1); background-color:${COLORS.black};}
-     
-  
+  @keyframes mymove {
+    from {
+      transform: scale(1, 1);
+      background-color: ${COLORS.gray};
+    }
+    to {
+      transform: scale(1.1, 1.1);
+      background-color: ${COLORS.black};
+    }
   }
-  @media screen and (min-width: 768px){
-   left:62vw;
-   margin: 0 0 0 6.8vw;
+  @media screen and (min-width: 768px) {
+    left: 62vw;
+    margin: 0 0 0 6.8vw;
   }
-`
+`;
 
 const Line = styled.div`
-height: 0.625rem;
-width: auto;
-display:flex;
-justify-content: flex-start;
+  height: 0.625rem;
+  width: auto;
+  display: flex;
+  justify-content: flex-start;
 
+  top: 60.6vh;
+  left: 31.5vw;
+  background-color: ${COLORS.black};
 
-top:60.6vh;
-left:31.5vw;
-background-color:${COLORS.black};
-
-animation: w70 5s linear;
-@keyframes w70 {
-  from { width: 0%; }
-  to { width: 100%; }
-}
-@media screen and (min-width: 768px){
-  width:auto;
-  left:36.5vw;
   animation: w70 5s linear;
-@keyframes w70 {
-    from { width: 0%; }
-    to { width: 100%; }
-}
-}
+  @keyframes w70 {
+    from {
+      width: 0%;
+    }
+    to {
+      width: 100%;
+    }
+  }
+  @media screen and (min-width: 768px) {
+    width: auto;
+    left: 36.5vw;
+    animation: w70 5s linear;
+    @keyframes w70 {
+      from {
+        width: 0%;
+      }
+      to {
+        width: 100%;
+      }
+    }
+  }
+`;
 
-`
+const Linecirclecontainer = () => {
+  return (
+    <LineCirclecontainer>
+      <Line style={{ margin: '0 0.1rem -1.5rem 0' }}></Line>
+      <CircleWrapper>
+        <Circle1>
+          {' '}
+          <FontAwesomeIcon icon={faCheckSquare} />
+        </Circle1>
+        <Circle2>
+          {' '}
+          <FontAwesomeIcon icon={faCheckSquare} />
+        </Circle2>
+        <Circle3>
+          {' '}
+          <FontAwesomeIcon icon={faCheckSquare} />
+        </Circle3>
+        <Circle4>
+          {' '}
+          <FontAwesomeIcon icon={faCheckSquare} />
+        </Circle4>
+      </CircleWrapper>
+    </LineCirclecontainer>
+  );
+};
 
-const Linecirclecontainer =()=>{
-    
-    return(
-        <LineCirclecontainer>
-        <Line style={{ margin: '0 0.1rem -1.5rem 0' }}></Line>
-        <CircleWrapper >
-          <Circle1  > <FontAwesomeIcon icon={faCheckSquare} /></Circle1>
-          <Circle2 > <FontAwesomeIcon icon={faCheckSquare} /></Circle2>
-          <Circle3 > <FontAwesomeIcon icon={faCheckSquare} /></Circle3>
-          <Circle4 > <FontAwesomeIcon icon={faCheckSquare} /></Circle4>
-        </CircleWrapper>
-      </LineCirclecontainer>
-    )
-}
-export default Linecirclecontainer;
+const ResponsiveProgressBar = ({ progress }) => {
+  const [percentage, setPercentage] = useState(0);
+
+  // const progressBarAnimation = useSpring({
+  //   width: `${progress * 25}%`,
+  //   from: { width: '0%' },
+  // });
+
+  // Calculate percentage based on progress and limit it to be between 0 and 100
+  const calculatePercentage = (progress) => Math.min(Math.max(progress * 25));
+
+  // Update the percentage state whenever the progress prop changes
+  useState(() => {
+    setPercentage(calculatePercentage(progress));
+  }, [progress]);
+
+  return (
+    <div className="w-full flex justify-center items-center flex-col  ">
+      <div
+        className="  text-md
+  font-bold
+  text-black mb-2"
+      >
+        {`${progress * 25}%`} Done
+      </div>
+      <div
+        className=" md:w-1/3
+        w-11/12
+       
+    h-3
+    bg-[#F4F4F4]
+    rounded-full"
+      >
+        {/* <animated.div
+          className="  h-full
+  rounded-full
+  bg-[#8CCF24]"
+          style={progressBarAnimation}
+        /> */}
+      </div>
+    </div>
+  );
+};
+
+export default ResponsiveProgressBar;
