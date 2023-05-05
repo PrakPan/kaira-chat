@@ -1,5 +1,4 @@
 import React , { useEffect, useState } from 'react'
-import axiosrecommendedinstance from '../../../services/poi/reccommededcities';
 import Card from '../../../components/containers/plannerlocations/Card';
 import media from "../../../components/media"
 import DesktopSkeleton,{MobileSkeleton} from '../../../components/containers/plannerlocations/LocationSkeleton'
@@ -14,23 +13,30 @@ const MobileCardsContainer = styled.div`
 grid-template-columns: 1fr 1fr ;
   gap: 0.5rem;
 `
+const Heading = styled.p`
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 48px;
+  margin-block: 1.5rem;
+  @media screen and (min-width: 768px) {
+    margin-block: 3.5rem;
+  }
+`;
 
 const NearbyLocations = (props) => {
-  
+
+  if (!props.nearbyCities || props.nearbyCities?.length === 0) return <></>;
+   
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
-  const [cards,setCards] = useState([])
+  const [cards, setCards] = useState([])
+  const [hide , setHide] = useState(false)
 
   useEffect(() => {
     
-    axiosrecommendedinstance
-      .get(
-        `/?slug=`+props.data.slug
-      )
-      .then((res) => {
 let cardsArr = []
 let MobileCardsArr = []
 let count = 0
-for(let i = 0;i<res.data.length;i++){
+for(let i = 0;i<props.nearbyCities.length;i++){
   if(i%4==0 && i!=0){
       let n = cardsArr.length;
       const el = cardsArr.slice(n-4,n)
@@ -39,12 +45,12 @@ for(let i = 0;i<res.data.length;i++){
     }
   cardsArr.push(
     <Card
-    key={res.data[i].id}
-    location={res.data[i].name}
-    heading={res.data[i].most_popular_for[res.data[i].most_popular_for.length-1]}
-    img={res.data[i].image}
-    slug={res.data[i].slug}
-    link={res.data[i].slug}
+    key={props.nearbyCities[i].id}
+    location={props.nearbyCities[i].name}
+    heading={props.nearbyCities[i].most_popular_for[props.nearbyCities[i].most_popular_for.length-1]}
+    img={props.nearbyCities[i].image}
+    slug={props.nearbyCities[i].slug}
+    link={props.nearbyCities[i].slug}
     city={true}
      >
     </Card>
@@ -57,10 +63,6 @@ if(count%4 !=0){
 setCards(cardsArr)
 setMobileCardsToShowJSX(MobileCardsArr)
 
-      })
-      .catch((error) => {
-      });
-
   }, []);
 
 
@@ -68,17 +70,50 @@ setMobileCardsToShowJSX(MobileCardsArr)
 const router = useRouter()
   return (
     <>
-    {isPageWide?<>
-    {cards.length?<Carousel initialIndex={0} hideSides groupCells={6} numberOfCards={6} cards={cards}></Carousel> : <DesktopSkeleton />}
-   <Button  onclick={()=>openTailoredModal(router, props.data.id ,props.data.name)} borderWidth="1px" fontSizeDesktop="16px" fontWeight="600" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
-</>
- : 
-     <div>
-       {MobilecardsToShowJSX.length?<PageDotsFlickity padding={'0.2rem'} initialIndex cards={MobilecardsToShowJSX}></PageDotsFlickity>:<MobileSkeleton />}
-</div>
+      {isPageWide ? (
+        <>
+          <Heading>Nearby Locations to {props.data.name}</Heading>
 
-}
-</>)
+          {cards.length ? (
+            <Carousel
+              initialIndex={0}
+              hideSides
+              groupCells={6}
+              numberOfCards={6}
+              cards={cards}
+            ></Carousel>
+          ) : (
+            <DesktopSkeleton />
+          )}
+          <Button
+            onclick={() =>
+              openTailoredModal(router, props.data.id, props.data.name)
+            }
+            borderWidth="1px"
+            fontSizeDesktop="16px"
+            fontWeight="600"
+            borderRadius="6px"
+            margin="2rem auto"
+            padding="0.5rem 2rem"
+          >
+            Unlock your personalized adventure
+          </Button>
+        </>
+      ) : (
+        <div>
+          {MobilecardsToShowJSX.length ? (
+            <PageDotsFlickity
+              padding={"0.2rem"}
+              initialIndex
+              cards={MobilecardsToShowJSX}
+            ></PageDotsFlickity>
+          ) : (
+            <MobileSkeleton />
+          )}
+        </div>
+      )}
+    </>
+  );
 }
 
 export default NearbyLocations

@@ -14,9 +14,9 @@ export const getServerSideProps = async ({ res }) => {
     let citypaths = citiesdata.map((object) => {
                 return BASE_URL+"/travel-guide/city/"+object.cta
     })
-    let thingspaths = citiesdata.map((object) => {
-      return BASE_URL+"/travel-guide/city/"+object.cta+"/things-to-do"
-    })
+    // let thingspaths = citiesdata.map((object) => {
+    //   return BASE_URL+"/travel-guide/city/"+object.cta+"/things-to-do"
+    // })
 
     const experiences = await fetch(`https://apis.tarzanway.com/search/all/?type=Experience`)
     const experiencesdata = await experiences.json();
@@ -58,7 +58,17 @@ export const getServerSideProps = async ({ res }) => {
 
 
     ]
-    const allPaths =[ ...StaticPaths, ...citypaths, ...thingspaths, ...experiencepaths  ];
+    // const allPaths = [
+    //   ...StaticPaths,
+    //   ...citypaths,
+    //   ...thingspaths,
+    //   ...experiencepaths,
+    // ];
+    const allPaths = [
+      ...StaticPaths,
+      ...citypaths,
+      ...experiencepaths,
+    ];
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

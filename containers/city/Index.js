@@ -17,33 +17,9 @@ const Experience = (props) => {
     setEscapeState(true)
    }, []);
    let isPageWide = media('(min-width: 768px)')
-  const [poiData, setPoiData] = useState();
-  const [showPoiModal, setShowPoiModal] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
    const [galleryimages, setGalleryImages] = useState([]);
-  const [itinerary, setItinerary] = useState(null);
-  const [brief, setBreif] = useState(null);
-  const [booking, setBooking] = useState(null);
-  const [payment, setPayment] = useState(null);
-  const [experienceData, setExperienceData] = useState({
-    data: {
-      name: null,
-      experience_filters: ['']
-    },
-  });
   const router = useRouter();
-
-  const _openPoiModal = (poi) => {
-    setPoiData({...poi});
-    document.getElementById("html").classList.add('overlfow-hidden');
-
-    setShowPoiModal(true);
-  }
-  const _closePoiModal = () => {
-    document.getElementById("html").classList.remove('overlfow-hidden');
-
-    setShowPoiModal(false);
-  }
  
   const closeGalleryHandler = () => {
     let images = [];
@@ -98,7 +74,7 @@ const Experience = (props) => {
             <NewMenu
               data={props.cityData}
               destination={props.cityData.name}
-              cities={props.reccomendedCitiesData}
+              nearbyCities={props.reccomendedCitiesData}
             />
           </div>
         </div>
