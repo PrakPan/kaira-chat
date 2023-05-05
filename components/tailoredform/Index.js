@@ -207,8 +207,9 @@ const Enquiry = (props) => {
       .then((response) => {
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
-          window.location.href =
-            "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+          // window.location.href =
+          //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+          router.push('/thank-you')
         } else {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
@@ -220,8 +221,9 @@ const Enquiry = (props) => {
       })
       .catch((err) => {
         setLoading(false);
-        window.location.href =
-          "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+        // window.location.href =
+        //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+          router.push("/thank-you");
 
         if (err.response.data.email) {
         }
