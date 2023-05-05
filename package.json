@@ -19,10 +19,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.55",
     "@mui/material": "^5.12.3",
-<<<<<<< HEAD
-    "@mui/styles": "^5.12.3",
-=======
->>>>>>> 899a002d5e5ace7d88b1cc7675609ab674f90a24
+
     "@mui/x-date-pickers": "^5.0.2",
     "@react-google-maps/api": "^2.18.1",
     "@react-google-maps/marker-clusterer": "^2.16.1",
