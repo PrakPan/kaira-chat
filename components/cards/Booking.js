@@ -64,10 +64,6 @@ const Booking = (props) => {
     root: {
       width: '100%',
     },
-    heading: {
-      fontSize: '1rem',
-      fontWeight: '600',
-    },
   }));
   const classes = useStyles();
 

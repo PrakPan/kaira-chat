@@ -12,10 +12,6 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     zIndex: '1',
   },
-  heading: {
-    fontSize: '1rem',
-    fontFamily: "'Open Sans', sans-serif !important;",
-  },
 }));
 
 const Accordion = withStyles({

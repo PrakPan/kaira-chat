@@ -123,10 +123,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
   },
-  heading: {
-    fontSize: '1rem',
-    fontWeight: '600',
-  },
 }));
 
 const Booking = (props) => {

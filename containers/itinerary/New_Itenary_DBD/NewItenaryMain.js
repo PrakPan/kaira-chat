@@ -193,7 +193,7 @@ const NewItenaryMain = (props) => {
         offset={'80px'}
         items={itemsDays}
         BarName="CityName"
-        year={yearCalc(itemsDays)}
+        year={itemsDays}
         Mstyle={'round'}
         Iterable="date"
         vertical={true}
