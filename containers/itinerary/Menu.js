@@ -218,7 +218,7 @@ const SimpleTabs = (props) => {
     }
   }, []);
 
-  const classes = useStyles();
+  const classes = useStyles;
   const [value, setValue] = React.useState(0);
   const [show, setShow] = useState(true);
   const [location, setLocation] = useState(0);
@@ -492,6 +492,7 @@ const SimpleTabs = (props) => {
           // blur={blurItinerary}
         ></Breif>
       </div>
+      {/* // for 0000000000000000000000  mobile */}
       {isPageWide ? null : (
         <>
           <div id={items[1].link}>
@@ -543,6 +544,7 @@ const SimpleTabs = (props) => {
           </div> */}
         </>
       )}
+      {/* // for 0000000000000000000000  desktop */}
       {isPageWide ? (
         <SplitScreen
           classStyle="min-h-[600px]"
@@ -553,28 +555,12 @@ const SimpleTabs = (props) => {
           <div>
             {isPageWide ? (
               <div id={items[1].link}>
-                <NewItenaryMain
-                  // is_registration_needed={
-                  //   props.payment ? props.payment.is_registration_needed : false
-                  // }
-                  // selectedPoi={selectedPoi}
-                  // user_email={props.user_email}
-                  // is_preview={props.preview}
-                  // is_stock={props.is_stock}
-                  // setShowPoiModal={_handlePoiEditModalOpen}
-                  // traveleritinerary={props.traveleritinerary}
-                  // hideTimer={minimiseTimer}
-                  // timeRequired={props.timeRequired}
-                  // itineraryReleased={props.itineraryReleased}
-                  // itineraryDate={props.itineraryDate}
-                  // showTimer={false}
-                  // _hideTimerHandler={_minimiseTimerHandler}
-                  // blur={false}
-                  city_slabs={props.breif.city_slabs}
-                  itinerary={props.itinerary}
-                  // newData={props.newData}
-                  // demoitinerary={props.demoitinerary}
-                ></NewItenaryMain>
+                {props?.itinerary && (
+                  <NewItenaryMain
+                    city_slabs={props?.breif?.city_slabs}
+                    itinerary={props?.itinerary}
+                  ></NewItenaryMain>
+                )}
               </div>
             ) : (
               <div id={items[1].link}>
@@ -750,42 +736,43 @@ const SimpleTabs = (props) => {
               />
             )}
           </div>
-
-          <div className="sticky top-[6rem] mt-40">
-            <BookingContainer
-              payment={props.payment}
-              plan={props.plan}
-              stayBookings={props.stayBookings}
-              flightBookings={props.flightBookings}
-              activityBookings={props.activityBookings}
-              transferBookings={props.transferBookings}
-            ></BookingContainer>
-            {/* <GITSummaryContainer
-              hasUserPaid={
-                props.payment ? (props.payment.paid_user ? true : false) : false
-              }
-              payment_status={props.payment_status}
-              plan={props.plan}
-              itinerary={props.itinerary}
-              getPaymentHandler={props.getPaymentHandler}
-              setUserDetails={props.setUserDetails}
-              id={props.id}
-              stayBookings={props.stayBookings}
-              flightBookings={props.flightBookings}
-              activityBookings={props.activityBookings}
-              transferBookings={props.transferBookings}
-              setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)}
-              payment={props.payment}
-              stayBookings={props.stayBookings}
-              transferBookings={props.transferBookings}
-              traveleritinerary={props.traveleritinerary}
-              blur={props.blur}
-              // hide={_hidePaymentHandler}
-              experienceId={props.experienceId}
-              token={props.token}
-              // setShowLoginModal={setShowLoginModal}
-            ></GITSummaryContainer> */}
-          </div>
+          {props.payment ? (
+            <div className="sticky top-[6rem] mt-40">
+              <BookingContainer
+                payment={props.payment}
+                plan={props.plan}
+                stayBookings={props.stayBookings}
+                flightBookings={props.flightBookings}
+                activityBookings={props.activityBookings}
+                transferBookings={props.transferBookings}
+              ></BookingContainer>
+              {/* <GITSummaryContainer
+    hasUserPaid={
+      props.payment ? (props.payment.paid_user ? true : false) : false
+    }
+    payment_status={props.payment_status}
+    plan={props.plan}
+    itinerary={props.itinerary}
+    getPaymentHandler={props.getPaymentHandler}
+    setUserDetails={props.setUserDetails}
+    id={props.id}
+    stayBookings={props.stayBookings}
+    flightBookings={props.flightBookings}
+    activityBookings={props.activityBookings}
+    transferBookings={props.transferBookings}
+    setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)}
+    payment={props.payment}
+    stayBookings={props.stayBookings}
+    transferBookings={props.transferBookings}
+    traveleritinerary={props.traveleritinerary}
+    blur={props.blur}
+    // hide={_hidePaymentHandler}
+    experienceId={props.experienceId}
+    token={props.token}
+    // setShowLoginModal={setShowLoginModal}
+  ></GITSummaryContainer> */}
+            </div>
+          ) : null}
         </SplitScreen>
       ) : null}
 

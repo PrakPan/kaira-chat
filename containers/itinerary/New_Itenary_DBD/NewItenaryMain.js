@@ -126,7 +126,7 @@ const NewItenaryMain = (props) => {
 
   function memoize(fn) {
     const cache = {};
-    return function(...args) {
+    return function (...args) {
       const key = JSON.stringify(args);
       if (cache[key]) {
         return cache[key];
@@ -149,7 +149,7 @@ const NewItenaryMain = (props) => {
   const IdPauser = (duration = 1) => {
     let counter = duration - 1;
 
-    return function() {
+    return function () {
       if (counter === duration - 1) {
         counter--;
         return true;
@@ -188,7 +188,7 @@ const NewItenaryMain = (props) => {
         BarName="CityName"
         Mstyle={'round'}
       ></ScrollableMenuTabs>
-      <ScrollableMenuTabs
+      {/* <ScrollableMenuTabs
         icons={false}
         offset={'80px'}
         items={itemsDays}
@@ -197,15 +197,19 @@ const NewItenaryMain = (props) => {
         Mstyle={'round'}
         Iterable="date"
         vertical={true}
-      ></ScrollableMenuTabs>
-
-      <div className="itenaryContainer">
-        {props.itinerary.day_slabs.map((element, index) => (
-          <div key={element.slab_id} id={element.slab_id}>
-            <Day_I_Container Days={element} indexDay={index}></Day_I_Container>
-          </div>
-        ))}
-      </div>
+      ></ScrollableMenuTabs> */}
+      {props.itinerary.day_slabs && (
+        <div className="itenaryContainer">
+          {props.itinerary.day_slabs.map((element, index) => (
+            <div key={element.slab_id} id={element.slab_id}>
+              <Day_I_Container
+                Days={element}
+                indexDay={index}
+              ></Day_I_Container>
+            </div>
+          ))}
+        </div>
+      )}
     </Wrapper>
   );
 };

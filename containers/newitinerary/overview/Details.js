@@ -40,7 +40,7 @@ const Details = (props) => {
 
   return (
     <Container className="font-lexend">
-      {props?.travellerType && (
+      {/* {props?.travellerType[0] && (
         <div style={{ width: 'max-content' }}>
           <Heading>Type of Travel</Heading>
           <Text>
@@ -50,7 +50,7 @@ const Details = (props) => {
               : `+${props.travellerType.length - 1}`}
           </Text>
         </div>
-      )}
+      ) : null} */}
       {props?.group_type !== null ? (
         <div style={{ width: 'max-content' }}>
           <Heading>Group Type</Heading>

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-
+import styled from 'styled-components';
 import useOnWindowResize from '../../hooks/useOnWindowResize';
 
 interface Props {
@@ -117,7 +117,7 @@ export const useLinkWithMarker = <RefType extends HTMLElement>({
   return { ref, handleSelect, handleMouseEnter, handleMouseLeave };
 };
 
-export const NavigationMarker = styled.div<Props>`
+export const NavigationMarker = styled.div`
   position: absolute;
   /* 1px border negative margin */
   bottom: -1px;

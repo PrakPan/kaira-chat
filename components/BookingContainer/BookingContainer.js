@@ -241,7 +241,7 @@ const BookingContainer = (props) => {
         'https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480',
       order_id: data.order_id,
       //Payment successfull handler passed to razorpay
-      handler: function(response) {
+      handler: function (response) {
         setPaymentLoading(true);
         axios
           .post(
@@ -329,19 +329,24 @@ const BookingContainer = (props) => {
             </div>
 
             <div className="flex flex-col">
-              <div className="flex flex-row gap-1">
-                <div className="flex flex-row items-center text-black font-bold text-2xl">
-                  <span>₹</span>
-                  <div>
-                    {getIndianPrice(
-                      Math.round(
-                        Math.round(props.payment.discounted_cost) / 100
-                      )
-                    )}
+              {props?.payment && (
+                <div className="flex flex-row gap-1">
+                  <div className="flex flex-row items-center text-black font-bold text-2xl">
+                    <span>₹</span>
+                    <div>
+                      {getIndianPrice(
+                        Math.round(
+                          Math.round(props?.payment.discounted_cost) / 100
+                        )
+                      )}
+                    </div>
+                  </div>
+                  <div className="font-medium text-base self-end">
+                    Total Cost
                   </div>
                 </div>
-                <div className="font-medium text-base self-end">Total Cost</div>
-              </div>
+              )}
+
               <div className="text-[#7A7A7A]">Exclusive applicable taxes</div>
             </div>
             <div
@@ -442,7 +447,7 @@ const BookingContainer = (props) => {
         </div>
 
         <div className="px-3 ">
-          {props.payment.allow_coupon_discount ? (
+          {props?.payment?.allow_coupon_discount ? (
             <form onSubmit={(e) => handleSubmit(e)}>
               <div className="relative  rounded-md shadow-sm cursor-pointer">
                 <input

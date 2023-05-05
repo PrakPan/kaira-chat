@@ -402,7 +402,7 @@ const Itinerary = (props) => {
       .then((res) => {
         setCardUpdateLoading(null);
         _updateTransferBookingHandler(res.data.bookings);
-        setTimeout(function() {
+        setTimeout(function () {
           getPaymentHandler();
         }, 1000);
       })
@@ -471,7 +471,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
         _updateStayBookingHandler(res.data.bookings);
         setSelectingBooking(null);
-        setTimeout(function() {
+        setTimeout(function () {
           getPaymentHandler();
         }, 1000);
       })
@@ -523,7 +523,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
         _updateFlightBookingHandler(res.data.bookings);
         setSelectingBooking(null);
-        setTimeout(function() {
+        setTimeout(function () {
           getPaymentHandler();
         }, 1000);
       })
@@ -578,7 +578,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
         _updateTransferBookingHandler(res.data.bookings);
         setSelectingBooking(null);
-        setTimeout(function() {
+        setTimeout(function () {
           getPaymentHandler();
         }, 1000);
       })
@@ -637,7 +637,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
         _updateActivityBookingHandler(res.data.bookings);
         setSelectingBooking(null);
-        setTimeout(function() {
+        setTimeout(function () {
           getPaymentHandler();
         }, 1000);
       })

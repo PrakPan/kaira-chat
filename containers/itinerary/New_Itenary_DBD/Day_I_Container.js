@@ -70,7 +70,7 @@ const Day_I_Container = (props) => {
   }
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements) {
-    JsonArray.forEach(function(element) {
+    JsonArray.forEach(function (element) {
       switch (element.element_type) {
         case 'transfer':
           dayIcontainer.push(
