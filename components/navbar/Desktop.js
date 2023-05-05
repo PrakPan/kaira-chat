@@ -12,7 +12,6 @@ import Button from '../ui/button/Index';
 import Notifications from '../modals/Notifications/Index';
 import urls from '../../services/urls';
 import ImageLoader from '../ImageLoader';
-import * as ga from '../../services/ga/Index';
 import DesktopSearch from '../search/header/desktop/Index';
 import { ImSearch } from 'react-icons/im';
 import media from '../media'
@@ -67,7 +66,6 @@ const TTWLogoContainer = styled(CenterNav)`
 
 
 const NavItem = styled.div`
-  font-family: http://localhost:3000/travel-supporthttp://localhost:3000/travel-supporthttp://localhost:3000/travel-support'Open Sans';
   color: white;
   padding: 1rem 0rem 0.5rem 0rem;
   @media screen and (min-width: 768px) {

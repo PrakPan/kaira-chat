@@ -91,11 +91,13 @@ const _openAllNotificationsHandler = () => {
       }).catch(err => {
   })
 }
+              console.log("hideNav: ", hideNav);
  
     return (
       <div className="font-lexend">
         <div className="hidden-desktop">
-          <NewMobile
+          
+          {!hideNav && <NewMobile
             PW={props.PW}
             id={props.id}
             destination={props.destination}
@@ -107,14 +109,15 @@ const _openAllNotificationsHandler = () => {
             hideNav={hideNav}
             notOpenCount={notOpenCount}
           ></NewMobile>
+          }
         </div>
         <div className="hidden-mobile">
-          <div
+          {/* <div
             style={{
               display: hideNav ? "none !important" : "initial !important",
             }}
-          >
-            <IndexDesktop
+          > */}
+          {!hideNav &&   <IndexDesktop
               id={props.id}
               destination={props.destination}
               PW={props.PW}
@@ -127,8 +130,8 @@ const _openAllNotificationsHandler = () => {
               notifications={notifications}
               token={props.token}
               style={{}}
-            ></IndexDesktop>
-          </div>
+            ></IndexDesktop>}
+          {/* </div> */}
         </div>
       </div>
     );
