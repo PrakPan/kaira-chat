@@ -4,14 +4,8 @@ import Subscribe from './Subscribe';
 import Black from './Links';
 import Copyright from './Copyright';
 import YellowPannel from './SubscribePanel';
-import { makeStyles } from '@mui/styles';
-import styled from 'styled-components';
 
-const useStyles = makeStyles({
-  paper: {
-    backgroundColor: '#F7e700',
-  },
-});
+import styled from 'styled-components';
 
 const Container = styled.div`
   max-width: 100vw !important;
@@ -23,7 +17,6 @@ const Container = styled.div`
 `;
 
 const Footer = (props) => {
-  const classes = useStyles();
   const [pannel, setPannel] = useState(false);
 
   const _handleScroll = (event) => {};

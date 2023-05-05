@@ -5,7 +5,7 @@ import Button1 from '../Button';
 import { TextField } from '@mui/material';
 import { Grid } from '@mui/material';
 import { Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+
 // import { Redirect } from 'react-router-dom'
 import Modal from 'react-bootstrap/Modal';
 import { connect } from 'react-redux';
@@ -24,44 +24,35 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GoogleLogin from 'react-google-login';
 // import FacebookLogin from 'react-facebook-login';
 
-const useStyles = makeStyles((themes) => ({
+const useStyles = {
   '@global': {
     body: {
       backgroundColor: themes.palette.common.white,
     },
   },
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    padding: '0',
-  },
-  avatar: {
-    backgroundColor: themes.palette.secondary.main,
-  },
-  form: {
-    width: '90%',
-    margin: '0 auto',
-  },
-  submit: {
-    margin: '1rem 0',
-    backgroundColor: theme.colors.brandColor,
-    color: 'black',
-    borderRadius: '2rem',
-    '&:hover': {
-      backgroundColor: '#F7e700',
-    },
-  },
-  google: {
-    margin: '1rem 0',
-    backgroundColor: 'white',
-    color: 'black',
-    borderRadius: '2rem',
-  },
-  height: {
-    height: '1.5rem !important',
-  },
-}));
+  paper: `
+   flex
+   flex-col
+    justify-center
+    p-0
+  `,
+
+  form: `
+   w-[90%]
+    mx-0 my-auto
+  `,
+  submit: `
+    mx-[1rem] my-0
+
+    text-black
+  rounded-[2rem]
+    hover:bg-[#F7e700]
+   
+  `,
+  google: `
+  my-4 bg-white text-black rounded-full
+  `,
+};
 var userDetails = {
   firstName: '',
   lastName: '',

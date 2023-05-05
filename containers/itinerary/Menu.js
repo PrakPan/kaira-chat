@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Link } from 'react-scroll';
-import { makeStyles } from '@mui/styles';
+
 import { AppBar } from '@mui/material';
 import { Tabs, Tab } from '@mui/material';
 
@@ -191,18 +191,11 @@ function TabPanel(props) {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  appbar: {
-    backgroundColor: '#262626 !important',
-    color: '#F7E700 !important',
-    height: '66px !important',
-    justifyContent: 'center',
-    top: '0 !important',
-  },
-}));
+const useStyles = {
+  root: `
+  flex-grow-1
+  `,
+};
 
 const SimpleTabs = (props) => {
   let isPageWide = media('(min-width: 768px)');

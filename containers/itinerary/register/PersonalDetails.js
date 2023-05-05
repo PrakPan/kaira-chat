@@ -6,7 +6,7 @@ import { TextField } from '@mui/material';
 import { Checkbox } from '@mui/material';
 import { Link } from '@mui/material';
 import { Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+  
 import { Container } from '@mui/material';
 
 function Copyright() {
@@ -22,27 +22,23 @@ function Copyright() {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    backgroundColor: '#F7e700',
-    color: 'black',
-    fontFamily: 'Open Sans',
-    fontWeight: '600',
-  },
-}));
+const useStyles = {
+  paper: `
+    flex
+    flex-col
+    items-center
+  `,
+  avatar: `
+    
+  `,
+  form: `w-full`,
+  submit: `
+    
+    bg-[#F7e700]
+  
+   font-[600]
+  `,
+};
 
 export default function SignIn(props) {
   const classes = useStyles();

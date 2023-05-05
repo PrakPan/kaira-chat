@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import { TextField } from '@mui/material';
 import { Grid } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+
 import { Container } from '@mui/material';
 import extensions from './extensionsdata';
 import styled from 'styled-components';
@@ -21,28 +21,11 @@ import { connect } from 'react-redux';
 import Login from '../../../../components/userauth/LogInModal';
 import { getFirstName } from '../../../../services/getfirstname';
 import * as ga from '../../../../services/ga/Index';
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-
-  form: {
-    width: '100%', // Fix IE 11 issue.
-  },
-
-  box: {
-    borderRadius: '5px',
-    borderWidth: '1px',
-    borderColor: '#E4e4e4',
-    borderStyle: 'solid',
-    height: 'max-content',
-    padding: '0.5rem',
-    position: 'sticky',
-    top: '12vh',
-  },
-}));
+const useStyles = {
+  box: `
+    sticky top-12vh border rounded-md border-gray-300 h-max p-2
+  `,
+};
 var userDetails = {
   firstName: '',
   lastName: '',

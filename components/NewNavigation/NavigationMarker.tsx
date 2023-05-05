@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import styled from '@emotion/styled';
+
 import useOnWindowResize from '../../hooks/useOnWindowResize';
 
 interface Props {
@@ -95,10 +95,10 @@ export const useLinkWithMarker = <RefType extends HTMLElement>({
 }: OnSelectProps & NavigationMarkerHandlers) => {
   const ref = useRef<RefType>(null);
 
-  const handleSelect = useCallback(() => onSelect({ ref, isSelected }), [
-    onSelect,
-    isSelected,
-  ]);
+  const handleSelect = useCallback(
+    () => onSelect({ ref, isSelected }),
+    [onSelect, isSelected]
+  );
 
   const handleMouseEnter = useCallback(
     () => onMouseEnter({ ref, isSelected }),

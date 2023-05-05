@@ -1,32 +1,12 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+
 import Accordion from '@mui/material';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { withStyles } from '@mui/styles';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    zIndex: '1',
-  },
-}));
-
-const Accordion = withStyles({
-  root: {
-    marginBottom: 10,
-    border: '1px solid #e4e4e4',
-    boxShadow: 'none',
-    zIndex: '1',
-  },
-
-  expanded: {},
-})(Accordion);
 const FAQs = (props) => {
-  const classes = useStyles();
-
   let FAQS = [];
   for (var i = 0; i < props.faqs.length; i++) {
     FAQS.push(

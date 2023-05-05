@@ -3,20 +3,19 @@ import styled from 'styled-components';
 import { FormControl } from '@mui/material';
 import { InputLabel } from '@mui/material';
 import { Select } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 
-const useStyles = makeStyles((theme) => ({
-  noPadding: {
-    padding: 0,
-  },
-  fullWidth: {
-    width: '100%',
-    padding: 0,
-  },
-  relative: {
-    position: 'relative',
-  },
-}));
+const useStyles = {
+  noPadding: `
+    p-0
+  `,
+  fullWidth: `
+    w-[100%]
+    p-[0]
+  `,
+  relative: `
+   relative
+  `,
+};
 const Option = styled.option`
   padding: 0.75rem;
   background-color: white;

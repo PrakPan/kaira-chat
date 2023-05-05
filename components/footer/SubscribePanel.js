@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
+
 import Drawer from '@mui/material/Drawer';
 import Paper from '@mui/material/Paper';
 import styled from 'styled-components';
 import SubscribeContent from './YellowSubscribe';
-
-const useStyles = makeStyles({
-  paper: {
-    backgroundColor: '#F7e700',
-  },
-});
 
 const GridContainer = styled.div`
   width: 70%;
@@ -55,8 +49,6 @@ const P = styled.p`
 const SubscribeDrawer = (props) => {
   const [subscribe, setSubscribe] = useState(true);
 
-  const classes = useStyles();
-
   const _escCloseHandler = (event) => {
     if (event.keyCode === 27) props.onhide();
   };
@@ -65,12 +57,12 @@ const SubscribeDrawer = (props) => {
       <Drawer
         anchor={'bottom'}
         open={props.open}
-        className={classes.root}
+        className={'bg-[#F7e700]'}
         onClose={props.onhide}
         transitionDuration={1000}
         onKeyDown={_escCloseHandler}
       >
-        <Paper className={classes.paper}>
+        <Paper className={'bg-[#F7e700]'}>
           <SubscribeContent onhide={props.onhide} />
         </Paper>
       </Drawer>

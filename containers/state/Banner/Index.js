@@ -5,15 +5,9 @@ import { faRupeeSign } from '@fortawesome/free-solid-svg-icons';
 
 // import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index';
-import { makeStyles } from '@mui/styles';
 
 import Menu from './Menu';
 import MenuButton from './MenuButton';
-const useStyles = makeStyles((theme) => ({
-  typography: {
-    padding: theme.spacing(2),
-  },
-}));
 
 const Banner = (props) => {
   const [heading, setHeading] = useState('Overview');

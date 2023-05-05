@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { makeStyles } from '@mui/styles';
+
 import AppBar from '@mui/material/AppBar';
 import { Tabs, Tab } from '@mui/material';
 
@@ -30,41 +30,6 @@ function TabPanel(props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
-  root: {},
-  appbar: {
-    backgroundColor: 'black !important',
-    color: 'white !important',
-    height: '10vh !important',
-    justifyContent: 'center !important',
-    alignItems: 'space-between !important',
-    borderStyle: 'none !important',
-    borderColor: '#e4e4e4 !important',
-    borderWidth: '1px !important',
-    top: '0 !important',
-  },
-  appbarmobile: {
-    backgroundColor: 'black !important',
-    color: 'white !important',
-    height: '10vh !important',
-    justifyContent: 'center !important',
-    borderStyle: 'solid none none none !important',
-    borderColor: '#e4e4e4 !important',
-    borderWidth: '1px !important',
-    top: '0',
-  },
-  tabs: {
-    width: '60vw',
-  },
-  tabheading: {
-    fontSize: '1rem',
-  },
-  nopadding: {
-    padding: '0 !important',
-    overflow: 'hidden',
-  },
-}));
-
 const HeaderExtraPadding = styled.div`
   height: 3vh;
   background-color: white;
@@ -76,7 +41,6 @@ const HeaderExtraPadding = styled.div`
 const SimpleTabs = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
-  const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
   const [location, setLocation] = useState(0);
@@ -119,7 +83,7 @@ const SimpleTabs = (props) => {
   };
   if (props.experienceLoaded)
     return (
-      <div className={classes.root}>
+      <div>
         {isPageWide ? (
           <EnquireButton
             onClick={openBooking}
