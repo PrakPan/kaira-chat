@@ -91,8 +91,6 @@ const _openAllNotificationsHandler = () => {
       }).catch(err => {
   })
 }
-              console.log("hideNav: ", hideNav);
- 
     return (
       <div className="font-lexend">
         <div className="hidden-desktop">
