@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { makeStyles, Theme } from '@mui/material/styless';
+
 import AppBar from '@mui/material/AppBar';
 import { Tabs, Tab } from '@mui/material';
 
@@ -34,38 +34,6 @@ function TabPanel(props) {
     </div>
   );
 }
-
-const useStyles = makeStyles(() => ({
-  root: {},
-  appbar: {
-    backgroundColor: 'black !important',
-    color: 'white !important',
-    height: '10vh !important',
-    justifyContent: 'center !important',
-
-    borderStyle: 'none !important',
-    borderColor: '#e4e4e4 !important',
-    borderWidth: '1px !important',
-    top: '0 !important',
-  },
-  appbarmobile: {
-    backgroundColor: 'black !important',
-    color: 'white !important',
-    height: '66px !important',
-    justifyContent: 'center !important',
-    borderStyle: 'solid none none none !important',
-    borderColor: '#e4e4e4 !important',
-    borderWidth: '1px !important',
-    top: '0',
-  },
-  tabs: {
-    width: '60vw',
-  },
-  tabheading: {
-    fontSize: '1rem',
-  },
-  nopadding: {},
-}));
 
 const HeaderExtraPadding = styled.div`
   height: 3.5vh;

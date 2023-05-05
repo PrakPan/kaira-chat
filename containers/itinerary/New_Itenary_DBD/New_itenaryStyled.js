@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const padding = {
-  initialLeft: '50px',
+  initialLeft: '75px',
 };
 export const Container = styled.div`
   display: flex;

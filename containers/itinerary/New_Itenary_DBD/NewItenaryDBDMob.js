@@ -107,6 +107,11 @@ const NewItenaryDBDMob = (props) => {
   };
   return (
     <Wrapper>
+      {' '}
+      <div className="font-lexend font-bold text-2xl mb-4 mt-4">
+        {' '}
+        Day By Day Itinerary
+      </div>
       <ScrollableMenuTabs
         icons={items.length < 3 ? false : true}
         offset={'47px'}
@@ -129,7 +134,6 @@ const NewItenaryDBDMob = (props) => {
           ))}
         </DropdownWrapper>
       </div> */}
-
       <ScrollableMenuTabs
         icons={itemsDays.length < 3 ? false : true}
         offset={'80px'}

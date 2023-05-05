@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import media from '../../media';
 import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
-import { Scrollbars } from 'react-custom-scrollbars';
+
 import FullScreenGallery from '../../fullscreengallery/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
 import MobileFilters from './filtersmobile/Index';

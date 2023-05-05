@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
 import { motion, Variants } from 'framer-motion';
+import styled from 'styled-components';
 import {
   useLinkWithMarker,
   NavigationMarkerHandlers,
@@ -64,17 +64,13 @@ export const NavigationLink = ({
   onSelect,
   ...restProps
 }: Props) => {
-  const {
-    ref,
-    handleSelect,
-    handleMouseEnter,
-    handleMouseLeave,
-  } = useLinkWithMarker<HTMLDivElement>({
-    isSelected,
-    onSelect,
-    onMouseEnter,
-    onMouseLeave,
-  });
+  const { ref, handleSelect, handleMouseEnter, handleMouseLeave } =
+    useLinkWithMarker<HTMLDivElement>({
+      isSelected,
+      onSelect,
+      onMouseEnter,
+      onMouseLeave,
+    });
 
   return (
     <Link

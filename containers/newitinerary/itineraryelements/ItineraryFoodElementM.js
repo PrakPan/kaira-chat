@@ -63,7 +63,10 @@ const ItineraryFoodElementM = (props) => {
         <div className="flex flex-col">
           <div className="flex flex-row ">
             <div className="text-center">
-              <GiKnifeFork className="text-black text-[33px] mr-4" />
+              <div className="grid place-items-center">
+                <GiKnifeFork className="text-black text-[28px] mr-4" />
+              </div>
+
               {/* {props.icon ? (
                 <div className="mr-4">
                   <ImageLoader
@@ -80,7 +83,7 @@ const ItineraryFoodElementM = (props) => {
                 </div>
               ) : null} */}
             </div>
-            <div className="font-bold">{props.heading}</div>
+            <div className="font-bold text-[16px]">{props.heading}</div>
           </div>
 
           <div className="flex ">

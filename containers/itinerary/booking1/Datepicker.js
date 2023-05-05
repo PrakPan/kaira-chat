@@ -4,29 +4,7 @@ import React from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import { DatePicker } from '@mui/lab';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import { makeStyles } from '@mui/styles';
 
-const StyledTextField = withStyles({
-  root: {
-    '& label.Mui-focused': {
-      color: 'green',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: 'green',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'red',
-      },
-      '&:hover fieldset': {
-        borderColor: 'yellow',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'green',
-      },
-    },
-  },
-})(DatePicker);
 export default function MaterialUIPickers(props) {
   // The first commit of Material-UI
   const [selectedDate, setSelectedDate] = React.useState(

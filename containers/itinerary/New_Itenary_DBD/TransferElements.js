@@ -36,11 +36,13 @@ const TransferElements = ({
           {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
         </Timecontainer>
         <div>
-          {modes && (
+          {modes ? (
             <TransportIconFetcher
               TransportMode={modes}
-              classname="text-black lg:text-[4.05rem] text-[1.25rem]"
+              classname="text-black lg:text-[3.05rem] text-[1.25rem]"
             />
+          ) : (
+            <div className="w-[3.05rem]"></div>
           )}
           {/* <ImageLoader
             url={icon}
@@ -66,8 +68,8 @@ const TransferElements = ({
             </div>
             {transfers !== undefined ? (
               <TransportContainer>
-                <div style={{ paddingRight: '10px' }}>
-                  {modes && (
+                <div>
+                  {/* {modes && (
                     <TransportIconFetcher
                       TransportMode={modes}
                       Instyle={{
@@ -76,7 +78,7 @@ const TransferElements = ({
                         color: 'black',
                       }}
                     />
-                  )}
+                  )} */}
                   {/* <ImageLoader
                     url={icon}
                     leftalign
@@ -85,18 +87,20 @@ const TransferElements = ({
                     widthmobile="1.25rem"
                   ></ImageLoader> */}
                 </div>
-                <div
-                  style={{ display: 'flex', flexDirection: 'column' }}
-                  className="text-md font-medium"
-                >
-                  <div>
-                    {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
-                    {transfers.routes[0]?.legs[0].destination.shortName}
+                {transfers.routes[0]?.legs[0].origin.shortName ? (
+                  <div
+                    style={{ display: 'flex', flexDirection: 'column' }}
+                    className="text-md font-medium"
+                  >
+                    <div>
+                      {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
+                      {transfers.routes[0]?.legs[0].destination.shortName}
+                    </div>
+                    {meta ? (
+                      <div>Duration: {convertNumToTime(meta.duration)}</div>
+                    ) : null}
                   </div>
-                  {meta ? (
-                    <div>Duration: {convertNumToTime(meta.duration)}</div>
-                  ) : null}
-                </div>
+                ) : null}
               </TransportContainer>
             ) : null}
 

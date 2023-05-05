@@ -112,6 +112,7 @@ const Day_I_ContainerM = (props) => {
             <RecomendationComponent
               icon={element.icon}
               recomendation={element.text}
+              heading={element.heading}
             ></RecomendationComponent>
           );
           break;
@@ -141,7 +142,7 @@ const Day_I_ContainerM = (props) => {
         style={{ paddingTop: '4px', display: 'flex', alignItems: 'center' }}
         className="pb-4"
       >
-        <div className="font-medium text-black text-md">
+        <div className="font-bold  text-black text-lg">
           Day {props.indexDay + 1}
         </div>
         {/* {Arslab_elements[0].data[0][0] !== undefined &&

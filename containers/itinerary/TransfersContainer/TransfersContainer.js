@@ -120,23 +120,24 @@ const TransfersContainer = (props) => {
                 index={i - 1}
               ></PinSection>
             );
-            midsectionHandler(
-              props?.transferBookings[i],
-              props?.transferBookings[i - 1]
-            );
+            // midsectionHandler(
+            //   props?.transferBookings[i],
+            //   props?.transferBookings[i - 1]
+            // );
             {
-              props?.transfers[i + 1]?.modes[0] == 'Flight' ||
-              props?.transfers[i + 1]?.modes[1] == 'Flight'
+              props?.transferBookings &&
+              props?.transferBookings[i]?.booking_type == 'Flight'
                 ? locationsArr.push(
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
                       <TransferModeContainer
                         booking_type={
                           props?.transferBookings[i + 1]?.booking_type
                         }
-                        pinColour={props.breif.city_slabs[i + 1].color}
+                        pinColour={props.breif.city_slabs[i].color}
                         costings_breakdown={
                           props?.transferBookings[i + 1]?.costings_breakdown
                         }
+                        booking={props?.transferBookings[i + 1]}
                         heading={
                           props?.transferBookings[i + 1]?.booking_display_name
                         }
@@ -161,6 +162,7 @@ const TransfersContainer = (props) => {
                         costings_breakdown={
                           props?.transferBookings[i]?.costings_breakdown
                         }
+                        booking={props?.transferBookings[i]}
                         heading={
                           props?.transferBookings[i]?.booking_display_name
                         }
@@ -190,6 +192,7 @@ const TransfersContainer = (props) => {
                       }
                       heading={props?.transferBookings[i]?.booking_display_name}
                       icon={props?.transfers[i]?.icon}
+                      booking={props?.transferBookings[i]}
                       modes={
                         props?.transfers[i]?.modes[1]
                           ? props?.transfers[i]?.modes[1]
@@ -274,7 +277,10 @@ const TransfersContainer = (props) => {
     }
   return (
     <Container>
-      <div className="font-lexend mb-4 mt-2 font-bold text-4xl">Route</div>
+      <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-4xl group text-[#262626] transition duration-300 max-w-fit">
+        Transfers{' '}
+        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
+      </div>
 
       <PinSection
         setCurrentPopup={false}
@@ -296,18 +302,19 @@ const TransfersContainer = (props) => {
         dayslab={props.dayslab}
         city={props.nostartinglocation ? 'Your Location' : startingcity}
       ></PinSection>
-
-      <TransferModeContainer
-        booking_type={props?.transferBookings[0]?.booking_type}
-        pinColour={props.breif.city_slabs[0].color}
-        heading={props?.transferBookings[0]?.booking_display_name}
-        costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
-        modes={'Taxi'}
-        icon={props?.transferBookings[0]?.images?.image}
-        taxi_type={props?.transferBookings[0]?.taxi_type}
-        transportMode={'Taxi'}
-        duration={'2'}
-      ></TransferModeContainer>
+      {props?.transferBookings && (
+        <TransferModeContainer
+          booking_type={props?.transferBookings[0]?.booking_type}
+          pinColour={props.breif.city_slabs[0].color}
+          heading={props?.transferBookings[0]?.booking_display_name}
+          costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
+          modes={'Taxi'}
+          icon={props?.transferBookings[0]?.images?.image}
+          taxi_type={props?.transferBookings[0]?.taxi_type}
+          transportMode={'Taxi'}
+          duration={'2'}
+        ></TransferModeContainer>
+      )}
 
       {locationsArr}
       {/* <TransferModeContainer></TransferModeContainer>

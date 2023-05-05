@@ -11,10 +11,8 @@ import {
   faChild,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { makeStyles } from '@mui/styles';
 import Accordion from '@mui/material/Accordion';
 
-import { withStyles } from '@mui/styles';
 import ImageContainer from './imagecontainer/Index';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
@@ -119,23 +117,12 @@ const Select = styled.div`
      }
  
  `;
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  heading: {
-    fontSize: '1rem',
-    fontWeight: '600',
-  },
-}));
 
 const Booking = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
   const [images, setImages] = useState(null);
   const RANDOM_RATING = [8.8, 8.9, 9.0, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8];
-
-  const classes = useStyles();
 
   const detailsarr = [];
   for (var i = 0; i < props.details.length; i++) {

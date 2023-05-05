@@ -6,7 +6,7 @@ import { faEdit, faHiking } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import * as authaction from '../../store/actions/auth';
 import Slider from '@mui/material/Slider';
-import { withStyles, makeStyles } from '@mui/styles';
+
 // import Button from '../../components/Button';
 import Button from '../../components/ui/button/Index';
 import urls from '../../services/urls';

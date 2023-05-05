@@ -1,34 +1,13 @@
 import React from 'react';
-import { makeStyles } from '@mui/styles';
+
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 
 import { Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { withStyles } from '@mui/styles';
+
 import { getIndianPrice } from '../../../services/getIndianPrice';
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    zIndex: '1',
-  },
-  heading: {
-    fontSize: '1rem',
-    fontFamily: "'Open Sans', sans-serif !important;",
-  },
-}));
 
-const AccordionSty = withStyles({
-  root: {
-    marginBottom: 10,
-    border: '0px solid #F7E70033',
-    boxShadow: 'none',
-    zIndex: '1',
-  },
-
-  expanded: {},
-})(Accordion);
 const FAQs = (props) => {
-  const classes = useStyles();
   const HEADINGS = ['Stays', 'Transfers', 'Flights', 'Activities'];
   let FAQS = [];
   let HeadingsJSX = [];

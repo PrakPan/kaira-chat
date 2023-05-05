@@ -5,7 +5,6 @@ import { faRupeeSign } from '@fortawesome/free-solid-svg-icons';
 
 // import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index';
-import { makeStyles } from '@mui/styles';
 
 import Menu from './Menu';
 import MenuButton from './MenuButton';
@@ -52,12 +51,6 @@ const MenuItem = styled.p`
   padding: 0.25rem 2rem;
   margin: 0;
 `;
-
-const useStyles = makeStyles((theme) => ({
-  typography: {
-    padding: theme.spacing(2),
-  },
-}));
 
 const Banner = (props) => {
   const router = useRouter();

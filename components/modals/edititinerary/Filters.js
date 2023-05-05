@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { withStyles } from '@mui/styles';
-import { makeStyles } from '@mui/styles';
+
+import { muisty}
 import { Grid } from '@mui/material';
 
 import { Typography } from '@mui/material';
@@ -10,23 +10,22 @@ import Slider from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
 
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    backgroundColor: 'hsl(0,0%,97%)',
-    padding: '0.5rem',
-    position: 'sticky',
-    height: '90vh',
-    overflow: 'scroll',
-    top: '0',
-  },
-  gridSlab: {
-    margin: '1.5rem 0',
-  },
-  checkbox: {
-    padding: '0.25rem',
-  },
-});
+const useStyles = {
+  root: `w-[100%]
+  bg-[hsl(0,0%,97%)]
+ p-[0.5rem]
+  sticky
+  h-['90vh']
+  overflow-scroll
+  top-0
+`,
+  gridSlab: `
+    m-[1.5rem 0]
+  `,
+  checkbox: `
+    p-[0.25rem]
+  `,
+};
 
 const Filters = (props) => {
   const classes = useStyles();
@@ -63,12 +62,7 @@ const Filters = (props) => {
       label: 'Luxury',
     },
   ];
-  const CustomCheckbox = withStyles({
-    root: {
-      margin: '0 !important',
-    },
-    checked: {},
-  })((props) => <Checkbox color="default" {...props} />);
+  const CustomCheckbox =  <Checkbox color="default" {...props} />
   const [state, setState] = React.useState({
     checkedA: true,
     checkedB: true,

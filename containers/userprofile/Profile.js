@@ -6,7 +6,7 @@ import { faEdit, faHiking } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import * as authaction from '../../store/actions/auth';
 import Slider from '@mui/material/Slider';
-import { withStyles, makeStyles } from '@mui/material/styles';
+
 import ImageLoader from '../../components/ImageLoader';
 import media from '../../components/media';
 
@@ -105,35 +105,6 @@ const Profile = (props) => {
     grid-template-columns: max-content auto;
     grid-gap: 1.5rem;
   `;
-  const PrettoSlider = withStyles({
-    root: {
-      color: '#f7e700',
-      height: 8,
-      margin: '0.5rem 0',
-    },
-    thumb: {
-      height: 16,
-      width: 16,
-      backgroundColor: 'currentColor',
-      border: '2px solid currentColor',
-      marginTop: -6,
-      marginLeft: -12,
-      '&:focus, &:hover, &$active': {},
-    },
-    active: {},
-    valueLabel: {
-      left: 'calc(-50% - 4px)',
-    },
-    track: {
-      height: 5,
-      borderRadius: 4,
-    },
-    rail: {
-      height: 5,
-      borderRadius: 4,
-      opacity: '0.3',
-    },
-  })(Slider);
 
   return (
     <Container className="border-thin">

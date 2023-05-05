@@ -70,7 +70,7 @@ const Day_I_Container = (props) => {
   }
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements) {
-    JsonArray.forEach(function(element) {
+    JsonArray.forEach(function (element) {
       switch (element.element_type) {
         case 'transfer':
           dayIcontainer.push(
@@ -78,6 +78,8 @@ const Day_I_Container = (props) => {
               time="9:00AM"
               modes={element.modes}
               // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
+
+              //To-do Read From Booking
               transfers={element.transfers}
               meta={element.meta}
               icon={element.icon}
@@ -120,6 +122,7 @@ const Day_I_Container = (props) => {
             <RecomendationComponent
               icon={element.icon}
               recomendation={element.text}
+              heading={element.heading}
             ></RecomendationComponent>
           );
           break;
@@ -149,7 +152,7 @@ const Day_I_Container = (props) => {
 
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: '2px' }}>
-          <div className="font-bold text-black text-md">
+          <div className="font-bold text-black text-2xl">
             {convertDateFormat(props.Days?.slab)}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&

@@ -8,13 +8,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import ImageLoader from '../ImageLoader';
-import { makeStyles } from '@mui/styles';
+
 import { Accordion } from '@mui/material';
 import { AccordionSummary } from '@mui/material';
 import { AccordionDetails } from '@mui/material';
 import { Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { withStyles } from '@mui/styles';
 
 const Container = styled.div`
   width: 100%;
@@ -60,22 +59,6 @@ const PhotosButton = styled.div`
 `;
 
 const Booking = (props) => {
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      width: '100%',
-    },
-    heading: {
-      fontSize: '1rem',
-      fontWeight: '600',
-    },
-  }));
-  const classes = useStyles();
-
-  const Accordion = withStyles({
-    root: {},
-    content: {},
-    expanded: {},
-  })(MuiAccordion);
   const detailsarr = [];
   for (var i = 0; i < props.details.length; i++) {
     detailsarr.push(
@@ -143,8 +126,8 @@ const Booking = (props) => {
                 <Typography
                   className={
                     props.blur
-                      ? classes.heading + 'font-lexend blurry-text'
-                      : classes.heading + ' font-lexend'
+                      ? 'text-[1rem] font-[600]' + 'font-lexend blurry-text'
+                      : 'text-[1rem] font-[600]' + ' font-lexend'
                   }
                 >
                   {props.heading}
@@ -201,8 +184,8 @@ const Booking = (props) => {
             <Typography
               className={
                 props.blur
-                  ? classes.heading + 'font-lexend blurry-text'
-                  : classes.heading + ' font-lexend'
+                  ? 'text-[1rem] font-[600]' + 'font-lexend blurry-text'
+                  : 'text-[1rem] font-[600]' + ' font-lexend'
               }
             >
               {props.heading}

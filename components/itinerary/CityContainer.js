@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import IconElement from './element/Index';
 import { Link, animateScroll as scroll } from 'react-scroll';
 import { FaChevronRight, FaChevronLeft } from 'react-icons/fa';
-import { makeStyles } from '@mui/styles';
+
 import { Tabs, Tab } from '@mui/material';
 
 import media from '../media';
@@ -63,10 +63,6 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const useStyles = makeStyles({
-  tab: {},
-});
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -85,7 +81,7 @@ function TabPanel(props) {
 }
 const CityContainer = (props) => {
   let isPageWide = media('(min-width: 768px)');
-  const classes = useStyles();
+
   const [value, setValue] = React.useState(0);
   const ref = useRef();
   const handleChange = (event, newValue) => {

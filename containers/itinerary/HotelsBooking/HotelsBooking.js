@@ -42,17 +42,20 @@ const HotelsBooking = (props) => {
   };
 
   return (
-    <div className="w-[60vw]">
-      <div className="text-4xl font-bold mt-4">Stays</div>
+    <div className="lg:w-[60vw] w-full">
+      <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
+        Stays
+        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
+      </div>
       {props.stayBookings
         ? props.stayBookings.map((booking) => (
             <div className="flex gap-1 pt-4  flex-col justify-start">
-              <div className="font-bold text-2xl pb-3 text-[#01202B]">
+              <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
                 {booking?.city}: <span>({booking?.duration}N)</span>
               </div>
-              <div className=" shadow-md rounded-lg  border-2 border-[#ECEAEA] shadow-[#ECEAEA] p-4">
+              <div className=" shadow-md rounded-lg  border-2 border-[#ECEAEA] shadow-[#ECEAEA] lg:p-4 p-2">
                 <div className="relative flex lg:flex-row flex-col gap-4">
-                  <div className="relative lg:w-1/3 lg:h-[15rem] w-full">
+                  <div className="relative lg:w-1/3 lg:h-[15rem] w-full h-[12rem]">
                     <ImageLoader
                       dimensions={{ width: 400, height: 400 }}
                       dimensionsMobile={{ width: 400, height: 400 }}
@@ -67,7 +70,7 @@ const HotelsBooking = (props) => {
                     ></ImageLoader>
                     {booking.star_category ? (
                       <div
-                        className={`text-white bg-[#01202B] px-3 py-2 m-2 shadow-sm shadow-[#00000060] absolute top-0 rounded-2xl`}
+                        className={`text-white bg-[#01202B] lg:px-3 px-2 lg:py-2 py-1 m-2 shadow-sm shadow-[#00000060] absolute top-0 rounded-2xl`}
                       >
                         {booking.star_category} star hotel
                       </div>
@@ -123,20 +126,20 @@ const HotelsBooking = (props) => {
                       </div>
                     ) : null}
 
-                    <div className="flex flex-row gap-3 items-center">
-                      <ButtonYellow>
+                    <div className="flex flex-row gap-3 items-center w-full">
+                      <ButtonYellow className="lg:w-fit w-1/2">
                         <div className="text-[#01202B] ">View Detail</div>
                       </ButtonYellow>
-                      <ButtonYellow primary={false}>
+                      <ButtonYellow primary={false} className="lg:w-fit w-1/2">
                         <div className="text-[#01202B] ">Change</div>
                       </ButtonYellow>
                     </div>
                   </div>
-                  {booking.costings_breakdown && (
+                  {/* {booking.costings_breakdown && (
                     <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-0 -m-6">
                       TTW Recommendation
                     </ClippathComp>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

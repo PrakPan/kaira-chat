@@ -5,7 +5,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import { Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
-import { withStyles } from '@mui/styles';
+i;
 import styled from 'styled-components';
 import media from '../../components/media';
 import { BsChevronDown } from 'react-icons/bs';
@@ -27,17 +27,6 @@ const StyledTypo = styled(Typography)`
     margin: 0;
   }
 `;
-
-const Accordion = withStyles({
-  root: {
-    marginBottom: 10,
-    border: '0px solid #e4e4e4',
-    boxShadow: 'none',
-    zIndex: '1',
-  },
-
-  expanded: {},
-})(Accordion);
 
 const MainHeading = styled.h2`
   font-weight: 2rem;

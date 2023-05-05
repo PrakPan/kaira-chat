@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { LinearProgress } from '@mui/material';
-import { withStyles } from '@mui/styles';
 
 const Container = styled.div`
   margin: 2rem 0;
@@ -37,4 +36,4 @@ const styles = (props) => ({
   },
 });
 
-export default withStyles(styles)(ColoredLinearProgress);
+export default ColoredLinearProgress;

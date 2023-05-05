@@ -2,7 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import ImageLoader from '../../../components/ImageLoader';
+import { format, parseISO } from 'date-fns';
 
+import { FaPlane } from 'react-icons/fa';
+function formatDate(dateString) {
+  const date = new parseISO(dateString);
+  if (isNaN(date.getTime())) {
+    throw new Error('Invalid date string');
+  }
+  return format(date, 'EEE, dd MMMM');
+}
 const Container = styled.div`
   display: grid;
   width: 100%;
@@ -64,57 +73,105 @@ const TransferModeContainer = (props) => {
       <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} />
       </div>
-      <div className="flex flex-row gap-2 w-full py-4">
-        {props.modes && (
-          <div className="grid bg-[#F4F4F4] place-items-center w-32 rounded-2xl">
-            {props.booking_type == 'Flight' ? (
-              <TransportIconFetcher
-                TransportMode={props.booking_type}
-                Instyle={{
-                  fontSize: '2.75rem',
-                  marginRight: '0.8rem',
-                  color: 'black',
-                }}
-              />
-            ) : (
-              props.icon && (
-                <ImageLoader
-                  url={props.icon}
-                  leftalign
-                  dimensions={{ width: 800, height: 500 }}
-                  width="4rem"
-                  widthmobile="4rem"
-                ></ImageLoader>
-              )
+      {props.booking_type == 'Flight' ? (
+        <div className="flex flex-row gap-2 w-full py-4">
+          <div className="grid bg-[#F4F4F4] place-items-center h-[6rem] w-[6rem] rounded-full">
+            <TransportIconFetcher
+              TransportMode={props.booking_type}
+              Instyle={{
+                fontSize: '2.75rem',
+
+                color: 'black',
+              }}
+            />
+          </div>
+          <div className="flex flex-row gap-3">
+            <div className="flex flex-col">
+              <div className="text-[#01202B] font-medium">
+                ({props.booking.origin_code})
+              </div>
+              <div>{formatDate(props.booking.check_in)}</div>
+              <div>{props.booking.city}</div>
+            </div>
+            <div className="flex flex-row justify-center items-center">
+              <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+              <div className="relative w-32 flex justify-center items-center">
+                <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
+                <div className="flex flex-col  justify-center items-center">
+                  <FaPlane className="" />
+                  <div>
+                    Nonstop
+                    {props.booking.duration
+                      ? ` (${props.booking.duration}h)`
+                      : null}
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+            </div>
+            <div>
+              <div className="text-[#01202B] font-medium">
+                ({props.booking.destination_code})
+              </div>
+              <div>{formatDate(props.booking.check_out)}</div>
+              <div>{props.booking.destination_city}</div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-row gap-2 w-full py-4">
+          {props.modes && (
+            <div className="grid bg-[#F4F4F4] place-items-center w-32 rounded-2xl">
+              {props.booking_type == 'Flight' ? (
+                <TransportIconFetcher
+                  TransportMode={props.booking_type}
+                  Instyle={{
+                    fontSize: '2.75rem',
+                    marginRight: '0.8rem',
+                    color: 'black',
+                  }}
+                />
+              ) : (
+                props.icon && (
+                  <ImageLoader
+                    url={props.icon}
+                    leftalign
+                    dimensions={{ width: 800, height: 500 }}
+                    width="4rem"
+                    widthmobile="4rem"
+                  ></ImageLoader>
+                )
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <div className="text-[#01202B] flex flex-row gap-1 font-medium">
+              <div className="font-semibold">{props.heading}</div>
+              <div>
+                ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
+                {props.duration}h 30m)
+              </div>
+            </div>
+            {props.taxi_type && (
+              <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
+            )}
+            {props?.costings_breakdown && (
+              <div className="text-[#01202B] font-normal flex flex-row mt-3">
+                <div className="pr-1">Facilities:</div>
+                {Facilities.map((data, index) => (
+                  <div className="flex flex-row gap-1">
+                    {index > 0 ? <span className="pl-1">|</span> : null}
+
+                    <div>{data}</div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        )}
-
-        <div className="flex flex-col">
-          <div className="text-[#01202B] flex flex-row gap-1 font-medium">
-            <div className="font-semibold">{props.heading}</div>
-            <div>
-              ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
-              {props.duration}h 30m)
-            </div>
-          </div>
-          {props.taxi_type && (
-            <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
-          )}
-          {props?.costings_breakdown && (
-            <div className="text-[#01202B] font-normal flex flex-row mt-3">
-              <div className="pr-1">Facilities:</div>
-              {Facilities.map((data, index) => (
-                <div className="flex flex-row gap-1">
-                  {index > 0 ? <span className="pl-1">|</span> : null}
-
-                  <div>{data}</div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </Container>
   );
 };

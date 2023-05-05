@@ -71,7 +71,10 @@ const ItineraryElementM = (props) => {
       </div>
       <div>
         <div className="flex flex-row">
-          <FaHome className="text-black text-[40px] mr-4" />
+          <div className="flex justify-center items-center">
+            <FaHome className="text-black text-[28px] mr-4" />
+          </div>
+
           {/* {props.icon ? (
             <div className="mr-4">
               
@@ -88,11 +91,11 @@ const ItineraryElementM = (props) => {
               ></ImageLoader>
             </div>
           ) : null} */}
-          <Heading>{props.heading}</Heading>
+          <div className="text-[16px] font-semibold">{props.heading}</div>
         </div>
 
         <div>
-          <div className="pb-[10px]">{props.text ? props.text : null}</div>
+          <div className="pb-3 pt-2 ">{props.text ? props.text : null}</div>
         </div>
       </div>
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@mui/styles';
 
 import styled from 'styled-components';
 import SubscribeBar from './SubscribeBar';
@@ -16,11 +15,7 @@ import content from '../../public/assets/icons/footer/content.svg';
 import offers from '../../public/assets/icons/footer/offer.svg';
 import community from '../../public/assets/icons/footer/community.svg';
 import media from '../media';
-const useStyles = makeStyles({
-  paper: {
-    backgroundColor: '#F7e700',
-  },
-});
+
 const Container = styled.div`
   background-color: #f7e700;
   padding: 0.5rem 0;
@@ -54,7 +49,6 @@ const SubscribeDrawer = (props) => {
   const [subscribe, setSubscribe] = useState(false);
 
   useEffect(() => {});
-  const classes = useStyles();
 
   const Heading = styled.h1`
     font-weight: 700;
