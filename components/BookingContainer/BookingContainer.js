@@ -335,9 +335,7 @@ const BookingContainer = (props) => {
                     <span>₹</span>
                     <div>
                       {getIndianPrice(
-                        Math.round(
-                          Math.round(props?.payment.discounted_cost) / 100
-                        )
+                        Math.round(Math.round(props?.payment.total_cost) / 100)
                       )}
                     </div>
                   </div>

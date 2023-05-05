@@ -93,7 +93,12 @@ const ItineraryFoodElement = (props) => {
       <Container className="font-lexend pt-3">
         {/* <div>{props.time}</div> */}
         <div className="flex flex-row ">
-          <GiKnifeFork className="text-black lg:text-[3.05rem]  text-[1.25rem]" />
+          <div className="w-[6.15rem] flex flex-col justify-center items-center">
+            <div className="w-[6.15rem] grid place-items-center">
+              <GiKnifeFork className="text-black text-[3.05rem] " />
+            </div>
+          </div>
+
           {/* <div>
      
             <ImageLoader
@@ -104,7 +109,7 @@ const ItineraryFoodElement = (props) => {
               widthmobile="1.25rem"
             ></ImageLoader>
           </div> */}
-          <div className="pl-[4.8rem] flex justify-center flex-col">
+          <div className="pl-[1.4rem] flex justify-center flex-col">
             <div className="text-base font-bold">{props.heading}</div>
             <div className="pt-1 line-clamp-3 font-normal text-sm pb-4">
               {props.text}

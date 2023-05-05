@@ -22,30 +22,30 @@ const Container = styled.div`
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-  ${(props) =>
-    props.pinColour
-      ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-      : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-   
+    ${(props) =>
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+
   background-size: 15px 3px, 100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
   width: 5rem;
-    height: 2px;
-    top: 23px;
-    right: -25px;
- 
+  height: 2px;
+  top: 23px;
+  right: -25px;
+
   border: 2px;
   opacity: initial;
-  
-  @media screen and (min-width: 768px){
+
+  @media screen and (min-width: 768px) {
     width: 8rem;
-  height: 2px;
-  top: 46px;
-  right: -48px;
-}
+    height: 2px;
+    top: 46px;
+    right: -48px;
+  }
   /* border-style: dashed;
   border-width: 1.4px;
   position: absolute;
@@ -99,7 +99,8 @@ const MidSection = (props) => {
         {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}
-        {props.transportMode}: {props.duration}h 30m
+        {props.transportMode ? props.transportMode : 'Taxi'}: {props.duration}h
+        30m
       </Text>
       {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
     </Container>

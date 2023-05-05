@@ -27,7 +27,7 @@ const Option = styled.option`
 `;
 const QueryType = (props) => {
   if (typeof window !== 'undefined') {
-    const classes = useStyles();
+    const classes = useStyles;
     const queries = [
       'Conferences or offsites',
       'Workcations or retreats',

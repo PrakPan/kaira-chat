@@ -64,7 +64,7 @@ const LogIn = (props) => {
   let otpvariable = ''; //store otp number, before storing in state(UPDATE)
   const [mobile, setMobile] = useState('+91');
   const [otpResent, setOtpResent] = useState(false);
-  const classes = useStyles();
+  const classes = useStyles;
   const [extension, setExtension] = useState('India'); //store extension
   let firstname = null; //JSX for first name
   let lastname = null; //JSX for last name
