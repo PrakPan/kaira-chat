@@ -100,10 +100,10 @@ const NewResults = (props) => {
 
       if (data.type == 'Location')
         window.location.href =
-          'https://thetarzanway.com/travel-guide/city/' + data.cta;
+          'https://dev.thetarzanway.com/travel-guide/city/' + data.cta;
       else
         window.location.href =
-          'https://thetarzanway.com/travel-planner/' + data.cta;
+          'https://dev.thetarzanway.com/travel-planner/' + data.cta;
     }
   };
   const _handlePersonaliseRedirect = (name) => {

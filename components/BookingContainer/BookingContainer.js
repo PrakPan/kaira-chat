@@ -30,7 +30,7 @@ const BookingContainer = (props) => {
   const [showTerms, setShowTerms] = useState(false);
   const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
   let message =
-    'Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/' +
+    'Hey TTW! I need some help with my tailored experience - https://dev.thetarzanway.com/' +
     router.asPath;
   // props.setUserDetails();
   const [showVerification, setShowVerification] = useState(false);
@@ -253,7 +253,7 @@ const BookingContainer = (props) => {
             setPaymentLoading(false);
             //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
             window.location.href =
-              'https://thetarzanway.com/itinerary/physicswallah/' +
+              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
               data.itinerary +
               '?payment_status=success';
           })
@@ -261,7 +261,7 @@ const BookingContainer = (props) => {
             setPaymentLoading(false);
             // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
             window.location.href =
-              'https://thetarzanway.com/itinerary/physicswallah/' +
+              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
               data.itinerary +
               '?payment_status=fail';
           });

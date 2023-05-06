@@ -97,7 +97,7 @@ const Locations = (props) => {
       // props.setPannelClose()
       // router.push('/travel-guide/city/'+slug)
       window.location.href =
-        'https://thetarzanway.com/travel-guide/city/' + slug;
+        'https://dev.thetarzanway.com/travel-guide/city/' + slug;
     }
   };
   const _handlePersonaliseRedirect = (id, name, parent) => {

@@ -279,7 +279,7 @@ const Details = (props) => {
 
   setBookingSummary();
   let message =
-    'Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/' +
+    'Hey TTW! I need some help with my tailored experience - https://dev.thetarzanway.com/' +
     router.asPath;
   // props.setUserDetails();
   const [showVerification, setShowVerification] = useState(false);
@@ -306,7 +306,7 @@ const Details = (props) => {
         'https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480',
       order_id: data.order_id,
       //Payment successfull handler passed to razorpay
-      handler: function(response) {
+      handler: function (response) {
         setPaymentLoading(true);
         axios
           .post(
@@ -318,7 +318,7 @@ const Details = (props) => {
             setPaymentLoading(false);
             //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
             window.location.href =
-              'https://thetarzanway.com/itinerary/physicswallah/' +
+              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
               data.itinerary +
               '?payment_status=success';
           })
@@ -326,7 +326,7 @@ const Details = (props) => {
             setPaymentLoading(false);
             // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
             window.location.href =
-              'https://thetarzanway.com/itinerary/physicswallah/' +
+              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
               data.itinerary +
               '?payment_status=fail';
           });

@@ -69,7 +69,7 @@ const Locations = (props) => {
   //   //    if(slug) router.push('/travel-guide/city/'+slug)
   //   if (slug)
   //     window.location.href =
-  //       'https://thetarzanway.com/travel-guide/city/' + slug;
+  //       'https://dev.thetarzanway.com/travel-guide/city/' + slug;
   // };
   const _handlePersonaliseRedirect = (id, name, parent) => {
     // localStorage.setItem('search_city_selected_id', id)

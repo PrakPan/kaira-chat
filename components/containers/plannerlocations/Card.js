@@ -67,8 +67,8 @@ const Experiences = (props) => {
   //       </Container>
   //   );
   const path = props.city
-    ? 'https://thetarzanway.com/travel-guide/city/'
-    : 'https://thetarzanway.com/travel-planner/';
+    ? 'https://dev.thetarzanway.com/travel-guide/city/'
+    : 'https://dev.thetarzanway.com/travel-planner/';
   return (
     <ImageContainer
       className="hover-pointer"

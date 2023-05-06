@@ -533,7 +533,7 @@ const SimpleTabs = (props) => {
             ></HotelsBooking>
           </div>
 
-          {/* <div id={items[3].link}>
+          <div id={items[3].link}>
             <TransfersContainer
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
@@ -541,7 +541,7 @@ const SimpleTabs = (props) => {
               transfers={TransfersData}
               transferBookings={props.transferBookings}
             />
-          </div> */}
+          </div>
         </>
       )}
       {/* // for 0000000000000000000000  desktop */}
