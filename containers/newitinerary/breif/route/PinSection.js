@@ -6,7 +6,7 @@ import Pin from './Pin';
 const Container = styled.div`
   cursor: pointer;
   display: grid;
-  grid-template-columns: max-content auto;
+  grid-template-columns: max-content auto max-content;
 `;
 const Heading = styled.div`
   font-weight: 650;
@@ -65,7 +65,12 @@ const PinSection = ({
   return (
     <Container className="cursor-pointer " ref={pinhover}>
       <Pin duration={duration} pinColour={pinColour}></Pin>
-      <Heading>{duration ? city + ` - ${duration}` : city}</Heading>
+      <Heading>
+        {duration ? city + ` - ${duration}` : city}
+        {/* <div className="px-4 py-1 text-[12px] cursor-pointer border-2 border-black ml-6 font-bold font-lexend text-black rounded-md">
+          Edit
+        </div> */}
+      </Heading>
     </Container>
   );
 };

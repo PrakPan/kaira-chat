@@ -37,10 +37,12 @@ const TransferElements = ({
         </Timecontainer>
         <div>
           {modes ? (
-            <TransportIconFetcher
-              TransportMode={modes}
-              classname="text-black lg:text-[3.05rem] text-[1.25rem]"
-            />
+            <div className="w-[6.15rem] grid place-items-center">
+              <TransportIconFetcher
+                TransportMode={modes}
+                classname="text-black lg:text-[3.05rem] text-[1.25rem]"
+              />
+            </div>
           ) : (
             <div className="w-[3.05rem]"></div>
           )}
@@ -107,7 +109,6 @@ const TransferElements = ({
             <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
               {text}
             </div>
-            <Line></Line>
           </div>
         </TInfoContainer>
       </Container>

@@ -96,7 +96,6 @@ const ItineraryElement = (props) => {
               </div>
             </div>
           </div>
-          <Line></Line>
         </div>
       </div>
       {/* <div style={{ marginLeft: '0px' }}>

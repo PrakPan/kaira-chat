@@ -55,7 +55,6 @@ const RecomendationComponent = (props) => {
               )}
             </div>
           ) : null}
-          <Line></Line>
         </div>
       </TInfoContainer>
     </Container>

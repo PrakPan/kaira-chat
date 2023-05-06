@@ -25,30 +25,33 @@ const Container = styled.div`
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-  ${(props) =>
-    props.pinColour
-      ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-      : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-   
+    ${(props) =>
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+
   background-size: 15px 3px, 100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
-  width: 5rem;
-    height: 2px;
-    top: 23px;
-    right: -25px;
- 
-  border: 2px;
-  opacity: initial;
-  
-  @media screen and (min-width: 768px){
-    width: 8rem;
+
   height: 2px;
-  top: 46px;
-  right: -48px;
-}
+
+  border: 2px;
+
+  width: ${(props) => (props.Transfers ? `10rem` : `5rem`)};
+
+  top: ${(props) => (props.Transfers ? `54px` : `23px`)};
+  right: ${(props) => (props.Transfers ? `-64px` : `-25px`)};
+  opacity: initial;
+
+  @media screen and (min-width: 768px) {
+    width: 8rem;
+    height: 2px;
+    top: 46px;
+    right: -48px;
+  }
   /* border-style: dashed;
   border-width: 1.4px;
   position: absolute;
@@ -71,11 +74,11 @@ const TransferModeContainer = (props) => {
   return (
     <Container>
       <div style={{ position: 'relative' }}>
-        <Line pinColour={props.pinColour} />
+        <Line pinColour={props.pinColour} Transfers={true} />
       </div>
       {props.booking_type == 'Flight' ? (
-        <div className="flex flex-row gap-2 w-full py-4">
-          <div className="grid bg-[#F4F4F4] place-items-center h-[6rem] w-[6rem] rounded-full">
+        <div className="flex flex-row gap-2 w-full py-[12px]">
+          <div className="grid bg-[#F4F4F4]  place-items-center w-32 rounded-2xl">
             <TransportIconFetcher
               TransportMode={props.booking_type}
               Instyle={{
@@ -85,7 +88,7 @@ const TransferModeContainer = (props) => {
               }}
             />
           </div>
-          <div className="flex flex-row gap-3">
+          <div className="flex lg:flex-row flex-col gap-3">
             <div className="flex flex-col">
               <div className="text-[#01202B] font-medium">
                 ({props.booking.origin_code})
@@ -117,12 +120,15 @@ const TransferModeContainer = (props) => {
               <div>{formatDate(props.booking.check_out)}</div>
               <div>{props.booking.destination_city}</div>
             </div>
+            <div className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-2 font-bold font-lexend text-black rounded-md">
+              Edit
+            </div>
           </div>
         </div>
       ) : (
-        <div className="flex flex-row gap-2 w-full py-4">
+        <div className="flex flex-row gap-2 w-full py-[12px]">
           {props.modes && (
-            <div className="grid bg-[#F4F4F4] place-items-center w-32 rounded-2xl">
+            <div className="grid bg-[#F4F4F4] place-items-center min-w-[8rem] min-h-[8rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
                 <TransportIconFetcher
                   TransportMode={props.booking_type}
@@ -147,21 +153,27 @@ const TransferModeContainer = (props) => {
           )}
 
           <div className="flex flex-col">
-            <div className="text-[#01202B] flex flex-row gap-1 font-medium">
+            <div className="text-[#01202B] flex lg:flex-row flex-col gap-1 font-medium">
               <div className="font-semibold">{props.heading}</div>
-              <div>
-                ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
-                {props.duration}h 30m)
+              <div className="flex flex-row">
+                <div>
+                  ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
+                  {props.duration}h 30m)
+                </div>
+                <div className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md">
+                  Edit
+                </div>
               </div>
             </div>
             {props.taxi_type && (
               <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
             )}
             {props?.costings_breakdown && (
-              <div className="text-[#01202B] font-normal flex flex-row mt-3">
-                <div className="pr-1">Facilities:</div>
+              <div className="text-[#01202B] font-normal flex flex-row mt-3 ">
+                <div className="pr-1 block ">Facilities:</div>
+                {}
                 {Facilities.map((data, index) => (
-                  <div className="flex flex-row gap-1">
+                  <div className="lg:flex hidden flex-row gap-1  ">
                     {index > 0 ? <span className="pl-1">|</span> : null}
 
                     <div>{data}</div>

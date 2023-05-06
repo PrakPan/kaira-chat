@@ -539,6 +539,12 @@ const SimpleTabs = (props) => {
               breif={props.breif}
               routes={RoutesData}
               transfers={TransfersData}
+              showTaxiModal={props.showTaxiModal}
+              setShowTaxiModal={props.setShowTaxiModal}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              _updateBookingHandler={props._updateBookingHandler}
+              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+              setShowBookingModal={() => props.setShowBookingModal(true)}
               transferBookings={props.transferBookings}
             />
           </div>
@@ -730,6 +736,12 @@ const SimpleTabs = (props) => {
               <TransfersContainer
                 dayslab={props?.itinerary?.day_slabs}
                 breif={props?.breif}
+                showTaxiModal={props.showTaxiModal}
+                setShowTaxiModal={props.setShowTaxiModal}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
                 routes={RoutesData}
                 transfers={TransfersData}
                 transferBookings={props?.transferBookings}

@@ -72,6 +72,16 @@ const Route = (props) => {
       });
     }
   };
+  function getTransportationType(url) {
+    const fileName = url.substring(
+      url.lastIndexOf('/') + 1,
+      url.lastIndexOf('.')
+    );
+    const firstLetter = fileName.charAt(0).toUpperCase();
+    const restOfWord = fileName.slice(1);
+    const transportationType = firstLetter + restOfWord;
+    return transportationType;
+  }
   let startingcity = null;
   let endingcity = null;
   if (props.breif)
@@ -120,16 +130,8 @@ const Route = (props) => {
               <MidSection
                 pinColour={props.breif.city_slabs[i].color}
                 icon={props?.transfers[i]?.icon}
-                modes={
-                  props?.transfers[i]?.modes[1]
-                    ? props?.transfers[i]?.modes[1]
-                    : props?.transfers[i]?.modes[0]
-                }
-                transportMode={
-                  props?.transfers[i]?.modes[1]
-                    ? props?.transfers[i]?.modes[1]
-                    : props?.transfers[i]?.modes[0]
-                }
+                modes={getTransportationType(props?.transfers[i]?.icon)}
+                transportMode={getTransportationType(props?.transfers[i]?.icon)}
                 duration={props.breif.city_slabs[i].duration}
               ></MidSection>
             );

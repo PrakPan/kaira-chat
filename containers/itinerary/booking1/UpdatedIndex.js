@@ -191,14 +191,10 @@ const Booking = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
 
-  const [
-    bookingsAccommodationsDesktopJSX,
-    setBookingAccommodationsDesktopJSX,
-  ] = useState([]);
-  const [
-    bookingsAccommodationsMobileJSX,
-    setBookingAccommodationsMobileJSX,
-  ] = useState([]);
+  const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
+    useState([]);
+  const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
+    useState([]);
 
   const [bookingsTransfersDesktopJSX, setBookingTransfersDesktopJSX] = useState(
     []

@@ -15,6 +15,7 @@ import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import ImageLoader from './ImageLoader';
 import { ITbutton } from '../containers/newitinerary/breif/cities/City';
 import WeatherWidget from './WeatherWidget/WeatherWidget';
+import DistanceBetweenCoords from '../helper/DistanceBetweenCoords';
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
@@ -35,6 +36,62 @@ const limeOptions = {
   dashOffset: '15',
 };
 const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
+  const [mapZoom, setMapZoom] = useState(5);
+  function sortWholeNumbersDescending(arr) {
+    // Convert decimal numbers to whole numbers using Math.floor()
+    const wholeNumbers = arr.map((num) => Math.floor(num));
+
+    // Sort whole numbers in descending order using Array.sort()
+    wholeNumbers.sort((a, b) => b - a);
+
+    return wholeNumbers;
+  }
+  function getDegree(value) {
+    const degrees = [
+      { range: [0, 49], degree: 11 },
+      { range: [50, 99], degree: 10 },
+      { range: [100, 149], degree: 9 },
+      { range: [150, 199], degree: 8 },
+      { range: [200, 249], degree: 7 },
+      { range: [250, 299], degree: 6 },
+      { range: [300, 349], degree: 5 },
+      { range: [350, 399], degree: 4 },
+      { range: [400, 449], degree: 3 },
+      { range: [450, Infinity], degree: 2 },
+    ];
+
+    for (let i = 0; i < degrees.length; i++) {
+      const range = degrees[i].range;
+
+      if (value >= range[0] && value <= range[1]) {
+        console.log(degrees[i].degree);
+        return degrees[i].degree;
+      }
+    }
+  }
+  function NearestLocation() {
+    const distanceArray = [];
+    locations.map((location, index) => {
+      distanceArray.push(
+        DistanceBetweenCoords(
+          { lat: locations[0]?.lat, long: locations[0]?.long },
+          { lat: location.lat, long: location.long }
+        )
+      );
+
+      //     const first = distanceArray.sort();
+      // }
+    });
+    console.log('distanceArray');
+
+    const longestroute = sortWholeNumbersDescending(distanceArray)[0];
+    console.log(longestroute);
+    setMapZoom(getDegree(longestroute));
+    // var firstelement = filtered.sort()[0];
+    // const firstData = distanceArray.filter((element, index) => {
+    //   return firstelement === filtered;
+    // });
+  }
   // function createTripPointsGeoJson({ locations } = {}) {
   //   return {
   //     type: 'FeatureCollection',
@@ -98,11 +155,13 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
     return formattedDate;
   };
   useEffect(() => {
+    NearestLocation();
     const updatedPolylines = locations.map((element) => [
       element.lat,
       element.long,
     ]);
     setPolylines(updatedPolylines);
+
     console.log('useEffect location');
     // console.log(locations);
   }, [locations]);
@@ -127,7 +186,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   return locations ? (
     <MapContainer
       center={[locations[0]?.lat, locations[0]?.long]}
-      zoom={5}
+      zoom={mapZoom}
       scrollWheelZoom={false}
       style={{ height: '100%', width: '100%', borderRadius: '1rem' }}
     >

@@ -10,19 +10,20 @@ import {
   NavigationMarker,
   useNavigationMarker,
 } from '../hooks/useNavigationMarker';
+import useHorizontalScroll from '../hooks/useHorizontalScroll';
 
 ///////// Style
 
 const Navbar = styled.div`
   /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
-  
+
   font-family: lexend;
   display: flex;
   ::-webkit-scrollbar {
     display: none;
   }
--ms-overflow-style: none;
-scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   overflow-x: scroll;
   align-items: center;
   flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
@@ -77,6 +78,9 @@ const ScrollableMenuTabs = ({
   const isDesktop = useMediaQuery('(min-width:1148px)');
 
   /////// functionality
+  //////////////////////////
+
+  ////////////////////////
 
   const handleSelect = (itemId) => {
     setActiveItem(itemId);
@@ -144,6 +148,7 @@ const ScrollableMenuTabs = ({
   );
 
   const debounceFun = useDebounce(handleScroll, 500);
+
   const { markerPos, ...markerHandlers } = useNavigationMarker();
   return (
     <NavbarContainer

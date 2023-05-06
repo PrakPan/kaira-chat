@@ -160,7 +160,6 @@ const ItineraryPoiElement = (props) => {
           <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
             {props.text}
           </div>
-          <Line></Line>
         </div>
       </div>
 

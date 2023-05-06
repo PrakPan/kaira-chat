@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const padding = {
-  initialLeft: '75px',
+  initialLeft: '22px',
 };
 export const Container = styled.div`
   display: flex;
@@ -113,17 +113,16 @@ export const HLine = styled.span`
 `;
 export const Navbar = styled.div`
   /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
-  
-  
+
   display: flex;
   ::-webkit-scrollbar {
     display: none;
   }
--ms-overflow-style: none;
-scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   overflow-x: scroll;
   align-items: center;
-  
+
   margin: 0px -20px 0px -20px;
   background-color: white;
 `;

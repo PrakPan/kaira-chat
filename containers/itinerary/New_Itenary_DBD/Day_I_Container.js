@@ -11,7 +11,22 @@ import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import NewCity from './NewCity';
+const DayContainerStyle = styled.div`
+  display: flex;
+  flex-direction: column;
 
+  > *:not(:last-child)::after {
+    content: '';
+    display: block;
+    border-style: none none solid none;
+    border-color: #e4e4e4;
+    border-width: 1px;
+    width: 85%;
+    margin-bottom: 10px;
+    margin-top: 10px; /* adjust this as needed */
+    margin-left: auto;
+  }
+`;
 const Container = styled.div`
   background: #ffffff;
   border: 1.5px solid #eceaea;
@@ -68,6 +83,16 @@ const Day_I_Container = (props) => {
       )
     );
   }
+  function getTransportationType(url) {
+    const fileName = url.substring(
+      url.lastIndexOf('/') + 1,
+      url.lastIndexOf('.')
+    );
+    const firstLetter = fileName.charAt(0).toUpperCase();
+    const restOfWord = fileName.slice(1);
+    const transportationType = firstLetter + restOfWord;
+    return transportationType;
+  }
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements) {
     JsonArray.forEach(function (element) {
@@ -76,7 +101,7 @@ const Day_I_Container = (props) => {
           dayIcontainer.push(
             <TransferElements
               time="9:00AM"
-              modes={element.modes}
+              modes={getTransportationType(element.icon)}
               // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
 
               //To-do Read From Booking
@@ -180,7 +205,7 @@ const Day_I_Container = (props) => {
           <BiChevronRight />
         </InnerDayLocationRow> */}
       </DivDayContainerRow>
-      <div>
+      <DayContainerStyle>
         {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
           time="9:00AM"
           heading={Arslab_elements[0].data[0].heading}
@@ -290,7 +315,7 @@ const Day_I_Container = (props) => {
           ></ItineraryFoodElement>
         ) : null} */}
         {dayIcontainer}
-      </div>
+      </DayContainerStyle>
     </Container>
   );
 };

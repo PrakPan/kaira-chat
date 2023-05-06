@@ -40,7 +40,16 @@ const HotelsBooking = (props) => {
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
-
+  const noOfWords = (sentence, number) => {
+    if (sentence) {
+      const words = sentence.trim().split(/\s+/);
+      if (words.length > number) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
   return (
     <div className="lg:w-[60vw] w-full">
       <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
@@ -53,7 +62,7 @@ const HotelsBooking = (props) => {
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
                 {booking?.city}: <span>({booking?.duration}N)</span>
               </div>
-              <div className=" shadow-md rounded-lg  border-2 border-[#ECEAEA] shadow-[#ECEAEA] lg:p-4 p-2">
+              <div className=" shadow-md rounded-lg transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-500/50 border-[#ECEAEA]  hover:border-[#ffa500] shadow-[#ECEAEA] lg:p-4 p-2">
                 <div className="relative flex lg:flex-row flex-col gap-4">
                   <div className="relative lg:w-1/3 lg:h-[15rem] w-full h-[12rem]">
                     <ImageLoader
@@ -103,7 +112,13 @@ const HotelsBooking = (props) => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-row gap-3">
+                    <div
+                      className={`flex ${
+                        noOfWords(booking.costings_breakdown[0].room_type, 4)
+                          ? 'lg:flex-row flex-col'
+                          : 'flex-row'
+                      } gap-3`}
+                    >
                       <div className="text-md font-medium gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-md text-[#7A7A7A]" />
                         <div className="text-md font-medium min-w-fit">
