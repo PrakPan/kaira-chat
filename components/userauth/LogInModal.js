@@ -666,7 +666,7 @@ if (props.loadingsocial) return (
             <Link
               href="/privacy-policy"
               style={{ textDecoration: "none" }}
-              passHref
+                target='_blank'
             >
               {/* <a style={{ color: "black" }} target="_blank"> */}
                 T&Cs and privacy policy{" "}

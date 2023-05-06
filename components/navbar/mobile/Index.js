@@ -47,7 +47,7 @@ const ListItem = styled.div`
   align-items: center;
   font-family: Poppins;
 `;
-const StyledLink = styled.a`
+const StyledLink = styled(Link)`
   text-decoration: none;
   font-style: normal;
   font-weight: 500;
@@ -225,11 +225,11 @@ const Mobile = (props) => {
             />
           )}
           {e.link && (
-            <Link style={{textDecoration : 'none'}} href={e.link} className="next-link" passHref={true}>
-              <StyledLink>{e.text}</StyledLink>
-            </Link>
+            <StyledLink style={{textDecoration : 'none'}} href={e.link} className="next-link" passHref={true}>
+              {e.text}
+            </StyledLink>
           )}
-          {e.onclick && <StyledLink onClick={e.onclick}>{e.text}</StyledLink>}
+          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
         </ListItem>
       );
   });
@@ -255,16 +255,16 @@ const Mobile = (props) => {
             />
           )}
           {e.link && (
-            <Link
+            <StyledLink
               style={{ textDecoration: "none" }}
               href={e.link}
               className="next-link"
               passHref={true}
             >
-              <StyledLink>{e.text}</StyledLink>
-            </Link>
+              {e.text}
+            </StyledLink>
           )}
-          {e.onclick && <StyledLink onClick={e.onclick}>{e.text}</StyledLink>}
+          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
         </ListItem>
       );
   });
@@ -304,7 +304,7 @@ const Mobile = (props) => {
             }}
             onClick={_handleHomepageRedirect}
           >
-            <Link
+            <StyledLink
               href={!props.PW ? "/" : "/corporates/physicswallah"}
               style={{ textDecoration: "none" }}
             >
@@ -318,7 +318,7 @@ const Mobile = (props) => {
                 widthmobile="52px"
                 url={"media/website/logo-only.svg"}
               ></ImageLoader>
-            </Link>
+            </StyledLink>
             {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
           </div>
         ) : (
@@ -383,7 +383,7 @@ const Mobile = (props) => {
                       widthmobile="20px"
                     />
                   }
-                  <StyledLink>Logout</StyledLink>
+                  <div>Logout</div>
                 </ListItem>
               )}
             </ListContainer>

@@ -64,7 +64,7 @@ const Internalbuttonstyle = styled.a`
 const Internallinkbutton = (props) => {
 
   return (
-    <Link href={props.link ? props.link : "/404"} passHref={true}>
+    <Link style={{textDecoration : "none"}} href={props.link ? props.link : "/404"} passHref={true}>
       <Internalbuttonstyle
       className="font-lexend"
         color={props.color}

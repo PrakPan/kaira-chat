@@ -64,7 +64,7 @@ font-size: 1.5rem;
 }
 
 `;
-const StyledA = styled.a`
+const StyledA = styled(Link)`
 text-decoration: none;
 color: white;
 &:hover{
@@ -82,25 +82,25 @@ const Footer = (props) => {
           <LinkHeading className="font-lexend">Travellers</LinkHeading>
           <UL>
             <li>
-              <Link
+              <StyledA
                 href={urls.travel_experiences.BASE}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Travel Experiences</StyledA>
-              </Link>
+                Travel Experiences
+              </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 style={{ textDecoration: "none" }}
                 href={urls.travel_experiences.BASE}
               >
-                <StyledA>Experience Types</StyledA>
-              </Link>
+                Experience Types
+              </StyledA>
             </li>
             <li onClick={openTailoredModal(router)}>
-              <Link style={{ textDecoration: "none", color: "white" }}>
-                <StyledA>Personalise</StyledA>
-              </Link>
+              <StyledA style={{ textDecoration: "none", color: "white" }}>
+                Personalise
+              </StyledA>
             </li>
             <li>
               <StyledA href={urls.supplier_thetarzanway.organisation.RESISTER}>
@@ -118,12 +118,12 @@ const Footer = (props) => {
           <LinkHeading className="font-lexend">Organisations</LinkHeading>
           <UL>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Individuals</StyledA>
-              </Link>
+                Individuals
+              </StyledA>
             </li>
             <li>
               <StyledA href={urls.supplier_thetarzanway.BASE}>
@@ -131,12 +131,12 @@ const Footer = (props) => {
               </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Affiliates</StyledA>
-              </Link>
+                Affiliates
+              </StyledA>
             </li>
             <li>
               <StyledA href={urls.supplier_thetarzanway.BASE}>
@@ -154,31 +154,31 @@ const Footer = (props) => {
           <LinkHeading>Company</LinkHeading>
           <UL>
             <li>
-              <Link
+              <StyledA
                 href={urls.ABOUT_US}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>About Us</StyledA>
-              </Link>
+                About Us
+              </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Contact Us</StyledA>
-              </Link>
+                Contact Us
+              </StyledA>
             </li>
             <li>
               <StyledA href={urls.PRIVACY_POLICY}>Privacy Policy</StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.COVID_19_SAFE_TRAVEL_INDIA}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>COVID-19 Safety</StyledA>
-              </Link>
+                COVID-19 Safety
+              </StyledA>
             </li>
             <li>
               <StyledA href={urls.SITEMAP}>Sitemap</StyledA>
@@ -194,36 +194,36 @@ const Footer = (props) => {
               </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Subscribe</StyledA>
-              </Link>
+                Subscribe
+              </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Freelance</StyledA>
-              </Link>
+                Freelance
+              </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Bloggers</StyledA>
-              </Link>
+                Bloggers
+              </StyledA>
             </li>
             <li>
-              <Link
+              <StyledA
                 href={urls.CONTACT}
                 style={{ textDecoration: "none", color: "white" }}
               >
-                <StyledA>Travel Help</StyledA>
-              </Link>
+                Travel Help
+              </StyledA>
             </li>
           </UL>
         </Column>
