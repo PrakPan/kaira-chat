@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
-import cross from '../../../public/assets/close.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash} from '@fortawesome/free-solid-svg-icons';
 import {useRouter} from 'next/router';

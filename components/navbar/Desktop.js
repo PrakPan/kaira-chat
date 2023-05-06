@@ -207,98 +207,232 @@ const Navbar = (props) => {
 
   const [toggleSearch, setToggleSearch] = useState(false);
      return (
-    <div>
-    <Header changeHeight={Height} >
-      <NavbarContainer bgColor={props.bgColor} hideNav={props.hideNav} style={{
-        backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)': 'white', 
-        opacity : props.hideNav ? '0' : '1'}}>
-         <CenterNav hidecta={props.hidecta}>
-          
-          <TTWLogoContainer>
-        {props.hidehomecta ? 
- <ImageLoader   hoverpointer  leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logo-only.svg'}></ImageLoader> : 
-        props.headerColor === 'black'?<Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><ImageLoader hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} width="55px" widthmobile="55px"  leftalign url={'media/website/logowhite.svg'} margin="0.5rem 0.5rem 0.5rem 2rem"></ImageLoader></Link> : <Link href={urls.HOMEPAGE}><ImageLoader   hoverpointer  onclick={!props.PW ? _handleHomepageRedirect : _handlePWRedirect} leftalign width="55px" widthmobile="55px"  margin="0.5rem 0.5rem 0.5rem 2rem" url={'media/website/logo-only.svg'}></ImageLoader></Link> 
-        }           <div>
-
-        {props.hidehomecta ?  
-            <CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0rem 0 0.25rem", fontSize: "2.25vh", fontWeight: '700', lineHeight: 1, display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}}>{'thetarzanway'}</CompanyName>
-         : 
-          <Link href={!props.PW? urls.HOMEPAGE : '/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0 0 0 0.25rem", fontWeight: '600', lineHeight: 1, display: 'inline', letterSpacing: '0'}}>thetarzanway</CompanyName></Link>
-
-      }
-      {/* {
+       <div>
+         <Header changeHeight={Height}>
+           <NavbarContainer
+             bgColor={props.bgColor}
+             hideNav={props.hideNav}
+             style={{
+               backgroundColor:
+                 props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
+               opacity: props.hideNav ? "0" : "1",
+             }}
+           >
+             <CenterNav hidecta={props.hidecta}>
+               <TTWLogoContainer>
+                 {props.hidehomecta ? (
+                   <ImageLoader
+                     hoverpointer
+                     leftalign
+                     width="55px"
+                     widthmobile="55px"
+                     margin="0.5rem 0.5rem 0.5rem 2rem"
+                     url={"media/website/logo-only.svg"}
+                   ></ImageLoader>
+                 ) : props.headerColor === "black" ? (
+                   <Link
+                     style={{ textDecoration: "none"}}
+                     href={
+                       !props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"
+                     }
+                   >
+                     <ImageLoader
+                       hoverpointer
+                       onclick={
+                         !props.PW ? _handleHomepageRedirect : _handlePWRedirect
+                       }
+                       width="55px"
+                       widthmobile="55px"
+                       leftalign
+                       url={"media/website/logowhite.svg"}
+                       margin="0.5rem 0.5rem 0.5rem 2rem"
+                     ></ImageLoader>
+                   </Link>
+                 ) : (
+                   <Link href={urls.HOMEPAGE}>
+                     <ImageLoader
+                       hoverpointer
+                       onclick={
+                         !props.PW ? _handleHomepageRedirect : _handlePWRedirect
+                       }
+                       leftalign
+                       width="55px"
+                       widthmobile="55px"
+                       margin="0.5rem 0.5rem 0.5rem 2rem"
+                       url={"media/website/logo-only.svg"}
+                     ></ImageLoader>
+                   </Link>
+                 )}{" "}
+                 <div>
+                   {props.hidehomecta ? (
+                     <CompanyName
+                       style={{
+                         color:
+                           props.headerColor === "black" ? "white" : "black",
+                         margin: "0 0rem 0 0.25rem",
+                         fontSize: "2.25vh",
+                         fontWeight: "700",
+                         lineHeight: 1,
+                         display: !props.PW ? "inline" : "block",
+                         letterSpacing: "0",
+                       }}
+                     >
+                       {"thetarzanway"}
+                     </CompanyName>
+                   ) : (
+                     <Link
+                       href={
+                         !props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"
+                       }
+                     >
+                       <CompanyName
+                         style={{
+                           color:
+                             props.headerColor === "black" ? "white" : "black",
+                           margin: "0 0 0 0.25rem",
+                           fontWeight: "600",
+                           lineHeight: 1,
+                           display: "inline",
+                           letterSpacing: "0",
+                         }}
+                       >
+                         thetarzanway
+                       </CompanyName>
+                     </Link>
+                   )}
+                   {/* {
        props.PW ?  
        <Link href={'/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0.25rem", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} >{'Physics Wallah Holidays'}</CompanyName></Link>
 : null
       } */}
-              </div> 
-        {/* </Link> */}
-          
-          </TTWLogoContainer>
-          
-          {/* <input /> */}
-         {!props.hidecta &&  <div style={{position: 'absolute', left: isTablet?'32%' : '26%', height: '100%' , width : '37%'}} className="center-div" onClick={() => setToggleSearch(true)}>
-          <TopContainer>
-            <SearchContainer>
-                    <Search placeholder="Where do you want to go?" ></Search>
-                    <ImSearch style={{position : 'absolute' , top : '17px' , left : '13px', color : '#B0BABF' , pointerEvents : 'none'}} />
-            </SearchContainer>
-        </TopContainer>
-          </div>}
-      {toggleSearch? <DesktopSearch onclose={() => setToggleSearch(false)}></DesktopSearch> : <div></div>}
-          {/* <SearchBar />  */}
-          <NavItemsContainer style={{ marginRight: props.token ? '0rem' : '0'}}>
-            
-            {/* <NavItem>
+                 </div>
+                 {/* </Link> */}
+               </TTWLogoContainer>
+
+               {/* <input /> */}
+               {!props.hidecta && (
+                 <div
+                   style={{
+                     position: "absolute",
+                     left: isTablet ? "32%" : "26%",
+                     height: "100%",
+                     width: "37%",
+                   }}
+                   className="center-div"
+                   onClick={() => setToggleSearch(true)}
+                 >
+                   <TopContainer>
+                     <SearchContainer>
+                       <Search placeholder="Where do you want to go?"></Search>
+                       <ImSearch
+                         style={{
+                           position: "absolute",
+                           top: "17px",
+                           left: "13px",
+                           color: "#B0BABF",
+                           pointerEvents: "none",
+                         }}
+                       />
+                     </SearchContainer>
+                   </TopContainer>
+                 </div>
+               )}
+               {toggleSearch ? (
+                 <DesktopSearch
+                   onclose={() => setToggleSearch(false)}
+                 ></DesktopSearch>
+               ) : (
+                 <div></div>
+               )}
+               {/* <SearchBar />  */}
+               <NavItemsContainer
+                 style={{ marginRight: props.token ? "0rem" : "0" }}
+               >
+                 {/* <NavItem>
               <Link href={urls.travel_experiences.BASE} className="next-link" passHref={true}>
                {router.pathname === '/travel-experiences' ? <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Experiences</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Experiences</StyledLink>}
               </Link>
             </NavItem> */}
-            {/* <NavItem>
+                 {/* <NavItem>
                 <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
             </NavItem> */}
-               <NavItem style={{paddingInline: '1.5rem'}}>
-              {/* <Link href={urls.CONTACT} passHref={true}>
+                 <NavItem style={{ paddingInline: "1.5rem" }}>
+                   {/* <Link href={urls.CONTACT} passHref={true}>
               {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700' , fontWeight : '500'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
               </Link> */}
-            </NavItem>
-      
-          {  !props.hidecta  ? 
-                        <Button fontWeight="500" borderColor='black' borderWidth='1px' hoverBgColor="black" hoverColor="white" bgColor="#F7e700"  borderRadius="6px" margin="0 1.5rem 0 0" padding="0.5rem 0.75rem" onclick={props.ctaonclick? props.ctaonclick : ()=>openTailoredModal(router, props.id , props.destination)}>Create a Trip</Button> 
-          : null}
-          {props.token ? 
-          <ProfilDropDown
-            setShowDropDownProfileList={setShowDropDownProfileList}
-            showDropDownProfileList={showDropDownProfileList}
-            showDropDownProfileListMobile={showDropDownProfileListMobile}
-            toggleProfileList={toggleProfileList}
-            onLogout={props.onLogout}
-            authShowLogin={props.authShowLogin}
-            token={props.token}
-            headerColor={props.headerColor}
-            name={props.name}
-            image={props.image}
-            notifications={props.notifications}
-            _handleNotifications={_handleNotifications}
-            notOpenedCount={props.notOpenCount} 
-          /> : 
-          <ProfileDropDownLoggedOut
-            setShowDropDownProfileList={setShowDropDownProfileList}
-            showDropDownProfileList={showDropDownProfileList}
-            showDropDownProfileListMobile={showDropDownProfileListMobile}
-            toggleProfileList={toggleProfileList}
-            onLogout={props.onLogout}
-            authShowLogin={props.authShowLogin}
-            token={props.token}
-            headerColor={props.headerColor}
-               /> }
-          </NavItemsContainer>
-        </CenterNav> 
-        {/* } */}
-      </NavbarContainer>
-            <Notifications _deleteNotificationHandler={props._deleteNotificationHandler} _openAllNotificationsHandler={props._openAllNotificationsHandler} notifications={props.notifications} show={showNotifications} handleClose={() => setShowNotifications(false)} ></Notifications>
-    </Header></div>
-  );
+                 </NavItem>
+
+                 {!props.hidecta ? (
+                   <Button
+                     fontWeight="500"
+                     borderColor="black"
+                     borderWidth="1px"
+                     hoverBgColor="black"
+                     hoverColor="white"
+                     bgColor="#F7e700"
+                     borderRadius="6px"
+                     margin="0 1.5rem 0 0"
+                     padding="0.5rem 0.75rem"
+                     onclick={
+                       props.ctaonclick
+                         ? props.ctaonclick
+                         : () =>
+                             openTailoredModal(
+                               router,
+                               props.id,
+                               props.destination
+                             )
+                     }
+                   >
+                     Create a Trip
+                   </Button>
+                 ) : null}
+                 {props.token ? (
+                   <ProfilDropDown
+                     setShowDropDownProfileList={setShowDropDownProfileList}
+                     showDropDownProfileList={showDropDownProfileList}
+                     showDropDownProfileListMobile={
+                       showDropDownProfileListMobile
+                     }
+                     toggleProfileList={toggleProfileList}
+                     onLogout={props.onLogout}
+                     authShowLogin={props.authShowLogin}
+                     token={props.token}
+                     headerColor={props.headerColor}
+                     name={props.name}
+                     image={props.image}
+                     notifications={props.notifications}
+                     _handleNotifications={_handleNotifications}
+                     notOpenedCount={props.notOpenCount}
+                   />
+                 ) : (
+                   <ProfileDropDownLoggedOut
+                     setShowDropDownProfileList={setShowDropDownProfileList}
+                     showDropDownProfileList={showDropDownProfileList}
+                     showDropDownProfileListMobile={
+                       showDropDownProfileListMobile
+                     }
+                     toggleProfileList={toggleProfileList}
+                     onLogout={props.onLogout}
+                     authShowLogin={props.authShowLogin}
+                     token={props.token}
+                     headerColor={props.headerColor}
+                   />
+                 )}
+               </NavItemsContainer>
+             </CenterNav>
+             {/* } */}
+           </NavbarContainer>
+           <Notifications
+             _deleteNotificationHandler={props._deleteNotificationHandler}
+             _openAllNotificationsHandler={props._openAllNotificationsHandler}
+             notifications={props.notifications}
+             show={showNotifications}
+             handleClose={() => setShowNotifications(false)}
+           ></Notifications>
+         </Header>
+       </div>
+     );
 };
 
 const mapStateToProps = (state) => {

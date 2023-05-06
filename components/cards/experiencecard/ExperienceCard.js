@@ -125,40 +125,97 @@ const redirect = () => {
     callback: redirect,
   })
 }
-    return(
+    return (
       <Container className="netflix-ite">
         <ImageContainer>
-              <ImageGallery filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
-       </ImageContainer>  
-       <ContentContainer className="text-center">
-           <HeadingContainer>
-             <Heading className="font-lexend">{props.experience}</Heading>
-           </HeadingContainer>
-           {typeof window !== 'undefined' ? <Rating className="font-nunito">
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={props.rating > 4.5 ? faStar : faStarHalf} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-          {props.rating? " "+props.rating : '4.5'}</Rating> : null}
-            <TextContainer className="font-nunito">
-                <Text>{textstr}</Text>
-            </TextContainer>
-            <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center", margin: '0 0.5rem'}}>
-            <Price className="font-lexend">{ "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}</Price>
-                <Link passHref={true} href ={urls.EXPERIENCES+props.id}>
-                  <Button display="inline-block" onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">Check Out!  
-                  {loading  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
-                  : null}
-                  </Button>
-                  {/* <Button onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">
+          <ImageGallery
+            filter={props.filter}
+            location={props.location}
+            cost={props.cost}
+            duration={props.duration}
+            images={props.images}
+            name={props.experience}
+          ></ImageGallery>
+        </ImageContainer>
+        <ContentContainer className="text-center">
+          <HeadingContainer>
+            <Heading className="font-lexend">{props.experience}</Heading>
+          </HeadingContainer>
+          {typeof window !== "undefined" ? (
+            <Rating className="font-nunito">
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={props.rating > 4.5 ? faStar : faStarHalf}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              {props.rating ? " " + props.rating : "4.5"}
+            </Rating>
+          ) : null}
+          <TextContainer className="font-nunito">
+            <Text>{textstr}</Text>
+          </TextContainer>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              margin: "0 0.5rem",
+            }}
+          >
+            <Price className="font-lexend">
+              {"₹ " +
+                getIndianPrice(Math.round(props.starting_cost / 100)) +
+                "/-"}
+            </Price>
+            <Link
+              style={{ textDecoration: "none" }}
+              passHref={true}
+              href={urls.EXPERIENCES + props.id}
+            >
+              <Button
+                display="inline-block"
+                onclick={_handleClick}
+                onclickparams={null}
+                boxShadow
+                hoverBgColor="black"
+                bgColor="#f7e700"
+                borderRadius="2rem"
+                padding="0.5rem 1.5rem"
+                borderStyle="none"
+                hoverColor="white"
+              >
+                Check Out!
+                {loading ? (
+                  <Spinner
+                    size={16}
+                    display="inline"
+                    margin="0 0 0 0.25rem"
+                  ></Spinner>
+                ) : null}
+              </Button>
+              {/* <Button onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">
                     <Spinner size={16}></Spinner>
                   </Button>  */}
-                  </Link>
-            </div>
-       </ContentContainer>
-      </Container> 
-  ); 
+            </Link>
+          </div>
+        </ContentContainer>
+      </Container>
+    ); 
 }
  
 export default ExperienceCard;

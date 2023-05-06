@@ -1,158 +1,159 @@
-import React, {useRef, useEffect} from 'react';
-import styled from 'styled-components'
-import img from '../../public/assets/user.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faHiking} from '@fortawesome/free-solid-svg-icons';
-import {connect} from 'react-redux';
-import * as authaction from '../../store/actions/auth';
-import Slider from '@material-ui/core/Slider';
-import { withStyles, makeStyles } from '@material-ui/styles';
-import ImageLoader from '../../components/ImageLoader';
-import media from '../../components/media';
+import React, { useRef, useEffect } from "react";
+import styled from "styled-components";
+import img from "../../public/assets/user.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faHiking } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
+import * as authaction from "../../store/actions/auth";
+import Slider from "@mui/material/Slider";
+import { withStyles, makeStyles } from "@mui/styles";
+import ImageLoader from "../../components/ImageLoader";
+import media from "../../components/media";
 
 const Container = styled.div`
-padding: 0.5rem;
-width: 90%;
-margin: auto;
-border-radius: 5px;
-@media screen and (min-width: 768px){
+  padding: 0.5rem;
+  width: 90%;
+  margin: auto;
+  border-radius: 5px;
+  @media screen and (min-width: 768px) {
     width: 100%;
-}
+  }
 `;
 const OverviewContainer = styled.div`
-
-@media screen and (min-width: 768px){
+  @media screen and (min-width: 768px) {
     display: grid;
     grid-template-columns: 50% 50%;
     width: 100%;
-}
+  }
 `;
 const CountContainer = styled.div`
-display: grid;
-grid-template-columns: 1fr 1fr 1fr;
-grid-gap: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 0.5rem;
 `;
 const DP = styled.img`
-border-radius: 50%;
-width: 60%;
-@media screen and (min-width: 768px){
+  border-radius: 50%;
+  width: 60%;
+  @media screen and (min-width: 768px) {
     width: 40%;
-}
+  }
 `;
 const ImageNameContainer = styled.div`
-    padding: 2rem 0;
-    @media screen and (min-width: 768px){
-        padding: 0;
+  padding: 2rem 0;
+  @media screen and (min-width: 768px) {
+    padding: 0;
+  }
+`;
+const Profile = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
+  const Name = styled.p`
+    font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
+    margin: 1rem 0 0 0;
+    font-weight: 700;
+    @media screen and (min-width: 768px) {
+      font-size: ${(props) => props.theme.fontsizes.desktop.text.two};
+      margin: 1rem;
     }
-`;
-const Profile = (props) =>{
-    let isPageWide = media('(min-width: 768px)');
-
-
-const Name = styled.p`
-font-size: ${props => props.theme.fontsizes.mobile.text.two};
-margin: 1rem 0 0 0;
-font-weight:700;
-@media screen and (min-width: 768px){
-    font-size: ${props => props.theme.fontsizes.desktop.text.two};
-    margin: 1rem;
-
-
-}
-`;
-const Count = styled.p`
-margin: 0rem;
-font-size: ${props => props.theme.fontsizes.mobile.headings.three};
-@media screen and (min-width: 768px){
-    font-size: ${props => props.theme.fontsizes.desktop.headings.two};
-
-}
-`;
-const DetailsContainer = styled.div`
-text-align: center;
-    padding: 2rem 0;
-    @media screen and (min-width: 768px){
-        text-align: left;
+  `;
+  const Count = styled.p`
+    margin: 0rem;
+    font-size: ${(props) => props.theme.fontsizes.mobile.headings.three};
+    @media screen and (min-width: 768px) {
+      font-size: ${(props) => props.theme.fontsizes.desktop.headings.two};
     }
-`;
-const SectionHeading = styled.p`
-font-size: ${props => props.theme.fontsizes.mobile.text.two};
-@media screen and (min-width: 768px){
-    font-size: ${props => props.theme.fontsizes.desktop.text.one};
-}
-
-`;
-const DetailHeading = styled.p`
-font-size: ${props => props.theme.fontsizes.mobile.text.two};
-font-weight: 500;
-margin-bottom: 0.5rem;
-@media screen and (min-width: 768px){
-    font-size: ${props => props.theme.fontsizes.desktop.text.three};
-    text-align: left;
+  `;
+  const DetailsContainer = styled.div`
+    text-align: center;
+    padding: 2rem 0;
+    @media screen and (min-width: 768px) {
+      text-align: left;
+    }
+  `;
+  const SectionHeading = styled.p`
+    font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
+    @media screen and (min-width: 768px) {
+      font-size: ${(props) => props.theme.fontsizes.desktop.text.one};
+    }
+  `;
+  const DetailHeading = styled.p`
+    font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
+    font-weight: 500;
     margin-bottom: 0.5rem;
-
-}
-`;
-const DetailText = styled.p`
-font-size: ${props => props.theme.fontsizes.mobile.text.three};
-font-weight: 300;
-color: 	#A0A0A0;
-@media screen and (min-width: 768px){
-    font-size: ${props => props.theme.fontsizes.desktop.text.three};
-    float: left;
-    display: inline;
-
-}
-`;
-const PreferencesContainer = styled.div`
+    @media screen and (min-width: 768px) {
+      font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
+      text-align: left;
+      margin-bottom: 0.5rem;
+    }
+  `;
+  const DetailText = styled.p`
+    font-size: ${(props) => props.theme.fontsizes.mobile.text.three};
+    font-weight: 300;
+    color: #a0a0a0;
+    @media screen and (min-width: 768px) {
+      font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
+      float: left;
+      display: inline;
+    }
+  `;
+  const PreferencesContainer = styled.div`
     width: 80%;
     margin: 2rem auto;
-`;
-const SlidersContainer = styled.div`
+  `;
+  const SlidersContainer = styled.div`
     display: grid;
     grid-template-columns: max-content auto;
     grid-gap: 1.5rem;
-`;
-const PrettoSlider = withStyles({
-  root: {
-    color: '#f7e700',
-    height: 8,
-    margin: '0.5rem 0'
-  },
-  thumb: {
-    height: 16,
-    width: 16,
-    backgroundColor: 'currentColor',
-    border: '2px solid currentColor',
-    marginTop: -6,
-    marginLeft: -12,
-    '&:focus, &:hover, &$active': {
-
+  `;
+  const PrettoSlider = withStyles({
+    root: {
+      color: "#f7e700",
+      height: 8,
+      margin: "0.5rem 0",
     },
-  },
-  active: { },
-  valueLabel: {
-    left: 'calc(-50% - 4px)',
-  },
-  track: {
-    height: 5,
-    borderRadius: 4,
-  },
-  rail: {
-    height: 5,
-    borderRadius: 4,
-    opacity: '0.3'
-  },
-})(Slider);
+    thumb: {
+      height: 16,
+      width: 16,
+      backgroundColor: "currentColor",
+      border: "2px solid currentColor",
+      marginTop: -6,
+      marginLeft: -12,
+      "&:focus, &:hover, &$active": {},
+    },
+    active: {},
+    valueLabel: {
+      left: "calc(-50% - 4px)",
+    },
+    track: {
+      height: 5,
+      borderRadius: 4,
+    },
+    rail: {
+      height: 5,
+      borderRadius: 4,
+      opacity: "0.3",
+    },
+  })(Slider);
 
-return(
-<Container className="border-thin">
-    <OverviewContainer>
-    <ImageNameContainer className="center-div">
-        <ImageLoader dimesions={{ width: 400, height: 400}} dimensionsMobile={{width: 1600, height: 1600}} url={props.image!=='null' && props.image!==null ? props.image : 'media/website/user.svg'} width="40%" borderRadius="50%" widthmobile="40%"></ImageLoader>
-        <Name className="font-lexend">{props.name}</Name>
-    </ImageNameContainer>        
-    {/* <CountContainer>
+  return (
+    <Container className="border-thin">
+      <OverviewContainer>
+        <ImageNameContainer className="center-div">
+          <ImageLoader
+            dimesions={{ width: 400, height: 400 }}
+            dimensionsMobile={{ width: 1600, height: 1600 }}
+            url={
+              props.image !== "null" && props.image !== null
+                ? props.image
+                : "media/website/user.svg"
+            }
+            width="40%"
+            borderRadius="50%"
+            widthmobile="40%"
+          ></ImageLoader>
+          <Name className="font-lexend">{props.name}</Name>
+        </ImageNameContainer>
+        {/* <CountContainer>
     <div className="center-div" >
         <Count className="font-lexend">10</Count>
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Saved</p>
@@ -166,21 +167,29 @@ return(
         <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Plans Created</p>
     </div>
     </CountContainer> */}
-    {!isPageWide ? <hr style={{margin: '0'}}/> : null}
-    <DetailsContainer>
-        {isPageWide ? <SectionHeading className="font-lexend" style={{fontWeight: '700', marginBottom: "2rem"}}>Your Profile</SectionHeading> : null}
-        <DetailHeading className="font-lexend">
-            Contact Number
-        </DetailHeading>
-        <DetailText style={{marginBottom: !isPageWide ? '2rem' : '2rem'}}>{props.phone}
-        </DetailText>
-        {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}} onClick={props.onSetProfilePic} />     */}
-        <DetailHeading className="font-lexend" style={{clear: "both"}}>Email</DetailHeading>
-        <DetailText style={{marginBottom: '0'}}>{props.email}</DetailText>
-        {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}}/>     */}
-    </DetailsContainer>
-    </OverviewContainer>
-    {/* <PreferencesContainer>
+        {!isPageWide ? <hr style={{ margin: "0" }} /> : null}
+        <DetailsContainer>
+          {isPageWide ? (
+            <SectionHeading
+              className="font-lexend"
+              style={{ fontWeight: "700", marginBottom: "2rem" }}
+            >
+              Your Profile
+            </SectionHeading>
+          ) : null}
+          <DetailHeading className="font-lexend">Contact Number</DetailHeading>
+          <DetailText style={{ marginBottom: !isPageWide ? "2rem" : "2rem" }}>
+            {props.phone}
+          </DetailText>
+          {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}} onClick={props.onSetProfilePic} />     */}
+          <DetailHeading className="font-lexend" style={{ clear: "both" }}>
+            Email
+          </DetailHeading>
+          <DetailText style={{ marginBottom: "0" }}>{props.email}</DetailText>
+          {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}}/>     */}
+        </DetailsContainer>
+      </OverviewContainer>
+      {/* <PreferencesContainer>
         <SectionHeading className="font-lexend" style={{margin: "0 auto 2rem auto", textAlign: "center", fontWeight: '700'}}>Your Preferences</SectionHeading>
         <SlidersContainer>
                <div className="center-div" style={{textAlign: 'right'}}>
@@ -219,23 +228,22 @@ return(
         </SlidersContainer>
         <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.5rem 2rem">Save</Button>
     </PreferencesContainer> */}
-</Container>
-    );
-}
+    </Container>
+  );
+};
 
 const mapStateToPros = (state) => {
-  return{
-    otpFail : state.auth.otpFail,
+  return {
+    otpFail: state.auth.otpFail,
     name: state.auth.name,
     phone: state.auth.phone,
     email: state.auth.email,
     image: state.auth.image,
-  }
-}
-const mapDispatchToProps = dispatch => {
-    return{
-      onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image)),
-      
-    }
-  }
-export default  connect(mapStateToPros,mapDispatchToProps)(Profile);
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image)),
+  };
+};
+export default connect(mapStateToPros, mapDispatchToProps)(Profile);

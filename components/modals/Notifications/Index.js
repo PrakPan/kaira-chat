@@ -5,15 +5,11 @@ import Notification from './Notification';
 // import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index'
 import media from '../../media';
-import cross from '../../../public/assets/close.png';
 import axiosnotificationsinstance from '../../../services/user/notifications/notifications';
 import {connect} from 'react-redux';
 import ImageLoader from '../../ImageLoader';
-const Cross = styled.img`
-    float: right;
-    width: 1rem;
+import {RxCross2} from 'react-icons/rx'
 
-`;
 const ClearAll = styled.div`
     width: max-content;
     margin: 2rem auto;
@@ -67,18 +63,51 @@ const Enquiry = (props) => {
         props._openAllNotificationsHandler();
         props.handleClose();
     }
-  return(
-      <div>
-          <Modal show={props.show} onHide={_handleClose} size={isPageWide ? "md" : "lg"} >
-            <Modal.Body style={{borderStyle: 'solid', borderWidth: '5px', borderColor: "#f7e700", minHeight: isPageWide ? '90vh' : '95vh' }}>
-            <Cross src={cross} onClick={_handleClose} />
-            <Heading noline align="center" aligndesktop="center" margin={ !isPageWide ? "2rem" : '5rem auto'}  bold>Notifications</Heading>
-                {notificationsArr.length ? notificationsArr : <ImageLoader  width="60%" widthmobile="70%" url={'media/website/nonotifications.svg'}/>}
-                {notificationsArr.length > 1 ?<ClearAll className="font-lexend" onClick={_clearAllHandler}>Clear All</ClearAll> : null}
-
-            </Modal.Body>
+  return (
+    <div>
+      <Modal
+        show={props.show}
+        onHide={_handleClose}
+        size={isPageWide ? "md" : "lg"}
+      >
+        <Modal.Body
+          style={{
+            borderStyle: "solid",
+            borderWidth: "5px",
+            borderColor: "#f7e700",
+            minHeight: isPageWide ? "90vh" : "95vh",
+          }}
+        >
+          <RxCross2
+            onClick={_handleClose}
+            style={{ width: "1rem", float: "right" }}
+          />
+          <Heading
+            noline
+            align="center"
+            aligndesktop="center"
+            margin={!isPageWide ? "2rem" : "5rem auto"}
+            bold
+          >
+            Notifications
+          </Heading>
+          {notificationsArr.length ? (
+            notificationsArr
+          ) : (
+            <ImageLoader
+              width="60%"
+              widthmobile="70%"
+              url={"media/website/nonotifications.svg"}
+            />
+          )}
+          {notificationsArr.length > 1 ? (
+            <ClearAll className="font-lexend" onClick={_clearAllHandler}>
+              Clear All
+            </ClearAll>
+          ) : null}
+        </Modal.Body>
       </Modal>
-      </div>
+    </div>
   );
 
 

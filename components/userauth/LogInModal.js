@@ -668,9 +668,9 @@ if (props.loadingsocial) return (
               style={{ textDecoration: "none" }}
               passHref
             >
-              <a style={{ color: "black" }} target="_blank">
+              {/* <a style={{ color: "black" }} target="_blank"> */}
                 T&Cs and privacy policy{" "}
-              </a>
+              {/* </a> */}
             </Link>
           </div>
         </form>

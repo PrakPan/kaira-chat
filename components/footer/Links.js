@@ -76,51 +76,158 @@ color: white;
 const Footer = (props) => {
    
    
-    return(
-            <LinksContainer>
-
-                <Column className="font-nunito">
-                    <LinkHeading className="font-lexend">Travellers</LinkHeading>
-                    <UL>
-                        <li><Link href={urls.travel_experiences.BASE} style={{textDecoration: "none", color: "white"}}><StyledA>Travel Experiences</StyledA></Link></li>
-                        <li><Link href={urls.travel_experiences.BASE} style={{textDecoration: "none", color: "white"}}><StyledA>Experience Types</StyledA></Link></li>
-                    <li onClick={openTailoredModal(router)}><Link style={{ textDecoration: "none", color: "white" }}><StyledA>Personalise</StyledA></Link></li>
-                        <li><StyledA href={urls.supplier_thetarzanway.organisation.RESISTER} >Groups</StyledA></li>
-                        <li><StyledA href="https://www.thetarzanway.com/contact">FAQs</StyledA></li>
-                    </UL>
-                </Column>
-                <Column className="font-nunito">
-                <LinkHeading className="font-lexend">Organisations</LinkHeading>
-                    <UL>
-                        <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Individuals</StyledA></Link></li>
-                        <li><StyledA href={urls.supplier_thetarzanway.BASE}>Tour Operators</StyledA></li>
-                        <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Affiliates</StyledA></Link></li>
-                        <li><StyledA href={urls.supplier_thetarzanway.BASE} >Accomodations</StyledA></li>
-                        <li><StyledA href={urls.supplier_thetarzanway.BASE}>Corporates</StyledA></li>
-                    </UL>
-                </Column>
-                <Column className="font-nunito">
-                <LinkHeading>Company</LinkHeading>
-                    <UL>
-                        <li><Link href={urls.ABOUT_US}style={{textDecoration: "none", color: "white"}}><StyledA >About Us</StyledA></Link></li>
-                        <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Contact Us</StyledA></Link></li>
-                        <li><StyledA href={urls.PRIVACY_POLICY}>Privacy Policy</StyledA></li>
-                        <li><Link href={urls.COVID_19_SAFE_TRAVEL_INDIA} style={{textDecoration: "none", color: "white"}}><StyledA>COVID-19 Safety</StyledA></Link></li>
-                        <li><StyledA href={urls.SITEMAP}>Sitemap</StyledA></li>
-                    </UL>
-                </Column>
-                <Column className="font-nunito">
-                <LinkHeading className="font-lexend">Community</LinkHeading>
-                    <UL>
-                        <li><StyledA href="http://blog.thetarzanway.com/" >Travel Feed</StyledA></li>
-                        <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Subscribe</StyledA></Link></li>
-                        <li><Link href={urls.CONTACT}style={{textDecoration: "none", color: "white"}}><StyledA >Freelance</StyledA></Link></li>
-                        <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Bloggers</StyledA></Link></li>
-                        <li><Link href={urls.CONTACT} style={{textDecoration: "none", color: "white"}}><StyledA >Travel Help</StyledA></Link></li>
-
-                    </UL>
-                </Column>
-            </LinksContainer>
+    return (
+      <LinksContainer>
+        <Column className="font-nunito">
+          <LinkHeading className="font-lexend">Travellers</LinkHeading>
+          <UL>
+            <li>
+              <Link
+                href={urls.travel_experiences.BASE}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Travel Experiences</StyledA>
+              </Link>
+            </li>
+            <li>
+              <Link
+                style={{ textDecoration: "none" }}
+                href={urls.travel_experiences.BASE}
+              >
+                <StyledA>Experience Types</StyledA>
+              </Link>
+            </li>
+            <li onClick={openTailoredModal(router)}>
+              <Link style={{ textDecoration: "none", color: "white" }}>
+                <StyledA>Personalise</StyledA>
+              </Link>
+            </li>
+            <li>
+              <StyledA href={urls.supplier_thetarzanway.organisation.RESISTER}>
+                Groups
+              </StyledA>
+            </li>
+            <li>
+              <StyledA href="https://www.thetarzanway.com/contact">
+                FAQs
+              </StyledA>
+            </li>
+          </UL>
+        </Column>
+        <Column className="font-nunito">
+          <LinkHeading className="font-lexend">Organisations</LinkHeading>
+          <UL>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Individuals</StyledA>
+              </Link>
+            </li>
+            <li>
+              <StyledA href={urls.supplier_thetarzanway.BASE}>
+                Tour Operators
+              </StyledA>
+            </li>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Affiliates</StyledA>
+              </Link>
+            </li>
+            <li>
+              <StyledA href={urls.supplier_thetarzanway.BASE}>
+                Accomodations
+              </StyledA>
+            </li>
+            <li>
+              <StyledA href={urls.supplier_thetarzanway.BASE}>
+                Corporates
+              </StyledA>
+            </li>
+          </UL>
+        </Column>
+        <Column className="font-nunito">
+          <LinkHeading>Company</LinkHeading>
+          <UL>
+            <li>
+              <Link
+                href={urls.ABOUT_US}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>About Us</StyledA>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Contact Us</StyledA>
+              </Link>
+            </li>
+            <li>
+              <StyledA href={urls.PRIVACY_POLICY}>Privacy Policy</StyledA>
+            </li>
+            <li>
+              <Link
+                href={urls.COVID_19_SAFE_TRAVEL_INDIA}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>COVID-19 Safety</StyledA>
+              </Link>
+            </li>
+            <li>
+              <StyledA href={urls.SITEMAP}>Sitemap</StyledA>
+            </li>
+          </UL>
+        </Column>
+        <Column className="font-nunito">
+          <LinkHeading className="font-lexend">Community</LinkHeading>
+          <UL>
+            <li>
+              <StyledA href="http://blog.thetarzanway.com/">
+                Travel Feed
+              </StyledA>
+            </li>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Subscribe</StyledA>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Freelance</StyledA>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Bloggers</StyledA>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={urls.CONTACT}
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <StyledA>Travel Help</StyledA>
+              </Link>
+            </li>
+          </UL>
+        </Column>
+      </LinksContainer>
     );
 }
 

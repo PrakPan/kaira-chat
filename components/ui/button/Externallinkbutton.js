@@ -72,9 +72,13 @@ text-align: ${(props)=> (props.textAlign ? props.textAlign : "center")};
 
 const Externallinkbutton = (props) => {
   return (
-    <Link href={props.external_link ? props.external_link : "/404"} passHref={true}>
+    <Link
+      style={{ textDecoration: "none" }}
+      href={props.external_link ? props.external_link : "/404"}
+      passHref={true}
+    >
       <Externalbuttonstyle
-      className="font-lexend"
+        className="font-lexend"
         color={props.color}
         borderRadius={props.borderRadius}
         bgColor={props.bgColor}
@@ -93,17 +97,16 @@ const Externallinkbutton = (props) => {
         hoverBgColor={props.hoverBgColor}
         hoverBrColor={props.hoverBrColor}
         page={props.page}
-        external_link ={props.external_link}
+        external_link={props.external_link}
         boxShadow={props.boxShadow}
         display={props.display}
         textAlign={props.textAlign}
         marginMobile={props.marginMobile}
         lineHeight={props.lineHeight}
-
       >
         {props.children}
       </Externalbuttonstyle>
-      </Link>
+    </Link>
   );
 };
 export default Externallinkbutton;
