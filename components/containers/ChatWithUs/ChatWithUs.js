@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 // import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index';
-// import img from '../../../public/assets/talktous.svg';
 import Link from 'next/link'
 // import Button from '../../Button';
 import Button from '../../ui/button/Index'

@@ -1,7 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-// import ImageLoader from './ImageLoader';
-import Spinner from './Spinner';
 import gif from '../public/assets/loader.gif';
 
 const ExperienceIndexLoading = (props) => {

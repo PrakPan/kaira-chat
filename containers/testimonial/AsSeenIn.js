@@ -1,10 +1,5 @@
 import React , {useState} from 'react';
 import styled, { keyframes } from 'styled-components'
-// import img1 from '../../public/assets/asseenin/logos/outlook.svg';
-// import img2 from '../../public/assets/asseenin/logos/indianexpress.png';
-// import img3 from '../../public/assets/asseenin/logos/phocuswire.svg';
-// import img4 from '../../public/assets/asseenin/logos/brilliant.png';
-// import img5 from '../../public/assets/asseenin/logos/yourstory.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import Heading from '../../components/heading/Heading';
 import media from '../../components/media';

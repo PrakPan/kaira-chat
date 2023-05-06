@@ -1,8 +1,5 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-// import img from '../../public/assets/arts/whyus/whyus1.svg';
-// import img2 from '../../public/assets/arts/whyus/whyus2.svg';
-// import img3 from '../../public/assets/arts/whyus/whyus3.svg';
 import media from '../media';
 import Button from '../ui/button/Index';
 import urls from '../../services/urls';

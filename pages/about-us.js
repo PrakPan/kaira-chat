@@ -5,7 +5,6 @@ import Mission from '../containers/aboutus/Mission/Mission';
 import Numbers from '../containers/aboutus/Numbers/Numbers';
 import Values from '../containers/aboutus/values/Values';
 import StartJourney from '../components/containers/ChatWithUs/ChatWithUs';
-// import hiker from '../public/assets/arts/getstarted.svg';
 import Head from 'next/head'
 import Layout from '../components/Layout'
 import Team from '../containers/aboutus/Ourteam/Index';

@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import ReviewCard from './ReviewCard';
 import Flickity from '../../components/FlickityCarousel';
-// import google from '../../public/assets/icons/reviewbrands/google.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar} from '@fortawesome/free-solid-svg-icons';
 import media from '../../components/media';

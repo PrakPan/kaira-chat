@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { faCheckSquare, faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import img1 from '../../public/assets/logoblack.svg';
 import content from '../../public/content/loaderbar';
 import Linecirclecontainer from './linecirclecontainer';
 import LottieAnimation from './Lottie';

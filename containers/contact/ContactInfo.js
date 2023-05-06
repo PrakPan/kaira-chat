@@ -9,9 +9,6 @@ import Button from '../../components/ui/button/Index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
 // import { faCommentDots} from '@fortawesome/free-solid-svg-icons';
-// import instagram from '../../public/assets/icons/social/color/Instagram.png';
-// import facebook from '../../public/assets/icons/social/color/facebook.svg';
-// import google from '../../public/assets/icons/social/color/google.svg';
 import urls from '../../services/urls';
 const Container = styled.div`
 background-color: white;

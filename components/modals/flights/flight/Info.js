@@ -5,7 +5,6 @@ import media from '../../../media';
 // import Gallery from './gallery/Index';
 // import ImageLoader from '../../../ImageLoader';
 import { getHumanDate } from '../../../../services/getHumanDate';
-// import right from '../../../../public/assets/right-arrow.png';
 import right from '../../../../public/assets/right-arrow-flight.png';
 
 import { getHumanTime } from '../../../../services/getHumanTime';

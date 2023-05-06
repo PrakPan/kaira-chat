@@ -9,7 +9,6 @@ import FullScreenGallery from '../../fullscreengallery/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
 import MobileFilters from './filtersmobile/Index';
 import Spinner from '../../Spinner';
-import cross from '../../../public/assets/icons/navigation/close.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import { Link, animateScroll as scroll} from "react-scroll";

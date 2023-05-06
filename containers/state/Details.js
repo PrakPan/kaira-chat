@@ -13,7 +13,6 @@ import Howtoreach from '../../components/experiencecity/info/Howtoreach';
 import { useRef } from 'react'
 import PoisData from '../../components/experiencecity/info/pois/Index';
 import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
-// import homepagecontent from '../../public/content/homepage';
 const Details = (props) => {
   const [menuHeading, setMenuHeading] = useState('overview');
   let offsets = {

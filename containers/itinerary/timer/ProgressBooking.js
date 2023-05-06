@@ -1,10 +1,6 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-// import GIF from '../../../public/assets/gifs/itinerary/activity.gif';
-// import GIF2 from '../../../public/assets/gifs/itinerary/negotiate.gif';
-// import GIF3 from '../../../public/assets/gifs/itinerary/route.gif';
-// import combinedGIF from '../../../public/assets/gifs/itinerary/timer.gif';
 const ProgressContainer = styled.div`
     margin: 1rem 0;
 `;
