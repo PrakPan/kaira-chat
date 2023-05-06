@@ -5,15 +5,6 @@ import ImageLoader from '../../components/ImageLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarker, faQuoteRight } from '@fortawesome/free-solid-svg-icons';
 import media from '../../components/media';
-import germany from '../../public/assets/icons/countries/germany.png'
-import mexico from '../../public/assets/icons/countries/mexico.svg'
-import india from '../../public/assets/icons/countries/india.svg'
-import turkey from '../../public/assets/icons/countries/turkey.svg'
-import us from '../../public/assets/icons/countries/us.svg'
-import france from '../../public/assets/icons/countries/france.svg'
-import indonesia from '../../public/assets/icons/countries/indonesia.svg'
-
-
 const Icon = styled.img`
 margin: -1rem 0.2rem 0rem -1rem;
 height: 1.5rem;
@@ -174,20 +165,20 @@ if(typeof window !== 'undefined' && !stringlength){
 
 let germanytest = require("../../public/assets/icons/countries/germany.png");
 const countryicons = {
-    germany: require("../../public/assets/icons/countries/germany.png"),
-    mexico: require("../../public/assets/icons/countries/mexico.svg"),
-    india: require("../../public/assets/icons/countries/india.svg"),
-    turkey: require("../../public/assets/icons/countries/turkey.svg"),
-    us: require("../../public/assets/icons/countries/us.svg"),
-    france: require("../../public/assets/icons/countries/france.svg"),
-    indonesia: require("../../public/assets/icons/countries/indonesia.svg"),
+    germany: 'media/icons/countries/germany.png',
+    mexico: 'media/icons/countries/mexico.svg',
+    india: 'media/icons/countries/india.svg',
+    turkey: 'media/icons/countries/turkey.svg',
+    us: 'media/icons/countries/us.svg',
+    france: 'media/icons/countries/france.svg',
+    indonesia: 'media/icons/countries/indonesia.svg',
 }
  return(
     <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
     <Card style={{minHeight: Card1Height+"px"}} ref={Card1Ref}  onClick={ (event) => _flipHandler(event, true)} onMouseEnter={(event) => _flipHandler(event, true)}   className="font-nunito text-center center-div">
             <ImageLoader widthmobile="60%" widthtab="40%" fit="cover" url={props.url} dimensions={{width: 400, height: 400}} dimensionsMobile={{width: 400, height: 400}} borderRadius="50%" width="50%"  />     
         <Name className="font-lexend">{props.name}</Name>
-        <Country src={countryicons[props.location]}></Country>
+        <ImageLoader dimensions={{height : 100 , width : 180}} height='1.5rem' width='2rem' widthmobile='2rem' url={countryicons[props.location]}></ImageLoader>
         <ReviewContainer style={{position: 'relative'}}>
             <ReviewFront className="font-nunito"><em>{props.text}</em> </ReviewFront>
             {/* <FontAwesomeIcon icon={faQuoteRight} style={{position: 'absolute', right: '-5px', top: '-1rem'}}></FontAwesomeIcon> */}

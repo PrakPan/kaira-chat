@@ -1,13 +1,9 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import HomepageContainer from '../containers/homepage/Index';
 import Layout from '../components/Layout';
 import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth';
-import Router from 'next/router'
 import { useEffect } from 'react';
-import axiosTravelPlannerInstance from '../services/pages/travel-planner'
 import axiospagelistinstance from '../services/pages/list'
 import axios from 'axios'
 const  Home = (props) =>  {

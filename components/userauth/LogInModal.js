@@ -18,6 +18,7 @@ import OTPInput from "react-otp-input";
 import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
 import LoginLoadingIcon from '../ui/LoadingLottie'
+import Image from 'next/image'
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -90,7 +91,7 @@ var userDetails = {
   userName: "",
   email: "",
 };
-const CountryImg = styled.img`
+const CountryImg = styled(Image)`
   height: 1.5rem;
 `;
 const UpdatePhone = styled.p`
@@ -178,7 +179,7 @@ if (props.loadingsocial) return (
           handleExtensionChangeOption(country), setOpenCountryCodeOption(false);
         }}
       >
-        <CountryImg
+        <CountryImg height='29' width='29' objectFit="cover"
           src={extensions[country].img}
           onClick={() => handleExtensionChangeOption(country)}
         ></CountryImg>
@@ -395,7 +396,7 @@ if (props.loadingsocial) return (
                 onClick={() => setOpenCountryCodeOption(true)}
               >
                 {/* {extension} */}
-                <CountryImg src={extensions[extension].img}></CountryImg>
+                <CountryImg height='29' width='29' objectFit="cover" src={extensions[extension].img}></CountryImg>
 
                 <p>{extensions[extension].label} </p>
                 <FiChevronDown />
@@ -449,7 +450,7 @@ if (props.loadingsocial) return (
                 onClick={() => setOpenCountryCodeOption(true)}
               >
                 {/* {extension} */}
-                <CountryImg src={extensions[extension].img}></CountryImg>
+                <CountryImg height='29' width='29' objectFit="cover" src={extensions[extension].img}></CountryImg>
 
                 <p>{extensions[extension].label} </p>
                 <FiChevronDown />
@@ -615,10 +616,10 @@ if (props.loadingsocial) return (
                     boxShadow="0px 2px 0px #ECEAEA"
                     borderRadius="8px"
                   >
-                    <img
+                    <Image
                       src={google}
-                      style={{ height: "1.5rem", margin: "0 0.5rem" }}
-                    ></img>
+                      style={{ height: "1.5rem" }}
+                    ></Image>
                     <p
                       style={{
                         margin: "0",

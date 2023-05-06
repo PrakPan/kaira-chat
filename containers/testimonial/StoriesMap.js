@@ -1,18 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled,{keyframes} from 'styled-components';
-// import Map from '../../public/assets/worldMap.svg';
-import MapPin from '../../public/assets/icons/map-pin-yellow.svg';
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import media from '../../components/media';
 import ImageLoader from '../../components/ImageLoader';
-import dieter from '../../public/assets/testimonials/Dieter.webp';
-import arnab from '../../public/assets/testimonials/Arnab.webp';
-import damla from '../../public/assets/testimonials/Damla.webp';
-import mohamed from '../../public/assets/testimonials/Mohamed.webp';
-import maria from '../../public/assets/testimonials/Maria Carolina.webp';
-import raghav from '../../public/assets/testimonials/Raghav.webp';
-import shivam from '../../public/assets/testimonials/Shivam.jpg';
 const MapSlide = keyframes`
 0% {
     margin-left: -30rem;
@@ -55,11 +45,11 @@ margin-top: 30px;
 }
 `;
 
-const PinIcon = styled.img`
+const PinIcon = styled.div`
 
 animation: ${MapSlide} 8s;
 animation-fill-mode: both;
-height: 4rem;
+height: 4rem !important;
 position: absolute;
 transform: none;
 transform: translate(-50%, -50%);
@@ -68,7 +58,7 @@ transform: translate(-50%, -50%);
 @media screen and (min-width: 768px){  
     
     
-    height: 4.5rem;     
+    height: 4.5rem !important;     
     animation: none;
     &:nth-of-type(5){    
         animation-name: ${Bounce};
@@ -97,59 +87,57 @@ and (max-device-width : 1024px){
 }
 `;
 
-const UserIcon = styled.img`
-animation: ${MapSlide} 8s;
-animation-fill-mode: both;
-cursor: pointer;
-background-color: #727272;
-height: 2rem;
-width: 2rem;
-border-radius: 50%;
-position: absolute;
-transform: translate(-50%, -50%);
-transition: all 0.2s linear;
-&:hover{
-    border-color:  #4c4c4c;
+const UserIcon = styled.div`
+  animation: ${MapSlide} 8s;
+  animation-fill-mode: both;
+  cursor: pointer;
+  background-color: #727272;
+  height: 2rem !important;
+  width: 2rem !important;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition: all 0.2s linear;
+  &:hover {
+    border-color: #4c4c4c;
     background-color: #4c4c4c;
-}
-@media screen and (min-width: 768px){   
-    animation: none;        
-    height: 2.5rem;
-    width: 2.5rem; 
-    &:nth-of-type(4){       
-        animation-name: ${Bounce};
-        animation-fill-mode: both;
-        animation-duration: 2s;
-            }
-         &:nth-of-type(6){   
-            animation-name: ${Bounce};
-            animation-fill-mode: both;
-            animation-duration: 1s;
-            }
-}
-@media only screen 
-and (min-device-width : 768px) 
-and (max-device-width : 1024px){ 
-    &:nth-of-type(6){
-        display:none;
+  }
+  @media screen and (min-width: 768px) {
+    animation: none;
+    height: 2.5rem !important;
+    width: 2.5rem !important
+    &:nth-of-type(4) {
+      animation-name: ${Bounce};
+      animation-fill-mode: both;
+      animation-duration: 2s;
     }
-    &:nth-of-type(2){
-        display:none;
+    &:nth-of-type(6) {
+      animation-name: ${Bounce};
+      animation-fill-mode: both;
+      animation-duration: 1s;
     }
-    &:nth-of-type(12){
-        display:none;
+  }
+  @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+    &:nth-of-type(6) {
+      display: none;
     }
-     &:nth-of-type(4){       
-        animation-name: ${Bounce};
-        animation-fill-mode: both;
-        animation-duration: 2s;
-            }
-         &:nth-of-type(6){   
-            animation-name: ${Bounce};
-            animation-fill-mode: both;
-            animation-duration: 1s;
-            }
-}
+    &:nth-of-type(2) {
+      display: none;
+    }
+    &:nth-of-type(12) {
+      display: none;
+    }
+    &:nth-of-type(4) {
+      animation-name: ${Bounce};
+      animation-fill-mode: both;
+      animation-duration: 2s;
+    }
+    &:nth-of-type(6) {
+      animation-name: ${Bounce};
+      animation-fill-mode: both;
+      animation-duration: 1s;
+    }
+  }
 `;
 
 const MapBg = styled.img`
@@ -251,163 +239,281 @@ const StoriesMap = () => {
     if(typeof window === undefined) return null
     else{
     let isPageWide = media('(min-width: 768px)')
-
-
-
-    var Tooltip1;
-    var Tooltip3;
-    var Tooltip4;
-    var Tooltip5;
-    var Tooltip2;
-    var Tooltip6;
-    var Tooltip7;
-
-    Tooltip1 = props => (
-        <Tooltip  {...props} ><TooltipContainer><h3><b>{reveiws[0].name}</b></h3>{reveiws[0].review}</TooltipContainer></Tooltip>
-    );
-
-    Tooltip2 = props => (
-        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[1].name}</b></h3>{reveiws[1].review}</TooltipContainer></Tooltip>
-    );
-    Tooltip3 = props => (
-        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[2].name}</b></h3>{reveiws[2].review}</TooltipContainer></Tooltip>
-    );
-    Tooltip4 = props => (
-        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[3].name}</b></h3>{reveiws[3].review}</TooltipContainer></Tooltip>
-    );
-
-    Tooltip5 = props => (
-        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[4].name}</b></h3>{reveiws[4].review}</TooltipContainer></Tooltip>
-    );
-    Tooltip6 = props => (
-        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[5].name}</b></h3>{reveiws[5].review}</TooltipContainer></Tooltip>
-    );
-    Tooltip7 = props => (
-        <Tooltip {...props}><TooltipContainer><h3><b>{reveiws[6].name}</b></h3>{reveiws[6].review}</TooltipContainer></Tooltip>
-    );
-    const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
-     const src1 = JSON.stringify({
-            bucket: 'thetarzanway-web',
-            key: reveiws[0].image,
-            edits: {
-                resize: {
-                    fit: 'cover',
-                    width: 100,
-                    height: 100,
-                },
-            },
-        });
-    // img.src=`${imgUrlEndPoint}/${btoa(imageRequest)}`;
-  let imageRequest = JSON.stringify({
-            bucket: 'thetarzanway-web',
-            edits: {
-                resize: {
-                    fit: 'cover',
-                    width: 100,
-                    height: 100,
-                },
-            },
-        });
-       
-    if (isPageWide) {
-        return(
-            <div>
            
-            <StoriesHeading className="font-lexend">
-                Our Stories
-            </StoriesHeading>
- 
-         
-            <Container >
-            <PinIcon style={{ left: "86%", top: "78.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip1}>
-                <UserIcon style={{ left: "86%", top: "77.5%" }} src={dieter} />
-            </OverlayTrigger>
-            <PinIcon style={{ left: "59%", top: "35.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip2}>
-                <UserIcon style={{ left: "59%", top: "34.5%" }} src={damla} />
-            </OverlayTrigger>
-            <PinIcon style={{ left: "72.5%", top: "46.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip3}>
-                <UserIcon style={{ left: "72.5%", top: "45.5%" }} src={arnab} />
-            </OverlayTrigger>
-            <PinIcon style={{ left: "46%", top: "40.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip4}>
-                <UserIcon style={{ left: "46%", top: "39.5%" }} src={maria} />
-            </OverlayTrigger>
-            <PinIcon style={{ left: "70%", top: "45.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip5}>
-                <UserIcon style={{ left: "70%", top: "44.5%" }} src={raghav} />
-            </OverlayTrigger>
-            <PinIcon style={{ left: "50%", top: "39.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip6}>
-                <UserIcon style={{ left: "50%", top: "38.5%" }} src={mohamed} />
-            </OverlayTrigger>
-            <PinIcon style={{ left: "25%", top: "39.9%" }} src={MapPin} />
-            <OverlayTrigger placement="top" overlay={Tooltip7}>
-                <UserIcon style={{ left: "25%", top: "38.5%" }} src={shivam} />
-            </OverlayTrigger>
-   <MapContainer>
-            <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp"  />
-            </MapContainer>
-        </Container>
-        </div>
+    if (isPageWide) {
+        return (
+          <div>
+            <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
+
+            <Container>
+              <PinIcon style={{ left: "86%", top: "78.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+
+              <UserIcon style={{ left: "85.8%", top: "76.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Dieter.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "59%", top: "35.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "58.8%", top: "33.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Damla.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "72.5%", top: "46.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "72.3%", top: "44.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Arnab.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "46%", top: "40.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "45.8%", top: "38.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Maria-Carolina.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "70%", top: "45.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "69.8%", top: "43.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Raghav.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+
+              <PinIcon style={{ left: "50%", top: "39.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "49.8%", top: "37.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Mohamed.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "25%", top: "39.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+
+              <UserIcon style={{ left: "24.8%", top: "37.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Shivam.jpg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <MapContainer>
+                <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp" />
+              </MapContainer>
+            </Container>
+          </div>
         );
    
     }
     else {
-      return(
-
+      return (
         <div>
-           
-        <StoriesHeading className="font-lexend">
-            Our Stories
-        </StoriesHeading>
-   
-     
-        <Container >
+          <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
 
-        <PinIcon style={{ left: "47.3rem", top: "40.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip1}>
-            <UserIcon style={{ left: "47.3rem", top: "39.5%" }} src={dieter} />
-        </OverlayTrigger>
+          <Container>
+            <PinIcon style={{ left: "47.3rem", top: "40.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "47.1rem", top: "38.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Dieter.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "30rem", top: "42.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "29.8rem", top: "40.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Damla.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "35.3rem", top: "59.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "35.1rem", top: "57.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Arnab.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "5rem", top: "35.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "4.8rem", top: "33.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Maria-Carolina.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "13.7rem", top: "57.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "13.5rem", top: "55.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Raghav.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "16.8rem", top: "65.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "16.6rem", top: "63.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Mohamed.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
 
-        <PinIcon style={{ left: "30rem", top: "42.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip2}>
-            <UserIcon style={{ left: "30rem", top: "41.5%" }} src={damla} />
-        </OverlayTrigger>
-
-        <PinIcon style={{ left: "35.3rem", top: "59.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip3}>
-            <UserIcon style={{ left: "35.3rem", top: "58.5%" }} src={arnab}  />
-        </OverlayTrigger>
-
-        <PinIcon style={{ left: "5rem", top: "35.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip4}>
-            <UserIcon style={{ left: "5rem", top: "34.5%" }} src={maria} />
-        </OverlayTrigger>
-
-        <PinIcon style={{ left: "13.7rem", top: "57.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip5}>
-            <UserIcon style={{ left: "13.7rem", top: "56.5%" }} src={raghav}/>
-        </OverlayTrigger>
-
-        <PinIcon style={{ left: "16.8rem", top: "65.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip6}>
-            <UserIcon style={{ left: "16.8rem", top: "64.5%" }} src={mohamed} />
-        </OverlayTrigger>
-       
-        {/* <PinIcon style={{ left: "2rem", top: "65.9%" }} src={MapPin} />
-        <OverlayTrigger placement="top" overlay={Tooltip7}>
-            <UserIcon style={{ left: "16.8rem", top: "64.5%" }} src={shivam} />
-        </OverlayTrigger> */}
-       
-      
-    
-        <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp" />
-       
-    </Container>
-    </div>
+            <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp" />
+          </Container>
+        </div>
       );
     }
         }

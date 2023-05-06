@@ -68,26 +68,6 @@ const ReviewLogo = styled.img`
 const TestimonialReviews = () => {
     let isPageWide = media('(min-width: 768px)')
 
-    {/*
-    let reviews = [];
-
-    for (var i = 0; i < 11; i++) {
-        reviews.push(
-            <Card className="font-nunito text-center">
-                <ImageLoader dimensions={{ width: 225, height: 220 }} borderRadius={"50%"} width="50%" url="media/ruby/cycletour.jpg" />
-                <br />
-                <h2><b>Shikhar Chadha</b></h2>
-                <h3><Icon src={LocationIcon} />Delhi</h3>
-                <p>“Random Review Lorem Ipsum Random Review Lorem
-                Ipsum Random Review Lorem Ipsum Random Review
-                Lorem IpsumRandom Review Lorem IpsumRandom Review Lorem IpsumRandom Random
-                Ipsum Random Review Lorem Ipsum Random Review
-                Lorem IpsumRandom Review Lorem IpsumRandom Review Lorem IpsumRandom Random”
-            </p>
-            </Card>
-        )
-    }
-    */}
     const reviews = [
         {
             name: "Uzay",
@@ -194,7 +174,6 @@ const TestimonialReviews = () => {
             <div className="center-div">
                 <Heading className="font-lexend" margin="0" padding="0">Stories from around the world</Heading>
             </div>
-            {/* <Flickity twocards borderRadius="10px" cards={[<ReviewCard  text={reviews[0].review} name={reviews[0].name}></ReviewCard>, <ReviewCard text={reviews[0].review} name={reviews[0].name}></ReviewCard>, <ReviewCard  text={reviews[0].review} name={reviews[0].name}></ReviewCard>, <ReviewCard  text={reviews[0].review} name={reviews[0].name}></ReviewCard>]}></Flickity> */}
         </div>
     );
         else return (
@@ -205,7 +184,6 @@ const TestimonialReviews = () => {
                 <ReviewCard text={reviews[1].summary} review={reviews[1].review} name={reviews[1].name} location={reviews[1].location}  url={reviews[1].image}></ReviewCard>
                 <ReviewCard text={reviews[2].summary} review={reviews[2].review} name={reviews[2].name} location={reviews[2].location}  url={reviews[2].image}></ReviewCard>
                 <ReviewCard text={reviews[3].summary} review={reviews[3].review} name={reviews[3].name} location={reviews[3].location}  url={reviews[3].image}></ReviewCard>
-                {/* <ReviewCard text={reviews[0].summary} review={reviews[0].review} name={reviews[0].name} location={reviews[0].location}></ReviewCard> */}
             </ReviewColumnContainer>
             <ReviewColumnContainer>
                 
@@ -213,19 +191,14 @@ const TestimonialReviews = () => {
                 <ReviewCard text={reviews[5].summary} review={reviews[5].review} name={reviews[5].name} location={reviews[5].location} url={reviews[5].image}></ReviewCard>
                 <ReviewCard text={reviews[6].summary} review={reviews[6].review} name={reviews[6].name} location={reviews[6].location} url={reviews[6].image}></ReviewCard>
                 <ReviewCard text={reviews[7].summary} review={reviews[7].review} name={reviews[7].name} location={reviews[7].location} url={reviews[7].image}></ReviewCard>
-                {/* <ReviewCard text={reviews[0].summary} review={reviews[0].review} name={reviews[0].name} location={reviews[0].location}></ReviewCard> */}
             </ReviewColumnContainer>
             <ReviewColumnContainer>
                 <ReviewCard text={reviews[8].summary} review={reviews[8].review} name={reviews[8].name} url={reviews[8].image} location={reviews[8].location}></ReviewCard>
                 <ReviewCard text={reviews[9].summary} review={reviews[9].review} name={reviews[9].name} location={reviews[9].location} url={reviews[9].image}></ReviewCard>
                 <ReviewCard text={reviews[10].summary} review={reviews[10].review} name={reviews[10].name} location={reviews[10].location} url={reviews[10].image}></ReviewCard>
                 <ReviewCard text={reviews[0].summary} review={reviews[0].review} name={reviews[0].name} location={reviews[0].location} url={reviews[0].image}></ReviewCard>
-                {/* <ReviewCard text={reviews[0].summary} review={reviews[0].review} name={reviews[0].name} location={reviews[0].location}></ReviewCard> */}
             </ReviewColumnContainer>
             </ReviewContainer>
-            {/* <ButtonContainer className="center-div">
-                <Button hoverColor={"white"} hoverBgColor={"black"} borderRadius={"5px"} width={"13rem"}>More Stories</Button>
-            </ButtonContainer> */}
             <ReviewGridContainer>
             <div className="center-div" style={{flexDirection: 'row', marginBottom: '0.5rem'}}>
                 <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
@@ -251,7 +224,6 @@ const TestimonialReviews = () => {
             </ReviewGridContainer>
         </div>
     );
-    // else return null;
 }
 
 export default TestimonialReviews;

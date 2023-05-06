@@ -23,6 +23,10 @@ module.exports = {
         protocol: "https",
         hostname: "q-xx.bstatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
   // images: {
