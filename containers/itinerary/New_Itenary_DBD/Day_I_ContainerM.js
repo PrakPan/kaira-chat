@@ -11,6 +11,7 @@ import ItineraryPoiElementM from '../../newitinerary/itineraryelements/PoiM';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
+import { DayContainerStyle } from './Day_I_Container';
 
 const Container = styled.div`
   background: #ffffff;
@@ -60,7 +61,7 @@ const Day_I_ContainerM = (props) => {
   divides(props.Days.slab_elements, Arslab_elements);
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements) {
-    JsonArray.forEach(function(element) {
+    JsonArray.forEach(function (element) {
       switch (element.element_type) {
         case 'transfer':
           dayIcontainer.push(
@@ -73,6 +74,7 @@ const Day_I_ContainerM = (props) => {
               heading={element.heading}
               bookings={element.bookings}
               text={props.Days.slab_elements[0].text}
+              booking={element?.bookings[0]}
               // newcity={
               //   Arslab_elements[1].data[0].length != 0
               //     ? Arslab_elements[1].data[0][0]
@@ -90,7 +92,7 @@ const Day_I_ContainerM = (props) => {
             <ItineraryElementM
               icon={element.icon}
               time="9:00AM"
-              bookings={element.bookings}
+              booking={element?.bookings[0]}
               heading={element.heading}
               text={element.text}
             ></ItineraryElementM>
@@ -169,7 +171,8 @@ const Day_I_ContainerM = (props) => {
           heading={Arslab_elements[0].data[0].heading}
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
-        {dayIcontainer}
+        <DayContainerStyle>{dayIcontainer}</DayContainerStyle>
+
         {/* {Arslab_elements[0].data[0].length != 0 ? (
           <TransferElementsM
             time="9:00AM"

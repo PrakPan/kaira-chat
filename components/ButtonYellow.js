@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
-import styled, { css } from 'styled-components';
-
+import styled, { css, keyframes } from 'styled-components';
+const pulse = keyframes`
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
 const StyledButton = styled.button`
   background-color: ${(props) => (props.primary ? '#F7E700' : '#FFFFFF')};
   color: ${(props) => (props.primary ? '#01202B' : '#3498db')};
@@ -19,11 +32,7 @@ const StyledButton = styled.button`
 
   &:hover {
     background-color: #f8e000;
-    transform: scale(2);
-  }
-
-  &:active {
-    transform: scale(2);
+    transform: scale(0.95);
   }
 
   ${(props) =>
@@ -57,11 +66,20 @@ const StyledButton = styled.button`
         }
       }
     `}
+    &:active {
+    transform: scale(0.95);
+  }
+  ${(props) =>
+    props.animate &&
+    css`
+      animation: ${pulse} 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    `};
 `;
 
 const ButtonYellow = ({
   children,
   styleClass,
+  onClick,
   primary = true,
   hoverAnimation = true,
   clickAnimation = true,
@@ -70,15 +88,24 @@ const ButtonYellow = ({
   ...rest
 }) => {
   const [isMounted, setIsMounted] = useState(false);
-
+  const [animate, setAnimate] = React.useState(false);
   const handleAnimationEnd = () => {
     setIsMounted(!isMounted);
+  };
+  const animateButton = () => {
+    setAnimate(true);
+    setTimeout(() => {
+      setAnimate(false);
+      onClick();
+    }, 500);
   };
 
   return (
     <StyledButton
       className={styleClass}
       primary={primary}
+      animate={animate}
+      onClick={animateButton}
       hoverAnimation={hoverAnimation}
       clickAnimation={clickAnimation}
       mountAnimation={mountAnimation}

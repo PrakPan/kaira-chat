@@ -11,7 +11,7 @@ import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
 import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import NewCity from './NewCity';
-const DayContainerStyle = styled.div`
+export const DayContainerStyle = styled.div`
   display: flex;
   flex-direction: column;
 
@@ -21,9 +21,15 @@ const DayContainerStyle = styled.div`
     border-style: none none solid none;
     border-color: #e4e4e4;
     border-width: 1px;
-    width: 85%;
-    margin-bottom: 10px;
-    margin-top: 10px; /* adjust this as needed */
+    width: 100%;
+    @media screen and (min-width: 768px) {
+      width: 85%;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+
+    margin-bottom: 15px;
+    margin-top: 15px; /* adjust this as needed */
     margin-left: auto;
   }
 `;
@@ -103,7 +109,7 @@ const Day_I_Container = (props) => {
               time="9:00AM"
               modes={getTransportationType(element.icon)}
               // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
-
+              data={element}
               //To-do Read From Booking
               transfers={element.transfers}
               meta={element.meta}

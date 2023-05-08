@@ -13,6 +13,7 @@ import {
 import { convertNumToTime } from '../../../helper/convertNumToTime';
 import { formatNumber } from '../../../helper/formatNumber';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
+import { LivelyButton } from '../../../components/LiveleyButton';
 const TransferElementsM = ({
   time,
   heading,
@@ -22,6 +23,7 @@ const TransferElementsM = ({
   icon,
   text,
   newcity,
+  booking,
 }) => {
   return (
     <>
@@ -30,16 +32,7 @@ const TransferElementsM = ({
           {/* <div className="text-base">{time}</div> */}
 
           <Timecontainer>
-            <div className="text-base font-medium ">{heading}</div>
-
-            {meta ? (
-              meta.estimated_cost ? (
-                <TransparentButton>
-                  {modes ? `${modes} From ` : null} ₹
-                  {formatNumber(meta.estimated_cost)}
-                </TransparentButton>
-              ) : null
-            ) : null}
+            <div className="text-base font-semibold ">{heading}</div>
           </Timecontainer>
         </Timecontainer>
 
@@ -51,7 +44,7 @@ const TransferElementsM = ({
                   TransportMode={modes}
                   Instyle={{
                     fontSize: '1.75rem',
-                    marginRight: '0.8rem',
+                    marginRight: '0.5rem',
                     color: 'black',
                   }}
                 />
@@ -77,9 +70,26 @@ const TransferElementsM = ({
             </div>
           </TransportContainer>
         ) : null}
-        <TransferInfo className="text-sm">{text}</TransferInfo>
+        {booking ? (
+          meta.estimated_cost ? (
+            <div className="flex mt-2 flex-row items-center justify-between">
+              <LivelyButton className="font-bold  border-2 border-black rounded-md px-3 py-1  bg-white text-black">
+                {modes ? `${modes} From ` : null} ₹
+                {formatNumber(meta.estimated_cost)}
+              </LivelyButton>
+
+              <div className="text-sm font-semibold">
+                {booking.user_selected ? (
+                  <div className="text-[#287E00]">Included</div>
+                ) : (
+                  <div className="text-[#D20A0A]">Excluded</div>
+                )}
+              </div>
+            </div>
+          ) : null
+        ) : null}
+        {/* <TransferInfo className="text-sm">{text}</TransferInfo> */}
       </Container>
-      <Line></Line>
 
       {/* {newcity !== null ? (
         <ArriveContainer style={{ fontSize: '15px', fontWeight: '550' }}>

@@ -63,6 +63,7 @@ const ItineraryPoiElementM = (props) => {
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
   }
+  const [viewMore, setViewMore] = useState(false);
   return (
     <Container className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -92,7 +93,7 @@ const ItineraryPoiElementM = (props) => {
           </div>
         ) : null}
       </div> */}
-      <GridContainer image={props.image} className="pt-3">
+      <GridContainer image={props.image}>
         {props.image ? (
           <ImageLoader
             dimensions={{ width: 250, height: 200 }}
@@ -112,55 +113,58 @@ const ItineraryPoiElementM = (props) => {
             <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
           {props?.rating && <StarRating initialRating={4}></StarRating>}
-
+          {props.poi ? <div></div> : null}
           {/* <Rating margin="0.25rem 0"></Rating> */}
-          {/* {props.poi !== undefined ? (
-            props.poi.experience_filters ? (
-              <div
-                className={`grid grid-flow-col grid-rows-${Math.ceil(
-                  props.poi.experience_filters.length / 2
-                )} gap-0`}
-              >
-                {props.poi.experience_filters.map((element, index) =>
-                  element.toString() != 'Hidden Gem' ? (
-                    <div className="flex flex-row items-end min-w-max">
-                      <span className="font-bold text-xl pr-1">.</span>
 
-                      <div
-                        className="flex  items-center text-sm  font-bold"
-                        key={index}
-                      >
-                        {' '}
-                        {element.split(' ').length > 2
-                          ? element.split(' ')[0]
-                          : element}{' '}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex font-bold" key={index}>
-                      <div
-                        className="border-solid border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
-                        style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
-                      >
-                        {element}
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            ) : null
-          ) : null} */}
+          {/* {props.poi !== undefined ? (
+          //   props.poi.experience_filters ? (
+          //     <div
+          //       className={`grid grid-flow-col grid-rows-${Math.ceil(
+          //         props.poi.experience_filters.length / 2
+          //       )} gap-0`}
+          //     >
+          //       {props.poi.experience_filters.map((element, index) =>
+          //         element.toString() != 'Hidden Gem' ? (
+          //           <div className="flex flex-row items-end min-w-max">
+          //             <span className="font-bold text-xl pr-1">.</span>
+
+          //             <div
+          //               className="flex  items-center text-sm  font-bold"
+          //               key={index}
+          //             >
+          //               {' '}
+          //               {element.split(' ').length > 2
+          //                 ? element.split(' ')[0]
+          //                 : element}{' '}
+          //             </div>
+          //           </div>
+          //         ) : (
+          //           <div className="flex font-bold" key={index}>
+          //             <div
+          //               className="border-solid border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
+          //               style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
+          //             >
+          //               {element}
+          //             </div>
+          //           </div>
+          //         )
+          //       )}
+          //     </div>
+          //   ) : null
+          // ) : null} */}
         </div>
       </GridContainer>
-      <Text className="pt-1">{props.text}</Text>
-
+      <div className={`pt-2 ${viewMore ? 'line-clamp-0' : 'line-clamp-3'}`}>
+        {props.text}
+      </div>
+      <span onClick={() => setViewMore(!viewMore)} className="font-semibold">
+        {viewMore ? 'Less' : 'More'}
+      </span>
       {/* {!ErrorNotDef(props.poi) ? (
         !ErrorNotDef(props.poi.tips) ? (
           <Tips tips={props.poi.tips}></Tips>
         ) : null
       ) : null} */}
-
-      <Line></Line>
     </Container>
   );
 };

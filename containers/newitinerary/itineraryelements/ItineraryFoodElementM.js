@@ -9,17 +9,10 @@ import { IoMdRestaurant } from 'react-icons/io';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
 import { GiKnifeFork } from 'react-icons/gi';
-const Container = styled.div`
-  padding: 10px 0px 0px 0px;
-
-  @media screen and (min-width: 768px) {
-  }
-`;
 
 const SectionOneText = styled.span``;
 
 const Text = styled.div`
-  margin: 0.65rem 0;
   overflow: hidden;
   line-height: 1.5;
   text-overflow: ellipsis;
@@ -55,7 +48,7 @@ const ItineraryFoodElementM = (props) => {
 
   return (
     <>
-      <Container className="font-lexend">
+      <div className="font-lexend">
         {/* <div style={{ display: 'flex', alignItems: 'center' }}>
           <SectionOneText>{props.time}</SectionOneText>
         </div> */}
@@ -83,11 +76,11 @@ const ItineraryFoodElementM = (props) => {
                 </div>
               ) : null} */}
             </div>
-            <div className="font-bold text-[16px]">{props.heading}</div>
+            <div className="font-semibold text-base">{props.heading}</div>
           </div>
 
           <div className="flex ">
-            <Text>{props.text}</Text>
+            <div className=" pt-2">{props.text}</div>
           </div>
         </div>
         {/* {props.recomendation ? (
@@ -105,7 +98,7 @@ const ItineraryFoodElementM = (props) => {
                 ))}
           </>
         ) : null} */}
-      </Container>
+      </div>
     </>
   );
 };

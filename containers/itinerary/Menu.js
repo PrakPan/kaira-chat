@@ -700,7 +700,17 @@ const SimpleTabs = (props) => {
                   // activityBookings={props.activityBookings}
                   // flightBookings={props.flightBookings}
                   // transferBookings={props.transferBookings}
+                  budget={props.budget}
                   stayBookings={props.stayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  showBookingModal={props.showBookingModal}
+                  setHideBookingModal={props.setHideBookingModal}
+                  payment={props.payment}
+                  booking={props.booking}
                   // _selectTaxiHandler={props._selectTaxiHandler}
                   // showFlightModal={props.showFlightModal}
                   // setShowFlightModal={_handleFlighModalShow}
@@ -844,6 +854,8 @@ const SimpleTabs = (props) => {
             setShowBookingModal={() => props.setShowBookingModal(true)}
             showBookingModal={props.showBookingModal}
             setHideBookingModal={props.setHideBookingModal}
+            payment={props.payment}
+            booking={props.booking}
             hours={hours}
             minutes={minutes}
             seconds={seconds}
@@ -855,8 +867,6 @@ const SimpleTabs = (props) => {
             openItinerary={_previewItineraryHandler}
             _handleTimerClose={_minimiseBookingTimerHandler}
             setImagesHandler={props.setImagesHandler}
-            payment={props.payment}
-            booking={props.booking}
           ></Booking>
         </div>
       )}

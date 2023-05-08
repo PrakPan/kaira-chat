@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FoodItem from './FoodItem';
 import {
   RecommendationGridContainer,
@@ -12,20 +12,12 @@ import {
   Timecontainer,
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import styled from 'styled-components';
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 22px;
+import { LivelyButton } from '../../../components/LiveleyButton';
 
-  padding: 0px 0px 0px 0px;
-  color: #01202b;
-`;
 const RecomendationComponent = (props) => {
+  const [viewMore, setViewMore] = useState(false);
   return props.recomendation ? (
-    <Container>
+    <div>
       <Timecontainer>
         {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
       </Timecontainer>
@@ -33,31 +25,50 @@ const RecomendationComponent = (props) => {
       <TInfoContainer>
         {/* <HLine style={{ width: '2rem' }}></HLine> */}
         {/* <Line></Line> */}
-        <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-2'}`}>
+        <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-0'}`}>
           <div className="text-lg font-semibold pb-3">{props.heading}</div>
           {props.recomendation ? (
-            <div className="pb-3">
+            <div>
               {!isJson(props.recomendation) ? (
                 <div className="pt-1 line-clamp-3 font-normal text-sm">
                   {props.recomendation}
                 </div>
               ) : (
-                <RecommendationGridContainer>
-                  {JSON.parse(props.recomendation)?.map((item, index) => (
-                    <FoodItem
-                      key={index}
-                      heading={item.name}
-                      text={item.description}
-                      ImageUrl={item.image}
-                    ></FoodItem>
-                  ))}
-                </RecommendationGridContainer>
+                <div>
+                  <RecommendationGridContainer>
+                    {!viewMore
+                      ? JSON.parse(props.recomendation)
+                          ?.slice(0, 2)
+                          ?.map((item, index) => (
+                            <FoodItem
+                              key={index}
+                              heading={item.name}
+                              text={item.description}
+                              ImageUrl={item.image}
+                            ></FoodItem>
+                          ))
+                      : JSON.parse(props.recomendation)?.map((item, index) => (
+                          <FoodItem
+                            key={index}
+                            heading={item.name}
+                            text={item.description}
+                            ImageUrl={item.image}
+                          ></FoodItem>
+                        ))}
+                  </RecommendationGridContainer>
+                  <LivelyButton
+                    className="font-bold border-2 border-black rounded-md px-3 py-1 mt-2  m-auto block  bg-white text-black"
+                    onClick={() => setViewMore(!viewMore)}
+                  >
+                    {!viewMore ? 'viewMore' : 'viewLess'}
+                  </LivelyButton>
+                </div>
               )}
             </div>
           ) : null}
         </div>
       </TInfoContainer>
-    </Container>
+    </div>
   ) : null;
 };
 

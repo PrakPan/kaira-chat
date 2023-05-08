@@ -35,9 +35,7 @@ const FoodItem = (props) => {
       ></ImageLoader>
       <div>
         <Heading className="font-bold text-base">{props.heading}</Heading>
-        <div className="pt-1 line-clamp-3 font-normal text-sm">
-          {cutSentence(props.text, 18)}
-        </div>
+        <div className="pt-1 line-clamp-3  ">{cutSentence(props.text, 18)}</div>
       </div>
     </Container>
   );

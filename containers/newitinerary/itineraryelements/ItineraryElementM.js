@@ -1,15 +1,11 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useState, useEffect } from 'react';
 import { AiFillCar } from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
-import Button from '../../../components/ui/button/Index';
+
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { FaHome } from 'react-icons/fa';
-const Container = styled.div`
-  padding: 10px 0px 10px 0px;
-  @media screen and (min-width: 768px) {
-  }
-`;
+import { LivelyButton } from '../../../components/LiveleyButton';
 
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
@@ -41,34 +37,7 @@ const ItineraryElementM = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container className="font-lexend">
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        {/* <SectionOneText>{props.time}</SectionOneText> */}
-        {/* <AiFillCar
-          style={{ margin: '-2px 0  0 0.5rem' }}
-          className="text-2xl"
-        ></AiFillCar> */}
-        {props.bookings ? (
-          <div
-            style={{
-              flexGrow: '1',
-              justifyContent: 'flex-start',
-              display: 'flex',
-            }}
-          >
-            <Button
-              borderRadius="8px"
-              fontWeight="730"
-              fontSize="15px"
-              borderWidth="2px"
-              padding="0.2rem 0.5rem"
-              onclick={() => console.log('')}
-            >
-              View Booking
-            </Button>
-          </div>
-        ) : null}
-      </div>
+    <div className="font-lexend">
       <div>
         <div className="flex flex-row">
           <div className="flex justify-center items-center">
@@ -91,16 +60,28 @@ const ItineraryElementM = (props) => {
               ></ImageLoader>
             </div>
           ) : null} */}
-          <div className="text-[16px] font-semibold">{props.heading}</div>
+          <div className="text-base font-semibold">{props.heading}</div>
         </div>
 
         <div>
           <div className="pb-3 pt-2 ">{props.text ? props.text : null}</div>
+          {props.booking ? (
+            <div className="flex flex-row items-center justify-between">
+              <LivelyButton className="font-bold border-2 border-black rounded-md px-3 py-1  bg-white text-black">
+                View Booking
+              </LivelyButton>
+              <div className="text-sm font-semibold">
+                {props.booking.user_selected ? (
+                  <div className="text-[#287E00]">Included</div>
+                ) : (
+                  <div className="text-[#D20A0A]">Excluded</div>
+                )}
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
-
-      <Line></Line>
-    </Container>
+    </div>
   );
 };
 
