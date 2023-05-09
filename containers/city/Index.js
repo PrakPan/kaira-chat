@@ -10,6 +10,7 @@ import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 import validateTextSize from '../../services/textSizeValidator';
 import openTailoredModal from '../../services/openTailoredModal';
 const Experience = (props) => {
+  
   const [escapeState, setEscapeState] = useState(false);
 
   useEffect(() => {

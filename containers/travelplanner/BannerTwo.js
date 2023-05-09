@@ -1,13 +1,10 @@
-import React, {useState, useRef, useEffect, createRef} from 'react';
-import { useRouter } from 'next/router';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import media from '../../components/media';
 import * as ga from '../../services/ga/Index';
 
 import styled from 'styled-components';
-import ImageLoader from '../../components/ImageLoader';
-import Enquiry from '../../components/tailoredform/Index';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 const Container = styled.div`
 

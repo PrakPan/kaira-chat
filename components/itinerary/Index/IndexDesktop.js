@@ -1,7 +1,6 @@
 import React, {useRef, useState} from 'react';
 import styled from 'styled-components'
 import CityContainer from '../CityContainer';
-import theme from '../../../public/Themes';
 import CityConnect from '../CityConnection';
 import { Link, animateScroll as scroll} from "react-scroll";
 import media from '../../media';
@@ -128,25 +127,62 @@ const Itinerary = (props) =>{
     }
   
     if(isPageWide)
-    return(
-        <div>
-            {/*If timer not expired*/}
-            {/* {props.showTimer? <Timer hours={props.hours} minutes={props.minutes} seconds={props.seconds} startingTimer={props.startingTimer} timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
+    return (
+      <div>
+        {/*If timer not expired*/}
+        {/* {props.showTimer? <Timer hours={props.hours} minutes={props.minutes} seconds={props.seconds} startingTimer={props.startingTimer} timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
 
-    <Container id="kochi-anchor" style={{marginTop : props.showTimer && !props.hideTimer  ? '-50vh' : '0' }}>
-        <div style={{textAlign: "center", position: 'sticky', top: '66px', height: 'max-content'}}>
-            <div    style={{fontSize: theme.fontsizes.desktop.text.three}}><div style={{backgroundColor: "#F7e700", padding: "0.75rem"}} className={props.blur? "font-lexend blurry-text" : "font-lexend"}><b>Locations Covered</b></div>
-                {LinksArr}
+        <Container
+          id="kochi-anchor"
+          style={{
+            marginTop: props.showTimer && !props.hideTimer ? "-50vh" : "0",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              position: "sticky",
+              top: "66px",
+              height: "max-content",
+            }}
+          >
+            <div style={{ fontSize: "1.25rem" }}>
+              <div
+                style={{ backgroundColor: "#F7e700", padding: "0.75rem" }}
+                className={
+                  props.blur ? "font-lexend blurry-text" : "font-lexend"
+                }
+              >
+                <b>Locations Covered</b>
+              </div>
+              {LinksArr}
             </div>
-        </div>
-        <div >
-        <div id={props.city_slabs ? props.city_slabs[0].city_name : ''} ></div>
-        {ContainerArr}
-        </div>
-     </Container>
-     {props.traveleritinerary ? <DesktopBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience like this?"></DesktopBanner> : null}
-      {props.traveleritinerary ? <div className='hidden-desktop'><Banner text="Want to craft your own travel experience like this?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>: null}
-     </div>);
+          </div>
+          <div>
+            <div
+              id={props.city_slabs ? props.city_slabs[0].city_name : ""}
+            ></div>
+            {ContainerArr}
+          </div>
+        </Container>
+        {props.traveleritinerary ? (
+          <DesktopBanner
+            onclick={() => openTailoredModal(router)}
+            text="Want to personalize your own experience like this?"
+          ></DesktopBanner>
+        ) : null}
+        {props.traveleritinerary ? (
+          <div className="hidden-desktop">
+            <Banner
+              text="Want to craft your own travel experience like this?"
+              buttontext="Start Now"
+              color="black"
+              buttonbgcolor="#f7e700"
+            ></Banner>
+          </div>
+        ) : null}
+      </div>
+    );
 
      else return(
 <div>

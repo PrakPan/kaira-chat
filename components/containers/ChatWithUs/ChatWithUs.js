@@ -1,16 +1,11 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-// import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index';
-import Link from 'next/link'
-// import Button from '../../Button';
 import Button from '../../ui/button/Index'
-import theme from '../../../public/Themes';
 import classes from './ChatWithUs.module.css';
-import { useRouter } from 'next/router';
 import urls from '../../../services/urls';
 import ImageLoader from '../../ImageLoader';
-import HowItWorks from '../HowItWorksSlideshow';
+import HowItWorks from '../../containers/HowItWorksSlideshow';
 const Text = styled.p`
     width: 80%;
     margin: auto;
@@ -58,20 +53,46 @@ font-weight: 300;
 `;
 
 const ChatWithUs = (props) => {
-    const HowitWorksHeadingsArr=[
-        <HowItWorksHeading className="font-lexend">You select</HowItWorksHeading>,
-        <HowItWorksHeading className="font-lexend">We prepare</HowItWorksHeading>,
-        <HowItWorksHeading className="font-lexend">You make memories</HowItWorksHeading>,
+      const HowitWorksHeadingsArr = [
+        <HowItWorksHeading className="font-lexend">
+          Select your preferences
+        </HowItWorksHeading>,
+        <HowItWorksHeading className="font-lexend">
+          Let our AI plan your itinerary
+        </HowItWorksHeading>,
+        <HowItWorksHeading className="font-lexend">
+          Easy Bookings with 24x7 Concierge
+        </HowItWorksHeading>,
+        <HowItWorksHeading className="font-lexend">
+          No Commissions - Pay for what you get
+        </HowItWorksHeading>,
       ];
       const HowitWorksContentsArr = [
-        <HowItWorksText className="font-lexend">A short trek, a long honeymoon, a workcation, or personalize your own</HowItWorksText>,
-          <HowItWorksText  className="font-lexend">A completely personalized plan by our travel experts and software</HowItWorksText>,
-        <HowItWorksText  className="font-lexend">Enough planning, time to travel and make unforgettable memories</HowItWorksText>
-      
+        <HowItWorksText className="font-lexend">
+          From solo travel to workcation, honeymoon to family travel, tell us
+          about your mood, budget & timeline.
+        </HowItWorksText>,
+        <HowItWorksText className="font-lexend">
+          Get a unique itinerary completely personalized for you, with all
+          bookings in one place.
+        </HowItWorksText>,
+        <HowItWorksText className="font-lexend">
+          From your stays to activities, book-it-all in one click, and enjoy
+          24x7 assistance while you explore.
+        </HowItWorksText>,
+        <HowItWorksText className="font-lexend">
+          We only take a small service fees for negotiated-bookings & live
+          support.
+        </HowItWorksText>,
       ];
 
 
- const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp']
+const howitworksimgs = [
+  "media/website/whyus-1.webp",
+  "media/website/whyus-2.webp",
+  "media/website/whyus-3.webp",
+  "media/website/how4.png",
+];
 
     if(!props.link)
     return(

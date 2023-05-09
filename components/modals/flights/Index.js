@@ -5,11 +5,7 @@ import media from '../../media';
 import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
-// import Spinner from '../../Spinner';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faChevronUp, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import { Link, animateScroll as scroll} from "react-scroll";
-// import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import {connect} from 'react-redux';
 import axiosflightsearch from '../../../services/bookings/FlightSearch';
@@ -20,8 +16,7 @@ import SectionTwo from './SectionTwo';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
 import Flight from './new-flight-searched/Index';
-import FlightSelected from './new-flight-selected/Index';
-import gif from '../../../public/assets/loader.gif';
+import LoadingLottie from "../../ui/LoadingLottie";
  const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -290,7 +285,7 @@ setViewMoreStatus(false);
             for(var i = 0; i < res.data.results.length; i++){
                  if(res.data.results[i].images.length > 3) //rmeove
                 if(res.data.results[i].name !== props.selectedBooking.name)
-                options.push(<Accommodation  selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} booking_id={props.selectedBooking.id} itinerary_id={props.selectedBooking.itinerary_id}  accommodation_id={res.data.results[i].id} room_type={res.data.results[i].live_data.roomtypeName} pricing_type={res.data.results[i].live_data.includeBreakfast ? "CP" : "EP"}  _updateBookingHandler={_updateBookingHandler} type={res.data.results[i].accommodation_type} review_score={res.data.results[i].live_data.reviewScore}   review_count={res.data.results[i].live_data.reviewCount} key={i} name={res.data.results[i].name} description={res.data.results[i].description} location={res.data.results[i].location} star={res.data.results[i].star_category} cost={Math.ceil(res.data.results[i].live_data.dailyRate/100)} images={res.data.results[i].images}  room_type={res.data.results[i].live_data.roomtypeName}  includeBreakfast={res.data.results[i].live_data.includeBreakfast} ></Accommodation>)
+                options.push(<Accommodation  selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} booking_id={props.selectedBooking.id} itinerary_id={props.selectedBooking.itinerary_id}  accommodation_id={res.data.results[i].id} room_type={res.data.results[i].live_data.roomtypeName} pricing_type={res.data.results[i].live_data.includeBreakfast ? "CP" : "EP"}  _updateBookingHandler={_updateBookingHandler} type={res.data.results[i].accommodation_type} review_score={res.data.results[i].live_data.reviewScore}   review_count={res.data.results[i].live_data.reviewCount} key={i} name={res.data.results[i].name} description={res.data.results[i].description} location={res.data.results[i].location} star={res.data.results[i].star_category} cost={Math.ceil(res.data.results[i].live_data.dailyRate/100)} images={res.data.results[i].images} includeBreakfast={res.data.results[i].live_data.includeBreakfast} ></Accommodation>)
                  
             }  
             if(res.data.next){
@@ -453,58 +448,158 @@ setViewMoreStatus(false);
         )
 
       }
-if(props.token)
-  return(
-      <div>
-        <Modal   className="booking-modal" show={props.showFlightModal}  size="md"  onHide={props.setHideFlightModal} style={{padding: "0"}}>
-           {/* <Modal.Header>2</Modal.Header> */}
-           <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
-           <SectionOne setHideBookingModal={props.setHideBookingModal} setHideFlightModal={props.setHideFlightModal}></SectionOne>
-              {/* <SectionTwo setHideFlightModal={props.setHideBookingModal}></SectionTwo> */}
+    if (props.token) 
+    
+  return (
+    <div>
+      <Modal
+        className="booking-modal"
+        show={props.showFlightModal}
+        size="md"
+        onHide={props.setHideFlightModal}
+        style={{ padding: "0" }}
+      >
+        {/* <Modal.Header>2</Modal.Header> */}
+        <Modal.Header
+          style={{
+            display: "block",
+            zIndex: "2",
+            position: "sticky",
+            top: "0",
+            backgroundColor: "white",
+          }}
+        >
+          <SectionOne
+            setHideBookingModal={props.setHideBookingModal}
+            setHideFlightModal={props.setHideFlightModal}
+          ></SectionOne>
+          {/* <SectionTwo setHideFlightModal={props.setHideBookingModal}></SectionTwo> */}
+        </Modal.Header>
+        <Modal.Body style={{ padding: "0.5rem", backgroundColor: "white" }}>
+          {/* <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> */}
+          <GridContainer style={{ clear: "right" }}>
+            {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
+            {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
+            <ContentContainer style={{ position: "relative" }}>
+              {/* <Flight></Flight> */}
+              {/* {!loading && !updateBookingState? optionsJSX : !optionsJSX ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching flights for you</div>  : null} */}
+              {updateLoadingState && !updateBookingState ? (
+                <div
+                  className="center-div"
+                  style={{ width: "max-content", margin: "auto" }}
+                >
+                  <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
+                  Fetching best fares
+                </div>
+              ) : null}
+              {updateBookingState ? (
+                <div
+                  style={{
+                    width: "max-content",
+                    margin: "auto",
+                    height: isPageWide ? "80vh" : "40vh",
+                  }}
+                  className="center-div font-lexend"
+                >
+                  <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
+                  Please wait while we update your flight
+                </div>
+              ) : null}
+              {!noResults && !updateLoadingState && !unauthorized ? (
+                <OptionsContainer id="options">
+                  <div style={{ clear: "right" }}>
+                    {optionsJSX.length && !updateBookingState
+                      ? optionsJSX
+                      : null}
+                    {loading && !optionsJSX.length ? (
+                      <div
+                        style={{
+                          width: "max-content",
+                          margin: "auto",
+                          height: isPageWide ? "80vh" : "40vh",
+                        }}
+                        className="center-div"
+                      >
+                        <LoadingLottie
+                          height={"5rem"}
+                          width={"5rem"}
+                          margin="none"
+                        />
+                        Fetching best fares
+                      </div>
+                    ) : null}
+                    {!loading && !optionsJSX.length ? (
+                      <div
+                        style={{
+                          width: "max-content",
+                          margin: "auto",
+                          height: isPageWide ? "80vh" : "40vh",
+                        }}
+                        className="center-div"
+                      >
+                        Oops, it looks like there are no alternate flights
+                        available.
+                      </div>
+                    ) : null}
+                  </div>
+                  {moreLoadingState ? (
+                    <div style={{ width: "max-content", margin: "auto" }}>
+                      <LoadingLottie
+                        height={"5rem"}
+                        width={"5rem"}
+                        margin="none"
+                      />
+                    </div>
+                  ) : null}
+                  {viewMoreStatus && !updateBookingState ? (
+                    <Button
+                      boxShadow
+                      onclickparam={null}
+                      onclick={_loadAccommodationsHandler}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
+                    >
+                      View More
+                    </Button>
+                  ) : null}
+                  {/* {noResults ? 'NO RESULTS' : null} */}
+                </OptionsContainer>
+              ) : null}
+              {unauthorized ? (
+                <div
+                  style={{
+                    width: "100%",
+                    margin: "auto",
+                    height: isPageWide ? "80vh" : "40vh",
+                  }}
+                  className="center-div text-center"
+                >
+                  Oops, this action is not allowed on another user's itinerary
+                </div>
+              ) : null}
 
-           </Modal.Header>
-            <Modal.Body style={{padding: "0.5rem", backgroundColor: 'white', }} >
-            {/* <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> */}
-               <GridContainer style={{clear: 'right'}}>
-                {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
-                {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
-               <ContentContainer style={{position: 'relative'}}>
-                {/* <Flight></Flight> */}
-                {/* {!loading && !updateBookingState? optionsJSX : !optionsJSX ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching flights for you</div>  : null} */}
-                {updateLoadingState && !updateBookingState? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching best fares</div> : null }
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div font-lexend"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your flight</div> : null }
-               { !noResults && !updateLoadingState && !unauthorized? <OptionsContainer id='options'>
-                   <div style={{clear: 'right'}}>
-                    {/* <FlightSelected data={props.selectedBooking}></FlightSelected> */}
-                   {optionsJSX.length && !updateBookingState? optionsJSX : null}
-                   {loading && !optionsJSX.length? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div"><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching best fares</div> : null}
-                   {!loading && !optionsJSX.length ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div">Oops, it looks like there are no alternate flights available.</div>: null }
-                   </div>
-                   {moreLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/></div> : null} 
-                    {viewMoreStatus && !updateBookingState? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
-                    {/* {noResults ? 'NO RESULTS' : null} */}
-               </OptionsContainer> : null}
-               {unauthorized ? <div style={{width: '100%', margin: 'auto', height: isPageWide ? '80vh' : '40vh'}} className="center-div text-center">Oops, this action is not allowed on another user's itinerary</div>  : null}
-
-               {noResults && !unauthorized? <p  className='font-lexend text-center' >Oops, we couldn't find what you were searching!</p>  : null}
-               {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-               {/* {
+              {noResults && !unauthorized ? (
+                <p className="font-lexend text-center">
+                  Oops, we couldn't find what you were searching!
+                </p>
+              ) : null}
+              {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
+              {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
                    } 
              */}
-               {/* <ButtonToTop className='center-div'>
+              {/* <ButtonToTop className='center-div'>
                    <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
                 </ButtonToTop> */}
-               
-               </ContentContainer>
-               </GridContainer>
-               {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
-
-            </Modal.Body>
-           
+            </ContentContainer>
+          </GridContainer>
+          {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
+        </Modal.Body>
       </Modal>
       {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
-      </div>
+    </div>
   );
 
   else return(

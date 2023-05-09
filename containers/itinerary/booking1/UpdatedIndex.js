@@ -3,12 +3,10 @@ import styled from "styled-components";
 import BookingCard from "../../../components/cards/bookings/activitybooking/Index";
 import SummaryContainer from "./TailoredDetails";
 import GITSummaryContainer from "./gittailored/Index";
-
 import Flickity from "../../../components/FlickityCarousel";
 import ComingSoon from "./ComingSoon";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import Timer from "../timer/Index";
-// import OldBookingModal from '../../../components/modals/booking/Index';
 import { connect } from "react-redux";
 import BookingModal from "../../../components/modals/bookingupdated/Index";
 import FlightModal from "../../../components/modals/flights/Index";
@@ -17,27 +15,21 @@ import { useRouter } from "next/router";
 import media from "../../../components/media";
 import DesktopBanner from "../../../components/containers/Banner";
 import Banner from "../../homepage/banner/Mobile";
-// import Accommodation from '../../../components/modals/accommodation/Index';
 import DesktopCardContainer from "./DesktopCardCotainer";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { getIndianPrice } from "../../../services/getIndianPrice";
-// import Spinner from '../../../components/Spinner';
-import gif from "../../../public/assets/loader.gif";
-import { ITINERARY_STATUSES } from "../../../services/constants";
 import * as ga from "../../../services/ga/Index";
 import urls from "../../../services/urls";
 import StayBookingCard from "../../../components/cards/bookings/staybooking/Index";
 import FlightBookingCard from "../../../components/cards/bookings/flightbooking/Index";
 import TaxiBookingCard from "../../../components/cards/bookings/taxibooking/Index";
 import BusBookingCard from "../../../components/cards/bookings/busbooking/Index";
-
 import FooterBannerMobile from "./FooterBannerMobile";
 import ImageLoader from "../../../components/ImageLoader";
 import LogInModal from "../../../components/modals/Login";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FerryBookingCard from "../../../components/cards/bookings/ferrybooking/Index";
-import { BsInfoCircleFill } from "react-icons/bs";
 import openTailoredModal from "../../../services/openTailoredModal";
 
 const Container = styled.div`
@@ -670,8 +662,6 @@ const Booking = (props) => {
                       transfer_type
                     )
                   }
-                  setShowLoginModal={setShowLoginModal}
-                  token={props.token}
                   _deselectTransferBookingHandler={
                     props._deselectTransferBookingHandler
                   }
@@ -686,9 +676,6 @@ const Booking = (props) => {
                   is_auth={props.is_auth}
                   are_prices_hidden={
                     props.payment ? props.payment.are_prices_hidden : false
-                  }
-                  is_registration_needed={
-                    props.payment ? props.payment.is_registration_needed : false
                   }
                   payment={props.payment}
                   key={i}
@@ -754,8 +741,6 @@ const Booking = (props) => {
                       transfer_type
                     )
                   }
-                  setShowLoginModal={setShowLoginModal}
-                  token={props.token}
                   _deselectTransferBookingHandler={
                     props._deselectTransferBookingHandler
                   }
@@ -781,9 +766,6 @@ const Booking = (props) => {
               bookings_transfers.push(
                 <TaxiBookingCard
                   rental
-                  is_registration_needed={
-                    props.payment ? props.payment.is_registration_needed : false
-                  }
                   isDatePresent={props.isDatePresent}
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
@@ -807,8 +789,6 @@ const Booking = (props) => {
                       transfer_type
                     )
                   }
-                  setShowLoginModal={setShowLoginModal}
-                  token={props.token}
                   _deselectTransferBookingHandler={
                     props._deselectTransferBookingHandler
                   }
@@ -931,7 +911,6 @@ const Booking = (props) => {
                 props.flightBookings[i].id === props.selectingBooking
               }
               data={props.flightBookings[i]}
-              is_stock={props.is_stock}
               bookings={props.flightBookings}
               setShowFlightModal={(props) =>
                 _changeFlightHandler(
@@ -951,10 +930,6 @@ const Booking = (props) => {
                 )
               }
               showFlightModal={props.showFlightModal}
-              is_auth={props.is_auth}
-              are_prices_hidden={
-                props.payment ? props.payment.are_prices_hidden : false
-              }
               is_auth={props.is_auth}
               are_prices_hidden={
                 props.payment ? props.payment.are_prices_hidden : false
@@ -1149,8 +1124,6 @@ const Booking = (props) => {
             transferBookings={props.transferBookings}
             setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)}
             payment={props.payment}
-            stayBookings={props.stayBookings}
-            transferBookings={props.transferBookings}
             traveleritinerary={props.traveleritinerary}
             blur={props.blur}
             hide={_hidePaymentHandler}
@@ -1178,8 +1151,6 @@ const Booking = (props) => {
             transferBookings={props.transferBookings}
             setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)}
             payment={props.payment}
-            stayBookings={props.stayBookings}
-            transferBookings={props.transferBookings}
             traveleritinerary={props.traveleritinerary}
             blur={props.blur}
             hide={_hidePaymentHandler}

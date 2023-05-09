@@ -4,15 +4,11 @@ import About from "../aboutus/About";
 import EntryFees from "../EntryFees";
 import GettingAround from "../GettingAround";
 import Recommendations from "../Recommendations";
-import aboutimg from "../../../../public/assets/poi/about.png";
-import gettingimg from "../../../../public/assets/poi/getting around.png";
-import tipsimg from "../../../../public/assets/poi/tips.png";
-import entryimg from "../../../../public/assets/poi/Entry fees.png";
-import timingimg from "../../../../public/assets/poi/timing.png";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Timings from "../Timings";
 import media from "../../../media";
+import ImageLoader from "../../../ImageLoader";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -26,15 +22,6 @@ const GridContainer = styled.div`
   border-width: 1px;
   border-color: #e4e4e4;
 `;
-// const Tab = styled.div`
-//     padding: 1rem;
-//     text-align: center;
-//     font-size: 1rem;
-//     &:hover{
-//         cursor: pointer;
-//     }
-
-// `;
 const TargetContainer = styled.div`
   padding: 1rem 1rem;
   height: 40vh;
@@ -42,14 +29,6 @@ const TargetContainer = styled.div`
   @media screen and (min-width: 768px) {
     height: 45vh;
   }
-`;
-const Icon = styled.img`
-  width: 1.5rem;
-  height: 1.5rem;
-`;
-const Heading = styled.p`
-  font-size: 0.75rem;
-  margin: 0.5rem 0 0 0;
 `;
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -77,28 +56,6 @@ const Tabscomponent = (props) => {
   };
   return (
     <Container>
-      {/* <GridContainer>
-            <Tab onClick={() => setSelectedState(0)} className="font-lexend center-div" style={{fontWeight: selectedState === 0 ? '700' : '400', backgroundColor: selectedState === 0 ? '#f7e700' : 'white'}}>
-                <Icon src={aboutimg}/>
-                <Heading>About</Heading>
-            </Tab>
-            <Tab onClick={() => setSelectedState(1)} className="font-lexend center-div" style={{fontWeight: selectedState === 1 ? '700' : '400', backgroundColor: selectedState === 1 ? '#f7e700' : 'white', borderStyle: 'none solid none solid', borderWidth: '1px', borderColor: "#e4e4e4"}}>
-                <Icon src={gettingimg}/>
-                <Heading>Getting Around</Heading>
-
-            </Tab>
-            <Tab onClick={() => setSelectedState(2)} className="font-lexend center-div" style={{fontWeight: selectedState === 2 ? '700' : '400', backgroundColor: selectedState === 2 ? '#f7e700' : 'white'}}>
-                <Icon src={tipsimg}/>
-                <Heading>Tips</Heading>
-
-            </Tab>
-       </GridContainer>
-       <TargetContainer>
-            {selectedState === 0 ? <About short_description={props.short_description}/> : null}
-            {selectedState === 1 ? <GettingAround getting_around={props.getting_around}/> : null}
-            {selectedState === 2 ? <Recommendations recommendations={props.recommendations} tips={props.tips}/> : null}
-
-       </TargetContainer> */}
       <Tabs
         value={value}
         onChange={handleChange}
@@ -109,28 +66,63 @@ const Tabscomponent = (props) => {
         id="poimodal-tabs"
       >
         <Tab
-          icon={<Icon src={aboutimg}></Icon>}
+          icon={
+            <ImageLoader
+              dimensions={{ height: 100, width: 100 }}
+              height="1.5rem"
+              width="1.5rem"
+              url="media/icons/pois/about.png"
+            />
+          }
           label="About"
           className="poi-tab font-lexend"
         ></Tab>
         <Tab
-          icon={<Icon src={gettingimg}></Icon>}
+          icon={
+            <ImageLoader
+              dimensions={{ height: 100, width: 100 }}
+              height="1.5rem"
+              width="1.5rem"
+              url="media/icons/pois/getting around.png"
+            />
+          }
           label="Getting Around"
           className="poi-tab font-lexend"
         ></Tab>
         <Tab
-          icon={<Icon src={entryimg} />}
+          icon={
+            <ImageLoader
+              dimensions={{ height: 100, width: 100 }}
+              height="1.5rem"
+              width="1.5rem"
+              url="media/icons/pois/Entry fees.png"
+            />
+          }
           label="Entry Fees"
           className="poi-tab font-lexend"
         ></Tab>
 
         <Tab
-          icon={<Icon src={tipsimg}></Icon>}
+          icon={
+            <ImageLoader
+              dimensions={{ height: 100, width: 100 }}
+              height="1.5rem"
+              width="1.5rem"
+              url="media/icons/pois/tips.png"
+            />
+          }
           label="Tips"
           className="poi-tab font-lexend"
         ></Tab>
         <Tab
-          icon={<Icon src={timingimg}></Icon>}
+          icon={
+            <ImageLoader
+              dimensions={{ height: 100, width: 100 }}
+              height="1.5rem"
+              width="1.5rem"
+              url="media/icons/pois/timing.png"
+            />
+          }
           label="Timings"
           className="poi-tab font-lexend"
         ></Tab>

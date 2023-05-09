@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import left from '../../public/assets/icons/navigation/left-circle.svg';
-import right from '../../public/assets/icons/navigation/right-circle.svg';
-
+import {BsArrowRightCircleFill , BsArrowLeftCircleFill } from 'react-icons/bs'
 import Images from './Image';
  
-const ArrowImage = styled.img`
+const ArrowImage = styled.div`
     width: 5vw;
     height: auto;
     filter: invert(1);
@@ -76,27 +74,38 @@ const Gallery = (props) => {
     const swipingLeft = (e, absX) => {
     }
 
-    return(
-        <div>
-            <IndexContainer>
-                <ActiveIndex>
-                {imageSelected+1+" "}
-                / 
-                </ActiveIndex>
-                <InactiveIndex> {props.images.length}</InactiveIndex>
-            </IndexContainer> 
-                <ArrowImage src={left} onClick={_prevImgHandler} style={{left: "0"}}></ArrowImage>
-                <ArrowImage src={right} onClick={_nextImgHandler} style={{right: "0"}}></ArrowImage>
-                <ImageCotainer  className="center-div">
-                    {/* {ImagesArr} */}
-                    <Images images={props.images} imageSelected={imageSelected}  _nextImgHandler={_nextImgHandler} _prevImgHandler={_prevImgHandler}></Images>
-
-                </ImageCotainer> 
-            {/* <DescriptionContainer>
+    return (
+      <div>
+        <IndexContainer>
+          <ActiveIndex>{imageSelected + 1 + " "}/</ActiveIndex>
+          <InactiveIndex> {props.images.length}</InactiveIndex>
+        </IndexContainer>
+        <ArrowImage
+          onClick={_prevImgHandler}
+          style={{ left: "0", fontSize: "2vw" }}
+        >
+          <BsArrowLeftCircleFill />
+        </ArrowImage>
+        <ArrowImage
+          onClick={_nextImgHandler}
+          style={{ right: "0", fontSize: "2vw" }}
+        >
+          <BsArrowRightCircleFill />
+        </ArrowImage>
+        <ImageCotainer className="center-div">
+          {/* {ImagesArr} */}
+          <Images
+            images={props.images}
+            imageSelected={imageSelected}
+            _nextImgHandler={_nextImgHandler}
+            _prevImgHandler={_prevImgHandler}
+          ></Images>
+        </ImageCotainer>
+        {/* <DescriptionContainer>
                 <AltText className="font-nunito">Image Alt Text</AltText>
                 <Credits className="font-nunito">Image Credits</Credits>
             </DescriptionContainer> */}
-        </div>
+      </div>
     );
   
 }

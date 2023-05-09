@@ -9,7 +9,6 @@ import media from "../media";
 import axiostailoredinstance from "../../services/leads/tailored";
 import Spinner from "../Spinner";
 import LoadingLottie from "../ui/LoadingLottie";
-//  import extensions from '../../../public/content/extensionsdata';
 import { useRouter } from "next/router";
 import { connect } from "react-redux";
 import { BiArrowBack } from "react-icons/bi";

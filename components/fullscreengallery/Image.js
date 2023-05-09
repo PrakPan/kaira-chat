@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 // import Animate from '../../components/HOC/Animate';
 import ImageLoader from '../../components/ImageLoader';
@@ -30,7 +30,32 @@ const ImageContainer = (props) => {
       }
 
       let is_url = isValidHttpUrl(props.images[props.imageSelected]);
+    useEffect(() => { 
+    var img = new Image();
+    if (!is_url) img.src = `${imgUrlEndPoint}/${btoa(imageRequest)}`;
+    else img.src = props.images[props.imageSelected];
+    img.onload = function () {
+      var height = img.height;
+      var width = img.width;
+      let aspectration;
+      aspectration = width / height;
+      // setAspect({...aspect, image: aspectration});
 
+      setImageLoaded(aspectration);
+    };
+    var img = new Image();
+    if (!is_url) img.src = `${imgUrlEndPoint}/${btoa(nextImageRequest)}`;
+    else img.src = props.images[props.imageSelected + 1];
+    img.onload = function () {
+      var height = img.height;
+      var width = img.width;
+      let aspectration;
+      aspectration = width / height;
+      // setAspect({...aspect, image: aspectration});
+
+      setImageLoaded(aspectration);
+    };
+    }, [])
    let imageRequest = JSON.stringify({
     bucket: 'thetarzanway-web',
     key: props.images[props.imageSelected],
@@ -44,34 +69,7 @@ const ImageContainer = (props) => {
                 });
             
         
-     var img = new Image()
-        if(!is_url)
-        img.src=`${imgUrlEndPoint}/${btoa(imageRequest)}`;
-        else img.src=props.images[props.imageSelected];
-        img.onload = function(){
-            var height = img.height;
-            var width = img.width;
-            let aspectration;
-            aspectration = width / height;
-            // setAspect({...aspect, image: aspectration});
-
-            setImageLoaded(aspectration)
-          
-        }
-        var img = new Image()
-        if(!is_url)
-        img.src=`${imgUrlEndPoint}/${btoa(nextImageRequest)}`;
-        else img.src=props.images[props.imageSelected+1];
-        img.onload = function(){
-            var height = img.height;
-            var width = img.width;
-            let aspectration;
-            aspectration = width / height;
-            // setAspect({...aspect, image: aspectration});
-
-            setImageLoaded(aspectration)
-          
-        }
+ 
     const _handleDragStart = (event) => {
         touchstart = event.clientX;
     }
@@ -80,12 +78,12 @@ const ImageContainer = (props) => {
         else props._prevImgHandler();
     }
     // if(imageLoaded){
-             let width_desktop = Math.round((window.innerHeight/1.6 ) * imageLoaded);
-            let height_desktop = Math.round(window.innerHeight/1.6);
+            //  let width_desktop = Math.round((window.innerHeight/1.6 ) * imageLoaded);
+            // let height_desktop = Math.round(window.innerHeight/1.6);
             // let width_desktop=1600;
             // let height_desktop=900;
-            let width_mobile = Math.round((window.innerWidth/0.7));
-            let height_mobile = Math.round(width_mobile/imageLoaded)
+            // let width_mobile = Math.round((window.innerWidth/0.7));
+            // let height_mobile = Math.round(width_mobile/imageLoaded)
 
             return(
             <ImageWrapper  style={{display:  'block' }} draggable="true" onDragStart={_handleDragStart} onDragEnd={_handleDragEnd}>

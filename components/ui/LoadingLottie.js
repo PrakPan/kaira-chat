@@ -6,7 +6,7 @@ export default function SkeletonCard(props){
     const LoadingBox = styled.div`
     height : ${props=>props.height || '100%'};
     width:${props=>props.width || '100%'};
-    margin : auto;
+    margin : ${props=>props.margin || 'auto'};
   `;
     const defaultOptions = {
         loop : true,
@@ -15,8 +15,8 @@ export default function SkeletonCard(props){
       }
 
     return (
-        <LoadingBox width={props.width} height={props.width}>
-        <Lottie options={defaultOptions} width={props.width} height={props.width} margin='auto'  />
+        <LoadingBox width={props.width} height={props.width} margin={props.margin}>
+        <Lottie options={defaultOptions} width={props.width} height={props.width}  />
         </LoadingBox>
     )
 }

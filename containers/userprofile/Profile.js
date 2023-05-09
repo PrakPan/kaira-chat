@@ -1,8 +1,5 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-import img from "../../public/assets/user.svg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faHiking } from "@fortawesome/free-solid-svg-icons";
 import { connect } from "react-redux";
 import * as authaction from "../../store/actions/auth";
 import Slider from "@mui/material/Slider";

@@ -14,15 +14,11 @@ import * as otpaction from "../../store/actions/getOtp";
 import axios from "axios";
 import Spinner from "../Spinner";
 import styled from "styled-components";
-import theme from "../../public/Themes";
 import extensions from "./extensionsdata";
 
-import google from "../../public/assets/icons/google.svg";
 import { checkEmail } from "../../services/validations";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faTimes} from '@fortawesome/free-solid-svg-icons';
 import GoogleLogin from "react-google-login";
-// import FacebookLogin from 'react-facebook-login';
+import ImageLoader from "../ImageLoader";
 
 const useStyles = makeStyles((themes) => ({
   "@global": {
@@ -45,7 +41,7 @@ const useStyles = makeStyles((themes) => ({
   },
   submit: {
     margin: "1rem 0",
-    backgroundColor: theme.colors.brandColor,
+    backgroundColor: "#F7E700",
     color: "black",
     borderRadius: "2rem",
     "&:hover": {
@@ -317,14 +313,13 @@ const LogIn = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={3}>
             <TextField
-              className="country-code-field"
+              className="country-code-field loginform"
               select
               label={extension}
               fullWidth
               value={extension}
               onChange={handleExtensionChange}
               variant="outlined"
-              className="loginform"
             >
               {ExtensionOptions}
             </TextField>
@@ -410,10 +405,20 @@ const LogIn = (props) => {
                   className={classes.google}
                   onClick={renderProps.onClick}
                 >
-                  <img
-                    src={google}
-                    style={{ height: "1.5rem", margin: "0 0.5rem" }}
-                  ></img>
+                  <div
+                    style={{
+                      height: "1.5rem",
+                      width: "1.5rem",
+                      margin: "0 0.5rem",
+                    }}
+                  >
+                    <ImageLoader
+                      dimensions={{ height: 100, width: 100 }}
+                      url={"media/icons/login/google.svg"}
+                      height="1.5rem"
+                      width="1.5rem"
+                    />
+                  </div>
                 </Button>
               )}
             />

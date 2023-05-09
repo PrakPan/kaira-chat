@@ -47,7 +47,6 @@ const Heading = styled.p`
 `;
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"

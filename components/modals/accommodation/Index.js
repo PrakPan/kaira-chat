@@ -13,7 +13,7 @@ import {connect} from 'react-redux';
 import {TbArrowBack} from 'react-icons/tb';
 import Spinner from '../../Spinner';
 import media from '../../media';
-import gif from '../../../public/assets/loader.gif';
+import LoadingLottie from '../../ui/LoadingLottie'
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover{
     cursor: pointer;
@@ -38,31 +38,72 @@ const POI = (props) => {
   }, [props.id, props.show]);
   let isPageWide = media('(min-width: 768px)')
 
-  return(
-      <div>
-        <Modal show={props.show}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} style={{}}>
-            <Modal.Header style={{ float: 'right', height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-end', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
-            <TbArrowBack onClick={props.onHide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
+  return (
+    <div>
+      <Modal
+        show={props.show}
+        className="booking-modal"
+        size="lg"
+        onHide={props.onHide}
+        animation={false}
+        style={{}}
+      >
+        <Modal.Header
+          style={{
+            float: "right",
+            height: isPageWide ? "max-content" : "20vw",
+            position: "sticky",
+            top: "0",
+            backgroundColor: "white",
+            justifyContent: "flex-end",
+            padding: !isPageWide ? "2rem 1rem" : "1rem",
+            backgroundColor: "white",
+            zIndex: "2",
+          }}
+        >
+          <TbArrowBack
+            onClick={props.onHide}
+            className="hover-pointer"
+            style={{
+              margin: "0.5rem",
+              fontSize: "1.75rem",
+              textAlign: "right",
+            }}
+          ></TbArrowBack>
 
-              {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
-            </Modal.Header>
-            <Modal.Body style={{   padding:'0' }}>
-                {!loading ? <div><Overview  _setImagesHandler={props._setImagesHandler} data={data} images={data.images ? data.images : []} experience_filters={props.poi ? props.poi.experience_filters : null} name={props.poi ? props.poi.name : null} duration={props.poi ? props.poi.ideal_duration_hours : null}></Overview>
-                <Tabs  
+          {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
+        </Modal.Header>
+        <Modal.Body style={{ padding: "0" }}>
+          {!loading ? (
+            <div>
+              <Overview
+                _setImagesHandler={props._setImagesHandler}
                 data={data}
-              
-                >
-                </Tabs>
-                <div>
-                  {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
-                  {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
-                  {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
-                </div>
-                </div>: <div style={{height: '100%', paddingTop: '20vw' }} className="center-div"><img src={gif} style={{width: '3rem', height: '3rem'}}/></div>}
-
-            </Modal.Body>
+                images={data.images ? data.images : []}
+                experience_filters={
+                  props.poi ? props.poi.experience_filters : null
+                }
+                name={props.poi ? props.poi.name : null}
+                duration={props.poi ? props.poi.ideal_duration_hours : null}
+              ></Overview>
+              <Tabs data={data}></Tabs>
+              <div>
+                {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
+                {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
+                {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{ height: "100%", paddingTop: "20vw" }}
+              className="center-div"
+            >
+              <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
+            </div>
+          )}
+        </Modal.Body>
       </Modal>
-      </div>
+    </div>
   );
 
 }

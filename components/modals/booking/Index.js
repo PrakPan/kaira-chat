@@ -4,19 +4,15 @@ import styled from 'styled-components';
 import media from '../../media';
 import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
-import {Scrollbars} from 'react-custom-scrollbars';
-import FullScreenGallery from '../../fullscreengallery/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
 import MobileFilters from './filtersmobile/Index';
 import Spinner from '../../Spinner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronUp, faChevronLeft} from '@fortawesome/free-solid-svg-icons';
+import {  faChevronLeft} from '@fortawesome/free-solid-svg-icons';
 import { Link, animateScroll as scroll} from "react-scroll";
 import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import {connect} from 'react-redux';
-import InfiniteScroller from './InfniteScroller';
-// import Button from '../../Button';
 import Button from '../../ui/button/Index';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -491,7 +487,6 @@ setViewMoreStatus(false);
             </Modal.Body>
            
       </Modal>
-      {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
       </div>
   );
 

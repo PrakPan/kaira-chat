@@ -18,7 +18,7 @@ import LogInModal from '../Login';
 import AccommodationSelected from './new-accommodation-selected/Index';
 import SectionOne from './SectionOne';
 import SectionTwo from './SectionTwo';
-import gif from '../../../public/assets/loader.gif';
+import LoadingLottie from '../../ui/LoadingLottie'
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -612,59 +612,149 @@ setUpdateLoadingState(true);
 
     }
       if(props.token)
-  return(
-      <div >
-        <Modal className='booking-modal'  show={props.showBookingModal}  size="xl"  onHide={props.setHideBookingModal} style={{}}>
-           <Modal.Header style={{display: 'block', zIndex: '2', position: 'sticky', top: '0', backgroundColor: 'white'}}>
-           <SectionOne setHideBookingModal={props.setHideBookingModal}></SectionOne>
-              <SectionTwo filtersState={filtersState} FILTERS={FILTERS} _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} ></SectionTwo>
+  return (
+    <div>
+      <Modal
+        className="booking-modal"
+        show={props.showBookingModal}
+        size="xl"
+        onHide={props.setHideBookingModal}
+        style={{}}
+      >
+        <Modal.Header
+          style={{
+            display: "block",
+            zIndex: "2",
+            position: "sticky",
+            top: "0",
+            backgroundColor: "white",
+          }}
+        >
+          <SectionOne
+            setHideBookingModal={props.setHideBookingModal}
+          ></SectionOne>
+          <SectionTwo
+            filtersState={filtersState}
+            FILTERS={FILTERS}
+            _updateStarFilterHandler={_updateStarFilterHandler}
+            _removeFilterHandler={_removeFilterHandler}
+            _addFilterHandler={_addFilterHandler}
+          ></SectionTwo>
+        </Modal.Header>
+        <Modal.Body style={{ padding: "0rem", backgroundColor: "white" }}>
+          {unauthorized ? (
+            <p
+              style={{
+                borderRadius: "5px",
+                padding: "0.25rem",
+                backgroundColor: "rgba(255,0,0,0.1)",
+                color: "red",
+                margin: "1rem",
+              }}
+              className="text-center font-lexend"
+            >
+              You're not authorized to take this action, please contact your
+              experience captain.
+            </p>
+          ) : null}
+          {/* {!unauthorized ? } */}
+          <GridContainer style={{ clear: "right" }}>
+            {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
+            {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
+            <ContentContainer style={{ position: "relative" }}>
+              {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
+              {updateBookingState ? (
+                <div
+                  style={{
+                    width: "max-content",
+                    margin: "auto",
+                    height: isPageWide ? "80vh" : "40vh",
+                  }}
+                  className="center-div text-center font-lexend"
+                >
+                  <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
+                  Please wait while we update your bookings
+                </div>
+              ) : null}
+              {!noResults && !updateBookingState ? (
+                <OptionsContainer id="options">
+                  <div style={{ clear: "right" }}>
+                    <AccommodationSelected
+                      _setImagesHandler={props._setImagesHandler}
+                      selectedBooking={props.selectedBooking}
+                    ></AccommodationSelected>
 
-           </Modal.Header>
-            <Modal.Body style={{padding: "0rem", backgroundColor: 'white', }} >
-            {unauthorized ? <p style={{borderRadius: '5px', padding: '0.25rem', backgroundColor: 'rgba(255,0,0,0.1)' ,color: 'red', margin: '1rem'}} className='text-center font-lexend' >You're not authorized to take this action, please contact your experience captain.</p> : null}
-            {/* {!unauthorized ? } */}
-                 <GridContainer style={{clear: 'right'}}>
-                {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
-                {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
-               <ContentContainer style={{position: 'relative'}}>
-                {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
-                {updateBookingState ? <div style={{width: 'max-content', margin: 'auto', height: isPageWide ? '80vh' :'40vh'}} className='center-div text-center font-lexend'><img src={gif} style={{width: '3rem', height: '3rem'}}/>Please wait while we update your bookings</div> : null }
-               { !noResults  && !updateBookingState ? <OptionsContainer id='options'>
-                   <div style={{clear: 'right'}}>
-                   <AccommodationSelected  _setImagesHandler={props._setImagesHandler} selectedBooking={props.selectedBooking}></AccommodationSelected>
-
-                   {optionsJSX.length ? optionsJSX :moreOptionsJSX.length? moreOptionsJSX : null}
+                    {optionsJSX.length
+                      ? optionsJSX
+                      : moreOptionsJSX.length
+                      ? moreOptionsJSX
+                      : null}
                     {/* {moreOptionsJSX} */}
-                   {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><img src={gif} style={{width: '3rem', height: '3rem'}}/>Fetching stay recommendations for you</div> : null}
-                   {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
+                    {loading && !optionsJSX.length ? (
+                      <div
+                        className="center-div"
+                        style={{ height: isPageWide ? "80vh" : "40vh" }}
+                      >
+                        <LoadingLottie
+                          height={"5rem"}
+                          width={"5rem"}
+                          margin="none"
+                        />
+                        Fetching stay recommendations for you
+                      </div>
+                    ) : null}
+                    {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
+                  </div>
 
-                   </div>
-                   
-                   {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
-                   {updateLoadingState ?  <div className='center-div' style={{ }}><img src={gif}  style={{width: '3rem', height: '3rem', margin: '1rem auto'}}></img></div> : null} 
+                  {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
+                  {updateLoadingState ? (
+                    <div className="center-div" style={{}}>
+                      <LoadingLottie
+                        height={"5rem"}
+                        width={"5rem"}
+                        margin="1rem auto"
+                      />
+                    </div>
+                  ) : null}
 
-                    {viewMoreStatus && !optionsJSX.length? <Button boxShadow onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null}
-                    {/* {noResults ? 'NO RESULTS' : null} */}
-               </OptionsContainer> : null}
-               {noResults ? <OptionsContainer  className='font-lexend center-div text-center' >Oops, we couldn't find what you were searching but we are already adding new and approved accommodations to our database everyday!</OptionsContainer>  : null}
-               {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-               {/* {
+                  {viewMoreStatus && !optionsJSX.length ? (
+                    <Button
+                      boxShadow
+                      onclickparam={null}
+                      onclick={_loadAccommodationsHandler}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
+                    >
+                      View More
+                    </Button>
+                  ) : null}
+                  {/* {noResults ? 'NO RESULTS' : null} */}
+                </OptionsContainer>
+              ) : null}
+              {noResults ? (
+                <OptionsContainer className="font-lexend center-div text-center">
+                  Oops, we couldn't find what you were searching but we are
+                  already adding new and approved accommodations to our database
+                  everyday!
+                </OptionsContainer>
+              ) : null}
+              {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
+              {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
                    } 
              */}
-               {/* <ButtonToTop className='center-div'>
+              {/* <ButtonToTop className='center-div'>
                    <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
                 </ButtonToTop> */}
-               
-               </ContentContainer>
-               </GridContainer>
-               {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
-
-            </Modal.Body>
-           
+            </ContentContainer>
+          </GridContainer>
+          {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
+        </Modal.Body>
       </Modal>
       {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
-      </div>
+    </div>
   );
   else return(
 <div>

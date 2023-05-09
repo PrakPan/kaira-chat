@@ -3,7 +3,6 @@ import ImageLoader from "../../../components/ImageLoader"
 import {MdNavigateNext} from 'react-icons/md'
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 
-
 const LeftSlideIn = keyframes`
   from { 
     transform: translateX(0%);
@@ -119,7 +118,10 @@ export default function PoiCard(props){
           <Typography>
             <p className="AnimateLeft">{props.data.name}</p>{" "}
             <div>
-              <MdNavigateNext style={{fontSize : '1.8rem'}} className="AnimateRight" />
+              <MdNavigateNext
+                style={{ fontSize: "1.8rem" }}
+                className="AnimateRight"
+              />
             </div>
           </Typography>
         )}

@@ -8,7 +8,6 @@ import Spinner from "../Spinner";
 import styled from "styled-components";
 import extensions from "../../public/content/extensionsdata";
 import Link from "next/link";
-import google from "../../public/assets/icons/google.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import GoogleLogin from "react-google-login";
 import CountryCodeDropdown from "./CountryDropdown";
@@ -396,7 +395,12 @@ if (props.loadingsocial) return (
                 onClick={() => setOpenCountryCodeOption(true)}
               >
                 {/* {extension} */}
-                <CountryImg height='29' width='29' objectFit="cover" src={extensions[extension].img}></CountryImg>
+                <CountryImg
+                  height="29"
+                  width="29"
+                  objectFit="cover"
+                  src={extensions[extension].img}
+                ></CountryImg>
 
                 <p>{extensions[extension].label} </p>
                 <FiChevronDown />
@@ -450,7 +454,12 @@ if (props.loadingsocial) return (
                 onClick={() => setOpenCountryCodeOption(true)}
               >
                 {/* {extension} */}
-                <CountryImg height='29' width='29' objectFit="cover" src={extensions[extension].img}></CountryImg>
+                <CountryImg
+                  height="29"
+                  width="29"
+                  objectFit="cover"
+                  src={extensions[extension].img}
+                ></CountryImg>
 
                 <p>{extensions[extension].label} </p>
                 <FiChevronDown />
@@ -470,25 +479,25 @@ if (props.loadingsocial) return (
             boooking updates via WhatsApp
           </WhatsappCheckBox>
 
-
-          {props.newUser || (props.otpSent && !props.name) ? <FloatingInput
-            style={{ marginBottom: "0.7rem" }}
-            error={userNameError}
-            helperText={"Please enter valid username"}
-            placeholder={"Enter Your Full Name"}
-            key="userName"
-            required
-            id="userName"
-            label="Enter Your Full Name"
-            onChange={(event) => {
-              _userDetailsOnChangeHandler(event, "userName");
-            }}
-            margin="0.7rem 0rem"
-          /> : null}
+          {props.newUser || (props.otpSent && !props.name) ? (
+            <FloatingInput
+              style={{ marginBottom: "0.7rem" }}
+              error={userNameError}
+              helperText={"Please enter valid username"}
+              placeholder={"Enter Your Full Name"}
+              key="userName"
+              required
+              id="userName"
+              label="Enter Your Full Name"
+              onChange={(event) => {
+                _userDetailsOnChangeHandler(event, "userName");
+              }}
+              margin="0.7rem 0rem"
+            />
+          ) : null}
 
           {props.newUser || (props.otpSent && !props.email) ? email : null}
 
-         
           {props.otpSent && (
             <div
               style={{
@@ -616,10 +625,20 @@ if (props.loadingsocial) return (
                     boxShadow="0px 2px 0px #ECEAEA"
                     borderRadius="8px"
                   >
-                    <Image
-                      src={google}
-                      style={{ height: "1.5rem" }}
-                    ></Image>
+                    <div
+                      style={{
+                        height: "1.5rem",
+                        width: "1.5rem",
+                        margin: "0 0.5rem",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 100, width: 100 }}
+                        url={"media/icons/login/google.svg"}
+                        height="1.5rem"
+                        width="1.5rem"
+                      />
+                    </div>
                     <p
                       style={{
                         margin: "0",
@@ -667,11 +686,10 @@ if (props.loadingsocial) return (
             <Link
               href="/privacy-policy"
               style={{ textDecoration: "none" }}
-                target='_blank'
+              target="_blank"
             >
               {/* <a style={{ color: "black" }} target="_blank"> */}
-                T&Cs and privacy policy{" "}
-              {/* </a> */}
+              T&Cs and privacy policy {/* </a> */}
             </Link>
           </div>
         </form>

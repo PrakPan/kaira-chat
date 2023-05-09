@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import gif from '../public/assets/loader.gif';
+import LoadingLottie from "../components/ui/LoadingLottie";
 
 const ExperienceIndexLoading = (props) => {
     const quotes = [
@@ -61,9 +61,7 @@ const ExperienceIndexLoading = (props) => {
  
     return(
             <Container className="center-div">
-        {/* <ImageLoader width="5vw" url="media/gifs/loadergif.gif"></ImageLoader> */}
-        {/* <Spinner></Spinner> */}
-        <img src={gif} style={{width: '3rem', height: '3rem'}}/>
+            <LoadingLottie height={'5rem'} width={'5rem'} margin='none' />
         <DidYouKnow className="font-lexend">Did you know?</DidYouKnow>
     <Quote style={{color: "black"}} className="font-nunito"><em>{quotes[Math.floor(Math.random() * 16)]}</em></Quote>
     </Container>

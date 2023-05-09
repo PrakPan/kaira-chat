@@ -163,7 +163,6 @@ if(typeof window !== 'undefined' && !stringlength){
 }
 
 
-let germanytest = require("../../public/assets/icons/countries/germany.png");
 const countryicons = {
     germany: 'media/icons/countries/germany.png',
     mexico: 'media/icons/countries/mexico.svg',

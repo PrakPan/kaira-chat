@@ -9,7 +9,6 @@ import * as authaction from "../../store/actions/auth";
 import * as otpaction from "../../store/actions/getOtp";
 import axios from "axios";
 import styled from "styled-components";
-import theme from "../../public/Themes";
 
 const UpdatePhone = (props) => {
   return (

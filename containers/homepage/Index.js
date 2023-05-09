@@ -22,7 +22,6 @@ import Banner from './banner/Mobile';
 import Locations from '../../components/containers/plannerlocations/Index';
 import FullImgContent from './search/SearchFullImgContent';
 // import FullImgContentChristmas from './search/Christmas';
-import PersonaliseBox  from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
    import * as ga from '../../services/ga/Index';
@@ -241,7 +240,6 @@ useEffect(() => {
     
  
 
- {/* {!isPageWide && <div><PersonaliseBox ></PersonaliseBox ></div>}  */}
       <SetWidthContainer>
 
       {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}

@@ -12,11 +12,9 @@ import styled from 'styled-components';
 import { Element } from 'react-scroll';
 //  import Faqs from '../../components/experiencecity/info/faqs/Index';
 // import Banner from './Banner/Index';
-// import Howtoreach from '../../components/experiencecity/info/Howtoreach';
 import { useRef } from 'react'
 import media from '../../../components/media';
 import { useRouter } from 'next/router';
-// import Footer from '../../components/footer/Index';
 // import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';

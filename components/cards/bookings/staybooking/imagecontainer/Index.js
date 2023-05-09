@@ -1,10 +1,6 @@
 import React, {useRef, useEffect} from 'react';
 import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faImages} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../../../../ImageLoader';
-// import YellowContainer from './YellowContainer';
-import bg from '../../../../../public/assets/grey.png';
 import Tag from './Tag';
 const Container = styled.div`
     width: 100%;        
@@ -19,7 +15,7 @@ const Container = styled.div`
 const ImageContainer = styled.div`
     width: 100%;
     position: relative;
-    background-image: url(${bg});
+    background-image: url("https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png");
     min-height: 20vh;
     
 `;
