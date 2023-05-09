@@ -8,7 +8,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Timings from "../Timings";
 import media from "../../../media";
-
+import ImageLoader from "../../../ImageLoader";
 const Container = styled.div`
   @media screen and (min-width: 768px) {
   }

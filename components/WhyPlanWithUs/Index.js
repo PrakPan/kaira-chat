@@ -1,5 +1,5 @@
 import styled from "styled-components"
-
+import ImageLoader from "../ImageLoader"
 const Heading = styled.p`
 font-weight: 600;
 font-size: 14px;

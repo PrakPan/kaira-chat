@@ -18,6 +18,7 @@ import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
 import LoginLoadingIcon from '../ui/LoadingLottie'
 import Image from 'next/image'
+import ImageLoader from "../ImageLoader";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;

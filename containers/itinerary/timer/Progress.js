@@ -1,6 +1,7 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
+import ImageLoader from '../../../components/ImageLoader';
 const ProgressContainer = styled.div`
     margin: 1rem 0;
 `;

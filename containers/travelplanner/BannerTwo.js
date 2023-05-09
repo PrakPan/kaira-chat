@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import ImageLoader from '../../components/ImageLoader';
 import media from '../../components/media';
 import * as ga from '../../services/ga/Index';
 
