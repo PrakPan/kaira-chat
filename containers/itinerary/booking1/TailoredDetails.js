@@ -306,7 +306,7 @@ const Details = (props) => {
   };
   return (
     <SummaryContainer
-      className="border-thin"
+      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md   border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
       style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
     >
       {window.innerWidth > 768 ? null : (

@@ -73,14 +73,18 @@ const Route = (props) => {
     }
   };
   function getTransportationType(url) {
-    const fileName = url.substring(
-      url.lastIndexOf('/') + 1,
-      url.lastIndexOf('.')
-    );
-    const firstLetter = fileName.charAt(0).toUpperCase();
-    const restOfWord = fileName.slice(1);
-    const transportationType = firstLetter + restOfWord;
-    return transportationType;
+    if (url) {
+      const fileName = url.substring(
+        url.lastIndexOf('/') + 1,
+        url.lastIndexOf('.')
+      );
+      const firstLetter = fileName.charAt(0).toUpperCase();
+      const restOfWord = fileName.slice(1);
+      const transportationType = firstLetter + restOfWord;
+      return transportationType;
+    } else {
+      return url;
+    }
   }
   let startingcity = null;
   let endingcity = null;
@@ -99,27 +103,27 @@ const Route = (props) => {
           props.breif.city_slabs[i].duration &&
           props.breif.city_slabs[i].duration !== '0'
         ) {
-          if (props.routes.length >= 1) {
+          if (props?.routes[i - 1]) {
             locationsArr.push(
               <PinSection
                 setCurrentPopup={props.setCurrentPopup}
                 handlemap={handlemap}
                 dayId={
-                  props.routes[i - 1].day_slab_location.start_day_slab_index
+                  props?.routes[i - 1]?.day_slab_location?.start_day_slab_index
                 }
-                cityData={props.routes[i - 1]}
-                dayslab={props.dayslab}
-                lat={props.routes[i - 1].lat}
-                long={props.routes[i - 1].long}
-                Mapid={props.routes[i - 1].gmaps_place_id}
-                city={props.routes[i - 1].city_name}
-                cityId={props.routes[i - 1].city_id}
+                cityData={props?.routes[i - 1]}
+                dayslab={props?.dayslab}
+                lat={props?.routes[i - 1]?.lat}
+                long={props?.routes[i - 1]?.long}
+                Mapid={props?.routes[i - 1].gmaps_place_id}
+                city={props?.routes[i - 1].city_name}
+                cityId={props?.routes[i - 1].city_id}
                 duration={
-                  props.breif.city_slabs[i].duration
-                    ? props.breif.city_slabs[i].duration + ' Nights'
+                  props.breif?.city_slabs[i].duration
+                    ? props.breif?.city_slabs[i].duration + ' Nights'
                     : null
                 }
-                pinColour={props.routes[i - 1].color}
+                pinColour={props?.routes[i - 1].color}
                 data={order[i - 1]}
                 _moveDownHandler={_moveDownHandler}
                 _moveUpHandler={_moveUpHandler}

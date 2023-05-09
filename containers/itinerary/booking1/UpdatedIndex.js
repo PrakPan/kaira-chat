@@ -1575,7 +1575,7 @@ const Booking = (props) => {
                     showFlightModal={props.showFlightModal}
                   ></FlightModal>
                 ) : null}
-                {props.showTaxiModal ? (
+                {/* {props.showTaxiModal ? (
                   <TaxiModal
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -1584,7 +1584,7 @@ const Booking = (props) => {
                     _updatePaymentHandler={props._updatePaymentHandler}
                     selectedBooking={selectedBooking}
                   ></TaxiModal>
-                ) : null}
+                ) : null} */}
               </Container>
               {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
             </div>

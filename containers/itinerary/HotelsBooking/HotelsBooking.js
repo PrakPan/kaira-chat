@@ -335,45 +335,48 @@ const HotelsBooking = (props) => {
   //   props.token,
   //   props.payment,
   // ]);
+  function handleClickAc(i) {
+    let name = props.stayBookings[i]['name'];
+    let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
+    let cost = props.stayBookings[i]['booking_cost'];
+    let itinerary_id = props.stayBookings[i]['itinerary_id'];
+    let itinerary_name = props.stayBookings[i]['itinerary_name'];
+    let booking_type = props.stayBookings[i]['booking_type'];
+    let accommodation = props.stayBookings[i]['accommodation'];
+    let tailored_id = props.stayBookings[i]['tailored_itinerary'];
+    let id = props.stayBookings[i]['id'];
+    let check_in = props.stayBookings[i]['check_in'];
+    let check_out = props.stayBookings[i]['check_out'];
+    let pax = {
+      number_of_adults:
+        props.stayBookings[i].costings_breakdown[0]['number_of_adults'],
+      number_of_children:
+        props.stayBookings[i].costings_breakdown[0]['number_of_children'],
+      number_of_infants:
+        props.stayBookings[i].costings_breakdown[0]['number_of_infants'],
+    };
+    let city = props.stayBookings[i]['city'];
+    let room_type = props.stayBookings[i]['room_type'];
+    _changeBookingHandler(
+      name,
+      itinerary_id,
+      tailored_id,
+      accommodation,
+      id,
+      check_in,
+      check_out,
+      pax,
+      city,
+      room_type,
 
+      itinerary_name
+    );
+
+    props.setShowBookingModal;
+  }
   function handleClick(i, id) {
-    // let name = props.stayBookings[i]['name'];
-    // let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
-    // let cost = props.stayBookings[i]['booking_cost'];
-    // let itinerary_id = props.stayBookings[i]['itinerary_id'];
-    // let itinerary_name = props.stayBookings[i]['itinerary_name'];
-    // let booking_type = props.stayBookings[i]['booking_type'];
-    // let accommodation = props.stayBookings[i]['accommodation'];
-    // let tailored_id = props.stayBookings[i]['tailored_itinerary'];
-
-    // let check_in = props.stayBookings[i]['check_in'];
-    // let check_out = props.stayBookings[i]['check_out'];
-    // let pax = {
-    //   number_of_adults:
-    //     props.stayBookings[i].costings_breakdown[0]['number_of_adults'],
-    //   number_of_children:
-    //     props.stayBookings[i].costings_breakdown[0]['number_of_children'],
-    //   number_of_infants:
-    //     props.stayBookings[i].costings_breakdown[0]['number_of_infants'],
-    // };
-    // let city = props.stayBookings[i]['city'];
-    // let room_type = props.stayBookings[i]['room_type'];
     setBookingId(id);
 
-    // _changeBookingHandler(
-    //   name,
-    //   itinerary_id,
-    //   tailored_id,
-    //   accommodation,
-    //   id,
-    //   check_in,
-    //   check_out,
-    //   pax,
-    //   city,
-    //   room_type,
-
-    //   itinerary_name
-    // );
     setShowDetails(true);
     props.setShowBookingModal;
   }
@@ -471,14 +474,18 @@ const HotelsBooking = (props) => {
                     <div className="flex flex-row gap-3 items-center w-full">
                       <ButtonYellow
                         className="lg:w-fit w-1/2"
-                        onClick={() => handleClick(index, booking.id)}
+                        onClick={() =>
+                          handleClick(index, booking.accommodation)
+                        }
                       >
                         <div className="text-[#01202B] ">View Detail</div>
                       </ButtonYellow>
                       <ButtonYellow
                         primary={false}
                         className="lg:w-fit w-1/2"
-                        onClick={props.setShowBookingModal}
+                        onClick={() => {
+                          handleClickAc(index);
+                        }}
                       >
                         <div className="text-[#01202B] ">Change</div>
                       </ButtonYellow>
@@ -491,34 +498,34 @@ const HotelsBooking = (props) => {
                     )} */}
                 </div>
               </div>
-              <AccommodationModal
-                _setImagesHandler={_setImagesHandler}
-                onHide={() => setShowDetails(false)}
-                id={props.stayBookings[index]}
-                show={showDetails}
-              ></AccommodationModal>
-              {props.showBookingModal ? (
-                <BookingModal
-                  _setImagesHandler={_setImagesHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  alternates={alternates[selectedBooking.id]}
-                  tailored_id={
-                    props.stayBookings
-                      ? props.stayBookings[0]['tailored_itinerary']
-                      : null
-                  }
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  selectedBooking={selectedBooking}
-                  setShowBookingModal={props.setShowBookingModal}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                ></BookingModal>
-              ) : null}
             </div>
           ))
         : null}
+      <AccommodationModal
+        _setImagesHandler={_setImagesHandler}
+        onHide={() => setShowDetails(false)}
+        id={bookingId}
+        show={showDetails}
+      ></AccommodationModal>
+      {/* {props.showBookingModal ? (
+        <BookingModal
+          _setImagesHandler={_setImagesHandler}
+          getPaymentHandler={props.getPaymentHandler}
+          _updateStayBookingHandler={props._updateStayBookingHandler}
+          alternates={alternates[selectedBooking.id]}
+          tailored_id={
+            props.stayBookings
+              ? props.stayBookings[0]['tailored_itinerary']
+              : null
+          }
+          _updatePaymentHandler={props._updatePaymentHandler}
+          _updateBookingHandler={props._updateBookingHandler}
+          selectedBooking={selectedBooking}
+          setShowBookingModal={props.setShowBookingModal}
+          showBookingModal={props.showBookingModal}
+          setHideBookingModal={props.setHideBookingModal}
+        ></BookingModal>
+      ) : null} */}
     </div>
   );
 };

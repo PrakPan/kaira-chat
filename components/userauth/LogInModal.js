@@ -1,23 +1,23 @@
-import React, { useState, useEffect, Fragment, useRef } from "react";
-import Button from "../ui/button/Index";
-import { connect } from "react-redux";
-import * as authaction from "../../store/actions/auth";
-import * as otpaction from "../../store/actions/getOtp";
-import axios from "axios";
-import Spinner from "../Spinner";
-import styled from "styled-components";
-import extensions from "../../public/content/extensionsdata";
-import Link from "next/link";
-import google from "../../public/assets/icons/google.svg";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import GoogleLogin from "react-google-login";
-import CountryCodeDropdown from "./CountryDropdown";
-import { FiChevronDown } from "react-icons/fi";
-import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
-import OTPInput from "react-otp-input";
-import FloatingInput from "../ui/input/FloatingInput";
-import { BiError } from "react-icons/bi";
-import LoginLoadingIcon from '../ui/LoadingLoginIcon'
+import React, { useState, useEffect, Fragment, useRef } from 'react';
+import Button from '../ui/button/Index';
+import { connect } from 'react-redux';
+import * as authaction from '../../store/actions/auth';
+import * as otpaction from '../../store/actions/getOtp';
+import axios from 'axios';
+import Spinner from '../Spinner';
+import styled from 'styled-components';
+import extensions from '../../public/content/extensionsdata';
+import Link from 'next/link';
+import google from '../../public/assets/icons/google.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import GoogleLogin from 'react-google-login';
+import CountryCodeDropdown from './CountryDropdown';
+import { FiChevronDown } from 'react-icons/fi';
+import { ImCheckboxUnchecked, ImCheckboxChecked } from 'react-icons/im';
+import OTPInput from 'react-otp-input';
+import FloatingInput from '../ui/input/FloatingInput';
+import { BiError } from 'react-icons/bi';
+import LoginLoadingIcon from '../ui/LoadingLoginIcon';
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -85,10 +85,10 @@ const OtpContainer = styled.div`
 `;
 
 var userDetails = {
-  firstName: "",
-  lastName: "",
-  userName: "",
-  email: "",
+  firstName: '',
+  lastName: '',
+  userName: '',
+  email: '',
 };
 const CountryImg = styled.img`
   height: 1.5rem;
@@ -124,17 +124,15 @@ const CountryCodeOption = styled.div`
 `;
 
 const LogIn = (props) => {
-
-if(props.loadingsocial) return <LoginLoadingIcon /> 
-
+  if (props.loadingsocial) return <LoginLoadingIcon />;
 
   const mobileRef = useRef();
-  const [mobile, setMobile] = useState("+91");
+  const [mobile, setMobile] = useState('+91');
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
-  const [extension, setExtension] = useState("India"); //store extension
+  const [extension, setExtension] = useState('India'); //store extension
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [userNameError, setUserNameError] = useState(false);
   let firstname = null; //JSX for first name
   let lastname = null; //JSX for last name
@@ -142,11 +140,11 @@ if(props.loadingsocial) return <LoginLoadingIcon />
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
   let ExtensionOptions = [];
-  let mobilevariable = "";
+  let mobilevariable = '';
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -155,8 +153,12 @@ if(props.loadingsocial) return <LoginLoadingIcon />
       props.token &&
       props.phone &&
       props.name &&
-      props.token && props.name && props.phone !== "null" &&
-      props.token && props.name && props.phone !== null
+      props.token &&
+      props.name &&
+      props.phone !== 'null' &&
+      props.token &&
+      props.name &&
+      props.phone !== null
     )
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
@@ -202,13 +204,12 @@ if(props.loadingsocial) return <LoginLoadingIcon />
   //Submit OTP
   const submitOtpHandler = (event) => {
     event.preventDefault();
-    setUserNameError(false)
-
+    setUserNameError(false);
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
 
-  if(!userDetails.userName) return setUserNameError(true);      
+      if (!userDetails.userName) return setUserNameError(true);
 
       if (newUserValidity)
         props.onAuth(
@@ -265,8 +266,8 @@ if(props.loadingsocial) return <LoginLoadingIcon />
   const otpHandler = () => {
     // if (!userDetails.userName) setUserNameError(true);
     // else {
-      // setUserNameError(false);
-      props.onOtp(extensions[extension].label + mobile);
+    // setUserNameError(false);
+    props.onOtp(extensions[extension].label + mobile);
     // }
   };
   //TEST
@@ -275,7 +276,7 @@ if(props.loadingsocial) return <LoginLoadingIcon />
       username: extensions[extension].label + mobile,
     };
     axios
-      .post("https://apis.tarzanway.com/user/resend/otp/", authData)
+      .post('https://apis.tarzanway.com/user/resend/otp/', authData)
       .then((response) => {});
     setOtpResent(true);
   };
@@ -318,7 +319,7 @@ if(props.loadingsocial) return <LoginLoadingIcon />
         type="email"
         id="email"
         onChange={(event) => {
-          _userDetailsOnChangeHandler(event, "email");
+          _userDetailsOnChangeHandler(event, 'email');
         }}
       />
     </>
@@ -338,8 +339,8 @@ if(props.loadingsocial) return <LoginLoadingIcon />
       </OtpContainer>
       {props.otpFail && (
         <ErrorText>
-          <BiError style={{ fontSize: "1rem" }} />
-          <span style={{ marginLeft: "2px", marginTop: "2px" }}>
+          <BiError style={{ fontSize: '1rem' }} />
+          <span style={{ marginLeft: '2px', marginTop: '2px' }}>
             OTP is not valid
           </span>
         </ErrorText>
@@ -360,20 +361,20 @@ if(props.loadingsocial) return <LoginLoadingIcon />
       {!props.noheading ? (
         <h1
           style={{
-            fontSize: "24px",
-            textAlign: "left",
-            margin: "1rem 0rem 1rem 0.5rem ",
-            fontWeight: "700",
+            fontSize: '24px',
+            textAlign: 'left',
+            margin: '1rem 0rem 1rem 0.5rem ',
+            fontWeight: '700',
           }}
           className="font-lexend"
         >
-          {props.loginmessage ? props.loginmessage : "Login to your account"}
+          {props.loginmessage ? props.loginmessage : 'Login to your account'}
         </h1>
       ) : null}
       {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+      (props.token && props.phone === 'null') ? (
         <p
-          style={{ margin: "0 1rem 4rem 1rem", fontWeight: "100" }}
+          style={{ margin: '0 1rem 4rem 1rem', fontWeight: '100' }}
           className="font-lexend text-center"
         >
           This is where your experience captain can reach you to personalize
@@ -381,7 +382,7 @@ if(props.loadingsocial) return <LoginLoadingIcon />
         </p>
       ) : null}
       {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+      (props.token && props.phone === 'null') ? (
         <form noValidate>
           <MobileNumberContainer>
             <CountryCodeContainer>
@@ -464,37 +465,37 @@ if(props.loadingsocial) return <LoginLoadingIcon />
             boooking updates via WhatsApp
           </WhatsappCheckBox>
 
-
-          {props.newUser || (props.otpSent && !props.name) ? <FloatingInput
-            style={{ marginBottom: "0.7rem" }}
-            error={userNameError}
-            helperText={"Please enter valid username"}
-            placeholder={"Enter Your Full Name"}
-            key="userName"
-            required
-            id="userName"
-            label="Enter Your Full Name"
-            onChange={(event) => {
-              _userDetailsOnChangeHandler(event, "userName");
-            }}
-            margin="0.7rem 0rem"
-          /> : null}
+          {props.newUser || (props.otpSent && !props.name) ? (
+            <FloatingInput
+              style={{ marginBottom: '0.7rem' }}
+              error={userNameError}
+              helperText={'Please enter valid username'}
+              placeholder={'Enter Your Full Name'}
+              key="userName"
+              required
+              id="userName"
+              label="Enter Your Full Name"
+              onChange={(event) => {
+                _userDetailsOnChangeHandler(event, 'userName');
+              }}
+              margin="0.7rem 0rem"
+            />
+          ) : null}
 
           {props.newUser || (props.otpSent && !props.email) ? email : null}
 
-         
           {props.otpSent && (
             <div
               style={{
-                height: "1.2rem",
-                marginLeft: "2px",
-                fontSize: "0.7rem",
-                marginTop: "10px",
+                height: '1.2rem',
+                marginLeft: '2px',
+                fontSize: '0.7rem',
+                marginTop: '10px',
               }}
             >
-              <p style={{ letterSpacing: "2px" }}>
-                {props.otpSent && !otpResent ? "OTP HAS BEEN SENT" : null}
-                {props.otpSent && otpResent ? "OTP HAS BEEN RESENT" : null}
+              <p style={{ letterSpacing: '2px' }}>
+                {props.otpSent && !otpResent ? 'OTP HAS BEEN SENT' : null}
+                {props.otpSent && otpResent ? 'OTP HAS BEEN RESENT' : null}
               </p>
               <br></br>
             </div>
@@ -505,10 +506,10 @@ if(props.loadingsocial) return <LoginLoadingIcon />
           {props.otpSent ? (
             <UpdatePhone
               style={{
-                textAlign: "left",
-                width: "100%",
-                fontSize: "14px",
-                marginBlock: "0.5rem",
+                textAlign: 'left',
+                width: '100%',
+                fontSize: '14px',
+                marginBlock: '0.5rem',
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
@@ -521,7 +522,7 @@ if(props.loadingsocial) return <LoginLoadingIcon />
           {!props.otpSent ? (
             <Button
               onclick={otpHandler}
-              margin={props.nospacing ? "0" : "0.5rem 0"}
+              margin={props.nospacing ? '0' : '0.5rem 0'}
               width="100%"
               bgColor="#F7E700"
               fontWeight="500"
@@ -546,18 +547,18 @@ if(props.loadingsocial) return <LoginLoadingIcon />
             <button
               onClick={submitOtpHandler}
               style={{
-                width: "100%",
-                background: "#F7E700",
-                fontWeight: "500",
-                cursor: "pointer",
-                fontSize: "16px",
-                padding: "0.5rem",
-                border: "1px solid black",
-                boxShadow: "0px 2px 0px #ECEAEA",
-                borderRadius: "8px",
-                "&:hover": {
-                  background: "black",
-                  color: "white",
+                width: '100%',
+                background: '#F7E700',
+                fontWeight: '500',
+                cursor: 'pointer',
+                fontSize: '16px',
+                padding: '0.5rem',
+                border: '1px solid black',
+                boxShadow: '0px 2px 0px #ECEAEA',
+                borderRadius: '8px',
+                '&:hover': {
+                  background: 'black',
+                  color: 'white',
                 },
               }}
             >
@@ -571,17 +572,17 @@ if(props.loadingsocial) return <LoginLoadingIcon />
               ) : null}
             </button>
           )}
-          <div style={{ position: "relative", marginBlock: "2rem" }}>
+          <div style={{ position: 'relative', marginBlock: '2rem' }}>
             <hr></hr>
             <p
               style={{
-                position: "absolute",
-                background: "white",
-                top: "-12px",
-                left: "43%",
-                paddingInline: "10px",
-                fontSize: "16px",
-                fontWeight: "500",
+                position: 'absolute',
+                background: 'white',
+                top: '-12px',
+                left: '43%',
+                paddingInline: '10px',
+                fontSize: '16px',
+                fontWeight: '500',
               }}
             >
               OR
@@ -599,7 +600,7 @@ if(props.loadingsocial) return <LoginLoadingIcon />
                 render={(renderProps) => (
                   <Button
                     onclick={renderProps.onClick}
-                    margin={"0"}
+                    margin={'0'}
                     width="100%"
                     bgColor="#F9F9F9"
                     fontWeight="500"
@@ -612,14 +613,14 @@ if(props.loadingsocial) return <LoginLoadingIcon />
                   >
                     <img
                       src={google}
-                      style={{ height: "1.5rem", margin: "0 0.5rem" }}
+                      style={{ height: '1.5rem', margin: '0 0.5rem' }}
                     ></img>
                     <p
                       style={{
-                        margin: "0",
-                        fontWeight: "500",
-                        fontSize: "1rem",
-                        display: "inline",
+                        margin: '0',
+                        fontWeight: '500',
+                        fontSize: '1rem',
+                        display: 'inline',
                       }}
                       className="font-lexend"
                     >
@@ -655,17 +656,17 @@ if(props.loadingsocial) return <LoginLoadingIcon />
           </>
           <div
             className="text-center font-nuntio"
-            style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
+            style={{ fontSize: '12px', fontWeight: '300', margin: '1.5rem 0' }}
           >
-            By signing up you are agreeing with our{" "}
+            By signing up you are agreeing with our{' '}
             <Link
               href="/privacy-policy"
-              style={{ textDecoration: "none" }}
+              style={{ textDecoration: 'none' }}
               passHref
+              target="_blank"
+              style={{ color: 'black' }}
             >
-              <a style={{ color: "black" }} target="_blank">
-                T&Cs and privacy policy{" "}
-              </a>
+              T&Cs and privacy policy{' '}
             </Link>
           </div>
         </form>
@@ -673,12 +674,12 @@ if(props.loadingsocial) return <LoginLoadingIcon />
       {props.loadingsocial ? (
         <div
           style={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            top: "0",
-            zIndex: "2",
-            backgroundColor: "white",
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            top: '0',
+            zIndex: '2',
+            backgroundColor: 'white',
           }}
           className="center-div"
         >

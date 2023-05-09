@@ -14,6 +14,289 @@ const Container = styled.div`
 `;
 
 const TransfersContainer = (props) => {
+  // useEffect(() => {
+  //   console.log(props.transferBookings);
+  //   if (props.transferBookings)
+  //     for (var i = 0; i < props.transferBookings.length; i++) {
+  //       if (true) {
+  //         let oldbooking = false;
+  //         if (props.transferBookings[i].version === 'v1') oldbooking = true;
+  //         if (props.traveleritinerary) oldbooking = true;
+  //         let name = props.transferBookings[i]['name'];
+  //         let costings_breakdown =
+  //           props.transferBookings[i]['costings_breakdown'];
+  //         let cost = props.transferBookings[i]['booking_cost'];
+  //         let itinerary_id = props.transferBookings[i]['itinerary_id'];
+  //         let itinerary_name = props.transferBookings[i]['itinerary_name'];
+  //         let booking_type = props.transferBookings[i]['booking_type'];
+
+  //         // let accommodation = props.transferBookings[i]["accommodation"];
+  //         let tailored_id = props.transferBookings[i]['tailored_itinerary'];
+  //         let id = props.transferBookings[i]['id'];
+  //         let check_in = props.transferBookings[i]['check_in'];
+  //         let check_out = props.transferBookings[i]['check_out'];
+  //         let pax = {
+  //           number_of_adults: props.transferBookings[i]['number_of_adults'],
+  //           number_of_children: props.transferBookings[i]['number_of_children'],
+  //           number_of_infants: props.transferBookings[i]['number_of_infants'],
+  //         };
+  //         let city = props.transferBookings[i]['city'];
+  //         let room_type = props.transferBookings[i]['room_type'];
+  //         let taxi_type = props.transferBookings[i]['taxi_type'];
+  //         let transfer_type = props.transferBookings[i]['transfer_type'];
+  //         let city_id = props.transferBookings[i]['city_id'];
+  //         let destination_city = props.transferBookings[i]['destination_city'];
+  //         let duration = props.transferBookings[i]['duration'];
+  //         let origin_iata = props.transferBookings[i]['origin_city_iata_code'];
+  //         let destination_iata =
+  //           props.transferBookings[i]['destination_city_iata_code'];
+  //         if (oldbooking) {
+  //           bookings_transfers.push(
+  //             <OldBookingCard
+  //               payment={props.payment}
+  //               key={i}
+  //               setShowBookingModal={(props) =>
+  //                 _changeBookingHandler(
+  //                   name,
+  //                   itinerary_id,
+  //                   tailored_id,
+  //                   accommodation,
+  //                   id,
+  //                   check_in,
+  //                   check_out,
+  //                   pax,
+  //                   city,
+  //                   room_type,
+  //                   number_of_rooms,
+  //                   itinerary_name
+  //                 )
+  //               }
+  //               showBookingModal={props.showBookingModal}
+  //               setHideBookingModal={props.setHideBookingModal}
+  //               blur={props.blur}
+  //               setImagesHandler={props.setImagesHandler}
+  //               accommodation
+  //               heading={props.transferBookings[i]['name']}
+  //               details={props.transferBookings[i]['points']}
+  //               rating={props.transferBookings[i]['user_rating']}
+  //               setImagesHandler={_setImagesHandler}
+  //               images={props.transferBookings[i]['images']}
+  //             ></OldBookingCard>
+  //           );
+  //         } else {
+  //           console.log(props.transferBookings[i].booking_type);
+  //           if (props.transferBookings[i].booking_type === 'Taxi')
+  //             bookings_transfers.push(
+  //               <TaxiBookingCard
+  //                 is_registration_needed={
+  //                   props.payment ? props.payment.is_registration_needed : false
+  //                 }
+  //                 isDatePresent={props.isDatePresent}
+  //                 token={props.token}
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 setShowTaxiModal={(props) =>
+  //                   _changeTaxiHandler(
+  //                     name,
+  //                     itinerary_id,
+  //                     tailored_id,
+  //                     id,
+  //                     check_in,
+  //                     check_out,
+  //                     pax,
+  //                     city,
+  //                     itinerary_name,
+  //                     cost,
+  //                     costings_breakdown,
+  //                     origin_iata,
+  //                     destination_iata,
+  //                     destination_city,
+  //                     taxi_type,
+  //                     transfer_type
+  //                   )
+  //                 }
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 token={props.token}
+  //                 _deselectTransferBookingHandler={
+  //                   props._deselectTransferBookingHandler
+  //                 }
+  //                 transferFlickityIndex={props.transferFlickityIndex}
+  //                 is_selecting={
+  //                   props.transferBookings[i].id === props.selectingBooking
+  //                 }
+  //                 data={props.transferBookings[i]}
+  //                 cardUpdateLoading={props.cardUpdateLoading}
+  //                 is_stock={props.is_stock}
+  //                 _selectTaxiHandler={props._selectTaxiHandler}
+  //                 is_auth={props.is_auth}
+  //                 are_prices_hidden={
+  //                   props.payment ? props.payment.are_prices_hidden : false
+  //                 }
+  //                 is_registration_needed={
+  //                   props.payment ? props.payment.is_registration_needed : false
+  //                 }
+  //                 payment={props.payment}
+  //                 key={i}
+  //                 setImagesHandler={_setImagesHandler}
+  //                 setHideTaxiModal={() => props.setShowTaxiModal(false)}
+  //               ></TaxiBookingCard>
+  //             );
+  //           else if (props.transferBookings[i].booking_type === 'Bus')
+  //             bookings_transfers.push(
+  //               <BusBookingCard
+  //                 is_registration_needed={
+  //                   props.payment ? props.payment.is_registration_needed : false
+  //                 }
+  //                 isDatePresent={props.isDatePresent}
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 token={props.token}
+  //                 _deselectTransferBookingHandler={
+  //                   props._deselectTransferBookingHandler
+  //                 }
+  //                 transferFlickityIndex={props.transferFlickityIndex}
+  //                 is_selecting={
+  //                   props.transferBookings[i].id === props.selectingBooking
+  //                 }
+  //                 data={props.transferBookings[i]}
+  //                 cardUpdateLoading={props.cardUpdateLoading}
+  //                 is_stock={props.is_stock}
+  //                 _selectTaxiHandler={props._selectTaxiHandler}
+  //                 is_auth={props.is_auth}
+  //                 are_prices_hidden={
+  //                   props.payment ? props.payment.are_prices_hidden : false
+  //                 }
+  //                 payment={props.payment}
+  //                 key={i}
+  //                 setImagesHandler={_setImagesHandler}
+  //               ></BusBookingCard>
+  //             );
+  //           else if (props.transferBookings[i].booking_type === 'Ferry')
+  //             bookings_transfers.push(
+  //               <FerryBookingCard
+  //                 is_registration_needed={
+  //                   props.payment ? props.payment.is_registration_needed : false
+  //                 }
+  //                 isDatePresent={props.isDatePresent}
+  //                 token={props.token}
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 setShowTaxiModal={(props) =>
+  //                   _changeTaxiHandler(
+  //                     name,
+  //                     itinerary_id,
+  //                     tailored_id,
+  //                     id,
+  //                     check_in,
+  //                     check_out,
+  //                     pax,
+  //                     city,
+  //                     itinerary_name,
+  //                     cost,
+  //                     costings_breakdown,
+  //                     origin_iata,
+  //                     destination_iata,
+  //                     destination_city,
+  //                     taxi_type,
+  //                     transfer_type
+  //                   )
+  //                 }
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 token={props.token}
+  //                 _deselectTransferBookingHandler={
+  //                   props._deselectTransferBookingHandler
+  //                 }
+  //                 transferFlickityIndex={props.transferFlickityIndex}
+  //                 is_selecting={
+  //                   props.transferBookings[i].id === props.selectingBooking
+  //                 }
+  //                 data={props.transferBookings[i]}
+  //                 cardUpdateLoading={props.cardUpdateLoading}
+  //                 is_stock={props.is_stock}
+  //                 _selectTaxiHandler={props._selectTaxiHandler}
+  //                 is_auth={props.is_auth}
+  //                 are_prices_hidden={
+  //                   props.payment ? props.payment.are_prices_hidden : false
+  //                 }
+  //                 payment={props.payment}
+  //                 key={i}
+  //                 setImagesHandler={_setImagesHandler}
+  //                 setHideTaxiModal={() => props.setShowTaxiModal(false)}
+  //               ></FerryBookingCard>
+  //             );
+  //           else if (props.transferBookings[i].booking_type === 'Rental')
+  //             bookings_transfers.push(
+  //               <TaxiBookingCard
+  //                 rental
+  //                 is_registration_needed={
+  //                   props.payment ? props.payment.is_registration_needed : false
+  //                 }
+  //                 isDatePresent={props.isDatePresent}
+  //                 token={props.token}
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 setShowTaxiModal={(props) =>
+  //                   _changeTaxiHandler(
+  //                     name,
+  //                     itinerary_id,
+  //                     tailored_id,
+  //                     id,
+  //                     check_in,
+  //                     check_out,
+  //                     pax,
+  //                     city,
+  //                     itinerary_name,
+  //                     cost,
+  //                     costings_breakdown,
+  //                     origin_iata,
+  //                     destination_iata,
+  //                     destination_city,
+  //                     taxi_type,
+  //                     transfer_type
+  //                   )
+  //                 }
+  //                 setShowLoginModal={setShowLoginModal}
+  //                 token={props.token}
+  //                 _deselectTransferBookingHandler={
+  //                   props._deselectTransferBookingHandler
+  //                 }
+  //                 transferFlickityIndex={props.transferFlickityIndex}
+  //                 is_selecting={
+  //                   props.transferBookings[i].id === props.selectingBooking
+  //                 }
+  //                 data={props.transferBookings[i]}
+  //                 cardUpdateLoading={props.cardUpdateLoading}
+  //                 is_stock={props.is_stock}
+  //                 _selectTaxiHandler={props._selectTaxiHandler}
+  //                 is_auth={props.is_auth}
+  //                 are_prices_hidden={
+  //                   props.payment ? props.payment.are_prices_hidden : false
+  //                 }
+  //                 is_registration_needed={
+  //                   props.payment ? props.payment.is_registration_needed : false
+  //                 }
+  //                 payment={props.payment}
+  //                 key={i}
+  //                 setImagesHandler={_setImagesHandler}
+  //                 setHideTaxiModal={() => props.setShowTaxiModal(false)}
+  //               ></TaxiBookingCard>
+  //             );
+  //         }
+  //       }
+
+  //       // setAlternates(alternatesarr);
+  //       setBookingTransfersDesktopJSX([...bookings_transfers]);
+  //       setBookingTransfersMobileJSX(
+  //         <Flickity
+  //           initialIndex={props.transferFlickityIndex}
+  //           cards={[...bookings_transfers]}
+  //         ></Flickity>
+  //       );
+  //     }
+  // }, [
+  //   props.transferBookings,
+  //   props.cardUpdateLoading,
+  //   props.selectingBooking,
+  //   props.token,
+  //   props.payment,
+  // ]);
+
   console.log('transfersBooking');
   console.log(props.transferBookings);
   //Stores initial order of locations
@@ -171,14 +454,18 @@ const TransfersContainer = (props) => {
     props.setShowTaxiModal(true);
   };
   function getTransportationType(url) {
-    const fileName = url.substring(
-      url.lastIndexOf('/') + 1,
-      url.lastIndexOf('.')
-    );
-    const firstLetter = fileName.charAt(0).toUpperCase();
-    const restOfWord = fileName.slice(1);
-    const transportationType = firstLetter + restOfWord;
-    return transportationType;
+    if (url) {
+      const fileName = url.substring(
+        url.lastIndexOf('/') + 1,
+        url.lastIndexOf('.')
+      );
+      const firstLetter = fileName.charAt(0).toUpperCase();
+      const restOfWord = fileName.slice(1);
+      const transportationType = firstLetter + restOfWord;
+      return transportationType;
+    } else {
+      return url;
+    }
   }
   function scrollToTargetAdjusted() {
     // if (window.location.pathname === '/') {
@@ -218,7 +505,6 @@ const TransfersContainer = (props) => {
   let endingcity = null;
   if (props.breif)
     if (props.breif.city_slabs) {
-      
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].is_departure_only)
           startingcity = props.breif.city_slabs[0].city_name;
@@ -228,43 +514,20 @@ const TransfersContainer = (props) => {
         if (
           !props.breif.city_slabs[i].is_trip_terminated &&
           !props.breif.city_slabs[i].is_departure_only &&
-          !props.breif.city_slabs[i].is_departure_only &&
-          props.breif.city_slabs[i].duration &&
-          props.breif.city_slabs[i].duration !== '0'
+          !props.breif.city_slabs[i].is_departure_only
         ) {
-          
-          if (props.routes.length >= 1) {
+          if (props?.routes[i - 1]) {
             locationsArr.push(
               <PinSection
                 setCurrentPopup={false}
                 handlemap={handlemap}
-                setShowTaxiModal={(props) =>
-                  _changeTaxiHandler(
-                    name,
-                    itinerary_id,
-                    tailored_id,
-                    id,
-                    check_in,
-                    check_out,
-                    pax,
-                    city,
-                    itinerary_name,
-                    cost,
-                    costings_breakdown,
-                    origin_iata,
-                    destination_iata,
-                    destination_city,
-                    taxi_type,
-                    transfer_type
-                  )
-                }
                 dayId={
-                  props.routes[i - 1].day_slab_location.start_day_slab_index
+                  props.routes[i - 1]?.day_slab_location?.start_day_slab_index
                 }
                 cityData={props.routes[i - 1]}
                 dayslab={props.dayslab}
-                lat={props.routes[i - 1].lat}
-                long={props.routes[i - 1].long}
+                lat={props.routes[i - 1]?.lat}
+                long={props.routes[i - 1]?.long}
                 Mapid={props.routes[i - 1].gmaps_place_id}
                 city={props.routes[i - 1].city_name}
                 cityId={props.routes[i - 1].city_id}
@@ -301,10 +564,14 @@ const TransfersContainer = (props) => {
                         heading={
                           props?.transferBookings[i + 1]?.booking_display_name
                         }
+                        index={i + 1}
                         icon={props?.transfers[i + 1]?.icon}
                         modes={getTransportationType(
                           props?.transfers[i + 1]?.icon
                         )}
+                        transferbookings={props.transferBookings}
+                        _changeTaxiHandler={_changeTaxiHandler}
+                        setShowTaxiModal={props.setShowTaxiModal}
                         icon={props?.transferBookings[i + 1]?.images?.image}
                         taxi_type={props?.transferBookings[i + 1]?.taxi_type}
                         transportMode={getTransportationType(
@@ -314,11 +581,15 @@ const TransfersContainer = (props) => {
                       ></TransferModeContainer>
                       <TransferModeContainer
                         booking_type={props?.transferBookings[i]?.booking_type}
+                        transferbookings={props.transferBookings}
+                        _changeTaxiHandler={_changeTaxiHandler}
+                        setShowTaxiModal={props.setShowTaxiModal}
                         pinColour={props.breif.city_slabs[i].color}
                         costings_breakdown={
                           props?.transferBookings[i]?.costings_breakdown
                         }
                         booking={props?.transferBookings[i]}
+                        index={i}
                         heading={
                           props?.transferBookings[i]?.booking_display_name
                         }
@@ -344,7 +615,11 @@ const TransfersContainer = (props) => {
                         heading={
                           props?.transferBookings[i]?.booking_display_name
                         }
+                        transferbookings={props.transferBookings}
+                        _changeTaxiHandler={_changeTaxiHandler}
+                        setShowTaxiModal={props.setShowTaxiModal}
                         icon={props?.transfers[i]?.icon}
+                        index={i}
                         booking={props?.transferBookings[i]}
                         modes={getTransportationType(props?.transfers[i]?.icon)}
                         icon={props?.transferBookings[i]?.images?.image}
@@ -432,10 +707,16 @@ const TransfersContainer = (props) => {
                     pinColour={props.breif.city_slabs[i].color}
                     modes={'Taxi'}
                     icon={props?.transferBookings[i]?.images?.image}
+                    setShowBookingModal={props?.setShowBookingModal}
                     taxi_type={props?.transferBookings[i]?.taxi_type}
+                    index={i}
+                    transferbookings={props.transferBookings}
+                    _changeTaxiHandler={_changeTaxiHandler}
+                    setShowTaxiModal={props.setShowTaxiModal}
                     transportMode={
                       props.breif.city_slabs[i].intracity_transport
                     }
+                    index={i}
                     duration={props.breif.city_slabs[i].duration}
                   ></TransferModeContainer>
                 );
@@ -487,10 +768,16 @@ const TransfersContainer = (props) => {
       {props?.transferBookings && (
         <TransferModeContainer
           booking_type={props?.transferBookings[0]?.booking_type}
+          setShowBookingModal={props.setShowBookingModal}
           pinColour={props.breif.city_slabs[0].color}
           heading={props?.transferBookings[0]?.booking_display_name}
           costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
           modes={'Taxi'}
+          transferbookings={props.transferBookings}
+          booking={props.transferBookings[0]}
+          _changeTaxiHandler={_changeTaxiHandler}
+          setShowTaxiModal={props.setShowTaxiModal}
+          index={0}
           icon={props?.transferBookings[0]?.images?.image}
           taxi_type={props?.transferBookings[0]?.taxi_type}
           transportMode={'Taxi'}

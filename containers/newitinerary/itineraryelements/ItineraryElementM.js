@@ -66,7 +66,7 @@ const ItineraryElementM = (props) => {
         <div>
           <div className="pb-3 pt-2 ">{props.text ? props.text : null}</div>
           {props.booking ? (
-            <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center justify-between w-full">
               <LivelyButton className="font-bold border-2 border-black rounded-md px-3 py-1  bg-white text-black">
                 View Booking
               </LivelyButton>

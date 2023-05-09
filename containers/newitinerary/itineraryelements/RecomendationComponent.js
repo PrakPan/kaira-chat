@@ -16,7 +16,7 @@ import { LivelyButton } from '../../../components/LiveleyButton';
 
 const RecomendationComponent = (props) => {
   const [viewMore, setViewMore] = useState(false);
-  return props.recomendation ? (
+  return props.recomendation || props.recomendation.length < 1 ? (
     <div>
       <Timecontainer>
         {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
@@ -25,6 +25,7 @@ const RecomendationComponent = (props) => {
       <TInfoContainer>
         {/* <HLine style={{ width: '2rem' }}></HLine> */}
         {/* <Line></Line> */}
+
         <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-0'}`}>
           <div className="text-lg font-semibold pb-3">{props.heading}</div>
           {props.recomendation ? (

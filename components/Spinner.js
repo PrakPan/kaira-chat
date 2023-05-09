@@ -1,31 +1,32 @@
 import React from 'react';
 import styled from 'styled-components';
-import { CircularProgress } from '@mui/material';
+// import { CircularProgress } from '@mui/material';
 
 const Container = styled.div`
   display: ${(props) => (props.display ? props.display : 'block')};
   height: max-content;
 `;
 
-const Spinner = styled(CircularProgress)`
-  color: ${(props) =>
-    props.color ? props.color + ' !important' : 'black !important'};
-  margin: ${(props) => (props.margin ? props.margin : '1rem')};
-  visibility: ${(props) => (props.visibility ? props.visibility : 'visibile')};
-`;
+// const Spinner = styled(CircularProgress)`
+//   color: ${(props) =>
+//     props.color ? props.color + ' !important' : 'black !important'};
+//   margin: ${(props) => (props.margin ? props.margin : '1rem')};
+//   visibility: ${(props) => (props.visibility ? props.visibility : 'visibile')};
+// `;
 
 const spinner = (props) => {
   let size = 40;
   if (props.size) size = props.size;
   return (
     <Container display={props.display}>
-      <Spinner
+      loading...
+      {/* <Spinner
         color={props.color}
         hoverColor={props.hoverColor}
         visibility={props.visibility}
         margin={props.margin}
         size={size}
-      ></Spinner>
+      ></Spinner> */}
     </Container>
   );
 };

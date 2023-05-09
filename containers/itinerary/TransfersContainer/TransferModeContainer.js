@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import ImageLoader from '../../../components/ImageLoader';
 import { format, parseISO } from 'date-fns';
-
+import * as ga from '../../../services/ga/Index';
 import { FaPlane } from 'react-icons/fa';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
@@ -47,10 +47,10 @@ const Line = styled.hr`
   opacity: initial;
 
   @media screen and (min-width: 768px) {
-    width: 8rem;
+    width: 9.4rem;
     height: 2px;
-    top: 46px;
-    right: -48px;
+    top: 61px;
+    right: -60px;
   }
   /* border-style: dashed;
   border-width: 1.4px;
@@ -65,6 +65,52 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
+  function HandleTransport(i) {
+    let name = props.booking['name'];
+    let costings_breakdown = props.booking['costings_breakdown'];
+    let cost = props.booking['booking_cost'];
+    let itinerary_id = props.booking['itinerary_id'];
+    let itinerary_name = props.booking['itinerary_name'];
+    let booking_type = props.booking['booking_type'];
+
+    // let accommodation = props.booking["accommodation"];
+    let tailored_id = props.booking['tailored_itinerary'];
+    let id = props.booking['id'];
+    let check_in = props.booking['check_in'];
+    let check_out = props.booking['check_out'];
+    let pax = {
+      number_of_adults: props.booking['number_of_adults'],
+      number_of_children: props.booking['number_of_children'],
+      number_of_infants: props.booking['number_of_infants'],
+    };
+    let city = props.booking['city'];
+    let room_type = props.booking['room_type'];
+    let taxi_type = props.booking['taxi_type'];
+    let transfer_type = props.booking['transfer_type'];
+    let city_id = props.booking['city_id'];
+    let destination_city = props.booking['destination_city'];
+    let duration = props.booking['duration'];
+    let origin_iata = props.booking['origin_city_iata_code'];
+    let destination_iata = props.booking['destination_city_iata_code'];
+    props._changeTaxiHandler(
+      name,
+      itinerary_id,
+      tailored_id,
+      id,
+      check_in,
+      check_out,
+      pax,
+      city,
+      itinerary_name,
+      cost,
+      costings_breakdown,
+      origin_iata,
+      destination_iata,
+      destination_city,
+      taxi_type,
+      transfer_type
+    );
+  }
   const Facilities = [
     `${props?.costings_breakdown?.taxi_occupancy ?? '2'} Seater`,
     `${props?.costings_breakdown?.distance?.text ?? 'Leisure'}`,
@@ -77,7 +123,7 @@ const TransferModeContainer = (props) => {
         <Line pinColour={props.pinColour} Transfers={true} />
       </div>
       {props.booking_type == 'Flight' ? (
-        <div className="flex flex-row gap-2 w-full py-[12px]">
+        <div className="flex flex-row gap-2 w-full py-[8px]">
           <div className="grid bg-[#F4F4F4]  place-items-center w-32 rounded-2xl">
             <TransportIconFetcher
               TransportMode={props.booking_type}
@@ -160,7 +206,10 @@ const TransferModeContainer = (props) => {
                   ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
                   {props.duration}h 30m)
                 </div>
-                <div className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md">
+                <div
+                  onClick={() => HandleTransport(props.index)}
+                  className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                >
                   Edit
                 </div>
               </div>

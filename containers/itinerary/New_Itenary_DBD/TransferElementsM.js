@@ -72,7 +72,7 @@ const TransferElementsM = ({
         ) : null}
         {booking ? (
           meta.estimated_cost ? (
-            <div className="flex mt-2 flex-row items-center justify-between">
+            <div className="flex mt-2 flex-row items-center justify-between w-full">
               <LivelyButton className="font-bold  border-2 border-black rounded-md px-3 py-1  bg-white text-black">
                 {modes ? `${modes} From ` : null} ₹
                 {formatNumber(meta.estimated_cost)}

@@ -36,7 +36,19 @@ const limeOptions = {
   dashOffset: '15',
 };
 const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
-  const [mapZoom, setMapZoom] = useState(5);
+  const [mapZoom, setMapZoom] = useState(() => NearestLocation());
+  const [mapCenter, setMapCenter] = useState(() => findCenterPoint());
+  function findCenterPoint() {
+    const points = locations.map((place) => ({
+      lat: place.lat,
+      long: place.long,
+    }));
+    const latSum = points.reduce((sum, point) => sum + point.lat, 0);
+    const longSum = points.reduce((sum, point) => sum + point.long, 0);
+    const latAvg = latSum / points.length;
+    const longAvg = longSum / points.length;
+    return { lat: latAvg, long: longAvg };
+  }
   function sortWholeNumbersDescending(arr) {
     // Convert decimal numbers to whole numbers using Math.floor()
     const wholeNumbers = arr.map((num) => Math.floor(num));
@@ -48,16 +60,16 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   }
   function getDegree(value) {
     const degrees = [
-      { range: [0, 49], degree: 11 },
-      { range: [50, 99], degree: 10 },
-      { range: [100, 149], degree: 9 },
-      { range: [150, 199], degree: 8 },
-      { range: [200, 249], degree: 7 },
-      { range: [250, 299], degree: 6 },
-      { range: [300, 349], degree: 5 },
-      { range: [350, 399], degree: 4 },
-      { range: [400, 449], degree: 3 },
-      { range: [450, Infinity], degree: 2 },
+      { range: [0, 49], degree: 12 },
+      { range: [50, 99], degree: 11 },
+      { range: [100, 149], degree: 10 },
+      { range: [150, 199], degree: 9 },
+      { range: [200, 249], degree: 8 },
+      { range: [250, 299], degree: 7 },
+      { range: [300, 349], degree: 6 },
+      { range: [350, 399], degree: 5 },
+      { range: [400, 449], degree: 4 },
+      { range: [450, Infinity], degree: 3 },
     ];
 
     for (let i = 0; i < degrees.length; i++) {
@@ -69,6 +81,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
       }
     }
   }
+
   function NearestLocation() {
     const distanceArray = [];
     locations.map((location, index) => {
@@ -86,7 +99,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
 
     const longestroute = sortWholeNumbersDescending(distanceArray)[0];
     console.log(longestroute);
-    setMapZoom(getDegree(longestroute));
+    return getDegree(longestroute);
     // var firstelement = filtered.sort()[0];
     // const firstData = distanceArray.filter((element, index) => {
     //   return firstelement === filtered;
@@ -185,7 +198,7 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
   console.log(polylines);
   return locations ? (
     <MapContainer
-      center={[locations[0]?.lat, locations[0]?.long]}
+      center={[mapCenter?.lat, mapCenter?.long]}
       zoom={mapZoom}
       scrollWheelZoom={false}
       style={{ height: '100%', width: '100%', borderRadius: '1rem' }}

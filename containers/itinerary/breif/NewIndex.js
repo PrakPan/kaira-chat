@@ -217,7 +217,8 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
-
+  console.log('Locationlatlong');
+  console.log(Locationlatlong);
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
