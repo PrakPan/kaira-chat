@@ -139,7 +139,6 @@ const Enquiry = (props) => {
                   required
                   fullWidth
                   name="name"
-                  label="Your Name"
                   type="name"
                   id="name"
                   onChange={(event) => setName(event.target.value)}

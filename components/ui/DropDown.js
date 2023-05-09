@@ -24,10 +24,10 @@ const DropDownIcon = styled.div`
   height: 1rem;
   right: 5px;
   top: 1rem;
-
   transform: rotate(0deg);
   transition: all 0.3s ease-out;
-  transform: ${(props) => (props.rotate ? `rotate(180deg)` : "")};
+  transform: ${(props) =>
+    props.rotate ? `rotate(180deg) ; translate: 0px 0.5rem` : ""};
 `;
 const Children = styled.div`
   position: absolute;

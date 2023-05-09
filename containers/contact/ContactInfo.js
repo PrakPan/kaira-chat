@@ -118,12 +118,14 @@ const Contact = () => {
             Reach Out
           </HeadingSmall>
           {/* <ReachOutHelper>Email us on</ReachOutHelper> */}
-          <p
-            style={{ fontSize: "1rem", textAlign: "center", color: "#0066b2" }}
-            className="font-nunito"
+          <div style={{ display: 'flex' , justifyContent : 'center'}}>
+          <a
+            href="mailto:info@thetarzanway.com"
+            style={{ fontSize: "1rem", color: "#0066b2" , textDecoration : 'none' }}
           >
             info@thetarzanway.com
-          </p>
+            </a>
+            </div>
           {/* <ReachOutHelper>or</ReachOutHelper> */}
           {/* <p style={{fontSize: '1rem', textAlign: "center"}} className="font-nunito">+91 9582125476</p> */}
           {/* <ButtonContainer>

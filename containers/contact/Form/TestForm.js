@@ -217,7 +217,8 @@ export default function SignUp() {
         height='60px'
         error={checkEmpty == "query_type"}
         helperText={"Please Select Your Interest"}
-        >{DropDownQueries.map((e,i)=><option key={i} value={e.value}>{e.text}</option>)}</DropDown>
+        >{DropDownQueries.map((e,i)=><option style={{borderBottom
+        : '1px solid #e6e6e6'}} key={i} value={e.value}>{e.text}</option>)}</DropDown>
         </div>
 }
         {typeof window !== "undefined" ? (

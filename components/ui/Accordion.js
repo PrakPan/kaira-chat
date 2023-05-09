@@ -14,12 +14,13 @@ const DownIcon = styled.div`
   position: absolute;
   top: 50%;
   font-size: 2rem;
-  right : 0.5rem;
+  right: 0.5rem;
   color: gray;
-  transform : translateY(-90%);
-  transform: ${(props) => (props.rotate ? `rotate(180deg)` : "")};
+  transform: translateY(-90%);
+  transform: ${(props) =>
+    props.rotate ? `rotate(180deg); translate: 0px 0.5rem` : ""};
   transition: all 0.3s ease-out;
-  height : 30%;
+  height: 30%;
 `;
 const Summary= styled.div`
 position : relative;
