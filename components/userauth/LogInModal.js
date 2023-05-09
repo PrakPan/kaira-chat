@@ -626,31 +626,33 @@ if (props.loadingsocial) return (
                     boxShadow="0px 2px 0px #ECEAEA"
                     borderRadius="8px"
                   >
-                    <div
-                      style={{
-                        height: "1.5rem",
-                        width: "1.5rem",
-                        margin: "0 0.5rem",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 100, width: 100 }}
-                        url={"media/icons/login/google.svg"}
-                        height="1.5rem"
-                        width="1.5rem"
-                      />
+                    <div style={{display : 'flex' , justifyContent : 'center' , alignItems : 'center'}}>
+                      <div
+                        style={{
+                          height: "1.5rem",
+                          width: "1.5rem",
+                          margin: "0 0.5rem",
+                        }}
+                      >
+                        <ImageLoader
+                          dimensions={{ height: 100, width: 100 }}
+                          url={"media/icons/login/google.svg"}
+                          height="1.5rem"
+                          width="1.5rem"
+                        />
+                      </div>
+                      <p
+                        style={{
+                          margin: "0",
+                          fontWeight: "500",
+                          fontSize: "1rem",
+                          display: "inline",
+                        }}
+                        className="font-lexend"
+                      >
+                        Sign in with Google
+                      </p>
                     </div>
-                    <p
-                      style={{
-                        margin: "0",
-                        fontWeight: "500",
-                        fontSize: "1rem",
-                        display: "inline",
-                      }}
-                      className="font-lexend"
-                    >
-                      Sign in with Google
-                    </p>
                     {/* {props.loadingsocial ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null} */}
                   </Button>
                 )}

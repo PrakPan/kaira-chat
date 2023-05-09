@@ -81,6 +81,7 @@ export default function Modal(props) {
   }
   useEffect(() => {
     set_document(document)
+    return ()=>document.body.style.overflowY = 'scroll'
 }, [])
   const [fade, setFade] = useState("out");
   function onCLose() {
