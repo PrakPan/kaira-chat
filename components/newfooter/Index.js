@@ -126,7 +126,7 @@ const NewFooter = (props) => {
      {e.data.map((data) => (
        <Links>
          {typeof data.link != "string" ? (
-           <a href={data.link[0]}>{data.title}</a>
+           <a href={data.link[0]} target='_blank'>{data.title}</a>
          ) : data.title == "Personalise" ? (
            <p onClick={() => openTailoredModal(router)}>{data.title}</p>
          ) : data.title == "Subscribe" ? (

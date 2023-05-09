@@ -344,7 +344,7 @@ const _addCityHandler = (city_id, city) => {
             // _nextQuestionHandler();
             window.scrollTo(0,0);
             if(!response.data.auto_itinerary_created) {
-              window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+             router.push("/thank-you");
             
                }
            else{
@@ -357,7 +357,7 @@ const _addCityHandler = (city_id, city) => {
 
             }
           }).catch( err => {
-            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+           router.push("/thank-you");
           }
           );
       }

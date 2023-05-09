@@ -165,7 +165,7 @@ const ProfileDropDown =(props)=>{
         {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
 
         <Link
-          style={{ textDecoration: "none" }}
+          style={{ textDecoration: "none", color: "rgba(0,0,0,0.7)" }}
           href={urls.DASHBOARD}
           className="next-link"
           passHref={true}

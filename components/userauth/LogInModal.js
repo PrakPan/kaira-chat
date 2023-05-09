@@ -19,6 +19,7 @@ import { BiError } from "react-icons/bi";
 import LoginLoadingIcon from '../ui/LoadingLottie'
 import Image from 'next/image'
 import ImageLoader from "../ImageLoader";
+import media from '../media'
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -31,7 +32,7 @@ const WhatsappCheckBox = styled.div`
   line-height: 16px;
   display: flex;
   gap: 0.3rem;
-  margin-block: 0.7rem 1rem;
+  margin-block: 1rem 1rem;
   align-items: center;
 `;
 
@@ -360,6 +361,8 @@ if (props.loadingsocial) return (
 
   const googleResponse = (response) => {};
   // if(!props.loadingsocial)
+      let isPageWide = media("(min-width: 768px)");
+
 
   return (
     <div className="font-lexend">
@@ -368,7 +371,9 @@ if (props.loadingsocial) return (
           style={{
             fontSize: "24px",
             textAlign: "left",
-            margin: "1rem 0rem 1rem 0.5rem ",
+            margin: isPageWide
+              ? "1.2rem 0rem 1.2rem 0.5rem"
+              : "0rem 0rem 1rem 0.5rem",
             fontWeight: "700",
           }}
           className="font-lexend"
@@ -587,7 +592,7 @@ if (props.loadingsocial) return (
               ) : null}
             </button>
           )}
-          <div style={{ position: "relative", marginBlock: "2rem" }}>
+          <div style={{ position: "relative", marginBlock: isPageWide? "3rem" : "2rem" }}>
             <hr></hr>
             <p
               style={{
@@ -626,7 +631,13 @@ if (props.loadingsocial) return (
                     boxShadow="0px 2px 0px #ECEAEA"
                     borderRadius="8px"
                   >
-                    <div style={{display : 'flex' , justifyContent : 'center' , alignItems : 'center'}}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
                       <div
                         style={{
                           height: "1.5rem",

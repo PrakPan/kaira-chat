@@ -207,33 +207,38 @@ const Mobile = (props) => {
   ];
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
   const MainLinksDiv = LinksArr.map((e) => {
-    if (e.type === "main")
-      return (
-        <ListItem
-          onClick={e.onclick && e.onclick}
-          style={
-            router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
-          }
-        >
-          {e.icon && (
-            <ImageLoader
-              leftalign
-              url={e.icon}
-              height="20px"
-              width="20px"
-              dimensions={{ height: 50, width: 50 }}
-              dimensionsMobile={{ height: 50, width: 50 }}
-              widthmobile="20px"
-            />
-          )}
-          {e.link && (
-            <StyledLink style={{textDecoration : 'none'}} href={e.link} className="next-link" passHref={true}>
-              {e.text}
-            </StyledLink>
-          )}
-          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
-        </ListItem>
-      );
+      if (e.type === "main")
+        return (
+          <ListItem
+            onClick={e.onclick && e.onclick}
+            style={
+              router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
+            }
+          >
+            {e.icon && (
+              <ImageLoader
+                leftalign
+                url={e.icon}
+                height="20px"
+                width="20px"
+                dimensions={{ height: 50, width: 50 }}
+                dimensionsMobile={{ height: 50, width: 50 }}
+                widthmobile="20px"
+              />
+            )}
+            {e.link && (
+              <StyledLink
+                style={{ textDecoration: "none" }}
+                href={e.link}
+                className="next-link"
+                passHref={true}
+              >
+                {e.text}
+              </StyledLink>
+            )}
+            {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
+          </ListItem>
+        );
   });
 
   const OtherLinksDiv = LinksArr.map((e) => {
