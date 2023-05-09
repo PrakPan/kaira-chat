@@ -1,15 +1,5 @@
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
-// import img from '../../../assets/carousel/yoga.jpg';
-// import img2 from '../../../assets/carousel/food.jpg';
-// import img3 from '../../../assets/carousel/yoga.jpg';
-// import img4 from '../../../assets/carousel/scuba.jpg';
-// import img5 from '../../../assets/carousel/monument.jpg';
-// import img6 from '../../../assets/carousel/play.jpg';
-// import img7 from '../../../assets/carousel/concert.jpg';
-// import img8 from '../../../assets/carousel/trek.jpg';
-// import img9 from '../../../assets/carousel/art.jpg';
-// import img10 from '../../../assets/carousel/road.jpg';
 import Button from '../../Button';
 
 import styled from 'styled-components';

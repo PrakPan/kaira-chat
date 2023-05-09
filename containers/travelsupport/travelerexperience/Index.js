@@ -3,7 +3,6 @@ import styled from 'styled-components';
 // import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index'
 import ImageLoader from '../../../components/ImageLoader';
-import quote from '../../../public/assets/double-quotes.png'
 import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
 import { ImQuotesLeft } from 'react-icons/im';

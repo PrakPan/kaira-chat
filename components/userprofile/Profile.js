@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
-// import img from '../../assets/userdp.png';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faHiking } from "@fortawesome/free-solid-svg-icons";
 import { connect } from "react-redux";
