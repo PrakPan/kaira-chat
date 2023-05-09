@@ -55,8 +55,7 @@ const SearchResults = (props) => {
      return ()=> {
       document.body.removeEventListener('click', ()=>props.setShowResults(false) );
   } 
-  },[]);
-
+  }, []);
   if(props.loading) return <AbsoluteContainer className='border' top={props.top}>{[skeleton,skeleton,skeleton,skeleton,skeleton]}</AbsoluteContainer>
   return (
     <AbsoluteContainer
@@ -87,7 +86,9 @@ const SearchResults = (props) => {
                 </div>
               );
           })
-        : null}
+        : 
+        (props.results && props.results.type === 'error') ?<>{props.results.data}</>:null
+        }
     </AbsoluteContainer>
   );
 }

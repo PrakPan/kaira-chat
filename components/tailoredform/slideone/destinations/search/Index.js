@@ -44,7 +44,7 @@ const Search = (props) => {
       axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
       setLoading(false)  
       if(res.data.length){
-        const resultsData = res.map((e)=>e['_source'])
+        const resultsData = res.data.map((e)=>e['_source'])
             setResults(resultsData)
         }
         else {
@@ -54,13 +54,17 @@ const Search = (props) => {
 
         // else props._showSearchedLocations([]);
 
-      }).catch(e => setLoading(false))
+      }).catch(error => {
+        setLoading(false)
           setShowResults(true);
-    setResults([
-      <div style={{ margin: "1rem" }}>
-        Something went wrong! Please try again later.
-      </div>,
-    ]);}
+        setResults({
+   type : 'error',
+   data : <div style={{ margin: "1rem" }}>
+     Something went wrong! Please try again later.
+   </div>
+  } );
+})
+}
   }
   useEffect(() => {
     if (query.city || query.link) {
