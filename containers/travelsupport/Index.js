@@ -19,6 +19,7 @@ import travelsupportcontent from '../../public/content/travelsupport';
 import DesktopBanner from '../../components/containers/Banner';
 import Banner from '../homepage/banner/Mobile';
 import { useRouter } from 'next/router';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 
 
 const SetWidthContainer = styled.div`
@@ -29,7 +30,9 @@ const SetWidthContainer = styled.div`
     }
   `;
 
-const AffiliatePage = ()=> {
+const AffiliatePage = () => {
+  const isPageLoaded = usePageLoaded();
+  
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
   
@@ -53,7 +56,7 @@ const AffiliatePage = ()=> {
         url="media/website/johannes-plenio-qkfxBc2NQ18-unsplash.jpeg"
         center={isPageWide ? false : true}
       >
-        {typeof window !== "undefined" ? (
+        {isPageLoaded ? (
           <FullImgContent
             heading={travelsupportcontent["heading"]}
             subheading={travelsupportcontent["subheading"]}

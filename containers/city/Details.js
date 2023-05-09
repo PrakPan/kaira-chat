@@ -9,6 +9,7 @@ import Banner from './Banner/Index';
 import { useRef } from 'react'
 import PoisData from '../../components/experiencecity/info/pois/Index';
   import media from '../../components/media';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 // import Heading from '../../components/heading/Heading';
  
 
@@ -64,7 +65,7 @@ const Details = (props) => {
   const experiencesRef= useRef();
 
   const _handleScroll = () => {
-     
+     const isPageLoaded = usePageLoaded()
     offsets={
             'Overview': overviewRef.current.offsetTop,
             'Things to do':  thingsRef.current.offsetTop,
@@ -74,7 +75,7 @@ const Details = (props) => {
             'Folklore or Story': folkloreRef.current.offsetTop,
             'Experiences':  experiencesRef.current.offsetTop
           }
-      if(typeof window !=='undefined')
+      if(isPageLoaded)
       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
   }
  

@@ -10,6 +10,7 @@ import Locations from "./Locations";
 import { connect } from "react-redux";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { isJson } from "../../../services/isJSON";
+import usePageLoaded from "../../custom hooks/usePageLoaded";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -23,6 +24,7 @@ const Container = styled.div`
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
+  const isPageLoaded = usePageLoaded();
 
   return (
     <div
@@ -87,13 +89,13 @@ const Itinerary = (props) => {
       getCityFromDay(newValue, props.day_slabs, props.city_slabs)
     );
     setValue(newValue);
-    if (typeof window !== "undefined" && !props.experience)
+    if (isPageLoaded && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const hadleLocationChange = (event, newValue) => {
     setLocationValue(newValue);
     setValue(props.city_slabs[newValue].day_slab_location.start_day_slab_index);
-    if (typeof window !== "undefined" && !props.experience)
+    if (isPageLoaded && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const [hideTimer, setHideTimer] = useState(false);

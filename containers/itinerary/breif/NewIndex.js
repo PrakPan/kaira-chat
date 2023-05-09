@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
 import openTailoredModal from '../../../services/openTailoredModal';
+import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
 const DetailsContainer = styled.div`
 width: 100%;
 margin: 0 auto 10vh auto;
@@ -32,6 +33,7 @@ padding: 0 1rem;
 `;
 
 const Details = (props) => {
+  const isPageLoaded = usePageLoaded();
  
    let offsets = {
 
@@ -64,7 +66,7 @@ const Details = (props) => {
 //             'Exclusions': exclusionsRef.current.offsetTop,
 //             'FAQ/s':  faqsRef.current.offsetTop
 //           }
-//           if(typeof window !== 'undefined')
+//           if(isPageLoaded)
 //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
 //   }
 const router = useRouter();

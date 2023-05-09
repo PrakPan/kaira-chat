@@ -4,6 +4,7 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import { makeStyles } from "@mui/styles";
+import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const useStyles = makeStyles((theme) => ({
   noPadding: {
@@ -29,7 +30,8 @@ const Option = styled.option`
   }
 `;
 const QueryType = (props) => {
-  if (typeof window !== "undefined") {
+  const isPageLoaded = usePageLoaded()
+  if (isPageLoaded) {
     const classes = useStyles();
     const queries = [
       "Conferences or offsites",

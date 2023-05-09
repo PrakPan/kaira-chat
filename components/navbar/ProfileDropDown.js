@@ -9,6 +9,7 @@ import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
 import { FaBell, FaRegListAlt, FaUser } from 'react-icons/fa';
 import {MdOutlineLogout,MdAssignment } from 'react-icons/md'
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
 const CenterNav=styled.div`
 width:100%;
@@ -94,6 +95,7 @@ opacity: ${props => (props.showProfileList ? `1` : '0')};
 }
 `;
 const ProfileDropDown =(props)=>{
+  const isPageLoaded = usePageLoaded();
 
     
     let firstname;
@@ -185,7 +187,7 @@ const ProfileDropDown =(props)=>{
             <CenterNav className=''>
               <ImageLoader borderRadius="50%" url={ props.image !== 'null' && props.image!== null ? props.image : 'media/icons/navigation/profile-user.png'} width="2rem" height="2rem" dimensions={{width: 300, height: 300}} onclick={props.toggleProfileList}/>   
               {/* <ExpandProfile src={props.headerColor==="black" ? ExpandProfileIcon : null} onClick={props.toggleProfileList}/>    */}
-              {typeof window !== 'undefined'  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color: props.headerColor === "black" ? 'white' : 'black'}}></StyledFontAwesomeIcon> : null}
+              {isPageLoaded  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color: props.headerColor === "black" ? 'white' : 'black'}}></StyledFontAwesomeIcon> : null}
             </CenterNav>
              {AuthMenu}
         </div>

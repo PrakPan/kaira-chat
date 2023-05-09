@@ -3,6 +3,7 @@ import styled,{keyframes} from 'styled-components';
 import Tooltip from "react-bootstrap/Tooltip";
 import media from '../../components/media';
 import ImageLoader from '../../components/ImageLoader';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 const MapSlide = keyframes`
 0% {
     margin-left: -30rem;
@@ -236,7 +237,8 @@ const TooltipContainer = styled.div`
 `;
 
 const StoriesMap = () => {
-    if(typeof window === undefined) return null
+  const isPageLoaded = usePageLoaded()
+    if(!isPageLoaded) return null
     else{
     let isPageWide = media('(min-width: 768px)')
            

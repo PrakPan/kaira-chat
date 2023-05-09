@@ -11,6 +11,7 @@ import { getIndianPrice } from '../../../services/getIndianPrice';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
 import Spinner from '../../Spinner';
+import usePageLoaded from '../../custom hooks/usePageLoaded';
 
 const Container = styled.div`
 width: 100%;
@@ -91,7 +92,8 @@ color: #212529;
 `;
  
 const ExperienceCard= (props) => {
-    let isPageWide = media('(min-width: 768px)')
+  let isPageWide = media('(min-width: 768px)')
+  const isPageLoaded = usePageLoaded();
  
 
 const router = useRouter();
@@ -141,7 +143,7 @@ const redirect = () => {
           <HeadingContainer>
             <Heading className="font-lexend">{props.experience}</Heading>
           </HeadingContainer>
-          {typeof window !== "undefined" ? (
+          {isPageLoaded ? (
             <Rating className="font-nunito">
               <FontAwesomeIcon
                 icon={faStar}

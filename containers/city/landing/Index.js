@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faMapMarker, faCalendar, faStarHalf, faMountain} from '@fortawesome/free-solid-svg-icons';
 
 import Gallery from './Gallery'
+import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
 const Wrapper = styled.div`
   height: max-content;
   color: black;
@@ -187,6 +188,7 @@ const IconText = styled.span`
 `;
 
 const BlackContainer = (props) => {
+  const isPageLoaded = usePageLoaded();
 
   const [escapeState, setEscapeState] = useState(false);
 
@@ -216,15 +218,15 @@ const BlackContainer = (props) => {
             <ExperienceName className='font-lexend' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
             <TagsContainer>
             <TagContainer>
-            {typeof window !=='undefined' ? <FontAwesomeIcon icon={faMapMarker} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
+            {isPageLoaded ? <FontAwesomeIcon icon={faMapMarker} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
               <p className="font-lexend" style={{margin: "0.5rem"}}>{props.region}</p>
             </TagContainer>
             <TagContainer>
-              {typeof window !=='undefined' ? <FontAwesomeIcon icon={faCalendar} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
+              {isPageLoaded ? <FontAwesomeIcon icon={faCalendar} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
               <p className="font-lexend" style={{margin: "0.5rem"}}>{!props.duration === 'null Days' ?  '4 Days' : props.duration}</p>
             </TagContainer>            
             <TagContainer>
-              {typeof window !=='undefined' ? <FontAwesomeIcon icon={faMountain} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
+              {isPageLoaded ? <FontAwesomeIcon icon={faMountain} style={{ fontSize: "2.5vh"}}></FontAwesomeIcon>: null}
               <p className="font-lexend" style={{margin: "0.5rem"}}>{props.filter}</p>
             </TagContainer>
             </TagsContainer>

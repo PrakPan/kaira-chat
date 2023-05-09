@@ -5,6 +5,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import { makeStyles } from "@mui/styles";
 import LogInModal from "../../../../components/modals/Login";
+import usePageLoaded from "../../../../components/custom hooks/usePageLoaded";
 const useStyles = makeStyles((theme) => ({
   noPadding: {
     padding: 0,
@@ -29,7 +30,9 @@ const Option = styled.option`
   }
 `;
 const QueryType = (props) => {
-  if (typeof window !== "undefined") {
+  const isPageLoaded = usePageLoaded();
+
+  if (isPageLoaded) {
     // let [optionsJSX, setOp]
     let optionsJSX = [];
     for (var i = props.number_of_adults; i <= 20; i++) {

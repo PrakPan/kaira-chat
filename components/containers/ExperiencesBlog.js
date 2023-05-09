@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Carousel from '../FlickityCarousel';
 import ExperiencesContainer from './Experiences';
 import media from '../media';
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
 
 
@@ -36,7 +37,8 @@ const GridContainer = styled.div`
 `; 
 const Experiences= (props) => {
    let isPageWide = media('(min-width: 768px)')
-
+  const isPageLoaded = usePageLoaded();
+  
     
   
    
@@ -91,7 +93,7 @@ const Experiences= (props) => {
       )
     
   });
-  // if(typeof window !== 'undefined' ) 
+  // if(isPageLoaded ) 
   return(
   <div  >
   <div  className='hidden-mobile' >
@@ -150,7 +152,7 @@ const Experiences= (props) => {
     <Container className={  'hidden-desktop'}>  
     <div>
       <GridContainer>
-        {typeof window !== 'undefined' ? <Carousel cards={experiencecards} experience pastitinerary={props.pastitinerary}></Carousel> : null}
+        {isPageLoaded ? <Carousel cards={experiencecards} experience pastitinerary={props.pastitinerary}></Carousel> : null}
       </GridContainer>
       <br></br>
     </div>

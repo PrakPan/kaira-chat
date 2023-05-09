@@ -9,8 +9,11 @@ import Head from 'next/head'
 import Layout from '../components/Layout'
 import Team from '../containers/aboutus/Ourteam/Index';
 import ImageLoader from '../components/ImageLoader';
- const AboutUsContainer = () => {
-    if(typeof window !== 'undefined')
+import usePageLoaded from '../components/custom hooks/usePageLoaded';
+const AboutUsContainer = () => {
+  const isPageLoaded = usePageLoaded();
+     
+    if(isPageLoaded)
     return(
         <Layout>
         <Head>

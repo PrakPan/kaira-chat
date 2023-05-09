@@ -19,6 +19,7 @@ import FullImgContent from './FullImgContent';
  import Menu from './Menu';
 import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
  
 const SetWidthContainer = styled.div`
 width: 100%;
@@ -84,6 +85,7 @@ height: 50vw;
 }
 `;
 const  Homepage = (props) =>{
+  const isPageLoaded = usePageLoaded();
  
 			
 let isPageWide = media('(min-width: 768px)');
@@ -403,11 +405,11 @@ const EXPERIENCE = {
           <iframe style={{position: 'relative', top: '0', left: '0', border: '0', height: '100%'}} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div> */}
 
-         {/* <div style={{width: typeof window !== "undefined" ? window.innerWidth / 2 : '300', height:  typeof window !== "undefined"? window.innerWidth/3 : '300' ,  position: 'relative', margin: 'auto' }}> */}
+         {/* <div style={{width: isPageLoaded ? window.innerWidth / 2 : '300', height:  isPageLoaded? window.innerWidth/3 : '300' ,  position: 'relative', margin: 'auto' }}> */}
          {/* <div style={{width: 'max-content', margin: 'auto'}}>
-          <iframe width={typeof window != "undefined" ? Math.round(window.innerWidth*0.4) : '300'} height={typeof window != "undefined" ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>     
+          <iframe width={isPageLoaded? Math.round(window.innerWidth*0.4) : '300'} height={isPageLoaded ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>     
         </div> */}
-         {/* {typeof window !== 'undefined' ?  <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+         {/* {isPageLoaded ?  <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
           <iframe width={Math.round(window.innerWidth*0.8)} height={Math.round(window.innerWidth * 0.3)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div> : null} */}
          <VideoContainer
@@ -428,7 +430,7 @@ const EXPERIENCE = {
              allowfullscreen
            ></iframe>
          </VideoContainer>
-         {/* {typeof window !== 'undefined' ? <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+         {/* {isPageLoaded ? <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
           <iframe width={Math.round(window.innerWidth*0.9)} height={Math.round(window.innerWidth * 0.5)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div>:null} */}
          <Heading

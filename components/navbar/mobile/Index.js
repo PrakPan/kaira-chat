@@ -12,6 +12,7 @@ import Notifications from "../../modals/Notifications/Index";
 import SearchMobile from "../../search/homepage/mobile/Index";
 import { FaSearch } from "react-icons/fa";
 import openTailoredModal from "../../../services/openTailoredModal";
+import usePageLoaded from "../../custom hooks/usePageLoaded";
 const Container = styled.div`
   background-color: white;
   padding: 0 5vw;
@@ -128,6 +129,7 @@ const HamburgerIcon = (
 );
 
 const Mobile = (props) => {
+  const isPageLoaded = usePageLoaded();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
@@ -288,7 +290,7 @@ const Mobile = (props) => {
           {props.notifications.length && props.notOpenCount ? (
             <RedDot className="center-div ">{props.notOpenCount}</RedDot>
           ) : null}
-          {typeof window !== "undefined" ? (
+          {isPageLoaded ? (
             <div onClick={() => setToggleMenu(!toggleMenu)}>
               {HamburgerIcon}
             </div>

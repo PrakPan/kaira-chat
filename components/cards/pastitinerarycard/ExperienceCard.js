@@ -12,6 +12,7 @@ import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
 import Spinner from '../../Spinner'; 
 import openTailoredModal from '../../../services/openTailoredModal';
+import usePageLoaded from '../../custom hooks/usePageLoaded';
 const Container = styled.div`
 width: 100%;
 background-color: white;
@@ -85,6 +86,7 @@ box-sizing: border-box;
  
 const ExperienceCard= (props) => {
     let isPageWide = media('(min-width: 768px)')
+  const isPageLoaded = usePageLoaded();
  
 
 const router = useRouter();
@@ -128,7 +130,7 @@ const redirectItinerary = () => {
            <HeadingContainer>
              <Heading className="font-lexend">{props.experience}</Heading>
            </HeadingContainer>
-           {/* {typeof window !== 'undefined' ? <Rating className="font-nunito">
+           {/* {isPageLoaded ? <Rating className="font-nunito">
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>

@@ -5,6 +5,7 @@ import ImageLoader from '../../components/ImageLoader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarker, faQuoteRight } from '@fortawesome/free-solid-svg-icons';
 import media from '../../components/media';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 const Icon = styled.img`
 margin: -1rem 0.2rem 0rem -1rem;
 height: 1.5rem;
@@ -134,6 +135,8 @@ const ReviewFront = styled.p`
 
 
 const TestimonialCard = (props) => {
+  const isPageLoaded = usePageLoaded();
+    
     let isPageWide = media('(min-width: 768px)')
 
     const [isFlipped, setIsFlipped] = useState(false);
@@ -155,7 +158,7 @@ const TestimonialCard = (props) => {
         }
     })
 const [stringlength, setStringlength] = useState();
-if(typeof window !== 'undefined' && !stringlength){
+if(isPageLoaded && !stringlength){
     if(window.innerWidth <= 380 && window.innerHeight < 700) setStringlength(380); // Moto g4 
     else if(window.innerWidth <= 380 && window.innerHeight > 700) setStringlength(450); //iphone x 
     else if (window.innerWidth > 380 && window.innerWidth < 768 ) setStringlength(600); //pixel 2 etc 

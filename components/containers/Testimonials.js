@@ -10,6 +10,7 @@ import Flickity from '../FlickityCarousel';
 import media from '../media';
 import { useRouter } from 'next/router';
 import urls from '../../services/urls';
+import usePageLoaded from '../custom hooks/usePageLoaded';
 //Testimonials shown on homepage and listing page 
 
 const GridContainer = styled.div`
@@ -35,6 +36,7 @@ display: block !important;
 
 const Testimonials= (props) => {
   let isPageWide = media('(min-width: 768px)')
+  const isPageLoaded = usePageLoaded();
 
 
      const reviews = [
@@ -105,7 +107,7 @@ const Testimonials= (props) => {
     <Container className='hidden-desktop'>  
           <Heading align="center" aligndesktop="left" margin={!isPageWide ? "0" : "5rem 0"}  bold>Traveler Stories</Heading>        
 
-         {typeof window !=='undefined' ? <Flickity cards={cards}></Flickity> : null}
+         {isPageLoaded ? <Flickity cards={cards}></Flickity> : null}
          <Button
          link={urls.TESTIMONIALS}
          

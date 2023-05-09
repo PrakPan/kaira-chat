@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../components/ImageLoader';
 import media from '../../../components/media';
+import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
 const Container = styled.div`
 
     @media screen and (min-width: 768px){
@@ -102,8 +103,9 @@ const Imageix = styled.div`
 `;
 
 const Gallery = (props) => {
+  const isPageLoaded = usePageLoaded()
       let ImageContainerTopPadding;
-      if(typeof window !=='undefined') ImageContainerTopPadding = localStorage.getItem('NavbarHeight');
+      if(isPageLoaded) ImageContainerTopPadding = localStorage.getItem('NavbarHeight');
       let isPageWide = media('(min-width: 768px)')
 
  const imageClickHandler = () => {
@@ -111,7 +113,7 @@ const Gallery = (props) => {
   }
   let imageheight;
   let imagewidth;
-  if(typeof window  !=='undefined'){
+  if(isPageLoaded){
    imageheight = Math.round(window.innerHeight / 2);
     imagewidth = Math.round(window.innerWidth / 4);
   }
