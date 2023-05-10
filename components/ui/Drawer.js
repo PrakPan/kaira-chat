@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import media from "../media";
 
-const LeftSlideIn = keyframes`
+const leftSlideIn = keyframes`
 from { 
   transform: translateX(-100%);
 }
@@ -13,7 +13,7 @@ to {
 } 
 `;
 
-const LeftSlideOut = keyframes`
+const leftSlideOut = keyframes`
 from { 
   transform: translateX(0%);
 }
@@ -21,7 +21,7 @@ to {
   transform: translateX(-100%);
 } 
 `;
-const RightSlideIn = keyframes`
+const rightSlideIn = keyframes`
 
  from { 
    transform: translateX(100%);
@@ -31,7 +31,7 @@ const RightSlideIn = keyframes`
  } 
  `;
 
-const RightSlideOut = keyframes`
+const rightSlideOut = keyframes`
 from { 
   transform: translateX(0%);
  }
@@ -40,22 +40,48 @@ from {
  } 
  `;
 
+const botttomSlideIn = keyframes`
+
+from { 
+  transform: translateY(100%);
+}
+to { 
+  transform: translateY(0%);
+} 
+`;
+
+const bottomSlideOut = keyframes`
+from { 
+ transform: translateY(0%);
+}
+to { 
+  transform: translateY(100%);
+} 
+`;
+
+
 const DrawerContainer = styled.div`
   position: fixed;
   top: ${(props) => (props.mobileTop ? props.mobileTop : "0%")};
-  height: 100vh;
-  ${(props) => props.anchor == "left" && "left: 0"};
-  ${(props) => props.anchor == "right" && "right: 0"};
+  ${(props) =>
+    props.anchor === "left" || props.anchor === "right"
+      ? "height: 100vh; top : 0;"
+      : "width: 100vw; left : 0;"}
+  ${(props) => props.anchor && `${props.anchor}: 0`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   animation: 0.2s
     ${(props) =>
       props.fade === "in"
         ? props.anchor == "left"
-          ? LeftSlideIn
-          : RightSlideIn
+          ? leftSlideIn
+          : props.anchor == "right"
+          ? rightSlideIn
+          : botttomSlideIn
+        : props.anchor == "left"
+        ? leftSlideOut
         : props.anchor == "right"
-        ? RightSlideOut
-        : LeftSlideOut}
+        ? rightSlideOut
+        : bottomSlideOut}
     forwards;
   z-index: ${(props) => (props.zIndex ? props.zIndex : "1250")};
   transition: opacity 0.25s linear;

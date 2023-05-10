@@ -55,7 +55,7 @@ const IndexWrapper = (props) =>{
 }
 
 else return(
-  <NotFoundContainer>
+    <NotFoundContainer>
   <MessageContainer className='border-thin font-lexend'>
   Looks like our travel experts are working on providing you the best available accommodations.
   </MessageContainer></NotFoundContainer>
