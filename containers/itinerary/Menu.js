@@ -237,7 +237,7 @@ const SimpleTabs = (props) => {
   const [showBookingTimer, setShowBookingTimer] = useState(true);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
   const [timerValid, setTimerValid] = useState(false);
-
+  const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
   const _hidePaymentHandler = () => {
     setShowFooterBannerMobile(true);
@@ -453,6 +453,71 @@ const SimpleTabs = (props) => {
     font-family: sans-serif;
   `;
 
+  // const getdayId = (id) => {
+  //   return props.itinerary?.day_slabs[id]?.slab_id;
+  // };
+  // const getdateId = (id) => {
+  //   return props.itinerary?.day_slabs[id]?.slab;
+  // };
+  // const Locationlatlong = [];
+  // useEffect(() => {
+  //   if (RoutesData.length >= 1) {
+  //     console.log('itsrendering');
+  //     for (var i = 0; i < RoutesData.length; i++) {
+  //       var postion = props.breif.city_slabs[i + 1];
+
+  //       // console.log(`response city data${JSON.stringify(citydetails)}`);
+  //       // console.log(`lat,long${citydetails.lat}`);
+  //       if (RoutesData[i].duration && RoutesData[i].duration !== '0') {
+  //         Locationlatlong.push({
+  //           dayId: getdayId(
+  //             RoutesData[i].day_slab_location.start_day_slab_index
+  //           ),
+  //           cityData: postion,
+  //           id: RoutesData[i].gmaps_place_id,
+  //           city_id: RoutesData[i].city_id,
+  //           lat: RoutesData[i].lat,
+  //           long: RoutesData[i].long,
+  //           name: RoutesData[i].city_name,
+  //           duration: RoutesData[i].duration,
+  //           color: RoutesData[i].color,
+  //           date: getdateId(
+  //             RoutesData[i].day_slab_location.start_day_slab_index
+  //           ),
+  //         });
+  //       }
+  //     }
+  //   } else {
+  //     for (var i = 0; i < props.breif.city_slabs.length; i++) {
+  //       var postion = props.breif.city_slabs[i];
+
+  //       // console.log(`response city data${JSON.stringify(citydetails)}`);
+  //       // console.log(`lat,long${citydetails.lat}`);
+  //       if (
+  //         !postion.is_departure_only &&
+  //         !postion.is_trip_terminated &&
+  //         postion.duration &&
+  //         postion.duration !== '0'
+  //       ) {
+  //         Locationlatlong.push({
+  //           dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+  //           cityData: postion,
+  //           id: postion.gmaps_place_id,
+  //           city_id: postion.city_id,
+  //           lat: postion.lat ?? '18.5204',
+  //           long: postion.long ?? '73.8567',
+  //           name: postion.city_name,
+  //           duration: postion.duration,
+  //           color: postion.color,
+  //           date: getdateId(postion.day_slab_location.start_day_slab_index),
+  //         });
+  //       }
+  //     }
+  //   }
+  //   setmapArray(true);
+  // }, []);
+
+  // console.log(Locationlatlong);
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
@@ -479,11 +544,13 @@ const SimpleTabs = (props) => {
         ></PriceBannerMobile>
       ) : null} */}
       <div id={items[0].link}>
+        {/* {mapArray ? ( */}
         <Breif
           routesData={RoutesData}
           transfersData={TransfersData}
           payment={props.payment}
           traveleritinerary={props.traveleritinerary}
+          // Locationlatlong={Locationlatlong}
           // hours={hours}
           // minutes={minutes}
           // seconds={seconds}
@@ -497,6 +564,7 @@ const SimpleTabs = (props) => {
           // _hideTimerHandler={_minimiseTimerHandler}
           // blur={blurItinerary}
         ></Breif>
+        // ) : null}
       </div>
       {/* // for 0000000000000000000000  mobile */}
       {isPageWide ? null : (

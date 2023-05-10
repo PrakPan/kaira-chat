@@ -74,7 +74,7 @@ const Day_I_ContainerM = (props) => {
               heading={element.heading}
               bookings={element.bookings}
               text={props.Days.slab_elements[0].text}
-              booking={element?.bookings[0]}
+              booking={element?.bookings ? element?.bookings[0] : null}
               // newcity={
               //   Arslab_elements[1].data[0].length != 0
               //     ? Arslab_elements[1].data[0][0]
@@ -92,7 +92,7 @@ const Day_I_ContainerM = (props) => {
             <ItineraryElementM
               icon={element.icon}
               time="9:00AM"
-              booking={element?.bookings[0]}
+              booking={element?.bookings ? element?.bookings[0] : null}
               heading={element.heading}
               text={element.text}
             ></ItineraryElementM>
@@ -103,7 +103,7 @@ const Day_I_ContainerM = (props) => {
             <ItineraryFoodElementM
               icon={element.icon}
               time="12:00PM"
-              bookings={element.bookings}
+              bookings={element?.bookings ? element?.bookings : null}
               heading={element.heading}
               text={element.text}
             ></ItineraryFoodElementM>

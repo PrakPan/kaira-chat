@@ -67,30 +67,25 @@ const Details = (props) => {
 
   const [currentPopup, setCurrentPopup] = useState(false);
 
-  async function getRoutes(itinaryId) {
-    const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
-    const data = res.data;
-    return data;
-  }
+  // async function getRoutes(itinaryId) {
+  //   const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
+  //   const data = res.data;
+  //   return data;
+  // }
 
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
   const _handleTailoredRedirect = (e) => {
     router.push('/tailored-travel');
   };
-  const Locationlatlong = [];
   const getdayId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab_id;
   };
   const getdateId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab;
   };
-  async function getCityDetails(cityname) {
-    const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
-    const data = res.data;
-    return data;
-  }
 
+  const Locationlatlong = [];
   if (props.routesData.length >= 1) {
     console.log('itsrendering');
     for (var i = 0; i < props.routesData.length; i++) {
@@ -147,6 +142,18 @@ const Details = (props) => {
       }
     }
   }
+  // const getdayId = (id) => {
+  //   return props.itinerary?.day_slabs[id]?.slab_id;
+  // };
+  // const getdateId = (id) => {
+  //   return props.itinerary?.day_slabs[id]?.slab;
+  // };
+  // async function getCityDetails(cityname) {
+  //   const res = await axiosPoiCityInstance.get(`/?city_id=${cityname}`);
+  //   const data = res.data;
+  //   return data;
+  // }
+
   // useEffect(() => {
   //   console.log('its useeffect');
   //   console.log(props.routesData);
@@ -205,10 +212,16 @@ const Details = (props) => {
   //     setCurrentPopup={setCurrentPopup}
   //   />
   // );
-  const MapWithNoSSR = dynamic(() => import('../../../components/mapbox.js'), {
-    ssr: true,
-    suspense: true,
+  const LeafMap = dynamic(() => import('../../../components/mapbox.js'), {
+    ssr: false,
   });
+  const MapWithNoSSR = ({ locations, currentPopup, setCurrentPopup }) => (
+    <LeafMap
+      locations={Locationlatlong}
+      currentPopup={currentPopup}
+      setCurrentPopup={setCurrentPopup}
+    />
+  );
   // const LeafMap = dynamic(
   //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
   //   {

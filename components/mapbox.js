@@ -35,7 +35,7 @@ const limeOptions = {
   dashArray: '10, 5', // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
   dashOffset: '15',
 };
-const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
+const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
   const [mapZoom, setMapZoom] = useState(() => NearestLocation());
   const [mapCenter, setMapCenter] = useState(() => findCenterPoint());
   function findCenterPoint() {
@@ -368,6 +368,6 @@ const Mapbox = ({ locations, currentPopup, setCurrentPopup }) => {
       ) : null}
     </MapContainer>
   ) : null;
-};
+});
 
-export default React.memo(Mapbox);
+export default Mapbox;
