@@ -4,6 +4,7 @@ import StarRating from '../../../components/StarRating';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { ImSpoonKnife } from 'react-icons/im';
+import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import BookingModal from '../../../components/modals/bookingupdated/Index';
 import * as ga from '../../../services/ga/Index';
 import Flickity from '../../../components/FlickityCarousel';
@@ -378,7 +379,6 @@ const HotelsBooking = (props) => {
     setBookingId(id);
 
     setShowDetails(true);
-    props.setShowBookingModal;
   }
   return (
     <div className="lg:w-[60vw] w-full">
@@ -507,7 +507,7 @@ const HotelsBooking = (props) => {
         id={bookingId}
         show={showDetails}
       ></AccommodationModal>
-      {/* {props.showBookingModal ? (
+      {props.showBookingModal ? (
         <BookingModal
           _setImagesHandler={_setImagesHandler}
           getPaymentHandler={props.getPaymentHandler}
@@ -525,7 +525,13 @@ const HotelsBooking = (props) => {
           showBookingModal={props.showBookingModal}
           setHideBookingModal={props.setHideBookingModal}
         ></BookingModal>
-      ) : null} */}
+      ) : null}
+      {images ? (
+        <FullScreenGallery
+          closeGalleryHandler={() => setImages(null)}
+          images={images}
+        ></FullScreenGallery>
+      ) : null}
     </div>
   );
 };
