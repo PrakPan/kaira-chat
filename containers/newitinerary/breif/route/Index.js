@@ -103,80 +103,41 @@ const Route = (props) => {
           props.breif.city_slabs[i].duration &&
           props.breif.city_slabs[i].duration !== '0'
         ) {
-          if (props?.routes[i - 1]) {
-            locationsArr.push(
-              <PinSection
-                setCurrentPopup={props.setCurrentPopup}
-                handlemap={handlemap}
-                dayId={
-                  props?.routes[i - 1]?.day_slab_location?.start_day_slab_index
-                }
-                cityData={props?.routes[i - 1]}
-                dayslab={props?.dayslab}
-                lat={props?.routes[i - 1]?.lat}
-                long={props?.routes[i - 1]?.long}
-                Mapid={props?.routes[i - 1].gmaps_place_id}
-                city={props?.routes[i - 1].city_name}
-                cityId={props?.routes[i - 1].city_id}
-                duration={
-                  props.breif?.city_slabs[i].duration
-                    ? props.breif?.city_slabs[i].duration + ' Nights'
-                    : null
-                }
-                pinColour={props?.routes[i - 1].color}
-                data={order[i - 1]}
-                _moveDownHandler={_moveDownHandler}
-                _moveUpHandler={_moveUpHandler}
-                index={i - 1}
-              ></PinSection>
-            );
-            locationsArr.push(
-              <MidSection
-                pinColour={props.breif.city_slabs[i].color}
-                icon={props?.transfers[i]?.icon}
-                modes={getTransportationType(props?.transfers[i]?.icon)}
-                transportMode={getTransportationType(props?.transfers[i]?.icon)}
-                duration={props.breif.city_slabs[i].duration}
-              ></MidSection>
-            );
-          } else {
-            locationsArr.push(
-              <PinSection
-                setCurrentPopup={props.setCurrentPopup}
-                handlemap={handlemap}
-                dayId={
-                  props.breif.city_slabs[i].day_slab_location
-                    .start_day_slab_index
-                }
-                cityData={props.breif.city_slabs[i]}
-                dayslab={props.dayslab}
-                lat={props.breif.city_slabs[i].lat}
-                long={props.breif.city_slabs[i].long}
-                Mapid={props.breif.city_slabs[i].gmaps_place_id}
-                city={props.breif.city_slabs[i].city_name}
-                cityId={props.breif.city_slabs[i].city_id}
-                duration={
-                  props.breif.city_slabs[i].duration
-                    ? props.breif.city_slabs[i].duration + ' Night'
-                    : null
-                }
-                pinColour={props.breif.city_slabs[i].color}
-                data={order[i]}
-                _moveDownHandler={_moveDownHandler}
-                _moveUpHandler={_moveUpHandler}
-                index={i}
-              ></PinSection>
-            );
-            locationsArr.push(
-              <MidSection
-                pinColour={props.breif.city_slabs[i].color}
-                modes={'Taxi'}
-                icon={null}
-                transportMode={props.breif.city_slabs[i].intracity_transport}
-                duration={props.breif.city_slabs[i].duration}
-              ></MidSection>
-            );
-          }
+          locationsArr.push(
+            <PinSection
+              setCurrentPopup={props.setCurrentPopup}
+              handlemap={handlemap}
+              dayId={
+                props.breif.city_slabs[i].day_slab_location.start_day_slab_index
+              }
+              cityData={props.breif.city_slabs[i]}
+              dayslab={props.dayslab}
+              lat={props.breif.city_slabs[i].lat}
+              long={props.breif.city_slabs[i].long}
+              Mapid={props.breif.city_slabs[i].gmaps_place_id}
+              city={props.breif.city_slabs[i].city_name}
+              cityId={props.breif.city_slabs[i].city_id}
+              duration={
+                props.breif.city_slabs[i].duration
+                  ? props.breif.city_slabs[i].duration + ' Night'
+                  : null
+              }
+              pinColour={props.breif.city_slabs[i].color}
+              data={order[i]}
+              _moveDownHandler={_moveDownHandler}
+              _moveUpHandler={_moveUpHandler}
+              index={i}
+            ></PinSection>
+          );
+          locationsArr.push(
+            <MidSection
+              pinColour={props.breif.city_slabs[i].color}
+              modes={'Taxi'}
+              icon={null}
+              transportMode={props.breif.city_slabs[i].intracity_transport}
+              duration={props.breif.city_slabs[i].duration}
+            ></MidSection>
+          );
         }
       }
       if (!startingcity) startingcity = props.breif.city_slabs[0].city_name;

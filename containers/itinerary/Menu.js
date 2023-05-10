@@ -564,7 +564,7 @@ const SimpleTabs = (props) => {
           // _hideTimerHandler={_minimiseTimerHandler}
           // blur={blurItinerary}
         ></Breif>
-        // ) : null}
+        {/* ) : null} */}
       </div>
       {/* // for 0000000000000000000000  mobile */}
       {isPageWide ? null : (
