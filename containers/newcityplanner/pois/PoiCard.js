@@ -2,6 +2,8 @@ import styled ,{keyframes} from "styled-components"
 import ImageLoader from "../../../components/ImageLoader"
 import {MdNavigateNext} from 'react-icons/md'
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import { useState } from "react";
+import { CatchingPokemonSharp } from "@mui/icons-material";
 
 const LeftSlideIn = keyframes`
   from { 
@@ -99,11 +101,17 @@ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endCo
 }
 
 `
-export default function PoiCard(props){          
+export default function PoiCard(props) {       
+  const [show, setShow] = useState(false)
+  const handleCloseDrawer = (e) => {
+    
+    if(e) e.stopPropagation(e)
+    setShow(false)
+  }
     return (
       <Container
         onClick={() => {
-          props._handleOpen(props.data.id);
+          setShow(true);
         }}
       >
         <ImageContainer>
@@ -126,9 +134,11 @@ export default function PoiCard(props){
           </Typography>
         )}
         <POIDetailsDrawer
-          show={props.showDrawer.isOpen}
+          // show={props.showDrawer.isOpen}
+          show={show}
           iconId={props.data.id}
-          handleCloseDrawer={props.handleCloseDrawer}
+          // handleCloseDrawer={props.handleCloseDrawer}
+          handleCloseDrawer={handleCloseDrawer}
           name={props.data.name}
         />
       </Container>

@@ -20,7 +20,7 @@ import FullImgContent from './FullImgContent';
 import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
 import usePageLoaded from '../../components/custom hooks/usePageLoaded';
- 
+import LoadingLottie from '../../components/ui/LoadingLottie'
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;

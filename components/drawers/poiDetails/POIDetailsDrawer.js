@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Drawer } from "@mui/material";
+// import { Drawer } from "@mui/material";
+import Drawer from "../../ui/Drawer";
 import POIDetailsSkeleton from "./POIDetailsSkeleton";
 import POIDetails from "./POIDetails";
 import { useEffect } from "react";
@@ -20,11 +21,13 @@ const POIDetailsDrawer = (props) => {
 
   return (
     <Drawer
-      open={props.show}
+      show={props.show}
       anchor={"right"}
-      ModalProps={{ onBackdropClick: props.handleCloseDrawer }}
-      style={{ zIndex: 1250 }}
+      backdrop
+      style={{ zIndex: 1501}}
       className="font-lexend"
+      onHide={props.handleCloseDrawer}
+      // zIndex='1501'
     >
       {!!data.name ? (
         <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Drawer from "@mui/material/Drawer";
+// import Drawer from "@mui/material/Drawer";
+import Drawer from "../../ui/Drawer";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import LoggedInMenu from "./LoggedIn";
@@ -352,7 +353,7 @@ const Mobile = (props) => {
 
         <Drawer
           anchor="left"
-          open={toggleMenu}
+          show={toggleMenu}
           onClose={() => setToggleMenu(false)}
           className="mobile-header-menu"
           width="250px"

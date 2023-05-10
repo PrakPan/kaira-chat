@@ -15,10 +15,11 @@ grid-template-columns: 1fr 1fr ;
 `
 const Heading = styled.p`
   font-weight: 600;
-  font-size: 32px;
-  line-height: 48px;
+  font-size: 25px;
+  // line-height: 48px;
   margin-block: 1.5rem;
   @media screen and (min-width: 768px) {
+    font-size: 32px;
     margin-block: 3.5rem;
   }
 `;
@@ -70,10 +71,10 @@ setMobileCardsToShowJSX(MobileCardsArr)
 const router = useRouter()
   return (
     <>
+      <Heading>Nearby Locations to {props.data.name}</Heading>
+
       {isPageWide ? (
         <>
-          <Heading>Nearby Locations to {props.data.name}</Heading>
-
           {cards.length ? (
             <Carousel
               initialIndex={0}

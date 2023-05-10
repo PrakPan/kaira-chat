@@ -8,6 +8,7 @@ import Map from '../../../components/Map'
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget"
 import openTailoredModal from "../../../services/openTailoredModal"
 import { useRouter } from "next/router"
+import Drawer from "../../../components/ui/Drawer"
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
@@ -73,7 +74,8 @@ const Poi = props=>{
   ))
   }
   const handleCloseDrawer = (e) => {
-    e.stopPropagation()
+    // e.stopPropagation()
+    if (e) e.stopPropagation();
     setShowDrawer(drawerShowArr);            
   };
 

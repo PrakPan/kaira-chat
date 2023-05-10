@@ -90,15 +90,14 @@ const POIDetails = (props) => {
   
   return (
     <Container>
-      <div
-        onClick={(e) => props.handleCloseDrawer(e)}
-      >
+      <div>
         <TbArrowBack
           style={{ height: "32px", width: "32px" }}
           cursor={"pointer"}
+          onClick={(e) => {props.handleCloseDrawer(e)}}
         />
       </div>
-      <div style={imageLoading?{display : 'none'} : {display : 'initial'}}>
+      <div style={imageLoading ? { display: "none" } : { display: "initial" }}>
         <ImageLoader
           borderRadius="8px"
           marginTop="23px"
@@ -107,11 +106,13 @@ const POIDetails = (props) => {
           dimensionsMobile={{ width: 500, height: 280 }}
           dimensions={{ width: 468, height: 188 }}
           onload={() => {
-            console.log("loaded"), setImageLoading(false);
+            setImageLoading(false);
           }}
         ></ImageLoader>
       </div>
-      {imageLoading && <SkeletonCard width={isPageWide?"468px" : "100%"} height={"188px"} />}
+      {imageLoading && (
+        <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"188px"} />
+      )}
 
       {props.data.ideal_duration_hours && (
         <TimeStamp>
@@ -122,18 +123,20 @@ const POIDetails = (props) => {
       <div>
         <Title>{props.data.name}</Title>
         <Reviews>
-          {props.data.rating && 
-          <div style={{color : '#ffa500' , marginBottom : '0.3rem'}}>{stars}
+          {props.data.rating && (
+            <div style={{ color: "#ffa500", marginBottom: "0.3rem" }}>
+              {stars}
             </div>
-          }
-          <div style={{display : 'flex' , alignItems : 'center'}}>
-          {props.data.rating && <p style={{marginBlock : 'auto' }}>{props.data.rating} · {' '}</p>}
+          )}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {props.data.rating && (
+              <p style={{ marginBlock: "auto" }}>{props.data.rating} · </p>
+            )}
 
-          {props.data.user_ratings_total && (
-            <u>{' '} {props.data.user_ratings_total} Google reviews</u>
-          )}  
+            {props.data.user_ratings_total && (
+              <u> {props.data.user_ratings_total} Google reviews</u>
+            )}
           </div>
-          
         </Reviews>
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </div>
