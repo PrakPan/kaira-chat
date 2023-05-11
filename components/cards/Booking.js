@@ -1,9 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faMapMarker,
-  faStar,
   faImages,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -34,10 +32,6 @@ const DetailsContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
   padding: 0 0.5rem;
-`;
-const DetailsLeftContainer = styled.div``;
-const DetailsRightContainer = styled.div`
-  text-align: right;
 `;
 const Rating = styled.div`
   text-align: right;
@@ -161,7 +155,6 @@ const Booking = (props) => {
     return (
       <Container className="border-thin">
         <ImageContainer>
-          {/* <ImageLoader fit="cover" url={props.images[0].image} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} widthmobile="100%" height="20vh" ></ImageLoader> */}
           <ImageLoader
             blur={props.blur}
             url={
@@ -219,21 +212,7 @@ const Booking = (props) => {
             </p>
           </div>
           {detailsarr}
-          {/* <IconsContainer>
-                        <div>
-                            <Icon src={icon} style={{width: "25%"}}></Icon>
-                            <p className="font-nunito" style={{textAlign: "center", fontSize: "0.75rem", margin: "0"}}>Breakfast</p>
-                        </div>
-                        <div>
-                            <Icon src={icon2}  style={{width: "25%"}}></Icon>
-                            <p className="font-nunito" style={{textAlign: "center",  fontSize: "0.75rem", margin: "0"}}>Toiletries</p></div>
-                        <div>
-                            <Icon src={icon3} style={{width: "25%"}}></Icon>
-                            <p className="font-nunito" style={{textAlign: "center",  fontSize: "0.75rem", margin: "0"}}>Free Wifi</p>
-                        </div>
-                        
-                        
-                    </IconsContainer> */}
+         
         </div>
       </Container>
     );

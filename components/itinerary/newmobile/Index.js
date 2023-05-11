@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import CityContainer from "../CityContainer";
 import Timer from "../../../containers/itinerary/timer/Index";
@@ -59,6 +59,11 @@ const getCityIdFromDay = (day_slab_index, day_slabs, city_slabs) => {
 };
 
 const Itinerary = (props) => {
+   const ref = useRef();
+   const [value, setValue] = React.useState(0);
+  const [locationValue, setLocationValue] = useState(0);
+  const [hideTimer, setHideTimer] = useState(false);
+  
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
@@ -76,13 +81,7 @@ const Itinerary = (props) => {
     );
   }
 
-  const ref = useRef();
-
-  const [value, setValue] = React.useState(0);
-  const [locationValue, setLocationValue] = useState(0);
-
-  const [dayTabsJSX, setDayTabsJSX] = useState([]);
-  const [dayPanelsJSX, setDayPannelsJSX] = useState([]);
+ 
 
   const handleChange = (event, newValue) => {
     setLocationValue(
@@ -98,7 +97,6 @@ const Itinerary = (props) => {
     if (isPageLoaded && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
-  const [hideTimer, setHideTimer] = useState(false);
 
   const _handleTimerClose = () => {
     props._hideTimerHandler();
@@ -198,9 +196,6 @@ const Itinerary = (props) => {
 
     // setDayPannelsJSX(day_pannesl_jsx);
   };
-  useEffect(() => {
-    // _generateDaySlabs();
-  }, []);
   _generateDaySlabs();
 
   return (

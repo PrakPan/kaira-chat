@@ -1,37 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../media';
 import {IoCheckboxOutline} from 'react-icons/io5';
 import { IoMdSquareOutline} from 'react-icons/io';
-
-import { getIndianPrice } from '../../../../services/getIndianPrice';
 import Spinner from '../../../Spinner';
 import {connect} from 'react-redux';
-
 const Container = styled.div`
 margin: 0.5rem 0.5rem 0 0.5rem;
 padding: 0.5rem 0;
 display: flex;
 justify-content: space-between;
-@media screen and (min-width: 768px){
-   
-    
+@media screen and (min-width: 768px){  
 }
-
-
 `;
-const Cost = styled.p`
-    font-size: 23px;
-    font-weight: 700;
-    margin: 0;
-`;
+
 const HoverConainer = styled.div`
     &:hover{
         cursor: pointer;
     }
 `;
 const Section= (props) => {
-    let isPageWide = media('(min-width: 768px)')
   
    if(props.data)
     return(
@@ -44,11 +31,7 @@ const Section= (props) => {
                     <div style={{marginLeft: '4px'}}>{props.data.user_selected ? 'Selected' : 'Select'}</div>
             
                 </HoverConainer > : null}
-                {/* <div></div> */}
                 <div >
-                {/* {!props.are_prices_hidden ? <Cost className='font-lexend'>
-                {"₹ "+ getIndianPrice(Math.round(props.data.booking_cost/100))+" /-"}
-                </Cost> : null} */}
                 </div>
       </Container>
   ); 
@@ -57,15 +40,11 @@ const Section= (props) => {
 
  const mapStateToPros = (state) => {
     return{
-    
-       
       token: state.auth.token,
-     
     }
   }
   const mapDispatchToProps = dispatch => {
       return{
-   
       }
     }
 

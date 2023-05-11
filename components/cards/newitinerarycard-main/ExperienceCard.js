@@ -55,8 +55,6 @@ const ExperienceCard= (props) => {
  
 
 const router = useRouter();
- 
- 
 const [loading, setLoading] = useState(false);
 
 const redirect = () => {
@@ -87,7 +85,7 @@ const _handleRedirect = () => {
               <ImageGallery duration_number={props.duration_number ? props.duration_number : null} duration={props.duration}  images={props.images} ></ImageGallery>
        </ImageContainer> 
        <ContentContainer className="text-cente">
-        <Info PW={props.PW} owner={props.data.owner} user_name={props.data.user_name} locations={props.locations} FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP} name={props.data ? props.data.name : props.name} PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
+        <Info PW={props.PW} owner={props.data.owner} user_name={props.data.user_name} locations={props.locations} FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP} name={props.data ? props.data.name : props.name} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
 
        </ContentContainer>
        {props.data ? props.data.payment_info ? props.data.payment_info.summary ? <Summary summary={props.data.payment_info.summary}></Summary> : null : null : null}

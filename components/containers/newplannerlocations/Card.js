@@ -1,9 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import BackroundImageLoader from '../../UpdatedBackgroundImageLoader';
 import media from '../../media';
 import ImageLoader from '../../ImageLoader';
-import { useRouter } from 'next/router';
 
 const Container = styled.div`
 width: 100%;
@@ -71,7 +69,6 @@ const Name = styled.p`
 const Experiences= (props) => {
     let isPageWide = media('(min-width: 768px)');
     let filters_to_show = "";
-    const router = useRouter();
      try{
     for(var i = 0 ; i < props.filters.length; i++){
         if(i === props.filters.length-1)

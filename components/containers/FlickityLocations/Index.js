@@ -1,6 +1,5 @@
 
-import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import Card from '../../cards/Location';
 import Carousel from '../../FlickityCarousel';
 import media from '../../media';
@@ -15,26 +14,10 @@ const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
    const router = useRouter();
-   const [loaded, setLoaded] = useState(false);
-   const [locations, setLocations] = useState([]);
    let cardsarr = [];
 
-   const flickityOptions = {
-    initialIndex: 0,
-    prevNextButtons: false,
-    wrapAround: false,
-    pageDots: false,
-    groudCells: 4,
-
-};
-
-   useEffect(() => {
-  
 
 
- 
-  }, []);
-console.log(props.locations)
   for (var i = 0; i < props.locations.length; i++){
       const slug  = props.locations[i].slug;
     let name = '';

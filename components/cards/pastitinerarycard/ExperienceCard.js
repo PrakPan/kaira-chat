@@ -1,13 +1,9 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
 import Button from '../../ui/button/Index';
-// import Link from 'next/link';
 import media from '../../media';
 import { useRouter } from 'next/router';
-// import { getIndianPrice } from '../../../services/getIndianPrice';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
 import Spinner from '../../Spinner'; 
@@ -84,12 +80,14 @@ box-sizing: border-box;
 }
 `;
  
-const ExperienceCard= (props) => {
-    let isPageWide = media('(min-width: 768px)')
+const ExperienceCard = (props) => {
+  const [loadingItinerary, setLoadingItinerary] = useState(false);
+  const [loadingPlanning, setLoadingPlanning] = useState(false);
+const router = useRouter();
+
   const isPageLoaded = usePageLoaded();
  
 
-const router = useRouter();
 
 let textstr = "";  
 if(!isPageWide ){ //change to less than 400
@@ -100,8 +98,7 @@ else if(!isPageWide){ // change to 400 to 480
 }
 else   textstr = props.text.substring(0,100)+"...";
 
-const [loadingItinerary, setLoadingItinerary] = useState(false);
-const [loadingPlanning, setLoadingPlanning] = useState(false);
+
 const redirectItinerary = () => {
   setLoadingItinerary(true);
   router.push(urls.itinerary.BASE+props.id)

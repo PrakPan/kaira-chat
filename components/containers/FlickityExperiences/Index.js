@@ -24,17 +24,7 @@ const LocationsBlog= (props) => {
    const router = useRouter();
 
    let experiencecards = [];
-
-   useEffect(() => {
   
-
-
- 
-  }, []);
-  
-      const _handleRedirect = (slug) => {
-        router.push('/travel-guide/city/'+slug)
-      }
     for(var i = 0; i<props.experiences.length; i++){
     
      

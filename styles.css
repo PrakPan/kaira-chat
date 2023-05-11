@@ -1324,7 +1324,9 @@ margin-left: -25px;
   }
   
   body {
-  overflow: overlay !important;
+  overflow: overlay ;
+  /* scrollbar-width: thin; */
+  /* scrollbar-color: #ccc #fff; */
 }
 
 *::-webkit-scrollbar {

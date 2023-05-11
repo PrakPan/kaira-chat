@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-// import Animate from '../../components/HOC/Animate';
 import ImageLoader from '../../components/ImageLoader';
 import media from '../../components/media';
 const ImageWrapper = styled.div`
@@ -12,10 +11,37 @@ const ImageWrapper = styled.div`
 
 const ImageContainer = (props) => {
     let isPageWide = media('(min-width: 768px)')
+    const [imageLoaded, setImageLoaded] = useState(false);
 
+      let is_url = isValidHttpUrl(props.images[props.imageSelected]);
+      useEffect(() => {
+        var img = new Image();
+        if (!is_url) img.src = `${imgUrlEndPoint}/${btoa(imageRequest)}`;
+        else img.src = props.images[props.imageSelected];
+        img.onload = function () {
+          var height = img.height;
+          var width = img.width;
+          let aspectration;
+          aspectration = width / height;
+          // setAspect({...aspect, image: aspectration});
+
+          setImageLoaded(aspectration);
+        };
+        var img = new Image();
+        if (!is_url) img.src = `${imgUrlEndPoint}/${btoa(nextImageRequest)}`;
+        else img.src = props.images[props.imageSelected + 1];
+        img.onload = function () {
+          var height = img.height;
+          var width = img.width;
+          let aspectration;
+          aspectration = width / height;
+          // setAspect({...aspect, image: aspectration});
+
+          setImageLoaded(aspectration);
+        };
+      }, []);
     let touchstart = null;
     const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
-    const [imageLoaded, setImageLoaded] = useState(false);
 
     function isValidHttpUrl(string) {
         let url;
@@ -29,33 +55,6 @@ const ImageContainer = (props) => {
         return url.protocol === "http:" || url.protocol === "https:";
       }
 
-      let is_url = isValidHttpUrl(props.images[props.imageSelected]);
-    useEffect(() => { 
-    var img = new Image();
-    if (!is_url) img.src = `${imgUrlEndPoint}/${btoa(imageRequest)}`;
-    else img.src = props.images[props.imageSelected];
-    img.onload = function () {
-      var height = img.height;
-      var width = img.width;
-      let aspectration;
-      aspectration = width / height;
-      // setAspect({...aspect, image: aspectration});
-
-      setImageLoaded(aspectration);
-    };
-    var img = new Image();
-    if (!is_url) img.src = `${imgUrlEndPoint}/${btoa(nextImageRequest)}`;
-    else img.src = props.images[props.imageSelected + 1];
-    img.onload = function () {
-      var height = img.height;
-      var width = img.width;
-      let aspectration;
-      aspectration = width / height;
-      // setAspect({...aspect, image: aspectration});
-
-      setImageLoaded(aspectration);
-    };
-    }, [])
    let imageRequest = JSON.stringify({
     bucket: 'thetarzanway-web',
     key: props.images[props.imageSelected],

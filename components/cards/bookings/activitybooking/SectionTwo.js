@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import ImageLoader from '../../../ImageLoader';
-// import { getHumanTime } from '../../../../services/getHumanTime';
 import { getHumanDate } from '../../../../services/getHumanDate';
 const Container = styled.div`
 flex-grow: 1;

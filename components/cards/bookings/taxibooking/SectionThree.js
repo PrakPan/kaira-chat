@@ -4,7 +4,6 @@ import media from '../../../media';
 import {IoCheckboxOutline} from 'react-icons/io5';
 import { IoMdSquareOutline} from 'react-icons/io';
 
-import { getIndianPrice } from '../../../../services/getIndianPrice';
 import Spinner from '../../../Spinner';
 import {connect} from 'react-redux';
 

@@ -1,8 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf, faWallet} from '@fortawesome/free-solid-svg-icons';
 import media from '../../media';
 import { useRouter } from 'next/router';
 
@@ -80,9 +78,6 @@ const ExperienceCard= (props) => {
     const [seconds, setSeconds] = useState('-');
   
     const [showItineraryTimer, setShowItineraryTimer] = useState(true);
-    const [minimiseTimer, setMinimiseTimer] = useState(false);
-
-  const [timerValid, setTimerValid] = useState(false);
 
   const [statusColor, setStatusColor] = useState('white');
   const [statusText, setStatusText] = useState('');

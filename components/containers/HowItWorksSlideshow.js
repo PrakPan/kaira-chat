@@ -51,10 +51,11 @@ margin-block : 15px;
     
     
 const HowItWorksSlideshow = (props) =>{
-    const router=useRouter();
+    const router = useRouter();
+    const [slideSelected, setSlideSelected] = useState(0);
+    
     let isPageWide = media('(min-width: 768px)');    
     let touchstart = null;
-    const [slideSelected, setSlideSelected] = useState(0);
     const _prevSlideHandler = (val) => {
 
         if(!(slideSelected === 0))

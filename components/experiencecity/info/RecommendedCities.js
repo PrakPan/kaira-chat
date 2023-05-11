@@ -24,15 +24,6 @@ const LocationsBlog= (props) => {
    const [locations, setLocations] = useState([]);
    let cardsarr = [];
 
-   const flickityOptions = {
-    initialIndex: 0,
-    prevNextButtons: false,
-    wrapAround: false,
-    pageDots: false,
-    groudCells: 4,
-
-};
-
    useEffect(() => {
   
 

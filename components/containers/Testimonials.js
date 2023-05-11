@@ -36,6 +36,8 @@ display: block !important;
 
 const Testimonials= (props) => {
   let isPageWide = media('(min-width: 768px)')
+      const router = useRouter();
+
   const isPageLoaded = usePageLoaded();
 
 
@@ -68,7 +70,6 @@ const Testimonials= (props) => {
         <ReviewCard text={reviews[2].summary} review={reviews[2].review} name={reviews[2].name} location={reviews[2].location} url={reviews[2].image}></ReviewCard>
 
       ]
-      const router = useRouter()
 
       const _handleRedirect = (e) => {
           router.push('/testimonials')

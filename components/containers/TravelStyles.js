@@ -1,12 +1,8 @@
 import React from 'react';
 import styled,{keyframes} from 'styled-components';
 import LazyImageLoader from '../ImageLoader';
-// import Link from 'next/link';
 import media from '../media';
 import { useRouter } from 'next/router';
-// import * as ga from '../../services/ga/Index';
-// import urls from '../../services/urls';
-/*Grid container for experience types currently used on homepage*/
 
 const GridGap = 1;
 

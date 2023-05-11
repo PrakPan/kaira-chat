@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import styled,  { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faCalendarWeek,faCog} from '@fortawesome/free-solid-svg-icons';
 import BackgroundImageLoader from '../../../UpdatedBackgroundImageLoader';
@@ -40,10 +40,9 @@ import usePageLoaded from '../../../custom hooks/usePageLoaded';
     `;
 const ImageSlider = (props) => {
   const isPageLoaded = usePageLoaded();
-  
   const Component = useRef();
   const [height, setHeight] = useState(0);
-   
+
   useEffect(()=> {
     setHeight((Component.current.offsetWidth * 3)/4);
   },[])

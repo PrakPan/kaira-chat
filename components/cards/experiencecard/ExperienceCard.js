@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
+import {  faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
 import Button from '../../ui/button/Index';
 import Link from 'next/link';
 import media from '../../media';
@@ -91,7 +91,9 @@ color: #212529;
 }
 `;
  
-const ExperienceCard= (props) => {
+const ExperienceCard = (props) => {
+const [loading, setLoading] = useState(false);
+  
   let isPageWide = media('(min-width: 768px)')
   const isPageLoaded = usePageLoaded();
  
@@ -108,7 +110,6 @@ else if(!isPageWide){ // change to 400 to 480
   textstr = props.text.substring(0,90)+"...";
 }
 else   textstr = props.text.substring(0,100)+"...";
-const [loading, setLoading] = useState(false);
 
 const redirect = () => {
   setLoading(true);

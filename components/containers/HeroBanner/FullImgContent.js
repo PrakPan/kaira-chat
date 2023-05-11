@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Button from "../../ui/button/Index";
 import media from "../../media";
@@ -89,7 +89,6 @@ const IconsContainer = styled.div`
 const FullImgContent = (props) => {
     let isPageWide = media("(min-width: 768px)");
     const router = useRouter()
-  // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   return (
     <Container className="font-lexend center-di text-cente">
       <PaddingContianer>
@@ -112,20 +111,7 @@ const FullImgContent = (props) => {
           </SubHeading>
         )
         }
-       
-        {/* <div className='hidden-mobile'>
-            <Button  padding="0.75rem 1rem" fontSize="16px" fontWeight="600" bgColor="#f7e700" hoverBgColor="rgba(0, 0, 0, 0.6)" borderRadius="10px" color="black" borderWidth="0" margin='3rem 0rem' onclick={()=>window.location.href=urls.WHATSAPP+"?text=Hey, I need help planning my trip."}>Whatsapp now! <IoLogoWhatsapp style={{margin : '2px 0px 5px 8px' , fontSize : '1.5rem'}}/></Button>
 
-            </div> */}
-        {/* <SubText>As per your 
-                <span style={{marginLeft: '6px', fontWeight: '800'}}>budget</span>
-            </SubText> */}
-        {/* <Rolodex></Rolodex> */}
-        {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
-
-        {/* <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
-                <BsWhatsapp style={{fontSize: '1.5rem', margin: '-0.125rem 0.25rem 0 0'}}> </BsWhatsapp>
-                View Trips</Button> */}
         {!isPageWide && (
           <div>
             <Button
@@ -144,7 +130,6 @@ const FullImgContent = (props) => {
           </div>
         )}
       </PaddingContianer>
-      {/* <Banner></Banner> */}
       {isPageWide && (
         <div style={{ marginTop : '1.2rem'}}>
           <TailoredForm
@@ -157,11 +142,6 @@ const FullImgContent = (props) => {
         </div>
       )}
 
-      {/* <div className='hidden-desktpo'>
-                    <div style={{backgroundColor: 'white', zIndex:'2', height: '100vh', width: '100vw', position: 'fixed', top: '0'}}>
-                        <TailoredForm children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
-                    </div>
-                </div> */}
 
       <IconsContainer>
         <div>

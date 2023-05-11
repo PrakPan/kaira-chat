@@ -1,7 +1,7 @@
-import React, {useRef, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faImages, faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
+import {  faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import {GrStar} from 'react-icons/gr';
 const YellowContainer  = styled.div`

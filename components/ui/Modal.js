@@ -81,10 +81,9 @@ export default function Modal(props) {
   }
   useEffect(() => {
     set_document(document)
-    return () => {
-      document.body.style.overflowY = "scroll";
-    document.body.style.overflow = "overlay";
-    };
+    // return () => {
+    // document.body.style.overflow = "overlay";
+    // };
     
 }, [])
   const [fade, setFade] = useState("out");
@@ -92,7 +91,7 @@ export default function Modal(props) {
     setFade("out");
     setTimeout(() => {
       if (props.onHide) props.onHide();
-      document.body.style.overflowY = 'scroll'
+      // document.body.style.overflowY = 'scroll'
     document.body.style.overflow = "overlay";
 
       // if(isPageWide) document.body.style.paddingRight = '0px'
@@ -101,7 +100,8 @@ export default function Modal(props) {
 
   useEffect(() => {
     if (props.show === true){
-    document.body.style.overflowY = 'hidden';
+      console.log('props.show: ', props.show);
+    document.body.style.overflow = 'hidden';
   // if(isPageWide) document.body.style.paddingRight = getScrollBarWidth() + 'px'
     setFade("in")
   }

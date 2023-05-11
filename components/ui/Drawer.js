@@ -117,11 +117,11 @@ export default function Drawer(props) {
   const [open , setOpen] = useState(false)
     useEffect(() => {
       set_document(document);
-      return () => { (document.body.style.overflowY = "scroll");}
+      // return () => { (document.body.style.overflow = "overlay");}
     }, []);
   const [fade, setFade] = useState("out");
   function onCLose() {
-    document.body.style.overflowY = "scroll";
+    // document.body.style.overflowY = "scroll";
     document.body.style.overflow = "overlay";
     setFade("out");
     setTimeout(() => {
@@ -139,10 +139,14 @@ export default function Drawer(props) {
    return width;
   }
   
-    useEffect(() => {
-      if (props.show === true) {
+  useEffect(() => {
+      
+    if (props.show === true) {
+        console.log("props.show: ", props.show);
+        
           setOpen(true)
-        document.body.style.overflowY = "hidden";
+        document.body.style.overflow = "hidden";
+       
         // if (isPageWide) document.body.style.paddingRight = getScrollBarWidth() + "px";
         setFade("in");
       } else onCLose();

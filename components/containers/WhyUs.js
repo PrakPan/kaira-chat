@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import media from '../media';
 import Button from '../ui/button/Index';
-import urls from '../../services/urls';
 import * as ga from '../../services/ga/Index';
 import { useRouter } from 'next/router';
 import ImageLoader from '../ImageLoader';

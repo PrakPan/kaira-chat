@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -26,8 +26,6 @@ const Locations = (props) => {
   const ref = useRef();
 
   const [value, setValue] = React.useState(0);
-  const [dayTabsJSX, setDayTabsJSX] = useState([]);
-  const [dayPanelsJSX, setDayPannelsJSX] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

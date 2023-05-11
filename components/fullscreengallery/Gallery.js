@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {BsArrowRightCircleFill , BsArrowLeftCircleFill } from 'react-icons/bs'
 import Images from './Image';
@@ -51,14 +51,7 @@ const InactiveIndex = styled.span`
     color: hsl(0,0%, 70%);
 `;
 const Gallery = (props) => {
-    const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
-     useEffect(()=> {
-
-    },[])
-
-
     const [imageSelected, setImageSelected] = useState(0);
-    const [imagesLoaded, setImagesLoaded] = useState(false);
 
     const _prevImgHandler = (val) => {
 

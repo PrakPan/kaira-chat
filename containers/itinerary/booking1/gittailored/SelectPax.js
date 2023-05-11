@@ -3,21 +3,8 @@ import styled from "styled-components";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
-import { makeStyles } from "@mui/styles";
 import LogInModal from "../../../../components/modals/Login";
 import usePageLoaded from "../../../../components/custom hooks/usePageLoaded";
-const useStyles = makeStyles((theme) => ({
-  noPadding: {
-    padding: 0,
-  },
-  fullWidth: {
-    width: "100%",
-    padding: 0,
-  },
-  relative: {
-    position: "relative",
-  },
-}));
 const Option = styled.option`
   padding: 0.75rem;
   background-color: white;
@@ -30,6 +17,12 @@ const Option = styled.option`
   }
 `;
 const QueryType = (props) => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selected, setSelected] = useState(false);
+    const [queryType, setQueryType] = useState("");
+  
+  
+
   const isPageLoaded = usePageLoaded();
 
   if (isPageLoaded) {
@@ -42,7 +35,6 @@ const QueryType = (props) => {
         </Option>
       );
     }
-    const classes = useStyles();
     const queries = [
       "Conferences or offsites",
       "Workcations or retreats",
@@ -50,10 +42,7 @@ const QueryType = (props) => {
       "Partnerships",
       "Others",
     ];
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [selected, setSelected] = useState(false);
 
-    const [queryType, setQueryType] = useState("");
     const _handleQueryTypeChange = (event) => {
       setSelected(true);
       setQueryType(event.target.value);
@@ -64,7 +53,7 @@ const QueryType = (props) => {
       <div>
         <FormControl
           id="bookingsummary-pax"
-          className={classes.fullWidth}
+          style={{ width: "100%", padding: 0 }}
           variant="outlined"
         >
           <InputLabel htmlFor="contact-query-select" id="contact-query-label">
@@ -77,7 +66,7 @@ const QueryType = (props) => {
             label="Topic of interest"
             value={queryType}
             onChange={_handleQueryTypeChange}
-            className={classes.relative}
+            style={{ position: "relative"}}
           >
             <Option aria-label="None" value="" style={{ display: "none" }} />
             {optionsJSX}

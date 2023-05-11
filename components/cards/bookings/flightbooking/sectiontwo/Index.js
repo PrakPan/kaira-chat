@@ -1,8 +1,7 @@
 
 
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState,  useEffect} from 'react';
 import styled from 'styled-components'
-  import media from '../../../../media';
   import { getHumanTime } from '../../../../../services/getHumanTime';
   import { getHumanDate } from '../../../../../services/getHumanDate';
 import ImageLoader from '../../../../ImageLoader';
@@ -29,17 +28,9 @@ const LogoContainer   = styled.div`
 `;
  
 const Booking = (props) =>{
-    
-    const  minuteToHours = (n) => {
-        var num = n;
-        var hours = (num / 60);
-        var rhours = Math.floor(hours);
-        var minutes = (hours - rhours) * 60;
-        var rminutes = Math.round(minutes);
-        return  rhours + " h " + rminutes + " m";
-        }
-    let isPageWide = media('(min-width: 768px)')
-    const [url, setUrl] = useState('https://d31aoa0ehgvjdi.cloudfront.net/crm/flight.webp')
+    const [url, setUrl] = useState(
+      "https://d31aoa0ehgvjdi.cloudfront.net/crm/flight.webp"
+    );
     useEffect(() => {
         if(props.data.costings_breakdown)
         if(props.data.costings_breakdown.Segments)
@@ -229,7 +220,6 @@ const Booking = (props) =>{
                 <div></div>
               )}
 
-              {/* {props.data.costings_breakdown? props.data.costings_breakdown.Segments ? props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal !=="" ?  <div className='font-lexend' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][0].Origin.Airport.Terminal}</div> : null : null : null} */}
             </div>
             <div>
               {props.data.costings_breakdown ? (
@@ -253,7 +243,6 @@ const Booking = (props) =>{
                   ) : null
                 ) : null
               ) : null}
-              {/* {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length > 1 ? <div className='font-lexend text-center' style={{fontSize: '0.55rem', fontWeight: '300'}}>{minuteToHours(props.data.costings_breakdown.Segments[0][1].GroundTime)}</div> : null : null : null} */}
             </div>
             <div style={{ width: "max-content" }}>
               {props.data.check_out ? (
@@ -295,7 +284,6 @@ const Booking = (props) =>{
                 <div></div>
               )}
 
-              {/* {props.data.costings_breakdown ? props.data.costings_breakdown.Segments?  props.data.costings_breakdown.Segments[0].length ?  props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal !=="" ?  <div className='font-lexend' style={{fontSize: '0.75rem', fontWeight: '300'}}>{"Terminal "+props.data.costings_breakdown.Segments[0][props.data.costings_breakdown.Segments[0].length-1].Destination.Airport.Terminal}</div> : null : null : null : null} */}
             </div>
           </DetailsGridContainer>
         </GridContainer>

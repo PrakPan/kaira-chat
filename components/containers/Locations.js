@@ -23,6 +23,7 @@ height: 60vh;
 
 const LocationsBlog= (props) => {
    const router = useRouter();
+    const [cardsJSX, setCardsJSX] = useState([null, null, null, null, null]);
 
       const _handlePlanning = (id, name, parent) => {
         localStorage.setItem('search_city_selected_id', id);
@@ -33,7 +34,6 @@ const LocationsBlog= (props) => {
     const _handlePlannerPage = (id,name) => {
               openTailoredModal(router, id, name);
     }
-    const [cardsJSX, setCardsJSX] = useState([null, null, null, null , null]);
     useEffect(() => {
       let cardsarr = [];
 

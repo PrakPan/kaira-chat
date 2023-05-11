@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import media from '../../../media';
 import {IoCheckboxOutline} from 'react-icons/io5';
 import {IoMdSquareOutline} from 'react-icons/io'; 
-import { getIndianPrice } from '../../../../services/getIndianPrice';
 import Spinner from '../../../Spinner';
 const Container = styled.div`
 margin: 0.5rem 0.5rem 0 0.5rem;
