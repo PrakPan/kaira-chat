@@ -18,16 +18,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Accordion = withStyles({
-  root: {
-    marginBottom: 10,
-    border: "1px solid #e4e4e4",
-    boxShadow: "none",
-    zIndex: "1",
-  },
-
-  expanded: {},
-})(MuiAccordion);
 const FAQs = (props) => {
   const classes = useStyles();
 

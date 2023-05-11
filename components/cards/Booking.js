@@ -6,7 +6,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import ImageLoader from "../ImageLoader";
-import { makeStyles } from "@mui/styles";
 import MuiAccordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -54,16 +53,6 @@ const PhotosButton = styled.div`
 `;
 
 const Booking = (props) => {
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      width: "100%",
-    },
-    heading: {
-      fontSize: "1rem",
-      fontWeight: "600",
-    },
-  }));
-  const classes = useStyles();
 
   const Accordion = withStyles({
     root: {},
@@ -136,10 +125,9 @@ const Booking = (props) => {
               <div>
                 <Typography
                   className={
-                    props.blur
-                      ? classes.heading + "font-lexend blurry-text"
-                      : classes.heading + " font-lexend"
+                    props.blur ? "font-lexend blurry-text" : " font-lexend"
                   }
+                  style={{ fontSize: "1rem", fontWeight: "600", width: "100%" }}
                 >
                   {props.heading}
                 </Typography>
@@ -194,9 +182,10 @@ const Booking = (props) => {
             <Typography
               className={
                 props.blur
-                  ? classes.heading + "font-lexend blurry-text"
-                  : classes.heading + " font-lexend"
+                  ?"font-lexend blurry-text"
+                  :" font-lexend"
               }
+              style={{ fontSize: "1rem", fontWeight: "600", width: "100%" }}
             >
               {props.heading}
             </Typography>
@@ -212,7 +201,6 @@ const Booking = (props) => {
             </p>
           </div>
           {detailsarr}
-         
         </div>
       </Container>
     );
