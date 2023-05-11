@@ -1,14 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../../ImageLoader';
-import Tags from './Tags';
-import {GoPrimitiveDot} from 'react-icons/go'
-import { getIndianPrice } from '../../../../../services/getIndianPrice';
-import Button from '../../../../ui/button/Index';
-import {  AiOutlinePlusSquare, AiOutlineMinusSquare} from 'react-icons/ai';
-import media from '../../../../media';
-import Dropdown from './Dropdown';
-import Details from '../../../details/Index';
 const Container = styled.div`
 width: 100%;
 display: grid;
@@ -74,6 +66,20 @@ const RoomType = (props) => {
     const [ammenities, setAmmenities] = useState(null);
     const [showCounter, setShowCounter] = useState(false);
     const [counterValue, setCounterValue] = useState(1);
+     useEffect(() => {
+       let ammenities_arr = [];
+       if (props.data.room_facilities) {
+         for (var i = 0; i < props.data.room_facilities.length; i++) {
+           // if(i === 5) break;
+           ammenities_arr.push(
+             <Ammenity className="font-lexend">
+               {props.data.room_facilities[i]}
+             </Ammenity>
+           );
+         }
+         setAmmenities(ammenities_arr);
+       }
+     }, [props.data]);
     let isPageWide = media('(min-width: 768px)')
 
     const _increaseCounter = () => {
@@ -87,19 +93,7 @@ const RoomType = (props) => {
         }
     }
 
-    useEffect(() => {
-        let ammenities_arr = [];
-        if(props.data.room_facilities){
-            for(var i=0; i<props.data.room_facilities.length; i++){
-                // if(i === 5) break;
-                ammenities_arr.push(
-                    <Ammenity className='font-lexend'>{props.data.room_facilities[i]}</Ammenity>
-                );
-            }
-            setAmmenities(ammenities_arr)
-        }
-       
-      }, [props.data]);
+   
       let image = 'media/icons/bookings/notfounds/noroom.png';
       if(props.images.length){
         for(var i = 0 ; i < props.images.length ; i++){

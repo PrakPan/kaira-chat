@@ -1,10 +1,6 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {Modal} from 'react-bootstrap';
+import React from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faAngleRight, faStar} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../../../../ImageLoader';
 import MobileGallery from './mobile/Index';
 const Container = styled.div`

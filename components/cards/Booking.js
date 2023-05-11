@@ -127,7 +127,7 @@ const Booking = (props) => {
           ) : null}
         </ImageContainer>
         <div>
-          <Accordion>
+          <MuiAccordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
@@ -147,7 +147,7 @@ const Booking = (props) => {
               </div>
             </AccordionSummary>
             <AccordionDetails></AccordionDetails>
-          </Accordion>
+          </MuiAccordion>
         </div>
       </Container>
     );

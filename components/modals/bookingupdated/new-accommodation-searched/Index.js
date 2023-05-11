@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import Info from './Info';
@@ -50,7 +50,7 @@ const Accommodation = (props) => {
                  
                 <Gallery  setShowDetails={() => setShowDetails(true)}  images={props.accommodation.images} ></Gallery>
               </ImageContainer>
-                <Info  alternates={props.alternates}   _updateSearchedAccommodation={props._updateSearchedAccommodation} setShowDetails={() => setShowDetails(true)}  token={props.token} rating={4.2} bookings={props.bookings} _updateSearchedAccommodation={props._updateSearchedAccommodation} bookings={props.bookings} accommodation={props.accommodation} new_booking_id={props.accommodation.id}  pricing_type={'TBO'} selectedBooking={props.selectedBooking} room_type={props.accommodation.rooms_available.length ? props.accommodation.rooms_available[0].room_type_name : 'Standard Room'} updateLoadingState={props.updateLoadingState} tailored_id={props.tailored_id} booking_id={props.booking_id} itinerary_id={props.itinerary_id} accommodation_id={props.accommodation.id} _updateBookingHandler={props._updateBookingHandler}  name={props.accommodation.name} star={props.accommodation.star_category}  />
+                <Info  alternates={props.alternates}   _updateSearchedAccommodation={props._updateSearchedAccommodation} setShowDetails={() => setShowDetails(true)}  token={props.token} rating={4.2} bookings={props.bookings} accommodation={props.accommodation} new_booking_id={props.accommodation.id}  pricing_type={'TBO'} selectedBooking={props.selectedBooking} room_type={props.accommodation.rooms_available.length ? props.accommodation.rooms_available[0].room_type_name : 'Standard Room'} updateLoadingState={props.updateLoadingState} tailored_id={props.tailored_id} booking_id={props.booking_id} itinerary_id={props.itinerary_id} accommodation_id={props.accommodation.id} _updateBookingHandler={props._updateBookingHandler}  name={props.accommodation.name} star={props.accommodation.star_category}  />
           </GridContainer>
           <div className='hidden-desktop'><Buttons alternates={props.alternates} _updateSearchedAccommodation={props._updateSearchedAccommodation} itinerary_id={props.itinerary_id} tailored_id={props.tailored_id} accommodation={props.accommodation} bookings={props.bookings}  setShowDetails={() => setShowDetails(true)}></Buttons></div>
           <AccommodationModal  _setImagesHandler={props._setImagesHandler} onHide={() => setShowDetails(false)} id={props.accommodation.id} show={showDetails}></AccommodationModal>

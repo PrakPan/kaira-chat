@@ -1,14 +1,7 @@
 import React from 'react';
 import styled from 'styled-components'
 import CurrentlyReplacing from './CurrentlyReplacing';
-import Filters from './Filters';
-import Cost from './Cost';
-import Heading from './Heading';
 import media from '../../../media';
-import Slider from './StarSlider';
-import BudgetSlider from './BudgetSlider';
-import AcordionFilters from './AccordianFilters';
-import Types from './Types';
 const Container  = styled.div`
 
 `;

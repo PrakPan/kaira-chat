@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
@@ -92,31 +92,7 @@ const Booking = (props) => {
 
     const [noResults, setNoResults] = useState(false);
     
-    const filters = {
-        budget: ["Below ₹3,000", "₹3,000 - ₹6,000", "₹6,000 - ₹10,000", "Above ₹10,000"],
-        type: [
-            "Hotel",
-            "Homestay",
-            "Camp",
-            "Guest House",
-            "Cottage",
-            "Villa",
-            "Resort",
-            "Lodge",
-            "Service Appartment",
-            "Bed and Breakfast",
-            "Farmstay",
-            // "Speciality Lodging",
-            // "Boat / Cruise",
-            // "Holiday Park / Caravan Park",
-            // "Country House",
-            "Entire House",
-            // "Capsule Hotel",
-            "Unique",
-
-        ],
-        star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
-    }
+  
 
     useEffect(() => {
 
@@ -163,8 +139,38 @@ const Booking = (props) => {
             }).catch(err => {
                 
             })
-      },[])
-
+    }, [])
+    
+  const filters = {
+    budget: [
+      "Below ₹3,000",
+      "₹3,000 - ₹6,000",
+      "₹6,000 - ₹10,000",
+      "Above ₹10,000",
+    ],
+    type: [
+      "Hotel",
+      "Homestay",
+      "Camp",
+      "Guest House",
+      "Cottage",
+      "Villa",
+      "Resort",
+      "Lodge",
+      "Service Appartment",
+      "Bed and Breakfast",
+      "Farmstay",
+      // "Speciality Lodging",
+      // "Boat / Cruise",
+      // "Holiday Park / Caravan Park",
+      // "Country House",
+      "Entire House",
+      // "Capsule Hotel",
+      "Unique",
+    ],
+    star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
+    };
+    
       const _updateOptionsHandlerWithFilter = () => {
           setOffset(0);
           setUpdateLoadingState(true);

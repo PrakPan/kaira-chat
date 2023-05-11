@@ -30,7 +30,19 @@ const useStyles = makeStyles({
 
 const Filters = (props) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(30);
+  const [value, setValue] = useState(30);
+  const [state, setState] = useState({
+    checkedA: true,
+    checkedB: true,
+    checkedC: false,
+    checkedD: true,
+    checkedE: false,
+    checkedJ: false,
+    checkedF: false,
+    checkedG: false,
+    checkedH: false,
+    checkedI: false,
+  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -69,18 +81,7 @@ const Filters = (props) => {
     },
     checked: {},
   })((props) => <Checkbox color="default" {...props} />);
-  const [state, setState] = React.useState({
-    checkedA: true,
-    checkedB: true,
-    checkedC: false,
-    checkedD: true,
-    checkedE: false,
-    checkedJ: false,
-    checkedF: false,
-    checkedG: false,
-    checkedH: false,
-    checkedI: false,
-  });
+  
   const handleCheckboxChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };

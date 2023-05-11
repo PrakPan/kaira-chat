@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
-import {IoCheckboxOutline} from 'react-icons/io5';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
 const Container = styled.div`
 margin: 0.5rem 0.5rem 0 0.5rem;

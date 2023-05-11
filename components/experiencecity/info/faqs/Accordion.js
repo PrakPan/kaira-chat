@@ -34,7 +34,15 @@ const FAQs = (props) => {
   let FAQS = [];
   for (var i = 0; i < props.faqs.length; i++) {
     FAQS.push(
-      <Accordion key={i}>
+      <MuiAccordion
+        style={{
+          marginBottom: 10,
+          border: "1px solid #e4e4e4",
+          boxShadow: "none",
+          zIndex: "1",
+        }}
+        key={i}
+      >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
@@ -64,7 +72,7 @@ const FAQs = (props) => {
             {props.faqs[i].answer}
           </Typography>
         </AccordionDetails>
-      </Accordion>
+      </MuiAccordion>
     );
   }
   return <div className={classes.root}>{FAQS}</div>;

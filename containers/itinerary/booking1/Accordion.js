@@ -125,7 +125,15 @@ const FAQs = (props) => {
         // );
       }
       HeadingsJSX.push(
-        <Accordion key={key}>
+        <MuiAccordion
+          key={key}
+          style={{
+            marginBottom: 10,
+            border: "0px solid #e4e4e4",
+            boxShadow: "none",
+            zIndex: "1",
+          }}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
@@ -173,7 +181,7 @@ const FAQs = (props) => {
               ? bookingslist
               : bookinglistwithcost}
           </AccordionDetails>
-        </Accordion>
+        </MuiAccordion>
       );
     }
   }

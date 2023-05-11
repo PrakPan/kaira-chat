@@ -1,6 +1,5 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import styled from 'styled-components';
-import media from '../../../media';
 import Info from './Info';
 import Gallery from './gallery/Index';
 import Buttons from './Buttons';
@@ -36,7 +35,6 @@ const ImageContainer = styled.div`
 
 
 const Accommodation = (props) => {
-   let isPageWide = media('(min-width: 768px)')
   //   if(!showPhotos)
   const [showDetails, setShowDetails] = useState(false);
 

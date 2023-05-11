@@ -97,32 +97,6 @@ const Booking = (props) => {
 
     const [noResults, setNoResults] = useState(false);
     const [unauthorized, setUnauthorized] = useState(false);
-    
-    const filters = {
-        budget: ["Below ₹3,000", "₹3,000 - ₹6,000", "₹6,000 - ₹10,000", "Above ₹10,000"],
-        type: [
-            "Hotel",
-            "Homestay",
-            "Camp",
-            "Guest House",
-            "Cottage",
-            "Villa",
-            "Resort",
-            "Lodge",
-            "Service Appartment",
-            "Bed and Breakfast",
-            "Farmstay",
-            // "Speciality Lodging",
-            // "Boat / Cruise",
-            // "Holiday Park / Caravan Park",
-            // "Country House",
-            "Entire House",
-            // "Capsule Hotel",
-            "Unique",
-
-        ],
-        star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
-    }
     useEffect(() => {
          // let options = [];
         // if(props.alternates)
@@ -174,6 +148,36 @@ const Booking = (props) => {
         )
       },[props.selectedBooking, props.token])
 
+    
+    const filters = {
+      budget: [
+        "Below ₹3,000",
+        "₹3,000 - ₹6,000",
+        "₹6,000 - ₹10,000",
+        "Above ₹10,000",
+      ],
+      type: [
+        "Hotel",
+        "Homestay",
+        "Camp",
+        "Guest House",
+        "Cottage",
+        "Villa",
+        "Resort",
+        "Lodge",
+        "Service Appartment",
+        "Bed and Breakfast",
+        "Farmstay",
+        // "Speciality Lodging",
+        // "Boat / Cruise",
+        // "Holiday Park / Caravan Park",
+        // "Country House",
+        "Entire House",
+        // "Capsule Hotel",
+        "Unique",
+      ],
+      star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
+    };
    
 
       const _updateOptionsHandlerWithFilter = () => {

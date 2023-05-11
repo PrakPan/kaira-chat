@@ -1,6 +1,5 @@
 import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
-import ImageLoader from '../../../ImageLoader';
 import Room from './roomtype/Index'
 const Container = styled.div`
 display: grid;
