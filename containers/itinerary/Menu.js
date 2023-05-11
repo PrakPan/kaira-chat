@@ -376,14 +376,27 @@ const SimpleTabs = (props) => {
     };
   }, [items]);
   const [activeItem, setActiveItem] = useState(1);
-  const items = [
-    { id: 1, label: 'Brief', link: 'Brief' },
-    { id: 2, label: 'Itinerary', link: 'Itenary' },
-    // { id: 3, label: 'Flights',link: 'Flights' },
-    { id: 3, label: 'Stays', link: 'Stays' },
-    { id: 4, label: 'Transfers', link: 'Transfers' },
-    { id: 5, label: 'Activities', link: 'Activities' },
-  ];
+  const items = props?.activityBookings
+    ? [
+        { id: 1, label: 'Brief', link: 'Brief' },
+        { id: 2, label: 'Itinerary', link: 'Itenary' },
+        // { id: 3, label: 'Flights',link: 'Flights' },
+        { id: 3, label: 'Stays', link: 'Stays' },
+        { id: 4, label: 'Transfers', link: 'Transfers' },
+        {
+          id: 5,
+          label: 'Activities',
+          link: 'Activities',
+        },
+      ]
+    : [
+        { id: 1, label: 'Brief', link: 'Brief' },
+        { id: 2, label: 'Itinerary', link: 'Itenary' },
+        // { id: 3, label: 'Flights',link: 'Flights' },
+        { id: 3, label: 'Stays', link: 'Stays' },
+        { id: 4, label: 'Transfers', link: 'Transfers' },
+      ];
+
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
   const handleSelect = (itemId) => {
@@ -776,19 +789,16 @@ const SimpleTabs = (props) => {
                 />
               </div>
             )}
-            {isGroup ? (
+            {props.activityBookings && (
               <div id={items[4].link}>
-                <Register></Register>
-              </div>
-            ) : (
-              <div id={items[4].link}>
-                <ActivityBookings>
-                  hasUserPaid=
-                  {props.payment
-                    ? props.payment.paid_user
-                      ? true
+                <ActivityBookings
+                  hasUserPaid={
+                    props.payment
+                      ? props.payment.paid_user
+                        ? true
+                        : false
                       : false
-                    : false}
+                  }
                   budget={props.budget}
                   stayBookings={props.stayBookings}
                   _updateBookingHandler={props._updateBookingHandler}
@@ -800,8 +810,8 @@ const SimpleTabs = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                   activityBookings={props.activityBookings}
                   payment={props.payment}
-                  booking={props.booking}>
-                </ActivityBookings>
+                  booking={props.booking}
+                />
               </div>
             )}
           </div>

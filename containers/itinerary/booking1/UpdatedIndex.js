@@ -1008,6 +1008,8 @@ const Booking = (props) => {
   ]);
 
   useEffect(() => {
+    console.log('activityBookings in booking');
+    console.log(props.activityBookings);
     if (props.activityBookings)
       for (var i = 0; i < props.activityBookings.length; i++) {
         if (props.activityBookings[i].alternate_to) {

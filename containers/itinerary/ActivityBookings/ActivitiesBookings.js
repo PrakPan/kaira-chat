@@ -441,58 +441,71 @@ const ActivitiesBookings = (props) => {
                       <BsCalendar2 className="text-md text-[#7A7A7A]" />
                       <div>
                         <div className="text-md font-medium ">
-                          {booking.check_in && getDate(booking.check_in)}-
-                          {booking.check_out && getDate(booking.check_out)}
+                          {booking.check_in && getDate(booking.check_in)}
+                          {booking.check_out &&
+                            ' - ' + ' ' + getDate(booking.check_out)}
                         </div>
                       </div>
                     </div>
-                    <div
-                      className={`flex ${
-                        noOfWords(booking.costings_breakdown[0].room_type, 4)
-                          ? 'lg:flex-row flex-col'
-                          : 'flex-row'
-                      } gap-3`}
-                    >
-                      <div className="text-md font-medium gap-2 flex flex-row items-center">
-                        <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                        <div className="text-md font-medium min-w-fit">
-                          {booking.number_of_adults} Adults
+                    {booking.costings_breakdown[0] && (
+                      <div>
+                        <div
+                          className={`flex ${
+                            noOfWords(
+                              booking.costings_breakdown[0]?.room_type,
+                              4
+                            )
+                              ? 'lg:flex-row flex-col'
+                              : 'flex-row'
+                          } gap-3`}
+                        >
+                          <div className="text-md font-medium gap-2 flex flex-row items-center">
+                            <BsPeopleFill className="text-md text-[#7A7A7A]" />
+                            <div className="text-md font-medium min-w-fit">
+                              {booking.number_of_adults} Adults
+                            </div>
+                          </div>
+                          <div className="text-md font-medium gap-2 flex flex-row items-center">
+                            <FaBed className="text-md text-[#7A7A7A]" />
+                            <div className="text-md font-medium">
+                              {booking.costings_breakdown[0].room_type}
+                            </div>
+                          </div>
                         </div>
+                        {Addons(booking.costings_breakdown[0].pricing_type) ? (
+                          <div className="flex flex-row gap-2 items-center">
+                            <ImSpoonKnife className="text-md text-[#7A7A7A]" />
+                            <div className="text-md font-medium">
+                              {Addons(
+                                booking.costings_breakdown[0].pricing_type
+                              )}
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
-                      <div className="text-md font-medium gap-2 flex flex-row items-center">
-                        <FaBed className="text-md text-[#7A7A7A]" />
-                        <div className="text-md font-medium">
-                          {booking.costings_breakdown[0].room_type}
-                        </div>
-                      </div>
-                    </div>
-                    {Addons(booking.costings_breakdown[0].pricing_type) ? (
-                      <div className="flex flex-row gap-2 items-center">
-                        <ImSpoonKnife className="text-md text-[#7A7A7A]" />
-                        <div className="text-md font-medium">
-                          {Addons(booking.costings_breakdown[0].pricing_type)}
-                        </div>
-                      </div>
-                    ) : null}
-
+                    )}
                     <div className="flex flex-row gap-3 items-center w-full">
-                      <ButtonYellow
-                        className="lg:w-fit w-1/2"
-                        onClick={() =>
-                          handleClick(index, booking.accommodation)
-                        }
-                      >
-                        <div className="text-[#01202B] ">View Detail</div>
-                      </ButtonYellow>
-                      <ButtonYellow
-                        primary={false}
-                        className="lg:w-fit w-1/2"
-                        onClick={() => {
-                          handleClickAc(index);
-                        }}
-                      >
-                        <div className="text-[#01202B] ">Change</div>
-                      </ButtonYellow>
+                      {booking.accommodation && (
+                        <ButtonYellow
+                          className="lg:w-fit w-1/2"
+                          onClick={() =>
+                            handleClick(index, booking.accommodation)
+                          }
+                        >
+                          <div className="text-[#01202B] ">View Detail</div>
+                        </ButtonYellow>
+                      )}
+                      {props.stayBookings[index]['id'] && (
+                        <ButtonYellow
+                          primary={false}
+                          className="lg:w-fit w-1/2"
+                          onClick={() => {
+                            handleClickAc(index);
+                          }}
+                        >
+                          <div className="text-[#01202B] ">Change</div>
+                        </ButtonYellow>
+                      )}
                     </div>
                   </div>
                   {/* {booking.costings_breakdown && (

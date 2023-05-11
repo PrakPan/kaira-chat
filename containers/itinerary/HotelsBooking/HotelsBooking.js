@@ -345,6 +345,8 @@ const HotelsBooking = (props) => {
     let booking_type = props.stayBookings[i]['booking_type'];
     let accommodation = props.stayBookings[i]['accommodation'];
     let tailored_id = props.stayBookings[i]['tailored_itinerary'];
+    let user_rating = props.stayBookings[i].user_rating;
+    let number_of_reviews = props.stayBookings[i].number_of_reviews;
     let id = props.stayBookings[i]['id'];
     let check_in = props.stayBookings[i]['check_in'];
     let check_out = props.stayBookings[i]['check_out'];
@@ -369,7 +371,8 @@ const HotelsBooking = (props) => {
       pax,
       city,
       room_type,
-
+      user_rating,
+      number_of_reviews,
       itinerary_name
     );
 

@@ -22,6 +22,12 @@ const Container = styled.div`
   }
 `;
 //
+const FacilityContainer = styled.div`
+  display: none;
+  @media screen and (min-width: 768px) {
+    display: flex;
+  }
+`;
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
@@ -174,7 +180,7 @@ const TransferModeContainer = (props) => {
       ) : (
         <div className="flex flex-row gap-2 w-full py-[12px]">
           {props.modes && (
-            <div className="grid bg-[#F4F4F4] place-items-center min-w-[8rem] min-h-[8rem]  rounded-2xl">
+            <div className="grid bg-[#F4F4F4] place-items-center lg:min-w-[8rem] min-w-[6rem] lg:min-h-[8rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
                 <TransportIconFetcher
                   TransportMode={props.booking_type}
@@ -218,7 +224,7 @@ const TransferModeContainer = (props) => {
               <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
             )}
             {props?.costings_breakdown && (
-              <div className="text-[#01202B] font-normal flex flex-row mt-3 ">
+              <FacilityContainer className="text-[#01202B] font-normal flex-row mt-3 ">
                 <div className="pr-1 block ">Facilities:</div>
                 {}
                 {Facilities.map((data, index) => (
@@ -228,7 +234,7 @@ const TransferModeContainer = (props) => {
                     <div>{data}</div>
                   </div>
                 ))}
-              </div>
+              </FacilityContainer>
             )}
           </div>
         </div>

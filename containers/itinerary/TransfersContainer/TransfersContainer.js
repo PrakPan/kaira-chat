@@ -514,33 +514,33 @@ const TransfersContainer = (props) => {
         if (
           !props.breif.city_slabs[i].is_trip_terminated &&
           !props.breif.city_slabs[i].is_departure_only &&
-          !props.breif.city_slabs[i].is_departure_only &&
-          props.breif.city_slabs[i].duration &&
-          props.breif.city_slabs[i].duration !== '0'
+          !props.breif.city_slabs[i].is_departure_only
         ) {
-          if (props?.routes[i]) {
+          if (props?.routes[i - 1]) {
             locationsArr.push(
               <PinSection
                 setCurrentPopup={false}
                 handlemap={handlemap}
-                dayId={props.routes[i]?.day_slab_location?.start_day_slab_index}
-                cityData={props.routes[i]}
+                dayId={
+                  props.routes[i - 1]?.day_slab_location?.start_day_slab_index
+                }
+                cityData={props.routes[i - 1]}
                 dayslab={props.dayslab}
-                lat={props.routes[i]?.lat}
-                long={props.routes[i]?.long}
-                Mapid={props.routes[i]?.gmaps_place_id}
-                city={props.routes[i]?.city_name}
-                cityId={props.routes[i]?.city_id}
+                lat={props.routes[i - 1]?.lat}
+                long={props.routes[i - 1]?.long}
+                Mapid={props.routes[i - 1].gmaps_place_id}
+                city={props.routes[i - 1].city_name}
+                cityId={props.routes[i - 1].city_id}
                 duration={
-                  props.breif.city_slabs[i]?.duration
-                    ? props.breif.city_slabs[i]?.duration + ' Nights'
+                  props.breif.city_slabs[i - 1].duration
+                    ? props.breif.city_slabs[i - 1].duration + ' Nights'
                     : null
                 }
-                pinColour={props.routes[i]?.color}
-                data={order[i]}
+                pinColour={props.routes[i - 1].color}
+                data={order[i - 1]}
                 _moveDownHandler={_moveDownHandler}
                 _moveUpHandler={_moveUpHandler}
-                index={i}
+                index={i - 1}
               ></PinSection>
             );
             // midsectionHandler(
