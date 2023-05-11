@@ -514,33 +514,33 @@ const TransfersContainer = (props) => {
         if (
           !props.breif.city_slabs[i].is_trip_terminated &&
           !props.breif.city_slabs[i].is_departure_only &&
-          !props.breif.city_slabs[i].is_departure_only
+          !props.breif.city_slabs[i].is_departure_only &&
+          props.breif.city_slabs[i].duration &&
+          props.breif.city_slabs[i].duration !== '0'
         ) {
-          if (props?.routes[i - 1]) {
+          if (props?.routes[i]) {
             locationsArr.push(
               <PinSection
                 setCurrentPopup={false}
                 handlemap={handlemap}
-                dayId={
-                  props.routes[i - 1]?.day_slab_location?.start_day_slab_index
-                }
-                cityData={props.routes[i - 1]}
+                dayId={props.routes[i]?.day_slab_location?.start_day_slab_index}
+                cityData={props.routes[i]}
                 dayslab={props.dayslab}
-                lat={props.routes[i - 1]?.lat}
-                long={props.routes[i - 1]?.long}
-                Mapid={props.routes[i - 1].gmaps_place_id}
-                city={props.routes[i - 1].city_name}
-                cityId={props.routes[i - 1].city_id}
+                lat={props.routes[i]?.lat}
+                long={props.routes[i]?.long}
+                Mapid={props.routes[i]?.gmaps_place_id}
+                city={props.routes[i]?.city_name}
+                cityId={props.routes[i]?.city_id}
                 duration={
-                  props.breif.city_slabs[i - 1].duration
-                    ? props.breif.city_slabs[i - 1].duration + ' Nights'
+                  props.breif.city_slabs[i]?.duration
+                    ? props.breif.city_slabs[i]?.duration + ' Nights'
                     : null
                 }
-                pinColour={props.routes[i - 1].color}
-                data={order[i - 1]}
+                pinColour={props.routes[i]?.color}
+                data={order[i]}
                 _moveDownHandler={_moveDownHandler}
                 _moveUpHandler={_moveUpHandler}
-                index={i - 1}
+                index={i}
               ></PinSection>
             );
             // midsectionHandler(
@@ -735,6 +735,26 @@ const TransfersContainer = (props) => {
         Transfers{' '}
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
+      {props.showFlightModal ? (
+        <FlightModal
+          getPaymentHandler={props.getPaymentHandler}
+          _updateFlightBookingHandler={props._updateFlightBookingHandler}
+          _updateBookingHandler={props._updateBookingHandler}
+          itinerary_id={
+            props.stayBookings.length
+              ? props.flightBookings[0]['itinerary_id']
+              : null
+          }
+          setHideFlightModal={props.setHideFlightModal}
+          alternates={alternates[selectedBooking.id]}
+          tailored_id={props.flightBookings[0]['tailored_itinerary']}
+          _updatePaymentHandler={props._updatePaymentHandler}
+          _updateFlightHandler={props._updateFlightHandler}
+          selectedBooking={selectedBooking}
+          setShowFlightModal={props.setShowFlightModal}
+          showFlightModal={props.showFlightModal}
+        ></FlightModal>
+      ) : null}
       {props.showTaxiModal ? (
         <TaxiModal
           getPaymentHandler={props.getPaymentHandler}

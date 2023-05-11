@@ -21,7 +21,7 @@ import { connect } from 'react-redux';
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
-const HotelsBooking = (props) => {
+const ActivitiesBookings = (props) => {
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
@@ -380,17 +380,21 @@ const HotelsBooking = (props) => {
 
     setShowDetails(true);
   }
+  console.log('activityBookings');
+  console.log(props.activityBookings);
+
   return (
     <div className="lg:w-[60vw] w-full">
       <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
-        Stays
+        Activities
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {props.stayBookings
-        ? props.stayBookings.map((booking, index) => (
+      {props.activityBookings
+        ? props.activityBookings.map((booking, index) => (
             <div className="flex gap-1 pt-4  flex-col justify-start">
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                {booking?.city}: <span>({booking?.duration}N)</span>
+                {booking?.city}:{' '}
+                {booking.duration && <span>({booking?.duration}N)</span>}
               </div>
               <div className=" shadow-md rounded-lg transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-500/50 border-[#ECEAEA]  hover:border-[#ffa500] shadow-[#ECEAEA] lg:p-4 p-2">
                 <div className="relative flex lg:flex-row flex-col gap-4">
@@ -437,8 +441,8 @@ const HotelsBooking = (props) => {
                       <BsCalendar2 className="text-md text-[#7A7A7A]" />
                       <div>
                         <div className="text-md font-medium ">
-                          {getDate(booking.check_in)}-
-                          {getDate(booking.check_out)}
+                          {booking.check_in && getDate(booking.check_in)}-
+                          {booking.check_out && getDate(booking.check_out)}
                         </div>
                       </div>
                     </div>
@@ -554,4 +558,4 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(HotelsBooking);
+export default connect(mapStateToPros, mapDispatchToProps)(ActivitiesBookings);

@@ -35,6 +35,8 @@ import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
 import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
 import ScrollableMenuTabs from '../../components/ScrollableMenuTabs';
 import NewBooking from './HotelsBooking/HotelsBooking';
+import ActivityBookings from './ActivityBookings/ActivitiesBookings';
+
 import HotelsBooking from './HotelsBooking/HotelsBooking';
 import { SplitScreen } from '../../components/SplitScreen';
 import BookingContainer from '../../components/BookingContainer/BookingContainer';
@@ -380,6 +382,7 @@ const SimpleTabs = (props) => {
     // { id: 3, label: 'Flights',link: 'Flights' },
     { id: 3, label: 'Stays', link: 'Stays' },
     { id: 4, label: 'Transfers', link: 'Transfers' },
+    { id: 5, label: 'Activities', link: 'Activities' },
   ];
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
@@ -741,39 +744,6 @@ const SimpleTabs = (props) => {
                         : false
                       : false
                   }
-                  // itinerary={props.itinerary}
-                  // _updateStayBookingHandler={props._updateStayBookingHandler}
-                  // _updateFlightBookingHandler={props._updateFlightBookingHandler}
-                  // hasUserPaid={props.payment ? props.payment.paid_user : false}
-                  // payment_status={router.query.payment_status}
-                  // plan={props.plan}
-                  // isDatePresent={props.isDatePresent}
-                  // _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  // showTaxiModal={props.showTaxiModal}
-                  // setShowTaxiModal={props.setShowTaxiModal}
-                  // paymentLoading={props.paymentLoading}
-                  // budget={props.budget}
-                  // _deselectActivityBookingHandler={
-                  //   props._deselectActivityBookingHandler
-                  // }
-                  // activityFlickityIndex={props.activityFlickityIndex}
-                  // _deselectFlightBookingHandler={props._deselectFlightBookingHandler}
-                  // flightFlickityIndex={props.flightFlickityIndex}
-                  // _deselectTransferBookingHandler={
-                  //   props._deselectTransferBookingHandler
-                  // }
-                  // transferFlickityIndex={props.transferFlickityIndex}
-                  // stayFlickityIndex={props.stayFlickityIndex}
-                  // setStayFlickityIndex={props.setStayFlickityIndex}
-                  // selectingBooking={props.selectingBooking}
-                  // _deselectStayBookingHandler={props._deselectStayBookingHandler}
-                  // getPaymentHandler={props.getPaymentHandler}
-                  // flightLoading={props.flightLoading}
-                  // transferLoading={props.transferLoading}
-                  // cardUpdateLoading={props.cardUpdateLoading}
-                  // activityBookings={props.activityBookings}
-                  // flightBookings={props.flightBookings}
-                  // transferBookings={props.transferBookings}
                   budget={props.budget}
                   stayBookings={props.stayBookings}
                   _updateBookingHandler={props._updateBookingHandler}
@@ -785,51 +755,54 @@ const SimpleTabs = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                   payment={props.payment}
                   booking={props.booking}
-                  // _selectTaxiHandler={props._selectTaxiHandler}
-                  // showFlightModal={props.showFlightModal}
-                  // setShowFlightModal={_handleFlighModalShow}
-                  // setHideFlightModal={_handleFlightModalClose}
-                  // user_email={props.user_email}
-                  // no_bookings={props.no_bookings}
-                  // traveleritinerary={props.traveleritinerary}
-                  // preview={props.preview}
-                  // id={props.id}
-                  // is_stock={props.is_stock}
-                  // _updatePaymentHandler={props._updatePaymentHandler}
-                  // _updateBookingHandler={props._updateBookingHandler}
-                  // setShowBookingModal={() => props.setShowBookingModal(true)}
-                  // showBookingModal={props.showBookingModal}
-                  // setHideBookingModal={props.setHideBookingModal}
-                  // hours={hours}
-                  // minutes={minutes}
-                  // seconds={seconds}
-                  // timeRequired={props.timeRequired}
-                  // hideTimer={minimseBookingTimer}
-                  // showTimer={false}
-                  // itineraryDate={props.itineraryDate}
-                  // blur={false}
-                  // openItinerary={_previewItineraryHandler}
-                  // _handleTimerClose={_minimiseBookingTimerHandler}
-                  // setImagesHandler={props.setImagesHandler}
-                  // payment={props.payment}
-                  // booking={props.booking}
                 ></HotelsBooking>
               </div>
             )}
+
             {props.transferBookings && (
-              <TransfersContainer
-                dayslab={props?.itinerary?.day_slabs}
-                breif={props?.breif}
-                showTaxiModal={props.showTaxiModal}
-                setShowTaxiModal={props.setShowTaxiModal}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                _updateBookingHandler={props._updateBookingHandler}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
-                routes={RoutesData}
-                transfers={TransfersData}
-                transferBookings={props?.transferBookings}
-              />
+              <div id={items[3].link}>
+                <TransfersContainer
+                  dayslab={props?.itinerary?.day_slabs}
+                  breif={props?.breif}
+                  showTaxiModal={props.showTaxiModal}
+                  setShowTaxiModal={props.setShowTaxiModal}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  routes={RoutesData}
+                  transfers={TransfersData}
+                  transferBookings={props?.transferBookings}
+                />
+              </div>
+            )}
+            {isGroup ? (
+              <div id={items[4].link}>
+                <Register></Register>
+              </div>
+            ) : (
+              <div id={items[4].link}>
+                <ActivityBookings>
+                  hasUserPaid=
+                  {props.payment
+                    ? props.payment.paid_user
+                      ? true
+                      : false
+                    : false}
+                  budget={props.budget}
+                  stayBookings={props.stayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  showBookingModal={props.showBookingModal}
+                  setHideBookingModal={props.setHideBookingModal}
+                  activityBookings={props.activityBookings}
+                  payment={props.payment}
+                  booking={props.booking}>
+                </ActivityBookings>
+              </div>
             )}
           </div>
 
@@ -902,7 +875,7 @@ const SimpleTabs = (props) => {
         </SplitScreen>
       ) : null}
 
-      {/* {isGroup ? (
+      {isGroup ? (
         <div id={items[2].link}>
           <Register></Register>
         </div>
@@ -973,7 +946,7 @@ const SimpleTabs = (props) => {
             setImagesHandler={props.setImagesHandler}
           ></Booking>
         </div>
-      )} */}
+      )}
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between mx-3">
           <div className="flex flex-col">
@@ -997,7 +970,7 @@ const SimpleTabs = (props) => {
           </div>
         </div>
       </div>
-      <div id={items[3].link}></div>
+
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}

@@ -9,6 +9,7 @@ import 'swiper/css/thumbs';
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper';
+import ImageLoader from '../ImageLoader';
 const SwiperGallery = (props) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   return (
@@ -27,7 +28,15 @@ const SwiperGallery = (props) => {
       >
         {props.images.map((image, index) => (
           <SwiperSlide>
-            <img src={image} />
+            <ImageLoader
+              url={image}
+              // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+              // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+              //   maxheight="60vh"
+              //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              fit="cover"
+            />
+            {/* <img src={image} /> */}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -43,7 +52,14 @@ const SwiperGallery = (props) => {
       >
         {props.images.map((image, index) => (
           <SwiperSlide>
-            <img src={image} />
+            <ImageLoader
+              url={image}
+              // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+              // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+              //   maxheight="60vh"
+              //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              fit="cover"
+            />
           </SwiperSlide>
         ))}
       </Swiper>

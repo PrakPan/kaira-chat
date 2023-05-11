@@ -222,7 +222,7 @@ const TransferModeContainer = (props) => {
                 <div className="pr-1 block ">Facilities:</div>
                 {}
                 {Facilities.map((data, index) => (
-                  <div className="lg:flex hidden flex-row gap-1  ">
+                  <div className="lg:flex flex-row gap-1  ">
                     {index > 0 ? <span className="pl-1">|</span> : null}
 
                     <div>{data}</div>
