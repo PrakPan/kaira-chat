@@ -2,13 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
-import {BsWhatsapp} from 'react-icons/bs';
-import urls from '../../services/urls';
-import Enquiry from './newenquiry/Index';
-import ImageLoader from '../../components/ImageLoader';
-import Banner from './BannerOne';
-import {BsFillCalendarFill} from 'react-icons/bs'
-import {BsYoutube} from 'react-icons/bs';
 import { Link } from 'react-scroll';
 const Container = styled.div`
   color:white;

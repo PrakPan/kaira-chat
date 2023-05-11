@@ -1,8 +1,5 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
-// import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index';
-import {checkEmail} from '../../../services/validations.js';
 
 
 const Submit = (props) => {

@@ -1,13 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Heading from '../../components/heading/Heading';
 import Heading from '../../components/newheading/heading/Index';
-
-// import Button from '../../components/Button';
 import Button from '../../components/ui/button/Index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-// import { faCommentDots} from '@fortawesome/free-solid-svg-icons';
 import urls from '../../services/urls';
 const Container = styled.div`
 background-color: white;

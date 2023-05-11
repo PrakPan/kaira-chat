@@ -11,7 +11,6 @@ import Republic from './FullImgContentRepublic';
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
- import BannerTwo from './BannerTwo';
  import WhyUs from '../testimonial/whyttw/Index';
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
@@ -451,7 +450,6 @@ const EXPERIENCE = {
 
        <SetWidthContainer>
          <AsSeenIn disablelinks></AsSeenIn>
-         {/* <div className='hidden-mobile'><BannerTwo></BannerTwo></div> */}
 
          <ChatWithUs></ChatWithUs>
        </SetWidthContainer>

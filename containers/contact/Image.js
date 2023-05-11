@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-// import Animate from '../../components/HOC/Animate';
 import BackgroundImageLoader from '../../components/UpdatedBackgroundImageLoader';
 import media from '../../components/media';
 
