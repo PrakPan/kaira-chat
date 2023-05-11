@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../../ImageLoader';
+import media from '../../../../media'
 const Container = styled.div`
 width: 100%;
 display: grid;
