@@ -1,8 +1,9 @@
 import React from "react";
 import { makeStyles } from "@mui/styles";
 import MuiAccordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+import Accordion , {AccordionDetails , AccordionSummary}  from "../../../components/ui/Accordion";
+// import AccordionSummary from "@mui/material/AccordionSummary";
+// import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getIndianPrice } from "../../../services/getIndianPrice";
@@ -115,11 +116,12 @@ const FAQs = (props) => {
         // );
       }
       HeadingsJSX.push(
-        <MuiAccordion
+        <Accordion
           key={key}
           style={{
             marginBottom: 10,
-            border: "0px solid #e4e4e4",
+            // border: "1px solid #e4e4e4",
+            // border: "1px solid red",
             boxShadow: "none",
             zIndex: "1",
           }}
@@ -128,7 +130,7 @@ const FAQs = (props) => {
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="itinerary-booking-summary-accordion"
-            style={{ zIndex: "1", minHeight: "max-content" }}
+            style={{ zIndex: "1" , height : '1rem'}}
           >
             <Typography
               content={"span"}
@@ -146,6 +148,7 @@ const FAQs = (props) => {
                 margin: "0",
                 flexGrow: "1",
                 textAlign: "right",
+                marginRight : '1.5rem'
               }}
             >
               {!props.payment.are_prices_hidden
@@ -156,7 +159,7 @@ const FAQs = (props) => {
                 : null}
             </Typography>
           </AccordionSummary>
-          <div
+          {/* <div
             style={{
               margin: "0 1rem",
               borderStyle: "none none none none",
@@ -165,13 +168,13 @@ const FAQs = (props) => {
               position: "relative",
               top: "-0.5rem",
             }}
-          ></div>
-          <AccordionDetails style={{ display: "block", padding: "0" }}>
+          ></div> */}
+          <AccordionDetails style={{ display: "block", padding: "0.1rem" }}>
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}
           </AccordionDetails>
-        </MuiAccordion>
+        </Accordion>
       );
     }
   }

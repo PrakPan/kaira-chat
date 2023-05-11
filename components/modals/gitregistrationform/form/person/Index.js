@@ -91,7 +91,7 @@ const Person = (props) => {
         })
       }
   return(
-         <Accordion initialOpen={props.index == 1?true:false} open={open} setOpen={setOpen}>
+         <Accordion border initialOpen={props.index == 1?true:false} open={open} setOpen={setOpen}>
        <AccordionSummary
         id="itinerary-booking-summary-accordio"
     style={{padding: '1rem'}}
