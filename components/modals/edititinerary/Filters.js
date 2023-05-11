@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
-import { withStyles } from "@mui/styles";
 import { makeStyles } from "@mui/styles";
 import Grid from "@mui/material/Grid";
 
@@ -75,12 +73,6 @@ const Filters = (props) => {
       label: "Luxury",
     },
   ];
-  const CustomCheckbox = withStyles({
-    root: {
-      margin: "0 !important",
-    },
-    checked: {},
-  })((props) => <Checkbox color="default" {...props} />);
   
   const handleCheckboxChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
@@ -118,7 +110,9 @@ const Filters = (props) => {
         <Grid item xs spacing={0}>
           <FormControlLabel
             control={
-              <CustomCheckbox
+              <Checkbox
+                color="default"
+                style={{ margin: "0 !important" }}
                 checked={state.checkedA}
                 onChange={handleCheckboxChange}
                 name="checkedA"
@@ -133,11 +127,14 @@ const Filters = (props) => {
         <Grid item xs>
           <FormControlLabel
             control={
-              <CustomCheckbox
+              <Checkbox
+                color="default"
+                style={{ margin: "0 !important" }}
                 checked={state.checkedB}
                 onChange={handleCheckboxChange}
                 name="checkedB"
                 className={classes.checkbox}
+                style={{ margin: "0 !important" }}
               />
             }
             label="Adventure"
@@ -147,7 +144,9 @@ const Filters = (props) => {
         <Grid item xs>
           <FormControlLabel
             control={
-              <CustomCheckbox
+              <Checkbox
+                color="default"
+                style={{ margin: "0 !important" }}
                 checked={state.checkedC}
                 onChange={handleCheckboxChange}
                 name="checkedC"
@@ -161,7 +160,9 @@ const Filters = (props) => {
         <Grid item xs>
           <FormControlLabel
             control={
-              <CustomCheckbox
+              <Checkbox
+                color="default"
+                style={{ margin: "0 !important" }}
                 checked={state.checkedE}
                 onChange={handleCheckboxChange}
                 name="checkedE"
@@ -184,7 +185,9 @@ const Filters = (props) => {
         <Grid item>
           <FormControlLabel
             control={
-              <CustomCheckbox
+              <Checkbox
+                color="default"
+                style={{ margin: "0 !important" }}
                 checked={state.checkedF}
                 onChange={handleCheckboxChange}
                 name="checkedF"
@@ -197,7 +200,9 @@ const Filters = (props) => {
           <Grid item>
             <FormControlLabel
               control={
-                <CustomCheckbox
+                <Checkbox
+                  color="default"
+                  style={{ margin: "0 !important" }}
                   checked={state.checkedG}
                   onChange={handleCheckboxChange}
                   name="checkedG"
@@ -210,7 +215,9 @@ const Filters = (props) => {
           <Grid item>
             <FormControlLabel
               control={
-                <CustomCheckbox
+                <Checkbox
+                  color="default"
+                  style={{ margin: "0 !important" }}
                   checked={state.checkedH}
                   onChange={handleCheckboxChange}
                   name="checkedH"
@@ -223,7 +230,9 @@ const Filters = (props) => {
           <Grid item>
             <FormControlLabel
               control={
-                <CustomCheckbox
+                <Checkbox
+                  color="default"
+                  style={{ margin: "0 !important" }}
                   checked={state.checkedI}
                   onChange={handleCheckboxChange}
                   name="checkedI"

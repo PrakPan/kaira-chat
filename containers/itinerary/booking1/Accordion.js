@@ -5,7 +5,6 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { withStyles } from "@mui/styles";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,16 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Accordion = withStyles({
-  root: {
-    marginBottom: 10,
-    border: "0px solid #e4e4e4",
-    boxShadow: "none",
-    zIndex: "1",
-  },
 
-  expanded: {},
-})(MuiAccordion);
 const FAQs = (props) => {
   const classes = useStyles();
   const HEADINGS = ["Stays", "Transfers", "Flights", "Activities"];

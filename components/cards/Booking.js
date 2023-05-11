@@ -11,7 +11,6 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { withStyles } from "@mui/styles";
 
 const Container = styled.div`
   width: 100%;
@@ -54,11 +53,6 @@ const PhotosButton = styled.div`
 
 const Booking = (props) => {
 
-  const Accordion = withStyles({
-    root: {},
-    content: {},
-    expanded: {},
-  })(MuiAccordion);
   const detailsarr = [];
   for (var i = 0; i < props.details.length; i++) {
     detailsarr.push(

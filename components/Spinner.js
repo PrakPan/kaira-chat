@@ -8,12 +8,16 @@ const Container = styled.div`
 const Spinner = styled.div`
   color: ${(props) =>
     props.color ? props.color + " !important" : "black !important"};
+  padding: 0.4rem;
+  position : absolute;
+  display : inline-block;
   margin: ${(props) => (props.margin ? props.margin : "1rem")};
   visibility: ${(props) => (props.visibility ? props.visibility : "visibile")};
   height: ${(props) => (props.size ? props.size + "px" : "40px")};
   width: ${(props) => (props.size ? props.size + "px" : "40px")};
-  border: ${(props) => props.color ? `4px solid ${props.color}` : "4px solid black"};
-  border-top: 4px white solid;
+  border: ${(props) =>
+    props.color ? `4px solid ${props.color}` : "4px solid black"};
+  border-top: 4px transparent solid;
   border-radius: 50%;
   animation: spin 1.2s linear infinite;
   @keyframes spin {

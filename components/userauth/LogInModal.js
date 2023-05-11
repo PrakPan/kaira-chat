@@ -592,7 +592,12 @@ if (props.loadingsocial) return (
               ) : null}
             </button>
           )}
-          <div style={{ position: "relative", marginBlock: isPageWide? "3rem" : "2rem" }}>
+          <div
+            style={{
+              position: "relative",
+              marginBlock: isPageWide ? "3rem" : "2rem",
+            }}
+          >
             <hr></hr>
             <p
               style={{
