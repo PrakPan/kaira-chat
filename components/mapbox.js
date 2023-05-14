@@ -15,7 +15,7 @@ import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
 import ImageLoader from './ImageLoader';
 import { ITbutton } from '../containers/newitinerary/breif/cities/City';
 import WeatherWidget from './WeatherWidget/WeatherWidget';
-import DistanceBetweenCoords from '../helper/DistanceBetweenCoords';
+import DistanceBetweenCoords from '../pages/helper/DistanceBetweenCoords';
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>

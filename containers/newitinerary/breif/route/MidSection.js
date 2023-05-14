@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 // import Pin from './Pin';
 import { MdOutlineFlightTakeoff } from 'react-icons/md';
-import { TransportIconFetcher } from '../../../../helper/TransportIconFetcher';
+import { TransportIconFetcher } from '../../../../pages/helper/TransportIconFetcher';
 import ImageLoader from '../../../../components/ImageLoader';
 const Container = styled.div`
   display: grid;

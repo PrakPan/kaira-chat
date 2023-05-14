@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
+import {  faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
 import Button from '../../ui/button/Index';
 import Link from 'next/link';
 import media from '../../media';
@@ -11,6 +11,7 @@ import { getIndianPrice } from '../../../services/getIndianPrice';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
 import Spinner from '../../Spinner';
+import usePageLoaded from '../../custom hooks/usePageLoaded';
 
 const Container = styled.div`
 width: 100%;
@@ -90,8 +91,11 @@ color: #212529;
 }
 `;
  
-const ExperienceCard= (props) => {
-    let isPageWide = media('(min-width: 768px)')
+const ExperienceCard = (props) => {
+const [loading, setLoading] = useState(false);
+  
+  let isPageWide = media('(min-width: 768px)')
+  const isPageLoaded = usePageLoaded();
  
 
 const router = useRouter();
@@ -106,7 +110,6 @@ else if(!isPageWide){ // change to 400 to 480
   textstr = props.text.substring(0,90)+"...";
 }
 else   textstr = props.text.substring(0,100)+"...";
-const [loading, setLoading] = useState(false);
 
 const redirect = () => {
   setLoading(true);
@@ -125,40 +128,97 @@ const redirect = () => {
     callback: redirect,
   })
 }
-    return(
+    return (
       <Container className="netflix-ite">
         <ImageContainer>
-              <ImageGallery filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
-       </ImageContainer>  
-       <ContentContainer className="text-center">
-           <HeadingContainer>
-             <Heading className="font-lexend">{props.experience}</Heading>
-           </HeadingContainer>
-           {typeof window !== 'undefined' ? <Rating className="font-nunito">
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-              <FontAwesomeIcon icon={props.rating > 4.5 ? faStar : faStarHalf} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
-          {props.rating? " "+props.rating : '4.5'}</Rating> : null}
-            <TextContainer className="font-nunito">
-                <Text>{textstr}</Text>
-            </TextContainer>
-            <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center", margin: '0 0.5rem'}}>
-            <Price className="font-lexend">{ "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}</Price>
-                <Link passHref={true} href ={urls.EXPERIENCES+props.id}>
-                  <Button display="inline-block" onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">Check Out!  
-                  {loading  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
-                  : null}
-                  </Button>
-                  {/* <Button onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">
+          <ImageGallery
+            filter={props.filter}
+            location={props.location}
+            cost={props.cost}
+            duration={props.duration}
+            images={props.images}
+            name={props.experience}
+          ></ImageGallery>
+        </ImageContainer>
+        <ContentContainer className="text-center">
+          <HeadingContainer>
+            <Heading className="font-lexend">{props.experience}</Heading>
+          </HeadingContainer>
+          {isPageLoaded ? (
+            <Rating className="font-nunito">
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={faStar}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              <FontAwesomeIcon
+                icon={props.rating > 4.5 ? faStar : faStarHalf}
+                style={{ color: "#F7e700", fontSize: "2vh" }}
+              ></FontAwesomeIcon>
+              {props.rating ? " " + props.rating : "4.5"}
+            </Rating>
+          ) : null}
+          <TextContainer className="font-nunito">
+            <Text>{textstr}</Text>
+          </TextContainer>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              margin: "0 0.5rem",
+            }}
+          >
+            <Price className="font-lexend">
+              {"₹ " +
+                getIndianPrice(Math.round(props.starting_cost / 100)) +
+                "/-"}
+            </Price>
+            <Link
+              style={{ textDecoration: "none" }}
+              passHref={true}
+              href={urls.EXPERIENCES + props.id}
+            >
+              <Button
+                display="inline-block"
+                onclick={_handleClick}
+                onclickparams={null}
+                boxShadow
+                hoverBgColor="black"
+                bgColor="#f7e700"
+                borderRadius="2rem"
+                padding="0.5rem 1.5rem"
+                borderStyle="none"
+                hoverColor="white"
+              >
+                Check Out!
+                {loading ? (
+                  <Spinner
+                    size={16}
+                    display="inline"
+                    margin="0 0 0 0.25rem"
+                  ></Spinner>
+                ) : null}
+              </Button>
+              {/* <Button onclick={_handleClick} onclickparams={null} boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.5rem 1.5rem" borderStyle="none" hoverColor="white">
                     <Spinner size={16}></Spinner>
                   </Button>  */}
-                  </Link>
-            </div>
-       </ContentContainer>
-      </Container> 
-  ); 
+            </Link>
+          </div>
+        </ContentContainer>
+      </Container>
+    ); 
 }
  
 export default ExperienceCard;

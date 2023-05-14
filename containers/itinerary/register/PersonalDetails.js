@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar } from '@mui/material';
-import { Button } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import { TextField } from '@mui/material';
-import { Checkbox } from '@mui/material';
-import { Link } from '@mui/material';
-import { Typography } from '@mui/material';
-  
-import { Container } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import Container from '@mui/material/Container';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link
+        style={{ textDecoration: 'none' }}
+        color="inherit"
+        href="https://material-ui.com/"
+      >
         Your Website
       </Link>{' '}
       {new Date().getFullYear()}
@@ -22,23 +26,27 @@ function Copyright() {
   );
 }
 
-const useStyles = {
-  paper: `
-    flex
-    flex-col
-    items-center
-  `,
-  avatar: `
-    
-  `,
-  form: `w-full`,
-  submit: `
-    
-    bg-[#F7e700]
-  
-   font-[600]
-  `,
-};
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    backgroundColor: '#F7e700',
+    color: 'black',
+    fontFamily: 'Open Sans',
+    fontWeight: '600',
+  },
+}));
 
 export default function SignIn(props) {
   const classes = useStyles();

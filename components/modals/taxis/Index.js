@@ -2,24 +2,13 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
-// import LeftSideBar from './leftsidebar/Index';
-// import Accommodation from './accommodation/Index';
-// import AccommodationSearched from './new-accommodation-searched/Index';
-// import AccommodationModal from '../accommodation/Index';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
 import axiostaxiinstance from '../../../services/bookings/FetchTaxiRecommendations';
-import Spinner from '../../Spinner';
-
-//  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import { connect } from 'react-redux';
-// import Button from '../../Button';
 import Button from '../../ui/button/Index';
 import LogInModal from '../Login';
-// import AccommodationSelected from './new-accommodation-selected/Index';
 import SectionOne from './SectionOne';
-import SectionTwo from './SectionTwo';
-import gif from '../../../public/assets/loader.gif';
+import LoadingLottie from '../../ui/LoadingLottie';
 import TaxiSelected from './taxi-selected/Index';
 import TaxiSearched from './taxi-searched/Index';
 const GridContainer = styled.div`
@@ -206,56 +195,7 @@ const Booking = (props) => {
         })
         .catch((err) => {});
     }
-  }, [props.alternates, props.budget]);
-
-  const _updateSearchedTaxi = ({
-    itinerary_id,
-    taxi_type,
-    transfer_type,
-    duration,
-    total_taxi,
-  }) => {
-    setUpdateBookingState(true);
-
-    let updated_bookings_arr = [
-      {
-        id: props.selectedBooking.id,
-        booking_type: 'Taxi',
-        itinerary_type: 'Tailored',
-        user_selected: true,
-        itinerary_id: itinerary_id,
-        taxi_type: taxi_type,
-        transfer_type: transfer_type,
-        costings_breakdown: {
-          duration: {
-            value: Math.trunc(duration),
-          },
-          total_taxi: total_taxi,
-        },
-      },
-    ];
-    console.dir(updated_bookings_arr);
-    axiosbookingupdateinstance
-      .post('?booking_type=Taxi,Bus,Ferry', updated_bookings_arr, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {
-        props._updateTaxiBookingHandler(res.data.bookings);
-        //  props.getPaymentHandler();
-        setTimeout(function () {
-          props.getPaymentHandler();
-        }, 1000);
-        setUpdateBookingState(false);
-      })
-      .catch((err) => {
-        // setUpdateLoadingState(false);
-        setUpdateBookingState(false);
-
-        window.alert('There seems to be a problem, please try again!');
-      });
-  };
+  });
 
   if (props.token)
     return (
@@ -294,7 +234,7 @@ const Booking = (props) => {
                     }}
                     className="center-div text-center font-lexend"
                   >
-                    <img src={gif} style={{ width: '3rem', height: '3rem' }} />
+                    <LoadingLottie height="5rem" width="5rem" margin="none" />
                     Please wait while we update your bookings
                   </div>
                 ) : null}
@@ -317,9 +257,10 @@ const Booking = (props) => {
                           className="center-div"
                           style={{ height: isPageWide ? '80vh' : '40vh' }}
                         >
-                          <img
-                            src={gif}
-                            style={{ width: '3rem', height: '3rem' }}
+                          <LoadingLottie
+                            height="5rem"
+                            width="5rem"
+                            margin="none"
                           />
                           Fetching recommendations for you
                         </div>
@@ -330,14 +271,11 @@ const Booking = (props) => {
                     {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
                     {updateLoadingState ? (
                       <div className="center-div" style={{}}>
-                        <img
-                          src={gif}
-                          style={{
-                            width: '3rem',
-                            height: '3rem',
-                            margin: '1rem auto',
-                          }}
-                        ></img>
+                        <LoadingLottie
+                          height="5rem"
+                          width="5rem"
+                          margin="1rem auto"
+                        />
                       </div>
                     ) : null}
 

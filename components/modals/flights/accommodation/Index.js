@@ -1,8 +1,9 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import styled from 'styled-components';
 import media from '../../../media';
 import Info from './Info';
 import Gallery from './gallery/Index';
+import ImageLoader from '../../../ImageLoader';
 const Container = styled.div`
     margin: 0 0 1rem 0;
     

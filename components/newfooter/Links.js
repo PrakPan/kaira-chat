@@ -13,7 +13,7 @@ const linksArr = [
   {
     heading: "Travel Styles",
     data: [
-      { title: "Personalise", link: urls.TAILORED_TRAVEL },
+      { title: "Personalise", link: '' },
       { title: "Workcation", link: urls.travel_planner.WORKCATION },
       { title: "Volunteer", link: urls.travel_planner.VOLUNTEER },
       // { title: "Treks", link: urls.travel_planner.TREKS },

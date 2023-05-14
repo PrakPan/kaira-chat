@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import S3Icon from "../S3Icon";
 import ImageLoader from "../../../ImageLoader";
 import POIModal from "../../../modals/poi/Index";
 import POIDetailsDrawer from "../../../drawers/poiDetails/POIDetailsDrawer";

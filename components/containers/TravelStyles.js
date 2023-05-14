@@ -1,12 +1,8 @@
 import React from 'react';
 import styled,{keyframes} from 'styled-components';
 import LazyImageLoader from '../ImageLoader';
-// import Link from 'next/link';
 import media from '../media';
 import { useRouter } from 'next/router';
-// import * as ga from '../../services/ga/Index';
-// import urls from '../../services/urls';
-/*Grid container for experience types currently used on homepage*/
 
 const GridGap = 1;
 
@@ -174,20 +170,6 @@ const ExperientialTravelStyle = (props) =>{
    localStorage.setItem('experience_filter', experience_filter);
    router.push('/travel-experiences')
  }
-//  const _handleTailoredRedirect = () => {
-//   router.push(urls.TAILORED_TRAVEL)
-// }
-// const _handleTailoredClick = () => {
-//   setLoading(true);
-//   setTimeout(_handleTailoredRedirect, 1000);
-
-//   ga.callback_event({
-//     action: 'TG-Bannerone',
-    
-//     callback: _handleTailoredRedirect,
-//   })
-
-// }
 
  const GridContainer = styled.div`
  display: grid;

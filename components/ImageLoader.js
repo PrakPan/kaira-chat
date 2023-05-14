@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import media from './media';
+import usePageLoaded from './custom hooks/usePageLoaded';
 
 const ImageLoader = (props) => {
   const [error, setError] = useState(false);
-  // if(typeof window === "undefined" ) return null;
-  // else {
   let isPageWide = media('(min-width: 768px)');
+  const isPageLoaded = usePageLoaded();
 
   const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
 
@@ -179,7 +179,7 @@ const ImageLoader = (props) => {
           <SmallImage
             src={
               !is_url
-                ? typeof window !== 'undefined'
+                ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -195,7 +195,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? error
                   ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : typeof window !== 'undefined'
+                  : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -229,7 +229,7 @@ const ImageLoader = (props) => {
           <SmallImage
             src={
               !is_url
-                ? typeof window !== 'undefined'
+                ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -245,7 +245,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? error
                   ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : typeof window !== 'undefined'
+                  : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -280,7 +280,7 @@ const ImageLoader = (props) => {
           <SmallImage
             src={
               !is_url
-                ? typeof window !== 'undefined'
+                ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -296,7 +296,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? error
                   ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : typeof window !== 'undefined'
+                  : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -333,7 +333,7 @@ const ImageLoader = (props) => {
           <SmallImage
             src={
               !is_url
-                ? typeof window !== 'undefined'
+                ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url
@@ -349,7 +349,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? error
                   ? 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
-                  : typeof window !== 'undefined'
+                  : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
                   : 'https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png'
                 : props.url

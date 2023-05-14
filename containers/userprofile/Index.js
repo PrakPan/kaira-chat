@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {connect} from 'react-redux';
-// import Image from './Image';
-// import Nav from 'react-bootstrap/Nav';
 import axiomyplansinstance from '../../services/sales/MyPlans'
 import styled from 'styled-components';
 import CheckAuthRedirect from '../../components/HOC/CheckAuthRedirect';
-// import Heading from '../../components/heading/Heading';
 import Heading from '../../components/newheading/heading/Index';
-// import Location from '../../components/cards/Location';
 import Experiences from '../../components/containers/Experiences';
 import Profile from './Profile'
-// import Settings from './Settings';
 import media from '../../components/media';
-// import Spinner from '../../components/Spinner';
 import ImageLoader from '../../components/ImageLoader';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 import Spinner from '../../components/Spinner';
+import openTailoredModal from '../../services/openTailoredModal';
 
 const Container = styled.div`
     width: 100%;
@@ -97,55 +92,77 @@ const UserDashboard = (props) => {
       },[props.token]);
   
 
-return(
-    <CheckAuthRedirect authRedirectPath="/" redirectOnFail={() => router.push('/')}>
+return (
+  <CheckAuthRedirect
+    authRedirectPath="/"
+    redirectOnFail={() => router.push("/")}
+  >
     <Container>
-        {/* <Heading align="left" margin="1.5rem 0" bold>Your Space</Heading> */}
-        {/* <Tabs defaultActiveKey={props.match.params.selected} className="justify-content-center nav-tabs-profile-main border-thin" style={{borderRadius: "5px"}}>
-                <Tab eventKey="profile" title="Profile" className="font-nunito">
-                    <ContentContainer className="border-thin"><Profile></Profile></ContentContainer>
-                    <ContentContainer className="border-thin">
-                        <Heading align="left" margin="0 0 1rem 0" bold>Expereinces Curated for You</Heading>
-                        <Experiences experiences={[experiences[0], experiences[1], experiences[2], experiences[3]]} columns={3}></Experiences>
-                    </ContentContainer>
-                    <ContentContainer className="border-thin">
-                        <Heading align="left" margin="0 0 1rem 0" bold>Readings Curated for You</Heading>
-                    <Blogs columns={2}></Blogs>
-                    </ContentContainer>
-                </Tab>
-                <Tab eventKey="messages" title="Messages"  className="font-nunito">
-                    <ContentContainer className="border-thin">Messages
-                    </ContentContainer>
-                </Tab>
-                <Tab eventKey="notifications" title="Notifictaions"  className="font-nunito">
-                    <ContentContainer className="border-thin">Notifications</ContentContainer>
-                </Tab>
-                <Tab eventKey="plans" title="My Plans"  className="font-nunito">
-                    <ContentContainer className="border-thin">Plans</ContentContainer>
-                </Tab>
-                <Tab eventKey="settings" title="Settings"  className="font-nunito">
-                    <ContentContainer className="border-thin"><Settings></Settings></ContentContainer>
-                </Tab>
-            </Tabs> */}
-            <ContentContainer ><Profile></Profile></ContentContainer>
-                    <ContentContainer className="border-thi">
-                        <div style={{display: 'flex'}}>{myPlansArr.length ? <Heading align='left' margin="0 0 2rem 0" bold noline>My Plans</Heading> :
-                         <Heading align='left' margin="0" bold  noline>My Plans
-                         </Heading>}
-                         {
-                            loading ? 
-                            <Spinner></Spinner> : null
-                         }</div>
-                        {isPageWide && !myPlansArr.length  && !loading? <NoPlans className="font-lexend" >You don't have any plans yet. <Link href="/tailored-travel" passHref={true} ><a style={{color: 'black', textDecoration: 'none !important'}}>Start Planning</a></Link></NoPlans> : null}
-                       
-                        {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
-                        {myPlansArr.length ? <Experiences  experiences={myPlansArr}></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null}
-                        {!isPageWide && !myPlansArr.length && !loading ? <NoPlans className="font-lexend" >You don't have any plans yet. </NoPlans> : null}
-                        {!isPageWide && !myPlansArr.length  && !loading? <Link href="/tailored-travel" passHref={true} ><a className="font-nunito" style={{color: 'black', fontWeight: '300', display: 'block', margin: '0.5rem auto', textDecoration: 'none !important', textAlign: 'center', fontSize: '1.25rem', letterSpacing: '1px'}}>Start Planning</a></Link> : null}
-                    </ContentContainer>
-                 
-    </Container></CheckAuthRedirect>
+      <ContentContainer>
+        <Profile></Profile>
+      </ContentContainer>
+      <ContentContainer className="border-thi">
+        <div style={{ display: "flex" }}>
+          {myPlansArr.length ? (
+            <Heading align="left" margin="0 0 2rem 0" bold noline>
+              My Plans
+            </Heading>
+          ) : (
+            <Heading align="left" margin="0" bold noline>
+              My Plans
+            </Heading>
+          )}
+          {loading ? <Spinner></Spinner> : null}
+        </div>
+        {isPageWide && !myPlansArr.length && !loading ? (
+          <NoPlans className="font-lexend">
+            You don't have any plans yet.{" "}
+            <a
+              onClick={() => openTailoredModal(router)}
+              style={{ color: "black", textDecoration: "none !important" }}
+            >
+              Start Planning
+            </a>
+          </NoPlans>
+        ) : null}
 
+        {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
+        {myPlansArr.length ? (
+          <Experiences experiences={myPlansArr}></Experiences>
+        ) : !loading ? (
+          <ImageLoader
+            width="40%"
+            widthmobile="40%"
+            margin="7.5vh auto"
+            url={"media/website/noplans.svg"}
+          ></ImageLoader>
+        ) : null}
+        {!isPageWide && !myPlansArr.length && !loading ? (
+          <NoPlans className="font-lexend">
+            You don't have any plans yet.{" "}
+          </NoPlans>
+        ) : null}
+        {!isPageWide && !myPlansArr.length && !loading ? (
+            <a
+              onClick={() => openTailoredModal(router)}
+              className="font-nunito"
+              style={{
+                color: "black",
+                fontWeight: "300",
+                display: "block",
+                margin: "0.5rem auto",
+                textDecoration: "none !important",
+                textAlign: "center",
+                fontSize: "1.25rem",
+                letterSpacing: "1px",
+              }}
+            >
+              Start Planning
+            </a>
+        ) : null}
+      </ContentContainer>
+    </Container>
+  </CheckAuthRedirect>
 );
 }
 const mapStateToPros = (state) => {

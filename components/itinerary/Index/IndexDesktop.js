@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import CityContainer from '../CityContainer';
-import theme from '../../../public/Themes';
 import CityConnect from '../CityConnection';
 import { Link, animateScroll as scroll } from 'react-scroll';
 import media from '../../media';

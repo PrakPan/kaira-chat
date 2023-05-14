@@ -9,6 +9,7 @@ import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
 import { FaBell, FaRegListAlt, FaUser } from 'react-icons/fa';
 import {MdOutlineLogout,MdAssignment } from 'react-icons/md'
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
 const CenterNav=styled.div`
 width:100%;
@@ -94,6 +95,7 @@ opacity: ${props => (props.showProfileList ? `1` : '0')};
 }
 `;
 const ProfileDropDown =(props)=>{
+  const isPageLoaded = usePageLoaded();
 
     
     let firstname;
@@ -117,26 +119,67 @@ const ProfileDropDown =(props)=>{
 
     
     let AuthMenu = <ProfileContainer className={props.headerColor==="white" ? "border" : ""} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white', color: 'rgba(0,0,0,0.7)'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
-                     <Link style={{ textDecoration: 'none'}} onClick={props.authShowLogin}><ProfileList>Login</ProfileList></Link>
+                     <Link onClick={props.authShowLogin}><ProfileList>Login</ProfileList></Link>
                    </ProfileContainer>;
 
-    if(props.token) AuthMenu = 
-    <ProfileContainer className={props.headerColor==="white" ? "border" : ""}  style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white' , color: 'rgba(0,0,0,0.7)' }} showProfileList={props.showDropDownProfileList} >  
-      <ProfileList style={{borderStyle: 'none'}}><FaUser /> <div>{"Hi "+firstname}</div></ProfileList>
-      <ProfileList style={{display: 'grid', gridTemplateColumns: 'auto max-content'}} onClick={props._handleNotifications}>
-      <FaBell />
-          <div>Notifications</div>
-          {props.notOpenedCount ? <div style={{fontWeight: '700', fontSize: '0.75rem',backgroundColor: '#f7e700', width: '1.25rem', height: '1.25rem', marginLeft: '0.5rem', color: 'black', borderRadius: '50%'}} className="center-div">{props.notOpenedCount}</div> : null}
+    if(props.token) AuthMenu = (
+      <ProfileContainer
+        className={props.headerColor === "white" ? "border" : ""}
+        style={{
+          backgroundColor:
+            props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
+          color: "rgba(0,0,0,0.7)",
+        }}
+        showProfileList={props.showDropDownProfileList}
+      >
+        <ProfileList style={{ borderStyle: "none" }}>
+          <FaUser /> <div>{"Hi " + firstname}</div>
         </ProfileList>
+        <ProfileList
+          style={{ display: "grid", gridTemplateColumns: "auto max-content" }}
+          onClick={props._handleNotifications}
+        >
+          <FaBell />
+          <div>Notifications</div>
+          {props.notOpenedCount ? (
+            <div
+              style={{
+                fontWeight: "700",
+                fontSize: "0.75rem",
+                backgroundColor: "#f7e700",
+                width: "1.25rem",
+                height: "1.25rem",
+                marginLeft: "0.5rem",
+                color: "black",
+                borderRadius: "50%",
+              }}
+              className="center-div"
+            >
+              {props.notOpenedCount}
+            </div>
+          ) : null}
+        </ProfileList>
+        {/* <Link to='/profile/profile' style={{ textDecoration: 'none'}}  className="font-nunito"><ProfileList>Profile</ProfileList></Link> */}
+        {/* <Link to='/profile/plans' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Saved Plans</ProfileList></Link> */}
+        {/* <Link to='/profile/notifications' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Previous Plans</ProfileList></Link> */}
+        {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
 
-      {/* <Link to='/profile/profile' style={{ textDecoration: 'none'}}  className="font-nunito"><ProfileList>Profile</ProfileList></Link> */}
-      {/* <Link to='/profile/plans' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Saved Plans</ProfileList></Link> */}
-      {/* <Link to='/profile/notifications' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Previous Plans</ProfileList></Link> */}
-      {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
-    <Link href={urls.DASHBOARD} className="next-link" passHref={true}><ProfileList><MdAssignment /><div>My Plans</div></ProfileList></Link>
-
-      <ProfileList onClick={props.onLogout}><MdOutlineLogout /> <div>Logout</div></ProfileList>
-   </ProfileContainer>;
+        <Link
+          style={{ textDecoration: "none", color: "rgba(0,0,0,0.7)" }}
+          href={urls.DASHBOARD}
+          className="next-link"
+          passHref={true}
+        >
+          <ProfileList>
+            <MdAssignment />
+            <div>My Plans</div>
+          </ProfileList>
+        </Link>
+        <ProfileList onClick={props.onLogout}>
+          <MdOutlineLogout /> <div>Logout</div>
+        </ProfileList>
+      </ProfileContainer>
+    );
     return(
         <div ref={profileRef} style={{marginRight: '2.5rem' , position : 'relative'}}>
             {props.notifications.length && props.notOpenedCount ? <RedDot className="center-div">1</RedDot> : null}
@@ -144,7 +187,7 @@ const ProfileDropDown =(props)=>{
             <CenterNav className=''>
               <ImageLoader borderRadius="50%" url={ props.image !== 'null' && props.image!== null ? props.image : 'media/icons/navigation/profile-user.png'} width="2rem" height="2rem" dimensions={{width: 300, height: 300}} onclick={props.toggleProfileList}/>   
               {/* <ExpandProfile src={props.headerColor==="black" ? ExpandProfileIcon : null} onClick={props.toggleProfileList}/>    */}
-              {typeof window !== 'undefined'  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color: props.headerColor === "black" ? 'white' : 'black'}}></StyledFontAwesomeIcon> : null}
+              {isPageLoaded  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color: props.headerColor === "black" ? 'white' : 'black'}}></StyledFontAwesomeIcon> : null}
             </CenterNav>
              {AuthMenu}
         </div>

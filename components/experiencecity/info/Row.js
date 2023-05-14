@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, {useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import Heading from '../../newheading/heading/Index';
 import media from '../../../components/media';

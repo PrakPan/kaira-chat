@@ -66,11 +66,10 @@ const SelectedDestination = (props) => {
 
   const [showDestination , setShowDestination] = useState(true)
 
+  
 
   return ( 
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() 
-    // : props.openCities
-  //  : setShowDestinationInput(!showDestinationInput)
   : ()=>{setShowDestination(false);_handleFocusSearch();}
    }  className=' font-lexend hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer' selectlocation={props.selectlocation}>
@@ -91,8 +90,8 @@ const SelectedDestination = (props) => {
      :
      props.destination && showDestination
       ? <>{props.destination}
-    <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Destination</span></> : 
-     <SearchInput _updateDestinationHandler={props._updateDestinationHandler} CITIES={props.CITIES}  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+    {!props.setDeletedId && <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Destination</span>}</> : 
+     <SearchInput autofocus={props.autofocus} _updateDestinationHandler={props._updateDestinationHandler} CITIES={props.CITIES}  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
      
      }
     

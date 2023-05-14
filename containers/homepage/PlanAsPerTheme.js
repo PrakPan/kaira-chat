@@ -7,6 +7,7 @@ import Button from '../../components/ui/button/Index';
 import ImageLoader from '../../components/ImageLoader';
 import axiosCountInstance from '../../services/itinerary/count';
 import SkeletonCard from '../../components/ui/SkeletonCard';
+import openTailoredModal from '../../services/openTailoredModal';
 const Container = styled.div`
   height: 430px;
   display: grid;

@@ -14,13 +14,12 @@ export default class MyDocument extends Document {
     // mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true, ignore_dnt: true});
   }
 
-  static async getInitialProps({ renderPage }) {
+  static async getInitialProps(ctx) {
     // Step 1: Create an instance of ServerStyleSheet
     const sheet = new ServerStyleSheet();
-
     // Step 2: Retrieve styles from components in the page
-    const page = await renderPage((App) => (props) =>
-      sheet.collectStyles(<App {...props} />)
+    const page = await ctx.renderPage(
+      (App) => (props) => sheet.collectStyles(<App {...props} />)
     );
 
     // Step 3: Extract the styles as <style> tags
@@ -107,17 +106,10 @@ export default class MyDocument extends Document {
             href="https://fonts.gstatic.com"
             crossOrigin="true"
           />
-
           <link
             href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
             rel="stylesheet"
           ></link>
-
-          <link
-            href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800&display=swap"
-            rel="stylesheet"
-          />
-
           <link
             href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
             rel="stylesheet"

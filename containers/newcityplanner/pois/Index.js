@@ -6,6 +6,9 @@ import PageDotsFlickity from '../../../components/PageDotsFlickity';
 import validateTextSize from '../../../services/textSizeValidator';
 import Map from '../../../components/Map';
 import WeatherWidget from '../../../components/WeatherWidget/WeatherWidget';
+import openTailoredModal from '../../../services/openTailoredModal';
+import { useRouter } from 'next/router';
+import Drawer from '../../../components/ui/Drawer';
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -72,7 +75,8 @@ const Poi = (props) => {
     );
   };
   const handleCloseDrawer = (e) => {
-    e.stopPropagation();
+    // e.stopPropagation()
+    if (e) e.stopPropagation();
     setShowDrawer(drawerShowArr);
   };
 
@@ -101,6 +105,18 @@ const Poi = (props) => {
     />
   ));
 
+  const cards = props.pois?.map((e, i) => (
+    <PoiCard
+      key={e.id}
+      data={e}
+      showDrawer={showDrawer[i]}
+      setShowDrawer={setShowDrawer}
+      _handleOpen={_handleOpen}
+      handleCloseDrawer={handleCloseDrawer}
+    />
+  ));
+  const router = useRouter();
+
   return (
     <GridContainer>
       <div className="hidden-mobile">
@@ -122,7 +138,9 @@ const Poi = (props) => {
           onClick={() => {
             more < props.pois.length
               ? setMore(more + 4)
-              : props._handleTailoredRedirect();
+              : props.data
+              ? openTailoredModal(router, props.data.id, props.data.name)
+              : console.log('');
           }}
         >
           {more < props.pois.length

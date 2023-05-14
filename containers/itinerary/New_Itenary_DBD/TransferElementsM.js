@@ -10,9 +10,9 @@ import {
   TransparentButton,
   TransportContainer,
 } from './New_itenaryStyled';
-import { convertNumToTime } from '../../../helper/convertNumToTime';
-import { formatNumber } from '../../../helper/formatNumber';
-import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
+import { convertNumToTime } from '../../../pages/helper/convertNumToTime';
+import { formatNumber } from '../../../pages/helper/formatNumber';
+import { TransportIconFetcher } from '../../../pages/helper/TransportIconFetcher';
 import { LivelyButton } from '../../../components/LiveleyButton';
 const TransferElementsM = ({
   time,

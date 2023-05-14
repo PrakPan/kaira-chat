@@ -38,9 +38,6 @@ margin: 1rem 0;
 font-weight: 100;
 letter-spacing: 1px;
 `;
-// list-style-image: ${require('../../../assets/icons/alert.svg')};
-
-// style={{margin: "1rem 0", listStyleImage: require('../../../assets/icons/alert.svg')}}
 let recommendations = [];
 let tips = [];
 

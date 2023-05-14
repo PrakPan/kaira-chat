@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../ImageLoader';
-// import Button from '../Button';
 import Button from '../ui/button/Index';
 import {useRouter} from 'next/router';
 
@@ -19,11 +18,6 @@ background-color: ${(props)=> props.bgColor? props.bgColor : 'transparent'};
     padding: 0;
 }
 `;
-// const Image = styled.img`
-//     border-radius: 50%;
-//     //width:${imgWidth};
-//     width: ${props => props.imgWidth ? props.imgWidth : imgWidth };
-// `;
 const Name = styled.p`
     padding: 0; 
      font-size:1.25rem;
@@ -45,6 +39,7 @@ display: -webkit-box;
 
 
 const Experiences= (props) => {
+    const router = useRouter();
 
     const Review = styled.div`
     width: 90%;
@@ -89,7 +84,6 @@ display: -webkit-box;
     /*Require props: imgWidth*/
  
   
-    const router = useRouter();
     const _onClickHandler = () => {
         if(props.page){
             router.push('/'+props.page)

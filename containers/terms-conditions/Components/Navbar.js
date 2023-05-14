@@ -5,10 +5,7 @@ import styled from 'styled-components';
 
 import { Link, animateScroll as scroll } from 'react-scroll';
 
-const Term2 = () => {
-  const handleSetActive = (activeClass) => {
-    setHeadingCont(activeClass);
-  };
+import { Link, animateScroll as scroll } from "react-scroll";
 
   let card = [];
   const [headingText, setHeadingText] = useState(false);

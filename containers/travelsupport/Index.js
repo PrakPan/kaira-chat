@@ -19,6 +19,7 @@ import travelsupportcontent from '../../public/content/travelsupport';
 import DesktopBanner from '../../components/containers/Banner';
 import Banner from '../homepage/banner/Mobile';
 import { useRouter } from 'next/router';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 
 
 const SetWidthContainer = styled.div`
@@ -29,12 +30,11 @@ const SetWidthContainer = styled.div`
     }
   `;
 
-const AffiliatePage = ()=> {
+const AffiliatePage = () => {
+  const isPageLoaded = usePageLoaded();
+  
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
-  const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel')
-  }
   
   
   const HowitWorksHeadingsArr=[
@@ -51,24 +51,60 @@ const AffiliatePage = ()=> {
   const howitworksimgs=["media/website/travelsupport-1.png", "media/website/travelsupport-2.png", "media/website/travelsupport-3.png"]
   
   return (
-     
     <div>
-      <FullImg url="media/website/johannes-plenio-qkfxBc2NQ18-unsplash.jpeg" center={isPageWide ? false : true}>
-          {typeof window !=='undefined' ? <FullImgContent heading={travelsupportcontent["heading"]} subheading={travelsupportcontent["subheading"]}></FullImgContent>:null}
+      <FullImg
+        url="media/website/johannes-plenio-qkfxBc2NQ18-unsplash.jpeg"
+        center={isPageWide ? false : true}
+      >
+        {isPageLoaded ? (
+          <FullImgContent
+            heading={travelsupportcontent["heading"]}
+            subheading={travelsupportcontent["subheading"]}
+          ></FullImgContent>
+        ) : null}
       </FullImg>
       <SetWidthContainer>
-      <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
-        <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
+        <Heading
+          align="center"
+          aligndesktop="center"
+          margin={!isPageWide ? "2.5rem 0.5rem" : "4rem"}
+          thincaps
+        >
+          HOW IT WORKS?
+        </Heading>
+        <HowItWorks
+          images={howitworksimgs}
+          content={HowitWorksContentsArr}
+          headings={HowitWorksHeadingsArr}
+        ></HowItWorks>
 
-      {/* <WhoAffiliate width={1200} height={900}/> */}
-     
-        <Heading bold margin="2.5rem auto" align="center">How our community travels</Heading>
-        <TravelerExperience width={1200} height={900} content={travelsupportcontent.travellerexperience}/>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}  bold>Locations for you</Heading>        
-        <Locations locations={travelsupportcontent["Top Locations"]} viewall></Locations>
+        {/* <WhoAffiliate width={1200} height={900}/> */}
+
+        <Heading bold margin="2.5rem auto" align="center">
+          How our community travels
+        </Heading>
+        <TravelerExperience
+          width={1200}
+          height={900}
+          content={travelsupportcontent.travellerexperience}
+        />
+        <Heading
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}
+          bold
+        >
+          Locations for you
+        </Heading>
+        <Locations
+          locations={travelsupportcontent["Top Locations"]}
+          viewall
+        ></Locations>
         {/* <Statistic/> */}
-        <Heading margin="5rem auto" align="center" bold>Key Benefits</Heading>
-        <KeyBenefits width={1200} height={900}/>
+        <Heading margin="5rem auto" align="center" bold>
+          Key Benefits
+        </Heading>
+        <KeyBenefits width={1200} height={900} />
         <AsSeenIn></AsSeenIn>
         <ChatWithUs link="/contact"></ChatWithUs>
       </SetWidthContainer>
@@ -77,17 +113,26 @@ const AffiliatePage = ()=> {
       <LookFor width={1200} height={900}/> */}
 
       {/* <ReviewYellow/> */}
-  
+
       {/* <WaitingFor width={1200} height={900}/> */}
-     
-    
+
       {/* <TypesOfGroups/> */}
-      
+
       {/* <WaitingForBanner></WaitingForBanner> */}
       {/* <TypesOfGroupsDropdown></TypesOfGroupsDropdown> */}
-      <div className='hidden-desktop'><Banner link="tailored-travel" text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>
-      <DesktopBanner onclick={_handleTailoredRedirect} text="Want to personalize your own experience?"></DesktopBanner>
-
+      <div className="hidden-desktop">
+        <Banner
+          link="tailored-travel"
+          text="Want to craft your own travel experience?"
+          buttontext="Start Now"
+          color="black"
+          buttonbgcolor="#f7e700"
+        ></Banner>
+      </div>
+      <DesktopBanner
+        onclick={() => openTailoredModal(router)}
+        text="Want to personalize your own experience?"
+      ></DesktopBanner>
     </div>
   );
 }

@@ -1,6 +1,5 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components'
-//  import { getHumanDate } from '../../../../services/getHumanDate';
   import SectionOne from './sectionone/Index';
 import SectionTwo from './SectionTwo';
   import media from '../../../media';

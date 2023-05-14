@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import CityContainer from '../CityContainer';
 import Timer from '../../../containers/itinerary/timer/Index';
 import { Tabs, Tab } from '@mui/material';
-    
+
 import IconElement from '../element/Index';
 import Locations from './Locations';
 // import {ITINERARY_ELEMENT_TYPES} from '../../../services/constants';

@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {MdOutlineFlight, MdLocalActivity} from  'react-icons/md';
 import {AiFillHome, AiFillCar}     from 'react-icons/ai' 
-// import {} from 'recat-icons/md';
 const Container = styled.div`
    display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;

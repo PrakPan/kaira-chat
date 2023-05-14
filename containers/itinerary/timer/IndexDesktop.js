@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components'
-// import GIF from '../../../public/assets/gifs/itinerary/one.gif';
-// import GIF2 from '../../../public/assets/gifs/itinerary/two.gif';
 import Tooltip from "react-bootstrap/Tooltip";
 import Overlay from "react-bootstrap/Overlay";
 import media from '../../media';

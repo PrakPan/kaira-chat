@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { TbArrowBack } from 'react-icons/tb';
 import Spinner from '../../Spinner';
 import media from '../../media';
-import gif from '../../../public/assets/loader.gif';
+import LoadingLottie from '../../ui/LoadingLottie';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
@@ -101,7 +101,7 @@ const POI = (props) => {
               style={{ height: '100%', paddingTop: '20vw' }}
               className="center-div"
             >
-              <img src={gif} style={{ width: '3rem', height: '3rem' }} />
+              <LoadingLottie />
             </div>
           )}
         </Modal.Body>

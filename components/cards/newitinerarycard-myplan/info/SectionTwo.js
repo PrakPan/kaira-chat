@@ -1,14 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-   import ImageLoader from '../../../ImageLoader';
-     
      
 const Container = styled.div`
   
 `;
 const Pax = (props) => {
-  
- 
     
     return(
         <Container  >

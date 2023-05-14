@@ -75,15 +75,13 @@ const _handleRedirect = () => {
     return(
       <Container className="netflix-ite" onClick={_handleRedirect}>
         <ImageContainer>
-              <ImageGallery myplan={props.myplan} budget={props.budget} group_type={props.group_type}   locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  duration={props.duration} PW={props.PW} filter={props.filter} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
+              <ImageGallery myplan={props.myplan} budget={props.budget} group_type={props.group_type}   locations={props.locations} duration_number={props.duration_number} duration_unit={props.duration_unit}  PW={props.PW} rating={props.rating} experience={props.experience} filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
        </ImageContainer>  
        <ContentContainer className="text-cente">
         <Info PW={props.PW} id={props.id}  number_of_adults={props.number_of_adults}  starting_cost={props.starting_cost}></Info>
        
        </ContentContainer>
-       {/* <div className='font-lexend text-center' style={{background: 'white' , borderWidth: '1px',  fontWeight: '600', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontSize: '0.75rem', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
-        {props.PW ? 'PW EXCLUSIVE - 50% OFF' : !props.myplan ?  'BLACK FRIDAY - 20% OFF' : 'ITINERARY STATUS'}
-        </div> */}
+      
       </Container> 
   ); 
 }

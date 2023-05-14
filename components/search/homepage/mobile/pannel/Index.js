@@ -8,7 +8,7 @@ import Results from './results/Index';
 import { RxCross2 } from 'react-icons/rx';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
-import axioslocationsinstance from '../../../../../services/poi/hotlocations';
+import axioslocationsinstance from '../../../../../services/search/search';
 import NewResults from './NewResults';
 import { ImSearch } from 'react-icons/im';
 import { MdCancel } from 'react-icons/md';

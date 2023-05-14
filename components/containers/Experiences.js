@@ -6,6 +6,7 @@ import PastItineraryCard from '../cards/Testimonial';
 import Carousel from '../FlickityCarousel';
 import media from '../media';
 import PageDotsFlickity from '../PageDotsFlickity'
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
 const Container = styled.div`
 @media screen and (min-width: 768px){
@@ -56,6 +57,8 @@ var i;
 
 const Experiences= (props) => {
   let isPageWide = media('(min-width: 768px)')
+  const isPageLoaded = usePageLoaded();
+
 const [cards,setCards] = useState([])
   const TextRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null) ];
   useEffect(() => {
@@ -218,7 +221,7 @@ const Experiences = [
 
     <div className='hidden-desktop'>       
            <div style={{ padding: "1rem 0"}}>
-            {typeof window !=='undefined' ? <PageDotsFlickity initialIndex={0} experience cards={experiencecards}></PageDotsFlickity> :null }
+            {isPageLoaded ? <PageDotsFlickity initialIndex={0} experience cards={experiencecards}></PageDotsFlickity> :null }
     </div>
   </div></>
   );

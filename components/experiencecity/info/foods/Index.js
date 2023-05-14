@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Icon from './Food';
-// import Button from '../../../Button';
 import Button from '../../../ui/button/Index';
 import urls from '../../../../services/urls';
 

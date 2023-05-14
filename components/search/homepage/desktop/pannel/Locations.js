@@ -61,36 +61,29 @@ const LocationContainer = styled.div`
 const Locations = (props) => {
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (id, name, parent, slug) => {
-    router.push('/travel-guide/city/' + slug);
+  const _handleLocationClick = (data) => {
+    if (data.cta) {
+      // props.setPannelClose()
+      // router.push('/travel-guide/city/'+slug)
+      if (data.type === 'Location')
+        window.location.href =
+          'https://thetarzanway.com/travel-guide/city/' + data.cta;
+      if (data.type === 'State')
+        window.location.href =
+          'https://thetarzanway.com/travel-planner/' + data.cta;
+    }
   };
-  // const _handleLocationClick = (slug) => {
-  //   // props.setPannelOpen(false)
-  //   //    if(slug) router.push('/travel-guide/city/'+slug)
-  //   if (slug)
-  //     window.location.href =
-  //       'https://dev.thetarzanway.com/travel-guide/city/' + slug;
-  // };
-  const _handlePersonaliseRedirect = (id, name, parent) => {
-    // localStorage.setItem('search_city_selected_id', id)
-    // localStorage.setItem('search_city_selected_name', name)
-    // localStorage.setItem('search_city_selected_parent', parent)
 
-    router.push('/tailored-travel?search_text=' + name);
-  };
   let locations = [];
   if (props.hotlocations) {
     for (var i = 0; i < props.hotlocations.length; i++) {
-      let id = props.hotlocations[i].id;
-      let name = props.hotlocations[i].name;
-      let parent = props.hotlocations[i].state.name;
-      let slug = props.hotlocations[i].slug;
+      const data = props.hotlocations[i];
+
       locations.push(
         <LocationContainer
           className="border-thin"
-          onClick={() => _handlePersonaliseRedirect(id, name, parent)}
+          onClick={() => _handleLocationClick(data)}
         >
-          {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
           <ImageLoader
             url={props.hotlocations[i].image}
             borderRadius="50%"
@@ -115,10 +108,7 @@ const Locations = (props) => {
   } else {
     for (var i = 0; i < 6; i++) {
       locations.push(
-        <LocationContainer
-          className="border-thin"
-          onClick={() => _handlePersonaliseRedirect(id, name, parent)}
-        >
+        <LocationContainer className="border-thin">
           <ImageLoader
             url={'media/website/grey.png'}
             borderRadius="50%"

@@ -42,7 +42,7 @@ export default {
     BASE: "/travel-guide/",
     city: {
       BASE1: "/travel-guide/city/",
-      THINGS_TO_DO: "/travelguide/city/things-to-do/",
+      // THINGS_TO_DO: "/travelguide/city/things-to-do/",
     },
   },
   HOMEPAGE: "/",
@@ -60,4 +60,3 @@ export default {
     OFFBEAT: "/travel-planner/offbeat-trips-in-india",
   },
 };
-  

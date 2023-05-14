@@ -1,7 +1,5 @@
 import React,{useState} from 'react';
 import styled from 'styled-components';
-// import arrow from '../../../assets/DropDownArrow.svg';
-// import arrow from '../../../public/assets/DropDownArrow.svg';
 /*
 Description:
 a separate dropdownlist component for DropdownWhyUS with fixed height in text dropdown to prevent 

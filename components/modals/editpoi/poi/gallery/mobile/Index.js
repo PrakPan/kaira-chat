@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import Flickity from './Flickity';
-import ImageLoader from '../../../../../ImageLoader';
 
 
 const FlickityCarousel = (props) => {

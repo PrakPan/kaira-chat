@@ -4,7 +4,6 @@ import Button from '../../../components/ui/button/Index';
 import media from '../../../components/media';
 // import {BsWhatsapp} from 'react-icons/bs';
 // import urls from '../../services/urls';
-// import Enquiry from './newenquiry/Index';
 // import ImageLoader from '../../components/ImageLoader';
 // import Banner from './BannerOne';
 import TailoredForm from '../../../components/tailoredform/Index';

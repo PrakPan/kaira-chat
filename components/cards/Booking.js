@@ -1,18 +1,13 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faMapMarker,
-  faStar,
-  faImages,
-} from '@fortawesome/free-solid-svg-icons';
+import { faImages } from '@fortawesome/free-solid-svg-icons';
 
 import ImageLoader from '../ImageLoader';
-
-import { Accordion } from '@mui/material';
-import { AccordionSummary } from '@mui/material';
-import { AccordionDetails } from '@mui/material';
-import { Typography } from '@mui/material';
+import MuiAccordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Container = styled.div`
@@ -33,10 +28,6 @@ const DetailsContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
   padding: 0 0.5rem;
-`;
-const DetailsLeftContainer = styled.div``;
-const DetailsRightContainer = styled.div`
-  text-align: right;
 `;
 const Rating = styled.div`
   text-align: right;
@@ -116,7 +107,7 @@ const Booking = (props) => {
           ) : null}
         </ImageContainer>
         <div>
-          <Accordion>
+          <MuiAccordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               aria-controls="panel1a-content"
@@ -125,10 +116,9 @@ const Booking = (props) => {
               <div>
                 <Typography
                   className={
-                    props.blur
-                      ? 'text-[1rem] font-[600]' + 'font-lexend blurry-text'
-                      : 'text-[1rem] font-[600]' + ' font-lexend'
+                    props.blur ? 'font-lexend blurry-text' : ' font-lexend'
                   }
+                  style={{ fontSize: '1rem', fontWeight: '600', width: '100%' }}
                 >
                   {props.heading}
                 </Typography>
@@ -136,7 +126,7 @@ const Booking = (props) => {
               </div>
             </AccordionSummary>
             <AccordionDetails></AccordionDetails>
-          </Accordion>
+          </MuiAccordion>
         </div>
       </Container>
     );
@@ -144,7 +134,6 @@ const Booking = (props) => {
     return (
       <Container className="border-thin">
         <ImageContainer>
-          {/* <ImageLoader fit="cover" url={props.images[0].image} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} widthmobile="100%" height="20vh" ></ImageLoader> */}
           <ImageLoader
             blur={props.blur}
             url={
@@ -183,10 +172,9 @@ const Booking = (props) => {
           <div>
             <Typography
               className={
-                props.blur
-                  ? 'text-[1rem] font-[600]' + 'font-lexend blurry-text'
-                  : 'text-[1rem] font-[600]' + ' font-lexend'
+                props.blur ? 'font-lexend blurry-text' : ' font-lexend'
               }
+              style={{ fontSize: '1rem', fontWeight: '600', width: '100%' }}
             >
               {props.heading}
             </Typography>
@@ -202,21 +190,6 @@ const Booking = (props) => {
             </p>
           </div>
           {detailsarr}
-          {/* <IconsContainer>
-                        <div>
-                            <Icon src={icon} style={{width: "25%"}}></Icon>
-                            <p className="font-nunito" style={{textAlign: "center", fontSize: "0.75rem", margin: "0"}}>Breakfast</p>
-                        </div>
-                        <div>
-                            <Icon src={icon2}  style={{width: "25%"}}></Icon>
-                            <p className="font-nunito" style={{textAlign: "center",  fontSize: "0.75rem", margin: "0"}}>Toiletries</p></div>
-                        <div>
-                            <Icon src={icon3} style={{width: "25%"}}></Icon>
-                            <p className="font-nunito" style={{textAlign: "center",  fontSize: "0.75rem", margin: "0"}}>Free Wifi</p>
-                        </div>
-                        
-                        
-                    </IconsContainer> */}
         </div>
       </Container>
     );

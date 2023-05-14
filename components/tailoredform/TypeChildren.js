@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FormControl } from '@mui/material';
-import { InputLabel } from '@mui/material';
-import { Select } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import { makeStyles } from '@mui/styles';
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
-const useStyles = {
-  noPadding: `
-    p-0,
-  `,
-  fullWidth: `
-    w-full,
-    p-0,
-  `,
-  relative: `relative`,
-};
+const useStyles = makeStyles((theme) => ({
+  noPadding: {
+    padding: 0,
+  },
+  fullWidth: {
+    width: '100%',
+    padding: 0,
+  },
+  relative: {
+    position: 'relative',
+  },
+}));
 const Option = styled.option`
   padding: 0.75rem;
   background-color: white;
@@ -26,8 +30,10 @@ const Option = styled.option`
   }
 `;
 const QueryType = (props) => {
-  if (typeof window !== 'undefined') {
-    const classes = useStyles;
+  const isPageLoaded = usePageLoaded();
+
+  if (isPageLoaded) {
+    const classes = useStyles();
     const queries = [
       'Conferences or offsites',
       'Workcations or retreats',

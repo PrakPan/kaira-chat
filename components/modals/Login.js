@@ -1,7 +1,7 @@
 import React, {useRef, useEffect, useState} from 'react';
 // import {Modal} from 'react-bootstrap';
 import Modal from '../ui/Modal'
-import Login from '../userauth/LogInModal';
+import Login from '../userauth/LogInModal'
 import styled from 'styled-components';
 import {connect} from 'react-redux';
 import ImageLoader from '../ImageLoader';
@@ -37,16 +37,18 @@ margin-block : auto;
 }
 `
 
-const TagsContent = [{icon : 'media/icons/login/tag.png' ,  text : 'Better prices'} ,
-{icon : 'media/icons/login/officer.png' , text : 'Get an experience captain'} ,
-{icon : 'media/icons/login/24-hours.png' , text : '24x7 live support for your trips'} ,{
-  icon : 'media/icons/login/discount.png' , text : 'Exclusive discounts'} ]
+const TagsContent = [
+  {icon : 'media/icons/login/free-travel.png' , text : 'Unlimited travel plans for free!'} ,
+  {icon : 'media/icons/login/discount.png' , text : 'Exclusive deals: Upto 70% off!'},
+{icon : 'media/icons/login/officer.png' , text : 'Expert support, 24x7!'} ,
+{icon : 'media/icons/login/night-stay.png' , text : 'Free night stay on selected properties!'} ]
+
 
 
 
 const Enquiry = (props) => {
   let isPageWide = media('(min-width: 768px)')
-  const [modalWidth , setModalWidth] = useState(50)
+  const [modalWidth , setModalWidth] = useState(!isPageWide? 90 :50)
     let myref = useRef(null);
     const [showImage, setShowImage] = useState(false);
     let height='100px'
@@ -61,7 +63,7 @@ const Enquiry = (props) => {
 
   useEffect(()=>{
   function findModalWidth(){
-    if(window.innerWidth >= 1800) setModalWidth(50)
+    if(window.innerWidth >= 1600) setModalWidth(50)
     else if(window.innerWidth >= 1400) setModalWidth(60)
     else if(window.innerWidth >= 1100) setModalWidth(70)
     else if(window.innerWidth >= 768) setModalWidth(90)
@@ -74,12 +76,10 @@ const Enquiry = (props) => {
       return ()=> window.removeEventListener("resize", findModalWidth)  
   },[])
 
-
   if(isPageWide)
   return(
       <div className='font-lexend'>
         <Modal centered closeIcon  backdrop={props.hideloginclose ? 'static' : true} show={props.show} onHide={props.hideloginclose ? null : props.onhide} borderRadius='20px' width={modalWidth + '%'} >
-            {/* <Modal.Body style={{padding: "0"}} > */}
                 <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
                   <div style={{backgroundColor: "#2C2C2C", height : '100%' , width : '100%' ,display: showImage ? 'none' : 'block' }}></div>
                   <ImgContainer style={{display: showImage ? 'block' : 'none'}}>

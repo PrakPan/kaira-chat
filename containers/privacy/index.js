@@ -162,7 +162,6 @@ export default Privacy;
 
 //previous
 
-// import content from "../../public/content/privacypolicy";
 // import styled from "styled-components";
 // import YellowContainer from "../contact/YellowContainer";
 // import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";

@@ -1,13 +1,11 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import HomepageContainer from '../containers/homepage/Index';
 import Layout from '../components/Layout';
 import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth';
-import Router from 'next/router'
 import { useEffect } from 'react';
-import axiosTravelPlannerInstance from '../services/pages/travel-planner'
+import axiospagelistinstance from '../services/pages/list'
+import axios from 'axios'
 const  Home = (props) =>  {
   useEffect(() => {
     props.checkAuthState();
@@ -24,7 +22,7 @@ const  Home = (props) =>  {
           <meta property='keywords' content='travel in india, tour in india, india travel, travel agents near me, plan a trip, travel and experience culture, local travel experience, customized trip planner india, customized holiday packages, customized packages in computer, customized travel, honeymoon travel packages, personalized travel package'></meta>
       </Head>
        
-     <HomepageContainer token={props.token} ThemeData={props.ThemeData}></HomepageContainer>
+     <HomepageContainer token={props.token} locations={props.locations} ThemeData={props.ThemeData}></HomepageContainer>
     </Layout>
   )
  
@@ -45,14 +43,23 @@ const mapDispatchToProps = (dispatch) => {
 
 export async function getStaticProps(){
 var data = []
+var locations = []
   try{
-    const res = await axiosTravelPlannerInstance.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
+    const res = await axios.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
     data = res.data
   }
   catch(e){
     data = []
   }
 
+  try{
+   const loc = await axiospagelistinstance.get(``)
+    locations = loc.data
+  }
+catch(e){
+  console.log(e)
+  locations = []
+}
   const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading}})
       if (!data) {
             return {
@@ -61,7 +68,8 @@ var data = []
           }
       return{
             props: {
-                  ThemeData: ThemeData
+                  ThemeData,
+                  locations
             }
       }
   }

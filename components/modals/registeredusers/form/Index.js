@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import Person from './person/Index';
 const Container = styled.div`
   display: grid;

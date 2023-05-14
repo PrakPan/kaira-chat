@@ -1,12 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import img from '../../public/assets/user.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faHiking } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import * as authaction from '../../store/actions/auth';
-import Slider from '@mui/material/Slider';
-
 import ImageLoader from '../../components/ImageLoader';
 import media from '../../components/media';
 
@@ -56,13 +51,6 @@ const Profile = (props) => {
       margin: 1rem;
     }
   `;
-  const Count = styled.p`
-    margin: 0rem;
-    font-size: ${(props) => props.theme.fontsizes.mobile.headings.three};
-    @media screen and (min-width: 768px) {
-      font-size: ${(props) => props.theme.fontsizes.desktop.headings.two};
-    }
-  `;
   const DetailsContainer = styled.div`
     text-align: center;
     padding: 2rem 0;
@@ -96,15 +84,6 @@ const Profile = (props) => {
       display: inline;
     }
   `;
-  const PreferencesContainer = styled.div`
-    width: 80%;
-    margin: 2rem auto;
-  `;
-  const SlidersContainer = styled.div`
-    display: grid;
-    grid-template-columns: max-content auto;
-    grid-gap: 1.5rem;
-  `;
 
   return (
     <Container className="border-thin">
@@ -124,20 +103,6 @@ const Profile = (props) => {
           ></ImageLoader>
           <Name className="font-lexend">{props.name}</Name>
         </ImageNameContainer>
-        {/* <CountContainer>
-    <div className="center-div" >
-        <Count className="font-lexend">10</Count>
-        <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Saved</p>
-    </div>
-    <div className="center-div" >
-        <Count className="font-lexend">24</Count>
-        <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Expereinces Taken</p>
-    </div>
-    <div className="center-div" >
-        <Count className="font-lexend">10</Count>
-        <p className="font-avenir" style={{textAlign: "center", height: "4rem"}}>Plans Created</p>
-    </div>
-    </CountContainer> */}
         {!isPageWide ? <hr style={{ margin: '0' }} /> : null}
         <DetailsContainer>
           {isPageWide ? (
@@ -152,53 +117,12 @@ const Profile = (props) => {
           <DetailText style={{ marginBottom: !isPageWide ? '2rem' : '2rem' }}>
             {props.phone}
           </DetailText>
-          {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}} onClick={props.onSetProfilePic} />     */}
           <DetailHeading className="font-lexend" style={{ clear: 'both' }}>
             Email
           </DetailHeading>
           <DetailText style={{ marginBottom: '0' }}>{props.email}</DetailText>
-          {/* <FontAwesomeIcon icon={faEdit} style={{fontSize: "1rem", marginLeft: "0.5rem", color: "#E4E4E4", fontWeight: '300'}}/>     */}
         </DetailsContainer>
       </OverviewContainer>
-      {/* <PreferencesContainer>
-        <SectionHeading className="font-lexend" style={{margin: "0 auto 2rem auto", textAlign: "center", fontWeight: '700'}}>Your Preferences</SectionHeading>
-        <SlidersContainer>
-               <div className="center-div" style={{textAlign: 'right'}}>
-                <div>Adventure
-                <FontAwesomeIcon icon={faHiking} style={{marginLeft: "0.5rem", fontSize: '1.5rem'}}/> </div>   
-                </div>
-                <PrettoSlider defaultValue={8} aria-labelledby="discrete-slider" valueLabelDisplay="on" step={1} min={0} max={10} />
-            <div adventure className="center-div">
-                <div>Nature
-                <FontAwesomeIcon icon={faHiking} style={{marginLeft: "0.5rem", fontSize: '1.5rem'}}/></div>   
-            </div>
-            <PrettoSlider defaultValue={2} aria-labelledby="discrete-slider" valueLabelDisplay="on" step={1} min={0} max={10} />
-
-            <div adventure className="center-div">
-                <div>Heritage
-                <FontAwesomeIcon icon={faHiking} style={{marginLeft: "0.5rem", fontSize: '1.5rem'}}/>  </div>  
-            </div>
-            <PrettoSlider defaultValue={6} aria-labelledby="discrete-slider" valueLabelDisplay="on" step={1} min={0} max={10}/>
-            <div adventure className="center-div">
-                <div>Culture
-                <FontAwesomeIcon icon={faHiking} style={{marginLeft: "0.5rem", fontSize: '1.5rem'}}/>   </div> 
-            </div>
-            <PrettoSlider defaultValue={1} aria-labelledby="discrete-slider" valueLabelDisplay="on" step={1} min={0} max={10} />
-            <div adventure className="center-div">
-                <div>Social
-                <FontAwesomeIcon icon={faHiking} style={{marginLeft: "0.5rem", fontSize: '1.5rem'}}/></div>  
-            </div>
-            <PrettoSlider defaultValue={9} aria-labelledby="discrete-slider" valueLabelDisplay="on" step={1} min={0} max={10}/>
-
-            <div adventure className="center-div">
-                <div>Other
-                <FontAwesomeIcon icon={faHiking} style={{marginLeft: "0.5rem", fontSize: '1.5rem'}}/></div>  
-            </div>
-            <PrettoSlider defaultValue={0} aria-labelledby="discrete-slider" valueLabelDisplay="on" step={1} min={0} max={10}/>
-
-        </SlidersContainer>
-        <Button margin="auto" borderWidth="1px" borderRadius="2rem" padding="0.5rem 2rem">Save</Button>
-    </PreferencesContainer> */}
     </Container>
   );
 };

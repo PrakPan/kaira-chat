@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
+import React, {useEffect} from 'react';
 import Image from './Image';
 import ContactForm from './Form/TestForm';
 import ContactInfo from './ContactInfo';

@@ -7,6 +7,7 @@ import ImageLoader from '../ImageLoader';
 import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
 import { FaUserCircle } from 'react-icons/fa';
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
 
 const CenterNav=styled.div`
@@ -109,6 +110,7 @@ font-weight : 600;
 }
 `;
 const ProfileDropDown =(props)=>{
+  const isPageLoaded = usePageLoaded();
 
     
     let firstname;
@@ -142,7 +144,7 @@ const ProfileDropDown =(props)=>{
             <CenterNav onClick={props.toggleProfileList}>
               <ImageLoader borderRadius="50%" url={'media/icons/navigation/profile-user.png'} width="2rem" height="2rem" dimensions={{width: 300, height: 300}}/>   
 
-            {typeof window !== 'undefined'  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color:'black'}}></StyledFontAwesomeIcon> : null}
+            {isPageLoaded  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color:'black'}}></StyledFontAwesomeIcon> : null}
             </CenterNav>
              {AuthMenu}
         </div>

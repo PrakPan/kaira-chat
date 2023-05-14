@@ -1,12 +1,11 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React from 'react';
  import styled from 'styled-components';
 import media from '../../../media';
  
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWifi, faStar, faHome} from '@fortawesome/free-solid-svg-icons';
+import { faWifi, faStar } from '@fortawesome/free-solid-svg-icons';
  import Button from '../../../ui/button/Index';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
-import {FaArrowUp, FaArrowDown} from 'react-icons/fa';
 import { BiRupee } from 'react-icons/bi';
 import { BsInfoCircle } from 'react-icons/bs';
 

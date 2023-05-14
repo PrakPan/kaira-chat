@@ -19,9 +19,10 @@ body {
   font-family: Lexend;
 }
 
-a {
-  color: inherit;
-  text-decoration: none !important;
+.next-link {
+  /* color: inherit;
+  text-decoration: none; */
+  color: black;
 }
 a.termsnavunderlinelink {
   text-decoration: none;

@@ -3,9 +3,9 @@ import styled from 'styled-components';
 // import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index'
 import ImageLoader from '../../../components/ImageLoader';
-import quote from '../../../public/assets/double-quotes.png'
 import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
+import { ImQuotesLeft } from 'react-icons/im';
  import { useRouter } from 'next/router';
 /*
 Description:
@@ -97,11 +97,7 @@ const QuoteContainer = styled.div`
 text-align: left;
 line-height: 1;
 `;
-const QuoteImg = styled.img`
-   width: 1.5rem;
-   height: 1.5rem;
-   display: block;
-`;
+
 const MobileCardContainer = styled.div`
     background-color: hsl(0,0%,97%);
     border-radius: 5px;
@@ -116,122 +112,225 @@ const PartnerWith = (props) => {
     }
    for(var i =0 ; i < props.content.length; i++){
       mobile_cards_generared.push(
-         <MobileCardContainer><Card>
-         {/* <ImageNumber>
+        <MobileCardContainer>
+          <Card>
+            {/* <ImageNumber>
             1
          </ImageNumber> */}
-         <ImageLoader dimensions={{ width: props.width, height: props.height }} url={props.content[i].image} />
-      </Card>
-      <Card className='center-div' style={{padding: '1rem'}}>
-         <div>
-            <ImageHeading className="font-lexend">{props.content[i].name}</ImageHeading>
-            <QuoteContainer>
-               <QuoteImg src={quote}></QuoteImg>
-            </QuoteContainer>
-            <Text className="font-lexend">
-              {props.content[i].review}
-            </Text>
-            <PlanDetails className='font-nunito'>{props.content[i].text}</PlanDetails>
-           
-            {/* <Button  borderWidth="0"  bgColor="#f7e700" color="black" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[i].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
-            <Button boxShadow  borderWidth="0"  bgColor="#f7e700" color="black" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[i].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button>
-         </div>
-      </Card></MobileCardContainer>
-      )
+            <ImageLoader
+              dimensions={{ width: props.width, height: props.height }}
+              url={props.content[i].image}
+            />
+          </Card>
+          <Card className="center-div" style={{ padding: "1rem" }}>
+            <div>
+              <ImageHeading className="font-lexend">
+                {props.content[i].name}
+              </ImageHeading>
+              <QuoteContainer>
+                <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
+              </QuoteContainer>
+              <Text className="font-lexend">{props.content[i].review}</Text>
+              <PlanDetails className="font-nunito">
+                {props.content[i].text}
+              </PlanDetails>
+
+              {/* <Button  borderWidth="0"  bgColor="#f7e700" color="black" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[i].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
+              <Button
+                boxShadow
+                borderWidth="0"
+                bgColor="#f7e700"
+                color="black"
+                hoverBgColor={"black"}
+                hoverColor="white"
+                onclick={_handleItineraryRedirect}
+                onclickparam={props.content[i].itinerary_id}
+                padding="0.25rem 1rem"
+                display={"inline"}
+                borderRadius={"2rem"}
+              >
+                View Itinerary
+              </Button>
+            </div>
+          </Card>
+        </MobileCardContainer>
+      );
    }
   
  
     if(isPageWide)
    return (
-      <Container>
-         <Card>
-            {/* <ImageNumber>
+     <Container>
+       <Card>
+         {/* <ImageNumber>
                1
             </ImageNumber> */}
-            <ImageLoader dimensions={{ width: props.width, height: props.height }} url={props.content[1].image} />
-         </Card>
-         <Card className='center-div'>
-            <div>
-               <ImageHeading className="font-lexend">{props.content[1].name}</ImageHeading>
-               <ReviewContainer><QuoteContainer>
-                  <QuoteImg src={quote}></QuoteImg>
-               </QuoteContainer>
-               <Text className="font-lexend">
-                  {props.content[1].review}
-               </Text></ReviewContainer>
-               <PlanDetails className='font-nunito'>{props.content[1].text}</PlanDetails>
-               
-               {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" onclick={_handleItineraryRedirect} onclickparam={props.content[1].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"} hoverBgColor={"black"} hoverColor="white">View Itinerary</Button> */}
-               <Button boxShadow bgColor="#f7e700" color="black" borderWidth="0px" onclick={_handleItineraryRedirect} onclickparam={props.content[1].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"} hoverBgColor={"black"} hoverColor="white">View Itinerary</Button>
-            </div>
-         </Card>
-         <Card className='center-div'>
-            <div>
-               <ImageHeading className="font-lexend">{props.content[0].name}</ImageHeading>
-               <ReviewContainer><QuoteContainer>
-                  <QuoteImg src={quote}></QuoteImg>
-               </QuoteContainer>
-               <Text className="font-lexend">
-                  {props.content[0].review}
-               </Text></ReviewContainer>
-               <PlanDetails className='font-nunito'>{props.content[0].text}</PlanDetails>
-               
-               {/* <Button  bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[0].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
-               <Button boxShadow bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[0].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button>
-            </div>
-         </Card>
-         <Card>
-            {/* <ImageNumberRight >
+         <ImageLoader
+           dimensions={{ width: props.width, height: props.height }}
+           url={props.content[1].image}
+         />
+       </Card>
+       <Card className="center-div">
+         <div>
+           <ImageHeading className="font-lexend">
+             {props.content[1].name}
+           </ImageHeading>
+           <ReviewContainer>
+             <QuoteContainer>
+               <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
+             </QuoteContainer>
+             <Text className="font-lexend">{props.content[1].review}</Text>
+           </ReviewContainer>
+           <PlanDetails className="font-nunito">
+             {props.content[1].text}
+           </PlanDetails>
+
+           {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" onclick={_handleItineraryRedirect} onclickparam={props.content[1].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"} hoverBgColor={"black"} hoverColor="white">View Itinerary</Button> */}
+           <Button
+             boxShadow
+             bgColor="#f7e700"
+             color="black"
+             borderWidth="0px"
+             onclick={_handleItineraryRedirect}
+             onclickparam={props.content[1].itinerary_id}
+             padding="0.25rem 1rem"
+             display={"inline"}
+             borderRadius={"2rem"}
+             hoverBgColor={"black"}
+             hoverColor="white"
+           >
+             View Itinerary
+           </Button>
+         </div>
+       </Card>
+       <Card className="center-div">
+         <div>
+           <ImageHeading className="font-lexend">
+             {props.content[0].name}
+           </ImageHeading>
+           <ReviewContainer>
+             <QuoteContainer>
+               <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
+             </QuoteContainer>
+             <Text className="font-lexend">{props.content[0].review}</Text>
+           </ReviewContainer>
+           <PlanDetails className="font-nunito">
+             {props.content[0].text}
+           </PlanDetails>
+
+           {/* <Button  bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[0].itinerary_id} padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
+           <Button
+             boxShadow
+             bgColor="#f7e700"
+             color="black"
+             borderWidth="0px"
+             hoverBgColor={"black"}
+             hoverColor="white"
+             onclick={_handleItineraryRedirect}
+             onclickparam={props.content[0].itinerary_id}
+             padding="0.25rem 1rem"
+             display={"inline"}
+             borderRadius={"2rem"}
+           >
+             View Itinerary
+           </Button>
+         </div>
+       </Card>
+       <Card>
+         {/* <ImageNumberRight >
                2
             </ImageNumberRight> */}
-            <ImageLoader dimensions={{ width: props.width, height: props.height }} url={props.content[0].image} />
-         </Card>
-        
-         <Card>
-            {/* <ImageNumberRight >
+         <ImageLoader
+           dimensions={{ width: props.width, height: props.height }}
+           url={props.content[0].image}
+         />
+       </Card>
+
+       <Card>
+         {/* <ImageNumberRight >
                2
             </ImageNumberRight> */}
-            <ImageLoader dimensions={{ width: props.width, height: props.height }} url={props.content[2].image} />
-         </Card>
-         <Card className='center-div'>
-            <div>
-               <ImageHeading className="font-lexend">{props.content[2].name}</ImageHeading>
-               <ReviewContainer><QuoteContainer>
-                  <QuoteImg src={quote}></QuoteImg>
-               </QuoteContainer>
-               <Text className="font-lexend">
-                  {props.content[2].review}
-               </Text></ReviewContainer>
-               <PlanDetails className='font-nunito'>{props.content[2].text}</PlanDetails>
-               
-               {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[2].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
-               <Button boxShadow bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[2].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button>
-            </div>
-         </Card>
-         <Card className='center-div'>
-            <div>
-               <ImageHeading className="font-lexend">{props.content[3].name}</ImageHeading>
-               <ReviewContainer><QuoteContainer>
-                  <QuoteImg src={quote}></QuoteImg>
-               </QuoteContainer>
-               <Text className="font-lexend">
-                  {props.content[3].review}
-               </Text></ReviewContainer>
-               <PlanDetails className='font-nunito'>{props.content[3].text}</PlanDetails>
-               
-               {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[3].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
-               <Button boxShadow bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[3].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button>
-            </div>
-         </Card>
-         <Card>
-            {/* <ImageNumberRight >
+         <ImageLoader
+           dimensions={{ width: props.width, height: props.height }}
+           url={props.content[2].image}
+         />
+       </Card>
+       <Card className="center-div">
+         <div>
+           <ImageHeading className="font-lexend">
+             {props.content[2].name}
+           </ImageHeading>
+           <ReviewContainer>
+             <QuoteContainer>
+               <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
+             </QuoteContainer>
+             <Text className="font-lexend">{props.content[2].review}</Text>
+           </ReviewContainer>
+           <PlanDetails className="font-nunito">
+             {props.content[2].text}
+           </PlanDetails>
+
+           {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[2].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
+           <Button
+             boxShadow
+             bgColor="#f7e700"
+             color="black"
+             borderWidth="0px"
+             hoverBgColor={"black"}
+             hoverColor="white"
+             onclick={_handleItineraryRedirect}
+             onclickparam={props.content[2].itinerary_id}
+             padding="0.25rem 1rem"
+             display={"inline"}
+             borderRadius={"2rem"}
+           >
+             View Itinerary
+           </Button>
+         </div>
+       </Card>
+       <Card className="center-div">
+         <div>
+           <ImageHeading className="font-lexend">
+             {props.content[3].name}
+           </ImageHeading>
+           <ReviewContainer>
+             <QuoteContainer>
+               <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
+             </QuoteContainer>
+             <Text className="font-lexend">{props.content[3].review}</Text>
+           </ReviewContainer>
+           <PlanDetails className="font-nunito">
+             {props.content[3].text}
+           </PlanDetails>
+
+           {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[3].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
+           <Button
+             boxShadow
+             bgColor="#f7e700"
+             color="black"
+             borderWidth="0px"
+             hoverBgColor={"black"}
+             hoverColor="white"
+             onclick={_handleItineraryRedirect}
+             onclickparam={props.content[3].itinerary_id}
+             padding="0.25rem 1rem"
+             display={"inline"}
+             borderRadius={"2rem"}
+           >
+             View Itinerary
+           </Button>
+         </div>
+       </Card>
+       <Card>
+         {/* <ImageNumberRight >
                2
             </ImageNumberRight> */}
-            <ImageLoader dimensions={{ width: props.width, height: props.height }} url={props.content[3].image} />
-         </Card>
-        
-        
-      </Container>
+         <ImageLoader
+           dimensions={{ width: props.width, height: props.height }}
+           url={props.content[3].image}
+         />
+       </Card>
+     </Container>
    );
    else return <Flickity cards={mobile_cards_generared}></Flickity>
 }

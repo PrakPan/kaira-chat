@@ -33,18 +33,22 @@ const DesktopCard = Array(6).fill(<SkeletonCard
 const DesktopSkeleton = (props) => {
 
     return (
-    <DesktopContainer>
-       {DesktopCard.map((e)=>e)}
-    </DesktopContainer>
-  )
+      <DesktopContainer>
+        {DesktopCard.map((e, i) => (
+          <div key={i}>{e}</div>
+        ))}
+      </DesktopContainer>
+    );
 }
 
 export const MobileSkeleton = (props)=>{
    return (
-      <MobileContainer>
-         {MobileCard.map(e=>e)}
-      </MobileContainer>
-   )
+     <MobileContainer>
+       {MobileCard.map((e, i) => (
+         <div key={i}>{e}</div>
+       ))}
+     </MobileContainer>
+   );
 }
 
 

@@ -11,7 +11,6 @@ import Republic from './FullImgContentRepublic';
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
- import BannerTwo from './BannerTwo';
  import WhyUs from '../testimonial/whyttw/Index';
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
@@ -19,11 +18,8 @@ import FullImgContent from './FullImgContent';
  import Menu from './Menu';
 import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
-import gif from '../../public/assets/loader.gif';
-import FooterBannerMobile from './FooterBannerMobile';
-import Holi from './FullImgContentRepublic';
-// import qs from qs;
- 
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
+import LoadingLottie from '../../components/ui/LoadingLottie'
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -88,6 +84,7 @@ height: 50vw;
 }
 `;
 const  Homepage = (props) =>{
+  const isPageLoaded = usePageLoaded();
  
 			
 let isPageWide = media('(min-width: 768px)');
@@ -313,20 +310,6 @@ const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 // const _handleExperiencesRedirect = (e) => {
 //     router.push('/travel-experiences')
 // }
-const _handleTailoredRedirect = () => {
-  router.push('/tailored-travel?search_text=Rajasthan')
-}
-const _handleTailoredClick = () => {
-  setDesktopBannerLoading(true);
-  setTimeout(_handleTailoredRedirect, 1000);
-
-  ga.callback_event({
-    action: 'TT-Desktopbanner',
-    
-    callback: _handleTailoredRedirect,
-  })
-
-}
 const EXPERIENCE = {  
   "id":"ifgPvZyQcBXXPYdJ",
   "slug": "bedazzling-friendcation-in-andaman",
@@ -352,91 +335,129 @@ const EXPERIENCE = {
 };
  
    return (
-    <div className={  "Homepage"  } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
-      <FullImage url="media/website/Andaman.jpeg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
-          <FullImgContent/>
-      </FullImage>
-      {/* <FullImage padding="0" height="max-content" heightMobile="max-content" url="media/website/debashis-rc-biswas-dyPFnxxUhYk-unsplash.jpg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+     <div
+       className={"Homepage"}
+       id="homepage-anchor"
+       style={{ visibility: props.hidden ? "hidden" : "visible" }}
+     >
+       <FullImage
+         url="media/website/Andaman.jpeg"
+         filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
+       >
+         <FullImgContent />
+       </FullImage>
+       {/* <FullImage padding="0" height="max-content" heightMobile="max-content" url="media/website/debashis-rc-biswas-dyPFnxxUhYk-unsplash.jpg" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <Holi/>
       </FullImage> */}
-      
-      
-      {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
-<BannerOne></BannerOne>
-<Menu _toggleFilterHandler={_toggleFilterHandler } filters={filters}></Menu>
-{/* <FullImage heightmobile="max-content" padding="0" height="max-content" url="media/website/travel-min.png" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
+
+       {/* <div className='hidden-desktop'><Enquiry></Enquiry></div> */}
+       <BannerOne></BannerOne>
+       <Menu
+         _toggleFilterHandler={_toggleFilterHandler}
+         filters={filters}
+       ></Menu>
+       {/* <FullImage heightmobile="max-content" padding="0" height="max-content" url="media/website/travel-min.png" filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  >
           <Republic></Republic>
       </FullImage> */}
-<SetWidthContainer>
-  <div id="holi"></div>
-<Heading align="center" aligndesktop="left" margin={!isPageWide  ? "2.5rem 0.5rem" : "2.5rem 0rem"} bold noline>Recommended trips for you</Heading>
-{/* {!loading ? <GridContainer>
+       <SetWidthContainer>
+         <div id="holi"></div>
+         <Heading
+           align="center"
+           aligndesktop="left"
+           margin={!isPageWide ? "2.5rem 0.5rem" : "2.5rem 0rem"}
+           bold
+           noline
+         >
+           Recommended trips for you
+         </Heading>
+         {/* {!loading ? <GridContainer>
     
     { itinerariesJSX}
     
  
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   } */}
-  {!loading ? <GridContainer>
-    
-    { itinerariesJSX}
-
- 
-  </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
-  }
-      {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
+         {!loading ? (
+           <GridContainer>{itinerariesJSX}</GridContainer>
+         ) : (
+           <MinHeightContainer className="center-div">
+             <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />{" "}
+           </MinHeightContainer>
+         )}
+         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Selling Experiences</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Top Selling Experiences"]} ></Experiences>
         <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Customer Tales</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Customer Tales"]} pastitinerary></Experiences>
  */}
-</SetWidthContainer>
-    {/* <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner> */}
-      <SetWidthContainer id="link">
-         <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading>
-        {/* <div style={{width: '100%' , position: 'relative', paddingBottom:  '56.25%', height: '0'}}>
+       </SetWidthContainer>
+       {/* <DesktopBanner loading={desktopBannerLoading} onclick={_handleTailoredClick} text="Want to personalize your own experience?"></DesktopBanner> */}
+       <SetWidthContainer id="link">
+         <Heading
+           align="center"
+           aligndesktop="center"
+           margin={!isPageWide ? "2.5rem 0.5rem" : "4rem"}
+           thincaps
+         >
+           HOW IT WORKS?
+         </Heading>
+         {/* <div style={{width: '100%' , position: 'relative', paddingBottom:  '56.25%', height: '0'}}>
           <iframe style={{position: 'relative', top: '0', left: '0', border: '0', height: '100%'}} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div> */}
-       
-        {/* <div style={{width: typeof window !== "undefined" ? window.innerWidth / 2 : '300', height:  typeof window !== "undefined"? window.innerWidth/3 : '300' ,  position: 'relative', margin: 'auto' }}> */}
+
+         {/* <div style={{width: isPageLoaded ? window.innerWidth / 2 : '300', height:  isPageLoaded? window.innerWidth/3 : '300' ,  position: 'relative', margin: 'auto' }}> */}
          {/* <div style={{width: 'max-content', margin: 'auto'}}>
-          <iframe width={typeof window != "undefined" ? Math.round(window.innerWidth*0.4) : '300'} height={typeof window != "undefined" ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>     
+          <iframe width={isPageLoaded? Math.round(window.innerWidth*0.4) : '300'} height={isPageLoaded ? Math.round(window.innerWidth * 0.3) : '300'} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>     
         </div> */}
-        {/* {typeof window !== 'undefined' ?  <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+         {/* {isPageLoaded ?  <div className="hidden-mobile" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
           <iframe width={Math.round(window.innerWidth*0.8)} height={Math.round(window.innerWidth * 0.3)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div> : null} */}
-         <VideoContainer style={{position: 'relative', display: 'block', margin: 'auto'}}>
-          <iframe style={{position: 'absolute', top: '0', left: '0', width: '100%', height: '100%'}} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
-        </VideoContainer> 
-        {/* {typeof window !== 'undefined' ? <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
+         <VideoContainer
+           style={{ position: "relative", display: "block", margin: "auto" }}
+         >
+           <iframe
+             style={{
+               position: "absolute",
+               top: "0",
+               left: "0",
+               width: "100%",
+               height: "100%",
+             }}
+             src="https://www.youtube.com/embed/NQ5aHR_HNzg"
+             title="YouTube video player"
+             frameborder="0"
+             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+             allowfullscreen
+           ></iframe>
+         </VideoContainer>
+         {/* {isPageLoaded ? <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
           <iframe width={Math.round(window.innerWidth*0.9)} height={Math.round(window.innerWidth * 0.5)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div>:null} */}
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>What our customers say?</Heading>        
-       <Reviews></Reviews>
-        {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
+         <Heading
+           align="center"
+           aligndesktop="left"
+           margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}
+           bold
+         >
+           What our customers say?
+         </Heading>
+         <Reviews></Reviews>
+         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
-        {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
-        </SetWidthContainer>
-    <WhyUs></WhyUs>
-{/*Add Banner*/}
-  
+         {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
+       </SetWidthContainer>
+       <WhyUs></WhyUs>
+       {/*Add Banner*/}
 
-   
-    
-  
- 
-      <SetWidthContainer>
-      
-        <AsSeenIn disablelinks></AsSeenIn>
-        {/* <div className='hidden-mobile'><BannerTwo></BannerTwo></div> */}
+       <SetWidthContainer>
+         <AsSeenIn disablelinks></AsSeenIn>
 
-        <ChatWithUs></ChatWithUs>
-      </SetWidthContainer>
-<div className='hidden-desktop'>
-  {/* <FooterBannerMobile></FooterBannerMobile> */}
-</div>
- 
-    </div>
-  );
+         <ChatWithUs></ChatWithUs>
+       </SetWidthContainer>
+       <div className="hidden-desktop">
+         {/* <FooterBannerMobile></FooterBannerMobile> */}
+       </div>
+     </div>
+   );
 }
 
 

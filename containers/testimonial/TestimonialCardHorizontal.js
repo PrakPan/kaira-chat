@@ -1,8 +1,5 @@
 import React from 'react';
 import styled from 'styled-components'
-// import img from '../../assets//Dieter Arnold.png';
-import theme from '../../Themes';
-
 const HorizontalTestimonialCard = (props) =>{
     const Container = styled.div`
         display: grid;

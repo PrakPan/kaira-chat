@@ -5,11 +5,7 @@ import Button from '../ui/button/Index';
 import * as ga from '../../services/ga/Index';
  import { useRouter } from 'next/router';
 import ImageLoader from '../ImageLoader';
-/* Grid (desktop) / slideshow (mobile)
-    inputs: images, content (JSX array), headings (JSX array)
-    used: homepage, travel support
-*/
-
+import openTailoredModal from '../../services/openTailoredModal';
 const Container = styled.div`
 margin-top : -50px;
     @media screen and (min-width: 768px){
@@ -55,10 +51,11 @@ margin-block : 15px;
     
     
 const HowItWorksSlideshow = (props) =>{
-    const router=useRouter();
+    const router = useRouter();
+    const [slideSelected, setSlideSelected] = useState(0);
+    
     let isPageWide = media('(min-width: 768px)');    
     let touchstart = null;
-    const [slideSelected, setSlideSelected] = useState(0);
     const _prevSlideHandler = (val) => {
 
         if(!(slideSelected === 0))
@@ -157,33 +154,25 @@ const HowItWorksSlideshow = (props) =>{
 
     
     ]
-    // if(!isPageWide )
-    const [loading, setLoading] = useState(false);
-
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-      }
-      const _handleTailoredClick = () => {
-        setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Howitworks',
-          
-          callback: _handleTailoredRedirect,
-        })
-      
-      }
-    return(
-    <div>
-        <Container>
-            {slidesdesktop}
-        </Container>
-        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem' padding="0.5rem 2rem" borderWidth="1px">
-            {isPageWide? 'Create your free itinerary' :'Start Now'}
-            {/* {loading ? <Spinner size={16}></Spinner> : null} */}
-        </Button> : null}
-        </div>
+    return (
+      <div>
+        <Container>{slidesdesktop}</Container>
+        {!props.nostart ? (
+          <Button
+            onclick={()=>openTailoredModal(router,props.page_id,props.destination)}
+            fontWeight="500"
+            boxShadow
+            borderRadius="8px"
+            bgColor="#F7E700"
+            margin="1rem auto"
+            width="20rem"
+            padding="0.5rem 2rem"
+            borderWidth="1px"
+          >
+            {isPageWide ? "Create your free itinerary" : "Start Now"}
+          </Button>
+        ) : null}
+      </div>
     );
     
 } 

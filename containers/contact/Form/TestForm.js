@@ -8,6 +8,7 @@ import axios from "axios";
 import SuccessModal from "../../../components/modals/Success";
 import FloatingInput from "../../../components/ui/input/FloatingInput";
 import DropDown from "../../../components/ui/DropDown";
+import usePageLoaded from "../../../components/custom hooks/usePageLoaded";
 const Container1 = styled.div`
   background-color: white;
   width: 100%;
@@ -43,6 +44,7 @@ const GridContainer = styled.div`
 `;
 
 export default function SignUp() {
+  const isPageLoaded = usePageLoaded();
   const DropDownQueries = [
     {
       text: "I want to enquire about travel experiences",
@@ -128,7 +130,7 @@ export default function SignUp() {
       </Heading>
       <FormContainer>
         <GridContainer>
-          {typeof window !== "undefined" ? (
+          {isPageLoaded ? (
             <FloatingInput
               height='60px'
               error={checkEmpty == "fname"}
@@ -145,7 +147,7 @@ export default function SignUp() {
             />
           ) : null}
 
-          {typeof window !== "undefined" ? (
+          {isPageLoaded ? (
             <FloatingInput
               height='60px'
               error={checkEmpty == "lname"}
@@ -162,7 +164,7 @@ export default function SignUp() {
           ) : null}
         </GridContainer>
         <GridContainer>
-          {typeof window !== "undefined" ? (
+          {isPageLoaded ? (
             <FloatingInput
               height='60px'
               error={checkEmpty == "country"}
@@ -177,7 +179,7 @@ export default function SignUp() {
               onChange={(event) => _changeDetailsHandler(event, "country")}
             />
           ) : null}
-          {typeof window !== "undefined" ? (
+          {isPageLoaded ? (
             <FloatingInput
               height='60px'
               error={checkEmpty == "mobile"}
@@ -193,7 +195,7 @@ export default function SignUp() {
             />
           ) : null}
         </GridContainer>
-        {typeof window !== "undefined" ? (
+        {isPageLoaded ? (
           <FloatingInput
               height='60px'
             error={emailFail}
@@ -208,7 +210,7 @@ export default function SignUp() {
             onChange={(event) => _changeDetailsHandler(event, "email")}
           />
         ) : null}
-        {typeof window !== "undefined" &&
+        {isPageLoaded &&
         <div>
 <DropDown 
         onChange={(e)=>_changeDetailsHandler(e, "query_type")} 
@@ -217,10 +219,11 @@ export default function SignUp() {
         height='60px'
         error={checkEmpty == "query_type"}
         helperText={"Please Select Your Interest"}
-        >{DropDownQueries.map((e,i)=><option key={i} value={e.value}>{e.text}</option>)}</DropDown>
+        >{DropDownQueries.map((e,i)=><option style={{borderBottom
+        : '1px solid #e6e6e6'}} key={i} value={e.value}>{e.text}</option>)}</DropDown>
         </div>
 }
-        {typeof window !== "undefined" ? (
+        {isPageLoaded ? (
           <FloatingInput
               height='60px'
             error={checkEmpty == "message"}

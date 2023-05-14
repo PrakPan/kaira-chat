@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import S3Icon from '../S3Icon'
 import ImageLoader from '../../../ImageLoader';
 const  Icon= (props) => {
     const Container = styled.div`

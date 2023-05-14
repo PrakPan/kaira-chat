@@ -1,6 +1,4 @@
 import styled from 'styled-components';
-// import img from '../../public/assets/contactcover.webp';
-// import Animate from '../../components/HOC/Animate';
 import BackgroundImageLoader from '../../components/UpdatedBackgroundImageLoader';
 import media from '../../components/media';
 

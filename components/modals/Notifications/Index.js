@@ -5,15 +5,11 @@ import Notification from './Notification';
 // import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index';
 import media from '../../media';
-import cross from '../../../public/assets/close.png';
 import axiosnotificationsinstance from '../../../services/user/notifications/notifications';
 import { connect } from 'react-redux';
 import ImageLoader from '../../ImageLoader';
-import Image from 'next/image';
-const Cross = styled.img`
-  float: right;
-  width: 1rem;
-`;
+import { RxCross2 } from 'react-icons/rx';
+
 const ClearAll = styled.div`
   width: max-content;
   margin: 2rem auto;
@@ -56,19 +52,7 @@ const Enquiry = (props) => {
       }
       setNotificationsArr(notificationsarr);
     }
-  }, [props.notifications]);
-
-  const _clearAllHandler = () => {
-    setNotificationsArr([]);
-    axiosnotificationsinstance
-      .delete('', {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {})
-      .catch((err) => {});
-  };
+  });
 
   const _handleClose = () => {
     props._openAllNotificationsHandler();
@@ -89,7 +73,10 @@ const Enquiry = (props) => {
             minHeight: isPageWide ? '90vh' : '95vh',
           }}
         >
-          <Cross src={cross} onClick={_handleClose} />
+          <RxCross2
+            onClick={_handleClose}
+            style={{ width: '1rem', float: 'right' }}
+          />
           <Heading
             noline
             align="center"

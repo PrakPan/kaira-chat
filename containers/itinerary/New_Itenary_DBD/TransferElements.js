@@ -12,10 +12,10 @@ import {
   TransportContainer,
   HLine,
 } from './New_itenaryStyled';
-import { convertNumToTime } from '../../../helper/convertNumToTime';
-import { formatNumber } from '../../../helper/formatNumber';
+import { convertNumToTime } from '../../../pages/helper/convertNumToTime';
+import { formatNumber } from '../../../pages/helper/formatNumber';
 import { Text } from '../../newitinerary/itineraryelements/ItineraryFoodElement';
-import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
+import { TransportIconFetcher } from '../../../pages/helper/TransportIconFetcher';
 const TransferElements = ({
   time,
   heading,

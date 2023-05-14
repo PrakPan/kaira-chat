@@ -1,9 +1,6 @@
 import Dropdown from 'react-bootstrap/Dropdown';
-// import Collapse from 'react-bootstrap/Collapse';
-import { useState } from 'react';
 
 const DropDown = (props) =>  {
-    const [open, setOpen] = useState(false);
     const _handleChange = (event) => {
          props.onclick({alternates: props.alternates,
           new_booking: props.new_booking,

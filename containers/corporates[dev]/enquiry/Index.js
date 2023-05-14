@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import styled from 'styled-components';
 import { Modal } from 'react-bootstrap';
 import TextField from '@mui/material/TextField';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import Button from '../../../components/ui/button/Index';
 import DateTime from './DateTime';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -139,7 +139,6 @@ const Enquiry = (props) => {
                   required
                   fullWidth
                   name="name"
-                  label="Your Name"
                   type="name"
                   id="name"
                   onChange={(event) => setName(event.target.value)}

@@ -1,12 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Heading from '../../../heading/Heading';
 import ImageLoader from '../../../ImageLoader';
 import Filters from './Filters';
 import Location from './Location';
 import { getHumanTime } from '../../../../services/getHumanTime';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
-import bg from '../../../../public/assets/grey.png';
+
 import Rooms from '../roomtypes/Index';
 
 const Container = styled.div`
@@ -64,11 +63,13 @@ const Cost = styled.div`
 const ImageContainer = styled.div`
   width: 100%;
   position: relative;
-  background-image: url(${bg});
+  background-image: url('https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png');
   min-height: 30vh;
   @media screen and (min-width: 768px) {
     margin: auto;
     width: 100%;
+
+    min-height: 20vh;
   }
 `;
 

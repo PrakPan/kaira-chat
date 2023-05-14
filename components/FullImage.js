@@ -10,12 +10,13 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
     height: ${(props) => (props.height ? props.height : '85vh')};
     padding: 0;
-    margin-top : 70px;
-    height: ${(props) => (props.heightmobile ? props.heightmobile : '60vh')};
-    @media screen and (min-width: 768px){
-        height: ${(props) => (props.height ? props.height : '85vh')};
-        padding: 0;
-    }
+  }
+  // margin-top : 70px;
+  height: ${(props) => (props.heightmobile ? props.heightmobile : '37rem')};
+  @media screen and (min-width: 768px) {
+    height: ${(props) => (props.height ? props.height : '85vh')};
+    padding: 0;
+  }
 
   position: relative;
 `;

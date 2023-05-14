@@ -27,7 +27,7 @@ width: 100%;
 .CardHeadingContainerLeft{
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    background-image: url("../../../public/assets/arts/Brush.png");
+    background-image: url("https://thetarzanway-web.s3.us-west-2.amazonaws.com/media/icons/values/Brush.png");
     font-weight: 600;
     width: max-content;
     margin: auto;
@@ -37,7 +37,7 @@ width: 100%;
 .CardHeadingContainerRight{
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    background-image: url("../../../public/assets/arts/Brush.png");
+    background-image: url("https://thetarzanway-web.s3.us-west-2.amazonaws.com/media/icons/values/Brush.png");
     font-weight: 600;
     width: max-content;
     margin: auto;

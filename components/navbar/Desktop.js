@@ -12,9 +12,10 @@ import Button from '../ui/button/Index';
 import Notifications from '../modals/Notifications/Index';
 import urls from '../../services/urls';
 import ImageLoader from '../ImageLoader';
-import * as ga from '../../services/ga/Index';
 import DesktopSearch from '../search/header/desktop/Index';
 import { ImSearch } from 'react-icons/im';
+import media from '../media';
+import openTailoredModal from '../../services/openTailoredModal';
 const NavItemsContainer = styled.div`
   display: none;
 
@@ -63,7 +64,6 @@ const TTWLogoContainer = styled(CenterNav)`
 `;
 
 const NavItem = styled.div`
-  font-family: http://localhost:3000/travel-supporthttp://localhost:3000/travel-supporthttp://localhost:3000/travel-support'Open Sans';
   color: white;
   padding: 1rem 0rem 0.5rem 0rem;
   @media screen and (min-width: 768px) {
@@ -96,7 +96,7 @@ const Header = styled.div`
 const CompanyName = styled.p`
 position: absolute;
     left: 30px;
-    top: 37px;
+    top: 40px;
     font-size : 14px;
 }
   &:hover{
@@ -162,27 +162,19 @@ const Search = styled.input`
 `;
 const Navbar = (props) => {
   const router = useRouter();
+  const isTablet = media('(min-width: 950px)');
 
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
 
   {
     /* toggle hamburger */
   }
-  const [
-    showDropDownProfileListMobile,
-    setShowDropDownProfileListMobile,
-  ] = useState(false);
+  const [showDropDownProfileListMobile, setShowDropDownProfileListMobile] =
+    useState(false);
   {
     /* toggle mobile profilelist */
   }
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
-  {
-    /* toggle desktop profilelist */
-  }
-  const [hideNav, setHideNav] = useState(false);
-  {
-    /* hide/show navbar on scroll */
-  }
   const [Height, setHeight] = useState(false);
 
   const toggleMobileNavItems = () => {
@@ -217,19 +209,7 @@ const Navbar = (props) => {
   const _handlePWRedirect = () => {
     router.push('/corporates/physicswallah');
   };
-  const _handleTailoredRedirect = () => {
-    router.push('/tailored-travel');
-  };
-  const _handleTailoredClick = () => {
-    // setDesktopBannerLoading(true);
-    setTimeout(_handleTailoredRedirect, 1000);
 
-    ga.callback_event({
-      action: 'TT-Header',
-
-      callback: _handleTailoredRedirect,
-    });
-  };
   const [toggleSearch, setToggleSearch] = useState(false);
   return (
     <div>
@@ -252,10 +232,11 @@ const Navbar = (props) => {
                   width="55px"
                   widthmobile="55px"
                   margin="0.5rem 0.5rem 0.5rem 2rem"
-                  url={'media/website/logoblack.svg'}
+                  url={'media/website/logo-only.svg'}
                 ></ImageLoader>
               ) : props.headerColor === 'black' ? (
                 <Link
+                  style={{ textDecoration: 'none' }}
                   href={!props.PW ? urls.HOMEPAGE : '/corporates/physicswallah'}
                 >
                   <ImageLoader
@@ -281,7 +262,7 @@ const Navbar = (props) => {
                     width="55px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={'media/website/logoblack.svg'}
+                    url={'media/website/logo-only.svg'}
                   ></ImageLoader>
                 </Link>
               )}{' '}
@@ -335,7 +316,7 @@ const Navbar = (props) => {
               <div
                 style={{
                   position: 'absolute',
-                  left: '32%',
+                  left: isTablet ? '32%' : '26%',
                   height: '100%',
                   width: '37%',
                 }}
@@ -344,7 +325,7 @@ const Navbar = (props) => {
               >
                 <TopContainer>
                   <SearchContainer>
-                    <Search placeholder="Search by destination (country, region or city)"></Search>
+                    <Search placeholder="Where do you want to go?"></Search>
                     <ImSearch
                       style={{
                         position: 'absolute',
@@ -395,7 +376,10 @@ const Navbar = (props) => {
                   margin="0 1.5rem 0 0"
                   padding="0.5rem 0.75rem"
                   onclick={
-                    props.ctaonclick ? props.ctaonclick : _handleTailoredClick
+                    props.ctaonclick
+                      ? props.ctaonclick
+                      : () =>
+                          openTailoredModal(router, props.id, props.destination)
                   }
                 >
                   Create a Trip

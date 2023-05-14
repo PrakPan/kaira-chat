@@ -9,7 +9,7 @@ import { useSticky } from '../../../hooks/useSticky';
 import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
 import ScrollableTabs from '../../../components/ScrollableTabs';
 import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
-import { convertDateFormat } from '../../../helper/ConvertDateFormat';
+import { convertDateFormat } from '../../../pages/helper/ConvertDateFormat';
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`

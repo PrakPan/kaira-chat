@@ -13,9 +13,13 @@ const Container = styled.div`
   text-align: left;
   position: absolute;
   width: 37%;
+
   top: 15px;
-  left: 32%;
   z-index: 2;
+  left: 26%;
+  @media screen and (min-width: 950px) {
+    left: 32%;
+  }
 `;
 
 const TopContainer = styled.div`
@@ -104,7 +108,7 @@ const SearchPannel = (props) => {
             onChange={_onChangeHandler}
             value={inputValue}
             className="font-lexend"
-            placeholder="Search by destination (country, region or city)"
+            placeholder="Where do you want to go?"
           ></Search>
           <ImSearch
             style={{

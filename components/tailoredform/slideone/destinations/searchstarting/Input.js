@@ -86,6 +86,7 @@ const SearchInput = (props) => {
       .catch((error) => {
         setLoading(false);
         _handleClearResults();
+        setResultsJSX([<div style={{margin : '1rem'}}>Something went wrong! Please try again later.</div>])
         // alert('Page could not be loaded. Please try again.');
       });
     
@@ -103,26 +104,36 @@ const SearchInput = (props) => {
 
 
    return (
-    <Container>
-   {props.showSearchStarting ? 
-   <div style={{display: 'flex'}}><InputContainer  onFocus={props.onfocus} onBlur={_handleBlur} placeholder='Departing from' className='font-lexend' autoFocus onChange={(e) => _getResults(e.target.value)}>
-    {/* ed */}
-    </InputContainer>
-    {loading ? <Spinner size={16} margin="0"></Spinner> : null}
-    </div>
-    : null}
-    {
-      !props.showSearchStarting && props.startingLocation ? <div className='font-lexend' onClick={_handleClearResults}>
-      {props.startingLocation.name}
-      </div> : null 
-    }
-    {resultsJSX.length && props.showSearchStarting? <ResultsContainer>
-       {loading ? [skeleton,skeleton,skeleton,skeleton,skeleton] :resultsJSX}
-    </ResultsContainer> : null}
-
-    </Container>
-
-  );
+     <Container>
+       {props.showSearchStarting ? (
+         <div style={{ display: "flex" }}>
+           <InputContainer
+             onFocus={props.onfocus}
+             onBlur={_handleBlur}
+             placeholder="Departing from"
+             className="font-lexend"
+             autoFocus
+             onChange={(e) => _getResults(e.target.value)}
+           >
+             {/* ed */}
+           </InputContainer>
+           {loading ? <Spinner size={16} margin="0"></Spinner> : null}
+         </div>
+       ) : null}
+       {!props.showSearchStarting && props.startingLocation ? (
+         <div className="font-lexend" onClick={_handleClearResults}>
+           {props.startingLocation.name}
+         </div>
+       ) : null}
+       {resultsJSX.length && props.showSearchStarting ? (
+         <ResultsContainer className="border">
+           {loading
+             ? [skeleton, skeleton, skeleton, skeleton, skeleton]
+             : resultsJSX}
+         </ResultsContainer>
+       ) : null}
+     </Container>
+   );
 }
 
 

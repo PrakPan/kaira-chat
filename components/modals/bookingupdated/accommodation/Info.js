@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../../media';

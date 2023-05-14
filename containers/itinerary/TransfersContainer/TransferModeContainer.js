@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
+import { TransportIconFetcher } from '../../../pages/helper/TransportIconFetcher';
 import ImageLoader from '../../../components/ImageLoader';
 import { format, parseISO } from 'date-fns';
 import * as ga from '../../../services/ga/Index';

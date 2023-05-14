@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import styled, { keyframes } from 'styled-components';
 // import Map from '../../public/assets/worldMap.svg';
 import MapPin from '../../public/assets/icons/map-pin-yellow.svg';
@@ -14,6 +15,13 @@ import maria from '../../public/assets/testimonials/Maria Carolina.webp';
 import raghav from '../../public/assets/testimonials/Raghav.webp';
 import shivam from '../../public/assets/testimonials/Shivam.jpg';
 import Image from 'next/image';
+=======
+import styled,{keyframes} from 'styled-components';
+import Tooltip from "react-bootstrap/Tooltip";
+import media from '../../components/media';
+import ImageLoader from '../../components/ImageLoader';
+import usePageLoaded from '../../components/custom hooks/usePageLoaded';
+>>>>>>> origin/main
 const MapSlide = keyframes`
 0% {
     margin-left: -30rem;
@@ -57,6 +65,7 @@ margin-top: 30px;
 `;
 
 const PinIcon = styled.div`
+<<<<<<< HEAD
   animation: ${MapSlide} 8s;
   animation-fill-mode: both;
   height: 2rem;
@@ -66,6 +75,21 @@ const PinIcon = styled.div`
 
   @media screen and (min-width: 768px) {
     height: 4.5rem;
+=======
+
+animation: ${MapSlide} 8s;
+animation-fill-mode: both;
+height: 4rem !important;
+position: absolute;
+transform: none;
+transform: translate(-50%, -50%);
+
+
+@media screen and (min-width: 768px){  
+    
+    
+    height: 4.5rem !important;     
+>>>>>>> origin/main
     animation: none;
     &:nth-of-type(5) {
       animation-name: ${Bounce};
@@ -95,12 +119,20 @@ const PinIcon = styled.div`
 const UserIcon = styled.div`
   animation: ${MapSlide} 8s;
   animation-fill-mode: both;
+<<<<<<< HEAD
 
   background-color: #727272;
   height: 2rem;
   width: 2rem;
   border-radius: 50%;
   overflow: hidden;
+=======
+  cursor: pointer;
+  background-color: #727272;
+  height: 2rem !important;
+  width: 2rem !important;
+  border-radius: 50%;
+>>>>>>> origin/main
   position: absolute;
   transform: translate(-50%, -50%);
   transition: all 0.2s linear;
@@ -110,8 +142,13 @@ const UserIcon = styled.div`
   }
   @media screen and (min-width: 768px) {
     animation: none;
+<<<<<<< HEAD
     height: 2.5rem;
     width: 2.5rem;
+=======
+    height: 2.5rem !important;
+    width: 2.5rem !important
+>>>>>>> origin/main
     &:nth-of-type(4) {
       animation-name: ${Bounce};
       animation-fill-mode: both;
@@ -243,6 +280,7 @@ const TooltipContainer = styled.div`
 `;
 
 const StoriesMap = () => {
+<<<<<<< HEAD
   if (typeof window === undefined) return null;
   else {
     let isPageWide = media('(min-width: 768px)');
@@ -352,11 +390,170 @@ const StoriesMap = () => {
     });
 
     if (isPageWide) {
+=======
+  const isPageLoaded = usePageLoaded()
+    if(!isPageLoaded) return null
+    else{
+    let isPageWide = media('(min-width: 768px)')
+           
+    if (isPageWide) {
+        return (
+          <div>
+            <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
+
+            <Container>
+              <PinIcon style={{ left: "86%", top: "78.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+
+              <UserIcon style={{ left: "85.8%", top: "76.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Dieter.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "59%", top: "35.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "58.8%", top: "33.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Damla.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "72.5%", top: "46.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "72.3%", top: "44.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Arnab.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "46%", top: "40.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "45.8%", top: "38.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Maria-Carolina.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "70%", top: "45.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "69.8%", top: "43.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Raghav.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+
+              <PinIcon style={{ left: "50%", top: "39.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+              <UserIcon style={{ left: "49.8%", top: "37.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Mohamed.webp"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <PinIcon style={{ left: "25%", top: "39.9%" }}>
+                <ImageLoader
+                  url={"media/icons/map-pin-yellow.svg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="72px"
+                  width="72px"
+                  widthmobile="72px"
+                />
+              </PinIcon>
+
+              <UserIcon style={{ left: "24.8%", top: "37.5%" }}>
+                <ImageLoader
+                  url={"media/testimonials/Shivam.jpg"}
+                  dimensions={{ height: 100, width: 100 }}
+                  height="40px"
+                  width="40px"
+                  widthmobile="40px"
+                  borderRadius='50%'
+                />
+              </UserIcon>
+              <MapContainer>
+                <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp" />
+              </MapContainer>
+            </Container>
+          </div>
+        );
+   
+    }
+    else {
+>>>>>>> origin/main
       return (
         <div>
           <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
 
           <Container>
+<<<<<<< HEAD
             <PinIcon style={{ left: '86%', top: '78.9%' }} src={MapPin} />
             <OverlayTrigger placement="top" overlay={Tooltip1}>
               <UserIcon style={{ left: '86%', top: '77.5%' }}>
@@ -481,6 +678,123 @@ const StoriesMap = () => {
             <UserIcon style={{ left: "16.8rem", top: "64.5%" }} src={shivam} />
         </OverlayTrigger> */}
 
+=======
+            <PinIcon style={{ left: "47.3rem", top: "40.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "47.1rem", top: "38.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Dieter.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "30rem", top: "42.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "29.8rem", top: "40.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Damla.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "35.3rem", top: "59.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "35.1rem", top: "57.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Arnab.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "5rem", top: "35.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "4.8rem", top: "33.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Maria-Carolina.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "13.7rem", top: "57.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "13.5rem", top: "55.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Raghav.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+            <PinIcon style={{ left: "16.8rem", top: "65.9%" }}>
+              <ImageLoader
+                url={"media/icons/map-pin-yellow.svg"}
+                dimensions={{ height: 100, width: 100 }}
+                height="72px"
+                width="72px"
+                widthmobile="72px"
+              />
+            </PinIcon>
+            <UserIcon style={{ left: "16.6rem", top: "63.5%" }}>
+              <ImageLoader
+                url={"media/testimonials/Mohamed.webp"}
+                dimensions={{ height: 100, width: 100 }}
+                height="40px"
+                width="40px"
+                widthmobile="40px"
+                borderRadius='50%'
+              />
+            </UserIcon>
+
+>>>>>>> origin/main
             <MapBg src="https://d31aoa0ehgvjdi.cloudfront.net/media/website/worldMap.webp" />
           </Container>
         </div>

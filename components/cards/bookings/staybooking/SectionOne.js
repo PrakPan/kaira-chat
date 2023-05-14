@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import media from '../../../media';
 
 import {IoStarSharp} from 'react-icons/io5';
-import ImageLoader from '../../../ImageLoader';
 const Container = styled.div`
 display: grid;
 grid-template-columns: auto max-content;

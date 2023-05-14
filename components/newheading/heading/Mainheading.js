@@ -1,4 +1,4 @@
-// import { red } from "@material-ui/core/colors";
+// import { red } from "@mui/material/colors";
 import React, { useState } from "react";
 import styled from "styled-components";
 
@@ -25,9 +25,9 @@ const Mainheadingstyle = styled.div`
     props.letterSpacing ? props.letterSpacing : "1"};
 
   text-align: ${(props) => (props.textAlign ? props.textAlign : "center")};
-  @media screen and (max-width:768px) {
-    color: ${(props) => (props.color ? props.color : "black")}; 
-    margin: ${(props)=>(props.noline ? "0" :"0 auto 0.5rem auto") };
+  @media screen and (max-width: 768px) {
+    color: ${(props) => (props.color ? props.color : "black")};
+    margin: ${(props) => (props.noline ? "0" : "0 auto 0.5rem auto")};
   }
   @media screen and (min-width: 768px) {
     max-width: ${(props) => (props.maxWidth ? props.maxWidth : "100%")};
@@ -48,8 +48,6 @@ const Mainheadingstyle = styled.div`
     max-width: ${(props) => (props.maxWidth ? props.maxWidth : "100%")};
     width: ${(props) => (props.width ? props.width : "max-content")};
     //
-  
-    
   }
 `;
 

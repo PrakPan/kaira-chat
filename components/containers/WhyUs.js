@@ -1,14 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
-// import img from '../../public/assets/arts/whyus/whyus1.svg';
-// import img2 from '../../public/assets/arts/whyus/whyus2.svg';
-// import img3 from '../../public/assets/arts/whyus/whyus3.svg';
 import media from '../media';
 import Button from '../ui/button/Index';
-import urls from '../../services/urls';
 import * as ga from '../../services/ga/Index';
 import { useRouter } from 'next/router';
 import ImageLoader from '../ImageLoader';
+import openTailoredModal from '../../services/openTailoredModal';
 
 const GridContainer = styled.div`
     display: grid !important;
@@ -22,20 +19,6 @@ const GridContainer = styled.div`
 const WhyUs = (props) =>{
     let isPageWide = media('(min-width: 768px)')
 const router=useRouter();
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-      }
-      const _handleTailoredClick = () => {
-        // setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Howitworks',
-          
-          callback: _handleTailoredRedirect,
-        })
-      
-      }
 
     return(
     <div><GridContainer className='hidden-desktop'>
@@ -97,7 +80,7 @@ const router=useRouter();
     </div>
 
     </GridContainer>
-    <Button onclick={_handleTailoredClick} onclickparams={null} margin="0 auto 2rem auto" padding='0.5rem 1.5rem' borderRadius="2rem">Start planning</Button>
+    <Button onclick={()=>openTailoredModal(router)} onclickparams={null} margin="0 auto 2rem auto" padding='0.5rem 1.5rem' borderRadius="2rem">Start planning</Button>
 
     </div>
     );

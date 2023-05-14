@@ -1,15 +1,14 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react';
-import { Button } from '@mui/material';
-import Button1 from '../Button';
-import { TextField } from '@mui/material';
-import { Grid } from '@mui/material';
-
-import { connect } from 'react-redux';
-import * as authaction from '../../store/actions/auth';
-import * as otpaction from '../../store/actions/getOtp';
-import axios from 'axios';
-import styled from 'styled-components';
-import theme from '../../public/Themes';
+import React, { useState, useEffect, Fragment, useRef } from "react";
+import Button from "@mui/material/Button";
+import Button1 from "../Button";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import { makeStyles } from "@mui/styles";
+import { connect } from "react-redux";
+import * as authaction from "../../store/actions/auth";
+import * as otpaction from "../../store/actions/getOtp";
+import axios from "axios";
+import styled from "styled-components";
 
 const UpdatePhone = (props) => {
   return (

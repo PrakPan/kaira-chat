@@ -4,6 +4,7 @@ import media from '../../../media';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import usePageLoaded from '../../../custom hooks/usePageLoaded';
 
 const Container = styled.div`
   background-color: white;
@@ -13,11 +14,9 @@ const Container = styled.div`
   margin: 0 auto 0 auto;
   height: 6vh;
 `;
-const SearchText = styled.span`
-  opacity: 0.7;
-`;
 const MobileBar = (props) => {
   let isPageWide = media('(min-width: 768px)');
+  const isPageLoaded = usePageLoaded();
 
   return (
     <Container
@@ -26,7 +25,7 @@ const MobileBar = (props) => {
       style={{ visibility: props.hidden ? 'hidden' : 'visible' }}
     >
       <SearchText className="font-lexend">
-        {typeof window !== 'undefined' ? (
+        {isPageLoaded ? (
           <FontAwesomeIcon
             icon={faSearch}
             style={{ fontSize: '1rem', margin: '0 0.5rem 0 0' }}

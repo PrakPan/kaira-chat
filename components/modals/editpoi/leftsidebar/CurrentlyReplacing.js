@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faFontAwesomeLogoFull} from '@fortawesome/free-solid-svg-icons';
 import media from '../../../media';
-import cross from '../../../../public/assets/icons/navigation/close.svg';
 import {BiTimeFive} from 'react-icons/bi'
 const Container  = styled.div`
 bottom: 0;

@@ -22,20 +22,17 @@ import Banner from './banner/Mobile';
 import Locations from '../../components/containers/plannerlocations/Index';
 import FullImgContent from './search/SearchFullImgContent';
 // import FullImgContentChristmas from './search/Christmas';
-import PersonaliseBox from '../../components/containers/Personalise';
 import Button from '../../components/ui/button/Index';
-// import howitworksimg1 from '../../public/assets/arts/whyus/1.webp';
-// import howitworksimg2 from '../../public/assets/arts/whyus/2.webp';
-// import howitworksimg3 from '../../public/assets/arts/whyus/3.webp';
 import media from '../../components/media';
 import * as ga from '../../services/ga/Index';
 import urls from '../../services/urls';
-import PLANNER_PAGES from '../../public/content/planner';
 import CaseStudies from '../travelplanner/CaseStudies/Index';
 import WhatsappFloating from '../../components/WhatsappFloating';
 import PlanAsPerTheme from './PlanAsPerTheme';
 import PlanWithUs from '../../components/WhyPlanWithUs/Index';
+import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
 import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
+import openTailoredModal from '../../services/openTailoredModal';
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -75,6 +72,8 @@ const Homepage = (props) => {
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+
   let isPageWide = media('(min-width: 768px)');
   useEffect(() => {
     if (props.token) {
@@ -159,26 +158,8 @@ const Homepage = (props) => {
   ];
 
   const router = useRouter();
-
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [experienceMore, setExperieceMore] = useState(false);
-
-  // const _handleExperiencesRedirect = (e) => {
-  //     router.push('/travel-experiences')
-  // }
-  const _handleTailoredRedirect = () => {
-    router.push('/tailored-travel');
-  };
-  const _handleTailoredClick = () => {
-    setDesktopBannerLoading(true);
-    setTimeout(_handleTailoredRedirect, 1000);
-
-    ga.callback_event({
-      action: 'TT-Desktopbanner',
-
-      callback: _handleTailoredRedirect,
-    });
-  };
 
   const _handleExperiencesRedirect = () => {
     router.push(urls.travel_experiences.BASE);
@@ -204,26 +185,34 @@ const Homepage = (props) => {
       style={{ visibility: props.hidden ? 'hidden' : 'visible' }}
     >
       {/* <Snowflakes></Snowflakes> */}
-      <FullImage
-        filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
-        fit="contain"
-        center
-        url="media/website/Home (1).png"
-        height="85vh"
-        heightmobile="60vh"
-      >
-        <FullImgContent
-          _handleTailoredClick={_handleTailoredClick}
-          tagline="Explore different realities."
-          text="Find an immersive experience or craft one yourself."
-        />
-      </FullImage>
+
+      {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
+       <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
+      </FullImage> */}
+
+      <HeroBanner
+        image={
+          isPageWide
+            ? 'media/website/homepage-herobanner.jpg'
+            : 'media/website/homepage-banner-mobile.png'
+        }
+        destinationType={'city-planner'}
+        title={
+          <p>
+            Travel planning a chore,
+            <br />
+            Let our AI Explore.
+          </p>
+        }
+        _startPlanningFunction={() => openTailoredModal(router)}
+      />
+
       <div
         style={{ zIndex: '1', backgroundColor: 'white', position: 'relative' }}
       >
         <DesktopBanner
           loading={desktopBannerLoading}
-          onclick={_handleTailoredClick}
+          onclick={() => openTailoredModal(router)}
           text="Want to personalize your own experience?"
         ></DesktopBanner>
 
@@ -272,7 +261,7 @@ const Homepage = (props) => {
                 onclickparams={null}
                 borderWidth="1px"
                 fontSizeDesktop="12px"
-                fontWeight="600"
+                fontWeight="500"
                 borderRadius="6px"
                 margin="1.5rem auto"
                 padding="0.5rem 2rem"
@@ -284,21 +273,24 @@ const Homepage = (props) => {
         </SetWidthContainer>
 
         <SetWidthContainer style={{}}>
-          <Heading
-            noline
-            textAlign="left"
-            fontSize={isPageWide ? '32px' : '24px'}
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
-            }
-            bold
-          >
-            Plan as per the best destinations
-          </Heading>
-
-          <Locations locations={PLANNER_PAGES} viewall></Locations>
+          {props.locations && props.locations.length ? (
+            <>
+              <Heading
+                noline
+                textAlign="left"
+                fontSize={isPageWide ? '32px' : '24px'}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
+                }
+                bold
+              >
+                Plan as per the best destinations
+              </Heading>
+              <Locations locations={props.locations} viewall></Locations>
+            </>
+          ) : null}
 
           {props.ThemeData && props.ThemeData.length ? (
             <>
@@ -350,10 +342,6 @@ const Homepage = (props) => {
           <CaseStudies></CaseStudies>
         </SetWidthContainer>
 
-        <div className="hidden-desktop">
-          <PersonaliseBox></PersonaliseBox>
-        </div>
-
         <SetWidthContainer>
           {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
           {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
@@ -363,14 +351,17 @@ const Homepage = (props) => {
 
         <br></br>
         {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-        <div className="hidden-desktop">
-          <Banner
-            text="Want to craft your own travel experience?"
-            buttontext="Start Now"
-            color="black"
-            buttonbgcolor="#f7e700"
-          ></Banner>
-        </div>
+        {!isPageWide && (
+          <div>
+            <Banner
+              onclick={() => openTailoredModal(router)}
+              text="Want to craft your own travel experience?"
+              buttontext="Start Now"
+              color="black"
+              buttonbgcolor="#f7e700"
+            ></Banner>
+          </div>
+        )}
         {/* <Chatbot history={props.history}/>     */}
       </div>
       <WhatsappFloating message="Hey, I need help planning my trip." />

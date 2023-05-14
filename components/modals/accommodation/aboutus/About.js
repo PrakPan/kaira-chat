@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -46,9 +46,9 @@ const Container = styled.div`
     `;
 const Overview = (props) => {
     const [showMore, setShowMore ] = useState(false);
-    useEffect(() => {
+    // useEffect(() => {
     //    if(props.short_description.length > 250) setShowMore(true)
-      }, [props.short_description]);
+    //   }, [props.short_description]);
     
 
   return(

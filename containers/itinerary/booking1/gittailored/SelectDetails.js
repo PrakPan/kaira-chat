@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import ImageLoader from '../../../components/ImageLoader';
 import SelectDate from './SelectDate';
 import SelectPax from './SelectPax';
-import { Grid } from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 const SelectDetails = (props) => {
   return (

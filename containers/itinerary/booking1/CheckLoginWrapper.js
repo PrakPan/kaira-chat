@@ -46,7 +46,6 @@ const IndexWrapper = (props) => {
 
   const [booking, setBooking] = useState();
   const [payment, setPayment] = useState();
-
   if (!props.no_bookings) {
     if (true)
       return (

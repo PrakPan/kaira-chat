@@ -51,12 +51,12 @@ const _handleCTA = () => {
     router.push('/travel-guide/city/'+props.cta)
 
 }
-const _handlePlanning = () => {
-    // localStorage.setItem('search_city_selected_id', props.id);
-    // localStorage.setItem('search_city_selected_name', props.title);
-    // localStorage.setItem('search_city_selected_parent', props.parent);
-    router.push('/tailored-travel?search_text='+props.title)
-}
+const _handlePlanning = (id, name) => {
+  // localStorage.setItem('search_city_selected_id', props.id);
+  // localStorage.setItem('search_city_selected_name', props.title);
+  // localStorage.setItem('search_city_selected_parent', props.parent);
+  openTailoredModal(router, id, name);
+};
     return(
         <Container>
         <div >
@@ -64,7 +64,7 @@ const _handlePlanning = () => {
             <p style={{opacity : "0.5", fontSize: "0.75rem", margin: "0"}} className="font-nuniti" onClick={_handleCTA}>{props.type.toUpperCase()}</p>
         </div>
         <div className="center-div">
-            <CTA className="font-nunito" onClick={_handlePlanning}>Start Planning</CTA>
+            <CTA className="font-nunito" onClick={()=>_handlePlanning(props.id , props.title)}>Start Planning</CTA>
         </div>
         </Container> 
     );

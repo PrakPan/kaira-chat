@@ -8,7 +8,6 @@ import Spinner from '../Spinner';
 import styled from 'styled-components';
 import extensions from '../../public/content/extensionsdata';
 import Link from 'next/link';
-import google from '../../public/assets/icons/google.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GoogleLogin from 'react-google-login';
 import CountryCodeDropdown from './CountryDropdown';
@@ -17,7 +16,10 @@ import { ImCheckboxUnchecked, ImCheckboxChecked } from 'react-icons/im';
 import OTPInput from 'react-otp-input';
 import FloatingInput from '../ui/input/FloatingInput';
 import { BiError } from 'react-icons/bi';
-import LoginLoadingIcon from '../ui/LoadingLoginIcon';
+import LoginLoadingIcon from '../ui/LoadingLottie';
+import Image from 'next/image';
+import ImageLoader from '../ImageLoader';
+import media from '../media';
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -30,7 +32,7 @@ const WhatsappCheckBox = styled.div`
   line-height: 16px;
   display: flex;
   gap: 0.3rem;
-  margin-block: 0.7rem 1rem;
+  margin-block: 1rem 1rem;
   align-items: center;
 `;
 
@@ -90,7 +92,7 @@ var userDetails = {
   userName: '',
   email: '',
 };
-const CountryImg = styled.img`
+const CountryImg = styled(Image)`
   height: 1.5rem;
 `;
 const UpdatePhone = styled.p`
@@ -124,7 +126,12 @@ const CountryCodeOption = styled.div`
 `;
 
 const LogIn = (props) => {
-  if (props.loadingsocial) return <LoginLoadingIcon />;
+  if (props.loadingsocial)
+    return (
+      <div style={{ height: '27.25rem', width: '100%', display: 'flex' }}>
+        <LoginLoadingIcon width={'7rem'} />
+      </div>
+    );
 
   const mobileRef = useRef();
   const [mobile, setMobile] = useState('+91');
@@ -176,6 +183,9 @@ const LogIn = (props) => {
         }}
       >
         <CountryImg
+          height="29"
+          width="29"
+          objectFit="cover"
           src={extensions[country].img}
           onClick={() => handleExtensionChangeOption(country)}
         ></CountryImg>
@@ -355,6 +365,7 @@ const LogIn = (props) => {
 
   const googleResponse = (response) => {};
   // if(!props.loadingsocial)
+  let isPageWide = media('(min-width: 768px)');
 
   return (
     <div className="font-lexend">
@@ -363,7 +374,9 @@ const LogIn = (props) => {
           style={{
             fontSize: '24px',
             textAlign: 'left',
-            margin: '1rem 0rem 1rem 0.5rem ',
+            margin: isPageWide
+              ? '1.2rem 0rem 1.2rem 0.5rem'
+              : '0rem 0rem 1rem 0.5rem',
             fontWeight: '700',
           }}
           className="font-lexend"
@@ -391,7 +404,12 @@ const LogIn = (props) => {
                 onClick={() => setOpenCountryCodeOption(true)}
               >
                 {/* {extension} */}
-                <CountryImg src={extensions[extension].img}></CountryImg>
+                <CountryImg
+                  height="29"
+                  width="29"
+                  objectFit="cover"
+                  src={extensions[extension].img}
+                ></CountryImg>
 
                 <p>{extensions[extension].label} </p>
                 <FiChevronDown />
@@ -445,7 +463,12 @@ const LogIn = (props) => {
                 onClick={() => setOpenCountryCodeOption(true)}
               >
                 {/* {extension} */}
-                <CountryImg src={extensions[extension].img}></CountryImg>
+                <CountryImg
+                  height="29"
+                  width="29"
+                  objectFit="cover"
+                  src={extensions[extension].img}
+                ></CountryImg>
 
                 <p>{extensions[extension].label} </p>
                 <FiChevronDown />
@@ -572,7 +595,12 @@ const LogIn = (props) => {
               ) : null}
             </button>
           )}
-          <div style={{ position: 'relative', marginBlock: '2rem' }}>
+          <div
+            style={{
+              position: 'relative',
+              marginBlock: isPageWide ? '3rem' : '2rem',
+            }}
+          >
             <hr></hr>
             <p
               style={{
@@ -611,21 +639,39 @@ const LogIn = (props) => {
                     boxShadow="0px 2px 0px #ECEAEA"
                     borderRadius="8px"
                   >
-                    <img
-                      src={google}
-                      style={{ height: '1.5rem', margin: '0 0.5rem' }}
-                    ></img>
-                    <p
+                    <div
                       style={{
-                        margin: '0',
-                        fontWeight: '500',
-                        fontSize: '1rem',
-                        display: 'inline',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                       }}
-                      className="font-lexend"
                     >
-                      Sign in with Google
-                    </p>
+                      <div
+                        style={{
+                          height: '1.5rem',
+                          width: '1.5rem',
+                          margin: '0 0.5rem',
+                        }}
+                      >
+                        <ImageLoader
+                          dimensions={{ height: 100, width: 100 }}
+                          url={'media/icons/login/google.svg'}
+                          height="1.5rem"
+                          width="1.5rem"
+                        />
+                      </div>
+                      <p
+                        style={{
+                          margin: '0',
+                          fontWeight: '500',
+                          fontSize: '1rem',
+                          display: 'inline',
+                        }}
+                        className="font-lexend"
+                      >
+                        Sign in with Google
+                      </p>
+                    </div>
                     {/* {props.loadingsocial ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null} */}
                   </Button>
                 )}
@@ -655,18 +701,17 @@ const LogIn = (props) => {
         </Grid> */}
           </>
           <div
-            className="text-center font-nuntio"
+            className="text-center font-lexend"
             style={{ fontSize: '12px', fontWeight: '300', margin: '1.5rem 0' }}
           >
             By signing up you are agreeing with our{' '}
             <Link
               href="/privacy-policy"
               style={{ textDecoration: 'none' }}
-              passHref
               target="_blank"
-              style={{ color: 'black' }}
             >
-              T&Cs and privacy policy{' '}
+              {/* <a style={{ color: "black" }} target="_blank"> */}
+              T&Cs and privacy policy {/* </a> */}
             </Link>
           </div>
         </form>

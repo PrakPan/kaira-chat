@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import BackroundImageLoader from '../../UpdatedBackgroundImageLoader';
 import media from '../../media';
 import ImageLoader from '../../ImageLoader';
 import { useRouter } from 'next/router';

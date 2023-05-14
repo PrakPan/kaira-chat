@@ -1,11 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
- import Pax from './Pax';
-  import Cost from './Cost';
-     import ImageLoader from '../../../ImageLoader';
-    import Button from '../../../ui/button/Index';
-    import urls from '../../../../services/urls';
-import { useRouter } from 'next/router';
 const Container = styled.div`
  
 
@@ -39,11 +33,6 @@ const TourType = styled.p`
 
 `;
 const Info = (props) => {
-  const router=useRouter();
- const _handleRedirect = () => {
-  if(props.PW) router.push('/itinerary/physicswallah/'+props.id);
-  else router.push('/itinerary/'+props.id)
- }
 
  let LOCATIONS_TO_SHOW = "";
       if(props.locations){

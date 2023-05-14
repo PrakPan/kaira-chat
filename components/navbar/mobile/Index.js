@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Drawer } from '@mui/material';
+import Drawer from '../../ui/Drawer';
 import Link from 'next/link';
-import { CgMenuLeftAlt } from 'react-icons/cg';
 import { useRouter } from 'next/router';
 import LoggedInMenu from './LoggedIn';
 import * as authaction from '../../../store/actions/auth';
@@ -12,23 +11,23 @@ import * as logout from '../../../store/actions/logout';
 import Notifications from '../../modals/Notifications/Index';
 import SearchMobile from '../../search/homepage/mobile/Index';
 import { FaSearch } from 'react-icons/fa';
+import openTailoredModal from '../../../services/openTailoredModal';
+import usePageLoaded from '../../custom hooks/usePageLoaded';
 const Container = styled.div`
-background-color: white;
-padding: 0 5vw;
-position: ${(props) => (!props.fixedC ? 'fixed !important;' : 'inherit')};
+  background-color: white;
+  padding: 0 5vw;
+  position: fixed !important;
+  top: 0 !important;
+  width: 100vw;
+  height: 72px;
+  z-index: 1500;
+  // display: grid;
+  // grid-template-columns: ${(props) =>
+    props.hidecta ? '0.1fr 1fr 0.1fr' : '0.3fr 1fr 1.5fr'} ;
 
-top: 0 !important;
-width: 100vw;
-height: 72px;
-z-index: 1500;
-// display: grid;
-// grid-template-columns: ${(props) =>
-  props.hidecta ? '0.1fr 1fr 0.1fr' : '0.3fr 1fr 1.5fr'} ;
-
-display : flex;
-justify-content : space-between;
-box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
-
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
 `;
 
 const DrawerContainer = styled.div`
@@ -47,9 +46,9 @@ const ListItem = styled.div`
   display: flex;
   gap: 13px;
   align-items: center;
-  font-family: lexend;
+  font-family: Poppins;
 `;
-const StyledLink = styled.a`
+const StyledLink = styled(Link)`
   text-decoration: none;
   font-style: normal;
   font-weight: 500;
@@ -70,14 +69,6 @@ const Cross = styled.img`
   width: 1.5rem;
   margin: 1rem;
 `;
-const IconContainer = styled.div`
-  background: #f0f0f0;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-`;
 const RedDot = styled.div`
   width: 1rem;
   padding: 0.15rem 0.25rem;
@@ -96,10 +87,14 @@ const RedDot = styled.div`
 
 const CompanyName = styled.div`
   position: absolute;
-  left: 34px;
-  top: 23px;
+  left: 33px;
+  top: 18px;
   font-size: 14px;
   font-weight: 600;
+  @media screen and (min-width: 768px) {
+    left: 34px;
+    top: 23px;
+  }
 `;
 const Heading = styled.p`
   // font-family: 'Poppins';
@@ -113,24 +108,41 @@ const Heading = styled.p`
   padding-inline: 1rem;
 `;
 
+const HamburgerIcon = (
+  <div style={{ opacity: 0.9 }}>
+    <div
+      style={{
+        borderBottom: '2px solid',
+        width: '1.7rem',
+        marginBottom: '0.3rem',
+      }}
+    ></div>
+    <div
+      style={{
+        borderBottom: '2px solid',
+        width: '1rem',
+        marginBottom: '0.3rem',
+      }}
+    ></div>
+    <div style={{ borderBottom: '2px solid', width: '1.2rem' }}></div>
+  </div>
+);
+
 const Mobile = (props) => {
+  const isPageLoaded = usePageLoaded();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
-  const [currentPage, setCurrentPage] = useState('');
   const _handleNotifications = () => {
     setToggleMenu(false);
     setShowNotifications(true);
   };
-  const router = useRouter();
-  useEffect(() => {
-    const currentRoute = router.asPath.split('/')[1];
-    setCurrentPage(currentRoute);
 
+  useEffect(() => {
     setShowLogo(true);
   }, []);
-
+  const router = useRouter();
   const _handleLogin = () => {
     setToggleMenu(false);
     props.authShowLogin();
@@ -170,7 +182,7 @@ const Mobile = (props) => {
     },
     {
       type: 'main',
-      link: '/tailored-travel',
+      onclick: () => openTailoredModal(router),
       text: 'Tailor-made travel',
       icon: 'media/icons/navigation/page.png',
     },
@@ -209,25 +221,30 @@ const Mobile = (props) => {
               url={e.icon}
               height="20px"
               width="20px"
-              dimensions={{ height: 20, width: 20 }}
+              dimensions={{ height: 50, width: 50 }}
+              dimensionsMobile={{ height: 50, width: 50 }}
               widthmobile="20px"
             />
           )}
           {e.link && (
-            <Link href={e.link} className="next-link" passHref={true}>
-              <StyledLink>{e.text}</StyledLink>
-            </Link>
+            <StyledLink
+              style={{ textDecoration: 'none' }}
+              href={e.link}
+              className="next-link"
+              passHref={true}
+            >
+              {e.text}
+            </StyledLink>
           )}
-          {e.onclick && <StyledLink onClick={e.onclick}>{e.text}</StyledLink>}
+          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
         </ListItem>
       );
   });
 
-  const OtherLinksDiv = LinksArr.map((e, index) => {
+  const OtherLinksDiv = LinksArr.map((e) => {
     if (e.type == 'others')
       return (
         <ListItem
-          key={index}
           onClick={e.onclick && e.onclick}
           style={
             router.pathname === e.link ? { backgroundColor: '#ffff4a45' } : {}
@@ -239,16 +256,22 @@ const Mobile = (props) => {
               url={e.icon}
               height="20px"
               width="20px"
-              dimensions={{ height: 20, width: 20 }}
+              dimensions={{ height: 50, width: 50 }}
+              dimensionsMobile={{ height: 50, width: 50 }}
               widthmobile="20px"
             />
           )}
           {e.link && (
-            <Link href={e.link} className="next-link" passHref={true}>
-              <StyledLink>{e.text}</StyledLink>
-            </Link>
+            <StyledLink
+              style={{ textDecoration: 'none' }}
+              href={e.link}
+              className="next-link"
+              passHref={true}
+            >
+              {e.text}
+            </StyledLink>
           )}
-          {e.onclick && <StyledLink onClick={e.onclick}>{e.text}</StyledLink>}
+          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
         </ListItem>
       );
   });
@@ -256,7 +279,6 @@ const Mobile = (props) => {
   return (
     <div key={props.notOpenCount}>
       <Container
-        fixedC={currentPage == 'itinerary'}
         hidecta={props.hidecta}
         style={{
           backgroundColor:
@@ -273,39 +295,42 @@ const Mobile = (props) => {
           {props.notifications.length && props.notOpenCount ? (
             <RedDot className="center-div ">{props.notOpenCount}</RedDot>
           ) : null}
-          {typeof window !== 'undefined' ? (
-            <div>
-              <CgMenuLeftAlt
-                style={{ fontSize: '1.5rem', fontWeight: '900' }}
-                onClick={() => setToggleMenu(!toggleMenu)}
-              />
+          {isPageLoaded ? (
+            <div onClick={() => setToggleMenu(!toggleMenu)}>
+              {HamburgerIcon}
             </div>
           ) : null}
         </div>
 
-        <div
-          style={{
-            position: 'relative',
-            marginLeft: '-20%',
-            marginBlock: 'auto',
-          }}
-        >
-          {showLogo && (
-            <Link href={!props.PW ? '/' : '/corporates/physicswallah'}>
+        {showLogo ? (
+          <div
+            style={{
+              position: 'relative',
+              marginLeft: '-20%',
+              marginBlock: 'auto',
+            }}
+            onClick={_handleHomepageRedirect}
+          >
+            <StyledLink
+              href={!props.PW ? '/' : '/corporates/physicswallah'}
+              style={{ textDecoration: 'none' }}
+            >
               <ImageLoader
-                dimensions={{ width: 200, height: 200 }}
-                dimensionsMobile={{ width: 200, height: 200 }}
+                dimensions={{ width: 122, height: 100 }}
+                dimensionsMobile={{ width: 122, height: 100 }}
                 hoverpointer
                 onclick={_handleHomepageRedirect}
                 width="3rem"
                 leftalign
-                widthmobile="55px"
-                url={'media/website/logoblack.svg'}
+                widthmobile="52px"
+                url={'media/website/logo-only.svg'}
               ></ImageLoader>
-            </Link>
-          )}
-          {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
-        </div>
+            </StyledLink>
+            {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
+          </div>
+        ) : (
+          <div></div>
+        )}
         {!props.hidecta ? (
           <div
             style={{
@@ -327,7 +352,7 @@ const Mobile = (props) => {
 
         <Drawer
           anchor="left"
-          open={toggleMenu}
+          show={toggleMenu}
           onClose={() => setToggleMenu(false)}
           className="mobile-header-menu"
           width="250px"
@@ -360,11 +385,12 @@ const Mobile = (props) => {
                       url={'media/icons/navigation/logout.png'}
                       height="20px"
                       width="20px"
-                      dimensions={{ height: 20, width: 20 }}
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
                       widthmobile="20px"
                     />
                   }
-                  <StyledLink>Logout</StyledLink>
+                  <div>Logout</div>
                 </ListItem>
               )}
             </ListContainer>

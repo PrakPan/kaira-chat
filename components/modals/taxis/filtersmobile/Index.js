@@ -3,7 +3,8 @@ import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Pannel from './Pannel';
 import styled from 'styled-components';
-import { Tabs, Tab } from '@mui/material';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 const FiltersContainer = styled.div`
   display: flex;

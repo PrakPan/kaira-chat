@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { AiFillStar } from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
-import { cutSentence } from '../../../helper/cutSentence';
+import { cutSentence } from '../../../pages/helper/cutSentence';
 const Container = styled.div`
   display: grid;
   grid-template-columns: 1.3fr 2.5fr;

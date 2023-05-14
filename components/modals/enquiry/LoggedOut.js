@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index';
 import styled, { keyframes } from 'styled-components';
-import { TextField } from '@mui/material';
+import TextField from '@mui/material/TextField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons';

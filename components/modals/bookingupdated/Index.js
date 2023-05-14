@@ -18,7 +18,7 @@ import LogInModal from '../Login';
 import AccommodationSelected from './new-accommodation-selected/Index';
 import SectionOne from './SectionOne';
 import SectionTwo from './SectionTwo';
-import gif from '../../../public/assets/loader.gif';
+import LoadingLottie from '../../ui/LoadingLottie';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 

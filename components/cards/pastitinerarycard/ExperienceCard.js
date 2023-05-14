@@ -1,16 +1,14 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import ImageGallery from './slider/ImageSlider';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faMapMarkerAlt, faCog, faCalendarWeek, faTags, faCoins, faRupeeSign, faStar, faStarHalf} from '@fortawesome/free-solid-svg-icons';
 import Button from '../../ui/button/Index';
-// import Link from 'next/link';
 import media from '../../media';
 import { useRouter } from 'next/router';
-// import { getIndianPrice } from '../../../services/getIndianPrice';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index'
 import Spinner from '../../Spinner'; 
+import openTailoredModal from '../../../services/openTailoredModal';
+import usePageLoaded from '../../custom hooks/usePageLoaded';
 const Container = styled.div`
 width: 100%;
 background-color: white;
@@ -82,11 +80,14 @@ box-sizing: border-box;
 }
 `;
  
-const ExperienceCard= (props) => {
-    let isPageWide = media('(min-width: 768px)')
+const ExperienceCard = (props) => {
+  const [loadingItinerary, setLoadingItinerary] = useState(false);
+  const [loadingPlanning, setLoadingPlanning] = useState(false);
+const router = useRouter();
+
+  const isPageLoaded = usePageLoaded();
  
 
-const router = useRouter();
 
 let textstr = "";  
 if(!isPageWide ){ //change to less than 400
@@ -97,18 +98,13 @@ else if(!isPageWide){ // change to 400 to 480
 }
 else   textstr = props.text.substring(0,100)+"...";
 
-const [loadingItinerary, setLoadingItinerary] = useState(false);
-const [loadingPlanning, setLoadingPlanning] = useState(false);
+
 const redirectItinerary = () => {
   setLoadingItinerary(true);
   router.push(urls.itinerary.BASE+props.id)
   // setLoading(false)
 }
-const redirectPersonalise = () => {
-  setLoadingPlanning(true);
-  router.push(urls.TAILORED_TRAVEL)
-  // setLoading(false)
-} 
+
  const _handleItineraryClick = () => {
   setLoadingItinerary(true);
  
@@ -122,18 +118,6 @@ const redirectPersonalise = () => {
 }
 
 
-const _handlePersonaliseClick = () => {
-  setLoadingPlanning(true);
- 
-
-  setTimeout(redirectPersonalise, 1000);
-  
-  ga.callback_event({
-    action: 'CC-T-'+props.experience,
-     
-    callback: redirectPersonalise,
-  })
-}
     return(
       <Container className="netflix-ite">
         <ImageContainer>
@@ -143,7 +127,7 @@ const _handlePersonaliseClick = () => {
            <HeadingContainer>
              <Heading className="font-lexend">{props.experience}</Heading>
            </HeadingContainer>
-           {/* {typeof window !== 'undefined' ? <Rating className="font-nunito">
+           {/* {isPageLoaded ? <Rating className="font-nunito">
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
@@ -159,7 +143,7 @@ const _handlePersonaliseClick = () => {
                   : 'View Itinerary'}
                   </Button>
             {/* <Price className="font-lexend">{ "₹ "+getIndianPrice(props.starting_cost/100)+"/-"}</Price> */}
-                  <Button display="inline-block"  width='100%' onclickparams={null} onclick={_handlePersonaliseClick}   boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
+                  <Button display="inline-block"  width='100%' onclickparams={null} onclick={()=>openTailoredModal(router)}   boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
                   {loadingPlanning  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
                   : 'Start Planning'}
                   </Button>

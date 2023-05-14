@@ -36,23 +36,45 @@ const Result= (props) => {
     router.push('/travel-guide/city/'+props.cta)
 
 }
-const _handlePlanning = () => {
-    // localStorage.setItem('search_city_selected_id', props.id);
-    // localStorage.setItem('search_city_selected_name', props.title);
-    // localStorage.setItem('search_city_selected_parent', props.parent);
-    router.push('/tailored-travel?search_text='+props.title)
-
-}
-    return(
-        <Container>
+const _handlePlanning = (id, name) => {
+  // localStorage.setItem('search_city_selected_id', props.id);
+  // localStorage.setItem('search_city_selected_name', props.title);
+  // localStorage.setItem('search_city_selected_parent', props.parent);
+  openTailoredModal(router, id, name);
+};
+    return (
+      <Container>
         <div>
-            <ResultTitle className="font-nunito" onClick={_handleCTA}>{props.title}</ResultTitle>
-            <p style={{opacity : "0.5", fontSize: "0.75rem", margin: "0"}} className="font-nuniti" onClick={_handleCTA}>{props.type.toUpperCase()}</p>
+          <ResultTitle className="font-nunito" onClick={_handleCTA}>
+            {props.title}
+          </ResultTitle>
+          <p
+            style={{ opacity: "0.5", fontSize: "0.75rem", margin: "0" }}
+            className="font-nuniti"
+            onClick={_handleCTA}
+          >
+            {props.type.toUpperCase()}
+          </p>
         </div>
         <div className="center-div">
-            <p style={{ borderStyle: 'solid', borderWidth: '0px', backgroundColor: '#f7e700', borderRadius: '2rem', color: 'black', padding: '0.5rem 2rem', fontSize: "1rem", margin: "0"}} className="font-nuniti" onClick={_handlePlanning}>Start Planning</p>
+          <p
+            style={{
+              borderStyle: "solid",
+              borderWidth: "0px",
+              backgroundColor: "#f7e700",
+              borderRadius: "2rem",
+              color: "black",
+              padding: "0.5rem 2rem",
+              fontSize: "1rem",
+              margin: "0",
+            }}
+            className="font-nuniti"
+            onClick={()=>_handlePlanning(props.id, props.title)}
+          >
+            Start Planning
+          </p>
         </div>
-        </Container> 
+      </Container>
     );
 }
 

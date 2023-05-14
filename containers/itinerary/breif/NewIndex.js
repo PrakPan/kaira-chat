@@ -17,7 +17,6 @@ import { Element } from 'react-scroll';
 import { useRef } from 'react';
 import media from '../../../components/media';
 import { useRouter } from 'next/router';
-// import Footer from '../../components/footer/Index';
 // import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';

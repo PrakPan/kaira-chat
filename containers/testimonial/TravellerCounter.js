@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import leaf from '../../public/assets/leaf.svg';
-import Image from 'next/image';
+import ImageLoader from '../../components/ImageLoader';
 
 const Text = styled.h1`
   position: relative;
@@ -71,21 +70,22 @@ const TravellerCounter = () => {
     <div className="font-lexend center-div text-center">
       <Container>
         <LeafContainer>
-          <Leaf>
-            <Image height="120" src={leaf}></Image>
-          </Leaf>
+          <ImageLoader
+            dimensions={{ height: 500, width: 300 }}
+            height={'8rem'}
+            url={'media/testimonials/leaf.svg'}
+          />
         </LeafContainer>
         <LeafContainer>
-          <Leaf>
-            <Image height="120" src={leaf}></Image>
-          </Leaf>
+          <ImageLoader
+            height={'8rem'}
+            dimensions={{ height: 500, width: 300 }}
+            url={'media/testimonials/leaf.svg'}
+          />
         </LeafContainer>
         <Text>{counter}</Text>
         <Text>Travellers and Counting</Text>
       </Container>
-      {/* <StoriesHeading className="font-nunito">
-            Stories of travellers from around the world who experienced different realities with us.
-        </StoriesHeading> */}
     </div>
   );
 };

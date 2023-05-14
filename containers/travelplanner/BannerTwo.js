@@ -1,13 +1,10 @@
-import React, {useState, useRef, useEffect, createRef} from 'react';
-import { useRouter } from 'next/router';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import ImageLoader from '../../components/ImageLoader';
 import media from '../../components/media';
 import * as ga from '../../services/ga/Index';
 
 import styled from 'styled-components';
-import ImageLoader from '../../components/ImageLoader';
-import Enquiry from '../../components/tailoredform/Index';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 const Container = styled.div`
 
@@ -75,16 +72,22 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
   let isPageWide = media('(min-width: 768px)');
   
   return (
-   <Container>
-        <GridContainer>
-          <div className=''>
-                    <HowItWorks nostart onclick={props._handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks>
+    <Container>
+      <GridContainer>
+        <div className="">
+          <HowItWorks
+            nostart
+            page_id={props.page_id}
+            images={howitworksimgs}
+            content={HowitWorksContentsArr}
+            destination={props.destination}
+            headings={HowitWorksHeadingsArr}
+          ></HowItWorks>
 
-            {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}
-            </div>       
-            {/* <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div> */}
-        </GridContainer>
-       
+          {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}
+        </div>
+        {/* <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div> */}
+      </GridContainer>
     </Container>
   );
 }

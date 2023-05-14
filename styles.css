@@ -134,58 +134,170 @@
 #planner-filter-checkbox {
   background-color: white;
 }
-#planner-filter-checkbox:checked {
-}
-#planner-filter-checkbox:focus {
-}
+
 #itinerary-booking-summary-accordion {
   padding: 0 !important;
   display: flex !important;
 }
+@-webkit-keyframes snowflakes-fall {
+  0% {
+    top: -10%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+@-webkit-keyframes snowflakes-shake {
+  0% {
+    -webkit-transform: translateX(0px);
+    transform: translateX(0px);
+  }
+  50% {
+    -webkit-transform: translateX(80px);
+    transform: translateX(80px);
+  }
+  100% {
+    -webkit-transform: translateX(0px);
+    transform: translateX(0px);
+  }
+}
+@keyframes snowflakes-fall {
+  0% {
+    top: -10%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+@keyframes snowflakes-shake {
+  0% {
+    transform: translateX(0px);
+  }
+  50% {
+    transform: translateX(80px);
+  }
+  100% {
+    transform: translateX(0px);
+  }
+}
+.snowflake {
+  position: fixed;
+  top: -10%;
+  z-index: 9998;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+  -webkit-animation-name: snowflakes-fall, snowflakes-shake;
+  -webkit-animation-duration: 10s, 3s;
+  -webkit-animation-timing-function: linear, ease-in-out;
+  -webkit-animation-iteration-count: infinite, infinite;
+  -webkit-animation-play-state: running, running;
+  animation-name: snowflakes-fall, snowflakes-shake;
+  animation-duration: 10s, 3s;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-play-state: running, running;
+}
+.snowflake:nth-of-type(0) {
+  left: 1%;
+  -webkit-animation-delay: 0s, 0s;
+  animation-delay: 0s, 0s;
+}
+.snowflake:nth-of-type(1) {
+  left: 10%;
+  -webkit-animation-delay: 1s, 1s;
+  animation-delay: 1s, 1s;
+}
+.snowflake:nth-of-type(2) {
+  left: 20%;
+  -webkit-animation-delay: 6s, 0.5s;
+  animation-delay: 6s, 0.5s;
+}
+.snowflake:nth-of-type(3) {
+  left: 30%;
+  -webkit-animation-delay: 4s, 2s;
+  animation-delay: 4s, 2s;
+}
+.snowflake:nth-of-type(4) {
+  left: 40%;
+  -webkit-animation-delay: 2s, 2s;
+  animation-delay: 2s, 2s;
+}
+.snowflake:nth-of-type(5) {
+  left: 50%;
+  -webkit-animation-delay: 8s, 3s;
+  animation-delay: 8s, 3s;
+}
+.snowflake:nth-of-type(6) {
+  left: 60%;
+  -webkit-animation-delay: 6s, 2s;
+  animation-delay: 6s, 2s;
+}
+.snowflake:nth-of-type(7) {
+  left: 70%;
+  -webkit-animation-delay: 2.5s, 1s;
+  animation-delay: 2.5s, 1s;
+}
+.snowflake:nth-of-type(8) {
+  left: 80%;
+  -webkit-animation-delay: 1s, 0s;
+  animation-delay: 1s, 0s;
+}
+.snowflake:nth-of-type(9) {
+  left: 90%;
+  -webkit-animation-delay: 3s, 1.5s;
+  animation-delay: 3s, 1.5s;
+}
+::-webkit-scrollbar {
+  width: 0.6rem;
+  height: 0.6rem;
 
-.MuiAccordionSummary-content {
-  margin: 0 !important;
-}
-.MuiAccordion-root::before {
-  display: none !important;
-}
-.MuiIconButton-root {
-  padding: 0 !important;
-  margin: 0 !important;
-}
-.dropdown-toggle::after {
-  display: none !important;
-}
+  .MuiAccordionSummary-content {
+    margin: 0 !important;
+  }
+  .MuiAccordion-root::before {
+    display: none !important;
+  }
+  .MuiIconButton-root {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .dropdown-toggle::after {
+    display: none !important;
+  }
 
-.full-width {
-  width: '100% important';
-}
+  .full-width {
+    width: '100% important';
+  }
 
-::-webkit-scrollbar-track {
-  /* background: #F7E700; */
-  background: gray;
-  border-radius: 50vw;
-  /* margin-block: 0.5rem; */
-}
+  ::-webkit-scrollbar-track {
+    /* background: #F7E700; */
+    background: gray;
+    border-radius: 50vw;
+    /* margin-block: 0.5rem; */
+  }
 
-::-webkit-scrollbar-thumb {
-  background-color: black;
-  /* border: 0.025em solid #F7E700; */
-  border-radius: 100vw;
-  height: 6rem;
-  width: 1rem;
-  background-image: linear-gradient(rgba(247, 231, 0, 1));
-  /* background-image: (linear,
+  ::-webkit-scrollbar-thumb {
+    background-color: black;
+    /* border: 0.025em solid #F7E700; */
+    border-radius: 100vw;
+    height: 6rem;
+    width: 1rem;
+    background-image: linear-gradient(rgba(247, 231, 0, 1));
+    /* background-image: (linear,
     left bottom,
     left top,
     color-stop(0.44, rgb(122,153,217)),
     color-stop(0.72, rgb(73,125,189)),
     color-stop(0.86, rgb(28,58,148))); */
-  /* -webkit-width:5em; */
-}
+    /* -webkit-width:5em; */
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #e7f700;
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e7f700;
+  }
 }
 /* end */
 
@@ -511,22 +623,14 @@
 .google-login-button span {
   display: none !important;
 }
-body.modal-open {
-}
 
-.carousel {
-}
-.flickity-viewport {
-}
 .flickity-enabled:focus {
   outline: none;
 }
 .rsc-os-option-element {
   background-color: rgba(247, 231, 0, 0.6) !important;
 }
-b {
-  font-weight: 600;
-}
+
 /*Experinece, poi and itinerary menu CSS, do not remove*/
 .experience-tab {
   opacity: 0.7 !important;
@@ -616,8 +720,7 @@ b {
 .progress {
   transition: all 0.3s ease !important;
 }
-.personalise-modal {
-}
+
 .MuiFormLabel-root {
   background-color: white !important ;
 }
@@ -745,13 +848,6 @@ b {
   border-color: #f7e700;
   border-width: 0.5rem;
   padding: 0;
-}
-
-a {
-  color: black;
-}
-img {
-  image-orientation: from-image;
 }
 
 .bg-whitee {
@@ -1073,10 +1169,7 @@ img {
   padding: 0 !important;
 }
 /* locks background scroll for modal*/
-body.modal-open {
-}
-.carousel {
-}
+
 .flickity-viewport {
 }
 .carousel > ol {
@@ -1131,9 +1224,7 @@ body.modal-open {
 .rsc-os-option-element {
   background-color: rgba(247, 231, 0, 0.6) !important;
 }
-b {
-  font-weight: 600;
-}
+
 .MuiAppBar-root {
   z-index: 1000 !important;
 }
@@ -1253,24 +1344,79 @@ b {
 @media only screen and (min-width: 768px) {
   #bookingedit-modal .modal-body {
     height: max-content !important;
+    .flickity-button {
+      display: initial;
+      position: absolute;
+    }
+  }
+  .flickity-button:disabled {
+    cursor: auto;
+    pointer-events: none;
+    display: none;
   }
 
-  .flickity-button {
-    display: initial;
+  .flickity-button-icon {
+    fill: white;
+  }
+
+  .flickity-prev-next-button {
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    transform: translateY(-50%);
+  }
+
+  .flickity-prev-next-button.previous {
+    left: -20px;
+  }
+  .flickity-prev-next-button.next {
+    right: -20px;
+  }
+
+  .flickity-prev-next-button .flickity-button-icon {
     position: absolute;
-    background: rgba(0, 0, 0, 0.6);
-    border: none;
-    color: white;
+    left: 30%;
+    top: 30%;
+    width: 40%;
+    height: 40%;
   }
+}
+#experience-modal-body {
+  border-style: solid solid solid solid;
+  border-color: #f7e700;
+  border-width: 0.5rem;
+  padding: 0;
+}
 
-  .flickity-button:hover {
-    cursor: pointer;
-  }
+a {
+  color: black;
+}
 
-  .flickity-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 5px #19f;
-  }
+.rsc-float-button {
+  border-style: solid;
+  border-width: 1px;
+}
+.bg-whitee {
+  background-color: white;
+  animation: fadeIn ease 0.5s;
+}
+
+.flickity-button {
+  display: initial;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+}
+
+.flickity-button:hover {
+  cursor: pointer;
+}
+
+.flickity-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 5px #19f;
 
   .flickity-button:disabled {
     cursor: auto;
@@ -1306,7 +1452,6 @@ b {
   }
 }
 #experience-modal-body {
-  border-style: solid solid solid solid;
   border-color: #f7e700;
   border-width: 0.5rem;
   padding: 0;

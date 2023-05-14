@@ -1,71 +1,76 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react';
-import { Avatar } from '@mui/material';
-import { Button } from '@mui/material';
-import Button1 from '../Button';
-import { TextField } from '@mui/material';
-import { Grid } from '@mui/material';
-import { Typography } from '@mui/material';
-
+import React, { useState, useEffect, Fragment, useRef } from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Button1 from "../Button";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { makeStyles } from "@mui/styles";
 // import { Redirect } from 'react-router-dom'
-import Modal from 'react-bootstrap/Modal';
-import { connect } from 'react-redux';
-import * as authaction from '../../store/actions/auth';
-import * as otpaction from '../../store/actions/getOtp';
-import axios from 'axios';
-import Spinner from '../Spinner';
-import styled from 'styled-components';
-import theme from '../../public/Themes';
-import extensions from './extensionsdata';
+import Modal from "react-bootstrap/Modal";
+import { connect } from "react-redux";
+import * as authaction from "../../store/actions/auth";
+import * as otpaction from "../../store/actions/getOtp";
+import axios from "axios";
+import Spinner from "../Spinner";
+import styled from "styled-components";
+import extensions from "./extensionsdata";
 
-import google from '../../public/assets/icons/google.svg';
-import { checkEmail } from '../../services/validations';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTimes} from '@fortawesome/free-solid-svg-icons';
-import GoogleLogin from 'react-google-login';
-// import FacebookLogin from 'react-facebook-login';
+import { checkEmail } from "../../services/validations";
+import GoogleLogin from "react-google-login";
+import ImageLoader from "../ImageLoader";
 
-const useStyles = {
-  '@global': {
+const useStyles = makeStyles((themes) => ({
+  "@global": {
     body: {
       backgroundColor: themes.palette.common.white,
     },
   },
-  paper: `
-   flex
-   flex-col
-    justify-center
-    p-0
-  `,
-
-  form: `
-   w-[90%]
-    mx-0 my-auto
-  `,
-  submit: `
-    mx-[1rem] my-0
-
-    text-black
-  rounded-[2rem]
-    hover:bg-[#F7e700]
-   
-  `,
-  google: `
-  my-4 bg-white text-black rounded-full
-  `,
-};
+  paper: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    padding: "0",
+  },
+  avatar: {
+    backgroundColor: themes.palette.secondary.main,
+  },
+  form: {
+    width: "90%",
+    margin: "0 auto",
+  },
+  submit: {
+    margin: "1rem 0",
+    backgroundColor: "#F7E700",
+    color: "black",
+    borderRadius: "2rem",
+    "&:hover": {
+      backgroundColor: "#F7e700",
+    },
+  },
+  google: {
+    margin: "1rem 0",
+    backgroundColor: "white",
+    color: "black",
+    borderRadius: "2rem",
+  },
+  height: {
+    height: "1.5rem !important",
+  },
+}));
 var userDetails = {
-  firstName: '',
-  lastName: '',
-  email: '',
+  firstName: "",
+  lastName: "",
+  email: "",
 };
 const LogIn = (props) => {
   const mobileRef = useRef();
-  let mobilevariable = ''; //store mobile number before storing in state
-  let otpvariable = ''; //store otp number, before storing in state(UPDATE)
-  const [mobile, setMobile] = useState('+91');
+  let mobilevariable = ""; //store mobile number before storing in state
+  let otpvariable = ""; //store otp number, before storing in state(UPDATE)
+  const [mobile, setMobile] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
-  const classes = useStyles;
-  const [extension, setExtension] = useState('India'); //store extension
+  const classes = useStyles();
+  const [extension, setExtension] = useState("India"); //store extension
   let firstname = null; //JSX for first name
   let lastname = null; //JSX for last name
   let resendotp = null; //JSX for resend otp
@@ -102,8 +107,8 @@ const LogIn = (props) => {
   `;
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -130,11 +135,11 @@ const LogIn = (props) => {
   const checkNewUserData = () => {
     if (userDetails.firstName && userDetails.lastName && userDetails.email) {
       if (!checkEmail(userDetails.email)) {
-        alert('Please enter a valid email');
+        alert("Please enter a valid email");
         return 0;
       } else return 1;
     } else {
-      alert('Please fill the form.');
+      alert("Please fill the form.");
       return 0;
     }
   };
@@ -147,7 +152,7 @@ const LogIn = (props) => {
         props.onAuth(
           mobile,
           otpvariable,
-          userDetails.firstName + ' ' + userDetails.lastName,
+          userDetails.firstName + " " + userDetails.lastName,
           userDetails.email
         );
     } else {
@@ -177,7 +182,7 @@ const LogIn = (props) => {
       username: mobile,
     };
     axios
-      .post('https://apis.tarzanway.com/user/resend/otp/', authData)
+      .post("https://apis.tarzanway.com/user/resend/otp/", authData)
       .then((response) => {});
     setOtpResent(true);
   };
@@ -188,7 +193,7 @@ const LogIn = (props) => {
       <TextField
         key="mobile"
         error={props.mobileFail ? true : false}
-        helperText={props.mobileFail ? 'Invalid Number' : null}
+        helperText={props.mobileFail ? "Invalid Number" : null}
         disabled={props.otpSent ? true : false}
         variant="outlined"
         required
@@ -215,7 +220,7 @@ const LogIn = (props) => {
         id="firstName"
         label="First Name"
         onChange={(event) => {
-          _userDetailsOnChangeHandler(event, 'firstName');
+          _userDetailsOnChangeHandler(event, "firstName");
         }}
         className="loginform"
       />
@@ -233,7 +238,7 @@ const LogIn = (props) => {
         name="lastName"
         autoComplete="lname"
         onChange={(event) => {
-          _userDetailsOnChangeHandler(event, 'lastName');
+          _userDetailsOnChangeHandler(event, "lastName");
         }}
         className="loginform"
       />
@@ -244,7 +249,7 @@ const LogIn = (props) => {
       <TextField
         key="email"
         error={props.emailFail ? true : false}
-        helperText={props.emailFail ? 'Email Already Taken' : null}
+        helperText={props.emailFail ? "Email Already Taken" : null}
         variant="outlined"
         required
         fullWidth
@@ -253,7 +258,7 @@ const LogIn = (props) => {
         name="email"
         autoComplete="email"
         onChange={(event) => {
-          _userDetailsOnChangeHandler(event, 'email');
+          _userDetailsOnChangeHandler(event, "email");
         }}
         className="loginform"
       />
@@ -308,14 +313,13 @@ const LogIn = (props) => {
         <Grid container spacing={2}>
           <Grid item xs={3}>
             <TextField
-              className="country-code-field"
+              className="country-code-field loginform"
               select
               label={extension}
               fullWidth
               value={extension}
               onChange={handleExtensionChange}
               variant="outlined"
-              className="loginform"
             >
               {ExtensionOptions}
             </TextField>
@@ -323,8 +327,8 @@ const LogIn = (props) => {
           {mobileInput}
           <Grid item xs={12}>
             <Typography variant="overline">
-              {props.otpSent && !otpResent ? 'OTP HAS BEEN SENT' : null}
-              {props.otpSent && otpResent ? 'OTP HAS BEEN RESENT' : null}
+              {props.otpSent && !otpResent ? "OTP HAS BEEN SENT" : null}
+              {props.otpSent && otpResent ? "OTP HAS BEEN RESENT" : null}
             </Typography>
             <br></br>
           </Grid>
@@ -333,7 +337,7 @@ const LogIn = (props) => {
           {props.newUser ? email : null}
           {props.otpSent ? password : null}
           {props.otpSent ? (
-            <UpdatePhone style={{ textAlign: 'left', width: '100%' }}>
+            <UpdatePhone style={{ textAlign: "left", width: "100%" }}>
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
               <ResendOtp onClick={resetOtpHandler}>
                 <u>Resend Otp</u>
@@ -348,16 +352,16 @@ const LogIn = (props) => {
           color="primary"
           className={classes.submit}
           onClick={otpHandler}
-          style={{ display: !props.otpSent ? 'initial' : 'none' }}
+          style={{ display: !props.otpSent ? "initial" : "none" }}
         >
           Get OTP
           {props.loading ? (
             <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>
           ) : null}
         </Button>
-        <div style={{ display: !props.otpSent ? 'initial' : 'none' }}>
+        <div style={{ display: !props.otpSent ? "initial" : "none" }}>
           <p
-            style={{ textAlign: 'center', fontWeight: '300' }}
+            style={{ textAlign: "center", fontWeight: "300" }}
             className="font-nunito"
           >
             Or login using social media
@@ -401,10 +405,20 @@ const LogIn = (props) => {
                   className={classes.google}
                   onClick={renderProps.onClick}
                 >
-                  <img
-                    src={google}
-                    style={{ height: '1.5rem', margin: '0 0.5rem' }}
-                  ></img>
+                  <div
+                    style={{
+                      height: "1.5rem",
+                      width: "1.5rem",
+                      margin: "0 0.5rem",
+                    }}
+                  >
+                    <ImageLoader
+                      dimensions={{ height: 100, width: 100 }}
+                      url={"media/icons/login/google.svg"}
+                      height="1.5rem"
+                      width="1.5rem"
+                    />
+                  </div>
                 </Button>
               )}
             />
@@ -435,7 +449,7 @@ const LogIn = (props) => {
           color="primary"
           className={classes.submit}
           style={{
-            display: props.otpSent && props.token === null ? 'initial' : 'none',
+            display: props.otpSent && props.token === null ? "initial" : "none",
           }}
           onClick={submitOtpHandler}
         >

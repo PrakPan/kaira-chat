@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Label from './Label';
 import Message from './Message';
-import { Tooltip } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 const InputContainer = styled.div`
   width: 100%;
   margin: 0px auto;

@@ -1,8 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
-import styled,  { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faCalendarWeek,faCog} from '@fortawesome/free-solid-svg-icons';
 import BackgroundImageLoader from '../../../UpdatedBackgroundImageLoader';
+import usePageLoaded from '../../../custom hooks/usePageLoaded';
 
 
 
@@ -38,10 +39,10 @@ import BackgroundImageLoader from '../../../UpdatedBackgroundImageLoader';
         position: relative;
     `;
 const ImageSlider = (props) => {
-  
+  const isPageLoaded = usePageLoaded();
   const Component = useRef();
   const [height, setHeight] = useState(0);
-   
+
   useEffect(()=> {
     setHeight((Component.current.offsetWidth * 3)/4);
   },[])
@@ -55,17 +56,58 @@ const ImageSlider = (props) => {
 
       
     
-    return(
-        <Container  props={props} ref={Component} >
-            {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
-            <BackgroundImageLoader height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)"></BackgroundImageLoader>
-            {typeof window !== 'undefined' ? <IconsContainer>
-             <IconTextContainer style={{}}><IconHoverContainer><div><FontAwesomeIcon icon={faMapMarkerAlt} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.location}</IconHoverContainer> </IconTextContainer>
-             <IconTextContainer style={{borderStyle: "none solid none solid", borderWidth: "1px", borderColor: "#E4E4E4"}}><IconHoverContainer><div><FontAwesomeIcon icon={faCalendarWeek} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.duration}</IconHoverContainer></IconTextContainer>
-             <IconTextContainer  style={{}}><IconHoverContainer><div><FontAwesomeIcon icon={faCog} style={{fontSize: "1.25rem", marginBottom: "0.5rem"}}/></div>{props.filter}</IconHoverContainer></IconTextContainer>
-
-           </IconsContainer> : null}
-        </Container>
+    return (
+      <Container props={props} ref={Component}>
+        {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
+        <BackgroundImageLoader
+          height={height + "px"}
+          url={image}
+          filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)"
+        ></BackgroundImageLoader>
+        {isPageLoaded ? (
+          <IconsContainer>
+            <IconTextContainer style={{}}>
+              <IconHoverContainer>
+                <div>
+                  <FontAwesomeIcon
+                    icon={faMapMarkerAlt}
+                    style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}
+                  />
+                </div>
+                {props.location}
+              </IconHoverContainer>{" "}
+            </IconTextContainer>
+            <IconTextContainer
+              style={{
+                borderStyle: "none solid none solid",
+                borderWidth: "1px",
+                borderColor: "#E4E4E4",
+              }}
+            >
+              <IconHoverContainer>
+                <div>
+                  <FontAwesomeIcon
+                    icon={faCalendarWeek}
+                    style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}
+                  />
+                </div>
+                {props.duration}
+              </IconHoverContainer>
+            </IconTextContainer>
+            <IconTextContainer style={{}}>
+              <IconHoverContainer>
+                <div>
+                  <FontAwesomeIcon
+                    icon={faCog}
+                    style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}
+                  />
+                </div>
+                {props.filter}
+              </IconHoverContainer>
+            </IconTextContainer>
+          </IconsContainer>
+        ) : null}
+      </Container>
     );
 }
 export default React.memo(ImageSlider);
