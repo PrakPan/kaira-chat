@@ -1,11 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
-import Results from './results/Index';
-import {RxCross2} from 'react-icons/rx'
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import axioslocationsinstance from '../../../../../services/search/search'
@@ -67,7 +63,6 @@ font-size : 1rem;
 
 `
 const SearchPannel= (props) => {
-  let isPageWide = media('(min-width: 768px)')
     const [showResults, setShowResults] = useState(false);
     let [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);

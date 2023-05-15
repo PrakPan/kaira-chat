@@ -31,9 +31,10 @@ const Option = styled.option`
 `;
 const QueryType = (props) => {
   const isPageLoaded = usePageLoaded();
+    const classes = useStyles();
+    const [queryType, setQueryType] = useState("");
 
   if (isPageLoaded) {
-    const classes = useStyles();
     const queries = [
       "Conferences or offsites",
       "Workcations or retreats",
@@ -41,7 +42,6 @@ const QueryType = (props) => {
       "Partnerships",
       "Others",
     ];
-    const [queryType, setQueryType] = useState("");
     const _handleQueryTypeChange = (event) => {
       setQueryType(event.target.value);
       props.setInfants(event.target.value);

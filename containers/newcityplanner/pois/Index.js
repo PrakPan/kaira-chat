@@ -81,7 +81,7 @@ const Poi = props=>{
 
   const InfoWindowContainer = (location)=><MapInfo>
     <b>{location.name}</b>
-    <div>{location.experience_filters.map((e,i)=>(i !=0)?<span>{', '+e}</span>:<span>{e}</span>)}</div>
+    <div>{location.experience_filters.map((e,i)=>(i !=0)?<span key={i}>{', '+e}</span>:<span key={i}>{e}</span>)}</div>
     {location.ideal_duration_hours && <p>Ideal duration : {location.ideal_duration_hours} hrs</p>}
 
   </MapInfo>

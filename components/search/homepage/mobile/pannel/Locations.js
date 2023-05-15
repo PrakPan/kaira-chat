@@ -1,11 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../media';
-import { useRouter } from 'next/router'
 import { FaMapMarkerAlt } from 'react-icons/fa';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
-import ImageLoader from '../../../../ImageLoader';
 import SkeletonCard from '../../../../ui/SkeletonCard';
 
 const Container = styled.div`
@@ -67,9 +62,6 @@ color: #7A7A7A;
 `;
 
 const Locations= (props) => {
-    const router = useRouter()
-
-  let isPageWide = media('(min-width: 768px)')
   const _handleLocationClick = (data) => {
     if(data.cta) {
      // props.setPannelClose()

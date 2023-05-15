@@ -173,7 +173,7 @@ useEffect(()=>{
     const order = ['e','b','c','a']
     const ThemeContainer = 
     props.ThemeData?.map((e,i)=>(
-        <GridItem className={order[i]} onClick={()=>_handleTripRedirect(e.link)}>
+        <GridItem className={order[i]} key={i} onClick={()=>_handleTripRedirect(e.link)}>
             {ImgLoading && <SkeletonCard />}
             <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>
             <TextContainer className='AnimateTop'>

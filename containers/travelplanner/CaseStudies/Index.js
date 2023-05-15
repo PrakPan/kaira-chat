@@ -35,7 +35,7 @@ const FullImgContent = (props) => {
          {isPageWide &&
          <>
          <Container>
-            {cards.map((e)=>(e))}
+                   {cards.map((e,i) => <div key={i}>{e}</div>)}
         </Container>
         <Button link={'/testimonials'} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="500" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View All</Button>
          </>}

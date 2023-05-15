@@ -34,6 +34,7 @@ padding: 0 1rem;
 
 const Details = (props) => {
   const isPageLoaded = usePageLoaded();
+const router = useRouter();
  
    let offsets = {
 
@@ -69,7 +70,6 @@ const Details = (props) => {
 //           if(isPageLoaded)
 //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
 //   }
-const router = useRouter();
   
   return (
     <div >

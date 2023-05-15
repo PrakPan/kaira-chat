@@ -1,7 +1,5 @@
 import React, { useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
-import styled from 'styled-components';
-import media from '../../media';
    import axiosflightsearch from '../../../services/bookings/FlightSearch';
 import Header from './Header';
 import LoadingLottie from "../../ui/LoadingLottie";

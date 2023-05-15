@@ -84,9 +84,10 @@ const GroupType = (props) => {
      return (
        <Container>
          <GridContainer tailoredFormModal={props.tailoredFormModal}>
-           {EXPERIENCE_FILTERS_BOX.map((filter) => {
+           {EXPERIENCE_FILTERS_BOX.map((filter,i) => {
              return (
                <OptionContainer
+                 key={i}
                  is_selected={_isPreferenceAdded(filter.display)}
                  className=" font-lexend hover-pointer"
                  onClick={() => _handleClick(filter.display)}

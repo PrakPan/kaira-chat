@@ -1,10 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
-
 const Container = styled.div`
 padding: 1rem;
 text-align: left;
@@ -34,7 +29,6 @@ height: max-content;
 padding: 0.5rem;
 `;
 const Result= (props) => {
-  let isPageWide = media('(min-width: 768px)')
 
     return(
         <Container>

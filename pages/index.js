@@ -50,6 +50,7 @@ var locations = []
   }
   catch(e){
     data = []
+    
   }
 
   try{

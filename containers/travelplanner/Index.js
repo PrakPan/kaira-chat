@@ -238,7 +238,12 @@ const Homepage = (props) => {
       setItinerariesToIndexCusstomer(iti_customer.slice());
 
       // setOffsetExclusive(iti.length);
-    } catch {}
+    } catch { }
+    
+    return () => {
+      setItinerariesToIndexExclusive([])
+    setItinerariesToIndexCusstomer([])
+    }
   }, []);
 
   const [offsetExclusive, setOffsetExclusive] = useState(0);
@@ -330,6 +335,7 @@ const Homepage = (props) => {
   useEffect(() => {
     // The counter changed!
     setOverviewHeading(props.experienceData.overview_heading);
+    return () => setOverviewHeading(null)
   }, [router.query.link, props.experienceData]);
 
   var country;
@@ -347,7 +353,7 @@ const Homepage = (props) => {
       <b>{location.name}</b>
       <div>
         {location.most_popular_for.map((e, i) =>
-          i != 0 ? <span>{", " + e}</span> : <span>{e}</span>
+          i != 0 ? <span key={i} >{", " + e}</span> : <span key={i} >{e}</span>
         )}
       </div>
     </MapInfo>

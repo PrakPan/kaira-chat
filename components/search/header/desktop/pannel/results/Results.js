@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
 import Result from './Result';
 import CityResult from './CityResult';
 const Container = styled.div`
@@ -11,7 +10,6 @@ const Container = styled.div`
 `;
 
 const Results= (props) => {
-  let isPageWide = media('(min-width: 768px)')
   let LocationResultsArr=[];
   let ExperienceResultsArr=[];
   let BlogResultsArr=[];

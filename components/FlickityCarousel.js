@@ -8,7 +8,7 @@ import styled from 'styled-components'
 const GridContainer = styled.div`
 display : grid;
 grid-template-columns : ${props=>`repeat(${props.columns},1fr)`} ;
-gap : 1.5%;
+gap : 1%;
 `
 
 

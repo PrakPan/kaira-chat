@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import media from '../../../media';
 import Button from '../../../ui/button/Index';
 import FareRules from '../../farerules/Index';
  const Container = styled.div`
@@ -18,9 +17,7 @@ grid-template-columns: 1fr 1fr;
 
  `;
 const Section= (props) => {
-    let isPageWide = media('(min-width: 768px)')
      const [showFareRules, setShowFareRules] = useState(false);
-//    if(props.data)
     return(
       <Container className='font-lexend'>  
       <GridContainer>
@@ -39,7 +36,6 @@ const Section= (props) => {
 
       </Container>
   ); 
-//   else return null;
 }
 
 export default Section;

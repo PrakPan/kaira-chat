@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import media from '../../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import CityResult from './CityResult';
-import ExperienceResult from './ExperienceResult';
 import Result from './Result';
 const Container = styled.div`
    padding: 1rem 0;

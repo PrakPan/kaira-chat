@@ -20,7 +20,8 @@ grid-template-columns: 1fr 1fr ;
   gap: 0.5rem;
 `
 
-const LocationsBlog= (props) => {
+const LocationsBlog = (props) => {
+  
   let isPageWide = media('(min-width: 768px)')
 
    const router = useRouter();
@@ -47,7 +48,8 @@ const LocationsBlog= (props) => {
           }
         cardsArr.push(
           <Card
-          key={props.locations[i].id}
+            key={props.locations[i].id}
+            ancestors={props.locations[i].ancestors}
           location={props.locations[i].destination}
           heading={props.locations[i].tagline}
           img={props.locations[i].image}

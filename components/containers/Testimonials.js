@@ -76,7 +76,6 @@ const Testimonials= (props) => {
       }
   
   
-        // if(isPageWide)
     return(
       <div ><Container className='hidden-mobile' style={{margin: props.margin? props.margin : '0'}}>  
 

@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
 import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faExternalLinkAlt} from '@fortawesome/free-solid-svg-icons';
+import {  faExternalLinkAlt} from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
 padding: 1rem;
@@ -25,7 +24,6 @@ margin: 0;
 `;
 
 const Result= (props) => {
-  let isPageWide = media('(min-width: 768px)')
   let router = useRouter();
     const _handleCTA = () => {
         if(props.type === 'Blog') window.location.href=props.cta;

@@ -98,6 +98,3 @@ setCardsJSX(cardsarr);
 }
 
 export default LocationsBlog;
-
-{/* <Button link={'/travel-guide'} hoverBgColor="black" hoverColor="white" borderWidth="1px" borderRadius="2rem" margin="1.5rem auto" padding="0.5rem 2rem" onclick={_handleGuideRedirect} onclickparam={null}>View All</Button>  */}
-{/* <Button borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.5rem 2rem" onclick={_handleGuideRedirect} onclickparam={null}>View All</Button> */}

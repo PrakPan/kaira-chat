@@ -76,14 +76,17 @@ const TravellerCounter = () => {
         <LeafContainer>
           <ImageLoader
             dimensions={{ height: 500, width: 300 }}
+            dimensionsMobile={{ height: 500, width: 270 }}
             height={"8rem"}
             url={"media/testimonials/leaf.svg"}
+            // widthmobile='2rem'
           />
         </LeafContainer>
         <LeafContainer>
           <ImageLoader
             height={"8rem"}
             dimensions={{ height: 500, width: 300 }}
+            dimensionsMobile={{ height: 500, width: 270 }}
             url={"media/testimonials/leaf.svg"}
           />
         </LeafContainer>

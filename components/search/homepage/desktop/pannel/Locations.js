@@ -1,10 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../media';
-import { useRouter } from 'next/router'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../../../../ImageLoader';
 const Container = styled.div`
     display: grid;
@@ -18,25 +13,7 @@ const Heading = styled.p`
     font-size: 1.5rem;
     text-align: center;
 `;
-    const ImageContainer = styled.div`
-position: relative;
-text-align: center;
-color: white;
-margin: auto;
-border-radius: 50%;
-width: 100%;
-min-height: 16vw;
-background: white;
 
-&:hover{
-    cursor: pointer;
-    background: #f7e700;
-}
-@media screen and (min-width: 768px){
-    min-height: 6.5vw;
-
-}
-`;
 const ImageText = styled.div`
 font-weight: 400;
 margin: 0;
@@ -62,12 +39,8 @@ grid-gap: 0.5rem;
 `;
 
 const Locations= (props) => {
-    const router = useRouter()
-  let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (data) => {
     if(data.cta) {
-     // props.setPannelClose()
-     // router.push('/travel-guide/city/'+slug)
      if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta    
      if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta    
  
@@ -94,8 +67,7 @@ const Locations= (props) => {
                         // onclickparams={{id, name, parent}}
                         hoverpointer/>
                         <ImageText className='center-div text-center font-lexend'>{props.hotlocations[i].name}</ImageText>
-                {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}
-           {/* </ImageContainer> */}
+             
            </LocationContainer>
             )
         }

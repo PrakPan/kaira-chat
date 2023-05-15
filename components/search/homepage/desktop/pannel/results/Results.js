@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import Result from './Result';
 import CityResult from './CityResult';
-import ExperienceResult from './ExperienceResult';
 const Container = styled.div`
    padding: 1rem 0;
    display: grid;
@@ -15,7 +10,6 @@ const Container = styled.div`
 `;
 
 const Results= (props) => {
-  let isPageWide = media('(min-width: 768px)')
   let LocationResultsArr=[];
   let ExperienceResultsArr=[];
   let BlogResultsArr=[];

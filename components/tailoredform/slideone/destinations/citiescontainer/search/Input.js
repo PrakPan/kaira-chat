@@ -1,7 +1,4 @@
-import React, {useState, useEffect } from 'react';
-  
-import media from '../../../../../media';
- 
+import React from 'react';
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
 
@@ -28,7 +25,6 @@ const Container = styled.input`
  
 const SearchInput = (props) => {
 
-  let isPageWide = media('(min-width: 768px)');
 
   const _handleKey = (e) => {
     axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value+"&parent=Himachal Pradesh").then(res=>{

@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
-import media from '../../../../media';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faTimes} from '@fortawesome/free-solid-svg-icons';
@@ -40,7 +39,6 @@ const Search = styled.input`
 `;
 
 const SearchPannel= (props) => {
-  let isPageWide = media('(min-width: 768px)')
     const [showResults, setShowResults] = useState(false);
     let [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);
@@ -71,7 +69,6 @@ const [hotLocationsData, setHotLocationsData] = useState();
 
     const checkIfClickedOutside = e => {
         if ( ref.current && !ref.current.contains(e.target)) {
-            // if(!isPageWide)  props._hideMenu();
             props.setPannelClose();
         }
       }

@@ -36,7 +36,7 @@ gap: 0.5rem;
 
 const FoodToEat = (props) => {
   const cards = props.foods?.map((icon,index) => 
-  <IconContainer>
+  <IconContainer key={index}>
      <ImageLoader borderRadius='12px' url={icon.image ? icon.image : 'media/food/dinner.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 900, height: 900}} ></ImageLoader>
      <IconTagLine className="font-lexend">{icon.name}</IconTagLine>
   </IconContainer>)
@@ -45,11 +45,17 @@ const FoodToEat = (props) => {
   for(let i = 4;i<cards.length;i=i+4){
         // let n = cards.length;
         const el = cards.slice(i-4,i)
-        MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+    MobileCardsArr.push(<MobileCardsContainer>{el.map((e, i) => <div key={i}>{e}</div>)}</MobileCardsContainer>)
         count++
       }
       const el = cards.slice(count*4,cards.length)
-      MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+      MobileCardsArr.push(
+        <MobileCardsContainer>
+          {el.map((e, i) => (
+            <div key={i}>{e}</div>
+          ))}
+        </MobileCardsContainer>
+      );
   
 
 

@@ -65,30 +65,46 @@ const Experiences= (props) => {
   
 
 //     return(
-//       <Container onClick={props.onclick ? props.onclick : null} >  
+//       <Container onClick={props.onclick ? props.onclick : null} >
 //           <BackroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   padding="0.25rem" zoomonhover center dimensions={{width: 900, height: 900}} height={isPageWide ? "40vh" : '60vh'} filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"  url={props.img}>
 //               <Name className="font-lexend">{props.heading}</Name>
 //               <Name className="font-lexend" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
 //           </BackroundImageLoader>
 //       </Container>
 //   ); 
-const path = props.city? "https://thetarzanway.com/travel-guide/city/" : "https://thetarzanway.com/travel-planner/"
-return(
-    <ImageContainer className='hover-pointer' onClick={(e) => window.location.href= path +props.link}>
-        <ImageFade><ImageLoader
 
-            url={props.img}
-            dimensions={{width: 800, height: 800}}
-            dimensionsMobile={{width: 800, height: 800}}
-            height="35vh"
-            ></ImageLoader></ImageFade>
-            <BlackContainer className='font-lexend'>
-                <Heading>{props.location}</Heading>
-                <Subheading>{props.heading}</Subheading>
-
-            </BlackContainer>
-        </ImageContainer>
-)
+    const _handleRedirect = (e) => {
+        e.preventDefault()
+        if (props.ancestors && props.slug) {
+            const anc = props.ancestors;
+            if (anc.length === 1) {
+                if (anc[0].level == "Country" && anc[0].name) {
+                     const link = '/'+ anc[0].slug + "/" + props.slug;
+                    window.location.href = link
+                    
+                }
+                                   
+            }
+       }
+    }
+    const path = props.city ? "https://thetarzanway.com/travel-guide/city/" : "https://thetarzanway.com/travel-planner/"
+return (
+    <ImageContainer className="hover-pointer" onClick={(e) => _handleRedirect(e)}>
+        
+        <ImageFade>
+      <ImageLoader
+        url={props.img}
+        dimensions={{ width: 800, height: 800 }}
+        dimensionsMobile={{ width: 800, height: 800 }}
+        height="35vh"
+      ></ImageLoader>
+    </ImageFade>
+    <BlackContainer className="font-lexend">
+      <Heading>{props.location}</Heading>
+      <Subheading>{props.heading}</Subheading>
+    </BlackContainer>
+  </ImageContainer>
+);
 }
 
 export default Experiences;

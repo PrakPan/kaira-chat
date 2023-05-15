@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {Modal} from 'react-bootstrap';
-import styled from 'styled-components';
 import * as authaction from '../../../store/actions/auth';
 import LoggedOut from './LoggedOut';
 const Enquiry = (props) => {

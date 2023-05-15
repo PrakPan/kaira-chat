@@ -38,9 +38,6 @@ const LocationsBlog= (props) => {
 
   const router = useRouter();
   
-    const _handlePlannerPage = (id,name,parent) => {
-      router.push('/travel-planner/'+name)
-    }
     const _handleCityRedirect = (name)=>{
       router.push(`/travel-guide/city/${name}`)
     }

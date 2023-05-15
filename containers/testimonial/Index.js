@@ -11,9 +11,10 @@ import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 const Testimonial = (props) => {
   const isPageLoaded = usePageLoaded();
 
-    if(isPageLoaded){ 
     useEffect(() => {
-        window.scrollTo(0,0);
+        if (isPageLoaded) {
+        window.scrollTo(0, 0);            
+        }
     },[])
    
     
@@ -27,7 +28,6 @@ const Testimonial = (props) => {
             <ChatWithUs link='/contact'/>
         </div>
     );
-        }
 }
 
 export default Testimonial;

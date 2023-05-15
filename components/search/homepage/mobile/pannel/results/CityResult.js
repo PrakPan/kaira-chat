@@ -1,10 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
 import { useRouter } from 'next/router'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
 padding: 1rem;
@@ -28,18 +24,11 @@ font-size: 1.25rem;
 
 const Result= (props) => {
     const router = useRouter();
-  let isPageWide = media('(min-width: 768px)')
   const _handleCTA = () => {
-    // localStorage.setItem('search_city_selected_id', props.id);
-    // localStorage.setItem('search_city_selected_name', props.title);
-    // localStorage.setItem('search_city_selected_parent', props.parent);
     router.push('/travel-guide/city/'+props.cta)
 
 }
 const _handlePlanning = (id, name) => {
-  // localStorage.setItem('search_city_selected_id', props.id);
-  // localStorage.setItem('search_city_selected_name', props.title);
-  // localStorage.setItem('search_city_selected_parent', props.parent);
   openTailoredModal(router, id, name);
 };
     return (

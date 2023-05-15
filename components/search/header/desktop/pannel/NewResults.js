@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import media from '../../../../media';
 import { useRouter } from 'next/router'
 import {ImSearch} from 'react-icons/im'
-import ImageLoader from '../../../../ImageLoader';
-import { FaMapMarkerAlt } from 'react-icons/fa';
 import SkeletonCard from '../../../../ui/SkeletonCard';
 const Container = styled.div`
 
@@ -96,11 +94,9 @@ margin: 1rem;
 const NewResults = (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (data) => {
+    const _handleLocationClick = (data) => {
+      
     if(data.cta){
-        // props.setPannelClose()
-        // if(data.type == 'Location') router.push('/travel-guide/city/'+data.cta)
-        // else router.push('/travel-planner/'+data.cta)    
 
         if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
         else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta

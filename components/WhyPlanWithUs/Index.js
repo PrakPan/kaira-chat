@@ -85,10 +85,12 @@ const WhyPlanWithUs = (props)=>{
     }
 
     return (
-        <Items>
-        {newArr.map(e=>e)}
-        </Items> 
-    )
+      <Items>
+        {newArr.map((e, i) => (
+          <div key={i}>{e}</div>
+        ))}
+      </Items>
+    );
 }
 
 export default WhyPlanWithUs

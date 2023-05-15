@@ -1,50 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../media';
-import { useRouter } from 'next/router'
 import {ImSearch} from 'react-icons/im'
 import SkeletonCard from '../../../../ui/SkeletonCard';
 const Container = styled.div`
     margin: 1rem;
     `;
-const Heading = styled.p`
-font-weight: 500;
-font-style: normal;
-font-size: 12px;
-line-height: 16px;
-display: flex;
-align-items: center;
-text-align: center;
-text-transform: uppercase;
-margin : 1rem;
-color: #7A7A7A;
-`;
-    const ImageContainer = styled.div`
-position: relative;
-text-align: center;
-color: white;
-margin: auto;
-border-radius: 50%;
-width: 100%;
-min-height: 16vw;
-background: white;
 
-&:hover{
-    cursor: pointer;
-    background: #f7e700;
-}
-@media screen and (min-width: 768px){
-    min-height: 6.5vw;
-
-}
-`;
-const ImageText = styled.div`
-font-weight: 400;
-margin: 0;
-padding: 0;
-font-size: 0.75rem;
-
-`;
 
 const LocationContainer = styled.div`
 padding: 0.3rem;
@@ -86,13 +47,9 @@ margin: 1rem;
 `
 
 const NewResults = (props) => {
-    const router = useRouter()
-  let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (data) => {
     if(data.cta){
-      // props.setPannelClose()
-    // if(data.type == 'Location') router.push('/travel-guide/city/'+data.cta)
-    // else router.push('/travel-planner/'+data.cta)
+     
 
     if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
