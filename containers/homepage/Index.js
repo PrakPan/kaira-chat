@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
@@ -78,7 +78,7 @@ const Homepage = (props) => {
   useEffect(() => {
     if (props.token) {
       const MyPlans = JSON.parse(localStorage.getItem('MyPlans'));
-      if (MyPlans) {
+      if (MyPlans && MyPlans.access_token === props.token) {
         setMyPlansArr(MyPlans.plans);
         setPlansCount(MyPlans.count);
         setPlansLoading(false);
@@ -98,7 +98,11 @@ const Homepage = (props) => {
             setMyPlansArr(plansarr.slice());
             localStorage.setItem(
               'MyPlans',
-              JSON.stringify({ plans: plansarr, count: res.data.count })
+              JSON.stringify({
+                plans: plansarr,
+                count: res.data.count,
+                access_token: props.token,
+              })
             );
             setPlansCount(res.data.count);
             setPlansLoading(false);
@@ -112,40 +116,40 @@ const Homepage = (props) => {
 
   //JSX for How it works
   const HowitWorksHeadingsArr = [
-    <HowItWorksHeading className="font-opensans">
+    <HowItWorksHeading className="font-lexend">
       Select your preferences
     </HowItWorksHeading>,
 
-    <HowItWorksHeading className="font-opensans">
+    <HowItWorksHeading className="font-lexend">
       Let our AI plan your itinerary
     </HowItWorksHeading>,
 
-    <HowItWorksHeading className="font-opensans">
+    <HowItWorksHeading className="font-lexend">
       Easy Bookings with 24x7 Concierge
     </HowItWorksHeading>,
 
-    <HowItWorksHeading className="font-opensans">
+    <HowItWorksHeading className="font-lexend">
       No Commissions - <br /> Pay for what you get
     </HowItWorksHeading>,
   ];
 
   const HowitWorksContentsArr = [
-    <HowItWorksText className="font-opensans">
+    <HowItWorksText className="font-lexend">
       From solo travel to workcation, honeymoon to family travel, tell us about
       your mood, budget & timeline.
     </HowItWorksText>,
 
-    <HowItWorksText className="font-opensans">
+    <HowItWorksText className="font-lexend">
       Get a unique itinerary completely personalized for you, with all bookings
       in one place.
     </HowItWorksText>,
 
-    <HowItWorksText className="font-opensans">
+    <HowItWorksText className="font-lexend">
       From your stays to activities, book-it-all in one click, and enjoy 24x7
       assistance while you explore.
     </HowItWorksText>,
 
-    <HowItWorksText className="font-opensans">
+    <HowItWorksText className="font-lexend">
       We only take a small service fees for negotiated-bookings & live support.
     </HowItWorksText>,
   ];

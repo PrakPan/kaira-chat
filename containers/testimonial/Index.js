@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
-import styled from 'styled-components'
- import AsSeenIn from './AsSeenIn';
+import React, { useEffect } from 'react';
+import styled from 'styled-components';
+import AsSeenIn from './AsSeenIn';
 import Reviews from './Reviews';
 import StoriesMap from './StoriesMap';
 import TravellerCounter from './TravellerCounter';
@@ -11,23 +11,22 @@ import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 const Testimonial = (props) => {
   const isPageLoaded = usePageLoaded();
 
-    if(isPageLoaded){ 
+  if (isPageLoaded) {
     useEffect(() => {
-        window.scrollTo(0,0);
-    },[])
-   
-    
-    return(
-        <div>
-            <StoriesMap></StoriesMap>
-            <TravellerCounter></TravellerCounter>
-            <Reviews/>
-            <WhyTarzan/>           
-            <AsSeenIn/>
-            <ChatWithUs link='/contact'/>
-        </div>
+      window.scrollTo(0, 0);
+    }, []);
+
+    return (
+      <div>
+        <StoriesMap></StoriesMap>
+        <TravellerCounter></TravellerCounter>
+        <Reviews />
+        <WhyTarzan />
+        <AsSeenIn />
+        <ChatWithUs link="/contact" />
+      </div>
     );
-        }
-}
+  }
+};
 
 export default Testimonial;

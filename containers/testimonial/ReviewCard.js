@@ -92,53 +92,52 @@ const ReviewContainer = styled.div`
     margin: auto;
   }
 `;
-const Country = styled.div`
+const Country = styled.img`
   width: 1.5rem;
   margin: 0 1rem 1.5rem 1rem;
 `;
 const ReviewFront = styled.p`
-    font-weight: 200;
-    letter-spacing: 1px;
-    line-height:    1.5;    
-    font-size: 1rem;
-    height: 9rem;
-    overflow: hidden;
-    @media screen and (min-width:768px){
-        height: auto;
-    }
-    &:before{
-        content: open-quote;
-        font-family: "Font Awesome 5 Free";
-        font-size: 2.5rem;
-        /* font-size: ${(props) =>
-          props.theme.fontsizes.mobile.headings.one
-            ? props.theme.fontsizes.mobile.headings.one
-            : props.theme.fontsizes.mobile.headings.one}; */
-        padding: 0;
-        display: inline-block;
+  font-weight: 200;
+  letter-spacing: 1px;
+  line-height: 1.5;
+  font-size: 1rem;
+  height: 9rem;
+  overflow: hidden;
+  @media screen and (min-width: 768px) {
+    height: auto;
+  }
+  &:before {
+    content: open-quote;
+    font-family: 'Font Awesome 5 Free';
+    font-size: 2.5rem;
+    /* font-size: ${(props) =>
+      props.theme.fontsizes.mobile.headings.one
+        ? props.theme.fontsizes.mobile.headings.one
+        : props.theme.fontsizes.mobile.headings.one}; */
+    padding: 0;
+    display: inline-block;
 
-        line-height: 1;
-    }
-    &:after{
-        content: close-quote;
-        font-family: "Font Awesome 5 Free";
-       font-size: 2.5rem;
-        /* font-size: ${(props) =>
-          props.theme.fontsizes.mobile.headings.one
-            ? props.theme.fontsizes.mobile.headings.one
-            : props.theme.fontsizes.mobile.headings.one}; */
-        padding: 0;
-        visibility: hidden;
-        line-height: 1;
-        display: block;
-    }
-  
+    line-height: 1;
+  }
+  &:after {
+    content: close-quote;
+    font-family: 'Font Awesome 5 Free';
+    font-size: 2.5rem;
+    /* font-size: ${(props) =>
+      props.theme.fontsizes.mobile.headings.one
+        ? props.theme.fontsizes.mobile.headings.one
+        : props.theme.fontsizes.mobile.headings.one}; */
+    padding: 0;
+    visibility: hidden;
+    line-height: 1;
+    display: block;
+  }
 `;
 
 const TestimonialCard = (props) => {
   const isPageLoaded = usePageLoaded();
-    
-    let isPageWide = media('(min-width: 768px)')
+
+  let isPageWide = media('(min-width: 768px)');
 
   const [isFlipped, setIsFlipped] = useState(false);
   const _flipHandler = (e, val) => {
@@ -158,41 +157,17 @@ const TestimonialCard = (props) => {
     }
   });
   const [stringlength, setStringlength] = useState();
-  if (typeof window !== 'undefined' && !stringlength) {
+  if (isPageLoaded && !stringlength) {
     if (window.innerWidth <= 380 && window.innerHeight < 700)
-      setStringlength(380);
-    // Moto g4
+      setStringlength(380); // Moto g4
     else if (window.innerWidth <= 380 && window.innerHeight > 700)
-      setStringlength(450);
-    //iphone x
+      setStringlength(450); //iphone x
     else if (window.innerWidth > 380 && window.innerWidth < 768)
-      setStringlength(600);
-    //pixel 2 etc
+      setStringlength(600); //pixel 2 etc
     else if (window.innerWidth > 768) setStringlength(800);
   }
 
-    const [Card1Height, setCard1Height] = useState(0);
-    const [Card2Height, setCard2Height] = useState(0);
-    const Card1Ref = useRef();
-    const Card2Ref = useRef();
-    useEffect(()=> {           
-        if(Card2Ref.current.offsetHeight < Card1Ref.current.offsetHeight){
-            setCard2Height(Card1Ref.current.offsetHeight);            
-        }
-        else{
-            setCard1Height(Card2Ref.current.offsetHeight);            
-        }
-    })
-const [stringlength, setStringlength] = useState();
-if(isPageLoaded && !stringlength){
-    if(window.innerWidth <= 380 && window.innerHeight < 700) setStringlength(380); // Moto g4 
-    else if(window.innerWidth <= 380 && window.innerHeight > 700) setStringlength(450); //iphone x 
-    else if (window.innerWidth > 380 && window.innerWidth < 768 ) setStringlength(600); //pixel 2 etc 
-    else if(window.innerWidth > 768) setStringlength(800);
-}
-
-
-const countryicons = {
+  const countryicons = {
     germany: 'media/icons/countries/germany.png',
     mexico: 'media/icons/countries/mexico.svg',
     india: 'media/icons/countries/india.svg',
@@ -200,8 +175,8 @@ const countryicons = {
     us: 'media/icons/countries/us.svg',
     france: 'media/icons/countries/france.svg',
     indonesia: 'media/icons/countries/indonesia.svg',
-}
- return(
+  };
+  return (
     <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
       <Card
         style={{ minHeight: Card1Height + 'px' }}
@@ -221,11 +196,32 @@ const countryicons = {
           width="50%"
         />
         <Name className="font-lexend">{props.name}</Name>
-        <ImageLoader dimensions={{height : 100 , width : 180}} height='1.5rem' width='2rem' widthmobile='2rem' url={countryicons[props.location]}></ImageLoader>
-        <ReviewContainer style={{position: 'relative'}}>
-            <ReviewFront className="font-nunito"><em>{props.text}</em> </ReviewFront>
-            {/* <FontAwesomeIcon icon={faQuoteRight} style={{position: 'absolute', right: '-5px', top: '-1rem'}}></FontAwesomeIcon> */}
-            {!isPageWide ? <ReadMore style={{borderStyle: 'none none solid none', borderWidth: '1px', width: 'max-content', margin: '2rem auto 0 auto', display: 'block'}} className="font-nunito">Read More</ReadMore> : null}
+        <ImageLoader
+          dimensions={{ height: 100, width: 180 }}
+          height="1.5rem"
+          width="2rem"
+          widthmobile="2rem"
+          url={countryicons[props.location]}
+        ></ImageLoader>
+        <ReviewContainer style={{ position: 'relative' }}>
+          <ReviewFront className="font-nunito">
+            <em>{props.text}</em>{' '}
+          </ReviewFront>
+          {/* <FontAwesomeIcon icon={faQuoteRight} style={{position: 'absolute', right: '-5px', top: '-1rem'}}></FontAwesomeIcon> */}
+          {!isPageWide ? (
+            <ReadMore
+              style={{
+                borderStyle: 'none none solid none',
+                borderWidth: '1px',
+                width: 'max-content',
+                margin: '2rem auto 0 auto',
+                display: 'block',
+              }}
+              className="font-nunito"
+            >
+              Read More
+            </ReadMore>
+          ) : null}
         </ReviewContainer>
       </Card>
       <Card2
