@@ -61,7 +61,7 @@ const RecomendationComponent = (props) => {
                     className="font-bold border-2 border-black rounded-md px-3 py-1 mt-2  m-auto block  bg-white text-black"
                     onClick={() => setViewMore(!viewMore)}
                   >
-                    {!viewMore ? 'viewMore' : 'viewLess'}
+                    {!viewMore ? 'View More' : 'View Less'}
                   </LivelyButton>
                 </div>
               )}

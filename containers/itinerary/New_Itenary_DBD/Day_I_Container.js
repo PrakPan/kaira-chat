@@ -11,6 +11,7 @@ import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
 import { convertDateFormat } from '../../../pages/helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import NewCity from './NewCity';
+import { isJson } from '../../../services/isJSON';
 export const DayContainerStyle = styled.div`
   display: flex;
   flex-direction: column;
@@ -149,13 +150,17 @@ const Day_I_Container = (props) => {
           );
           break;
         case 'recommendation':
-          dayIcontainer.push(
-            <RecomendationComponent
-              icon={element.icon}
-              recomendation={element.text}
-              heading={element.heading}
-            ></RecomendationComponent>
-          );
+          {
+            JSON.parse(element.text).length >= 1 &&
+              dayIcontainer.push(
+                <RecomendationComponent
+                  icon={element.icon}
+                  recomendation={element.text}
+                  heading={element.heading}
+                ></RecomendationComponent>
+              );
+          }
+
           break;
         case 'activity':
           dayIcontainer.push(

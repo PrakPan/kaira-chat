@@ -5,6 +5,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import { format, parseISO } from 'date-fns';
 import * as ga from '../../../services/ga/Index';
 import { FaPlane } from 'react-icons/fa';
+import { LivelyButton } from '../../../components/LiveleyButton';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -120,7 +121,11 @@ const TransferModeContainer = (props) => {
   const Facilities = [
     `${props?.costings_breakdown?.taxi_occupancy ?? '2'} Seater`,
     `${props?.costings_breakdown?.distance?.text ?? 'Leisure'}`,
-    '2 Luggage bags',
+    `${
+      props.booking_type == 'Taxi' || props.booking_type == 'Bus'
+        ? '2 Luggage bags'
+        : ''
+    }  `,
   ];
 
   return (
@@ -165,22 +170,24 @@ const TransferModeContainer = (props) => {
 
               <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
             </div>
-            <div>
-              <div className="text-[#01202B] font-medium">
-                ({props.booking.destination_code})
+            <div className="flex flex-row justify-between w-full">
+              <div>
+                <div className="text-[#01202B] font-medium">
+                  ({props.booking.destination_code})
+                </div>
+                <div>{formatDate(props.booking.check_out)}</div>
+                <div>{props.booking.destination_city}</div>
               </div>
-              <div>{formatDate(props.booking.check_out)}</div>
-              <div>{props.booking.destination_city}</div>
-            </div>
-            <div className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-2 font-bold font-lexend text-black rounded-md">
-              Edit
+              <div className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-2 font-bold font-lexend text-black rounded-md">
+                Change
+              </div>
             </div>
           </div>
         </div>
       ) : (
         <div className="flex flex-row gap-2 w-full py-[12px]">
           {props.modes && (
-            <div className="grid bg-[#F4F4F4] place-items-center lg:min-w-[8rem] min-w-[6rem] lg:min-h-[8rem] min-h-[6rem]  rounded-2xl">
+            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[8rem] min-w-[6rem] lg:min-h-[8rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
                 <TransportIconFetcher
                   TransportMode={props.booking_type}
@@ -193,6 +200,7 @@ const TransferModeContainer = (props) => {
               ) : (
                 props.icon && (
                   <ImageLoader
+                    className="aspect-[3/2] object-contain"
                     url={props.icon}
                     leftalign
                     dimensions={{ width: 800, height: 500 }}
@@ -204,20 +212,22 @@ const TransferModeContainer = (props) => {
             </div>
           )}
 
-          <div className="flex flex-col">
+          <div className="flex flex-col w-full">
             <div className="text-[#01202B] flex lg:flex-row flex-col gap-1 font-medium">
-              <div className="font-semibold">{props.heading}</div>
-              <div className="flex flex-row">
+              <div className="font-semibold w-full">{props.heading}</div>
+              <div className="flex flex-row justify-between w-full">
                 <div>
                   ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
                   {props.duration}h 30m)
                 </div>
-                <div
-                  onClick={() => HandleTransport(props.index)}
-                  className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                >
-                  Edit
-                </div>
+                {props.booking_type == 'Taxi' && (
+                  <LivelyButton
+                    onClick={() => HandleTransport(props.index)}
+                    className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                  >
+                    Change
+                  </LivelyButton>
+                )}
               </div>
             </div>
             {props.taxi_type && (

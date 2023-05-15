@@ -40,7 +40,7 @@ export function LivelyButton({ children, className, onClick }) {
     setTimeout(() => {
       setAnimate(false);
       onClick();
-    }, 400);
+    }, 500);
   };
 
   return (

@@ -112,7 +112,17 @@ const ItineraryPoiElementM = (props) => {
             <Heading>{props.heading}</Heading>
             <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
+
           {props?.rating && <StarRating initialRating={4}></StarRating>}
+          <div className="flex flex-row">
+            <div
+              className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[4px] mt-4    block  bg-white text-[#9F9F9F]"
+              // onClick={() => setViewMore(!viewMore)}
+            >
+              {true ? 'ATTRACTION' : 'View Less'}
+            </div>
+          </div>
+
           {props.poi ? <div></div> : null}
           {/* <Rating margin="0.25rem 0"></Rating> */}
 

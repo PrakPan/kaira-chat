@@ -110,13 +110,16 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case 'recommendation':
-          dayIcontainer.push(
-            <RecomendationComponent
-              icon={element.icon}
-              recomendation={element.text}
-              heading={element.heading}
-            ></RecomendationComponent>
-          );
+          {
+            JSON.parse(element.text).length >= 1 &&
+              dayIcontainer.push(
+                <RecomendationComponent
+                  icon={element.icon}
+                  recomendation={element.text}
+                  heading={element.heading}
+                ></RecomendationComponent>
+              );
+          }
           break;
         case 'activity':
           dayIcontainer.push(
