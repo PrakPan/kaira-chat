@@ -166,14 +166,16 @@ const PlanAsPerTheme = (props) => {
 useEffect(()=>{
   axiosCountInstance.get('').then(res=>setCount(res.data.user))
 },[])    
-    const _handleTripRedirect = (link)=>{
-      router.push(`/travel-planner/${link}`)
+    const _handleTripRedirect = (path)=>{
+      // router.push(`/travel-planner/${link}`)
+      console.log('props: ', props);
+      if(path) window.location.href = '/india/' + path
     }
 
     const order = ['e','b','c','a']
     const ThemeContainer = 
     props.ThemeData?.map((e,i)=>(
-        <GridItem className={order[i]} key={i} onClick={()=>_handleTripRedirect(e.link)}>
+        <GridItem className={order[i]} key={i} onClick={()=>_handleTripRedirect(e.path)}>
             {ImgLoading && <SkeletonCard />}
             <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>
             <TextContainer className='AnimateTop'>

@@ -74,18 +74,9 @@ const Experiences= (props) => {
 //   ); 
 
     const _handleRedirect = (e) => {
-        e.preventDefault()
-        if (props.ancestors && props.slug) {
-            const anc = props.ancestors;
-            if (anc.length === 1) {
-                if (anc[0].level == "Country" && anc[0].name) {
-                     const link = '/'+ anc[0].slug + "/" + props.slug;
-                    window.location.href = link
-                    
-                }
-                                   
-            }
-       }
+      e.preventDefault()
+      if(props.path) window.location.href = '/'+props.path;
+      console.log('props.path: ', props.path);
     }
     const path = props.city ? "https://thetarzanway.com/travel-guide/city/" : "https://thetarzanway.com/travel-planner/"
 return (

@@ -48,13 +48,14 @@ margin: 1rem;
 
 const NewResults = (props) => {
   const _handleLocationClick = (data) => {
-    if(data.cta){
-     
+    console.log('data: ', data);
+     if (data.path) window.location.href = "/" + data.path;
 
-    if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
-    else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
-  
-    }}
+    // if(data.cta){
+    // if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
+    // else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
+    // }
+  }
   
   const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '0.5fr 5fr'}}>
   <SkeletonCard borderRadius='100%' width='44px'></SkeletonCard>
@@ -69,12 +70,12 @@ const NewResults = (props) => {
     return(      <>
         <Container>
         {props.results.map((e,i)=>
-       { if(i<5) return<LocationContainer key={e["_source"].resource_id} onClick={() => {_handleLocationClick(e['_source'])}}>
+       { if(i<5) return<LocationContainer key={e.resource_id} onClick={() => {_handleLocationClick(e)}}>
             
             <MarkerContainer><ImSearch /></MarkerContainer>
             <Text>
-              <div>{e['_source'].name}</div>
-            {e['_source'].parent && <p>{e['_source'].parent}</p>}            
+              <div>{e.name}</div>
+            {e.parent && <p>{e.parent}</p>}            
             </Text>
         </LocationContainer>}
         )

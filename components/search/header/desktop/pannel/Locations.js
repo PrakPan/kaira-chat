@@ -96,21 +96,7 @@ const Locations = (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (data) => {
-   if(data.cta) {
-    if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta    
-       if (data.type === 'State') {
-             if (data.ancestors && data.cta) {
-               const anc = data.ancestors;
-               if (anc.length === 1) {
-                 if (anc[0].level == "Country" && anc[0].name) {
-                   const link = "/" + anc[0].slug + "/" + data.cta;
-                   window.location.href = link;
-                 }
-               }
-             }
-       }
-
-}
+      window.location.href = '/' + data.path
   }
   let locations=[];
     if(props.hotlocations){
@@ -144,7 +130,7 @@ const Locations = (props) => {
     }
     return(
         <div>
-        <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
+            <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
         <Container>
         {locations}
         </Container>

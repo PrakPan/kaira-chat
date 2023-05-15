@@ -54,14 +54,16 @@ const [hotLocationsData, setHotLocationsData] = useState();
             }
           });
         setInputValue(event.target.value);
-        axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
-            if(res.data.length){
-                setResults(res.data);
-                setShowResults(true)
-            }
-            else setShowResults(false);
-
-        });
+        axios
+          .get(
+            `https://apis.tarzanway.com/search/suggest/?q=` + event.target.value
+          )
+          .then((res) => {
+            if (res.data.length) {
+              setResults(res.data.slice(0, 10));
+              setShowResults(true);
+            } else setShowResults(false);
+          });
     }
     const ref=useRef();
 

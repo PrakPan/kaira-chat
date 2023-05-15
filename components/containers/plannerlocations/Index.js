@@ -3,6 +3,7 @@ import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from './Card';
 import Carousel from '../../FlickityCarousel';
+import EmblaCarousel from '../../EmblaCarousel';
 import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
@@ -50,6 +51,7 @@ const LocationsBlog = (props) => {
           <Card
             key={props.locations[i].id}
             ancestors={props.locations[i].ancestors}
+            path={props.locations[i].path}
           location={props.locations[i].destination}
           heading={props.locations[i].tagline}
           img={props.locations[i].image}
@@ -74,13 +76,45 @@ const LocationsBlog = (props) => {
     }
   }, []);
 
-  if(isPageWide) return(
-      <div>
-               {cards.length?<Carousel hideSides initialIndex={0} groupCells={6} numberOfCards={6} cards={cards}></Carousel> : <DesktopSkeleton />}
-              <Button  onclick={()=>openTailoredModal(router,props.page_id,props.destination)} borderWidth="1px" fontSizeDesktop="16px" fontWeight="500" borderRadius="6px" margin="2rem auto" padding="0.5rem 2rem" >Unlock your personalized adventure</Button> 
-
-      </div>
- )
+  if(isPageWide) return (
+    <div>
+      {cards.length ? (
+        <Carousel
+          hideSides
+          initialIndex={0}
+          groupCells={6}
+          numberOfCards={6}
+          cards={cards}
+        ></Carousel>
+      ) : (
+        <DesktopSkeleton />
+      )}
+      {/* {cards.length ? (
+        <EmblaCarousel
+          hideSides
+          initialIndex={0}
+          groupCells={6}
+          numberOfCards={6}
+          cards={cards}
+        ></EmblaCarousel>
+      ) : (
+        <DesktopSkeleton />
+      )} */}
+      <Button
+        onclick={() =>
+          openTailoredModal(router, props.page_id, props.destination)
+        }
+        borderWidth="1px"
+        fontSizeDesktop="16px"
+        fontWeight="500"
+        borderRadius="6px"
+        margin="2rem auto"
+        padding="0.5rem 2rem"
+      >
+        Unlock your personalized adventure
+      </Button>
+    </div>
+  );
   else return <div>       
           <div style={{ padding: "1rem 0"}}>
             {MobilecardsToShowJSX.length?<PageDotsFlickity initialIndex={0} cards={MobilecardsToShowJSX}></PageDotsFlickity>:<MobileSkeleton />}

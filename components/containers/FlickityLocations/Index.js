@@ -37,7 +37,7 @@ const LocationsBlog= (props) => {
     );
 }
       const _handleRedirect = (slug) => {
-        router.push('/travel-guide/city/'+slug)
+        // router.push('/travel-guide/city/'+slug)
       }
     
    if(isPageWide) {

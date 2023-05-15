@@ -41,29 +41,32 @@ const Search = (props) => {
     if(e.target.value.length > 1)
     {
       setLoading(true)
-      axios.get(`https://apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
-      setLoading(false)  
-      if(res.data.length){
-        const resultsData = res.data.map((e)=>e['_source'])
-            setResults(resultsData)
-        }
-        else {
-          setShowResults(false)
-      setShowHotLocations(true); 
-        };
+      axios
+        .get(`https://apis.tarzanway.com/search/suggest/?q=` + e.target.value)
+        .then((res) => {
+          setLoading(false);
+          if (res.data.length) {
+            // const resultsData = res.data.map((e) => e["_source"]);
+            setResults(res.data.slice(0, 5));
+          } else {
+            setShowResults(false);
+            setShowHotLocations(true);
+          }
 
-        // else props._showSearchedLocations([]);
-
-      }).catch(error => {
-        setLoading(false)
+          // else props._showSearchedLocations([]);
+        })
+        .catch((error) => {
+          setLoading(false);
           setShowResults(true);
-        setResults({
-   type : 'error',
-   data : <div style={{ margin: "1rem" }}>
-     Something went wrong! Please try again later.
-   </div>
-  } );
-})
+          setResults({
+            type: "error",
+            data: (
+              <div style={{ margin: "1rem" }}>
+                Something went wrong! Please try again later.
+              </div>
+            ),
+          });
+        });
 }
   }
   useEffect(() => {

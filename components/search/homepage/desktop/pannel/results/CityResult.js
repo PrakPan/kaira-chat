@@ -40,7 +40,8 @@ background-color: #f7e700;
 const Result= (props) => {
   const router = useRouter();
 const _handleCTA = () => {
-    router.push('/travel-guide/city/'+props.cta)
+    // router.push('/travel-guide/city/'+props.cta)
+    window.location.href = '/' + props.path
 
 }
 const _handlePlanning = (id, name) => {

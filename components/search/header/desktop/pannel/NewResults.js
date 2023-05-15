@@ -95,12 +95,11 @@ const NewResults = (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
     const _handleLocationClick = (data) => {
-      
-    if(data.cta){
-
-        if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
-        else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
-    }
+      if (data.path) window.location.href = "/" + data.path;
+    // if(data.cta){
+    //     if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
+    //     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
+    // }
   }
   
   const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '1fr 5fr'}}>
@@ -120,12 +119,12 @@ const NewResults = (props) => {
         <>
         <Container>
         {props.results.map((e)=>
-        <LocationContainer key={e["_source"].resource_id} onClick={() => {_handleLocationClick(e['_source'])}}>
+        <LocationContainer key={e.resource_id} onClick={() => {_handleLocationClick(e)}}>
             
             <MarkerContainer><ImSearch /></MarkerContainer>
             <Text>
-              <div>{e['_source'].name}</div>
-            {e['_source'].parent && <p>{e['_source'].parent}</p>}            
+              <div>{e.name}</div>
+            {e.parent && <p>{e.parent}</p>}            
             </Text>
         </LocationContainer>
         )}

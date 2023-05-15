@@ -58,19 +58,9 @@ export async function getStaticPaths() {
 
   let paths = [];
     for (var i = 0; i < data.length; i++) {
-          var countrySlug;
-        var stateSlug;
-        var citySlug;
-          if (data[i] && data[i].ancestors) {
-            if (data[i].ancestors[0] && data[i].ancestors[1])
-              if (
-                data[i].ancestors[0].level === "State" &&
-                data[i].ancestors[1].level === "Country"
-              )
-                stateSlug = data[i].ancestors[0].slug;
-            countrySlug = data[i].ancestors[1].slug;
-            if (data[i].cta) citySlug = data[i].cta;
-          }
+        const pathArr = data[i].path.split("/");
+        if (pathArr.length === 3)
+          var [countrySlug, stateSlug, citySlug] = pathArr;
     if (data[i].cta) {
       paths.push({
         params: {
@@ -81,14 +71,6 @@ export async function getStaticPaths() {
       });
     }
   }
-  // let paths = data.map((object) => {
-  //       if(object.cta !== null)
-  //             return {
-  //                   params: {
-  //                         city: object.cta
-  //                   }
-  //             }
-  // })
   return {
     paths: paths,
     fallback: "blocking",
@@ -113,6 +95,7 @@ export async function getStaticProps(context) {
       long: e.long,
       most_popular_for: e.most_popular_for,
       name: e.name,
+      path : e.path
     }));
   } catch {
     var reccomendedCitiesData = null;

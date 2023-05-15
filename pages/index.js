@@ -61,7 +61,7 @@ catch(e){
   console.log(e)
   locations = []
 }
-  const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading}})
+  const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading , path : e.path}})
       if (!data) {
             return {
               notFound: true,

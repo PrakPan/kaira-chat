@@ -41,23 +41,27 @@ export async function getStaticPaths(){
       const data = res.data
       let paths = [];
       for (var i = 0; i < data.length; i++){
-            var countrySlug
-            var stateSlug
-        if (data[i] && data[i].ancestors) {
-          if (data[i].ancestors[0])
-            if (data[i].ancestors[0].level === "Country")
-              countrySlug = data[i].ancestors[0].slug;
-          if (data[i].cta) stateSlug = data[i].cta;
-        }
+        //     var countrySlug
+        //     var stateSlug
+        // if (data[i] && data[i].ancestors) {
+        //   if (data[i].ancestors[0])
+        //     if (data[i].ancestors[0].level === "Country")
+        //       countrySlug = data[i].ancestors[0].slug;
+        //   if (data[i].cta) stateSlug = data[i].cta;
+        // }
+// console.log("data[i]: ", data[i]);
+        const pathArr = data[i].path.split("/");
+        if (pathArr.length === 2) var [countrySlug, stateSlug] = pathArr;
+        else if (pathArr.length === 1) { var countrySlug = 'india';  var stateSlug = pathArr[0]}
 
-        if (data[i].id !== 1) {
-          paths.push({
-            params: {
-              country: countrySlug,
-              state: stateSlug,
-            },
-          });
-        }
+  if (data[i].id !== 1) {
+    paths.push({
+      params: {
+        country: countrySlug,
+        state: stateSlug,
+      },
+    });
+  }
     }  
   
     return{

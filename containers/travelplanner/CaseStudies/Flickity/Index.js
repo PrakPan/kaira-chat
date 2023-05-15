@@ -34,9 +34,6 @@ const LocationsBlog= (props) => {
   </Card>
     )
 }
-      const _handleRedirect = (slug) => {
-        router.push('/travel-guide/city/'+slug)
-      }
     
   if(isPageWide) {
    return(

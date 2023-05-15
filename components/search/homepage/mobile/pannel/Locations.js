@@ -62,14 +62,16 @@ color: #7A7A7A;
 `;
 
 const Locations= (props) => {
-  const _handleLocationClick = (data) => {
-    if(data.cta) {
-     // props.setPannelClose()
-     // router.push('/travel-guide/city/'+slug)
-     if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta    
-     if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta    
+    const _handleLocationClick = (data) => {
+     if (data.path) window.location.href = "/" + data.path;
+      
+//     if(data.cta) {
+//      props.setPannelClose()
+//      router.push('/travel-guide/city/'+slug)
+//      if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta    
+//      if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta    
  
- }
+//  }
    }
 
   let locations=[];

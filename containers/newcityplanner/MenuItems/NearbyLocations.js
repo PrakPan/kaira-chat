@@ -25,9 +25,7 @@ const Heading = styled.p`
 `;
 
 const NearbyLocations = (props) => {
-
   if (!props.nearbyCities || props.nearbyCities?.length === 0) return <></>;
-   
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
   const [cards, setCards] = useState([])
   const [hide , setHide] = useState(false)
@@ -56,7 +54,7 @@ for(let i = 0;i<props.nearbyCities.length;i++){
     location={props.nearbyCities[i].name}
     heading={props.nearbyCities[i].most_popular_for[props.nearbyCities[i].most_popular_for.length-1]}
     img={props.nearbyCities[i].image}
-    slug={props.nearbyCities[i].slug}
+    path={props.nearbyCities[i].path}
     link={props.nearbyCities[i].slug}
     city={true}
      >

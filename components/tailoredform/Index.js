@@ -92,7 +92,7 @@ const Enquiry = (props) => {
   const [flexible, setFlexible] = useState(false);
 
   const [selectedCities, setSelectedCities] = useState(
-    router.pathname.split("/").includes("travel-planner")
+    !router.pathname.split("/").includes("[city]")
       ? [
           {
             destination_id: routerquery.page_id || props.page_id,

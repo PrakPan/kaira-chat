@@ -8,6 +8,7 @@ import axioslocationsinstance from '../../../../../services/search/search'
 import NewResults from './NewResults';
 import {ImSearch} from 'react-icons/im'
 import {MdCancel} from 'react-icons/md'
+import { RxCross2 } from 'react-icons/rx';
 
 const Container = styled.div`
     background-color: white;
@@ -80,16 +81,21 @@ const SearchPannel= (props) => {
           setShowP(false)
           setShowResults(true);
           setResults(null);
-          axios.get(`https://apis.tarzanway.com/search/?q=`+event.target.value).then(res=>{
-            if(res.data.length){
-                setResults(res.data);
-                setShowResults(true)
-                setShowP(false)
-            }
-            else {setShowP(true) 
-                setShowResults(false)
-            };
-        });
+          axios
+            .get(
+              `https://apis.tarzanway.com/search/suggest/?q=` +
+                event.target.value
+            )
+            .then((res) => {
+              if (res.data.length) {
+                setResults(res.data.slice(0, 10));
+                setShowResults(true);
+                setShowP(false);
+              } else {
+                setShowP(true);
+                setShowResults(false);
+              }
+            });
     }
 
 

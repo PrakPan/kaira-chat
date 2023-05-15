@@ -12,7 +12,7 @@ export const getServerSideProps = async ({ res }) => {
     const citiesdata = await cities.json();
     
     let citypaths = citiesdata.map((object) => {
-                return BASE_URL+"/travel-guide/city/"+object.cta
+                return BASE_URL + '/'+object.path
     })
     // let thingspaths = citiesdata.map((object) => {
     //   return BASE_URL+"/travel-guide/city/"+object.cta+"/things-to-do"
