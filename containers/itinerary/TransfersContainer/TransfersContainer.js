@@ -503,7 +503,7 @@ const TransfersContainer = (props) => {
   const midsectionHandler = (data, prevdata) => {};
   let startingcity = null;
   let endingcity = null;
-  if (props.breif)
+  if (props.breif) {
     if (props.breif.city_slabs) {
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].is_departure_only)
@@ -724,11 +724,137 @@ const TransfersContainer = (props) => {
           }
         }
       }
-      if (!startingcity) startingcity = props.breif.city_slabs[0].city_name;
-      if (!endingcity)
-        endingcity =
-          props.breif.city_slabs[props.breif.city_slabs.length - 1].city_name;
+      // for (var i = 1; i < props.transferBookings.length; i++) {
+      //   //If duration present and not 0, not trip terminated or departure only city show in route
+
+      //   locationsArr.push(
+      //     <PinSection
+      //       setCurrentPopup={false}
+      //       handlemap={handlemap}
+      //       cityData={props.routes[i - 1]}
+      //       dayslab={props.dayslab}
+      //       lat={props.routes[i - 1]?.lat}
+      //       long={props.routes[i - 1]?.long}
+      //       Mapid={props.routes[i - 1].gmaps_place_id}
+      //       city={props.transferBookings[i].destination_city	}
+      //       cityId={props.routes[i - 1].city_id}
+      //       duration={
+      //         props.breif.city_slabs[i - 1].duration
+      //           ? props.breif.city_slabs[i - 1].duration + ' Nights'
+      //           : null
+      //       }
+      //       pinColour={props.routes[i - 1].color}
+      //       data={order[i - 1]}
+      //       _moveDownHandler={_moveDownHandler}
+      //       _moveUpHandler={_moveUpHandler}
+      //       index={i - 1}
+      //     ></PinSection>
+      //   );
+      //   // midsectionHandler(
+      //   //   props?.transferBookings[i],
+      //   //   props?.transferBookings[i - 1]
+      //   // );
+      //   {
+      //     props?.transferBookings &&
+      //     props?.transferBookings[i]?.booking_type == 'Flight'
+      //       ? locationsArr.push(
+      //           <div className="flex flex-col gap-1">
+      //             <TransferModeContainer
+      //               booking_type={props?.transferBookings[i + 1]?.booking_type}
+      //               pinColour={props.breif.city_slabs[i].color}
+      //               costings_breakdown={
+      //                 props?.transferBookings[i + 1]?.costings_breakdown
+      //               }
+      //               booking={props?.transferBookings[i + 1]}
+      //               heading={
+      //                 props?.transferBookings[i + 1]?.booking_display_name
+      //               }
+      //               index={i + 1}
+      //               icon={props?.transfers[i + 1]?.icon}
+      //               modes={getTransportationType(props?.transfers[i + 1]?.icon)}
+      //               transferbookings={props.transferBookings}
+      //               _changeTaxiHandler={_changeTaxiHandler}
+      //               setShowTaxiModal={props.setShowTaxiModal}
+      //               icon={props?.transferBookings[i + 1]?.images?.image}
+      //               taxi_type={props?.transferBookings[i + 1]?.taxi_type}
+      //               transportMode={getTransportationType(
+      //                 props?.transfers[i + 1]?.icon
+      //               )}
+      //               duration={props.breif.city_slabs[i].duration}
+      //             ></TransferModeContainer>
+      //             <TransferModeContainer
+      //               booking_type={props?.transferBookings[i]?.booking_type}
+      //               transferbookings={props.transferBookings}
+      //               _changeTaxiHandler={_changeTaxiHandler}
+      //               setShowTaxiModal={props.setShowTaxiModal}
+      //               pinColour={props.breif.city_slabs[i].color}
+      //               costings_breakdown={
+      //                 props?.transferBookings[i]?.costings_breakdown
+      //               }
+      //               booking={props?.transferBookings[i]}
+      //               index={i}
+      //               heading={props?.transferBookings[i]?.booking_display_name}
+      //               icon={props?.transfers[i]?.icon}
+      //               modes={getTransportationType(props?.transfers[i]?.icon)}
+      //               icon={props?.transferBookings[i]?.images?.image}
+      //               taxi_type={props?.transferBookings[i]?.taxi_type}
+      //               transportMode={getTransportationType(
+      //                 props?.transfers[i]?.icon
+      //               )}
+      //               duration={props.breif.city_slabs[i].duration}
+      //             ></TransferModeContainer>
+      //           </div>
+      //         )
+      //       : locationsArr.push(
+      //           props?.transferBookings && (
+      //             <TransferModeContainer
+      //               booking_type={props?.transferBookings[i]?.booking_type}
+      //               pinColour={props.breif.city_slabs[i].color}
+      //               costings_breakdown={
+      //                 props?.transferBookings[i]?.costings_breakdown
+      //               }
+      //               heading={props?.transferBookings[i]?.booking_display_name}
+      //               transferbookings={props.transferBookings}
+      //               _changeTaxiHandler={_changeTaxiHandler}
+      //               setShowTaxiModal={props.setShowTaxiModal}
+      //               icon={props?.transfers[i]?.icon}
+      //               index={i}
+      //               booking={props?.transferBookings[i]}
+      //               modes={getTransportationType(props?.transfers[i]?.icon)}
+      //               icon={props?.transferBookings[i]?.images?.image}
+      //               taxi_type={props?.transferBookings[i]?.taxi_type}
+      //               transportMode={getTransportationType(
+      //                 props?.transfers[i]?.icon
+      //               )}
+      //               duration={props.breif.city_slabs[i].duration}
+      //             ></TransferModeContainer>
+      //           )
+      //         );
+      //   }
+
+      //   // locationsArr.push(
+      //   //   <TransferModeContainer
+      //   //     pinColour={props.breif.city_slabs[i].color}
+      //   //     icon={props?.transfers[i]?.icon}
+      //   //     modes={
+      //   //       props?.transfers[i]?.modes[1]
+      //   //         ? props?.transfers[i]?.modes[1]
+      //   //         : props?.transfers[i]?.modes[0]
+      //   //     }
+      //   //     icon={props?.transferBookings[i]?.images?.image}
+      //   //     taxi_type={props?.transferBookings[i]?.taxi_type}
+      //   //     transportMode={
+      //   //       props?.transfers[i]?.modes[1]
+      //   //         ? props?.transfers[i]?.modes[1]
+      //   //         : props?.transfers[i]?.modes[0]
+      //   //     }
+      //   //     duration={props.breif.city_slabs[i].duration}
+      //   //   ></TransferModeContainer>
+      //   // );
+      // }
     }
+  }
+
   return (
     <Container>
       <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-4xl group text-[#262626] transition duration-300 max-w-fit">

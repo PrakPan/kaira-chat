@@ -66,17 +66,17 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
       { range: [150, 199], degree: 9 },
       { range: [200, 249], degree: 8 },
       { range: [250, 299], degree: 7 },
-      { range: [300, 349], degree: 6 },
-      { range: [350, 399], degree: 5 },
-      { range: [400, 449], degree: 4 },
-      { range: [450, Infinity], degree: 3 },
+      { range: [300, 499], degree: 6 },
+      { range: [2000, 2999], degree: 5 },
+      { range: [3000, 3999], degree: 4 },
+      { range: [4000, Infinity], degree: 3 },
     ];
 
     for (let i = 0; i < degrees.length; i++) {
       const range = degrees[i].range;
 
       if (value >= range[0] && value <= range[1]) {
-        console.log(degrees[i].degree);
+        console.log(degrees[i].degree, value);
         return degrees[i].degree;
       }
     }
