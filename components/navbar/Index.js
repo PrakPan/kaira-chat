@@ -15,7 +15,7 @@ import axiosnotificationsinstance from '../../services/user/notifications/notifi
 const Navbar = (props) => {
   let isPageWide = media('(min-width: 768px)')
     const [hideNav, setHideNav] = useState(false);
-
+    const [showMobileSearch , setShowMobileSearch] = useState(false)
     const [headerColor, setHeaderColor] = useState('black')
     const [notOpenCount,  setNotOpenCount] = useState();
 
@@ -94,20 +94,23 @@ const _openAllNotificationsHandler = () => {
     return (
       <div className="font-lexend">
         <div className="hidden-desktop">
-          
-          {!hideNav && <NewMobile
-            PW={props.PW}
-            id={props.id}
-            destination={props.destination}
-            _openAllNotificationsHandler={_openAllNotificationsHandler}
-            hidecta={props.hidecta}
-            ctaonclick={props.ctaonclick}
-            _deleteNotificationHandler={_deleteNotificationHandler}
-            notifications={notifications}
-            hideNav={hideNav}
-            notOpenCount={notOpenCount}
-          ></NewMobile>
-          }
+          {!hideNav && (
+            <NewMobile
+              PW={props.PW}
+              id={props.id}
+              destination={props.destination}
+              _openAllNotificationsHandler={_openAllNotificationsHandler}
+              hidecta={props.hidecta}
+              ctaonclick={props.ctaonclick}
+              _deleteNotificationHandler={_deleteNotificationHandler}
+              notifications={notifications}
+              hideNav={hideNav}
+              showMobileSearch={showMobileSearch}
+              setShowMobileSearch={setShowMobileSearch}
+              setHideNav={setHideNav}
+              notOpenCount={notOpenCount}
+            ></NewMobile>
+          )}
         </div>
         <div className="hidden-mobile">
           {/* <div
@@ -115,7 +118,8 @@ const _openAllNotificationsHandler = () => {
               display: hideNav ? "none !important" : "initial !important",
             }}
           > */}
-          {!hideNav &&   <IndexDesktop
+          {!hideNav && (
+            <IndexDesktop
               id={props.id}
               destination={props.destination}
               PW={props.PW}
@@ -128,7 +132,8 @@ const _openAllNotificationsHandler = () => {
               notifications={notifications}
               token={props.token}
               style={{}}
-            ></IndexDesktop>}
+            ></IndexDesktop>
+          )}
           {/* </div> */}
         </div>
       </div>
