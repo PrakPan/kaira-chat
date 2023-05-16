@@ -7,20 +7,22 @@ const Sitemap = () => {
 export const getServerSideProps = async ({ res }) => {
   const BASE_URL = 'https://thetarzanway.com';
 
-    //Fetch city list 
-    const cities = await fetch(`https://apis.tarzanway.com/search/all/?type=Location`)
-    const citiesdata = await cities.json();
-    
-    let citypaths = citiesdata.map((object) => {
-                return BASE_URL+"/travel-guide/city/"+object.cta
-    })
-    // let thingspaths = citiesdata.map((object) => {
-    //   return BASE_URL+"/travel-guide/city/"+object.cta+"/things-to-do"
-    // })
+  //Fetch city list
+  const cities = await fetch(
+    `https://apis.tarzanway.com/search/all/?type=Location`
+  );
+  const citiesdata = await cities.json();
 
   let citypaths = citiesdata.map((object) => {
     return BASE_URL + '/travel-guide/city/' + object.cta;
   });
+  // let thingspaths = citiesdata.map((object) => {
+  //   return BASE_URL+"/travel-guide/city/"+object.cta+"/things-to-do"
+  // })
+
+  // let citypaths = citiesdata.map((object) => {
+  //   return BASE_URL + '/travel-guide/city/' + object.cta;
+  // });
   let thingspaths = citiesdata.map((object) => {
     return BASE_URL + '/travel-guide/city/' + object.cta + '/things-to-do';
   });
@@ -70,21 +72,19 @@ export const getServerSideProps = async ({ res }) => {
     ...experiencepaths,
   ];
 
+  // const allPaths = [
+  //   ...StaticPaths,
+  //   ...citypaths,
+  //   ...thingspaths,
+  //   ...experiencepaths,
+  // ];
+  // const allPaths = [
+  //   ...StaticPaths,
+  //   ...citypaths,
+  //   ...experiencepaths,
+  // ];
 
-    ]
-    // const allPaths = [
-    //   ...StaticPaths,
-    //   ...citypaths,
-    //   ...thingspaths,
-    //   ...experiencepaths,
-    // ];
-    const allPaths = [
-      ...StaticPaths,
-      ...citypaths,
-      ...experiencepaths,
-    ];
-
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       ${allPaths
         .map((url, index) => {

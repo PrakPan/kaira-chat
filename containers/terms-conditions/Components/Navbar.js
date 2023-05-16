@@ -5,7 +5,10 @@ import styled from 'styled-components';
 
 import { Link, animateScroll as scroll } from 'react-scroll';
 
-import { Link, animateScroll as scroll } from "react-scroll";
+const Term2 = () => {
+  const handleSetActive = (activeClass) => {
+    setHeadingCont(activeClass);
+  };
 
   let card = [];
   const [headingText, setHeadingText] = useState(false);
@@ -22,6 +25,7 @@ import { Link, animateScroll as scroll } from "react-scroll";
                 headingCont === content[i].subheading
                   ? '#f7e700'
                   : 'transparent',
+              padding: '0.5rem',
               fontWeight: headingCont === content[i].subheading ? '600' : '400',
             }}
           >
