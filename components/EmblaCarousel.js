@@ -30,7 +30,11 @@ overflow : hidden;
 
 
 const FlickityCarousel = (props) => {
-     const [emblaRef] = useEmblaCarousel({ loop: false, startIndex: 0 });
+     const [emblaRef] = useEmblaCarousel({
+       loop: false,
+       startIndex: 0,
+       initialIndex: 0,
+     });
   const containerRef = useRef()
   const [containerWidth , setContainerWidth] = useState(props.numberOfCards ? `${100/+props.numberOfCards -1}%` : '80%')
   useEffect(() => {
