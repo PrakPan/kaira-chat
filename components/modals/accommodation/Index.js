@@ -89,7 +89,7 @@ const POI = (props) => {
                 name={props.poi ? props.poi.name : null}
                 duration={props.poi ? props.poi.ideal_duration_hours : null}
               ></Overview>
-              <Tabs data={data}></Tabs>
+              {/* <Tabs data={data}></Tabs> */}
               <div>
                 {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
                 {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}

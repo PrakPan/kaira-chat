@@ -29,8 +29,10 @@ const Rooms = (props) => {
   }, [props.data]);
   return (
     <Container>
-      <div className="text-lg font-bold ">Rooms</div>
-      <div className="flex w-full flex-row overflow-auto">{rooms}</div>
+      <div className="font-semibold text-3xl text-black mb-4">Rooms</div>
+      <div className="flex w-full flex-row overflow-auto Hide_scrollBar">
+        {rooms}
+      </div>
 
       {/* <ImageLoader url={props.image ? props.image: 'media/website/grey.png'} dimensions={{width: 900, height: 900}} dimensionsMobile={{width: 600, height: 600}} width="60%" margin="auto"/>  */}
     </Container>

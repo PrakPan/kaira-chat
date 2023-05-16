@@ -4,6 +4,7 @@ import Heading from '../../../../components/newheading/heading/Index';
 // import Option from '../../../components/forms/Option';
 // import Dropdown from '../../../components/forms/Dropdown';
 import Button from '../../../../components/Button';
+import { RiWhatsappFill } from 'react-icons/ri';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { connect } from 'react-redux';
 import * as orderaction from '../../../../store/actions/order';
@@ -31,6 +32,7 @@ import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCr
 import Spinner from '../../../../components/Spinner';
 import TermsModal from '../../../../components/modals/terms/PW';
 import RegisteredUsersModal from '../../../../components/modals/registeredusers/Index';
+import ButtonYellow from '../../../../components/ButtonYellow';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -858,8 +860,19 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
           </Button>
         ) : null
       ) : null}
-
-      <Button
+      <ButtonYellow
+        styleClass="w-full"
+        primary={false}
+        onclick={() =>
+          (window.location.href = urls.WHATSAPP + '?text=' + message)
+        }
+      >
+        <div className="flex flex-row justify-center items-center">
+          <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+          <div className="text-[#01202B] ">Chat on Whatsapp</div>
+        </div>
+      </ButtonYellow>
+      {/* <Button
         onclick={() =>
           (window.location.href = urls.WHATSAPP + '?text=' + message)
         }
@@ -875,7 +888,7 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
       >
         <FontAwesomeIcon icon={faWhatsapp} style={{ marginRight: '0.5rem' }} />
         Connect on WhatsApp
-      </Button>
+      </Button> */}
       <div
         style={{ color: 'blue', margin: '1rem 0 0 0', fontSize: '0.85rem' }}
         className=" text-center hover-pointer font-opensans"

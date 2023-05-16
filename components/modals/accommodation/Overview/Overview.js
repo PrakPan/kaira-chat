@@ -2,11 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../ImageLoader';
 import Filters from './Filters';
-import Location from './Location';
+import Location from '../Location';
 import { getHumanTime } from '../../../../services/getHumanTime';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
 
 import Rooms from '../roomtypes/Index';
+import Ammenities from '../Ammenities';
 
 const Container = styled.div`
   border-style: none none solid none;
@@ -35,17 +36,9 @@ const DetailsContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   @media screen and (min-width: 768px) {
-    width: 60%;
-    margin: auto;
   }
 `;
-const CheckIn = styled.div`
-  font-size: 0.9rem;
-  font-weight: 300;
-  @media screen and (min-width: 768px) {
-    margin: auto;
-  }
-`;
+
 const Cost = styled.div`
   font-weight: 600;
   text-align: right;
@@ -160,58 +153,129 @@ const Overview = (props) => {
         </ImageContainer> */}
 
       <ImageContainer>
-        <GridImage>
-          <Child area="1 / 1 / 5 / 4" className="div1 ">
-            <ImageLoader
-              url={images[0]}
-              fit="cover"
-              width="100%"
-              height="100%"
-              // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-              // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-              //   maxheight="60vh"
-              //   maxwidth={isPageWide ? '70vw' : '80vw'}
-            />
-          </Child>
+        {images.length > 3 ? (
+          <GridImage>
+            <Child area="1 / 1 / 5 / 4" className="div1 ">
+              <ImageLoader
+                url={images[0]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
 
-          <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-            <ImageLoader
-              url={images[1]}
-              fit="cover"
-              width="100%"
-              height="100%"
-              // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-              // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-              //   maxheight="60vh"
-              //   maxwidth={isPageWide ? '70vw' : '80vw'}
-            />
-          </Child>
-          <Child area="1 / 4 / 3 / 8" className="div3">
-            <ImageLoader
-              url={images[2]}
-              fit="cover"
-              width="100%"
-              height="100%"
-              // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-              // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-              //   maxheight="60vh"
-              //   maxwidth={isPageWide ? '70vw' : '80vw'}
-            />
-          </Child>
-          <Child area="3 / 4 / 5 / 8" className="div4">
-            <ImageLoader
-              url={images[3]}
-              fit="cover"
-              width="100%"
-              height="100%"
-              // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-              // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-              //   maxheight="60vh"
-              //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              fit="cover"
-            />
-          </Child>
-        </GridImage>
+            <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+              <ImageLoader
+                url={images[1]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+            <Child area="1 / 4 / 3 / 8" className="div3">
+              <ImageLoader
+                url={images[2]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+            <Child area="3 / 4 / 5 / 8" className="div4">
+              <ImageLoader
+                url={images[3]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                fit="cover"
+              />
+            </Child>
+          </GridImage>
+        ) : images.length == 3 ? (
+          <GridImage>
+            <Child area="1 / 1 / 5 / 4" className="div1 ">
+              <ImageLoader
+                url={images[0]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+
+            <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
+              <ImageLoader
+                url={images[1]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+            <Child area="1 / 7 / 5 / 11" className="div3">
+              <ImageLoader
+                url={images[2]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+          </GridImage>
+        ) : (
+          <GridImage>
+            <Child area="1 / 1 / 5 / 6" className="div1 ">
+              <ImageLoader
+                url={images[0]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+
+            <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
+              <ImageLoader
+                url={images[1]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+          </GridImage>
+        )}
+
         {/* <ImageLoader
           url={
             props.images
@@ -223,7 +287,6 @@ const Overview = (props) => {
           height="30vh"
           width="100%"
         ></ImageLoader> */}
-
         {props.images ? (
           props.images.length ? (
             <PhotosButton
@@ -235,7 +298,6 @@ const Overview = (props) => {
             </PhotosButton>
           ) : null
         ) : null}
-
         <div
           style={{
             position: 'absolute',
@@ -260,9 +322,6 @@ const Overview = (props) => {
       </ImageContainer>
 
       <DetailsContainer>
-        {props.data.location ? <Location data={props.data}></Location> : null}
-        {/* {props.data.rooms_available? props.data.rooms_available.length && props.data.rooms_available[0].prices.min_price  ? <Cost className='font-lexend'>{ "₹ "+getIndianPrice(Math.round(props.data.rooms_available[0].prices.min_price/100))}</Cost> : null : null} */}
-        {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-lexend'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
         <div
           style={{
             display: 'grid',
@@ -271,43 +330,36 @@ const Overview = (props) => {
           }}
         >
           {props.data.check_in ? (
-            <div className="font-lexend text-center">
-              <CheckIn
-                style={{ fontWeight: '600', fontSize: '0.9rem' }}
-                className="font-lexend"
-              >
-                {'Check in'}
-              </CheckIn>
-              <CheckIn
-                style={{ fontWeight: '300', fontSize: '0.75rem' }}
-                className="font-lexend"
-              >
+            <div className="font-lexend flex flex-row text-sm">
+              <div className="font-lexend">{'Check in'}</div>
+              <div className="font-lexend font-bold pl-1">
                 {getHumanTime(props.data.check_in.slice(0, -3))}
-              </CheckIn>
+              </div>
             </div>
           ) : null}
           {props.data.check_in ? (
-            <div className="font-lexend text-center">
-              <CheckIn
-                style={{ fontWeight: '600', fontSize: '0.9rem' }}
-                className="font-lexend"
-              >
-                {'Check in'}
-              </CheckIn>
-              <CheckIn
-                style={{ fontWeight: '300', fontSize: '0.75rem' }}
-                className="font-lexend"
-              >
+            <div className="font-lexend flex flex-row text-sm">
+              <div className="font-lexend">{'Check in'}</div>
+              <div className="font-lexend font-bold pl-1">
                 {getHumanTime(props.data.check_in.slice(0, -3))}
-              </CheckIn>
+              </div>
             </div>
           ) : null}
         </div>
       </DetailsContainer>
       {props.data.rooms_available && <Rooms data={props.data}></Rooms>}
+      <div>
+        <div className="font-semibold text-3xl text-black mb-4">Ammenities</div>
+        <Ammenities data={props.data}></Ammenities>
+      </div>
+      <div>
+        <div className="font-semibold text-3xl text-black mb-4">Address</div>
+        <Location data={props.data}></Location>
+      </div>
+
       {/* <Filters data={props.data}></Filters> */}
       {/* <Icons></Icons> */}
-      {/* {props.data.check_in && props.data.check_out ? <CheckIn className='font-lexend'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</CheckIn> : null} */}
+      {/* {props.data.check_in && props.data.check_out ? <div className='font-lexend'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</div> : null} */}
     </Container>
   );
 };

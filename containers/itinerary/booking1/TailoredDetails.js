@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Heading from '../../../components/newheading/heading/Index';
 import Option from '../../../components/forms/Option';
 import Dropdown from '../../../components/forms/Dropdown';
+import { RiWhatsappFill } from 'react-icons/ri';
 import Button from '../../../components/Button';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { connect } from 'react-redux';
@@ -24,6 +25,7 @@ import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreat
 import axios from 'axios';
 import Accordion from './Accordion';
 import Spinner from '../../../components/Spinner';
+import ButtonYellow from '../../../components/ButtonYellow';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -35,10 +37,10 @@ const SummaryContainer = styled.div`
     top: 11vh;
   }
 `;
-const INR = styled.p`
+const INR = styled.div`
   font-weight: 600;
   font-size: 1.5rem;
-  text-align: center;
+
   &:after {
     content: 'Per Adult';
     display: ${(props) => (props.show_per_person_cost ? 'block' : 'none')};
@@ -56,6 +58,11 @@ const BookingListCostContainer = styled.div`
   }
 `;
 const Details = (props) => {
+  const [iscouponApplied, setiscouponApplied] = useState(false);
+  const [percentoff, setPercentoff] = useState(0);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+
   const router = useRouter();
 
   const setBookingSummary = () => {
@@ -228,7 +235,7 @@ const Details = (props) => {
   let message =
     'Hey TTW! I need some help with my tailored experience - https://dev.thetarzanway.com/' +
     router.asPath;
-  const [paymentLoading, setPaymentLoading] = useState(false);
+  // const [paymentLoading, setPaymentLoading] = useState(false);
 
   const _startRazorpayHandler = (data) => {
     //Razorpay payload
@@ -306,29 +313,62 @@ const Details = (props) => {
   };
   return (
     <SummaryContainer
-      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md   border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
+      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md bg-[#F7E70033]  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
       style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
     >
-      {window.innerWidth > 768 ? null : (
-        <FontAwesomeIcon
-          icon={faTimes}
-          onClick={props.hide}
-          style={{ textAlign: 'right' }}
-        />
-      )}
-      <Heading
-        bold
-        blur={props.blur}
-        margin="0 auto 1.5rem auto"
-        noline
-        align="center"
-      >
-        {props.payment
-          ? props.payment.paid_user
-            ? "You're all set!"
-            : 'Book Now'
-          : 'Book Now'}
-      </Heading>
+      <div className="flex flex-row justify-between">
+        {/* <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                <span>₹</span>
+                <div>
+                  {' '}
+                  {getIndianPrice(
+                    Math.round(props.payment.per_person_total_cost / 100) * 2
+                  )}
+                </div>
+              </div> */}
+        {iscouponApplied && (
+          <div className="bg-[#EB5757] font-bold text-sm px-2 py-1 text-white">
+            {percentoff}% OFF
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-col">
+        {props?.payment && (
+          <div className="flex flex-row gap-1">
+            <INR
+              show_per_person_cost={props.payment.show_per_person_cost}
+              className={
+                props.blur
+                  ? 'font-lexend blurry-text'
+                  : 'font-lexend  font-bold'
+              }
+            >
+              <FontAwesomeIcon icon={faRupeeSign} />
+              {!props.payment.show_per_person_cost
+                ? ' ' +
+                  getIndianPrice(Math.round(props.payment.total_cost / 100))
+                : ' ' +
+                  getIndianPrice(
+                    Math.round(
+                      Math.round(props.payment.per_person_total_cost) / 100
+                    )
+                  )}
+            </INR>
+            {/* <div className="flex flex-row items-center text-black font-bold text-2xl">
+              <span>₹</span>
+              <div>
+                {getIndianPrice(
+                  Math.round(Math.round(props?.payment.total_cost) / 100)
+                )}
+              </div>
+            </div> */}
+            <div className="font-medium text-base self-end">Total Cost</div>
+          </div>
+        )}
+
+        <div className="text-[#7A7A7A]">Exclusive applicable taxes</div>
+      </div>
       {!oldaccommodation ? (
         <div
           style={{
@@ -442,7 +482,7 @@ const Details = (props) => {
           ) : null}
         </div>
       ) : null}
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div>
         {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
         {/* <BookingListCostContainer>
            {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
@@ -467,7 +507,7 @@ const Details = (props) => {
             <p
               style={{
                 fontSize: '0.75rem',
-                fontWeight: '300',
+                fontWeight: '500',
                 letterSpacing: '1px',
                 marginBottom: '0.25rem',
               }}
@@ -482,7 +522,7 @@ const Details = (props) => {
             <p
               style={{
                 fontSize: '0.75rem',
-                fontWeight: '300',
+                fontWeight: '500',
                 textAlign: 'right',
                 letterSpacing: '1px',
                 marginBottom: '0.25rem',
@@ -513,7 +553,7 @@ const Details = (props) => {
             <p
               style={{
                 fontSize: '0.75rem',
-                fontWeight: '300',
+                fontWeight: '500',
                 letterSpacing: '1px',
                 marginBottom: '0.25rem',
               }}
@@ -529,7 +569,7 @@ const Details = (props) => {
               style={{
                 fontSize: '0.75rem',
                 textAlign: 'right',
-                fontWeight: '300',
+                fontWeight: '500',
                 letterSpacing: '1px',
                 marginBottom: '0.25rem',
                 marginRight: '24px',
@@ -610,22 +650,32 @@ const Details = (props) => {
           ) : null
         ) : null
       ) : null}
-
-      <INR
-        show_per_person_cost={props.payment.show_per_person_cost}
-        className={props.blur ? 'font-lexend blurry-text' : 'font-lexend'}
-      >
-        <FontAwesomeIcon icon={faRupeeSign} />
-        {!props.payment.show_per_person_cost
-          ? ' ' +
-            getIndianPrice(Math.round(props.payment.total_cost / 100)) +
-            ' /-'
-          : ' ' +
-            getIndianPrice(
-              Math.round(Math.round(props.payment.per_person_total_cost) / 100)
-            ) +
-            ' /-'}
-      </INR>
+      {props?.payment?.allow_coupon_discount ? (
+        <form onSubmit={(e) => handleSubmit(e)}>
+          <div className="relative mb-4  rounded-md shadow-sm cursor-pointer">
+            <input
+              class=" px-3 w-9/12 py-2 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              id="name"
+              name="name"
+              placeholder="Have a coupon code?"
+            />
+            <button
+              className="pointer-events-none absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+              type="submit"
+            >
+              <div
+                className=" font-bold text-black cursor-pointer"
+                aria-hidden="true"
+              >
+                Apply
+              </div>
+            </button>
+          </div>
+        </form>
+      ) : null}
       {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
       {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
           <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
@@ -694,23 +744,18 @@ const Details = (props) => {
           Login
         </Button>
       ) : null}
-      <Button
+      <ButtonYellow
+        styleClass="w-full"
+        primary={false}
         onclick={() =>
           (window.location.href = urls.WHATSAPP + '?text=' + message)
         }
-        hoverColor="black"
-        hoverBgColor="#128C7E"
-        onclickparam={null}
-        width="100%"
-        bgColor="white"
-        borderRadius="5px"
-        borderWidth="1px"
-        borderColor="#e4e4e4"
-        margin="0"
       >
-        <FontAwesomeIcon icon={faWhatsapp} style={{ marginRight: '0.5rem' }} />
-        Connect on WhatsApp
-      </Button>
+        <div className="flex flex-row justify-center items-center">
+          <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+          <div className="text-[#01202B] ">Chat on Whatsapp</div>
+        </div>
+      </ButtonYellow>
     </SummaryContainer>
   );
 };

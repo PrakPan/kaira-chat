@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
@@ -164,9 +164,9 @@ const Booking = (props) => {
           cities: props.selectedBooking.city,
           check_in: props.selectedBooking.check_in,
           check_out: props.selectedBooking.check_out,
-          /* "number_of_adults": props.selectedBooking.pax.number_of_adults,
-                "number_of_children": props.selectedBooking.pax.number_of_children,
-                "number_of_infants": props.selectedBooking.pax.number_of_infants, */
+          number_of_adults: props.selectedBooking.pax.number_of_adults,
+          number_of_children: props.selectedBooking.pax.number_of_children,
+          number_of_infants: props.selectedBooking.pax.number_of_infants,
           accommodation_types: filters.type,
           price_lower_range: filters.price_lower_range,
           price_upper_range: filters.price_upper_range,
@@ -200,7 +200,6 @@ const Booking = (props) => {
                   options.push(
                     <AccommodationSearched
                       _setImagesHandler={props._setImagesHandler}
-                      bookings={props.bookings}
                       _updateSearchedAccommodation={
                         _updateSearchedAccommodation
                       }
@@ -218,7 +217,6 @@ const Booking = (props) => {
                 options.push(
                   <AccommodationSearched
                     _setImagesHandler={props._setImagesHandler}
-                    bookings={props.bookings}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     itinerary_id={props.selectedBooking.itinerary_id}
                     tailored_id={props.tailored_id}
@@ -758,7 +756,11 @@ const Booking = (props) => {
                     }}
                     className="center-div text-center font-lexend"
                   >
-                    <img src={gif} style={{ width: '3rem', height: '3rem' }} />
+                    <LoadingLottie
+                      height={'5rem'}
+                      width={'5rem'}
+                      margin="none"
+                    />
                     Please wait while we update your bookings
                   </div>
                 ) : null}
@@ -781,9 +783,10 @@ const Booking = (props) => {
                           className="center-div"
                           style={{ height: isPageWide ? '80vh' : '40vh' }}
                         >
-                          <img
-                            src={gif}
-                            style={{ width: '3rem', height: '3rem' }}
+                          <LoadingLottie
+                            height={'5rem'}
+                            width={'5rem'}
+                            margin="none"
                           />
                           Fetching stay recommendations for you
                         </div>
@@ -794,14 +797,11 @@ const Booking = (props) => {
                     {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
                     {updateLoadingState ? (
                       <div className="center-div" style={{}}>
-                        <img
-                          src={gif}
-                          style={{
-                            width: '3rem',
-                            height: '3rem',
-                            margin: '1rem auto',
-                          }}
-                        ></img>
+                        <LoadingLottie
+                          height={'5rem'}
+                          width={'5rem'}
+                          margin="1rem auto"
+                        />
                       </div>
                     ) : null}
 

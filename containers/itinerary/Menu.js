@@ -885,7 +885,7 @@ const SimpleTabs = (props) => {
         </SplitScreen>
       ) : null}
 
-      {isGroup ? (
+      {/* {isGroup ? (
         <div id={items[2].link}>
           <Register></Register>
         </div>
@@ -956,7 +956,7 @@ const SimpleTabs = (props) => {
             setImagesHandler={props.setImagesHandler}
           ></Booking>
         </div>
-      )}
+      )} */}
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between mx-3">
           <div className="flex flex-col">

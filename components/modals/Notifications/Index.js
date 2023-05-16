@@ -52,7 +52,19 @@ const Enquiry = (props) => {
       }
       setNotificationsArr(notificationsarr);
     }
-  });
+  }, [props.notifications]);
+
+  const _clearAllHandler = () => {
+    setNotificationsArr([]);
+    axiosnotificationsinstance
+      .delete('', {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {})
+      .catch((err) => {});
+  };
 
   const _handleClose = () => {
     props._openAllNotificationsHandler();

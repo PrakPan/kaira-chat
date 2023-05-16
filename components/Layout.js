@@ -15,6 +15,9 @@ const Layout = (props) => {
   }, []);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
+  console.log('router');
+  console.log(router);
+
   useEffect(() => {
     if (router.isReady) {
       const queries = router.query;
@@ -39,14 +42,17 @@ const Layout = (props) => {
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}
       ></LoginModal>
-      <TailoredFormMobileModal
-        destinationType={'city-planner'}
-        onHide={() => {
-          setShowMobilePlanner(false);
-          closeTailoredModal(router);
-        }}
-        show={showMoiblePlanner}
-      />
+      {router.query.id && (
+        <TailoredFormMobileModal
+          destinationType={'city-planner'}
+          onHide={() => {
+            setShowMobilePlanner(false);
+            closeTailoredModal(router, router.query.id);
+          }}
+          show={showMoiblePlanner}
+        />
+      )}
+
       {!props.itinerary ? <Footer></Footer> : null}
     </div>
   );

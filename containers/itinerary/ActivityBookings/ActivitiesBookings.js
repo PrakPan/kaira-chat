@@ -495,7 +495,7 @@ const ActivitiesBookings = (props) => {
                           <div className="text-[#01202B] ">View Detail</div>
                         </ButtonYellow>
                       )}
-                      {props.stayBookings[index]['id'] && (
+                      {props?.stayBookings[index] && (
                         <ButtonYellow
                           primary={false}
                           className="lg:w-fit w-1/2"

@@ -12,6 +12,7 @@ import { convertDateFormat } from '../../../pages/helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 import { DayContainerStyle } from './Day_I_Container';
+import { isJson } from '../../../services/isJSON';
 
 const Container = styled.div`
   background: #ffffff;
@@ -111,14 +112,22 @@ const Day_I_ContainerM = (props) => {
           break;
         case 'recommendation':
           {
-            JSON.parse(element.text).length >= 1 &&
-              dayIcontainer.push(
-                <RecomendationComponent
-                  icon={element.icon}
-                  recomendation={element.text}
-                  heading={element.heading}
-                ></RecomendationComponent>
-              );
+            !isJson(element.text)
+              ? dayIcontainer.push(
+                  <RecomendationComponent
+                    icon={element.icon}
+                    recomendation={element.text}
+                    heading={element.heading}
+                  ></RecomendationComponent>
+                )
+              : JSON.parse(element.text).length >= 1 &&
+                dayIcontainer.push(
+                  <RecomendationComponent
+                    icon={element.icon}
+                    recomendation={element.text}
+                    heading={element.heading}
+                  ></RecomendationComponent>
+                );
           }
           break;
         case 'activity':
