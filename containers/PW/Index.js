@@ -20,6 +20,7 @@ import axiossearchinstance from '../../services/sales/search/Search';
 import ExperienceCard from '../../components/cards/newitinerarycard-main/ExperienceCard';
 import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 import LoadingLottie from '../../components/ui/LoadingLottie'
+import SwiperCarousel from '../../components/SwiperCarousel';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -56,17 +57,6 @@ const HowItWorksHeading = styled.p`
     }
 `;
 
-const GridContainer = styled.div`
-display: grid;
-padding: 1rem;
-grid-gap: 1rem;
-
-@media screen and (min-width: 768px){
-  padding: 2rem 0;
-  grid-gap: 2rem;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-`;
 const MinHeightContainer = styled.div`
 min-height: 40vh;
 
@@ -378,7 +368,20 @@ const EXPERIENCE = {
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   } */}
          {!loading ? (
-           <GridContainer>{itinerariesJSX}</GridContainer>
+           isPageWide ? (
+             <SwiperCarousel
+               navigationButtons={true}
+               slidesPerView={3}
+               cards={itinerariesJSX}
+             ></SwiperCarousel>
+           ) : (
+             <SwiperCarousel
+               slidesPerView={1}
+               initialIndex={0}
+               pageDots
+               cards={itinerariesJSX}
+             ></SwiperCarousel>
+           )
          ) : (
            <MinHeightContainer className="center-div">
              <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />{" "}

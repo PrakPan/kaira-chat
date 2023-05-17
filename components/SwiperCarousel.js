@@ -1,12 +1,13 @@
 import React from 'react';
-import Flickity from 'react-flickity-component';
 import { Swiper, SwiperSlide } from 'swiper/react'
-import SwiperCore, { Pagination, Navigation } from "swiper";
+import  { Pagination, Navigation } from "swiper";
 import 'swiper/css'
 import "swiper/swiper-bundle.css";
 import "swiper/css/navigation";
 import "swiper/swiper.min.css";
 import styled from 'styled-components'
+
+
 const SwiperContainer = styled.div`
   position: relative;
   ${props => props.pageDots && 'margin-bottom : 2rem' };

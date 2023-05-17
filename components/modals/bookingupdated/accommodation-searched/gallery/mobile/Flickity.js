@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import Flickity from 'react-flickity-component';
 import { Carousel } from 'react-bootstrap';
 import ImageLoader from '../../../../../ImageLoader';
 
