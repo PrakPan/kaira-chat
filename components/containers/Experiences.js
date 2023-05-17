@@ -3,9 +3,8 @@ import styled from 'styled-components';
 import ExperienceCard from '../cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../cards/newitinerarycard-myplan/ExperienceCard';
 import PastItineraryCard from '../cards/Testimonial';
-import Carousel from '../FlickityCarousel';
+import SwiperCarousel from '../SwiperCarousel'
 import media from '../media';
-import PageDotsFlickity from '../PageDotsFlickity'
 import usePageLoaded from '../custom hooks/usePageLoaded';
 
 const Container = styled.div`
@@ -42,21 +41,9 @@ line-height: 1.5;
 
 }
 `; 
-// const ShortText = styled.p`
-// font-size: ${props => props.theme.fontsizes.mobile.text.default};
-// font-weight: 300;
-// @media screen and (min-width: 768px){
-// font-size: ${props => props.theme.fontsizes.desktop.text.five};
-// font-weight: 300;
-// line-height: 1.5;
-
-// }
-// `; 
-
 var i;
 
 const Experiences= (props) => {
-  let isPageWide = media('(min-width: 768px)')
   const isPageLoaded = usePageLoaded();
 
 const [cards,setCards] = useState([])
@@ -109,10 +96,6 @@ const Experiences = [
     else{
       if(props.experiences && !props.pastitinerary)
       for(var j = 0; j<props.experiences.length; j++){
-    
-       
-        //get height of text 
-        // if height of text more than maxheight set maxheight to new height
         experiencecards.push(  
           <ExperienceCard 
           data={props.experiences[j]}
@@ -142,10 +125,6 @@ const Experiences = [
       
       else if(props.itineraries){
         for(var j = 0; j<props.itineraries.length; j++){
-    
-         
-          //get height of text 
-          // if height of text more than maxheight set maxheight to new height
           experiencecards.push(  
             <ItineraryCard 
             data={props.itineraries[j]}
@@ -178,7 +157,6 @@ const Experiences = [
         experiencecards.push(  
           <PastItineraryCard 
           data={props.experiences[j]}
-          // filter={props.itineraries[j].experience_filters[0]}
           key={props.experiences[j].short_text}
            filter={props.experiences[j].experience_filters[0]}
           rating={props.experiences[j].rating}
@@ -201,30 +179,34 @@ const Experiences = [
           )
         }
       }
-      //loop through experiences again, push to experiencecards with min height set to maxheight
     }
     useEffect(()=>{
     setCards(experiencecards)
 
     },[])
 
-      // if(isPageWide)
-    return(
+    return (
       <>
-      <Container className='hidden-mobile'>        
-          {/* <GridContainer columns={props.cols} className="netflix-containe">
-             {props.three ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
-          </GridContainer> */}   
-          <Carousel initialIndex={0} hideSides numberOfCards={3} groupCells={3} cards={experiencecards}></Carousel>
-      {/* <Carousel hideSides initialIndex={0} groupCells={6} numberOfCards={6} cards={cards}></Carousel> */}
-      </Container>
+        <Container className="hidden-mobile">
+          <SwiperCarousel
+            navigationButtons={true}
+            slidesPerView={3}
+            cards={experiencecards}
+          ></SwiperCarousel>
+        </Container>
 
-    <div className='hidden-desktop'>       
-           <div style={{ padding: "1rem 0"}}>
-            {isPageLoaded ? <PageDotsFlickity initialIndex={0} experience cards={experiencecards}></PageDotsFlickity> :null }
-    </div>
-  </div></>
-  );
+        <div className="hidden-desktop">
+          {isPageLoaded ? (
+            <SwiperCarousel
+              slidesPerView={1}
+              initialIndex={0}
+              pageDots
+              cards={experiencecards}
+            ></SwiperCarousel>
+          ) : null}
+        </div>
+      </>
+    );
   
 }
 

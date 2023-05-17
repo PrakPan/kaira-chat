@@ -2,13 +2,13 @@ import styled from "styled-components"
 import PoiCard from "./PoiCard"
 import {useState} from 'react'
 import media from '../../../components/media'
-import PageDotsFlickity from '../../../components/PageDotsFlickity'
 import validateTextSize from "../../../services/textSizeValidator"
 import Map from '../../../components/Map'
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget"
 import openTailoredModal from "../../../services/openTailoredModal"
 import { useRouter } from "next/router"
 import Drawer from "../../../components/ui/Drawer"
+import SwiperCarousel from "../../../components/SwiperCarousel"
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
@@ -93,37 +93,82 @@ const Poi = props=>{
   
     return (
       <GridContainer>
-        <div className="hidden-mobile">            
-            <Items>
-            {
-               props.pois.filter((e,i)=>i<more)?.map((e,i)=> ( <PoiCard key={e.id} data={e} showDrawer={showDrawer[i]} setShowDrawer={setShowDrawer} _handleOpen={_handleOpen}  handleCloseDrawer={handleCloseDrawer}/>))
-            }
-            </Items>
-          <Button onClick={()=>{more<props.pois.length?setMore(more+4): props.data?openTailoredModal(router, props.data.id , props.data.name) : console.log('')}}>{more<props.pois.length?'View More' : validateTextSize(`Craft a trip to ${props.city} now!`,8,'Craft a trip now!')}</Button>
+        <div className="hidden-mobile">
+          <Items>
+            {props.pois
+              .filter((e, i) => i < more)
+              ?.map((e, i) => (
+                <PoiCard
+                  key={e.id}
+                  data={e}
+                  showDrawer={showDrawer[i]}
+                  setShowDrawer={setShowDrawer}
+                  _handleOpen={_handleOpen}
+                  handleCloseDrawer={handleCloseDrawer}
+                />
+              ))}
+          </Items>
+          <Button
+            onClick={() => {
+              more < props.pois.length
+                ? setMore(more + 4)
+                : props.data
+                ? openTailoredModal(router, props.data.id, props.data.name)
+                : console.log("");
+            }}
+          >
+            {more < props.pois.length
+              ? "View More"
+              : validateTextSize(
+                  `Craft a trip to ${props.city} now!`,
+                  8,
+                  "Craft a trip now!"
+                )}
+          </Button>
         </div>
-        
+
         <div className="hidden-desktop">
-        <PageDotsFlickity padding={'1rem 0.2rem'} cards={cards} />
+          <SwiperCarousel
+            slidesPerView={1}
+            pageDots
+            noPadding
+            cards={cards}
+          />
         </div>
         <div>
+          {props.thingsToDoPage && (
+            <WeatherContainer elevation={props.elevation}>
+              <WeatherWidget
+                city={props.data.name}
+                lat={props.data.lat}
+                lon={props.data.long}
+              />
+              {props.data.elevation &&
+                props.data.elevation.length &&
+                props.data.elevation[0]?.elevation && (
+                  <div style={{ marginTop: "20px" }}>
+                    <TextBold>Altitude</TextBold>
+                    <p style={{ fontWeight: "300", marginBottom: "0" }}>
+                      {Math.floor(props.data.elevation[0]?.elevation)} metres (
+                      {Math.floor(props.data.elevation[0]?.elevation * 3.281)}{" "}
+                      feet) above sea level
+                    </p>
+                  </div>
+                )}
+            </WeatherContainer>
+          )}
 
-        {(props.thingsToDoPage ) && <WeatherContainer elevation={props.elevation}>
-      <WeatherWidget city={props.data.name} lat={props.data.lat} lon={props.data.long} />
-      {props.data.elevation && props.data.elevation.length && props.data.elevation[0]?.elevation && 
-     <div style={{marginTop : '20px'}}>
-     <TextBold>Altitude</TextBold>
-     <p style={{fontWeight : '300', marginBottom : '0'}}>{Math.floor(props.data.elevation[0]?.elevation)} metres ({Math.floor(props.data.elevation[0]?.elevation*3.281)} feet) above sea level</p>
-     </div>
- }
-      </WeatherContainer>} 
-
-
-<Map locations={props.pois} defaultZoom={12} height={isPageWide? props.thingsToDoPage? '320px' : '350px' :'230px'} InfoWindowContainer={InfoWindowContainer} />
-
-</div>
-    </GridContainer>
-
-        )
+          <Map
+            locations={props.pois}
+            defaultZoom={12}
+            height={
+              isPageWide ? (props.thingsToDoPage ? "320px" : "350px") : "230px"
+            }
+            InfoWindowContainer={InfoWindowContainer}
+          />
+        </div>
+      </GridContainer>
+    );
 }
 
 export default Poi
