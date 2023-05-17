@@ -7,6 +7,8 @@ import Flickity from './Flickity/Index';
  
 const Card = styled.div`
       padding: 2rem 2rem;
+      height : 17rem;
+      margin-bottom : 0.2rem;
     @media screen and (min-width: 768px){
         min-height: 40vh;
      }

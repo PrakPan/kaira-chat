@@ -6,8 +6,6 @@ import FullImage from '../../components/FullImage';
 // import {connect} from 'react-redux';
 import DesktopBanner from '../../components/containers/Banner';
 import Experiences from '../../components/containers/Experiences';
-// import Testimonials from '../../components/containers/Testimonials';
-import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
 import axiomyplansinstance from '../../services/sales/MyPlans';
 
 //  import Chatbot from '../../components/chatbot/Homepage';
@@ -246,7 +244,6 @@ useEffect(() => {
          {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
        </SetWidthContainer>
      
-      {/* <Testimonials margin="1.5rem 0"></Testimonials> */}
 
 
             <br></br>

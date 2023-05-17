@@ -3,10 +3,10 @@ import styled from 'styled-components';
 // import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index'
 import ImageLoader from '../../../components/ImageLoader';
-import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
 import { ImQuotesLeft } from 'react-icons/im';
  import { useRouter } from 'next/router';
+import SwiperCarousel from '../../../components/SwiperCarousel';
 /*
 Description:
 PartnerWith component
@@ -332,7 +332,14 @@ const PartnerWith = (props) => {
        </Card>
      </Container>
    );
-   else return <Flickity cards={mobile_cards_generared}></Flickity>
+   else return (
+     <SwiperCarousel
+       slidesPerView={1.3}
+       initialSlide={1}
+       centeredSlides
+       cards={mobile_cards_generared}
+     ></SwiperCarousel>
+   );
 }
 
 export default PartnerWith;

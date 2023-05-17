@@ -1,7 +1,6 @@
 import React, { useState, useEffect , useRef}  from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../../components/ImageLoader';
-import FlickityCarousel from '../../../../components/FlickityCarousel';
 import media from '../../../../components/media';
 import Location from './Location';
 const Container = styled.div`

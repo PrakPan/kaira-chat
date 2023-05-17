@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import Flickity from '../FlickityCarousel';
-
 import Card from '../cards/Blog';
 import media from '../media';
+import SwiperCarousel from '../SwiperCarousel';
 
 const Container = styled.div`
     margin: ${(props) => props.margin? props.margin : '0'};
@@ -46,7 +45,14 @@ const Blogs= (props) => {
           </GridContainer>
       </Container>
   ); 
-  else return <Flickity cards={cards}></Flickity>
+  else return (
+    <SwiperCarousel
+      slidesPerView={1.3}
+      initialSlide={1}
+      centeredSlides
+      cards={cards}
+    ></SwiperCarousel>
+  );
 }
 
 export default Blogs;

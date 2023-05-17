@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import Card from './Card';
-import Carousel from '../../../components/FlickityCarousel';
 // import Heading from '../../../components/heading/Heading';
 import Heading from '../../../components/newheading/heading/Index';
 import media from '../../../components/media';
+import SwiperCarousel from '../../../components/SwiperCarousel';
 
 const GridContainer = styled.div`
 margin: auto;
@@ -83,13 +83,20 @@ const Team = (props) => {
             <br></br>
         </div>
     );
-    else return(
-         <div>
-            <Heading bold align="center" aligndesktop="center" margin="1.5rem">Our Team</Heading>
-            <Carousel cards={cards}></Carousel>
-            <br></br>
-        </div>
-    )
+    else return (
+      <div>
+        <Heading bold align="center" aligndesktop="center" margin="1.5rem">
+          Our Team
+        </Heading>
+        <SwiperCarousel
+          slidesPerView={1.3}
+          initialSlide={1}
+          centeredSlides
+          cards={cards}
+        ></SwiperCarousel>
+        <br></br>
+      </div>
+    );
 }
 
 export default Team;

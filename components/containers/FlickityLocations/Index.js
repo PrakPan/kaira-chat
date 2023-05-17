@@ -1,14 +1,9 @@
 
 import React from 'react';
 import Card from '../../cards/Location';
-import Carousel from '../../FlickityCarousel';
 import media from '../../media';
 import { useRouter } from 'next/router';
-import FlickityLocations from './Flickity';
-/* Carousle for desktop and mobile to display locations
-Inputs: experiences (json), 
-used: guides, lising preview
-*/
+import SwiperCarousel from '../../SwiperCarousel';
  
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
@@ -43,18 +38,22 @@ const LocationsBlog= (props) => {
    if(isPageWide) {
   if(props.locations.length)
   return(
-    <FlickityLocations cards={cardsarr} groupCells={5}></FlickityLocations>
+    <SwiperCarousel cards={cardsarr} slidesPerView={5}></SwiperCarousel>
   ); 
   else return null;
   } 
-  else return(
-    <div >       
-          <div style={{ padding: "1rem 0"}}>
-            {isPageWide ? <Carousel cards={cardsarr} twocards></Carousel> :<Carousel cards={cardsarr}></Carousel> }
+  else return (
+    <div>
+      <div style={{ padding: "1rem 0" }}>
+        <SwiperCarousel
+          slidesPerView={1.3}
+          initialSlide={1}
+          centeredSlides
+          cards={cardsarr}
+        ></SwiperCarousel>
+      </div>
     </div>
-  </div>
-  )
-  ;
+  );
 }
 
 export default LocationsBlog;

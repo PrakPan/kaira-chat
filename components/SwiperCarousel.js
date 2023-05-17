@@ -77,7 +77,12 @@ const SwiperCarousel = (props) => {
           swiper.slideTo(newIndex);
         };
         return (
-          <SwiperContainer pageDots={props.pageDots} style={props.style} navButtonsTop={props.navButtonsTop} noPadding={props.noPadding}>
+          <SwiperContainer
+            pageDots={props.pageDots}
+            style={props.style}
+            navButtonsTop={props.navButtonsTop}
+            noPadding={props.noPadding}
+          >
             <Swiper
               onInit={(swiper) => {
                 if (props.navigationButtons) {
@@ -92,6 +97,8 @@ const SwiperCarousel = (props) => {
                 }
               }}
               spaceBetween={12}
+              centeredSlides={props.centeredSlides}
+              initialSlide={props.initialSlide || 0}
               navigation={props.navigationButtons}
               pagination={props.pageDots ? { clickable: true } : false}
               slidesPerView={props.slidesPerView || 6}

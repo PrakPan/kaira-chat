@@ -1,12 +1,12 @@
 import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from '../cards/Location';
-import Carousel from '../FlickityCarousel';
 import { useRouter } from 'next/router';
 import Button from '../ui/button/Index';
 import urls from '../../services/urls';
 import * as ga from '../../services/ga/Index';
 import openTailoredModal from '../../services/openTailoredModal';
+import SwiperCarousel from '../SwiperCarousel';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -77,7 +77,12 @@ setCardsJSX(cardsarr);
 
       <div className="hidden-desktop">
         <div style={{ padding: "1rem 0" }}>
-          <Carousel cards={cardsJSX}></Carousel>
+          <SwiperCarousel
+            slidesPerView={1.3}
+            initialSlide={1}
+            centeredSlides
+            cards={cardsJSX}
+          ></SwiperCarousel>
         </div>
         {props.viewall ? (
           <Button

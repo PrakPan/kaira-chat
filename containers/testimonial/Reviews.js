@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import ReviewCard from './ReviewCard';
-import Flickity from '../../components/FlickityCarousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar} from '@fortawesome/free-solid-svg-icons';
 import media from '../../components/media';
+import SwiperCarousel from '../../components/SwiperCarousel';
 const Heading = styled.p`
     font-size: 1.5rem
     padding: 1rem 0;
@@ -210,18 +210,36 @@ const TestimonialReviews = () => {
     );
     }
     else return (
-        <div style={{background: "#F7e700", padding: "1rem 0 1.5rem 0"}}>
-
-            <Flickity borderRadius="10px" cards={FlickityCards}></Flickity>
-            <ReviewGridContainer>
-                <div className="center-div" style={{flexDirection: 'row', marginBottom: '0.5rem'}}>
-                <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
-                <Heading className="font-lexend" style={{margin: '0 0.5rem 0 0.5rem'}}> Read more </Heading>
-                <FontAwesomeIcon icon={faStar} style={{fontSize: '1rem'}}/>
-                </div>
-                <ReviewLogo src={"https://d31aoa0ehgvjdi.cloudfront.net/media/website/googlereviews.png"}></ReviewLogo>
-            </ReviewGridContainer>
-        </div>
+      <div style={{ background: "#F7e700", padding: "1rem 0 1.5rem 0" }}>
+            <SwiperCarousel
+                
+          slidesPerView={1.3}
+          initialSlide={1}
+                centeredSlides
+                cards={FlickityCards}
+        ></SwiperCarousel>
+        <ReviewGridContainer>
+          <div
+            className="center-div"
+            style={{ flexDirection: "row", marginBottom: "0.5rem" }}
+          >
+            <FontAwesomeIcon icon={faStar} style={{ fontSize: "1rem" }} />
+            <Heading
+              className="font-lexend"
+              style={{ margin: "0 0.5rem 0 0.5rem" }}
+            >
+              {" "}
+              Read more{" "}
+            </Heading>
+            <FontAwesomeIcon icon={faStar} style={{ fontSize: "1rem" }} />
+          </div>
+          <ReviewLogo
+            src={
+              "https://d31aoa0ehgvjdi.cloudfront.net/media/website/googlereviews.png"
+            }
+          ></ReviewLogo>
+        </ReviewGridContainer>
+      </div>
     );
 }
 

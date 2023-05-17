@@ -3,7 +3,6 @@ import styled from "styled-components";
 import BookingCard from "../../../components/cards/bookings/activitybooking/Index";
 import SummaryContainer from "./TailoredDetails";
 import GITSummaryContainer from "./gittailored/Index";
-import Flickity from "../../../components/FlickityCarousel";
 import ComingSoon from "./ComingSoon";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import Timer from "../timer/Index";
@@ -31,6 +30,7 @@ import LogInModal from "../../../components/modals/Login";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FerryBookingCard from "../../../components/cards/bookings/ferrybooking/Index";
 import openTailoredModal from "../../../services/openTailoredModal";
+import SwiperCarousel from "../../../components/SwiperCarousel";
 
 const Container = styled.div`
   width: 100%;
@@ -551,10 +551,12 @@ const Booking = (props) => {
       <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
     );
     setBookingAccommodationsMobileJSX(
-      <Flickity
-        initialIndex={props.stayFlickityIndex}
+      <SwiperCarousel
+        slidesPerView={1}
+        pageDots
+        centeredSlides
         cards={bookings_accommodations}
-      ></Flickity>
+      ></SwiperCarousel>
     );
   }, [
     props.stayBookings,
@@ -819,10 +821,12 @@ const Booking = (props) => {
         // setAlternates(alternatesarr);
         setBookingTransfersDesktopJSX([...bookings_transfers]);
         setBookingTransfersMobileJSX(
-          <Flickity
-            initialIndex={props.transferFlickityIndex}
+          <SwiperCarousel
+        slidesPerView={1}
+        pageDots
+        centeredSlides
             cards={[...bookings_transfers]}
-          ></Flickity>
+          ></SwiperCarousel>
         );
       }
   }, [
@@ -965,10 +969,12 @@ const Booking = (props) => {
     // setAlternates(alternatesarr);
     setBookingFlightsDesktopJSX([...bookings_flights]);
     setBookingFlightsMobileJSX(
-      <Flickity
-        initialIndex={props.flightFlickityIndex}
+       <SwiperCarousel
+        slidesPerView={1}
+        pageDots
+        centeredSlides
         cards={[...bookings_flights]}
-      ></Flickity>
+      ></SwiperCarousel>
     );
   }, [
     props.flightBookings,
@@ -1099,10 +1105,12 @@ const Booking = (props) => {
       <DesktopCardContainer>{bookings_activities}</DesktopCardContainer>
     );
     setBookingActivityMobileJSX(
-      <Flickity
-        initialIndex={props.activityFlickityIndex}
+      <SwiperCarousel
+        slidesPerView={1}
+        pageDots
+        centeredSlides
         cards={bookings_activities}
-      ></Flickity>
+      ></SwiperCarousel>
     );
   }, [
     props.activityBookings,
