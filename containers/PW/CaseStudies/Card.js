@@ -3,10 +3,11 @@ import styled from 'styled-components';
 // import Button from '../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from './Flickity/Index';
  
 const Card = styled.div`
       padding: 2rem 2rem;
+      height : 17rem;
+      margin-bottom : 0.2rem;
     @media screen and (min-width: 768px){
         min-height: 40vh;
      }

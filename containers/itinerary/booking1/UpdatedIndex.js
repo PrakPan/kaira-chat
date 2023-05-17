@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import BookingCard from '../../../components/cards/bookings/activitybooking/Index';
 import SummaryContainer from './TailoredDetails';
 import GITSummaryContainer from './gittailored/Index';
+
 import Flickity from '../../../components/FlickityCarousel';
 import ComingSoon from './ComingSoon';
 import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import Timer from '../timer/Index';
+// import OldBookingModal from '../../../components/modals/booking/Index';
 import { connect } from 'react-redux';
 import BookingModal from '../../../components/modals/bookingupdated/Index';
 import FlightModal from '../../../components/modals/flights/Index';
@@ -15,22 +17,27 @@ import { useRouter } from 'next/router';
 import media from '../../../components/media';
 import DesktopBanner from '../../../components/containers/Banner';
 import Banner from '../../homepage/banner/Mobile';
+// import Accommodation from '../../../components/modals/accommodation/Index';
 import DesktopCardContainer from './DesktopCardCotainer';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { Tabs, Tab } from '@mui/material';
+
 import { getIndianPrice } from '../../../services/getIndianPrice';
+// import Spinner from '../../../components/Spinner';
+import gif from '../../../public/assets/loader.gif';
+import { ITINERARY_STATUSES } from '../../../services/constants';
 import * as ga from '../../../services/ga/Index';
 import urls from '../../../services/urls';
 import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
 import FlightBookingCard from '../../../components/cards/bookings/flightbooking/Index';
 import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
 import BusBookingCard from '../../../components/cards/bookings/busbooking/Index';
+
 import FooterBannerMobile from './FooterBannerMobile';
 import ImageLoader from '../../../components/ImageLoader';
 import LogInModal from '../../../components/modals/Login';
 import TaxiModal from '../../../components/modals/taxis/Index';
 import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
-import openTailoredModal from '../../../services/openTailoredModal';
+import { BsInfoCircleFill } from 'react-icons/bs';
 
 const Container = styled.div`
   width: 100%;
@@ -161,6 +168,9 @@ function TabPanel(props) {
 
 const Booking = (props) => {
   const router = useRouter();
+  const _handleTailoredRedirect = (e) => {
+    router.push('/tailored-travel');
+  };
 
   const [value, setValue] = React.useState(0);
 
@@ -565,6 +575,7 @@ const Booking = (props) => {
   ]);
 
   useEffect(() => {
+    console.log(props.transferBookings);
     if (props.transferBookings)
       for (var i = 0; i < props.transferBookings.length; i++) {
         if (true) {
@@ -633,6 +644,7 @@ const Booking = (props) => {
               ></OldBookingCard>
             );
           } else {
+            console.log(props.transferBookings[i].booking_type);
             if (props.transferBookings[i].booking_type === 'Taxi')
               bookings_transfers.push(
                 <TaxiBookingCard
@@ -662,6 +674,8 @@ const Booking = (props) => {
                       transfer_type
                     )
                   }
+                  setShowLoginModal={setShowLoginModal}
+                  token={props.token}
                   _deselectTransferBookingHandler={
                     props._deselectTransferBookingHandler
                   }
@@ -676,6 +690,9 @@ const Booking = (props) => {
                   is_auth={props.is_auth}
                   are_prices_hidden={
                     props.payment ? props.payment.are_prices_hidden : false
+                  }
+                  is_registration_needed={
+                    props.payment ? props.payment.is_registration_needed : false
                   }
                   payment={props.payment}
                   key={i}
@@ -741,6 +758,8 @@ const Booking = (props) => {
                       transfer_type
                     )
                   }
+                  setShowLoginModal={setShowLoginModal}
+                  token={props.token}
                   _deselectTransferBookingHandler={
                     props._deselectTransferBookingHandler
                   }
@@ -766,6 +785,9 @@ const Booking = (props) => {
               bookings_transfers.push(
                 <TaxiBookingCard
                   rental
+                  is_registration_needed={
+                    props.payment ? props.payment.is_registration_needed : false
+                  }
                   isDatePresent={props.isDatePresent}
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
@@ -789,6 +811,8 @@ const Booking = (props) => {
                       transfer_type
                     )
                   }
+                  setShowLoginModal={setShowLoginModal}
+                  token={props.token}
                   _deselectTransferBookingHandler={
                     props._deselectTransferBookingHandler
                   }
@@ -911,6 +935,7 @@ const Booking = (props) => {
                 props.flightBookings[i].id === props.selectingBooking
               }
               data={props.flightBookings[i]}
+              is_stock={props.is_stock}
               bookings={props.flightBookings}
               setShowFlightModal={(props) =>
                 _changeFlightHandler(
@@ -930,6 +955,10 @@ const Booking = (props) => {
                 )
               }
               showFlightModal={props.showFlightModal}
+              is_auth={props.is_auth}
+              are_prices_hidden={
+                props.payment ? props.payment.are_prices_hidden : false
+              }
               is_auth={props.is_auth}
               are_prices_hidden={
                 props.payment ? props.payment.are_prices_hidden : false
@@ -979,6 +1008,8 @@ const Booking = (props) => {
   ]);
 
   useEffect(() => {
+    console.log('activityBookings in booking');
+    console.log(props.activityBookings);
     if (props.activityBookings)
       for (var i = 0; i < props.activityBookings.length; i++) {
         if (props.activityBookings[i].alternate_to) {
@@ -1124,6 +1155,8 @@ const Booking = (props) => {
             transferBookings={props.transferBookings}
             setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)}
             payment={props.payment}
+            stayBookings={props.stayBookings}
+            transferBookings={props.transferBookings}
             traveleritinerary={props.traveleritinerary}
             blur={props.blur}
             hide={_hidePaymentHandler}
@@ -1151,6 +1184,8 @@ const Booking = (props) => {
             transferBookings={props.transferBookings}
             setShowFooterBannerMobile={() => setShowFooterBannerMobile(true)}
             payment={props.payment}
+            stayBookings={props.stayBookings}
+            transferBookings={props.transferBookings}
             traveleritinerary={props.traveleritinerary}
             blur={props.blur}
             hide={_hidePaymentHandler}
@@ -1239,7 +1274,7 @@ const Booking = (props) => {
                         >
                           <div
                             style={{ lineHeight: '2' }}
-                            className="font-lexend"
+                            className="font-opensans"
                           >
                             {props.payment.paid_user
                               ? props.is_registration_needed
@@ -1285,7 +1320,7 @@ const Booking = (props) => {
                         <BookingSuccessText style={{ color: 'green' }}>
                           <div
                             style={{ lineHeight: '2' }}
-                            className="font-lexend"
+                            className="font-opensans"
                           >
                             {props.is_registration_needed
                               ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
@@ -1323,7 +1358,7 @@ const Booking = (props) => {
                           ? 'Stays' + ' (' + props.stayBookings.length + ')'
                           : 'Stays'
                       }
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab font-opensans"
                     ></Tab>
                     <Tab
                       label={
@@ -1334,20 +1369,20 @@ const Booking = (props) => {
                             ')'
                           : 'Transfers'
                       }
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab font-opensans"
                       id="bookingdetail-tab-transfers"
                     ></Tab>
                     {props.flightBookings ? (
                       props.flightBookings.length ? (
                         <Tab
                           label={props.flightBookings ? 'Flights' : 'Flights'}
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                           id="bookingdetail-tab-flights"
                         ></Tab>
                       ) : (
                         <Tab
                           label={'Flights'}
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                           id="bookingdetail-tab-flights"
                           style={{ display: 'none' }}
                         ></Tab>
@@ -1355,7 +1390,7 @@ const Booking = (props) => {
                     ) : (
                       <Tab
                         label={'Flights'}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab font-opensans"
                         id="bookingdetail-tab-flights"
                         style={{ display: 'none' }}
                       ></Tab>
@@ -1372,19 +1407,19 @@ const Booking = (props) => {
                                 ')'
                               : 'Activities'
                           }
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                         ></Tab>
                       ) : (
                         <Tab
                           label={'Activities'}
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                           style={{ display: 'none' }}
                         ></Tab>
                       )
                     ) : (
                       <Tab
                         label={'Activities'}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab font-opensans"
                         style={{ display: 'none' }}
                       ></Tab>
                     )}
@@ -1410,7 +1445,7 @@ const Booking = (props) => {
                     {!props.stayBookings ? (
                       <div className="center-div">
                         <p
-                          className="font-lexend text-center"
+                          className="font-opensans text-center"
                           style={{ margin: '1rem 0' }}
                         >
                           Nothing to see here
@@ -1419,7 +1454,7 @@ const Booking = (props) => {
                     ) : !props.stayBookings.length ? (
                       <div className="center-dov">
                         <p
-                          className="font-lexend text-center"
+                          className="font-opensans text-center"
                           style={{ margin: '1rem 0' }}
                         >
                           Nothing to see here
@@ -1448,7 +1483,7 @@ const Booking = (props) => {
                         widthmobile="50%"
                       ></ImageLoader>
                     )}
-                    {/* {!props.flightBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
                   </TabPanel>
                   <TabPanel value={value} index={1}>
                     {props.transferBookings ? (
@@ -1471,7 +1506,7 @@ const Booking = (props) => {
                         widthmobile="50%"
                       ></ImageLoader>
                     )}
-                    {/* {!props.transferBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
                   </TabPanel>
                   <TabPanel value={value} index={3}>
                     {true ? (
@@ -1491,7 +1526,7 @@ const Booking = (props) => {
                         widthmobile="50%"
                       ></ImageLoader>
                     )}
-                    {/* {!props.activityBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
                   </TabPanel>
                 </BookingsContainer>
                 {summaryContainerJSX}
@@ -1516,7 +1551,7 @@ const Booking = (props) => {
                 ) : null}
                 {props.traveleritinerary ? (
                   <DesktopBanner
-                    onclick={() => openTailoredModal(router)}
+                    onclick={_handleTailoredRedirect}
                     text="Want to personalize your own experience like this?"
                   ></DesktopBanner>
                 ) : null}
@@ -1542,7 +1577,7 @@ const Booking = (props) => {
                     showFlightModal={props.showFlightModal}
                   ></FlightModal>
                 ) : null}
-                {props.showTaxiModal ? (
+                {/* {props.showTaxiModal ? (
                   <TaxiModal
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -1551,7 +1586,7 @@ const Booking = (props) => {
                     _updatePaymentHandler={props._updatePaymentHandler}
                     selectedBooking={selectedBooking}
                   ></TaxiModal>
-                ) : null}
+                ) : null} */}
               </Container>
               {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
             </div>
@@ -1601,7 +1636,7 @@ const Booking = (props) => {
                           >
                             <div
                               style={{ lineHeight: '2' }}
-                              className="font-lexend"
+                              className="font-opensans"
                             >
                               {props.payment.paid_user
                                 ? props.payment.is_registration_needed
@@ -1650,7 +1685,7 @@ const Booking = (props) => {
                         <BookingSuccessText style={{ color: 'green' }}>
                           <div
                             style={{ lineHeight: '2' }}
-                            className="font-lexend"
+                            className="font-opensans"
                           >
                             {props.payment.is_registration_needed
                               ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
@@ -1688,7 +1723,7 @@ const Booking = (props) => {
                           ? 'Stays' + ' (' + props.stayBookings.length + ')'
                           : 'Stays'
                       }
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab font-opensans"
                     ></Tab>
                     <Tab
                       label={
@@ -1699,21 +1734,21 @@ const Booking = (props) => {
                             ')'
                           : 'Transfers'
                       }
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab font-opensans"
                       id="bookingdetail-tab-transfers"
                     ></Tab>
                     {props.flightBookings ? (
                       props.flightBookings.length ? (
                         <Tab
                           label={props.flightBookings ? 'Flights' : 'Flights'}
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                           id="bookingdetail-tab-flights"
                         ></Tab>
                       ) : (
                         <Tab
                           label={'Flights'}
                           style={{ display: 'none' }}
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                           id="bookingdetail-tab-flights"
                         ></Tab>
                       )
@@ -1721,7 +1756,7 @@ const Booking = (props) => {
                       <Tab
                         label={'Flights'}
                         style={{ display: 'none' }}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab font-opensans"
                         id="bookingdetail-tab-flights"
                       ></Tab>
                     )}
@@ -1737,19 +1772,19 @@ const Booking = (props) => {
                                 ')'
                               : 'Activities (0)'
                           }
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                         ></Tab>
                       ) : (
                         <Tab
                           label={'Activities'}
-                          className="bookingdetail-tab font-lexend"
+                          className="bookingdetail-tab font-opensans"
                           style={{ display: 'none' }}
                         ></Tab>
                       )
                     ) : (
                       <Tab
                         label={'Activities'}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab font-opensans"
                         style={{ display: 'none' }}
                       ></Tab>
                     )}
@@ -1776,7 +1811,7 @@ const Booking = (props) => {
                     {!props.stayBookings ? (
                       <div className="center-div">
                         <p
-                          className="font-lexend text-center"
+                          className="font-opensans text-center"
                           style={{ margin: '1rem 0' }}
                         >
                           Nothing to see here
@@ -1785,7 +1820,7 @@ const Booking = (props) => {
                     ) : !props.stayBookings.length ? (
                       <div className="center-dov">
                         <p
-                          className="font-lexend text-center"
+                          className="font-opensans text-center"
                           style={{ margin: '1rem 0' }}
                         >
                           Nothing to see here
@@ -1812,7 +1847,7 @@ const Booking = (props) => {
                         url="media/website/undraw_best_place_re_lne9.svg"
                       ></ImageLoader>
                     )}
-                    {/* {!props.flightBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    {/* {!props.flightBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
 
                     {/* {bookingsTransfersMobileJSX} */}
                   </TabPanel>
@@ -1836,7 +1871,7 @@ const Booking = (props) => {
                         url="media/website/undraw_best_place_re_lne9.svg"
                       ></ImageLoader>
                     )}
-                    {/* {!props.transferBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    {/* {!props.transferBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
                   </TabPanel>
                   <TabPanel value={value} index={3}>
                     {props.activityBookings ? (
@@ -1857,7 +1892,7 @@ const Booking = (props) => {
                         url="media/website/undraw_best_place_re_lne9.svg"
                       ></ImageLoader>
                     )}
-                    {/* {!props.activityBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    {/* {!props.activityBookings ? <div className='center-div'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-opensans text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
                   </TabPanel>
                   {/* <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>
              <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0 0 12.5vh 0" >

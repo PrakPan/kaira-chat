@@ -1,5 +1,3 @@
-
-import Flickity from 'react-flickity-component';
 import styled , {keyframes} from 'styled-components';
 import SlideOne from "./slideone/SlideOne";
 import React, {useState, useRef} from "react";
@@ -18,15 +16,6 @@ animation: 1s ${fadeInAnimation};
 
   
 `;
-const flickityOptions = {
-    initialIndex:0,
-    prevNextButtons: false,
-    wrapAround: false,
-    draggable: false,
-    pageDots: false,
-
-
-  };
 
 
 const FlickityComp = (props) => {

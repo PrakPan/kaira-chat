@@ -212,9 +212,9 @@ const Enquiry = (props) => {
         } else {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
-          setTimeout(function () {
+          // setTimeout(function () {
             router.push("/itinerary/" + response.data.itinerary.itinerary_id);
-          }, 10000);
+          // }, 10000);
           setLoading(false);
         }
       })

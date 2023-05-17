@@ -1,384 +1,528 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
-import FullImage from '../../components/FullImage';
-// import {connect} from 'react-redux';
-import DesktopBanner from '../../components/containers/Banner';
-import Experiences from '../../components/containers/Experiences';
-// import Testimonials from '../../components/containers/Testimonials';
-import ExperiencesBlog from '../../components/containers/ExperiencesBlog';
-import axiomyplansinstance from '../../services/sales/MyPlans';
+import Button from '../ui/button/Index';
 
-//  import Chatbot from '../../components/chatbot/Homepage';
-// import ImageLoader from '../../components/ImageLoader';
-import AsSeenIn from '../../containers/testimonial/AsSeenIn';
-// import Heading from '../../components/newheading/heading/Index';
-import Heading from '../../components/newheading/heading/Index';
-import TravelStyles from '../../components/containers/TravelStyles';
-import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
-import HowItWorks from '../../components/containers/HowItWorksSlideshow';
-import Banner from './banner/Mobile';
-import Locations from '../../components/containers/plannerlocations/Index';
-import FullImgContent from './search/SearchFullImgContent';
-// import FullImgContentChristmas from './search/Christmas';
-import Button from '../../components/ui/button/Index';
-import media from '../../components/media';
 import * as ga from '../../services/ga/Index';
-import urls from '../../services/urls';
-import CaseStudies from '../travelplanner/CaseStudies/Index';
-import WhatsappFloating from '../../components/WhatsappFloating';
-import PlanAsPerTheme from './PlanAsPerTheme';
-import PlanWithUs from '../../components/WhyPlanWithUs/Index';
-import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile';
-import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
-import openTailoredModal from '../../services/openTailoredModal';
-const SetWidthContainer = styled.div`
+import { format } from 'date-fns';
+import media from '../media';
+
+import axiostailoredinstance from '../../services/leads/tailored';
+import Spinner from '../Spinner';
+import LoadingLottie from '../ui/LoadingLottie';
+import { useRouter } from 'next/router';
+import { connect } from 'react-redux';
+import { BiArrowBack } from 'react-icons/bi';
+import Flickity from './Flickity';
+import { EXPERIENCE_FILTERS_BOX } from '../../services/constants';
+import { fadeIn } from 'react-animations';
+import Popup from '../ErrorPopup';
+
+const fadeInAnimation = keyframes`${fadeIn}`;
+const Container = styled.div`
+  height: max-content;
+  color: black;
+  z-index: ${(props) => (props.showBlack ? '1006' : '2')};
+  position: relative;
+  background-color: ${(props) =>
+    props.slideIndex || props.tailoredFormModal
+      ? 'white'
+      : 'rgba(255,255,255,0.9)'};
   width: 100%;
-  margin: auto;
+  border: none !important;
+
   @media screen and (min-width: 768px) {
-    width: 85%;
+    ${(props) => props.tailoredFormModal && 'height : 100%'};
+    margin: auto 0;
+    border-radius: ${(props) =>
+      props.tailoredFormModal ? '0px' : '8px !important'};
+
+    min-height: 400px;
   }
 `;
-
-const HowItWorksText = styled.p`
-  font-size: 1rem;
-  width: 100%;
-  margin: 0 0;
-  font-weight: 300;
-
-  @media screen and (min-width: 768px) {
-    font-size: 1rem;
-    margin: 0 0;
-    font-weight: 300;
-  }
-`;
-
-const HowItWorksHeading = styled.p`
+const Heading = styled.p`
+  font-size: 1.2rem;
+  margin: 0.25rem 0 0.25rem 0;
+  text-align: left;
   font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  @media screen and (min-width: 768px) {
-    font-size: 1.25rem;
-    margin: 1rem 0 0.5rem 0;
+  color: black;
+  line-height: normal;
+
+  @media screen and (min-width: 815px) {
+    font-size: 1.5rem;
+    height: 1.8rem;
+    overflow: hidden;
   }
 `;
-const HowItWorksContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    margin: auto;
+const CountryCodeOption = styled.div`
+  &:hover {
+    cursor: pointer;
   }
+  text-align: center;
+  height: 2rem !important;
+  margin: 0.5rem;
 `;
 
-const Homepage = (props) => {
-  const [myPlansArr, setMyPlansArr] = useState([]);
-  const [plansLoading, setPlansLoading] = useState(false);
-  const [plansCount, setPlansCount] = useState(null);
-  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+const CountryImg = styled.img`
+  height: 100%;
+`;
+const Card = styled.div`
+  width: 80%;
+  margin: 2px 1rem;
+`;
+const BlackContainer = styled.div`
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1005;
+  width: 100vw;
+  display: none;
+  height: 100vh;
+  animation: 0.5s ${fadeInAnimation};
+  @media screen and (min-width: 768px) {
+    display: initial;
+  }
+`;
+const Enquiry = (props) => {
+  const router = useRouter();
+  const routerquery = router.query;
+  const initialInputId = Date.now();
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [flexible, setFlexible] = useState(false);
 
-  let isPageWide = media('(min-width: 768px)');
-  useEffect(() => {
-    if (props.token) {
-      const MyPlans = JSON.parse(localStorage.getItem('MyPlans'));
-      if (MyPlans && MyPlans.access_token === props.token) {
-        setMyPlansArr(MyPlans.plans);
-        setPlansCount(MyPlans.count);
-        setPlansLoading(false);
-      } else {
-        axiomyplansinstance
-          .get('?limit=3&offset=0', {
-            headers: {
-              Authorization: `Bearer ${props.token}`,
-            },
-          })
-          .then((res) => {
-            let plansarr = [];
+  const [selectedCities, setSelectedCities] = useState(
+    !router.pathname.split('/').includes('[city]')
+      ? [
+          {
+            destination_id: routerquery.page_id || props.page_id,
+            name: routerquery.destination || props.destination,
+            input_id: initialInputId,
+          },
+        ]
+      : [
+          {
+            id: routerquery.page_id || props.page_id,
+            name: routerquery.destination || props.destination,
+            input_id: initialInputId,
+          },
+        ]
+  );
+  const [groupType, setGroupType] = useState(null);
+  const [startingLocation, setStartingLocation] = useState(false);
+  const [destination, setDestination] = useState(
+    routerquery.destination || props.destination
+  );
+  // const ContainerRef = useRef()
 
-            for (var i = 0; i < res.data.results.length; i++) {
-              plansarr.push(res.data.results[i]);
-            }
-            setMyPlansArr(plansarr.slice());
-            localStorage.setItem(
-              'MyPlans',
-              JSON.stringify({
-                plans: plansarr,
-                count: res.data.count,
-                access_token: props.token,
-              })
-            );
-            setPlansCount(res.data.count);
-            setPlansLoading(false);
-          })
-          .catch((err) => {
-            setPlansLoading(false);
-          });
+  const _submitDataHandler = () => {
+    const value_start = new Date(valueStart);
+    const value_end = new Date(valueEnd);
+    setLoading(true);
+    let cityids = [];
+    let locations = [];
+    let stateIds = [];
+    // let starting_location = null;
+    let preferences = [];
+    for (var i = 0; i < selectedPreferences.length; i++) {
+      for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
+        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
+          for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
+            preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
+          }
+          break;
+        }
       }
     }
-  }, [props.token]);
+    try {
+      for (var i = 0; i < selectedCities.length; i++) {
+        if (
+          cityids.indexOf(selectedCities[i].id) == -1 &&
+          selectedCities[i].id
+        ) {
+          if (selectedCities[i].type == 'State')
+            stateIds.push(parseInt(selectedCities[i].id));
+          else {
+            cityids.push(parseInt(selectedCities[i].id));
+          }
+          locations.push(selectedCities[i].name);
+        }
+      }
+    } catch {}
 
-  //JSX for How it works
-  const HowitWorksHeadingsArr = [
-    <HowItWorksHeading className="font-lexend">
-      Select your preferences
-    </HowItWorksHeading>,
+    const start_date = format(value_start, 'yyyy-MM-dd');
+    const end_date = format(value_end, 'yyyy-MM-dd');
 
-    <HowItWorksHeading className="font-lexend">
-      Let our AI plan your itinerary
-    </HowItWorksHeading>,
+    let number_of_adults = 2,
+      number_of_children = 0,
+      number_of_infants = 0;
+    if (groupType === 'Solo') {
+      number_of_adults = 1;
+    } else if (groupType === 'Couple') {
+      number_of_adults = 2;
+    } else {
+      number_of_adults = numberOfAdults;
+      number_of_children = numberOfChildren;
+      number_of_infants = numberOfInfants;
+    }
+    let data = null;
 
-    <HowItWorksHeading className="font-lexend">
-      Easy Bookings with 24x7 Concierge
-    </HowItWorksHeading>,
+    data = {
+      // "locations": locations,
+      experience_filters_selected: preferences,
+      budget: budget,
+      // "city_id": cityids,
+      group_type: groupType,
+      number_of_adults: number_of_adults,
+      number_of_children: number_of_children,
+      number_of_infants: number_of_infants,
+      start_date: start_date,
+      end_date: end_date,
+      flexible_dates: flexible,
+      user_location: {
+        place_id: startingLocation
+          ? startingLocation.place_id
+          : 'ChIJLbZ-NFv9DDkRzk0gTkm3wlI',
+      },
+    };
 
-    <HowItWorksHeading className="font-lexend">
-      No Commissions - <br /> Pay for what you get
-    </HowItWorksHeading>,
-  ];
+    if (selectedCities[0].destination_id)
+      data.destination_id = [selectedCities[0].destination_id];
+    if (stateIds.length) data.state_id = stateIds;
+    if (cityids.length) data.city_id = cityids;
+    if (locations.length) data.locations = locations;
 
-  const HowitWorksContentsArr = [
-    <HowItWorksText className="font-lexend">
-      From solo travel to workcation, honeymoon to family travel, tell us about
-      your mood, budget & timeline.
-    </HowItWorksText>,
+    if (startingLocation) data;
 
-    <HowItWorksText className="font-lexend">
-      Get a unique itinerary completely personalized for you, with all bookings
-      in one place.
-    </HowItWorksText>,
+    setLoading(true);
+    localStorage.removeItem('MyPlans');
 
-    <HowItWorksText className="font-lexend">
-      From your stays to activities, book-it-all in one click, and enjoy 24x7
-      assistance while you explore.
-    </HowItWorksText>,
+    axiostailoredinstance
+      .post('', data, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((response) => {
+        setSubmitted(true);
+        if (!response.data.auto_itinerary_created) {
+          // window.location.href =
+          //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+          router.push('/thank-you');
+        } else {
+          // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
-    <HowItWorksText className="font-lexend">
-      We only take a small service fees for negotiated-bookings & live support.
-    </HowItWorksText>,
-  ];
+          // setTimeout(function () {
+          router.push('/itinerary/' + response.data.itinerary.itinerary_id);
+          // }, 10000);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        // window.location.href =
+        //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
+        router.push('/thank-you');
 
-  const howitworksimgs = [
-    'media/website/whyus-1.webp',
-    'media/website/whyus-2.webp',
-    'media/website/whyus-3.webp',
-    'media/website/how4.png',
-  ];
-
-  const router = useRouter();
-  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-  const [experienceMore, setExperieceMore] = useState(false);
-
-  const _handleExperiencesRedirect = () => {
-    router.push(urls.travel_experiences.BASE);
+        if (err.response.data.email) {
+        }
+      });
   };
-  const _handleExperiencesClick = () => {
-    //  setTimeout(_handleExperiencesRedirect, 1000);
-
-    // ga.callback_event({
-    //   action: 'TE-Travelstyles',
-
-    //   callback: _handleTailoredRedirect,
-    // })
-    _handleExperiencesRedirect();
+  const [slideIndex, setSlideIndex] = useState(0);
+  const _prevSlideHandler = () => {
+    if (slideIndex) setSlideIndex(slideIndex - 1);
   };
-  const [escapeState, setEscapeState] = useState(false);
+  // const [valueStart, setValueStart] =useState((moment().add(5, 'day')));
+  // const [valueEnd, setValueEnd] =useState((moment().add(10,'day')));
+
+  const [valueStart, setValueStart] = useState(null);
+  const [valueEnd, setValueEnd] = useState(null);
+  const [numberOfAdults, setNumberOfAdults] = useState(2);
+  const [numberOfChildren, setNumberOfChildren] = useState(0);
+  const [numberOfInfants, setNumberOfInfants] = useState(0);
+  const [budget, setBudget] = useState('Affordable');
+  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  const [showCities, setShowCities] = useState(false);
+  const [showSearchStarting, setShowSearchStarting] = useState(false);
+  const [showPopup, setShowPopup] = useState({
+    dateStart: false,
+    dateEnd: false,
+    group: false,
+    InputOne: false,
+  });
+  const [showBlack, setShowBlack] = useState(false);
+  const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   useEffect(() => {
-    setEscapeState(true);
-  }, []);
-  return (
-    <div
-      className={'Homepage font-lexend'}
-      id="homepage-anchor"
-      style={{ visibility: props.hidden ? 'hidden' : 'visible' }}
-    >
-      {/* <Snowflakes></Snowflakes> */}
+    if (slideIndex === 2 && props.token) _submitDataHandler();
+  }, [slideIndex, props.token]);
+  const _handleHideBlack = () => {
+    setShowBlack(false);
+    setShowCities(false);
+    setShowSearchStarting(false);
+  };
+  let isPageWide = media('(min-width: 768px)');
+  const _SlideOneSubmitHandler = () => {
+    if (!selectedCities[0].destination_id && !selectedCities[0].id)
+      return setShowPopup({ ...showPopup, InputOne: true });
+    if (!valueStart && !flexible)
+      return setShowPopup({ ...showPopup, dateStart: true });
+    if (!valueEnd && !flexible)
+      return setShowPopup({ ...showPopup, dateEnd: true });
+    setSlideIndex(slideIndex + 1);
+    // window.scrollBy(0, -200 , 'smooth');
+    // ContainerRef.current.scrollIntoView(0,-150)
+    if (props.HeroBanner && isPageWide)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-      {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
-       <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
-      </FullImage> */}
+  const _SlideTwoSubmitHandler = () => {
+    if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
+    setSlideIndex(slideIndex + 1);
+  };
 
-      <HeroBanner
-        image={
-          isPageWide
-            ? 'media/website/homepage-herobanner.jpg'
-            : 'media/website/homepage-banner-mobile.png'
-        }
-        destinationType={'city-planner'}
-        title={
-          <p>
-            Travel planning a chore,
-            <br />
-            Let our AI Explore.
-          </p>
-        }
-        _startPlanningFunction={() => openTailoredModal(router)}
-      />
+  if (!loading && !submitted)
+    return (
+      <div style={{}}>
+        {showBlack && !props.tailoredFormModal ? (
+          <BlackContainer onClick={_handleHideBlack}></BlackContainer>
+        ) : null}
 
-      <div
-        style={{ zIndex: '1', backgroundColor: 'white', position: 'relative' }}
-      >
-        <DesktopBanner
-          loading={desktopBannerLoading}
-          onclick={() => openTailoredModal(router)}
-          text="Want to personalize your own experience?"
-        ></DesktopBanner>
+        <Container
+          showBlack={showBlack}
+          tailoredFormModal={props.tailoredFormModal}
+          slideIndex={slideIndex}
+          className={isPageWide ? 'border center-di' : 'center-div'}
+          onClick={() => setShowBlack(true)}
+          //  ref={ContainerRef}
+        >
+          {showPopup.InputOne && (
+            <Popup
+              setShowPopup={setShowPopup}
+              top="12.2rem"
+              mobileTop="14rem"
+              left="10px"
+              text="Please select your destination!"
+            />
+          )}
+          {showPopup.dateStart && !flexible && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom="5.2rem"
+              mobileBottom="5.6rem"
+              left="10px"
+              text="Please select starting date!"
+            />
+          )}
+          {showPopup.dateEnd && !flexible && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom="5.6rem"
+              mobileBottom="5.6rem"
+              left="170px"
+              mobileleft={'135px'}
+              text="Please select ending date!"
+            />
+          )}
+          {showPopup.group && (
+            <Popup
+              setShowPopup={setShowPopup}
+              top="190px"
+              left="20%"
+              tipLeft="45%"
+              text="Please select your group type!"
+            />
+          )}
 
-        <SetWidthContainer>
-          <Heading
-            textAlign="left"
-            bold
-            noline
-            fontSize={isPageWide ? '32px' : '24px'}
-            align="center"
-            aligndesktop="left"
-            margin={!isPageWide ? '2.5rem 0.5rem 3.5rem 0.5rem' : '3rem 0'}
+          {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
+          {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
+
+          {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
+          <div
+            style={{
+              padding: '0.5rem 1rem',
+              width: '100%',
+              marginBottom: slideIndex === 2 ? '0rem' : '0rem',
+              display: 'grid',
+              gridTemplateColumns: 'max-content auto',
+            }}
           >
-            How it works?
-          </Heading>
-          <HowItWorksContainer>
-            <HowItWorks
-              images={howitworksimgs}
-              content={HowitWorksContentsArr}
-              headings={HowitWorksHeadingsArr}
-            ></HowItWorks>
-          </HowItWorksContainer>
-
-          {props.token && myPlansArr.length && plansCount ? (
-            <Heading
-              noline
-              fontSize={isPageWide ? '32px' : '24px'}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
-              }
-              bold
-            >
-              {'My Trips (' + plansCount + ')'}
+            {slideIndex ? (
+              <div className="center-div">
+                <BiArrowBack
+                  onClick={_prevSlideHandler}
+                  className="hover-pointer"
+                  style={{ marginTop: '2px', fontSize: '1.5rem' }}
+                ></BiArrowBack>
+              </div>
+            ) : (
+              <div></div>
+            )}
+            <Heading style={{ textAlign: !slideIndex ? 'left' : 'center' }}>
+              {!slideIndex ? 'Get your free travel plan now' : 'Trip Planner'}
             </Heading>
-          ) : null}
-          {props.token && myPlansArr.length ? (
-            <>
-              <Experiences
-                margin="2.5rem 0"
-                experiences={myPlansArr}
-              ></Experiences>
-              <Button
-                link="/dashboard"
-                onclickparams={null}
-                borderWidth="1px"
-                fontSizeDesktop="12px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="1.5rem auto"
-                padding="0.5rem 2rem"
-              >
-                View All
-              </Button>
-            </>
-          ) : null}
-        </SetWidthContainer>
-
-        <SetWidthContainer style={{}}>
-          {props.locations && props.locations.length ? (
-            <>
-              <Heading
-                noline
-                textAlign="left"
-                fontSize={isPageWide ? '32px' : '24px'}
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
-                }
-                bold
-              >
-                Plan as per the best destinations
-              </Heading>
-              <Locations locations={props.locations} viewall></Locations>
-            </>
-          ) : null}
-
-          {props.ThemeData && props.ThemeData.length ? (
-            <>
-              <Heading
-                noline
-                textAlign="left"
-                fontSize={isPageWide ? '32px' : '24px'}
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
-                }
-                bold
-              >
-                Plan your trip as per theme
-              </Heading>
-              <PlanAsPerTheme ThemeData={props.ThemeData} />
-            </>
-          ) : null}
-
-          <Heading
-            noline
-            textAlign="left"
-            fontSize={isPageWide ? '32px' : '24px'}
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
-            }
-            bold
-          >
-            Why plan with us?
-          </Heading>
-          <PlanWithUs />
-
-          <Heading
-            noline
-            textAlign="left"
-            fontSize={isPageWide ? '32px' : '24px'}
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
-            }
-            bold
-          >
-            Our happy customers say about us{' '}
-          </Heading>
-          <CaseStudies></CaseStudies>
-        </SetWidthContainer>
-
-        <SetWidthContainer>
-          {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
-          {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
-        </SetWidthContainer>
-
-        {/* <Testimonials margin="1.5rem 0"></Testimonials> */}
-
-        <br></br>
-        {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-        {!isPageWide && (
-          <div>
-            <Banner
-              onclick={() => openTailoredModal(router)}
-              text="Want to craft your own travel experience?"
-              buttontext="Start Now"
-              color="black"
-              buttonbgcolor="#f7e700"
-            ></Banner>
           </div>
-        )}
-        {/* <Chatbot history={props.history}/>     */}
+          {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
+          <div style={{ padding: '0 1rem 1rem 1rem', width: '100%' }}>
+            <div
+              style={{
+                borderStyle: 'solid none none none',
+                borderWidth: '1px',
+                color: '#D3D3D3',
+                height: '1px',
+                width: '100%',
+                marginBottom: '1rem',
+              }}
+            ></div>
+
+            <Flickity
+              initialInputId={initialInputId}
+              focusedDate={props.focusedDate}
+              setFocusedDate={props.setFocusedDate}
+              tailoredFormModal={props.tailoredFormModal}
+              flexible={flexible}
+              setFlexible={setFlexible}
+              startingLocation={startingLocation}
+              setStartingLocation={setStartingLocation}
+              children_cities={props.children_cities}
+              showSearchStarting={showSearchStarting}
+              setShowSearchStarting={setShowSearchStarting}
+              showCities={showCities}
+              setShowCities={setShowCities}
+              destination={destination}
+              setDestination={setDestination}
+              token={props.token}
+              // _handlePrev={_prevSlideHandler}
+              slideIndex={slideIndex}
+              cities={props.cities}
+              selectedCities={selectedCities}
+              setSelectedCities={setSelectedCities}
+              valueStart={valueStart}
+              valueEnd={valueEnd}
+              setValueStart={setValueStart}
+              setValueEnd={setValueEnd}
+              groupType={groupType}
+              setGroupType={setGroupType}
+              numberOfAdults={numberOfAdults}
+              setNumberOfAdults={setNumberOfAdults}
+              numberOfChildren={numberOfChildren}
+              setNumberOfChildren={setNumberOfChildren}
+              numberOfInfants={numberOfInfants}
+              setNumberOfInfants={setNumberOfInfants}
+              setBudget={setBudget}
+              selectedPreferences={selectedPreferences}
+              setSelectedPreferences={setSelectedPreferences}
+              setSubmitSecondSlide={setSubmitSecondSlide}
+            ></Flickity>
+            {/* {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
+            Continue
+            </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
+            Submit
+            </Button> } */}
+
+            {slideIndex === 0 ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  //  visibility:
+                  //  showCities &&
+                  //  props.cities ? "hidden" : "visible",
+                }}
+              >
+                <Button
+                  width="100%"
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  onclick={() => _SlideOneSubmitHandler()}
+                >
+                  Continue
+                </Button>
+              </div>
+            ) : null}
+            {slideIndex === 1 ? (
+              !props.token ? (
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    fontSize="12px"
+                    width="100%"
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    onclick={_SlideTwoSubmitHandler}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button
+                    width="100%"
+                    padding="0.5rem 2rem"
+                    fontSize="12px"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    onclick={_submitDataHandler}
+                  >
+                    Submit
+                  </Button>
+                </div>
+              )
+            ) : null}
+            {/* <Grid container spacing={2}> */}
+            {/* <Grid item xs={12}>
+                    {!loading ? 
+                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
+                        : 
+                        <Button onclickparam={null} onclick={() => null} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
+                            Preparing Plan
+                            <Spinner display="inline-block" size={16} margin="0 0 0 0.5rem" color={loading ? 'white' : 'black'}></Spinner>
+                        </Button>
+
+                    }
+                    </Grid> */}
+            {/* </Grid> */}
+
+            {/* </Modal.Body> */}
+            {/* </Modal> */}
+          </div>
+        </Container>
       </div>
-      <WhatsappFloating message="Hey, I need help planning my trip." />
-    </div>
-  );
+    );
+  else
+    return (
+      <div>
+        {showBlack ? (
+          <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
+        ) : null}
+
+        <Container className="border center-div">
+          <LoadingLottie height="50%" width="50%"></LoadingLottie>
+        </Container>
+      </div>
+    );
 };
 
-// const mapStateToPros = (state) => {
-//   return{
-//     auth: state.auth.authentication,
-//     name: state.auth.userName
-//   }
-// }
+const mapStateToPros = (state) => {
+  return {
+    name: state.auth.name,
+    emailFail: state.auth.emailFail,
+    token: state.auth.token,
+    phone: state.auth.phone,
+    email: state.auth.email,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
 
-// export default connect(mapStateToPros)(Homepage);
-export default Homepage;
+export default connect(mapStateToPros, mapDispatchToProps)(Enquiry);

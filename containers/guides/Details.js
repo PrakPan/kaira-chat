@@ -2,11 +2,10 @@ import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import media from '../../components/media';
 import Heading from '../../components/newheading/heading/Index';
-import FlickityExperiences from '../../components/containers/FlickityExperiences/Index';
 import Experiences from '../../components/containers/Experiences';
 import Banner from '../homepage/banner/Mobile';
 import Blogs from '../../components/containers/Blogs'
-import FlickityLocations from '../../components/containers/FlickityLocations/Index';
+import SwiperLocations from '../../components/containers/SwiperLocations/Index';
 
 const SetWidthContainer = styled.div`
 width: 100%;
@@ -148,9 +147,6 @@ const content = {
 },
 }
 }
-const Segment = styled.div`
-
-`;
 const Details = (props) => {
   let isPageWide = media('(min-width: 768px)')
   let JSX = [];
@@ -183,16 +179,14 @@ const Details = (props) => {
         for(var j = 0; j < props.data[i].cities.length ; j++)
           locations.push(props.data[i].cities[j]);
         JSX.push(
-          <FlickityLocations locations={locations}></FlickityLocations>
+          <SwiperLocations locations={locations}></SwiperLocations>
         )
         JSX.push(<div key={i+1000} style={{margin: '5rem'}}></div>)
       }
       if(props.data[i].itineraries.length){
         for(var j = 0; j < props.data[i].itineraries.length ; j++)
             experiences.push(props.data[i].itineraries[j]);
-        if(props.data[i].itineraries.length > 3)
-          JSX.push(<FlickityExperiences    margin="0" experiences={experiences}></FlickityExperiences>)
-        else JSX.push(<Experiences    margin="0" experiences={experiences}></Experiences>)
+       JSX.push(<Experiences    margin="0" experiences={experiences}></Experiences>)
         JSX.push(<div key={i+2000} style={{margin: '5rem'}}></div>)
       }
         if(props.data[i].blogs.length){

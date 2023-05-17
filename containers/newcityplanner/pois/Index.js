@@ -2,13 +2,13 @@ import styled from 'styled-components';
 import PoiCard from './PoiCard';
 import { useState } from 'react';
 import media from '../../../components/media';
-import PageDotsFlickity from '../../../components/PageDotsFlickity';
 import validateTextSize from '../../../services/textSizeValidator';
 import Map from '../../../components/Map';
 import WeatherWidget from '../../../components/WeatherWidget/WeatherWidget';
 import openTailoredModal from '../../../services/openTailoredModal';
 import { useRouter } from 'next/router';
 import Drawer from '../../../components/ui/Drawer';
+import SwiperCarousel from '../../../components/SwiperCarousel';
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -106,6 +106,18 @@ const Poi = (props) => {
   ));
   const router = useRouter();
 
+  const cards = props.pois?.map((e, i) => (
+    <PoiCard
+      key={e.id}
+      data={e}
+      showDrawer={showDrawer[i]}
+      setShowDrawer={setShowDrawer}
+      _handleOpen={_handleOpen}
+      handleCloseDrawer={handleCloseDrawer}
+    />
+  ));
+  const router = useRouter();
+
   return (
     <GridContainer>
       <div className="hidden-mobile">
@@ -143,7 +155,7 @@ const Poi = (props) => {
       </div>
 
       <div className="hidden-desktop">
-        <PageDotsFlickity padding={'1rem 0.2rem'} cards={cards} />
+        <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
       </div>
       <div>
         {props.thingsToDoPage && (

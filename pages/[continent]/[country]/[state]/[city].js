@@ -1,10 +1,11 @@
-import ExperienceContainer from "../../../containers/city/Index";
-import Layout from "../../../components/Layout";
+import ExperienceContainer from "../../../../containers/city/Index";
+import Layout from "../../../../components/Layout";
 import { useRouter } from "next/router";
-import axiosallCityInstance from "../../../services/travel-guide/SearchAllLocation";
-import axiosPoiCityInstance from "../../../services/poi/city";
-import axiosReccommendedCityInstance from "../../../services/poi/reccommededcities";
+import axiosallCityInstance from "../../../../services/travel-guide/SearchAllLocation";
+import axiosPoiCityInstance from "../../../../services/poi/city";
+import axiosReccommendedCityInstance from "../../../../services/poi/reccommededcities";
 import Head from "next/head";
+import axios from "axios";
 const Experience = (props) => {
   const schemaData = {
     "@context": "https://schema.org/",
@@ -53,17 +54,21 @@ export async function getStaticPaths() {
 
   // const data = await res.json();
 
-  const res = await axiosallCityInstance.get("");
+  // const res = await axiosallCityInstance.get("");
+    const res = await axios.get(
+      "https://apis.tarzanway.com/search/all/?type=Location"
+    );
+
   const data = res.data;
 
   let paths = [];
     for (var i = 0; i < data.length; i++) {
         const pathArr = data[i].path.split("/");
-        if (pathArr.length === 3)
-          var [countrySlug, stateSlug, citySlug] = pathArr;
+          var [continentSlug , countrySlug, stateSlug, citySlug] = pathArr;
     if (data[i].cta) {
       paths.push({
         params: {
+          continent: continentSlug,
           country: countrySlug,
           state: stateSlug,
           city: citySlug,

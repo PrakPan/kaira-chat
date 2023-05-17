@@ -1246,74 +1246,132 @@ b {
   height: 1.5rem !important;
 }
 
-.country-code-field img {
-  height: 100%;
-  width: auto;
+.flickity-button {
+  display: initial;
+  position: absolute;
+  background: rgba(1, 32, 43, 0.7);
+  border: none;
+  color: white;
 }
-.MuiSelect-root {
-}
-.MuiInputBase-input {
-  height: 1.5rem !important;
+.new-planner-location .flickity-button {
+  top: 40%;
 }
 
-@media only screen and (min-width: 768px) {
-  #bookingedit-modal .modal-body {
-    height: max-content !important;
-  }
-
-  .flickity-button {
-    display: initial;
-    position: absolute;
-    background: rgba(1, 32, 43, 0.7);
-    border: none;
-    color: white;
-  }
-  .new-planner-location .flickity-button {
-    top: 40%;
-  }
-
-  .flickity-button:hover {
-    cursor: pointer;
-  }
-
-  .flickity-button:focus {
-    outline: none;
-    box-shadow: 0 0 0 5px #19f;
-  }
-
-  .flickity-button:disabled {
-    cursor: auto;
-    pointer-events: none;
-    display: none;
-  }
-
-  .flickity-button-icon {
-    fill: white;
-  }
-
-  .flickity-prev-next-button {
-    top: 50%;
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    transform: translateY(-50%);
-  }
-
-  .flickity-prev-next-button.previous {
-    left: -20px;
-  }
-  .flickity-prev-next-button.next {
-    right: -20px;
-  }
-
-  .flickity-prev-next-button .flickity-button-icon {
-    position: absolute;
-    left: 30%;
-    top: 30%;
-    width: 40%;
-    height: 40%;
-  }
+.flickity-button:hover {
+  cursor: pointer;
 }
+
+.flickity-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 5px #19f;
+}
+
+.flickity-button:disabled {
+  cursor: auto;
+  pointer-events: none;
+  display: none;
+}
+
+.flickity-button-icon {
+  fill: white;
+}
+
+.flickity-prev-next-button {
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  transform: translateY(-50%);
+}
+
+.flickity-prev-next-button.previous {
+  left: -20px;
+}
+.flickity-prev-next-button.next {
+  right: -20px;
+}
+
+.flickity-prev-next-button .flickity-button-icon {
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 40%;
+  height: 40%;
+}
+
+#experience-modal-body {
+  border-style: solid solid solid solid;
+  border-color: #f7e700;
+  border-width: 0.5rem;
+  padding: 0;
+}
+
+a {
+  color: black;
+}
+
+.rsc-float-button {
+  border-style: solid;
+  border-width: 1px;
+}
+.bg-whitee {
+  background-color: white;
+  animation: fadeIn ease 0.5s;
+}
+
+.flickity-button {
+  display: initial;
+  position: absolute;
+  background: rgba(1, 32, 43, 0.7);
+  border: none;
+  color: white;
+}
+.new-planner-location .flickity-button {
+  top: 40%;
+}
+
+.flickity-button:hover {
+  cursor: pointer;
+}
+
+.flickity-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 5px #19f;
+}
+
+.flickity-button:disabled {
+  cursor: auto;
+  pointer-events: none;
+  display: none;
+}
+
+.flickity-button-icon {
+  fill: white;
+}
+
+.flickity-prev-next-button {
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  transform: translateY(-50%);
+}
+
+.flickity-prev-next-button.previous {
+  left: -20px;
+}
+.flickity-prev-next-button.next {
+  right: -20px;
+}
+
+.flickity-prev-next-button .flickity-button-icon {
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 40%;
+  height: 40%;
+}
+
 #experience-modal-body {
   border-style: solid solid solid solid;
   border-color: #f7e700;

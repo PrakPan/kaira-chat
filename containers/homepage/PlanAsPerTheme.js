@@ -173,8 +173,9 @@ const PlanAsPerTheme = (props) => {
   useEffect(() => {
     axiosCountInstance.get('').then((res) => setCount(res.data.user));
   }, []);
-  const _handleTripRedirect = (link) => {
-    router.push(`/travel-planner/${link}`);
+  const _handleTripRedirect = (path) => {
+    // router.push(`/travel-planner/${link}`)
+    if (path) window.location.href = '/asia/india/' + path;
   };
 
   const order = ['e', 'b', 'c', 'a'];

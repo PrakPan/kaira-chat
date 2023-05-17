@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import ReviewCard from './ReviewCard';
-import Flickity from '../../components/FlickityCarousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import media from '../../components/media';
+import SwiperCarousel from '../../components/SwiperCarousel';
 const Heading = styled.p`
     font-size: 1.5rem
     padding: 1rem 0;

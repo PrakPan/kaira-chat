@@ -1,24 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../components/ImageLoader';
-import Carousel from '../../../components/FlickityCarousel';
-import PageDotsFlickity from '../../../components/PageDotsFlickity';
-import { useEffect } from 'react';
-const Container = styled.div`
-  max-width: 100%;
-  display: grid;
-  padding: 0;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
-  grid-gap: 1rem;
-  @media screen and (min-width: 768px) {
-    grid-template-columns: ${(props) => 'repeat(' + props.total + ',1fr)'};
-    grid-template-rows: auto;
-  }
-  @media (min-width: 768px) and (max-width: 1024px) {
-    grid-template-columns: 33% 33% 33%;
-  }
-`;
+import SwiperCarousel from '../../../components/SwiperCarousel';
+
 const IconContainer = styled.div`
   width: 100%;
 `;
@@ -48,7 +32,6 @@ const FoodToEat = (props) => {
   const MobileCardsArr = [];
   let count = 0;
   for (let i = 4; i < cards.length; i = i + 4) {
-    // let n = cards.length;
     const el = cards.slice(i - 4, i);
     MobileCardsArr.push(
       <MobileCardsContainer>
@@ -71,16 +54,19 @@ const FoodToEat = (props) => {
   return (
     <>
       <div className="hidden-mobile">
-        <Carousel
-          initialIndex={0}
-          hideSides
-          numberOfCards={4}
-          groupCells={4}
+        <SwiperCarousel
+          navigationButtons={true}
+          slidesPerView={4}
           cards={cards}
         />
       </div>
       <div className="hidden-desktop">
-        <PageDotsFlickity padding={'1rem 0.2rem'} cards={MobileCardsArr} />
+        <SwiperCarousel
+          slidesPerView={1}
+          pageDots
+          noPadding
+          cards={MobileCardsArr}
+        />
       </div>
     </>
   );

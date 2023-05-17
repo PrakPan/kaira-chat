@@ -4,10 +4,9 @@ import media from "../../../components/media"
 import DesktopSkeleton,{MobileSkeleton} from '../../../components/containers/plannerlocations/LocationSkeleton'
 import Button from '../../../components/ui/button/Index'
 import styled from 'styled-components'
-import Carousel from '../../../components/FlickityCarousel'
-import PageDotsFlickity from '../../../components/PageDotsFlickity'
 import openTailoredModal from '../../../services/openTailoredModal';
 import { useRouter } from 'next/router';
+import SwiperCarousel from '../../../components/SwiperCarousel';
 const MobileCardsContainer = styled.div`
   display : grid;
 grid-template-columns: 1fr 1fr ;
@@ -80,13 +79,11 @@ const router = useRouter()
       {isPageWide ? (
         <>
           {cards.length ? (
-            <Carousel
-              initialIndex={0}
-              hideSides
-              groupCells={6}
-              numberOfCards={6}
+            <SwiperCarousel
+              navigationButtons={true}
+              slidesPerView={6}
               cards={cards}
-            ></Carousel>
+            ></SwiperCarousel>
           ) : (
             <DesktopSkeleton />
           )}
@@ -107,11 +104,12 @@ const router = useRouter()
       ) : (
         <div>
           {MobilecardsToShowJSX.length ? (
-            <PageDotsFlickity
-              padding={"0.2rem"}
-              initialIndex
-              cards={MobilecardsToShowJSX}
-            ></PageDotsFlickity>
+            <SwiperCarousel
+              slidesPerView={1}
+              pageDots
+                cards={MobilecardsToShowJSX}
+                noPadding
+            ></SwiperCarousel>
           ) : (
             <MobileSkeleton />
           )}

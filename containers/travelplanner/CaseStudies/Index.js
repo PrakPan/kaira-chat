@@ -4,7 +4,7 @@ import media from '../../../components/media';
 import Card from './Card';
 import TRAVELERS from '../../../public/content/travelers';
 import Button from '../../../components/ui/button/Index';
-import PageDotsFlickity from '../../../components/PageDotsFlickity'
+import SwiperCarousel from '../../../components/SwiperCarousel';
 const Container = styled.div`
       padding: 0 0.5rem ;
 @media screen and (min-width: 768px){
@@ -29,20 +29,40 @@ const FullImgContent = (props) => {
     ]
     
    
-   return(
-        <div>
-        
-         {isPageWide &&
+   return (
+     <div>
+       {isPageWide && (
          <>
-         <Container>
-                   {cards.map((e,i) => <div key={i}>{e}</div>)}
-        </Container>
-        <Button link={'/testimonials'} onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="500" borderRadius="6px" margin="auto" padding="0.5rem 2rem" >View All</Button>
-         </>}
-         
-        {!isPageWide &&<PageDotsFlickity padding={'1rem 0.2rem'} cards={cards}></PageDotsFlickity>}
-        </div>
-    );
+           <Container>
+             {cards.map((e, i) => (
+               <div key={i}>{e}</div>
+             ))}
+           </Container>
+           <Button
+             link={"/testimonials"}
+             onclickparams={null}
+             borderWidth="1px"
+             fontSizeDesktop="12px"
+             fontWeight="500"
+             borderRadius="6px"
+             margin="auto"
+             padding="0.5rem 2rem"
+           >
+             View All
+           </Button>
+         </>
+       )}
+
+       {!isPageWide && (
+         <SwiperCarousel
+           slidesPerView={1}
+           pageDots
+           noPadding
+           cards={cards}
+         ></SwiperCarousel>
+       )}
+     </div>
+   );
 }
 
 export default FullImgContent;

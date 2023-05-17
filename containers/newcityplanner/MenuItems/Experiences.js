@@ -4,9 +4,8 @@ import styled from 'styled-components';
 import ExperienceCard from '../../../components/cards/newitinerarycard-main/ExperienceCard';
 import ItineraryCard from '../../../components/cards/newitinerarycard-myplan/ExperienceCard';
 import PastItineraryCard from '../../../components/cards/Testimonial';
-import PageDotFlickity from '../../../components/PageDotsFlickity'
-import Carousel from '../../../components/FlickityCarousel'
 import media from '../../../components/media'
+import SwiperCarousel from '../../../components/SwiperCarousel';
 const Container = styled.div`
 @media screen and (min-width: 768px){
 
@@ -158,25 +157,33 @@ const Experiences= (props) => {
         }
       }
     }
-    return(
+    return (
       <>
-      {isPageWide?
-      <Container>        
-      {/* <GridContainer columns={props.cols} className="netflix-containe">
+        {isPageWide ? (
+          <Container>
+            {/* <GridContainer columns={props.cols} className="netflix-containe">
          {!more ? [experiencecards[0], experiencecards[1],experiencecards[2]] : experiencecards}
       </GridContainer> */}
-      <Carousel initialIndex={0} hideSides numberOfCards={3} groupCells={3} cards={experiencecards} />
-      {/* <div style={{width:'100%', marginInline : 'auto'}}>
+            <SwiperCarousel
+              navigationButtons={true}
+              slidesPerView={3}
+              cards={experiencecards}
+            ></SwiperCarousel>
+            {/* <div style={{width:'100%', marginInline : 'auto'}}>
       <Button onClick={()=>setMore(!more)}>{more?'Show Less' : 'View all'}</Button>
       </div> */}
-
-  </Container>
-:
-<PageDotFlickity cards={experiencecards} padding={'1rem 0.2rem'} />  
-}
-      
-  </>
-  );
+          </Container>
+        ) : (
+          <SwiperCarousel
+            slidesPerView={1}
+            initialIndex={0}
+              pageDots
+              noPadding
+            cards={experiencecards}
+          ></SwiperCarousel>
+        )}
+      </>
+    );
   
 }
 

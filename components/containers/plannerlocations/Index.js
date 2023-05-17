@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Card from './Card';
-import Carousel from '../../FlickityCarousel';
-
 import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
-import PageDotsFlickity from '../../PageDotsFlickity';
 import DesktopSkeleton, { MobileSkeleton } from './LocationSkeleton';
 import * as ga from '../../../services/ga/Index';
 import openTailoredModal from '../../../services/openTailoredModal';
+import SwiperCarousel from '../../SwiperCarousel';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -77,27 +75,14 @@ const LocationsBlog = (props) => {
     return (
       <div>
         {cards.length ? (
-          <Carousel
-            hideSides
-            initialIndex={0}
-            groupCells={6}
-            numberOfCards={6}
+          <SwiperCarousel
+            navigationButtons={true}
+            slidesPerView={6}
             cards={cards}
-          ></Carousel>
+          ></SwiperCarousel>
         ) : (
           <DesktopSkeleton />
         )}
-        {/* {cards.length ? (
-        <EmblaCarousel
-          hideSides
-          initialIndex={0}
-          groupCells={6}
-          numberOfCards={6}
-          cards={cards}
-        ></EmblaCarousel>
-      ) : (
-        <DesktopSkeleton />
-      )} */}
         <Button
           onclick={() =>
             openTailoredModal(router, props.page_id, props.destination)
@@ -118,10 +103,11 @@ const LocationsBlog = (props) => {
       <div>
         <div style={{ padding: '1rem 0' }}>
           {MobilecardsToShowJSX.length ? (
-            <PageDotsFlickity
-              initialIndex={0}
+            <SwiperCarousel
+              slidesPerView={1}
               cards={MobilecardsToShowJSX}
-            ></PageDotsFlickity>
+              pageDots
+            ></SwiperCarousel>
           ) : (
             <MobileSkeleton />
           )}

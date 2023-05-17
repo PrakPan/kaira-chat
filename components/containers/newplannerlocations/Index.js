@@ -2,13 +2,12 @@
 import React, { useState , useEffect} from 'react';
 import styled from 'styled-components';
 import Card from './Card';
-import Carousel from '../../FlickityCarousel';
-import PageDotsFlickity from '../../PageDotsFlickity';
 import media from '../../media';
 import { useRouter } from 'next/router';
 import Button from '../../ui/button/Index';
 import urls from '../../../services/urls';
 import * as ga from '../../../services/ga/Index';
+import SwiperCarousel from '../../SwiperCarousel';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -104,25 +103,24 @@ setCardsToShowJSXmobile(MobileCardsArr)
    return (
      <>
        <div className="hidden-mobile new-planner-location">
-        
          {/* <Container >  
                {cardsToShowJSX}
       </Container> */}
-         <Carousel
-           hideSides
-           initialIndex={0}
-           groupCells={6}
-           numberOfCards={6}
+         <SwiperCarousel
+           navigationButtons={true}
+           slidesPerView={6}
            cards={cardsToShowJSX}
-         ></Carousel>
+           navButtonsTop={'38%'}
+         ></SwiperCarousel>
        </div>
 
        <div className="hidden-desktop">
          <div style={{ padding: "1rem 0" }}>
-           <PageDotsFlickity
-             initialIndex={0}
+           <SwiperCarousel
+             slidesPerView={1}
+             pageDots
              cards={cardsToShowJSXmobile}
-           ></PageDotsFlickity>
+           ></SwiperCarousel>
          </div>
          {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
        </div>
