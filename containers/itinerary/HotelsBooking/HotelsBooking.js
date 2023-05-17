@@ -7,7 +7,7 @@ import { ImSpoonKnife } from 'react-icons/im';
 import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import BookingModal from '../../../components/modals/bookingupdated/Index';
 import * as ga from '../../../services/ga/Index';
-import Flickity from '../../../components/FlickityCarousel';
+
 import ButtonYellow from '../../../components/ButtonYellow';
 import AccommodationModal from '../../../components/modals/accommodation/Index';
 import styled from 'styled-components';
