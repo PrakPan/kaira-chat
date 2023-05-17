@@ -5,7 +5,7 @@ import Heading from '../../components/newheading/heading/Index';
 import Experiences from '../../components/containers/Experiences';
 import Banner from '../homepage/banner/Mobile';
 import Blogs from '../../components/containers/Blogs'
-import FlickityLocations from '../../components/containers/FlickityLocations/Index';
+import SwiperLocations from '../../components/containers/SwiperLocations/Index';
 
 const SetWidthContainer = styled.div`
 width: 100%;
@@ -179,7 +179,7 @@ const Details = (props) => {
         for(var j = 0; j < props.data[i].cities.length ; j++)
           locations.push(props.data[i].cities[j]);
         JSX.push(
-          <FlickityLocations locations={locations}></FlickityLocations>
+          <SwiperLocations locations={locations}></SwiperLocations>
         )
         JSX.push(<div key={i+1000} style={{margin: '5rem'}}></div>)
       }
