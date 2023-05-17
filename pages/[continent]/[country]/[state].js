@@ -1,10 +1,11 @@
-import LadakhContainer from '../../containers/travelplanner/Index';
+import LadakhContainer from '../../../containers/travelplanner/Index';
 import Head from 'next/head';
-import Layout from '../../components/Layout'
+import Layout from '../../../components/Layout'
 import { useState, useEffect } from 'react';
-import axiosTravelPlannerInstance from '../../services/pages/travel-planner'
-import axiossearchallinstance from '../../services/search/all'
-import axiospagelistinstance from '../../services/pages/list'
+import axiosTravelPlannerInstance from '../../../services/pages/travel-planner'
+import axiossearchallinstance from '../../../services/search/all'
+import axiospagelistinstance from '../../../services/pages/list'
+import axios from 'axios';
 const TravelPlanner = (props) => {
 	const [data, setData] = useState({
 		page_title: null,
@@ -37,26 +38,20 @@ export async function getStaticPaths(){
 //     const data = await res.json();
       // const res = await axiosTravelPlannerInstance.get('/list')
       // const data = res.data
-      const res = await axiossearchallinstance.get('?type=State')
+  
+  // const res = await axiossearchallinstance.get('?type=State')
+  const res = await axios.get(
+    "https://apis.tarzanway.com/search/all/?type=State"
+  );
       const data = res.data
       let paths = [];
       for (var i = 0; i < data.length; i++){
-        //     var countrySlug
-        //     var stateSlug
-        // if (data[i] && data[i].ancestors) {
-        //   if (data[i].ancestors[0])
-        //     if (data[i].ancestors[0].level === "Country")
-        //       countrySlug = data[i].ancestors[0].slug;
-        //   if (data[i].cta) stateSlug = data[i].cta;
-        // }
-// console.log("data[i]: ", data[i]);
         const pathArr = data[i].path.split("/");
-        if (pathArr.length === 2) var [countrySlug, stateSlug] = pathArr;
-        else if (pathArr.length === 1) { var countrySlug = 'india';  var stateSlug = pathArr[0]}
-
+        var [continentSlug, countrySlug, stateSlug] = pathArr;          
   if (data[i].id !== 1) {
     paths.push({
       params: {
+        continent : continentSlug,
         country: countrySlug,
         state: stateSlug,
       },

@@ -168,8 +168,7 @@ useEffect(()=>{
 },[])    
     const _handleTripRedirect = (path)=>{
       // router.push(`/travel-planner/${link}`)
-      console.log('props: ', props);
-      if(path) window.location.href = '/india/' + path
+      if(path) window.location.href = '/asia/india/' + path
     }
 
     const order = ['e','b','c','a']

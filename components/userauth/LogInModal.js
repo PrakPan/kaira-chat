@@ -624,7 +624,7 @@ if (props.loadingsocial) return (
                 onFailure={googleResponse}
                 render={(renderProps) => (
                   <Button
-                    onclick={renderProps.onClick}
+                    onclick={() => { console.log('button clicked'); renderProps.onClick()}}
                     margin={"0"}
                     width="100%"
                     bgColor="#F9F9F9"
