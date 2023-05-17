@@ -1,4 +1,4 @@
-import { getHumanDate } from '../../services/getHumanDate';
+import { getHumanDate } from '../services/getHumanDate';
 
 const convertDFormat = (dt) => {
   const date = parseISO(dt);

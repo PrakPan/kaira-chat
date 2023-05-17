@@ -93,7 +93,7 @@ const Experiences= (props) => {
 //       </Container>
 //   ); 
 return(
-    <div className='hover-pointer' onClick={() => {props.slug ?props._handleCityRedirect(props.slug) : console.log('')}}>
+    <div className='hover-pointer' onClick={() => {props.path ?props._handleCityRedirect(props.path) : console.log('')}}>
   {/* <ImageLoader
 
 url={'media'}

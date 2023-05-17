@@ -136,8 +136,8 @@ const Accommodation = (props) => {
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         
                         { rooms.length ? 
-                        rooms.map(room => 
-                            <div className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
+                        rooms.map((room,i) => 
+                            <div key={i} className='' style={{display: 'grid', gridTemplateColumns: 'max-content auto'}}>
                                  <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0'}} className='font-lexend'>{room.number_of_rooms + " x "}</p>
                                  <p  style={{fontWeight: '300', fontSize: '0.75rem', margin: '0 0 0 0.25rem'}} className='font-lexend'>{room.room_type_name}</p>
                             </div>

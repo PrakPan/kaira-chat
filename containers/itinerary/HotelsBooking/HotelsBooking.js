@@ -15,7 +15,7 @@ import styled from 'styled-components';
 import {
   getDate,
   convertDateYearFormat,
-} from '../../../pages/helper/ConvertDateFormat';
+} from '../../../helper/ConvertDateFormat';
 import { connect } from 'react-redux';
 
 const ClippathComp = styled.div`

@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import media from '../../../../media';
 import { useRouter } from 'next/router';
 import { ImSearch } from 'react-icons/im';
-import ImageLoader from '../../../../ImageLoader';
-import { FaMapMarkerAlt } from 'react-icons/fa';
 import SkeletonCard from '../../../../ui/SkeletonCard';
 const Container = styled.div`
   margin: 1rem;
@@ -93,18 +91,11 @@ const NewResults = (props) => {
   const router = useRouter();
   let isPageWide = media('(min-width: 768px)');
   const _handleLocationClick = (data) => {
-    if (data.cta) {
-      // props.setPannelClose()
-      // if(data.type == 'Location') router.push('/travel-guide/city/'+data.cta)
-      // else router.push('/travel-planner/'+data.cta)
-
-      if (data.type == 'Location')
-        window.location.href =
-          'https://dev.thetarzanway.com/travel-guide/city/' + data.cta;
-      else
-        window.location.href =
-          'https://dev.thetarzanway.com/travel-planner/' + data.cta;
-    }
+    if (data.path) window.location.href = '/' + data.path;
+    // if(data.cta){
+    //     if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
+    //     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
+    // }
   };
 
   const skeleton = (
@@ -163,6 +154,34 @@ const NewResults = (props) => {
   //   </div>
   // );
 
+  // const skeleton = (
+  //   <div
+  //     style={{
+  //       display: 'grid',
+  //       padding: '0.3rem',
+  //       gap: '2px',
+  //       gridTemplateColumns: '1fr 5fr',
+  //     }}
+  //   >
+  //     <SkeletonCard borderRadius="100%" width="45px"></SkeletonCard>
+  //     <div style={{ marginBlock: 'auto' }}>
+  //       <SkeletonCard
+  //         height="14px"
+  //         ml="8px"
+  //         width={'70%'}
+  //         borderRadius={'2px'}
+  //       ></SkeletonCard>
+  //       <SkeletonCard
+  //         height="12px"
+  //         ml="8px"
+  //         mt="4px"
+  //         width={'55%'}
+  //         borderRadius={'2px'}
+  //       ></SkeletonCard>
+  //     </div>
+  //   </div>
+  // );
+
   if (!props.results)
     return (
       <SkeletonContainer>
@@ -180,29 +199,6 @@ const NewResults = (props) => {
         ]}
       </SkeletonContainer>
     );
-
-  return (
-    <>
-      <Container>
-        {props.results.map((e) => (
-          <LocationContainer
-            key={e['_source'].resource_id}
-            onClick={() => {
-              _handleLocationClick(e['_source']);
-            }}
-          >
-            <MarkerContainer>
-              <ImSearch />
-            </MarkerContainer>
-            <Text>
-              <div>{e['_source'].name}</div>
-              {e['_source'].parent && <p>{e['_source'].parent}</p>}
-            </Text>
-          </LocationContainer>
-        ))}
-      </Container>
-    </>
-  );
 
   return (
     <Container>

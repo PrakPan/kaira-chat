@@ -14,6 +14,8 @@ import { TbArrowBack } from 'react-icons/tb';
 import Spinner from '../../Spinner';
 import media from '../../media';
 import LoadingLottie from '../../ui/LoadingLottie';
+import Drawer from '../../ui/Drawer';
+import POIDetailsSkeleton from '../../drawers/poiDetails/POIDetailsSkeleton';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
@@ -41,71 +43,52 @@ const POI = (props) => {
 
   return (
     <div>
-      <Modal
+      <Drawer
         show={props.show}
-        className="booking-modal"
-        size="lg"
+        anchor={'right'}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
         onHide={props.onHide}
-        animation={false}
-        style={{}}
+        // zIndex='1501'
       >
-        <Modal.Header
-          style={{
-            float: 'right',
-            height: isPageWide ? 'max-content' : '20vw',
-            position: 'sticky',
-            top: '0',
-            backgroundColor: 'white',
-            justifyContent: 'flex-end',
-            padding: !isPageWide ? '2rem 1rem' : '1rem',
-            backgroundColor: 'white',
-            zIndex: '2',
-          }}
-        >
-          <TbArrowBack
-            onClick={props.onHide}
-            className="hover-pointer"
-            style={{
-              margin: '0.5rem',
-              fontSize: '1.75rem',
-              textAlign: 'right',
-            }}
-          ></TbArrowBack>
-
-          {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
-        </Modal.Header>
-        <Modal.Body style={{ padding: '0' }}>
-          {!loading ? (
+        {!loading ? (
+          <div>
+            <TbArrowBack
+              onClick={props.onHide}
+              className="hover-pointer"
+              style={{
+                margin: '0.5rem',
+                fontSize: '1.75rem',
+                textAlign: 'right',
+              }}
+            ></TbArrowBack>
+            <Overview
+              _setImagesHandler={props._setImagesHandler}
+              user_rating={props.user_rating}
+              number_of_reviews={props.number_of_reviews}
+              data={data}
+              images={data.images ? data.images : []}
+              experience_filters={
+                props.poi ? props.poi.experience_filters : null
+              }
+              name={props.poi ? props.poi.name : null}
+              duration={props.poi ? props.poi.ideal_duration_hours : null}
+            ></Overview>
+            {/* <Tabs data={data}></Tabs> */}
             <div>
-              <Overview
-                _setImagesHandler={props._setImagesHandler}
-                user_rating={props.user_rating}
-                number_of_reviews={props.number_of_reviews}
-                data={data}
-                images={data.images ? data.images : []}
-                experience_filters={
-                  props.poi ? props.poi.experience_filters : null
-                }
-                name={props.poi ? props.poi.name : null}
-                duration={props.poi ? props.poi.ideal_duration_hours : null}
-              ></Overview>
-              {/* <Tabs data={data}></Tabs> */}
-              <div>
-                {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
-                {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
-                {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
-              </div>
+              {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
+              {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
+              {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
             </div>
-          ) : (
-            <div
-              style={{ height: '100%', paddingTop: '20vw' }}
-              className="center-div"
-            >
-              <LoadingLottie />
-            </div>
-          )}
-        </Modal.Body>
-      </Modal>
+          </div>
+        ) : (
+          <POIDetailsSkeleton
+            name={props.name}
+            handleCloseDrawer={props.onHide}
+          />
+        )}
+      </Drawer>
     </div>
   );
 };

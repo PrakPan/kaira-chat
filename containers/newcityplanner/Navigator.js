@@ -57,8 +57,9 @@ const Navigator = (props) => {
   return (
     <Container>
       <TitleContainer>
-        {points.map((e) => (
+        {points.map((e, i) => (
           <Title
+            key={i}
             style={selectedPoint == e ? selectedStyle : null}
             onClick={() => changeData(e)}
           >

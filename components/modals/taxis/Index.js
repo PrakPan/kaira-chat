@@ -22,6 +22,7 @@ import SectionTwo from './SectionTwo';
 import LoadingLottie from '../../ui/LoadingLottie';
 import TaxiSelected from './taxi-selected/Index';
 import TaxiSearched from './taxi-searched/Index';
+import Drawer from '../../ui/Drawer';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -260,26 +261,17 @@ const Booking = (props) => {
   if (props.token)
     return (
       <div>
-        <Modal
-          className="booking-modal"
+        <Drawer
+          anchor={'right'}
+          backdrop
+          style={{ zIndex: 1501 }}
+          className="font-lexend"
           show={props.showTaxiModal}
-          size="xl"
           onHide={props.setHideTaxiModal}
-          style={{}}
+          // zIndex='1501'
         >
-          <Modal.Header
-            style={{
-              display: 'block',
-              zIndex: '2',
-              position: 'sticky',
-              top: '0',
-              backgroundColor: 'white',
-            }}
-          >
-            <SectionOne setHideTaxiModal={props.setHideTaxiModal}></SectionOne>
-            {/* <SectionTwo dler}_addFilterHandler={_addFilterHandler} ></SectionTwo> */}
-          </Modal.Header>
-          <Modal.Body style={{ padding: '0.5rem', backgroundColor: 'white' }}>
+          <SectionOne setHideTaxiModal={props.setHideTaxiModal}></SectionOne>
+          <div>
             <GridContainer style={{ clear: 'right' }}>
               {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
               {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
@@ -372,9 +364,9 @@ const Booking = (props) => {
                 </ButtonToTop> */}
               </ContentContainer>
             </GridContainer>
-            {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
-          </Modal.Body>
-        </Modal>
+          </div>
+        </Drawer>
+
         {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
       </div>
     );

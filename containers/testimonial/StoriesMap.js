@@ -233,10 +233,10 @@ const TooltipContainer = styled.div`
 
 const StoriesMap = () => {
   const isPageLoaded = usePageLoaded();
+  let isPageWide = media('(min-width: 768px)');
+
   if (!isPageLoaded) return null;
   else {
-    let isPageWide = media('(min-width: 768px)');
-
     if (isPageWide) {
       return (
         <div>

@@ -8,25 +8,18 @@ import IndexDesktop from './Desktop';
 import media from '../media';
 import NewMobile from './mobile/Index';
 import axiosnotificationsinstance from '../../services/user/notifications/notifications';
-import { useRouter } from 'next/router';
+
 const Navbar = (props) => {
   let isPageWide = media('(min-width: 768px)');
   const [hideNav, setHideNav] = useState(false);
-  const [Isitenary, setIsitenary] = useState(false);
 
-  const [headerColor, setHeaderColor] = useState('white');
+  const [headerColor, setHeaderColor] = useState('black');
   const [notOpenCount, setNotOpenCount] = useState();
 
   let notopencount = 0;
 
   let [notifications, setNotifications] = useState([]);
-  const router = useRouter();
-  const path = router.route.split('/');
-
   useEffect(() => {
-    if (path[1] == 'itinerary') {
-      setIsitenary(true);
-    }
     if (props.token)
       axiosnotificationsinstance
         .get('', {
@@ -51,7 +44,7 @@ const Navbar = (props) => {
     let scrollhandler = () => {
       if (window.pageYOffset < 10) {
         setHideNav(false);
-        setHeaderColor('white');
+        setHeaderColor('black');
       } else setHeaderColor('white');
       let currentScroll = window.pageYOffset;
       //sfroll up
@@ -60,7 +53,7 @@ const Navbar = (props) => {
       }
       //scroll down
       else {
-        if (window.pageYOffset < 10) setHeaderColor('white');
+        if (window.pageYOffset < 10) setHeaderColor('black');
         else setHideNav(true);
         // else setHeaderColor('black');
       }
@@ -102,43 +95,34 @@ const Navbar = (props) => {
         })
         .catch((err) => {});
   };
-
-  //             setNotifications(res.data)
-  //         }).catch(err => {
-  //     })
-
-  // }
-  // const _openAllNotificationsHandler = () => {
-  //   if(props.token)
-  //   axiosnotificationsinstance.patch("", {},  {headers: {
-  //       'Authorization': `Bearer ${props.token}`
-  //       }}).then(res => {
-  //         setNotOpenCount(0);
-  //       }).catch(err => {
-  //   })
-  // }
-
   return (
     <div className="font-lexend">
       <div className="hidden-desktop">
-        <NewMobile
-          PW={props.PW}
-          _openAllNotificationsHandler={_openAllNotificationsHandler}
-          hidecta={props.hidecta}
-          ctaonclick={props.ctaonclick}
-          _deleteNotificationHandler={_deleteNotificationHandler}
-          notifications={notifications}
-          hideNav={hideNav}
-          notOpenCount={notOpenCount}
-        ></NewMobile>
+        {!hideNav && (
+          <NewMobile
+            PW={props.PW}
+            id={props.id}
+            destination={props.destination}
+            _openAllNotificationsHandler={_openAllNotificationsHandler}
+            hidecta={props.hidecta}
+            ctaonclick={props.ctaonclick}
+            _deleteNotificationHandler={_deleteNotificationHandler}
+            notifications={notifications}
+            hideNav={hideNav}
+            notOpenCount={notOpenCount}
+          ></NewMobile>
+        )}
       </div>
       <div className="hidden-mobile">
-        <div
-          style={{
-            display: hideNav ? 'none !important' : 'initial !important',
-          }}
-        >
+        {/* <div
+            style={{
+              display: hideNav ? "none !important" : "initial !important",
+            }}
+          > */}
+        {!hideNav && (
           <IndexDesktop
+            id={props.id}
+            destination={props.destination}
             PW={props.PW}
             ctaonclick={props.ctaonclick}
             hidehomecta={props.hidehomecta}
@@ -150,29 +134,9 @@ const Navbar = (props) => {
             token={props.token}
             style={{}}
           ></IndexDesktop>
-        </div>
+        )}
+        {/* </div> */}
       </div>
-      {/* <div className="hidden-mobile">
-        <div
-          style={{
-            display: hideNav ? 'none !important' : 'initial !important',
-          }}
-        >
-          <IndexDesktop
-            PW={props.PW}
-            ctaonclick={props.ctaonclick}
-            hidehomecta={props.hidehomecta}
-            hidecta={props.hidecta}
-            _deleteNotificationHandler={_deleteNotificationHandler}
-            _openAllNotificationsHandler={_openAllNotificationsHandler}
-            notOpenCount={notOpenCount}
-            notifications={notifications}
-            token={props.token}
-            headerColor={headerColor}
-            style={{}}
-          ></IndexDesktop>
-        </div>
-      </div> */}
     </div>
   );
 };

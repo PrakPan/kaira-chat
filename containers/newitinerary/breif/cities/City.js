@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import ImageLoader from '../../../../components/ImageLoader';
-import TruncatedText from '../../../../pages/helper/TruncatedText';
+import TruncatedText from '../../../../helper/TruncatedText';
 import WeatherWidget from '../../../../components/WeatherWidget/WeatherWidget';
 import { FaBed } from 'react-icons/fa';
 

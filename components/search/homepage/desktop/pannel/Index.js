@@ -80,12 +80,6 @@ const SearchPannel = (props) => {
   }, []);
 
   useEffect(() => {
-    axioslocationsinstance.get('').then((response) => {
-      setHotLocationsData(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
     axioslocationsinstance.get('hot_destinations').then((response) => {
       setHotLocationsData(response.data);
     });

@@ -1,17 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes } from '@fortawesome/free-solid-svg-icons';
-import Results from './results/Index';
-import { RxCross2 } from 'react-icons/rx';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import axioslocationsinstance from '../../../../../services/search/search';
 import NewResults from './NewResults';
 import { ImSearch } from 'react-icons/im';
 import { MdCancel } from 'react-icons/md';
+import { RxCross2 } from 'react-icons/rx';
 
 const Container = styled.div`
   background-color: white;
@@ -66,7 +63,6 @@ const Text = styled.div`
   font-size: 1rem;
 `;
 const SearchPannel = (props) => {
-  let isPageWide = media('(min-width: 768px)');
   const [showResults, setShowResults] = useState(false);
   let [inputValue, setInputValue] = useState('');
   const [results, setResults] = useState(null);
@@ -85,10 +81,10 @@ const SearchPannel = (props) => {
     setShowResults(true);
     setResults(null);
     axios
-      .get(`https://apis.tarzanway.com/search/?q=` + event.target.value)
+      .get(`https://apis.tarzanway.com/search/suggest/?q=` + event.target.value)
       .then((res) => {
         if (res.data.length) {
-          setResults(res.data);
+          setResults(res.data.slice(0, 10));
           setShowResults(true);
           setShowP(false);
         } else {

@@ -33,20 +33,51 @@ const Pannel = (props) =>{
       else filter = 'type';
 
     //   if(props.heading!=='Star Category')
-    return(
-        <Container >
-            <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '1rem'}} ></FontAwesomeIcon>
-            <Heading className='font-lexend'>{props.heading}</Heading>
-            {props.heading!=='Star Category' ?<div style={{width: 'max-content', margin: '2rem auto'}}>
-           
+    return (
+      <Container>
+        <FontAwesomeIcon
+          onClick={() => props.onclose()}
+          className="hover-pointer"
+          icon={faChevronLeft}
+          style={{ margin: "1rem" }}
+        ></FontAwesomeIcon>
+        <Heading className="font-lexend">{props.heading}</Heading>
+        {props.heading !== "Star Category" ? (
+          <div style={{ width: "max-content", margin: "2rem auto" }}>
             <FormGroup>
-          { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-lexend">{currentfilter}</Label>}/>)
-          }
-      </FormGroup>   
-      
-            </div>   : <StarSlider _updateStarFilterHandler={props._updateStarFilterHandler}></StarSlider>}     
-        </Container>
+              {props.filters[filter].map((currentfilter, i) => (
+                <FormControlLabel
+                  key={i}
+                  control={
+                    <Checkbox
+                      onChange={(event) =>
+                        _onChangeHandler(
+                          event.target.checked,
+                          currentfilter,
+                          filter
+                        )
+                      }
+                      sx={{
+                        "& .MuiSvgIcon-root": { fontSize: 16 },
+                        color: "black",
+                        "&.Mui-checked": { color: "black" },
+                      }}
+                      defaultChecked={
+                        currentfilter === props.default ? true : false
+                      }
+                    />
+                  }
+                  label={<Label className="font-lexend">{currentfilter}</Label>}
+                />
+              ))}
+            </FormGroup>
+          </div>
+        ) : (
+          <StarSlider
+            _updateStarFilterHandler={props._updateStarFilterHandler}
+          ></StarSlider>
+        )}
+      </Container>
     );
     // else return <StarSlider></StarSlider>
 }

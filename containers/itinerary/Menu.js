@@ -782,6 +782,9 @@ const SimpleTabs = (props) => {
                   _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
                   _updateBookingHandler={props._updateBookingHandler}
+                  showFlightModal={props.showFlightModal}
+                  setShowFlightModal={_handleFlighModalShow}
+                  setHideFlightModal={_handleFlightModalClose}
                   setShowBookingModal={() => props.setShowBookingModal(true)}
                   routes={RoutesData}
                   transfers={TransfersData}
@@ -804,6 +807,8 @@ const SimpleTabs = (props) => {
                   _updateBookingHandler={props._updateBookingHandler}
                   _updateStayBookingHandler={props._updateStayBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
+                  flightLoading={props.flightLoading}
+                  flightBookings={props.flightBookings}
                   getPaymentHandler={props.getPaymentHandler}
                   setShowBookingModal={() => props.setShowBookingModal(true)}
                   showBookingModal={props.showBookingModal}

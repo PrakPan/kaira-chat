@@ -2,27 +2,8 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Pannel from './Pannel';
-import styled from 'styled-components';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-
-const FiltersContainer = styled.div`
-  display: flex;
-  margin: 0.5rem 0;
-`;
-const Filter = styled.div`
-  border-radius: 2rem;
-  padding: 0.25rem 1rem;
-  margin-right: 0.25rem;
-  font-size: 0.75rem;
-`;
-const NewFilter = styled.div`
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-`;
 export default function TemporaryDrawer(props) {
   const [state, setState] = React.useState(false);
   const [filterSelected, setFilterSelected] = useState(null);
@@ -53,13 +34,6 @@ export default function TemporaryDrawer(props) {
   return (
     <div>
       <React.Fragment key={'bottom'}>
-        {/* <FiltersContainer>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Budget</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Type</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>User Rating</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Star Category</Filter>
-
-            </FiltersContainer> */}
         <Tabs
           value={filterSelected}
           onChange={(event) => _selectFilter(event.target.id)}

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
@@ -194,21 +194,9 @@ const Booking = (props) => {
                { !noResults && !loading && !updatePoiState ?  <OptionsContainer id='options'>
                    <div style={{clear: 'right'}}>
                    {optionsJSX.length ? optionsJSX : null}
-                   {/* {loading ? <div style={{width: 'max-content', margin: 'auto'}}><Spinner/></div> : null} */}
                    </div>
-                   {/* {moreLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
-                    {/* {viewMoreStatus ? <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">View More</Button> : null} */}
-                    {/* {noResults ? 'NO RESULTS' : null} */}
                </OptionsContainer> : null}
                {noResults ? <p  className='font-lexend text-center' >Oops, we couldn't find what you were searching but we are already adding new activities to our database everyday!</p>  : null}
-               {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-               {/* {
-                   !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   } 
-             */}
-               {/* <ButtonToTop className='center-div'>
-                   <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
-                </ButtonToTop> */}
                
                </ContentContainer></div>
                 {showPoiDetails ? <PoiDetailsContainer style={{display: showPoiDetails? 'block':'none'}}>
@@ -227,7 +215,6 @@ const Booking = (props) => {
             </Modal.Body>
            
       </Modal>
-      {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
       </div>
   );
 

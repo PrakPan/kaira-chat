@@ -90,7 +90,7 @@ const Profile = (props) => {
       <OverviewContainer>
         <ImageNameContainer className="center-div">
           <ImageLoader
-            dimesions={{ width: 400, height: 400 }}
+            dimesions={{ width: 1600, height: 1600 }}
             dimensionsMobile={{ width: 1600, height: 1600 }}
             url={
               props.image !== 'null' && props.image !== null

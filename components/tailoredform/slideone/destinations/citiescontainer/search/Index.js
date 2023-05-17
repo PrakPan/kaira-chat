@@ -1,7 +1,4 @@
-import React, {useState, useEffect } from 'react';
-  
-import media from '../../../../../media';
- 
+import React, {useState } from 'react';
 import styled from 'styled-components';
 import {AiOutlineSearch} from 'react-icons/ai';
 import SearchInput from './Input';
@@ -26,9 +23,6 @@ import SearchInput from './Input';
 
  
 const Search = (props) => {
-
-  let isPageWide = media('(min-width: 768px)');
-//   const [loaded, setLoaded] = useState(false);
 
     const [open, setOpen] = useState(false);
   return (

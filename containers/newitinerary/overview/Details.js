@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import Button from '../../../components/ui/button/Index';
-import { convertDateFormat } from '../../../pages/helper/ConvertDateFormat';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import { format, parseISO } from 'date-fns';
 const Container = styled.div`
   display: grid;

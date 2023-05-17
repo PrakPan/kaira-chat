@@ -67,7 +67,6 @@ const Inlcusions = (props) => {
          {/* {showMoreStatus === 1 || showMoreStatus === 2  ? moreicons : null} */}
          {/* {showMoreStatus === 2 ? moremoreicons : null} */}
         </Container>
-        {/* <Button boxShadow link={'/travel-guide/city/'+props.slug+"/things-to-do"} hoverBgColor="black" hoverColor="white" margin="1rem auto" borderRadius="2rem" borderWidth="1px" padding="2px 1.25rem" >View All</Button> */}
 
 
     </div>
@@ -75,4 +74,3 @@ const Inlcusions = (props) => {
 }
 
 export default Inlcusions;
-{/* <Button boxShadow link={'/travel-guide/city/'+props.slug+"/things-to-do"} hoverBgColor="black" hoverColor="white" margin="1rem auto" borderRadius="2rem" borderWidth="1px" padding="2px 1.25rem" onclick={_showMoreHandler}>View All</Button> */}

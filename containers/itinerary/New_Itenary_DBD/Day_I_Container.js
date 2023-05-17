@@ -8,7 +8,7 @@ import { BiChevronRight } from 'react-icons/bi';
 import TransferElements from './TransferElements';
 import ItineraryElement from '../../newitinerary/itineraryelements/ItineraryElement';
 import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
-import { convertDateFormat } from '../../../pages/helper/ConvertDateFormat';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import NewCity from './NewCity';
 import { isJson } from '../../../services/isJSON';

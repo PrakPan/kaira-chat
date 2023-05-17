@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-//  import { getHumanDate } from '../../../../services/getHumanDate';
  import SectionTwo from './sectiontwo/Index';
-  import media from '../../../media';
  import SectionThree from './SectionThree';
 import SectionFour from './SectionFour';
   const Container = styled.div`
@@ -25,18 +23,6 @@ import SectionFour from './SectionFour';
  
  
 const Booking = (props) =>{
-    let isPageWide = media('(min-width: 768px)')
-
-    
-   
-    // const detailsarr=[]
-    // for(var i=0; i<props.details.length; i++){
-    //     if(props.details[i].length)
-    //     detailsarr.push(
-    //         <li className={props.blur ? 'blurry-text' : ''} style={{fontSize: "0.75rem",  margin: "0.5rem 0 0.5rem 0rem", fontWeight: "300"}} >{props.details[i]}</li>
-    //     );
-    // } 
-    //  if(isPageWide)
      return(
         <Container className='border' style={{ borderRadius: "10px"}}>
           <SectionTwo data={props.data}></SectionTwo>

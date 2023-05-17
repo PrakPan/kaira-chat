@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Layout from '../../components/Layout';
 import { useState, useEffect } from 'react';
 import axiosTravelPlannerInstance from '../../services/pages/travel-planner';
+import axiossearchallinstance from '../../services/search/all';
 import axiospagelistinstance from '../../services/pages/list';
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
@@ -40,14 +41,33 @@ const TravelPlanner = (props) => {
 export async function getStaticPaths() {
   //     const res = await fetch(`https://apis.tarzanway.com/page/list?country=india`)
   //     const data = await res.json();
-  const res = await axiosTravelPlannerInstance.get('/list');
+  // const res = await axiosTravelPlannerInstance.get('/list')
+  // const data = res.data
+  const res = await axiossearchallinstance.get('?type=State');
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
+    //     var countrySlug
+    //     var stateSlug
+    // if (data[i] && data[i].ancestors) {
+    //   if (data[i].ancestors[0])
+    //     if (data[i].ancestors[0].level === "Country")
+    //       countrySlug = data[i].ancestors[0].slug;
+    //   if (data[i].cta) stateSlug = data[i].cta;
+    // }
+    // console.log("data[i]: ", data[i]);
+    const pathArr = data[i].path.split('/');
+    if (pathArr.length === 2) var [countrySlug, stateSlug] = pathArr;
+    else if (pathArr.length === 1) {
+      var countrySlug = 'india';
+      var stateSlug = pathArr[0];
+    }
+
     if (data[i].id !== 1) {
       paths.push({
         params: {
-          link: data[i].link,
+          country: countrySlug,
+          state: stateSlug,
         },
       });
     }
@@ -58,11 +78,15 @@ export async function getStaticPaths() {
     fallback: 'blocking',
   };
 }
+
+//     const res = await fetch(`https://apis.tarzanway.com/page/?link=`+context.params.link)
+//     const data = await res.json()
+
 export async function getStaticProps(context) {
   //     const res = await fetch(`https://apis.tarzanway.com/page/?link=`+context.params.link)
   //     const data = await res.json()
   const res = await axiosTravelPlannerInstance.get(
-    `/?link=${context.params.link}`
+    `/?link=${context.params.state}`
   );
   const data = res.data;
   var locations = [];

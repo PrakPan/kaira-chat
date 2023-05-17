@@ -115,7 +115,7 @@ const ItineraryPoiElement = (props) => {
                 className="flex flex-row w-full  justify-start items-center"
                 style={{ lineHeight: '1' }}
               >
-                <div className="text-base font-semibold ">{props.heading}</div>
+                <div className="text-xl font-normal ">{props.heading}</div>
                 <HiPencil className="text-lg min-w-max pl-3"></HiPencil>
               </div>
               <div className="flex flex-row">

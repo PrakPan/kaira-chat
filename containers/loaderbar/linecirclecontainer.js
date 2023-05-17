@@ -173,6 +173,36 @@ const Line = styled.div`
   }
 `;
 
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const Text = styled.div`
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 2px;
+`;
+
+const ProgressBarWrapper = styled.div`
+  width: 33.33%;
+  height: 1rem;
+  background-color: #f4f4f4;
+  border-radius: 9999px;
+  margin-top: 8px;
+`;
+
+const ProgressBar = styled(animated.div)`
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #8ccf24;
+  ${(props) => props.animation}
+`;
+
 const Linecirclecontainer = () => {
   return (
     <LineCirclecontainer>
@@ -207,39 +237,19 @@ const ResponsiveProgressBar = ({ progress }) => {
     from: { width: '0%' },
   });
 
-  // Calculate percentage based on progress and limit it to be between 0 and 100
   const calculatePercentage = (progress) => Math.min(Math.max(progress * 25));
 
-  // Update the percentage state whenever the progress prop changes
   useState(() => {
     setPercentage(calculatePercentage(progress));
   }, [progress]);
 
   return (
-    <div className="w-full flex justify-center items-center flex-col  ">
-      <div
-        className="  text-md
-  font-bold
-  text-black mb-2"
-      >
-        {`${progress * 25}%`} Done
-      </div>
-      <div
-        className=" md:w-1/3
-        w-11/12
-       
-    h-3
-    bg-[#F4F4F4]
-    rounded-full"
-      >
-        <animated.div
-          className="  h-full
-  rounded-full
-  bg-[#8CCF24]"
-          style={progressBarAnimation}
-        />
-      </div>
-    </div>
+    <Container>
+      <Text>{`${progress * 25}%`} Done</Text>
+      <ProgressBarWrapper>
+        <ProgressBar style={progressBarAnimation} />
+      </ProgressBarWrapper>
+    </Container>
   );
 };
 

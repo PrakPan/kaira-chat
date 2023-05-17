@@ -110,7 +110,7 @@ const ItineraryFoodElement = (props) => {
             ></ImageLoader>
           </div> */}
           <div className="pl-[1.4rem] flex justify-center flex-col">
-            <div className="text-base font-bold">{props.heading}</div>
+            <div className="text-xl font-normal">{props.heading}</div>
             <div className="pt-1 line-clamp-3 font-normal text-sm pb-4">
               {props.text}
             </div>

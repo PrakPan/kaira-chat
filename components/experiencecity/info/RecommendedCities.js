@@ -45,22 +45,7 @@ const LocationsBlog= (props) => {
 
  
   }, []);
-//   for(var i = 0 ; i<props.length ; i++){
-//     const slug  = locations[i].slug;
-//     if(locations[i].image)
-//     cardsarr.push(
-//         <Card
-//   location={locations[i].nickname}
-//   heading={locations[i].tagline}
-//   img={locations[i].image}
-//   onclick={() => _handleRedirect(slug)}
-//   > 
-//   </Card>
-//     )
-// }
-      const _handleRedirect = (slug) => {
-        router.push('/travel-guide/city/'+slug)
-      }
+
 
 
   if(isPageWide) {

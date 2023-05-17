@@ -35,7 +35,7 @@ const MobileCardsContainer = styled.div`
 
 const FoodToEat = (props) => {
   const cards = props.foods?.map((icon, index) => (
-    <IconContainer>
+    <IconContainer key={index}>
       <ImageLoader
         borderRadius="12px"
         url={icon.image ? icon.image : 'media/food/dinner.png'}
@@ -51,13 +51,21 @@ const FoodToEat = (props) => {
     // let n = cards.length;
     const el = cards.slice(i - 4, i);
     MobileCardsArr.push(
-      <MobileCardsContainer>{el.map((e) => e)}</MobileCardsContainer>
+      <MobileCardsContainer>
+        {el.map((e, i) => (
+          <div key={i}>{e}</div>
+        ))}
+      </MobileCardsContainer>
     );
     count++;
   }
   const el = cards.slice(count * 4, cards.length);
   MobileCardsArr.push(
-    <MobileCardsContainer>{el.map((e) => e)}</MobileCardsContainer>
+    <MobileCardsContainer>
+      {el.map((e, i) => (
+        <div key={i}>{e}</div>
+      ))}
+    </MobileCardsContainer>
   );
 
   return (

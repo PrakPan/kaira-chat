@@ -23,21 +23,6 @@ const Cross = styled.p`
   font-weight: 100;
 `;
 
-const DescriptionContainer = styled.div`
-  color: white;
-`;
-const AltText = styled.p`
-  text-align: center;
-  @media screen and (min-width: 768px) {
-    margin: 3rem 0 1rem 0;
-  }
-`;
-const Credits = styled.p`
-  margin: 0;
-  text-align: center;
-  color: hsl(0, 0%, 70%);
-`;
-
 const FullScreenGallery = (props) => {
   console.log('gallery images');
   console.log(props.images);

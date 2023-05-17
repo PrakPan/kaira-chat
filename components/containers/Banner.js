@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import Button from '../ui/button/Index';
-import Link from 'next/link'
 /* Bottom floating banner for Desktop only
   Inputs: text, onclick
 */
@@ -43,13 +42,7 @@ const Text = styled.p`
         margin: 0 2.5vw;
     }
 `;
-const StyledLink = styled(Link)`
-  text-decoration: none !important;
-  &:hover{
-    color: black;
-    text-decoration: none;
 
-  }`;
 const Banner = (props) => {
     const [showBanner, setShowBanner ] = useState(false);
   
@@ -77,12 +70,9 @@ const Banner = (props) => {
                     <div className="center-div">
                       <Text className="font-lexend">{props.text}</Text>
                     </div>
-              {/* <div className="center-div"> */}
                 <Button display="inline-block" boxShadow onclick={props.onclick}  hoverColor="white" hoverBgColor="black" bgColor="#F7e700"  borderStyle="none" padding="0.5rem 0.5rem" borderRadius="2rem">
                   {props.cta ? props.cta : 'Start Planning'}
-                  {/* {props.loading ? <Spinner size={16}></Spinner> : null} */}
                 </Button>
-              {/* </div> */}
               </GridContainer>
               </Container>
 

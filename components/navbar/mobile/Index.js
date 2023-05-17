@@ -132,7 +132,6 @@ const Mobile = (props) => {
   const isPageLoaded = usePageLoaded();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [toggleSearch, setToggleSearch] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
   const _handleNotifications = () => {
     setToggleMenu(false);
@@ -340,7 +339,7 @@ const Mobile = (props) => {
               borderRadius: '50%',
             }}
             className="center-div"
-            onClick={() => setToggleSearch(true)}
+            onClick={() => props.setShowMobileSearch(true)}
           >
             <FaSearch
               style={{
@@ -397,10 +396,10 @@ const Mobile = (props) => {
           </DrawerContainer>
         </Drawer>
       </Container>
-      {toggleSearch ? (
+      {props.showMobileSearch ? (
         <div className="hidden-desktop" style={{ width: '100%' }}>
           <SearchMobile
-            onclose={() => setToggleSearch(false)}
+            onclose={() => props.setShowMobileSearch(false)}
             open={true}
           ></SearchMobile>
         </div>

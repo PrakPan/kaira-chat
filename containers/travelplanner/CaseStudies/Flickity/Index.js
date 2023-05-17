@@ -1,5 +1,5 @@
 
-import React, {useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import styled from 'styled-components';
 //  import Carousel from '../../FlickityCarousel';
 import media from '../../../../components/media';
@@ -23,12 +23,6 @@ const LocationsBlog= (props) => {
 
 };
 
-   useEffect(() => {
-  
-
-
- 
-  }, []);
   for(var i = 0 ; i<props.data.length ; i++){
     //  const slug  = props.locations[i].slug;
     // if(props.locations[i].image)
@@ -40,9 +34,6 @@ const LocationsBlog= (props) => {
   </Card>
     )
 }
-      const _handleRedirect = (slug) => {
-        router.push('/travel-guide/city/'+slug)
-      }
     
   if(isPageWide) {
    return(

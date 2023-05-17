@@ -25,9 +25,7 @@ const Heading = styled.p`
 `;
 
 const NearbyLocations = (props) => {
-
   if (!props.nearbyCities || props.nearbyCities?.length === 0) return <></>;
-   
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
   const [cards, setCards] = useState([])
   const [hide , setHide] = useState(false)
@@ -41,7 +39,13 @@ for(let i = 0;i<props.nearbyCities.length;i++){
   if(i%4==0 && i!=0){
       let n = cardsArr.length;
       const el = cardsArr.slice(n-4,n)
-      MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+      MobileCardsArr.push(
+        <MobileCardsContainer>
+          {el.map((e, i) => (
+            <div key={i}>{e}</div>
+          ))}
+        </MobileCardsContainer>
+      );
     count++
     }
   cardsArr.push(
@@ -50,7 +54,7 @@ for(let i = 0;i<props.nearbyCities.length;i++){
     location={props.nearbyCities[i].name}
     heading={props.nearbyCities[i].most_popular_for[props.nearbyCities[i].most_popular_for.length-1]}
     img={props.nearbyCities[i].image}
-    slug={props.nearbyCities[i].slug}
+    path={props.nearbyCities[i].path}
     link={props.nearbyCities[i].slug}
     city={true}
      >
@@ -59,7 +63,7 @@ for(let i = 0;i<props.nearbyCities.length;i++){
 }
 if(count%4 !=0){
   const el = cardsArr.slice(count*4,cardsArr.length)
-  MobileCardsArr.push(<MobileCardsContainer>{el.map(e=>e)}</MobileCardsContainer>)
+  MobileCardsArr.push(<MobileCardsContainer>{el.map((e, i) => <div key={i}>{e}</div>)}</MobileCardsContainer>)
 }
 setCards(cardsArr)
 setMobileCardsToShowJSX(MobileCardsArr)

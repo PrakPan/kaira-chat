@@ -173,32 +173,13 @@ const PlanAsPerTheme = (props) => {
   useEffect(() => {
     axiosCountInstance.get('').then((res) => setCount(res.data.user));
   }, []);
-
-  const _handleTailoredRedirect = () => {
-    router.push('/tailored-travel');
-  };
-  const _handleTailoredClick = () => {
-    setLoading(true);
-    setTimeout(_handleTailoredRedirect, 1000);
-
-    ga.callback_event({
-      action: 'TT-Howitworks',
-
-      callback: _handleTailoredRedirect,
-    });
-  };
-
   const _handleTripRedirect = (link) => {
     router.push(`/travel-planner/${link}`);
   };
 
   const order = ['e', 'b', 'c', 'a'];
   const ThemeContainer = props.ThemeData?.map((e, i) => (
-    <GridItem
-      className={order[i]}
-      onClick={() => _handleTripRedirect(e.link)}
-      key={i}
-    >
+    <GridItem className={order[i]} onClick={() => _handleTripRedirect(e.link)}>
       {ImgLoading && <SkeletonCard />}
       <ImageContainer
         style={ImgLoading ? { display: 'none' } : { display: 'initial' }}
@@ -255,7 +236,9 @@ const PlanAsPerTheme = (props) => {
 
       {!props.nostart ? (
         <Button
-          onclick={props.onclick ? props.onclick : _handleTailoredClick}
+          onclick={() =>
+            openTailoredModal(router, props.page_id, props.destination)
+          }
           fontWeight="500"
           boxShadow
           borderRadius="8px"

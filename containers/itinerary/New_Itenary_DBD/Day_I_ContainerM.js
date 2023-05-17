@@ -8,7 +8,7 @@ import TransferElementsM from './TransferElementsM';
 import ItineraryElementM from '../../newitinerary/itineraryelements/ItineraryElementM';
 import ItineraryFoodElementM from '../../newitinerary/itineraryelements/ItineraryFoodElementM';
 import ItineraryPoiElementM from '../../newitinerary/itineraryelements/PoiM';
-import { convertDateFormat } from '../../../pages/helper/ConvertDateFormat';
+import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 import { DayContainerStyle } from './Day_I_Container';

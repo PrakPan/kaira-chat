@@ -93,17 +93,12 @@ const NewResults = (props) => {
 
       if (data.type == 'Location')
         window.location.href =
-          'https://dev.thetarzanway.com/travel-guide/city/' + data.cta;
+          'https://thetarzanway.com/travel-guide/city/' + data.cta;
       else
         window.location.href =
-          'https://dev.thetarzanway.com/travel-planner/' + data.cta;
+          'https://thetarzanway.com/travel-planner/' + data.cta;
     }
   };
-  const _handlePersonaliseRedirect = (name) => {
-    router.push('/tailored-travel?search_text=' + name);
-  };
-  let results = [];
-  console.log(props.results, '_sour');
 
   const skeleton = (
     <div
@@ -133,7 +128,6 @@ const NewResults = (props) => {
     </div>
   );
 
-  console.log(props.results, 'props.results');
   if (!props.results)
     return (
       <SkeletonContainer>

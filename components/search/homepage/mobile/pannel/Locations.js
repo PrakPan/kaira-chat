@@ -70,35 +70,35 @@ const Locations = (props) => {
   const router = useRouter();
 
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (slug) => {
-    // if(slug)router.push('/travel-guide/city/'+slug)
-    if (slug)
-      window.location.href =
-        'https://dev.thetarzanway.com/travel-guide/city/' + slug;
+  const _handleLocationClick = (data) => {
+    if (data.cta) {
+      // props.setPannelClose()
+      // router.push('/travel-guide/city/'+slug)
+      if (data.type === 'Location')
+        window.location.href =
+          'https://thetarzanway.com/travel-guide/city/' + data.cta;
+      if (data.type === 'State')
+        window.location.href =
+          'https://thetarzanway.com/travel-planner/' + data.cta;
+    }
   };
-  const _handlePersonaliseRedirect = (id, name, parent) => {
-    // localStorage.setItem('search_city_selected_id', id)
-    // localStorage.setItem('search_city_selected_name', name)
-    // localStorage.setItem('search_city_selected_parent', parent)
 
-    router.push('/tailored-travel?search_text=' + name);
-  };
   let locations = [];
   if (props.hotlocations) {
     for (var i = 0; i < 5; i++) {
-      let location = props.hotlocations[i];
-      let id = props.hotlocations[i].id;
-      let name = props.hotlocations[i].name;
-      let parent = props.hotlocations[i].state.name;
-      let slug = props.hotlocations[i].slug;
+      const data = props.hotlocations[i];
       locations.push(
-        <LocationContainer onClick={() => _handleLocationClick(slug)}>
+        <LocationContainer onClick={() => _handleLocationClick(data)}>
           <MarkerContainer>
             <FaMapMarkerAlt />
           </MarkerContainer>
           <Text>
             <div>{props.hotlocations[i].name}</div>
-            <p>{props.hotlocations[i].state?.name}</p>
+            {props.hotlocations[i].parent ? (
+              <p>{props.hotlocations[i].parent}</p>
+            ) : (
+              <p>{props.hotlocations[i].state?.name}</p>
+            )}
           </Text>
         </LocationContainer>
       );

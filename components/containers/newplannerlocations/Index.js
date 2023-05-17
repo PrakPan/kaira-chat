@@ -38,11 +38,9 @@ const LocationsBlog= (props) => {
 
   const router = useRouter();
   
-    const _handlePlannerPage = (id,name,parent) => {
-      router.push('/travel-planner/'+name)
-    }
-    const _handleCityRedirect = (name)=>{
-      router.push(`/travel-guide/city/${name}`)
+    const _handleCityRedirect = (path)=>{
+      // router.push(`/travel-guide/city/${name}`)
+      if(path) window.location.href = '/' + path
     }
     const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
     const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
@@ -72,7 +70,7 @@ let MobileCardsArr = []
             location={props.locations[i].name}
             heading={props.locations[i].tagline}
             img={props.locations[i].image}
-            slug={props.locations[i].slug}
+            path={props.locations[i].path}
             filters={props.locations[i].most_popular_for}
             _handleCityRedirect={_handleCityRedirect}
 
@@ -106,6 +104,7 @@ setCardsToShowJSXmobile(MobileCardsArr)
    return (
      <>
        <div className="hidden-mobile new-planner-location">
+        
          {/* <Container >  
                {cardsToShowJSX}
       </Container> */}

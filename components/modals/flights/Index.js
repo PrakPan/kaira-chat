@@ -1,19 +1,15 @@
-import React, {useRef, useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
 import styled from 'styled-components';
 import media from '../../media';
-import LeftSideBar from './leftsidebar/Index';
 import Accommodation from './accommodation/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
-import { Link, animateScroll as scroll} from "react-scroll";
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import {connect} from 'react-redux';
 import axiosflightsearch from '../../../services/bookings/FlightSearch';
 import LogInModal from '../Login';
 
 import SectionOne from './SectionOne';
-import SectionTwo from './SectionTwo';
-// import Button from '../../Button';
 import Button from '../../ui/button/Index';
 import Flight from './new-flight-searched/Index';
 import LoadingLottie from "../../ui/LoadingLottie";
@@ -48,32 +44,7 @@ const ContentContainer = styled.div`
         margin: auto;
      }
 `;
-const InfiniteOptionsContainer = styled.div`
 
-`;
-const Cross = styled.img`
-    width: 1rem;
-    margin: 0.5rem;
-    &:hover{
-        cursor: pointer;
-    }
-`;
-const ButtonToTop = styled.div`
-    position: absolute;
-    bottom: 2rem;
-    right: 1.25rem;
-    background-color: rgba(0,0,0,0.6);
-    width: max-content;
-    border-radius: 50%;
-    height: 2rem;
-    width: 2rem;
-
-`;
-const StyledLink = styled(Link)`
-    &:hover{
-        cursor: pointer;
-    }
-`;
 
 const Booking = (props) => {
     let isPageWide = media('(min-width: 768px)')
@@ -98,13 +69,7 @@ const Booking = (props) => {
     const [noResults, setNoResults] = useState(false);
     const [unauthorized, setUnauthorized] = useState(false);
     useEffect(() => {
-         // let options = [];
-        // if(props.alternates)
-        // for(var i=0; i<props.alternates.length; i++){
-        //     options.push(<Accommodation bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
-        // }
-        //                 setOptionsJSX(options)
-        // const token = localStorage.getItem('access_token');
+    
         let options = [];
         setLoading(true);
          if(props.selectedBooking && props.token)
@@ -320,52 +285,14 @@ setViewMoreStatus(false);
             
 
       }
-      const _addFilterHandler= (filter, heading) => {
 
-          let oldfilters = filtersState;
-          let oldfiltersheadingarr = filtersState[heading];
 
-          oldfiltersheadingarr.push(filter);
-            let newfilters = {
-                ...oldfilters,
-                [heading] : oldfiltersheadingarr,
-            }
-            setFiltersState(newfilters)
-            _updateOptionsHandlerWithFilter();
 
-        }
-    const _updateStarFilterHandler = ( lower, upper) => {
-        let oldfilters = filtersState;
-        let newfilters = {
-            ...oldfilters,
-            star_category: [lower, upper]
-        }
-
-        setFiltersState(newfilters)
-        _updateOptionsHandlerWithFilter();
-    }
-    const _removeFilterHandler = (filter, heading) => {
-        let oldfilters = filtersState;
-        let oldfiltersheadingarr = filtersState[heading];
-        const index = oldfiltersheadingarr.indexOf(filter);
-
-        oldfiltersheadingarr.splice(index, 1);
-        let newfilters = {
-            ...oldfilters,
-            [heading] : oldfiltersheadingarr,
-        }
-        setFiltersState(newfilters)
-            _updateOptionsHandlerWithFilter();
-
-    }
 
     
     const _newUpdateBookingHandler = ({  booking_id, itinerary_id, result_index}) => {
-        // setViewMoreStatus(false);
         setUpdateBookingState(true);
         setUnauthorized(false);
-        // const token = 'OGTY7bDGph15WP7BXBf051Ra4lvNoh';
-        // const token = localStorage.getItem('access_token');
          let updated_bookings_arr = [];
             
                  
@@ -477,16 +404,10 @@ setViewMoreStatus(false);
             setHideBookingModal={props.setHideBookingModal}
             setHideFlightModal={props.setHideFlightModal}
           ></SectionOne>
-          {/* <SectionTwo setHideFlightModal={props.setHideBookingModal}></SectionTwo> */}
         </Modal.Header>
         <Modal.Body style={{ padding: "0.5rem", backgroundColor: "white" }}>
-          {/* <FontAwesomeIcon className="hover-pointer" icon={faChevronLeft} onClick={props.setHideBookingModal} style={{margin: '0.5rem', position: 'sticky', top: '0'}} ></FontAwesomeIcon> */}
           <GridContainer style={{ clear: "right" }}>
-            {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
-            {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
             <ContentContainer style={{ position: "relative" }}>
-              {/* <Flight></Flight> */}
-              {/* {!loading && !updateBookingState? optionsJSX : !optionsJSX ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching flights for you</div>  : null} */}
               {updateLoadingState && !updateBookingState ? (
                 <div
                   className="center-div"
@@ -568,7 +489,6 @@ setViewMoreStatus(false);
                       View More
                     </Button>
                   ) : null}
-                  {/* {noResults ? 'NO RESULTS' : null} */}
                 </OptionsContainer>
               ) : null}
               {unauthorized ? (
@@ -589,20 +509,11 @@ setViewMoreStatus(false);
                   Oops, we couldn't find what you were searching!
                 </p>
               ) : null}
-              {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-              {/* {
-                   !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   } 
-             */}
-              {/* <ButtonToTop className='center-div'>
-                   <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
-                </ButtonToTop> */}
+        
             </ContentContainer>
           </GridContainer>
-          {/* {!isPageWide ? <CurrentlyReplacing selectedBooking={props.selectedBooking} replacing={props.selectedBooking.name}></CurrentlyReplacing> : null} */}
         </Modal.Body>
       </Modal>
-      {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
     </div>
   );
 

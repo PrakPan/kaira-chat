@@ -1,6 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import media from '../../../media';
 import Bar from './Bar';
 import Pannel from './pannel/Index';
 const Container = styled.div`
@@ -11,7 +10,6 @@ margin: auto;
 
 
 const MobileSearch= (props) => {
-  let isPageWide = media('(min-width: 768px)')
     const [pannelOpen, setPannelOpen] = useState(false);
     
     return(

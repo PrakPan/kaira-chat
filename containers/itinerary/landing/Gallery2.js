@@ -55,6 +55,7 @@ const ImageTwo = styled.div`
  
 const Gallery = (props) => {
   const isPageLoaded = usePageLoaded();
+      let isPageWide = media("(min-width: 768px)");
 
   let ImageContainerTopPadding = 0;
   let imageheight = null;
@@ -64,7 +65,6 @@ const Gallery = (props) => {
          imageheight = Math.round(window.innerHeight / 2);
        imagewidth = Math.round(window.innerWidth / 4)
   }
-      let isPageWide = media('(min-width: 768px)')
 
  const imageClickHandler = () => {
     props.setGalleryOpen(true)

@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../media';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import usePageLoaded from '../../../custom hooks/usePageLoaded';
@@ -15,7 +13,6 @@ const Container = styled.div`
   height: 6vh;
 `;
 const MobileBar = (props) => {
-  let isPageWide = media('(min-width: 768px)');
   const isPageLoaded = usePageLoaded();
 
   return (

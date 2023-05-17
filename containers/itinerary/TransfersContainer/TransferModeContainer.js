@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { TransportIconFetcher } from '../../../pages/helper/TransportIconFetcher';
+import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import ImageLoader from '../../../components/ImageLoader';
 import { format, parseISO } from 'date-fns';
 import * as ga from '../../../services/ga/Index';
@@ -72,6 +72,52 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
+  function HandleFlights(i) {
+    let name = props.booking['name'];
+    let costings_breakdown = props.booking['costings_breakdown'];
+    let cost = props.booking['booking_cost'];
+    let itinerary_id = props.booking['itinerary_id'];
+    let itinerary_name = props.booking['itinerary_name'];
+    let booking_type = props.booking['booking_type'];
+
+    // let accommodation = props.booking["accommodation"];
+    let tailored_id = props.booking['tailored_itinerary'];
+    let id = props.booking['id'];
+    let check_in = props.booking['check_in'];
+    let check_out = props.booking['check_out'];
+    let pax = {
+      number_of_adults: props.booking['number_of_adults'],
+      number_of_children: props.booking['number_of_children'],
+      number_of_infants: props.booking['number_of_infants'],
+    };
+    let city = props.booking['city'];
+    let room_type = props.booking['room_type'];
+    let taxi_type = props.booking['taxi_type'];
+    let transfer_type = props.booking['transfer_type'];
+    let city_id = props.booking['city_id'];
+    let destination_city = props.booking['destination_city'];
+    let duration = props.booking['duration'];
+    let origin_iata = props.booking['origin_city_iata_code'];
+    let destination_iata = props.booking['destination_city_iata_code'];
+    props._changeFlightHandler(
+      name,
+      itinerary_id,
+      tailored_id,
+      id,
+      check_in,
+      check_out,
+      pax,
+      city,
+      itinerary_name,
+      cost,
+      costings_breakdown,
+      origin_iata,
+      destination_iata,
+      destination_city,
+      taxi_type,
+      transfer_type
+    );
+  }
   function HandleTransport(i) {
     let name = props.booking['name'];
     let costings_breakdown = props.booking['costings_breakdown'];
@@ -130,9 +176,10 @@ const TransferModeContainer = (props) => {
 
   return (
     <Container>
-      <div style={{ position: 'relative' }}>
+      <div></div>
+      {/* <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} Transfers={true} />
-      </div>
+      </div> */}
       {props.booking_type == 'Flight' ? (
         <div className="flex flex-row gap-2 w-full py-[8px]">
           <div className="grid bg-[#F4F4F4]  place-items-center w-32 rounded-2xl">
@@ -178,9 +225,14 @@ const TransferModeContainer = (props) => {
                 <div>{formatDate(props.booking.check_out)}</div>
                 <div>{props.booking.destination_city}</div>
               </div>
-              <div className="px-4 py-1 text-[12px] h-8 w-20 cursor-pointer border-2 border-black ml-2 font-bold font-lexend text-black rounded-md">
-                Change
-              </div>
+              {
+                <LivelyButton
+                  onClick={() => HandleFlights(props.index)}
+                  className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                >
+                  Change
+                </LivelyButton>
+              }
             </div>
           </div>
         </div>

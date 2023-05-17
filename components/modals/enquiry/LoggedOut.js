@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index';
 import styled, { keyframes } from 'styled-components';
 import TextField from '@mui/material/TextField';

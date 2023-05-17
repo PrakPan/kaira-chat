@@ -89,7 +89,7 @@ const ItineraryElement = (props) => {
           className="pl-[1.4rem]"
         >
           <div className="flex flex-col">
-            <div className="text-base font-bold">{props.heading}</div>
+            <div className="text-xl font-normal">{props.heading}</div>
             <div>
               <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
                 {props.text ? props.text : null}

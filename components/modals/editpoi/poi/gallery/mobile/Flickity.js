@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import Flickity from 'react-flickity-component';
 import { Carousel } from 'react-bootstrap';
 import ImageLoader from '../../../../../ImageLoader';
 
@@ -38,15 +37,10 @@ const StyledCarouselItem = styled(Carousel.Item)`
 `;
 const FlickityCarousel = (props) => {
     const [index, setIndex] = useState(0);
-
+   const [imagesJSX, setImagesJSX] = useState([]);
     const handleSelect = (selectedIndex, e) => {
       setIndex(selectedIndex);
     };
-    const [imagesJSX, setImagesJSX] = useState([]);
-    const [hover, setHover] = useState(false);
-    const _onMouseEnter = () => {
-         setHover(true);
-    }
     let color="green";
     if(props.review_score < 8 && props.review_score > 6.5) color="orange";
     else if(props.review_score < 6.5) color="red";
@@ -63,11 +57,6 @@ const FlickityCarousel = (props) => {
                     </RatingContainer> 
                     <ReviewCount className='font-lexend'>{props.review_count + " Reviews"}</ReviewCount>
                </Carousel.Caption>
-               {/* <RatingContainer className='font-lexend'>
-                        <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                            8.5/10 
-                    </RatingContainer> 
-                    <ReviewCount className='font-lexend'>326 Reviews</ReviewCount> */}
             </StyledCarouselItem>
             )
         }

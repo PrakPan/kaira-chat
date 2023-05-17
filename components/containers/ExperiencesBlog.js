@@ -5,7 +5,6 @@ import styled from 'styled-components';
  import BlogNew from '../cards/Blog';
 import Carousel from '../FlickityCarousel';
 import ExperiencesContainer from './Experiences';
-import media from '../media';
 import usePageLoaded from '../custom hooks/usePageLoaded';
 
 
@@ -36,7 +35,6 @@ const GridContainer = styled.div`
     }
 `; 
 const Experiences= (props) => {
-   let isPageWide = media('(min-width: 768px)')
   const isPageLoaded = usePageLoaded();
   
     

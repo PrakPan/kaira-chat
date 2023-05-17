@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import Link from "next/link";
 
-const Internalbuttonstyle = styled.a`
+const Internalbuttonstyle = styled.p`
   color: ${(props) => (props.color ? props.color : "black")};
   display: ${(props) => (props.display ? props.display : "block")};
 

@@ -2,10 +2,10 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { AiFillStar } from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
-import { cutSentence } from '../../../pages/helper/cutSentence';
+import { cutSentence } from '../../../helper/cutSentence';
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1.3fr 2.5fr;
+  grid-template-columns: 1.1fr 2.5fr;
   grid-gap: 0.75rem;
   @media screen and (min-width: 768px) {
   }
@@ -34,8 +34,10 @@ const FoodItem = (props) => {
         url={props.ImageUrl}
       ></ImageLoader>
       <div>
-        <Heading className="font-bold text-base">{props.heading}</Heading>
-        <div className="pt-1 line-clamp-3  ">{cutSentence(props.text, 18)}</div>
+        <Heading className="font-normal text-xl">{props.heading}</Heading>
+        <div className="pt-1 text-sm font-normal line-clamp-3  ">
+          {cutSentence(props.text, 18)}
+        </div>
       </div>
     </Container>
   );
