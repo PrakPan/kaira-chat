@@ -45,12 +45,12 @@ const RoundMenuItem = styled.div`
     Isvertical ? '4px 9px 6px 9px' : '2px 20px 4px 20px'};
   cursor: pointer;
   width: ${({ Isvertical }) => (Isvertical ? '95px' : 'max-content')};
- 
+
   display: flex;
   justify-content: center;
   margin: ${({ Isvertical }) =>
     Isvertical ? '12px 0px 0px 0px' : '0px 7px 0px 0px'};
-  
+
   background-color: ${({ isActive }) => (isActive ? '#01202B' : 'none')};
   color: ${({ isActive }) => (isActive ? '#fff' : '#111')};
   border-radius: 8px;
