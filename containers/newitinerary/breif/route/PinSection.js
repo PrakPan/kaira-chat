@@ -10,7 +10,7 @@ const Container = styled.div`
 `;
 const Heading = styled.div`
   font-weight: 650;
-  margin: 0 0 0 1rem;
+
   color: black;
 
   font-size: 20px;
@@ -65,7 +65,7 @@ const PinSection = ({
   return (
     <Container className="cursor-pointer " ref={pinhover}>
       <Pin duration={duration} pinColour={pinColour}></Pin>
-      <Heading>
+      <Heading className={`${setCurrentPopup ? 'ml-4' : 'lg:ml-8 ml-2'} `}>
         {duration ? city + ` - ${duration}` : city}
         {/* <div className="px-4 py-1 text-[12px] cursor-pointer border-2 border-black ml-6 font-bold font-lexend text-black rounded-md">
           Edit

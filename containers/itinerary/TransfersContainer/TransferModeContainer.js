@@ -181,28 +181,85 @@ const TransferModeContainer = (props) => {
         <Line pinColour={props.pinColour} Transfers={true} />
       </div>
       {props.booking_type == 'Flight' ? (
-        <div className="flex flex-row gap-2 w-full py-[8px]">
-          <div className="grid bg-[#F4F4F4]  place-items-center w-32 rounded-2xl">
-            <TransportIconFetcher
-              TransportMode={props.booking_type}
-              Instyle={{
-                fontSize: '2.75rem',
+        <div className="py-[20px]">
+          <div className="flex flex-row gap-2 w-full  lg:ml-8 ml-2">
+            <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
+              <TransportIconFetcher
+                TransportMode={props.booking_type}
+                Instyle={{
+                  fontSize: '2.75rem',
 
-                color: 'black',
-              }}
-            />
+                  color: 'black',
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-1 w-[80%]">
+              <div className="flex lg:flex-row flex-col justify-between w-full">
+                <div className="font-semibold w-full">{props.heading}</div>
+                {
+                  <LivelyButton
+                    onClick={() => HandleFlights(props.index)}
+                    className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                  >
+                    Change
+                  </LivelyButton>
+                }
+              </div>
+
+              <div className="lg:flex flex-row  gap-3  ">
+                <div className="flex flex-col">
+                  <div className="text-[#01202B] font-medium">
+                    ({props.booking.origin_code})
+                  </div>
+                  <div className="min-w-max">
+                    {formatDate(props.booking.check_in)}
+                  </div>
+                  <div>{props.booking.city}</div>
+                </div>
+                <div className="flex flex-row justify-center items-center">
+                  <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                  <div className="relative w-32 flex justify-center items-center">
+                    <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
+                    <div className="flex flex-col  justify-center items-center">
+                      <FaPlane className="" />
+                      <div>
+                        Nonstop
+                        {props.booking.duration
+                          ? ` (${props.booking.duration}h)`
+                          : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                </div>
+                <div className="flex flex-row justify-between w-full">
+                  <div>
+                    <div className="text-[#01202B] font-medium">
+                      ({props.booking.destination_code})
+                    </div>
+                    <div className="min-w-max">
+                      {formatDate(props.booking.check_out)}
+                    </div>
+                    <div>{props.booking.destination_city}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="flex lg:flex-row flex-col gap-3">
+          <div className="lg:hidden flex flex-row gap-3 ml-2">
             <div className="flex flex-col">
               <div className="text-[#01202B] font-medium">
                 ({props.booking.origin_code})
               </div>
-              <div>{formatDate(props.booking.check_in)}</div>
+              <div className="min-w-max">
+                {formatDate(props.booking.check_in)}
+              </div>
               <div>{props.booking.city}</div>
             </div>
             <div className="flex flex-row justify-center items-center">
               <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-              <div className="relative w-32 flex justify-center items-center">
+              <div className="relative w-12 flex justify-center items-center">
                 <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
                 <div className="flex flex-col  justify-center items-center">
                   <FaPlane className="" />
@@ -222,24 +279,18 @@ const TransferModeContainer = (props) => {
                 <div className="text-[#01202B] font-medium">
                   ({props.booking.destination_code})
                 </div>
-                <div>{formatDate(props.booking.check_out)}</div>
+                <div className="min-w-max">
+                  {formatDate(props.booking.check_out)}
+                </div>
                 <div>{props.booking.destination_city}</div>
               </div>
-              {
-                <LivelyButton
-                  onClick={() => HandleFlights(props.index)}
-                  className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                >
-                  Change
-                </LivelyButton>
-              }
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex flex-row gap-2 w-full py-[12px]">
+        <div className="flex flex-row gap-2 w-full py-[20px] lg:ml-8 ml-2 ">
           {props.modes && (
-            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[8rem] min-w-[6rem] lg:min-h-[8rem] min-h-[6rem]  rounded-2xl">
+            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
                 <TransportIconFetcher
                   TransportMode={props.booking_type}
@@ -256,7 +307,8 @@ const TransferModeContainer = (props) => {
                     url={props.icon}
                     leftalign
                     dimensions={{ width: 800, height: 500 }}
-                    width="4rem"
+                    height="2rem"
+                    width="auto"
                     widthmobile="4rem"
                   ></ImageLoader>
                 )
@@ -264,14 +316,10 @@ const TransferModeContainer = (props) => {
             </div>
           )}
 
-          <div className="flex flex-col w-full">
-            <div className="text-[#01202B] flex lg:flex-row flex-col gap-1 font-medium">
+          <div className="flex flex-col w-[80%]">
+            <div className="text-[#01202B] flex lg:flex-row flex-col w-full justify-between gap-1 font-medium">
               <div className="font-semibold w-full">{props.heading}</div>
-              <div className="flex flex-row justify-between w-full">
-                <div>
-                  ({props.transportMode ? props.transportMode : 'taxi'}:{' '}
-                  {props.duration}h 30m)
-                </div>
+              <div>
                 {props.booking_type == 'Taxi' && (
                   <LivelyButton
                     onClick={() => HandleTransport(props.index)}
@@ -282,9 +330,12 @@ const TransferModeContainer = (props) => {
                 )}
               </div>
             </div>
-            {props.taxi_type && (
-              <div className="text-[#7A7A7A] font-light">{props.taxi_type}</div>
-            )}
+
+            <div className="flex flex-row gap-2 text-[#7A7A7A] font-light">
+              {props.taxi_type && <div>{props.taxi_type}</div>}
+              <div>({props.duration}h 30m)</div>
+            </div>
+
             {props?.costings_breakdown && (
               <FacilityContainer className="text-[#01202B] font-normal flex-row mt-3 ">
                 <div className="pr-1 block ">Facilities:</div>

@@ -17,7 +17,7 @@ const pulse = keyframes`
 const StyledButton = styled.button`
   background-color: ${(props) => (props.primary ? '#F7E700' : '#FFFFFF')};
   color: ${(props) => (props.primary ? '#01202B' : '#3498db')};
-  border: 1.5px solid #000000;
+  border: 2px solid #000000;
   font-weight: 600;
   font-family: lexend;
   box-shadow: 0px 1px 0px #f0f0f0;
