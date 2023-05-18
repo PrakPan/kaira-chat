@@ -176,10 +176,10 @@ const TransferModeContainer = (props) => {
 
   return (
     <Container>
-      <div></div>
-      {/* <div style={{ position: 'relative' }}>
+      {/* <div></div> */}
+      <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} Transfers={true} />
-      </div> */}
+      </div>
       {props.booking_type == 'Flight' ? (
         <div className="flex flex-row gap-2 w-full py-[8px]">
           <div className="grid bg-[#F4F4F4]  place-items-center w-32 rounded-2xl">

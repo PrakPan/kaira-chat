@@ -156,7 +156,7 @@ const Day_I_ContainerM = (props) => {
         style={{ paddingTop: '4px', display: 'flex', alignItems: 'center' }}
         className="pb-4"
       >
-        <div className="font-bold  text-black text-lg">
+        <div className="font-bold  text-black text-2xl">
           Day {props.indexDay + 1}
         </div>
         {/* {Arslab_elements[0].data[0][0] !== undefined &&

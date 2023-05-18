@@ -60,11 +60,13 @@ const ItineraryElementM = (props) => {
               ></ImageLoader>
             </div>
           ) : null} */}
-          <div className="text-base font-semibold">{props.heading}</div>
+          <div className="text-[1.2rem] font-normal">{props.heading}</div>
         </div>
 
         <div>
-          <div className="pb-3 pt-2 ">{props.text ? props.text : null}</div>
+          <div className="pb-3 pt-2 text-md font-[350]">
+            {props.text ? props.text : null}
+          </div>
           {props.booking ? (
             <div className="flex flex-row items-center justify-between w-full">
               <LivelyButton className="font-bold border-2 border-black rounded-md px-3 py-1  bg-white text-black">

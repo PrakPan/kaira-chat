@@ -27,7 +27,7 @@ const RecomendationComponent = (props) => {
         {/* <Line></Line> */}
 
         <div className={`${!isJson(props.recomendation) ? 'pt-0' : 'pt-0'}`}>
-          <div className="text-xl font-normal pb-3">{props.heading}</div>
+          <div className="text-lg font-semibold pb-3">{props.heading}</div>
           {props.recomendation ? (
             <div>
               {!isJson(props.recomendation) ? (
@@ -63,6 +63,12 @@ const RecomendationComponent = (props) => {
                   >
                     {!viewMore ? 'View More' : 'View Less'}
                   </LivelyButton>
+                  {/* <LivelyButton
+                    className="font-normal  rounded-sm  py-1 mt-2   block  bg-white text-[#565555]"
+                    onClick={() => setViewMore(!viewMore)}
+                  >
+                    {!viewMore ? 'View More' : 'View Less'} ^
+                  </LivelyButton> */}
                 </div>
               )}
             </div>

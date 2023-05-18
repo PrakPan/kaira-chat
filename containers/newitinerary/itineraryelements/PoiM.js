@@ -34,7 +34,7 @@ const Text = styled.p`
 const Heading = styled.span`
   margin-bottom: 0rem;
   margin-right: 0.25rem;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1;
 `;
 const Line = styled.div`
@@ -109,7 +109,7 @@ const ItineraryPoiElementM = (props) => {
         ) : null}
         <div>
           <div className="flex flex-row " style={{ lineHeight: '1' }}>
-            <Heading>{props.heading}</Heading>
+            <div className="text-[1.2rem]">{props.heading}</div>
             <HiPencil className="text-lg min-w-max"></HiPencil>
           </div>
 
@@ -164,7 +164,11 @@ const ItineraryPoiElementM = (props) => {
           // ) : null} */}
         </div>
       </GridContainer>
-      <div className={`pt-2 ${viewMore ? 'line-clamp-0' : 'line-clamp-3'}`}>
+      <div
+        className={`pt-2 text-md font-[350] ${
+          viewMore ? 'line-clamp-0' : 'line-clamp-3'
+        }`}
+      >
         {props.text}
       </div>
       <span onClick={() => setViewMore(!viewMore)} className="font-semibold">

@@ -32,7 +32,7 @@ const TransferElementsM = ({
           {/* <div className="text-base">{time}</div> */}
 
           <Timecontainer>
-            <div className="text-base font-semibold ">{heading}</div>
+            <div className="text-[1.2rem] font-normal ">{heading}</div>
           </Timecontainer>
         </Timecontainer>
 
@@ -58,12 +58,12 @@ const TransferElementsM = ({
               ></ImageLoader> */}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div className="text-base">
+              <div className="text-md">
                 {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
                 {transfers.routes[0]?.legs[0].destination.shortName}
               </div>
               {meta ? (
-                <div className="text-base">
+                <div className="text-md">
                   Duration: {convertNumToTime(meta.duration)}
                 </div>
               ) : null}

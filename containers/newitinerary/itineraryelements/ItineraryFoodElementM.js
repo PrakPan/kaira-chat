@@ -76,11 +76,11 @@ const ItineraryFoodElementM = (props) => {
                 </div>
               ) : null} */}
             </div>
-            <div className="font-semibold text-base">{props.heading}</div>
+            <div className="font-normal text-[1.2rem]">{props.heading}</div>
           </div>
 
           <div className="flex ">
-            <div className=" pt-2">{props.text}</div>
+            <div className=" pt-2 text-md font-[350]">{props.text}</div>
           </div>
         </div>
         {/* {props.recomendation ? (

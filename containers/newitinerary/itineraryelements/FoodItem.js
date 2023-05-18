@@ -23,8 +23,8 @@ const FoodItem = (props) => {
   return (
     <Container margin={props.margin}>
       <ImageLoader
-        dimensions={{ width: 200, height: 200 }}
-        dimensionsMobile={{ width: 200, height: 200 }}
+        dimensions={{ width: 150, height: 150 }}
+        dimensionsMobile={{ width: 100, height: 100 }}
         borderRadius="8px"
         hoverpointer
         onclick={() => console.log('')}
@@ -34,7 +34,9 @@ const FoodItem = (props) => {
         url={props.ImageUrl}
       ></ImageLoader>
       <div>
-        <Heading className="font-normal text-xl">{props.heading}</Heading>
+        <Heading className="font-normal text-lg lg:text-xl">
+          {props.heading}
+        </Heading>
         <div className="pt-1 text-sm font-normal line-clamp-3  ">
           {cutSentence(props.text, 18)}
         </div>

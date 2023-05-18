@@ -106,18 +106,6 @@ const Poi = (props) => {
   ));
   const router = useRouter();
 
-  const cards = props.pois?.map((e, i) => (
-    <PoiCard
-      key={e.id}
-      data={e}
-      showDrawer={showDrawer[i]}
-      setShowDrawer={setShowDrawer}
-      _handleOpen={_handleOpen}
-      handleCloseDrawer={handleCloseDrawer}
-    />
-  ));
-  const router = useRouter();
-
   return (
     <GridContainer>
       <div className="hidden-mobile">
