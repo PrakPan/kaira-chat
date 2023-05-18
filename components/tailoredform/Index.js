@@ -16,6 +16,7 @@ import Flickity from "./Flickity";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
+import { RxCross2 } from "react-icons/rx";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -29,19 +30,26 @@ const Container = styled.div`
       : "rgba(255,255,255,0.9)"};
   width: 100%;
   border: none !important;
-
+  border-radius: ${(props) =>
+    props.tailoredFormModal ? "12px !important" : "8px !important"};
   @media screen and (min-width: 768px) {
     ${(props) => props.tailoredFormModal && "height : 100%"};
     margin: auto 0;
-    border-radius: ${(props) =>
-      props.tailoredFormModal ? "0px" : "8px !important"};
 
     min-height: 400px;
   }
 `;
+const CloseIcon = styled.div`
+  display: flex;
+  justify-content: space-between;
+  text-align: right;
+  border-bottom: 1px solid #0000004a;
+  padding-block: 1rem;
+`;
 const Heading = styled.p`
-  font-size: 1.2rem;
-  margin: 0.25rem 0 0.25rem 0;
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.5rem 0;
+  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
   text-align: left;
   font-weight: 600;
   color: black;
@@ -49,6 +57,9 @@ const Heading = styled.p`
 
   @media screen and (min-width: 815px) {
     font-size: 1.5rem;
+    margin: 0.25rem 0 0.25rem 0;
+    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+
     height: 1.8rem;
     overflow: hidden;
   }
@@ -91,6 +102,42 @@ const Enquiry = (props) => {
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
 
+  const [valueStart, setValueStart] = useState(null);
+  const [valueEnd, setValueEnd] = useState(null);
+  const [numberOfAdults, setNumberOfAdults] = useState(2);
+  const [numberOfChildren, setNumberOfChildren] = useState(0);
+  const [numberOfInfants, setNumberOfInfants] = useState(0);
+  const [budget, setBudget] = useState("Affordable");
+  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  const [showCities, setShowCities] = useState(false);
+  const [showSearchStarting, setShowSearchStarting] = useState(false);
+  const [focusedDate, setFocusedDate] = useState(null);
+  const [groupType, setGroupType] = useState(null);
+  const [startingLocation, setStartingLocation] = useState(false);
+  const [destination, setDestination] = useState(
+    routerquery.destination || props.destination
+  );
+  const popupObj = {
+    dateStart: false,
+    dateEnd: false,
+    group: false,
+    InputOne: false,
+  };
+  const [showPopup, setShowPopup] = useState(popupObj);
+  const [showBlack, setShowBlack] = useState(false);
+  const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
+ 
+  useEffect(() => {
+    if (slideIndex === 2 && props.token) _submitDataHandler();
+    setShowPopup(popupObj);
+  }, [slideIndex, props.token]);
+  const _handleHideBlack = () => {
+    setShowBlack(false);
+    setShowCities(false);
+    setShowSearchStarting(false);
+  };
+  let isPageWide = media("(min-width: 768px)");
+
   const [selectedCities, setSelectedCities] = useState(
     !router.pathname.split("/").includes("[city]")
       ? [
@@ -108,11 +155,20 @@ const Enquiry = (props) => {
           },
         ]
   );
-  const [groupType, setGroupType] = useState(null);
-  const [startingLocation, setStartingLocation] = useState(false);
-  const [destination, setDestination] = useState(
-    routerquery.destination || props.destination
-  );
+   useEffect(() => {
+     setShowPopup(popupObj);
+   }, [
+     valueStart,
+     valueEnd,
+     startingLocation,
+     destination,
+     showSearchStarting,
+     showCities,
+     groupType,
+     selectedCities.length,
+     slideIndex
+   ]);
+
   // const ContainerRef = useRef()
 
   const _submitDataHandler = () => {
@@ -208,12 +264,12 @@ const Enquiry = (props) => {
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
           //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
-          router.push('/thank-you')
+          router.push("/thank-you");
         } else {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
           // setTimeout(function () {
-            router.push("/itinerary/" + response.data.itinerary.itinerary_id);
+          router.push("/itinerary/" + response.data.itinerary.itinerary_id);
           // }, 10000);
           setLoading(false);
         }
@@ -222,7 +278,7 @@ const Enquiry = (props) => {
         setLoading(false);
         // window.location.href =
         //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
-          router.push("/thank-you");
+        router.push("/thank-you");
 
         if (err.response.data.email) {
         }
@@ -235,87 +291,72 @@ const Enquiry = (props) => {
   // const [valueStart, setValueStart] =useState((moment().add(5, 'day')));
   // const [valueEnd, setValueEnd] =useState((moment().add(10,'day')));
 
-  const [valueStart, setValueStart] = useState(null);
-  const [valueEnd, setValueEnd] = useState(null);
-  const [numberOfAdults, setNumberOfAdults] = useState(2);
-  const [numberOfChildren, setNumberOfChildren] = useState(0);
-  const [numberOfInfants, setNumberOfInfants] = useState(0);
-  const [budget, setBudget] = useState("Affordable");
-  const [selectedPreferences, setSelectedPreferences] = useState([]);
-  const [showCities, setShowCities] = useState(false);
-  const [showSearchStarting, setShowSearchStarting] = useState(false);
-  const [showPopup, setShowPopup] = useState({
-    dateStart: false,
-    dateEnd: false,
-    group: false,
-    InputOne: false,
-  });
-  const [showBlack, setShowBlack] = useState(false);
-  const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
-  useEffect(() => {
-    if (slideIndex === 2 && props.token) _submitDataHandler();
-  }, [slideIndex, props.token]);
-  const _handleHideBlack = () => {
-    setShowBlack(false);
-    setShowCities(false);
-    setShowSearchStarting(false);
+  const getHeading = () => {
+    if (props.tailoredFormModal && focusedDate) {
+      if (focusedDate == "startDate") return "Please select start date.";
+      if (focusedDate == "endDate") return "Please select end date.";
+    } else return "Get your free travel plan now";
   };
-  let isPageWide = media("(min-width: 768px)");
   const _SlideOneSubmitHandler = () => {
-    if (!selectedCities[0].destination_id && !selectedCities[0].id)
+    if (!selectedCities[0].destination_id && !selectedCities[0].id) {
+      console.log("destination popup");
       return setShowPopup({ ...showPopup, InputOne: true });
-    if (!valueStart && !flexible) return setShowPopup({ ...showPopup, dateStart: true });
-    if (!valueEnd && !flexible) return setShowPopup({ ...showPopup, dateEnd: true });
+    }
+    if (!valueStart && !flexible)
+      return setShowPopup({ ...showPopup, dateStart: true });
+    if (!valueEnd && !flexible)
+      return setShowPopup({ ...showPopup, dateEnd: true });
+    setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
     // window.scrollBy(0, -200 , 'smooth');
     // ContainerRef.current.scrollIntoView(0,-150)
     if (props.HeroBanner && isPageWide)
       window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+  console.log("showPopup: ", showPopup);
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
+    setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
   };
-
   if (!loading && !submitted)
     return (
       <div style={{}}>
         {showBlack && !props.tailoredFormModal ? (
-          <BlackContainer onClick={_handleHideBlack}></BlackContainer>
+          <BlackContainer onClick={() => _handleHideBlack}></BlackContainer>
         ) : null}
 
         <Container
           showBlack={showBlack}
           tailoredFormModal={props.tailoredFormModal}
           slideIndex={slideIndex}
-          className={isPageWide ? "border center-di" : "center-div"}
-          onClick={() => setShowBlack(true)}
+          className={"center-div"}
+          onClick={() => {
+            setShowBlack(true);
+          }}
           //  ref={ContainerRef}
         >
           {showPopup.InputOne && (
             <Popup
               setShowPopup={setShowPopup}
-              top="12.2rem"
+              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
               mobileTop="14rem"
               left="10px"
               text="Please select your destination!"
             />
           )}
-          {(showPopup.dateStart && !flexible) && (
+          {showPopup.dateStart && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
-              bottom="5.2rem"
-              mobileBottom="5.6rem"
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
               left="10px"
               text="Please select starting date!"
             />
           )}
-          {(showPopup.dateEnd && !flexible) && (
+          {showPopup.dateEnd && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
-              bottom="5.6rem"
-              mobileBottom="5.6rem"
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
               left="170px"
               mobileleft={"135px"}
               text="Please select ending date!"
@@ -324,7 +365,7 @@ const Enquiry = (props) => {
           {showPopup.group && (
             <Popup
               setShowPopup={setShowPopup}
-              top="190px"
+              top={props.tailoredFormModal ? "16rem" : "190px"}
               left="20%"
               tipLeft="45%"
               text="Please select your group type!"
@@ -335,16 +376,17 @@ const Enquiry = (props) => {
           {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
 
           {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
+
           <div
             style={{
-              padding: "0.5rem 1rem",
+              padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
               width: "100%",
               marginBottom: slideIndex === 2 ? "0rem" : "0rem",
-              display: "grid",
+              display: props.tailoredFormModal ? "initial" : "grid",
               gridTemplateColumns: "max-content auto",
             }}
           >
-            {slideIndex ? (
+            {slideIndex && !props.tailoredFormModal ? (
               <div className="center-div">
                 <BiArrowBack
                   onClick={_prevSlideHandler}
@@ -353,11 +395,40 @@ const Enquiry = (props) => {
                 ></BiArrowBack>
               </div>
             ) : (
-              <div></div>
+              <></>
             )}
-            <Heading style={{ textAlign: !slideIndex ? "left" : "center" }}>
-              {!slideIndex ? "Get your free travel plan now" : "Trip Planner"}
-            </Heading>
+            <div style={{ width: "100%" }}>
+              {props.tailoredFormModal && (
+                <CloseIcon>
+                  {slideIndex ? (
+                    <BiArrowBack
+                      onClick={_prevSlideHandler}
+                      className="hover-pointer"
+                      style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                    ></BiArrowBack>
+                  ) : (
+                    <div></div>
+                  )}
+                  <RxCross2
+                    style={{
+                      fontSize: "1.75rem",
+                      textAlign: "right",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      !focusedDate ? props.onHide() : console.log("");
+                    }}
+                  />
+                </CloseIcon>
+              )}
+
+              <Heading
+                tailoredFormModal={props.tailoredFormModal}
+                style={{ textAlign: !slideIndex ? "left" : "center" }}
+              >
+                {getHeading()}
+              </Heading>
+            </div>
           </div>
           {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
           <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
@@ -368,14 +439,14 @@ const Enquiry = (props) => {
                 color: "#D3D3D3",
                 height: "1px",
                 width: "100%",
-                marginBottom: "1rem",
+                marginBottom: "1.5rem",
               }}
             ></div>
 
             <Flickity
               initialInputId={initialInputId}
-              focusedDate={props.focusedDate}
-              setFocusedDate={props.setFocusedDate}
+              focusedDate={focusedDate}
+              setFocusedDate={setFocusedDate}
               tailoredFormModal={props.tailoredFormModal}
               flexible={flexible}
               setFlexible={setFlexible}
@@ -428,7 +499,18 @@ const Enquiry = (props) => {
                 }}
               >
                 <Button
-                  width="100%"
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
                   padding="0.5rem 2rem"
                   fontWeight="500"
                   margin="1rem 0"
@@ -445,8 +527,18 @@ const Enquiry = (props) => {
               !props.token ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
-                    fontSize="12px"
-                    width="100%"
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
                     padding="0.5rem 2rem"
                     fontWeight="500"
                     margin="1rem 0"
@@ -461,9 +553,19 @@ const Enquiry = (props) => {
               ) : (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
-                    width="100%"
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
                     padding="0.5rem 2rem"
-                    fontSize="12px"
                     fontWeight="500"
                     margin="1rem 0"
                     borderRadius="5px"

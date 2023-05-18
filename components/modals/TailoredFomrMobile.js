@@ -5,6 +5,8 @@ import media from '../media';
 import TailoredForm from '../tailoredform/Index';
 import ImageLoader from '../ImageLoader';
 import styled from 'styled-components'
+import {TbArrowBack} from 'react-icons/tb'
+// import { RxCross2 } from 'react-icons/rx';
 const ImgContainer = styled.div`
   height: 100%;
   position  : relative;
@@ -35,6 +37,14 @@ line-height: 24px;
 margin-block : auto;
 }
 `
+const CloseIcon = styled.div`
+  // width: 100%;
+  text-align: right;
+  border-bottom: 1px solid #0000004a;
+  // padding: 0.5rem 0.5rem 0rem 0rem;
+  padding-block : 1rem;
+  margin-inline : 1rem;
+`;
 
 const TagsContent = [
   {icon : 'media/icons/login/free-travel.png' , text : 'Unlimited travel plans for free!'} ,
@@ -48,7 +58,7 @@ const TagsContent = [
 const TailoredFormMobileModal = (props) => {
   let isPageWide = media('(min-width: 768px)')
   const [showImage, setShowImage] = useState(false);
-  const [modalWidth , setModalWidth] = useState(!isPageWide? 90 :50)
+  const [modalWidth , setModalWidth] = useState(!isPageWide? 100 :50)
  
   useEffect(() => {
    
@@ -59,18 +69,48 @@ const TailoredFormMobileModal = (props) => {
       if(window.innerWidth >= 1400) setModalWidth(25)
       else if(window.innerWidth >= 1100) setModalWidth(70)
       else if(window.innerWidth >= 768) setModalWidth(90)
-      else if(window.innerWidth >= 600) setModalWidth(60)
-      else if(window.innerWidth >= 400) setModalWidth(80)
-      else setModalWidth(90)
+      // else if(window.innerWidth >= 600) setModalWidth(60)
+      // else if(window.innerWidth >= 400) setModalWidth(80)
+      else setModalWidth(100)
         }
         window.addEventListener("resize", findModalWidth);
         findModalWidth()
         return ()=> window.removeEventListener("resize", findModalWidth)  
     },[])
-    const [focusedDate , setFocusedDate] = useState(null)
-    return <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={isPageWide? '400px' : '335px'}>
-      <TailoredForm tailoredFormModal focusedDate={focusedDate} setFocusedDate={setFocusedDate}  destinationType={props.destinationType}  page_id={props.page_id} children_cities={props.children_cities} destination={props.destination} cities={props.cities}></TailoredForm>
-</Modal>
+    return (
+      <Modal
+        height={!isPageWide && "100%"}
+        overflow={"none"}
+        borderRadius={"12px"}
+        show={props.show}
+        backdrop={true}
+        className="booking-modal"
+        size="lg"
+        onHide={props.onHide}
+        animation={false}
+        width={isPageWide ? "400px" : "100%"}
+      >
+        {/* <CloseIcon>
+          <RxCross2
+            style={{
+              fontSize: "1.75rem",
+              textAlign: "right",
+            }}
+            onClick={()=>props.onHide()}
+          />
+        </CloseIcon> */}
+
+        <TailoredForm
+          tailoredFormModal
+          destinationType={props.destinationType}
+          page_id={props.page_id}
+          children_cities={props.children_cities}
+          destination={props.destination}
+          cities={props.cities}
+          onHide={props.onHide}
+        ></TailoredForm>
+      </Modal>
+    );
 //   return(
 //       <Modal borderRadius={'12px'} show={props.show} backdrop={true}  className="booking-modal" size="lg"  onHide={props.onHide} animation={false} width={modalWidth + '%'}>
 //             <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>

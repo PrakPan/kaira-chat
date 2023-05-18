@@ -5,6 +5,7 @@ import styled from "styled-components";
 import SelectedDestination from "./selecteddestination/Index";
 import { AiFillDelete } from "react-icons/ai";
 import { ConstructionOutlined } from "@mui/icons-material";
+import TailoredFormMobileModal from "../../../modals/TailoredFomrMobile";
 
 const Container = styled.div`
   width: 100%;
@@ -23,12 +24,13 @@ const Destinations = (props) => {
     data: null,
   });
   const [destinations, setDestinations] = useState([]);
+
     useEffect(() => {
       const des = [];
       for (let i = 0; i < props.selectedCities.length; i++) {
         des.push(
           <SelectedDestination
-            autofocus={i == 0 && true}
+            autofocus={i == 0 && props.selectedCities[0].name && true}
             _updateDestinationHandler={_updateDestinationHandler}
             key={props.selectedCities[i].input_id}
             setDeletedId={(i != 0 || props.selectedCities.length > 1)&& setDeletedId}
@@ -141,14 +143,6 @@ const Destinations = (props) => {
           </p>
         )}
       </div>
-
-      {/* {props.showCities && props.CITIES ? <CitiesContainer
-        setDestination={props.setDestination}
-        top={destinations ? destinations.length === 1 ? '5.75rem' : (5.75+(3*(destinations.length-1)))+"rem" : '5.75rem'} children_cities={props.children_cities} setShowCities={props.setShowCities} destination={props.destination} CITIES={props.CITIES} selectedCities={props.selectedCities} setSelectedCities={props.setSelectedCities}>
-
-        </CitiesContainer>  : null}  */}
-
-      {/* <p className='font-lexend text-center hover-pointer' style={{fontSize: '0.85rem', color: '#1360D3'}}>+ Add More</p> */}
     </Container>
   );
 };

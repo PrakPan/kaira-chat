@@ -34,77 +34,79 @@ const Index = (props) => {
             boxShadow={props.boxShadow}
             display={props.display}
             textAlign={props.textAlign}
-            center={props.center}
+           center={props.center}
+           style={props.style}
           >
             {props.children}
           </Generalbutton>
        )
       } else if (props.link) {
        setJSX(
-          <>
-            <Internallinkbutton
-            className="font-lexend"
-              link={props.link}
-              color={props.color}
-              borderRadius={props.borderRadius}
-              bgColor={props.bgColor}
-              textDecor={props.textDecor}
-              margin={props.margin}
-              marginMobile={props.marginMobile}
-              lineHeight={props.lineHeight}
-
-              padding={props.padding}
-              width={props.width}
-              height={props.height}
-              fontSize={props.fontSize}
-              borderStyle={props.borderStyle}
-              borderWidth={props.borderWidth}
-              borderColor={props.borderColor}
-              fontWeight={props.fontWeight}
-              fontSizeDesktop={props.fontSizeDesktop}
-              hoverColor={props.hoverColor}
-              hoverBgColor={props.hoverBgColor}
-              hoverBrColor={props.hoverBrColor}
-              boxShadow={props.boxShadow}
-              display={props.display}
-              textAlign={props.textAlign}
-            >
-              {props.children}
-            </Internallinkbutton>
-          </>)
+         <>
+           <Internallinkbutton
+             className="font-lexend"
+             link={props.link}
+             color={props.color}
+             borderRadius={props.borderRadius}
+             bgColor={props.bgColor}
+             textDecor={props.textDecor}
+             margin={props.margin}
+             marginMobile={props.marginMobile}
+             lineHeight={props.lineHeight}
+             padding={props.padding}
+             width={props.width}
+             height={props.height}
+             fontSize={props.fontSize}
+             borderStyle={props.borderStyle}
+             borderWidth={props.borderWidth}
+             borderColor={props.borderColor}
+             fontWeight={props.fontWeight}
+             fontSizeDesktop={props.fontSizeDesktop}
+             hoverColor={props.hoverColor}
+             hoverBgColor={props.hoverBgColor}
+             hoverBrColor={props.hoverBrColor}
+             boxShadow={props.boxShadow}
+             display={props.display}
+             textAlign={props.textAlign}
+             style={props.style}
+           >
+             {props.children}
+           </Internallinkbutton>
+         </>
+       );
        
       } else if (props.external_link) {
        setJSX(
-          <Externallinkbutton
-          className="font-lexend"
-            external_link={props.external_link}
-            color={props.color}
-            borderRadius={props.borderRadius}
-            bgColor={props.bgColor}
-            textDecor={props.textDecor}
-            margin={props.margin}
-            marginMobile={props.marginMobile}
-            lineHeight={props.lineHeight}
-
-            padding={props.padding}
-            width={props.width}
-            height={props.height}
-            fontSize={props.fontSize}
-            borderStyle={props.borderStyle}
-            borderWidth={props.borderWidth}
-            borderColor={props.borderColor}
-            fontWeight={props.fontWeight}
-            fontSizeDesktop={props.fontSizeDesktop}
-            hoverColor={props.hoverColor}
-            hoverBgColor={props.hoverBgColor}
-            hoverBrColor={props.hoverBrColor}
-            boxShadow={props.boxShadow}
-            display={props.display}
-            textAlign={props.textAlign}
-          >
-            {props.children}
-          </Externallinkbutton>
-       )
+         <Externallinkbutton
+           className="font-lexend"
+           external_link={props.external_link}
+           color={props.color}
+           borderRadius={props.borderRadius}
+           bgColor={props.bgColor}
+           textDecor={props.textDecor}
+           margin={props.margin}
+           marginMobile={props.marginMobile}
+           lineHeight={props.lineHeight}
+           padding={props.padding}
+           width={props.width}
+           height={props.height}
+           fontSize={props.fontSize}
+           borderStyle={props.borderStyle}
+           borderWidth={props.borderWidth}
+           borderColor={props.borderColor}
+           fontWeight={props.fontWeight}
+           fontSizeDesktop={props.fontSizeDesktop}
+           hoverColor={props.hoverColor}
+           hoverBgColor={props.hoverBgColor}
+           hoverBrColor={props.hoverBrColor}
+           boxShadow={props.boxShadow}
+           display={props.display}
+           textAlign={props.textAlign}
+           style={props.style}
+         >
+           {props.children}
+         </Externallinkbutton>
+       );
       } else {
           setJSX(
        null

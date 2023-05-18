@@ -45,29 +45,37 @@ right : ${props=>props.mobileRight};
 
 
 const Popup = (props) => {
-  function handlePopup(){
-    if(props.setShowPopup) props.setShowPopup({dateStart : false, dateEnd : false , group : false}) 
-   }
-  useEffect(() => {
-    document.body.addEventListener('click', handlePopup);
+  function handlePopup() {
+    if(props.setShowPopup) props.setShowPopup({
+      dateStart: false,
+      dateEnd: false,
+      group: false,
+      InputOne : false,
+    }); 
+  }
+    // useEffect(() => {
+    //   document.body.addEventListener("click", handlePopup);
 
-    return ()=> {
-      document.body.removeEventListener('click', handlePopup);
- }
- },[]);
+    //   return () => {
+    //     document.body.removeEventListener("click", handlePopup);
+    //   };
+    // }, []);
   return (
     // <div style={{position : 'relative'}}>
-    <Container {...props}>{props.text} <ImCross 
-    style={{
-      top: '0',
-      fontSize: '8px',
-      position: 'absolute',
-      right: '0',
-      cursor : 'pointer'
-    }}
-    /></Container>
+    <Container {...props} onClick={handlePopup}>
+      {props.text}{" "}
+      <ImCross
+        style={{
+          top: "0",
+          fontSize: "8px",
+          position: "absolute",
+          right: "0",
+          cursor: "pointer",
+        }}
+      />
+    </Container>
     // </div>
-  )
+  );
 }
 
 export default Popup
