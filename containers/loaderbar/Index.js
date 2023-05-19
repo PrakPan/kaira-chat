@@ -7,6 +7,8 @@ import content from '../../public/content/loaderbar';
 import Linecirclecontainer from './linecirclecontainer';
 import LottieAnimation from './Lottie';
 import ResponsiveProgressBar from './linecirclecontainer';
+import { useRouter } from 'next/router';
+import { ConnectingAirportsOutlined } from '@mui/icons-material';
 
 const COLORS = {
   black: '#212529',
@@ -63,7 +65,10 @@ const Heading2 = styled.div`
 
 const Index = () => {
   let cards = [];
-  const [currentStep, updateCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(1);
+  const router = useRouter()
+  var IntervalTiming
+  if (router.query.t) IntervalTiming = (+router.query.t) / 5 * 1000
 
   const [CardJSX, setCardJSX] = useState(false);
   useEffect(() => {
@@ -77,27 +82,17 @@ const Index = () => {
     setCardJSX(cards);
   }, []);
   useEffect(() => {
-    if (currentStep < 4) {
-      const interval = setInterval(() => {
-        updateCurrentStep(currentStep + 1);
-      }, 300);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  });
+if(!IntervalTiming) setCurrentStep(5)
+   else if (currentStep < 5) {
+      setTimeout(() => {
+        setCurrentStep((prevCount) => prevCount + 1);
+      }, IntervalTiming);
+}
+  }, [currentStep]);
+  
   function updateStep(step) {
-    updateCurrentStep(step);
+    setCurrentStep(step);
   }
-
-  const [counter, setCounter] = useState(0);
-
-  useEffect(() => {
-    const timer =
-      counter < 100 && setInterval(() => setCounter(counter + 1), 40);
-    return () => clearInterval(timer);
-  }, [counter]);
 
   return (
     <Container1 className="center-div">
@@ -106,7 +101,7 @@ const Index = () => {
       {/* <Logo style={{ margin: '1rem 0 4rem 0' }} className='center-div' src={img1} ></Logo> */}
       {/* <Linecirclecontainer/> */}
       <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
-      <Heading2 className=" font-opensans font-medium text-lg">
+      <Heading2 className=" font-lexend font-medium text-lg">
         {' '}
         {content[currentStep - 1].heading}{' '}
       </Heading2>

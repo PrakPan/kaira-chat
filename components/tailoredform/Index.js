@@ -260,6 +260,7 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
+        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
@@ -269,7 +270,13 @@ const Enquiry = (props) => {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
           // setTimeout(function () {
-          router.push("/itinerary/" + response.data.itinerary.itinerary_id);
+        if(response.data.loader_time) router.push(
+              "/itinerary/" +
+                response.data.itinerary.itinerary_id +
+                "?t=" +
+                response.data.loader_time
+            );
+         else router.push("/itinerary/" + response.data.itinerary.itinerary_id);
           // }, 10000);
           setLoading(false);
         }
