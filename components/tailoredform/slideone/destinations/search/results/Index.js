@@ -10,7 +10,7 @@ position: absolute;
 top: ${props => props.top};
 width: 100%;
 left: 0;
-z-index: 100;
+z-index: 1500;
  `
  const LocationContainer = styled.div`
  padding: 0.25rem 0;

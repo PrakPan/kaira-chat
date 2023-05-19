@@ -233,11 +233,11 @@ const ResponsiveProgressBar = ({ progress }) => {
   const [percentage, setPercentage] = useState(0);
 
   const progressBarAnimation = useSpring({
-    width: `${progress * 25}%`,
+    width: `${progress * 20}%`,
     from: { width: '0%' },
   });
 
-  const calculatePercentage = (progress) => Math.min(Math.max(progress * 25));
+  const calculatePercentage = (progress) => Math.min(Math.max(progress * 20));
 
   useState(() => {
     setPercentage(calculatePercentage(progress));
@@ -245,7 +245,7 @@ const ResponsiveProgressBar = ({ progress }) => {
 
   return (
     <Container>
-      <Text>{`${progress * 25}%`} Done</Text>
+      <Text>{`${progress * 20}%`} Done</Text>
       <ProgressBarWrapper>
         <ProgressBar style={progressBarAnimation} />
       </ProgressBarWrapper>

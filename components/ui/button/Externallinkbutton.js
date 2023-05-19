@@ -102,6 +102,7 @@ const Externallinkbutton = (props) => {
         display={props.display}
         textAlign={props.textAlign}
         marginMobile={props.marginMobile}
+        style={props.style}
         lineHeight={props.lineHeight}
       >
         {props.children}

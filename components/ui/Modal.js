@@ -25,33 +25,37 @@ to {
 
 const ModalContainer = styled.div`
   position: fixed;
-  top: ${props=>props.mobileTop? props.mobileTop : '50%'};
-  left: ${props=>props.mobileLeft? props.mobileLeft : '50%'};
-  background: ${props=>props.bgColor? props.bgColor : 'white'};
-  border-radius : ${props=>props.borderRadius? props.borderRadius : '0px'};
-  ${props=>props.mobileWidth && `width : ${props.mobileWidth}`};
-  ${props=>props.height && `height : ${props.height}`};
+  top: ${(props) => (props.mobileTop ? props.mobileTop : "50%")};
+  left: ${(props) => (props.mobileLeft ? props.mobileLeft : "50%")};
+  background: ${(props) => (props.bgColor ? props.bgColor : "white")};
+  border-radius: ${(props) =>
+    props.borderRadius ? props.borderRadius : "0px"};
+  ${(props) => props.mobileWidth && `width : ${props.mobileWidth}`};
+  ${(props) => props.height && `height : ${props.height}`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)} forwards;
+  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)}
+    forwards;
   z-index: 1600;
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   transition: opacity 0.8s linear;
-  overflow : auto;
+
+  ${(props) => (props.overflow ? props.overflow : "overflow : auto")};
   overscroll-behavior: contain;
-  max-height : 95vh;
-  margin : ${props=>props.margin? props.margin : '0px'};
+  ${(props) => !props.height && "max-height: 95vh;"}
+  
+
+  margin: ${(props) => (props.margin ? props.margin : "0px")};
   @media screen and (min-width: 768px) {
-  ${props=>props.width && `width : ${props.width}`};
-    top: ${props=>props.top? props.top : '50%'};
-    left: ${props=>props.left? props.left : '50%'};
-  };
+    ${(props) => props.width && `width : ${props.width}`};
+    top: ${(props) => (props.top ? props.top : "50%")};
+    left: ${(props) => (props.left ? props.left : "50%")};
+  }
 
-&::-webkit-scrollbar {
+  &::-webkit-scrollbar {
     display: none;
-};
--ms-overflow-style: none;
-scrollbar-width: none;
-
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 const BlackContainer = styled.div`
   background: ${(props) =>
@@ -125,6 +129,7 @@ export default function Modal(props) {
             fade={fade}
             className="modalContainer"
             style={{ ...props.style }}
+            overflow={props.overflow}
             top={props.top}
             left={props.left}
             mobileTop={props.mobileTop}

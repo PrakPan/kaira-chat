@@ -65,11 +65,11 @@ const Container = styled.div`
       top: 55px !important;
       ${(props) =>
         props.tailoredFormModal &&
-        "position : fixed ; top : 90px !important ; left : 0 !important; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10"};
+        "position : fixed ; top : 125px !important ; left : 0 !important; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10 ; border-radius : 1rem"};
     }
     ${(props) =>
       props.tailoredFormModal &&
-      "position : fixed ; top : 90px !important; left : 0 !important; right : 0; bottom : 0px !important ; z-index : 10"};
+      "position : fixed ; top : 120px !important; left : 0 !important; right : 0; bottom : 0px !important ; z-index : 10"};
   }
   .CalendarDay {
     border: 0px;
@@ -161,8 +161,10 @@ right : 0;
 const DatePicker = (props) => {
 const [focusedInput, setFocusedInput] = useState(props.focusedDate || null);
 
-useEffect(()=>{
-  if(props.setFocusedDate) props.setFocusedDate(focusedInput)
+  useEffect(() => {
+    if (focusedInput) props.setFocusedDate(focusedInput);
+    else props.setFocusedDate(undefined)
+  
 },[focusedInput])
 
 useEffect(()=>{
@@ -173,59 +175,77 @@ let isPageWide = media('(min-width: 768px)');
 
 return (
   <>
-    <TextContainer tailoredFormModal={props.tailoredFormModal} className={'TextContainer'}>
+    <TextContainer
+      tailoredFormModal={props.tailoredFormModal}
+      className={"TextContainer"}
+    >
       <Text>Start Date</Text>
       <Text>End Date</Text>
     </TextContainer>
-   <Container tailoredFormModal={props.tailoredFormModal}>
-    
-    <DateRangePicker
-    displayFormat='DD/MM/YYYY'
-    readOnly={true}
+    <Container tailoredFormModal={props.tailoredFormModal}>
+      <DateRangePicker
+        displayFormat="DD/MM/YYYY"
+        readOnly={true}
         startDate={props.valueStart}
         startDateId="startDate"
-        startDatePlaceholderText='DD/MM/YYYY'
-        endDatePlaceholderText='DD/MM/YYYY'
+        startDatePlaceholderText="DD/MM/YYYY"
+        endDatePlaceholderText="DD/MM/YYYY"
         endDate={props.valueEnd}
         endDateId="endDate"
         onDatesChange={({ startDate, endDate }) => {
           props.setValueStart(startDate);
-          props.setValueEnd(endDate)
+          props.setValueEnd(endDate);
         }}
         focusedInput={focusedInput}
         onFocusChange={setFocusedInput}
-        isOutsideRange={day => day.startOf('day').isBefore(moment().add(0,'day')) }
-          initialVisibleMonth={() => moment().subtract(0, "month")}
-        numberOfMonths={isPageWide && !props.tailoredFormModal?2:1}
+        isOutsideRange={(day) =>
+          day.startOf("day").isBefore(moment().add(0, "day"))
+        }
+        initialVisibleMonth={() => moment().subtract(0, "month")}
+        numberOfMonths={isPageWide && !props.tailoredFormModal ? 2 : 1}
         orientation={"horizontal"}
         noBorder={true}
         // navPrev={<FaChevronLeft />}
         // navNext={<FaChevronRight />}
       />
-      <CalenderIcons tailoredFormModal={props.tailoredFormModal} className='CalentderIcons'>
-      <Icon><BiCalendarAlt /></Icon>
-      <Icon><BiCalendarAlt /></Icon>
+      <CalenderIcons
+        tailoredFormModal={props.tailoredFormModal}
+        className="CalentderIcons"
+      >
+        <Icon>
+          <BiCalendarAlt />
+        </Icon>
+        <Icon>
+          <BiCalendarAlt />
+        </Icon>
       </CalenderIcons>
 
-      {
-        (props.tailoredFormModal && !!focusedInput)? 
+      {props.tailoredFormModal && !!focusedInput ? (
         <ButtonContainer>
-
-        <Button 
-        
-        width="100%"
-        padding="0.5rem 2rem"
-        fontWeight="500"
-        margin="1rem 0"
-        borderRadius="5px"
-        borderWidth="1px"
-        bgColor="#f7e700"
-        onclick={()=>setFocusedInput(null)}
-        >Back</Button></ButtonContainer> : null
-      }
-   </Container>
+          <Button
+            width={!isPageWide ? "auto" : "100%"}
+            style={
+              !isPageWide ? {
+                position: "fixed",
+                left: "1rem",
+                right: "1rem",
+                bottom: "0",
+              } : {}
+            }
+            padding="0.5rem 2rem"
+            fontWeight="500"
+            margin="1rem 0"
+            borderRadius="5px"
+            borderWidth="1px"
+            bgColor="#f7e700"
+            onclick={() => setFocusedInput(null)}
+          >
+            Back
+          </Button>
+        </ButtonContainer>
+      ) : null}
+    </Container>
   </>
-
-)};
+);};
 
 export default DatePicker

@@ -34,12 +34,13 @@ const Search = (props) => {
   const {query} = useRouter()
   // const [selectedCities, setSelectedCities] = useState([]);
   const _handleKey = (e) => {
-    setShowResults(true);
-    setShowHotLocations(false);
+    
     if(e.target.value === '') setShowHotLocations(true);
     if(e.target.value)
     if(e.target.value.length > 1)
     {
+    setShowHotLocations(false);
+    setShowResults(true);
       setLoading(true)
       axios
         .get(`https://apis.tarzanway.com/search/suggest/?q=` + e.target.value)

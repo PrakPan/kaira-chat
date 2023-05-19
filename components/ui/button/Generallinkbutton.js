@@ -101,6 +101,7 @@ const Generalbutton = (props) => {
       textAlign={props.textAlign}
       marginMobile={props.marginMobile}
       lineHeight={props.lineHeight}
+      style={props.style}
     >
       {props.children}
     </Generalbuttonstyle>

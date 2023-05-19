@@ -40,6 +40,7 @@ const SlideOne = (props) =>{
 
          <Destinations
            startingLocation={props.startingLocation}
+           tailoredFormModal={props.tailoredFormModal}
            initialInputId={props.initialInputId}
            setStartingLocation={props.setStartingLocation}
            showSearchStarting={props.showSearchStarting}
