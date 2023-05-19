@@ -101,7 +101,7 @@ const Enquiry = (props) => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
-
+  const [slideIndex, setSlideIndex] = useState(0);
   const [valueStart, setValueStart] = useState(null);
   const [valueEnd, setValueEnd] = useState(null);
   const [numberOfAdults, setNumberOfAdults] = useState(2);
@@ -284,7 +284,6 @@ const Enquiry = (props) => {
         }
       });
   };
-  const [slideIndex, setSlideIndex] = useState(0);
   const _prevSlideHandler = () => {
     if (slideIndex) setSlideIndex(slideIndex - 1);
   };
@@ -323,7 +322,7 @@ const Enquiry = (props) => {
     return (
       <div style={{}}>
         {showBlack && !props.tailoredFormModal ? (
-          <BlackContainer onClick={() => _handleHideBlack}></BlackContainer>
+          <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
         ) : null}
 
         <Container
