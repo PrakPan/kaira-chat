@@ -62,13 +62,13 @@ width: 360px;
 const POIDetails = (props) => {
   let isPageWide = media('(min-width: 768px)')
   const [imageLoading, setImageLoading] = useState(true)
-  const [aboutText, setAboutText] = useState(about);
   
   var about = (
     <p>
       {props.data.short_description?.substr(0, 250)} <b className='hover-pointer'>...more</b>
     </p>
   );
+  const [aboutText, setAboutText] = useState(about);
    
       var experience_filters = <div>
         {
