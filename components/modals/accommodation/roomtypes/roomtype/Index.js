@@ -10,8 +10,7 @@ import media from '../../../../media';
 import { FaBed } from 'react-icons/fa';
 import Dropdown from './Dropdown';
 import Details from '../../../details/Index';
-import Hoverable from '../../../../HoverableAnime/hoverable';
-import HoverAnimation from '../../../../HoverableAnime/hoverable';
+
 const Container = styled.div`
   width: 100%;
 `;
