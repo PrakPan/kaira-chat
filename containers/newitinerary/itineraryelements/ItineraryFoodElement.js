@@ -6,12 +6,15 @@ import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { MdOutlineFlightTakeoff } from 'react-icons/md';
 import { IoMdRestaurant } from 'react-icons/io';
-import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import {
+  HLine,
+  newDayContainerTextpadding,
+} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
 import { GiKnifeFork } from 'react-icons/gi';
 const padding = {
-  initialLeft: '120px',
+  initialLeft: '8.5rem',
 };
 const Container = styled.div`
   display: flex;
@@ -109,7 +112,10 @@ const ItineraryFoodElement = (props) => {
               widthmobile="1.25rem"
             ></ImageLoader>
           </div> */}
-          <div className="pl-[1.4rem] flex justify-center flex-col">
+          <div
+            className="pl-[1.4rem] flex justify-center flex-col"
+            style={{ paddingLeft: newDayContainerTextpadding.initialLeft }}
+          >
             <div className="text-xl font-normal">{props.heading}</div>
             <div className="pt-1 line-clamp-3 font-normal text-sm pb-4">
               {props.text}

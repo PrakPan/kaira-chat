@@ -188,16 +188,17 @@ const NewItenaryMain = (props) => {
         BarName="CityName"
         Mstyle={'round'}
       ></ScrollableMenuTabs>
-      {/* <ScrollableMenuTabs
+
+      <ScrollableMenuTabs
         icons={false}
         offset={'80px'}
         items={itemsDays}
         BarName="CityName"
-        year={itemsDays}
+        year={yearCalc(itemsDays)}
         Mstyle={'round'}
         Iterable="date"
         vertical={true}
-      ></ScrollableMenuTabs> */}
+      ></ScrollableMenuTabs>
       {props.itinerary.day_slabs && (
         <div className="itenaryContainer">
           {props.itinerary.day_slabs.map((element, index) => (

@@ -24,7 +24,7 @@ export const DayContainerStyle = styled.div`
     border-width: 1px;
     width: 100%;
     @media screen and (min-width: 768px) {
-      width: 85%;
+      width: 83%;
       margin-bottom: 10px;
       margin-top: 10px;
     }

@@ -6,7 +6,10 @@ import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { FaHome } from 'react-icons/fa';
 
-import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import {
+  HLine,
+  newDayContainerTextpadding,
+} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 const padding = {
   initialLeft: '60px',
 };
@@ -85,8 +88,11 @@ const ItineraryElement = (props) => {
           ></ImageLoader> */}
         </div>
         <div
-          style={{ display: 'flex', alignItems: 'center' }}
-          className="pl-[1.4rem]"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            paddingLeft: newDayContainerTextpadding.initialLeft,
+          }}
         >
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>

@@ -954,6 +954,7 @@ const TransfersContainer = (props) => {
           tailored_id={props.flightBookings[0]['tailored_itinerary']}
           _updatePaymentHandler={props._updatePaymentHandler}
           _updateFlightHandler={props._updateFlightHandler}
+          setHideBookingModal={props.setHideBookingModal}
           selectedBooking={selectedBooking}
           setShowFlightModal={props.setShowFlightModal}
           showFlightModal={props.showFlightModal}
@@ -963,6 +964,7 @@ const TransfersContainer = (props) => {
         <TaxiModal
           getPaymentHandler={props.getPaymentHandler}
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          setHideBookingModal={props.setHideBookingModal}
           setHideTaxiModal={() => props.setShowTaxiModal(false)}
           showTaxiModal={props.showTaxiModal}
           _updatePaymentHandler={props._updatePaymentHandler}

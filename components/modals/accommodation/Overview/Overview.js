@@ -16,7 +16,7 @@ const Container = styled.div`
   padding: 0 1rem 1rem 1rem;
   display: grid;
   grid-gap: 1rem;
-  width: 360px;
+  width: 100vw;
 
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr;

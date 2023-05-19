@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-const padding = {
-  initialLeft: '22px',
+export const newDayContainerTextpadding = {
+  initialLeft: '2.6rem',
 };
 export const Container = styled.div`
   display: flex;
@@ -52,7 +52,7 @@ export const TInfoContainer = styled.div`
 
     flex-direction: row;
     & > div {
-      padding-left: ${padding.initialLeft};
+      padding-left: ${newDayContainerTextpadding.initialLeft};
       width: 100%;
     }
   }
@@ -82,7 +82,7 @@ export const SubTimecontainer = styled.div`
   @media screen and (min-width: 768px) {
     flex-direction: row;
     align-items: center;
-    padding-left: ${padding.initialLeft};
+    padding-left: ${newDayContainerTextpadding.initialLeft};
     padding-right: '10px';
   }
 `;

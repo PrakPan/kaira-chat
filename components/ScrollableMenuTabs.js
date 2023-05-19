@@ -49,6 +49,7 @@ const NavbarContainer = styled.div`
 
   display: flex;
   width: ${({ Isvertical }) => (Isvertical ? 'fit-content' : 'auto')};
+  height: ${({ Isvertical }) => (Isvertical ? '80vh' : 'auto')};
   -webkit-flex-direction: row;
   -ms-flex-direction: row;
   flex-direction: row;

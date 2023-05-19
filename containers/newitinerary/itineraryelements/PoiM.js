@@ -108,15 +108,17 @@ const ItineraryPoiElementM = (props) => {
           ></ImageLoader>
         ) : null}
         <div>
-          <div className="flex flex-row " style={{ lineHeight: '1' }}>
-            <div className="text-[1.2rem]">{props.heading}</div>
-            <HiPencil className="text-lg min-w-max"></HiPencil>
+          <div className=" " style={{ lineHeight: '1' }}>
+            <div className="flex flex-row text-[1.2rem]">
+              {props.heading}{' '}
+              {/* <HiPencil className="text-lg min-w-max"></HiPencil> */}
+            </div>
           </div>
 
           {props?.rating && <StarRating initialRating={4}></StarRating>}
           <div className="flex flex-row">
             <div
-              className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[4px] mt-4    block  bg-white text-[#9F9F9F]"
+              className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]"
               // onClick={() => setViewMore(!viewMore)}
             >
               {true ? 'ATTRACTION' : 'View Less'}

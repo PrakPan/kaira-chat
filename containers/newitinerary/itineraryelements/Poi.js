@@ -7,7 +7,10 @@ import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { HiPencil } from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
-import { HLine } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import {
+  HLine,
+  newDayContainerTextpadding,
+} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import StarRating from '../../../components/StarRating';
 
 const padding = {
@@ -98,7 +101,7 @@ const ItineraryPoiElement = (props) => {
               borderRadius="8px"
               hoverpointer
               onclick={() => console.log('')}
-              width="6rem"
+              width="8rem"
               leftalign
               widthmobile="6rem"
               url={props.image}
@@ -108,7 +111,7 @@ const ItineraryPoiElement = (props) => {
           )}
         </div>
 
-        <div className="pl-6">
+        <div style={{ paddingLeft: newDayContainerTextpadding.initialLeft }}>
           <div className="w-full ">
             <div className="w-full">
               <div

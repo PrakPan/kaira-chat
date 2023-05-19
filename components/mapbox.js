@@ -231,11 +231,15 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
           draggable={false}
           icon={divIcon({
             className: 'icon',
-            html: `<div class=" rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
+            html: `
+            <div class=" group w-[40px] h-[40px] rounded-full grid place-items-center">
+            <div class="drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
               location.color
             };">
             <span class="text-white text-xs font-bold  ">  ${index + 1}</span>
-         
+         </div>
+            </div>
+            
           `,
             iconSize: 20,
           })}
