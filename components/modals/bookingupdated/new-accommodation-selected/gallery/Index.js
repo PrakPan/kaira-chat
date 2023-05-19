@@ -14,7 +14,21 @@ const Gallery = (props) => {
 
   return (
     <Container className="">
-      {/* <ImageLoader hoverpointer onclick={props.setShowDetails} borderRadius="10px" url={props.images.length ? props.images[0].image : 'media/website/grey.png'}   width='12.5vw' widthmobile="30vw" height={isPageWide ? "12.5vw" : "25vw"}   dimensions={{width: 800, height: 800}} dimensionsMobile={{width: 600, height: 600}}></ImageLoader> */}
+      <ImageLoader
+        hoverpointer
+        onclick={props.setShowDetails}
+        borderRadius="10px"
+        url={
+          props?.images?.length
+            ? props.images[0].image
+            : 'media/website/grey.png'
+        }
+        width="12.5vw"
+        widthmobile="30vw"
+        height={isPageWide ? '12.5vw' : '25vw'}
+        dimensions={{ width: 800, height: 800 }}
+        dimensionsMobile={{ width: 600, height: 600 }}
+      ></ImageLoader>
     </Container>
   );
 };

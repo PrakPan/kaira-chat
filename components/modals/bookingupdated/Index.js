@@ -110,6 +110,7 @@ const Booking = (props) => {
       for (var i = 0; i < props.alternates.length; i++) {
         options.push(
           <AccommodationSearched
+            currentBooking={props.currentBooking}
             _setImagesHandler={props._setImagesHandler}
             alternates={props.alternates}
             bookings={props.bookings}
@@ -204,6 +205,7 @@ const Booking = (props) => {
                       _updateSearchedAccommodation={
                         _updateSearchedAccommodation
                       }
+                      currentBooking={props.currentBooking}
                       itinerary_id={props.selectedBooking.itinerary_id}
                       tailored_id={props.tailored_id}
                       _updateBookingHandler={_newUpdateBookingHandler}
@@ -217,6 +219,7 @@ const Booking = (props) => {
               } catch {
                 options.push(
                   <AccommodationSearched
+                    currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     itinerary_id={props.selectedBooking.itinerary_id}
@@ -358,6 +361,7 @@ const Booking = (props) => {
             if (res.data.results[i].name !== props.selectedBooking.name)
               options.push(
                 <AccommodationSearched
+                  currentBooking={props.currentBooking}
                   _setImagesHandler={props._setImagesHandler}
                   s
                   _updateSearchedAccommodation={_newUpdateBookingHandler}
@@ -613,6 +617,7 @@ const Booking = (props) => {
               )
                 options.push(
                   <AccommodationSearched
+                    currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     token={props.token}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
@@ -629,6 +634,7 @@ const Booking = (props) => {
             } catch {
               options.push(
                 <AccommodationSearched
+                  currentBooking={props.currentBooking}
                   _setImagesHandler={props._setImagesHandler}
                   token={props.token}
                   _updateSearchedAccommodation={_updateSearchedAccommodation}
@@ -763,6 +769,7 @@ const Booking = (props) => {
                       <AccommodationSelected
                         _setImagesHandler={props._setImagesHandler}
                         selectedBooking={props.selectedBooking}
+                        currentBooking={props.currentBooking}
                       ></AccommodationSelected>
 
                       {optionsJSX.length

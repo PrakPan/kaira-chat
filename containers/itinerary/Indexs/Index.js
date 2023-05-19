@@ -277,14 +277,14 @@ const Itinerary = (props) => {
         if (res.data.day_slabs.length) {
           if (res.data.is_stock) setIsStock(true);
           setItinerary(res.data);
-          setItineraryLoading(false);
+          // setItineraryLoading(false);
         } else {
           // window.location.href =
           //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         }
       })
       .catch((error) => {
-        setItineraryLoading(false);
+        // setItineraryLoading(false);
         // window.location.href =
         //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
       });

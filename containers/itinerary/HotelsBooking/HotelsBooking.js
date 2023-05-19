@@ -37,6 +37,7 @@ const HotelsBooking = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
+  const [currentBooking, setCurrentBooking] = useState(null);
   const [alternates, setAlternates] = useState(null);
   console.log(props.stayBookings);
   const _changeBookingHandler = (
@@ -340,7 +341,7 @@ const HotelsBooking = (props) => {
   //   props.token,
   //   props.payment,
   // ]);
-  function handleClickAc(i) {
+  function handleClickAc(i, data) {
     let name = props.stayBookings[i]['name'];
     let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
     let cost = props.stayBookings[i]['booking_cost'];
@@ -379,12 +380,12 @@ const HotelsBooking = (props) => {
       number_of_reviews,
       itinerary_name
     );
-
+    setCurrentBooking(data);
     props.setShowBookingModal;
   }
-  function handleClick(i, id) {
+  function handleClick(i, id, data) {
     setBookingId(id);
-
+    setCurrentBooking(data);
     setShowDetails(true);
   }
   return (
@@ -408,6 +409,7 @@ const HotelsBooking = (props) => {
         _setImagesHandler={_setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={bookingId}
+        currentBooking={currentBooking}
         show={showDetails}
       ></AccommodationModal>
 
@@ -426,6 +428,7 @@ const HotelsBooking = (props) => {
           _updateBookingHandler={props._updateBookingHandler}
           selectedBooking={selectedBooking}
           setShowBookingModal={props.setShowBookingModal}
+          currentBooking={currentBooking}
           showBookingModal={props.showBookingModal}
           setHideBookingModal={props.setHideBookingModal}
         ></BookingModal>

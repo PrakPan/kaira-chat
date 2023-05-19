@@ -37,10 +37,10 @@ export function LivelyButton({ children, className, onClick }) {
 
   const animateButton = () => {
     setAnimate(true);
+    onClick();
     setTimeout(() => {
       setAnimate(false);
-      onClick();
-    }, 500);
+    }, 300);
   };
 
   return (

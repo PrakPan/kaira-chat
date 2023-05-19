@@ -158,7 +158,9 @@ const HotelBookingContainer = ({
               <div className="flex flex-row gap-3 items-center w-full">
                 <ButtonYellow
                   className=" w-1/2"
-                  onClick={() => handleClick(index, booking.accommodation)}
+                  onClick={() =>
+                    handleClick(index, booking.accommodation, booking)
+                  }
                 >
                   <div className="text-[#01202B] ">View Detail</div>
                 </ButtonYellow>
@@ -166,7 +168,7 @@ const HotelBookingContainer = ({
                   primary={false}
                   className=" w-1/2"
                   onClick={() => {
-                    handleClickAc(index);
+                    handleClickAc(index, booking);
                   }}
                 >
                   <div className="text-[#01202B] ">Change</div>

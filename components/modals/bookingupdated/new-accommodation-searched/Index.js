@@ -43,6 +43,7 @@ const Accommodation = (props) => {
     <Container className="border">
       <div onClick={() => setShowDetails(true)}>
         <HotelBookingContainer
+          currentBooking={props.currentBooking}
           booking={props.accommodation}
           handleClick={false}
           // handleClickAc={handleClickAc}

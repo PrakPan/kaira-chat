@@ -66,6 +66,7 @@ const POI = (props) => {
             <Overview
               _setImagesHandler={props._setImagesHandler}
               user_rating={props.user_rating}
+              currentBooking={props.currentBooking}
               number_of_reviews={props.number_of_reviews}
               data={data}
               images={data.images ? data.images : []}

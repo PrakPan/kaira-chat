@@ -64,40 +64,39 @@ const Heading2 = styled.div`
 const Index = () => {
   let cards = [];
   const [currentStep, updateCurrentStep] = useState(1);
-
+  const [counter, setCounter] = useState(0);
   const [CardJSX, setCardJSX] = useState(false);
-  useEffect(() => {
-    for (var i = 0; i < content.length; i++) {
-      if (content[i].heading) {
-        cards.push(
-          <Heading2 className="font-opensans">{content[i].heading}</Heading2>
-        );
-      }
-    }
-    setCardJSX(cards);
-  }, []);
-  useEffect(() => {
-    if (currentStep < 4) {
-      const interval = setInterval(() => {
-        updateCurrentStep(currentStep + 1);
-      }, 300);
+  // useEffect(() => {
+  //   for (var i = 0; i < content.length; i++) {
+  //     if (content[i].heading) {
+  //       cards.push(
+  //         <Heading2 className="font-opensans">{content[i].heading}</Heading2>
+  //       );
+  //     }
+  //   }
+  //   setCardJSX(cards);
+  // }, []);
 
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  });
-  function updateStep(step) {
-    updateCurrentStep(step);
+  if (currentStep < 5) {
+    const interval = setInterval(() => {
+      console.log('interval');
+      updateCurrentStep(currentStep + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }
 
-  const [counter, setCounter] = useState(0);
+  // function updateStep(step) {
+  //   updateCurrentStep(step);
+  // }
 
-  useEffect(() => {
-    const timer =
-      counter < 100 && setInterval(() => setCounter(counter + 1), 40);
-    return () => clearInterval(timer);
-  }, [counter]);
+  // useEffect(() => {
+  //   const timer =
+  //     counter < 100 && setInterval(() => setCounter(counter + 1), 1000);
+  //   return () => clearInterval(timer);
+  // }, [counter]);
 
   return (
     <Container1 className="center-div">
@@ -108,7 +107,7 @@ const Index = () => {
       <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
       <Heading2 className=" font-opensans font-medium text-lg">
         {' '}
-        {content[currentStep - 1].heading}{' '}
+        {content[currentStep + 1].heading}{' '}
       </Heading2>
     </Container1>
   );

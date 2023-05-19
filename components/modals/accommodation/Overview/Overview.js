@@ -8,7 +8,17 @@ import { getIndianPrice } from '../../../../services/getIndianPrice';
 
 import Rooms from '../roomtypes/Index';
 import Ammenities from '../Ammenities';
+import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import useMediaQuery from '../../../media';
 
+const starRating = (rating) => {
+  var stars = [];
+  for (let i = 0; i < Math.floor(rating); i++) {
+    stars.push(<FaStar />);
+  }
+  if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
+  return stars;
+};
 const Container = styled.div`
   border-style: none none solid none;
   border-width: 1px;
@@ -58,7 +68,7 @@ const Cost = styled.div`
 const ImageContainer = styled.div`
   width: 100%;
   position: relative;
-  background-image: url('https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png');
+
   min-height: 30vh;
   @media screen and (min-width: 768px) {
     margin: auto;
@@ -104,6 +114,13 @@ const GridImage = styled.div`
   grid-column-gap: 6px;
   grid-row-gap: 6px;
 `;
+const MGridImage = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-column-gap: 7px;
+  grid-row-gap: 7px;
+`;
 const Child = styled.div`
   border-radius: 8px;
   position: relative;
@@ -114,6 +131,7 @@ const Child = styled.div`
   ${(props) => props.className && `class="${props.className}"`};
 `;
 const Overview = (props) => {
+  const isDesktop = useMediaQuery('(min-width:1148px)');
   let images = [];
   try {
     for (var i = 0; i < props.images.length; i++) {
@@ -125,18 +143,20 @@ const Overview = (props) => {
       <div className="flex flex-col gap-1">
         <div className="font-bold text-xl">{props.data.name}</div>
         <div>{props.data.addr1}</div>
-        {props?.user_rating && (
+        {props?.currentBooking.user_rating && (
           <div className="flex flex-col gap-1">
-            <div className="text-sm font-medium">{booking?.city}</div>
-            {props?.user_rating && (
+            {/* <div className="text-sm font-medium">
+              {props.currentBooking?.city}
+            </div> */}
+            {props?.currentBooking.user_rating && (
               <div className="gap-1 flex flex-row  items-center">
                 <div className="flex flex-row text-[#ffa500]">
-                  {starRating(props?.user_rating)}
+                  {starRating(props?.currentBooking.user_rating)}
                 </div>
-                <div>{props?.user_rating}</div>
-                {props?.number_of_reviews && (
+                <div>{props?.currentBooking.user_rating}</div>
+                {props?.currentBooking.number_of_reviews && (
                   <div className="text-sm text-[#7A7A7A] font-medium underline">
-                    {props?.number_of_reviews} Google reviews
+                    {props?.currentBooking.number_of_reviews} Google reviews
                   </div>
                 )}
               </div>
@@ -153,132 +173,132 @@ const Overview = (props) => {
         <ImageLoader url={props.images.length ? props.images[0].image: 'media/website/grey.png'} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} width="60%" margin="auto"/> 
 
         </ImageContainer> */}
+      {isDesktop ? (
+        <ImageContainer>
+          {images.length > 3 ? (
+            <GridImage>
+              <Child area="1 / 1 / 5 / 4" className="div1 ">
+                <ImageLoader
+                  url={images[0]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
 
-      <ImageContainer>
-        {images.length > 3 ? (
-          <GridImage>
-            <Child area="1 / 1 / 5 / 4" className="div1 ">
-              <ImageLoader
-                url={images[0]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
+              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                <ImageLoader
+                  url={images[1]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
+              <Child area="1 / 4 / 3 / 8" className="div3">
+                <ImageLoader
+                  url={images[2]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
+              <Child area="3 / 4 / 5 / 8" className="div4">
+                <ImageLoader
+                  url={images[3]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                  fit="cover"
+                />
+              </Child>
+            </GridImage>
+          ) : images.length == 3 ? (
+            <GridImage>
+              <Child area="1 / 1 / 5 / 4" className="div1 ">
+                <ImageLoader
+                  url={images[0]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
 
-            <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-              <ImageLoader
-                url={images[1]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
-            <Child area="1 / 4 / 3 / 8" className="div3">
-              <ImageLoader
-                url={images[2]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
-            <Child area="3 / 4 / 5 / 8" className="div4">
-              <ImageLoader
-                url={images[3]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-                fit="cover"
-              />
-            </Child>
-          </GridImage>
-        ) : images.length == 3 ? (
-          <GridImage>
-            <Child area="1 / 1 / 5 / 4" className="div1 ">
-              <ImageLoader
-                url={images[0]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
+              <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
+                <ImageLoader
+                  url={images[1]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
+              <Child area="1 / 7 / 5 / 11" className="div3">
+                <ImageLoader
+                  url={images[2]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
+            </GridImage>
+          ) : (
+            <GridImage>
+              <Child area="1 / 1 / 5 / 6" className="div1 ">
+                <ImageLoader
+                  url={images[0]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
 
-            <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
-              <ImageLoader
-                url={images[1]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
-            <Child area="1 / 7 / 5 / 11" className="div3">
-              <ImageLoader
-                url={images[2]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
-          </GridImage>
-        ) : (
-          <GridImage>
-            <Child area="1 / 1 / 5 / 6" className="div1 ">
-              <ImageLoader
-                url={images[0]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
+              <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
+                <ImageLoader
+                  url={images[1]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                  // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                  //   maxheight="60vh"
+                  //   maxwidth={isPageWide ? '70vw' : '80vw'}
+                />
+              </Child>
+            </GridImage>
+          )}
 
-            <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
-              <ImageLoader
-                url={images[1]}
-                fit="cover"
-                width="100%"
-                height="100%"
-                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
-                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
-                //   maxheight="60vh"
-                //   maxwidth={isPageWide ? '70vw' : '80vw'}
-              />
-            </Child>
-          </GridImage>
-        )}
-
-        {/* <ImageLoader
+          {/* <ImageLoader
           url={
             props.images
               ? props.images.length
@@ -289,39 +309,126 @@ const Overview = (props) => {
           height="30vh"
           width="100%"
         ></ImageLoader> */}
-        {props.images ? (
-          props.images.length ? (
-            <PhotosButton
-              onClick={() => props._setImagesHandler(images)}
-              className="font-lexend"
-            >
-              {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
-              All Photos
-            </PhotosButton>
-          ) : null
-        ) : null}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '0.25rem',
-            right: '0.25rem',
-            display: 'flex',
-          }}
-        >
-          {props.data.accommodation_type ? (
-            <EditButton
-              className="font-lexend"
-              style={{ marginRight: '0.5rem' }}
-            >
-              {props.data.accommodation_type}
-            </EditButton>
+          {props.images ? (
+            props.images.length ? (
+              <PhotosButton
+                onClick={() => props._setImagesHandler(images)}
+                className="font-lexend"
+              >
+                {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
+                All Photos
+              </PhotosButton>
+            ) : null
           ) : null}
-          {/* <EditButton className="font-lexend">5 star</EditButton> */}
-        </div>
-        {props.tag ? (
-          <Tag star_category={props.star_category} tag={props.tag}></Tag>
-        ) : null}
-      </ImageContainer>
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '0.25rem',
+              right: '0.25rem',
+              display: 'flex',
+            }}
+          >
+            {props.data.accommodation_type ? (
+              <EditButton
+                className="font-lexend"
+                style={{ marginRight: '0.5rem' }}
+              >
+                {props.data.accommodation_type}
+              </EditButton>
+            ) : null}
+            {/* <EditButton className="font-lexend">5 star</EditButton> */}
+          </div>
+          {props.tag ? (
+            <Tag star_category={props.star_category} tag={props.tag}></Tag>
+          ) : null}
+        </ImageContainer>
+      ) : (
+        <ImageContainer>
+          <MGridImage>
+            <Child area="1 / 1 / 4 / 7" className="div1 ">
+              <ImageLoader
+                url={images[0]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+
+            <Child area=" 4 / 1 / 7 / 4" className="div2 rounded-lg">
+              <ImageLoader
+                url={images[1]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+            <Child area="4 / 4 / 7 / 7" className="div3">
+              <ImageLoader
+                url={images[2]}
+                fit="cover"
+                width="100%"
+                height="100%"
+                // dimensions={isPageWide ? {width: width_desktop, height: height_desktop} : {width: Math.round(width_mobile*1.5), height: Math.round(height_mobile*1.5)}}
+                // width={isPageWide ? Math.round(window.innerHeight*0.6*imageLoaded) : width_mobile+"px"}
+                //   maxheight="60vh"
+                //   maxwidth={isPageWide ? '70vw' : '80vw'}
+              />
+            </Child>
+          </MGridImage>
+
+          {/* <ImageLoader
+          url={
+            props.images
+              ? props.images.length
+                ? props.images[0].image
+                : 'media/website/grey.png'
+              : 'media/website/grey.png'
+          }
+          height="30vh"
+          width="100%"
+        ></ImageLoader> */}
+          {props.images ? (
+            props.images.length ? (
+              <PhotosButton
+                onClick={() => props._setImagesHandler(images)}
+                className="font-lexend"
+              >
+                {/* <FontAwesomeIcon icon={faImages} style={{marginRight: "0.5rem"}}></FontAwesomeIcon> */}
+                All Photos
+              </PhotosButton>
+            ) : null
+          ) : null}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: '0.25rem',
+              right: '0.25rem',
+              display: 'flex',
+            }}
+          >
+            {props.data.accommodation_type ? (
+              <EditButton
+                className="font-lexend"
+                style={{ marginRight: '0.5rem' }}
+              >
+                {props.data.accommodation_type}
+              </EditButton>
+            ) : null}
+            {/* <EditButton className="font-lexend">5 star</EditButton> */}
+          </div>
+          {props.tag ? (
+            <Tag star_category={props.star_category} tag={props.tag}></Tag>
+          ) : null}
+        </ImageContainer>
+      )}
 
       <DetailsContainer>
         <div
@@ -350,15 +457,23 @@ const Overview = (props) => {
         </div>
       </DetailsContainer>
       {props.data.rooms_available && <Rooms data={props.data}></Rooms>}
-      <div>
-        <div className="font-semibold text-3xl text-black mb-4">Ammenities</div>
-        <Ammenities data={props.data}></Ammenities>
-      </div>
-      <div>
-        <div className="font-semibold text-3xl text-black mb-4">Address</div>
-        <Location data={props.data}></Location>
-      </div>
-
+      {props.data.hotel_facilities && (
+        <div>
+          <div className="font-semibold lg:text-3xl text-xl text-black mb-2 lg:mb-4">
+            Ammenities
+          </div>
+          <Ammenities data={props.data}></Ammenities>
+        </div>
+      )}
+      {props.data.addr1 && (
+        <div>
+          <div className="font-semibold lg:text-3xl text-xl text-black mb-2 lg:mb-4">
+            Address
+          </div>
+          <Location data={props.data}></Location>
+        </div>
+      )}
+      <div className="mb-4"></div>
       {/* <Filters data={props.data}></Filters> */}
       {/* <Icons></Icons> */}
       {/* {props.data.check_in && props.data.check_out ? <div className='font-lexend'>{"Check in: "+getHumanTime(props.data.check_in.slice(0,-3))+" ; Check out:"+getHumanTime(props.data.check_out.slice(0,-3))}</div> : null} */}
