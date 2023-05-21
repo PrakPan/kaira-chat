@@ -14,6 +14,7 @@ const Bar = styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-x: scroll;
+  width: 100%;
 `;
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);

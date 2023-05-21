@@ -38,6 +38,7 @@ export const Navigation = ({ items, BarName }) => {
             isSelected={selectedTab === `${item.id}`}
             item={item}
             BarName={BarName}
+            setSelectedTab={setSelectedTab}
           >
             {item.label}
           </NavigationLink>

@@ -11,6 +11,7 @@ import {
 import ButtonYellow from '../../../components/ButtonYellow';
 
 import styled from 'styled-components';
+import { getIndianPrice } from '../../../services/getIndianPrice';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -21,6 +22,7 @@ const ClippathComp = styled.div`
 `;
 
 const HotelBookingContainer = ({
+  currentBooking,
   booking,
   index,
   handleClick,
@@ -60,11 +62,22 @@ const HotelBookingContainer = ({
       }
     }
   };
+  let room = [];
+  if (booking) {
+    for (var i = 0; i < booking.rooms_available.length; i++) {
+      if (booking.rooms_available[i].prices.min_price) {
+        room.push(booking.rooms_available[i].room_type);
+      }
+    }
+  }
   return (
     <div className="flex gap-1 pt-4  flex-col justify-start">
-      <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking?.city} Hotel <span>({booking?.duration}N)</span>
-      </div>
+      {handleClick && (
+        <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
+          {booking?.city} Hotel <span>({booking?.duration}N)</span>
+        </div>
+      )}
+
       <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
         <div
           className={`relative flex lg:flex-row w-full flex-col gap-4  ${
@@ -112,7 +125,7 @@ const HotelBookingContainer = ({
                   </div>
                 )}
               </div>
-              {booking.check_in && (
+              {booking.check_in ? (
                 <div className="flex flex-row gap-2 items-center">
                   <BsCalendar2 className="text-md text-[#7A7A7A]" />
                   <div>
@@ -121,8 +134,21 @@ const HotelBookingContainer = ({
                     </div>
                   </div>
                 </div>
+              ) : (
+                currentBooking && (
+                  <div className="flex flex-row gap-2 items-center">
+                    <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                    <div>
+                      <div className="text-md font-semibold ">
+                        {getDate(currentBooking.check_in)}-
+                        {getDate(currentBooking.check_out)}
+                      </div>
+                    </div>
+                  </div>
+                )
               )}
-              {booking.costings_breakdown && (
+
+              {booking.costings_breakdown ? (
                 <div
                   className={`flex ${
                     noOfWords(booking.costings_breakdown[0].room_type, 4)
@@ -143,6 +169,29 @@ const HotelBookingContainer = ({
                     </div>
                   </div>
                 </div>
+              ) : (
+                currentBooking.number_of_adults && (
+                  <div
+                    className={`flex ${
+                      noOfWords(room[0], 4)
+                        ? 'lg:flex-row flex-col'
+                        : 'flex-row'
+                    } gap-3`}
+                  >
+                    <div className="text-md font-semibold gap-2 flex flex-row items-center">
+                      <BsPeopleFill className="text-md text-[#7A7A7A]" />
+                      <div className="text-md font-semibold min-w-fit">
+                        {currentBooking.number_of_adults} Adults
+                      </div>
+                    </div>
+                    {room[0] && (
+                      <div className="text-md font-semibold gap-2 flex flex-row items-center">
+                        <FaBed className="text-md text-[#7A7A7A]" />
+                        <div className="text-md font-semibold">{room[0]}</div>
+                      </div>
+                    )}
+                  </div>
+                )
               )}
               {booking.costings_breakdown &&
               Addons(booking.costings_breakdown[0].pricing_type) ? (
@@ -154,6 +203,15 @@ const HotelBookingContainer = ({
                 </div>
               ) : null}
             </div>
+            {booking.price_lower_range_ext ? (
+              <div className="font-lexend">
+                {'₹ ' +
+                  getIndianPrice(
+                    Math.round(booking.price_lower_range_ext / 100)
+                  ) +
+                  ' /-'}
+              </div>
+            ) : null}
             {handleClick && (
               <div className="flex flex-row gap-3 items-center w-full">
                 <ButtonYellow

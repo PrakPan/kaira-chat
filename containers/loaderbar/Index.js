@@ -77,16 +77,16 @@ const Index = () => {
   //   setCardJSX(cards);
   // }, []);
 
-  if (currentStep < 5) {
-    const interval = setInterval(() => {
-      console.log('interval');
-      updateCurrentStep(currentStep + 1);
-    }, 1000);
+  // if (currentStep < 5) {
+  //   const interval = setInterval(() => {
+  //     console.log('interval');
+  //     updateCurrentStep(currentStep + 1);
+  //   }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }
 
   // function updateStep(step) {
   //   updateCurrentStep(step);

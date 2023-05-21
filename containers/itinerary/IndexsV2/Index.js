@@ -761,10 +761,11 @@ const Itinerary = (props) => {
       </Container>
       // </CheckAuthRedirect>
     );
-  else if (isPastTravelerItinerary) return <OldSpinner></OldSpinner>;
+  else if (isPastTravelerItinerary)
+    return <div>{/* <OldSpinner></OldSpinner> */}</div>;
   else if (router.query.payment_status) {
-    return <OldSpinner></OldSpinner>;
-  } else return <Spinner></Spinner>;
+    return <div>{/* <OldSpinner></OldSpinner> */}</div>;
+  } else return <div>{/* <Spinner></Spinner> */}</div>;
 };
 
 const mapStateToPros = (state) => {

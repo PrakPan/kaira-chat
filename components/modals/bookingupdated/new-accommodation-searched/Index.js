@@ -8,7 +8,7 @@ import AccommodationModal from '../../accommodation/Index';
 import HotelBookingContainer from '../../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
 
 const Container = styled.div`
-  margin: 0 0 1rem 0;
+  /* margin: 0 0 1rem 0;
   border-radius: 10px !important;
   @media screen and (min-width: 768px) {
     padding: 0.5rem;
@@ -16,7 +16,7 @@ const Container = styled.div`
       cursor: pointer;
       background-color: rgba(247, 231, 0, 0.1);
     }
-  }
+  } */
 `;
 
 const GridContainer = styled.div`
@@ -40,7 +40,7 @@ const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   //   if(!showPhotos)
   return (
-    <Container className="border">
+    <Container>
       <div onClick={() => setShowDetails(true)}>
         <HotelBookingContainer
           currentBooking={props.currentBooking}
@@ -50,7 +50,7 @@ const Accommodation = (props) => {
         ></HotelBookingContainer>
       </div>
 
-      <GridContainer>
+      {/* <GridContainer>
         <ImageContainer
           className="center-di"
           onClick={() => setShowDetails(true)}
@@ -85,7 +85,7 @@ const Accommodation = (props) => {
           name={props.accommodation.name}
           star={props.accommodation.star_category}
         />
-      </GridContainer>
+      </GridContainer> */}
       <div className="hidden-desktop">
         <Buttons
           alternates={props.alternates}

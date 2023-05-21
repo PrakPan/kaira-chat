@@ -62,6 +62,7 @@ export const NavigationLink = ({
   onMouseLeave,
   onMouseEnter,
   onSelect,
+  setSelectedTab,
   ...restProps
 }: Props) => {
   const { ref, handleSelect, handleMouseEnter, handleMouseLeave } =
@@ -81,7 +82,7 @@ export const NavigationLink = ({
       spy={true}
       // duration={500}
       offset={-50}
-      onSetActive={() => onSelect(item.id)}
+      onSetActive={() => setSelectedTab(`${item.id}`)}
       {...restProps}
       {...variants}
       onAnimationComplete={handleSelect}
