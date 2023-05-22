@@ -336,7 +336,7 @@ const Enquiry = (props) => {
           showBlack={showBlack}
           tailoredFormModal={props.tailoredFormModal}
           slideIndex={slideIndex}
-          className={"center-div"}
+          className={isPageWide ? "center-div border" : "center-div"}
           onClick={() => {
             setShowBlack(true);
           }}

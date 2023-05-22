@@ -544,20 +544,12 @@ const Homepage = (props) => {
         </Heading>
         <Reviews></Reviews>
 
-        {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
-        <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
-        {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
       </SetWidthContainer>
-      {/*Add Banner*/}
 
       <SetWidthContainer>
-        {/* <AsSeenIn disablelinks margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.55rem 0"} ></AsSeenIn> */}
-        {/* <div className='hidden-mobil'><BannerTwo page_id={props.experienceData.id} _handleTailoredRedirect={_handleTailoredRedirect}  destination={props.experienceData.destination} cities={props.experienceData.locations} ></BannerTwo></div> */}
 
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
-        {/* <div style={{display: 'none'}}>
-           {itinerariesToIndex}
-        </div> */}
+
       </SetWidthContainer>
       <WhatsappFloating
         message={
