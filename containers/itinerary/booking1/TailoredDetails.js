@@ -333,7 +333,7 @@ const Details = (props) => {
           </div>
         )}
       </div>
-      <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] ">
+      <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-2">
         <div className="flex flex-col m-[1rem]">
           {props?.payment && (
             <div className="flex flex-row gap-1">
@@ -527,7 +527,7 @@ const Details = (props) => {
           </div>
         </form>
       ) : null}
-      <div className="border-y-2 border-[#F0F0F0] my-3">
+      <div className=" border-[#F0F0F0] my-1">
         <div className="flex flex-row gap-3 items-center py-[0.7rem]">
           <BsCalendar2 className="text-md text-[#7A7A7A]" />
           <div>
@@ -545,7 +545,7 @@ const Details = (props) => {
           </div>
         </div>
       </div>
-      <div className="text-md font-medium gap-3 flex flex-row items-center">
+      <div className="text-md font-medium gap-3 flex flex-row items-center mb-2">
         <BsPeopleFill className="text-md text-[#7A7A7A]" />
         <div className="text-md font-semibold text-black">
           {/* {booking.number_of_adults} */}
