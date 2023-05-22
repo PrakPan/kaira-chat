@@ -27,7 +27,7 @@ const GridContainer = styled.div`
     grid-template-columns: 1fr;
  
     @media screen and (min-width: 768px) {
-    
+      width: 50vw;
     }
 `;
 
@@ -39,7 +39,7 @@ const OptionsContainer = styled.div`
 
   @media screen and (min-width: 768px) {
     min-height: 80vh;
-    width: 80%;
+    width: 95%;
     margin: auto;
   }
 `;
@@ -710,7 +710,7 @@ const Booking = (props) => {
           anchor={'right'}
           backdrop
           style={{ zIndex: 1501 }}
-          className="font-lexend"
+          className="font-lexend "
           onHide={props.setHideBookingModal}
           // zIndex='1501'
         >

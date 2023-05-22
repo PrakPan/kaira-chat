@@ -12,6 +12,7 @@ import ButtonYellow from '../../../components/ButtonYellow';
 
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../services/getIndianPrice';
+import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -27,6 +28,11 @@ const HotelBookingContainer = ({
   index,
   handleClick,
   handleClickAc,
+  _updateSearchedAccommodation,
+  itinerary_id,
+  alternates,
+  tailored_id,
+  openDetails,
 }) => {
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -71,7 +77,7 @@ const HotelBookingContainer = ({
     }
   }
   return (
-    <div className="flex gap-1 pt-4  flex-col justify-start">
+    <div className={`flex gap-1 pt-4  flex-col justify-start `}>
       {handleClick && (
         <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
           {booking?.city} Hotel <span>({booking?.duration}N)</span>
@@ -84,7 +90,11 @@ const HotelBookingContainer = ({
             booking?.user_selected ? 'grayscale-0' : 'grayscale'
           } `}
         >
-          <div className="relative   lg:h-[15rem] lg:w-[30%] w-full  h-[12rem]">
+          <div
+            className={`relative  ${
+              currentBooking ? 'lg:h-[11rem]' : 'lg:h-[15rem]'
+            }  lg:w-[30%] w-full  h-[12rem]`}
+          >
             <ImageLoader
               dimensions={{ width: 400, height: 400 }}
               dimensionsMobile={{ width: 400, height: 400 }}
@@ -106,11 +116,20 @@ const HotelBookingContainer = ({
               </starHotel>
             ) : null}
           </div>
-          <div className="flex flex-col gap-2 text-[#01202B] lg:w-[50%] w-full  justify-between">
+          <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
             <div className="flex flex-col gap-2">
-              <div className="text-2xl font-bold ">{booking?.name}</div>
+              <div
+                className={`${
+                  currentBooking ? 'text-lg' : 'text-2xl'
+                } font-bold `}
+              >
+                {booking?.name}
+              </div>
               <div className="flex flex-col gap-1">
-                <div className="text-md font-normal">{booking?.city}</div>
+                {!currentBooking && (
+                  <div className="text-md font-normal">{booking?.city}</div>
+                )}
+
                 {booking?.user_rating && (
                   <div className="gap-1 flex flex-row  items-center">
                     <div className="flex flex-row text-[#FFD201]">
@@ -173,20 +192,20 @@ const HotelBookingContainer = ({
                 currentBooking.number_of_adults && (
                   <div
                     className={`flex ${
-                      noOfWords(room[0], 4)
+                      noOfWords(room[0].toString(), 4)
                         ? 'lg:flex-row flex-col'
                         : 'flex-row'
                     } gap-3`}
                   >
                     <div className="text-md font-semibold gap-2 flex flex-row items-center">
-                      <BsPeopleFill className="text-md text-[#7A7A7A]" />
+                      <BsPeopleFill className="text-md min-w-fit text-[#7A7A7A]" />
                       <div className="text-md font-semibold min-w-fit">
                         {currentBooking.number_of_adults} Adults
                       </div>
                     </div>
                     {room[0] && (
                       <div className="text-md font-semibold gap-2 flex flex-row items-center">
-                        <FaBed className="text-md text-[#7A7A7A]" />
+                        <FaBed className="text-md min-w-fit text-[#7A7A7A]" />
                         <div className="text-md font-semibold">{room[0]}</div>
                       </div>
                     )}
@@ -203,15 +222,63 @@ const HotelBookingContainer = ({
                 </div>
               ) : null}
             </div>
-            {booking.price_lower_range_ext ? (
-              <div className="font-lexend">
-                {'₹ ' +
-                  getIndianPrice(
-                    Math.round(booking.price_lower_range_ext / 100)
-                  ) +
-                  ' /-'}
+
+            {currentBooking && (
+              <div className="flex flex-row gap-3 items-center w-full">
+                {booking.price_lower_range_ext ? (
+                  <div className="font-lexend">
+                    {'₹ ' +
+                      getIndianPrice(
+                        Math.round(booking.price_lower_range_ext / 100)
+                      ) +
+                      ' /-'}
+                  </div>
+                ) : null}
+                {alternates ? (
+                  <div className="hidden-mobile">
+                    <div
+                      fontSize="1rem"
+                      fontSizeDesktop="1.25rem"
+                      onclick={_updateSearchedAccommodation}
+                      onclickparam={{
+                        alternates: alternates,
+                        new_booking: booking,
+                        itinerary_id: itinerary_id,
+                        tailored_id: tailored_id,
+                      }}
+                      bgColor="#f7e700"
+                      borderRadius="10px"
+                      fontWeight="600"
+                      borderWidth="0px"
+                      padding="0.25rem 1.5rem"
+                    >
+                      Select
+                    </div>
+                  </div>
+                ) : (
+                  <div className="hidden-mobile">
+                    <DropDown
+                      itinerary_id={itinerary_id}
+                      tailored_id={tailored_id}
+                      fontSize="1rem"
+                      new_booking={booking}
+                      fontSizeDesktop="1.25rem"
+                      onclick={_updateSearchedAccommodation}
+                      bgColor="#f7e700"
+                      borderRadius="10px"
+                      fontWeight="600"
+                      borderWidth="0px"
+                      padding="0.25rem 1.5rem"
+                    >
+                      Select
+                    </DropDown>
+                  </div>
+                )}
+                <ButtonYellow className="w-fit" onClick={openDetails}>
+                  <div className="text-[#01202B] ">View Detail</div>
+                </ButtonYellow>
               </div>
-            ) : null}
+            )}
             {handleClick && (
               <div className="flex flex-row gap-3 items-center w-full">
                 <ButtonYellow

@@ -41,11 +41,16 @@ const Accommodation = (props) => {
   //   if(!showPhotos)
   return (
     <Container>
-      <div onClick={() => setShowDetails(true)}>
+      <div>
         <HotelBookingContainer
           currentBooking={props.currentBooking}
+          tailored_id={props.tailored_id}
+          itinerary_id={props.itinerary_id}
           booking={props.accommodation}
+          alternates={props.alternates}
           handleClick={false}
+          _updateSearchedAccommodation={props._updateSearchedAccommodation}
+          openDetails={() => setShowDetails(true)}
           // handleClickAc={handleClickAc}
         ></HotelBookingContainer>
       </div>
@@ -101,6 +106,7 @@ const Accommodation = (props) => {
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}
+        currentBooking={props.accommodation}
         show={showDetails}
       ></AccommodationModal>
     </Container>
