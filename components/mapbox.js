@@ -232,8 +232,8 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
           icon={divIcon({
             className: 'icon',
             html: `
-            <div class=" group w-[40px] h-[40px] rounded-full grid place-items-center">
-            <div class="drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
+            <div class="-mt-1 -ml-2 group w-[40px] h-[40px] rounded-full grid place-items-center">
+            <div class="-mt-2 drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
               location.color
             };">
             <span class="text-white text-xs font-bold  ">  ${index + 1}</span>
@@ -257,13 +257,16 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
                 ></ImageLoader>
               </div>
 
-              <div className="flex flex-col gap-2 pl-3">
-                <div className={`font-bold text-lg text-[#270e0e]`}>
-                  {location.name} - {location?.duration} Nights
+              <div className="flex flex-col justify-between gap-2 pl-3">
+                <div>
+                  <div className={`font-bold text-lg text-[#270e0e]`}>
+                    {location.name} - {location?.duration} Nights
+                  </div>
+                  <div className="flex flex-row gap-2">
+                    <span>Date</span>:<div>{location.date}</div>
+                  </div>
                 </div>
-                <div className="flex flex-row gap-2">
-                  <span>Date</span>:<div>{location.date}</div>
-                </div>
+
                 {/* <div>Things to do</div>
                 <div className="font-bold text-md">
                   Tours · Wildlife · Museums
@@ -292,14 +295,14 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
                   onClick={() => scrollToTargetAdjusted(location.dayId)}
                 >
                   View {location.cityData.city_name} in your Itinerary
-                  <span class="absolute -right-1 -top-2 flex h-3 w-3">
+                  {/* <span class="absolute -right-1 -top-2 flex h-3 w-3">
                     <span
                       className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75`}
                     ></span>
                     <span
                       className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
                     ></span>
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>
@@ -323,13 +326,16 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
               ></ImageLoader>
             </div>
 
-            <div className="flex flex-col gap-2 pl-3">
-              <div className={`font-bold text-lg text-[#270e0e]`}>
-                {currentPopup[0].name}
+            <div className="flex flex-col justify-between gap-2 pl-3">
+              <div>
+                <div className={`font-bold text-lg text-[#270e0e]`}>
+                  {currentPopup[0].name}
+                </div>
+                <div className="flex flex-row gap-2">
+                  <span>Date</span>:<div>{currentPopup[0].date} </div>
+                </div>
               </div>
-              <div className="flex flex-row gap-2">
-                <span>Date</span>:<div>{currentPopup[0].date} </div>
-              </div>
+
               {/* <div>Things to do</div>
               <div className="font-bold text-md">
                 Tours · Wildlife · Museums
@@ -358,14 +364,14 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
                 onClick={() => scrollToTargetAdjusted(currentPopup[0].dayId)}
               >
                 View {currentPopup[0].cityData.city_name} in your Itinerary
-                <span class="absolute -right-1 -top-2 flex h-3 w-3">
+                {/* <span class="absolute -right-1 -top-2 flex h-3 w-3">
                   <span
                     className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75`}
                   ></span>
                   <span
                     className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
                   ></span>
-                </span>
+                </span> */}
               </div>
             </div>
           </div>

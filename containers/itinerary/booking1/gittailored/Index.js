@@ -408,7 +408,7 @@ const Details = (props) => {
       ) : null}
       {/* <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? "You're all set!" : 'Book Now'}</Heading> */}
 
-      {!oldaccommodation ? (
+      {/* {!oldaccommodation ? (
         <div
           style={{
             marginBottom: '1.5rem',
@@ -489,7 +489,7 @@ const Details = (props) => {
               token={props.token}
             ></SelectDate>
           )}
-          {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{props.payment.number_of_people}</p> */}
+         
           {props.payment.meta_info &&
           (props.payment.itinerary_status ===
             ITINERARY_STATUSES.itinerary_finalized ||
@@ -553,7 +553,7 @@ const Details = (props) => {
             ></SelectPax>
           )}
         </div>
-      ) : null}
+      ) : null} */}
       {/* <SelectDetails></SelectDetails> */}
       <div style={{ marginBottom: '1.5rem' }}>
         {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>WHAT'S INCLUDED?</p> */}
@@ -660,6 +660,7 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
             </p>
           </div>
         ) : null}
+
         {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'GST'}</p>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"Rs 1000 /-"}</p>

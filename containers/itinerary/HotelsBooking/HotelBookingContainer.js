@@ -13,6 +13,7 @@ import ButtonYellow from '../../../components/ButtonYellow';
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../services/getIndianPrice';
 import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
+import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -34,6 +35,11 @@ const HotelBookingContainer = ({
   tailored_id,
   openDetails,
 }) => {
+  const [addbooking, setaddboking] = useState(
+    !currentBooking ? booking?.user_selected : true
+  );
+  const [isSelect, setisSelect] = useState(booking?.user_selected);
+
   function Addons(Shorthand) {
     switch (Shorthand) {
       case 'EP':
@@ -76,6 +82,13 @@ const HotelBookingContainer = ({
       }
     }
   }
+  function handleCheckboxChange(e) {
+    setaddboking(!addbooking);
+    e.stopPropagation();
+  }
+  function handleSelectChange() {
+    setisSelect(!isSelect);
+  }
   return (
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
       {handleClick && (
@@ -84,10 +97,15 @@ const HotelBookingContainer = ({
         </div>
       )}
 
-      <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
+      <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
         <div
+          onClick={() => {
+            currentBooking
+              ? openDetails()
+              : handleClick(index, booking.accommodation, booking);
+          }}
           className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-            booking?.user_selected ? 'grayscale-0' : 'grayscale'
+            addbooking ? 'grayscale-0' : 'grayscale'
           } `}
         >
           <div
@@ -95,18 +113,33 @@ const HotelBookingContainer = ({
               currentBooking ? 'lg:h-[11rem]' : 'lg:h-[15rem]'
             }  lg:w-[30%] w-full  h-[12rem]`}
           >
-            <ImageLoader
-              dimensions={{ width: 400, height: 400 }}
-              dimensionsMobile={{ width: 400, height: 400 }}
-              borderRadius="16px"
-              hoverpointer
-              onclick={() => console.log('')}
-              width="100%"
-              height="100%"
-              leftalign
-              widthmobile="100%"
-              url={booking.images[0]?.image}
-            ></ImageLoader>
+            {booking.images[0]?.image ? (
+              <ImageLoader
+                dimensions={{ width: 400, height: 400 }}
+                dimensionsMobile={{ width: 400, height: 400 }}
+                borderRadius="16px"
+                hoverpointer
+                onclick={() => console.log('')}
+                width="100%"
+                height="100%"
+                leftalign
+                widthmobile="100%"
+                url={booking.images[0]?.image}
+              ></ImageLoader>
+            ) : (
+              <ImageLoader
+                dimensions={{ width: 400, height: 400 }}
+                dimensionsMobile={{ width: 400, height: 400 }}
+                borderRadius="16px"
+                hoverpointer
+                onclick={() => console.log('')}
+                width="100%"
+                height="100%"
+                leftalign
+                widthmobile="100%"
+                url={'media/website/grey.png'}
+              ></ImageLoader>
+            )}
             {booking.star_category ? (
               <starHotel
                 starHotel
@@ -234,70 +267,35 @@ const HotelBookingContainer = ({
                       ' /-'}
                   </div>
                 ) : null}
-                {alternates ? (
-                  <div className="hidden-mobile">
-                    <div
-                      fontSize="1rem"
-                      fontSizeDesktop="1.25rem"
-                      onclick={_updateSearchedAccommodation}
-                      onclickparam={{
-                        alternates: alternates,
-                        new_booking: booking,
-                        itinerary_id: itinerary_id,
-                        tailored_id: tailored_id,
-                      }}
-                      bgColor="#f7e700"
-                      borderRadius="10px"
-                      fontWeight="600"
-                      borderWidth="0px"
-                      padding="0.25rem 1.5rem"
-                    >
-                      Select
-                    </div>
-                  </div>
-                ) : (
-                  <div className="hidden-mobile">
-                    <DropDown
-                      itinerary_id={itinerary_id}
-                      tailored_id={tailored_id}
-                      fontSize="1rem"
-                      new_booking={booking}
-                      fontSizeDesktop="1.25rem"
-                      onclick={_updateSearchedAccommodation}
-                      bgColor="#f7e700"
-                      borderRadius="10px"
-                      fontWeight="600"
-                      borderWidth="0px"
-                      padding="0.25rem 1.5rem"
-                    >
-                      Select
-                    </DropDown>
-                  </div>
-                )}
-                <ButtonYellow className="w-fit" onClick={openDetails}>
-                  <div className="text-[#01202B] ">View Detail</div>
-                </ButtonYellow>
               </div>
             )}
             {handleClick && (
-              <div className="flex flex-row gap-3 items-center w-full">
-                <ButtonYellow
+              <div className="flex flex-row gap-3 items-center justify-between w-full">
+                {/* <ButtonYellow
                   className=" w-1/2"
                   onClick={() =>
                     handleClick(index, booking.accommodation, booking)
                   }
                 >
                   <div className="text-[#01202B] ">View Detail</div>
-                </ButtonYellow>
+                </ButtonYellow> */}
                 <ButtonYellow
-                  primary={false}
-                  className=" w-1/2"
+                  className="w-1/2"
                   onClick={() => {
                     handleClickAc(index, booking);
                   }}
                 >
                   <div className="text-[#01202B] ">Change</div>
                 </ButtonYellow>
+                {/* <div
+                  onClick={(e) => {
+                    handleCheckboxChange(e);
+                  }}
+                  className="flex flex-row gap-3 items-center cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={addbooking} />
+                  <label>{addbooking ? 'Added Booking' : 'Add Booking'}</label>
+                </div> */}
               </div>
             )}
           </div>
@@ -306,13 +304,79 @@ const HotelBookingContainer = ({
         {/* <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
         TTW Recommendation
       </ClippathComp> */}
-        {booking?.user_selected ? (
-          <div className="absolute text-md font-bold  text-[#277004] top-6 right-8 -m-3">
-            Included
+        {!currentBooking && (
+          <div>
+            {addbooking ? (
+              <div className="absolute text-md font-bold  text-[#277004] top-6 right-8 -m-3">
+                Included
+              </div>
+            ) : (
+              <div className="absolute text-md font-bold text-[#E00000] top-6 right-8 -m-3">
+                Excluded
+              </div>
+            )}
+            <div className="absolute bottom-10 right-8 -m-3">
+              <div
+                onClick={(e) => {
+                  handleCheckboxChange(e);
+                }}
+                className="flex flex-row gap-1 items-center  cursor-pointer"
+              >
+                <CheckboxFormComponent checked={addbooking} />
+                <label className="text-center">
+                  {addbooking ? 'Added Booking' : 'Add Booking'}
+                </label>
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="absolute text-md font-bold text-[#E00000] top-6 right-8 -m-3">
-            Excluded
+        )}
+        {currentBooking && (
+          <div className="absolute  bottom-10 right-8 -m-3">
+            {alternates ? (
+              <div className="hidden-mobile">
+                <div
+                  fontSize="1rem"
+                  fontSizeDesktop="1.25rem"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    _updateSearchedAccommodation;
+                  }}
+                  onclickparam={{
+                    alternates: alternates,
+                    new_booking: booking,
+                    itinerary_id: itinerary_id,
+                    tailored_id: tailored_id,
+                  }}
+                >
+                  Select
+                </div>
+              </div>
+            ) : (
+              <div className="hidden-mobile z-50">
+                <DropDown
+                  itinerary_id={itinerary_id}
+                  tailored_id={tailored_id}
+                  fontSize="1rem"
+                  new_booking={booking}
+                  fontSizeDesktop="1.25rem"
+                  onclick={_updateSearchedAccommodation}
+                  onclick1={() => handleSelectChange()}
+                  onclickparam={{
+                    alternates: alternates,
+                    new_booking: booking,
+                    itinerary_id: itinerary_id,
+                    tailored_id: tailored_id,
+                  }}
+                >
+                  <div className="flex flex-row gap-1 items-center  cursor-pointer">
+                    <CheckboxFormComponent checked={isSelect} />
+                    <label className="text-center">
+                      {isSelect ? 'Selected' : 'Select'}
+                    </label>
+                  </div>
+                </DropDown>
+              </div>
+            )}
           </div>
         )}
       </div>

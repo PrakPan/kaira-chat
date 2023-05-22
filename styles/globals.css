@@ -68,14 +68,16 @@ a.termsnavunderlinelink {
 
 .Hide_scrollBar {
   -ms-overflow-style: none;
-  scrollbar-width: thin;
+  scrollbar-width: 5px;
   scrollbar-color: #888 #f1f1f1;
 }
-/* .Hide_scrollBar::-webkit-scrollbar {
+
+.Hide_scrollBar::-webkit-scrollbar {
   display: none;
-} */
+}
 .Hide_scrollBar:hover::-webkit-scrollbar {
   display: block;
+  width: 8px !important;
 }
 /* .Hide_scrollBar::-webkit-scrollbar {
   display: none;
@@ -97,7 +99,7 @@ a.termsnavunderlinelink {
 /* Handle on hover for webkit-based browsers */
 .Hide_scrollBar::-webkit-scrollbar-thumb:hover {
   background: #555;
-  width: 0.5rem;
+  width: 0.2rem;
 }
 
 /* Firefox */

@@ -859,7 +859,7 @@ const TransfersContainer = (props) => {
         locationsArr.push(
           <PinSection
             setCurrentPopup={false}
-            city={props?.transferBookings[i]?.destination_city}
+            city={props?.transferBookings[i - 1]?.destination_city}
             duration={
               props?.breif?.city_slabs[i]?.duration
                 ? props?.breif?.city_slabs[i]?.duration + ' Night'
@@ -945,13 +945,13 @@ const TransfersContainer = (props) => {
           _updateFlightBookingHandler={props._updateFlightBookingHandler}
           _updateBookingHandler={props._updateBookingHandler}
           itinerary_id={
-            props.stayBookings.length
-              ? props.transferBookings[0]['itinerary_id']
+            props?.transferBookings[0]
+              ? props?.transferBookings[0]['itinerary_id']
               : null
           }
           setHideFlightModal={props.setHideFlightModal}
-          alternates={alternates[selectedBooking.id]}
-          tailored_id={props.flightBookings[0]['tailored_itinerary']}
+          alternates={selectedBooking.id}
+          tailored_id={selectedBooking['tailored_itinerary']}
           _updatePaymentHandler={props._updatePaymentHandler}
           _updateFlightHandler={props._updateFlightHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -993,7 +993,6 @@ const TransfersContainer = (props) => {
             }
             pinColour={props.breif.city_slabs[0].color}
             dayslab={props.dayslab}
-            city={props?.transferBookings[0]?.destination_city}
           ></PinSection>
 
           <TransferModeContainer
@@ -1006,6 +1005,7 @@ const TransfersContainer = (props) => {
             transferbookings={props.transferBookings}
             booking={props.transferBookings[0]}
             _changeTaxiHandler={_changeTaxiHandler}
+            _changeFlightHandler={_changeFlightHandler}
             setShowTaxiModal={props.setShowTaxiModal}
             index={0}
             icon={props?.transferBookings[0]?.images?.image}
@@ -1038,10 +1038,6 @@ const TransfersContainer = (props) => {
                 : null
             }
             pinColour={props.breif.city_slabs[0].color}
-            city={
-              props?.transferBookings[props?.transferBookings.length]
-                ?.destination_city
-            }
           ></PinSection>
         </>
       )}

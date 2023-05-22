@@ -92,20 +92,27 @@ const ButtonYellow = ({
   const handleAnimationEnd = () => {
     setIsMounted(!isMounted);
   };
-  const animateButton = () => {
+  function animateButton(e) {
+    e.stopPropagation();
     setAnimate(true);
-    setTimeout(() => {
+    setTimeout((e) => {
+      if (e) {
+        e.stopPropagation();
+      }
+
       setAnimate(false);
       onClick();
     }, 500);
-  };
+  }
 
   return (
     <StyledButton
       className={styleClass}
       primary={primary}
       animate={animate}
-      onClick={animateButton}
+      onClick={(e) => {
+        animateButton(e);
+      }}
       hoverAnimation={hoverAnimation}
       clickAnimation={clickAnimation}
       mountAnimation={mountAnimation}

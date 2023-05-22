@@ -26,6 +26,7 @@ import axios from 'axios';
 import Accordion from './Accordion';
 import Spinner from '../../../components/Spinner';
 import ButtonYellow from '../../../components/ButtonYellow';
+import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -313,7 +314,7 @@ const Details = (props) => {
   };
   return (
     <SummaryContainer
-      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md bg-[#F7E70033]  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
+      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
       style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
     >
       <div className="flex flex-row justify-between">
@@ -332,30 +333,30 @@ const Details = (props) => {
           </div>
         )}
       </div>
-
-      <div className="flex flex-col">
-        {props?.payment && (
-          <div className="flex flex-row gap-1">
-            <INR
-              show_per_person_cost={props.payment.show_per_person_cost}
-              className={
-                props.blur
-                  ? 'font-lexend blurry-text'
-                  : 'font-lexend  font-bold'
-              }
-            >
-              <FontAwesomeIcon icon={faRupeeSign} />
-              {!props.payment.show_per_person_cost
-                ? ' ' +
-                  getIndianPrice(Math.round(props.payment.total_cost / 100))
-                : ' ' +
-                  getIndianPrice(
-                    Math.round(
-                      Math.round(props.payment.per_person_total_cost) / 100
-                    )
-                  )}
-            </INR>
-            {/* <div className="flex flex-row items-center text-black font-bold text-2xl">
+      <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] ">
+        <div className="flex flex-col m-[1rem]">
+          {props?.payment && (
+            <div className="flex flex-row gap-1">
+              <INR
+                show_per_person_cost={props.payment.show_per_person_cost}
+                className={
+                  props.blur
+                    ? 'font-lexend blurry-text'
+                    : 'font-lexend  font-bold'
+                }
+              >
+                <FontAwesomeIcon icon={faRupeeSign} />
+                {!props.payment.show_per_person_cost
+                  ? ' ' +
+                    getIndianPrice(Math.round(props.payment.total_cost / 100))
+                  : ' ' +
+                    getIndianPrice(
+                      Math.round(
+                        Math.round(props.payment.per_person_total_cost) / 100
+                      )
+                    )}
+              </INR>
+              {/* <div className="flex flex-row items-center text-black font-bold text-2xl">
               <span>₹</span>
               <div>
                 {getIndianPrice(
@@ -363,277 +364,127 @@ const Details = (props) => {
                 )}
               </div>
             </div> */}
-            <div className="font-medium text-base self-end">Total Cost</div>
-          </div>
-        )}
+              <div className="font-medium text-base self-end">Total Cost</div>
+            </div>
+          )}
 
-        <div className="text-[#7A7A7A]">Exclusive applicable taxes</div>
-      </div>
-      {!oldaccommodation ? (
-        <div
-          style={{
-            marginBottom: '1.5rem',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gridColumnGap: '1rem',
-          }}
-        >
-          <p
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              letterSpacing: '1px',
-              marginBottom: '0.25rem',
-            }}
-            className={
-              props.blur
-                ? 'font-lexend text-enter blurry-text'
-                : 'font-lexend text-enter'
-            }
-          >
-            STARTING DATE
-          </p>
-          <p
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              letterSpacing: '1px',
-              marginBottom: '0.25rem',
-            }}
-            className={
-              props.blur
-                ? 'font-lexend text-enter blurry-text'
-                : 'font-lexend text-enter'
-            }
-          >
-            PAX
-          </p>
-          {
+          <div className="text-[#7A7A7A] text-sm">
+            Exclusive applicable taxes
+          </div>
+        </div>
+
+        <div className="m-[1rem]">
+          {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
+          {/* <BookingListCostContainer>
+           {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
+           </BookingListCostContainer> */}
+          <Accordion
+            stayBookings={props.stayBookings}
+            flightBookings={props.flightBookings}
+            activityBookings={props.activityBookings}
+            transferBookings={props.transferBookings}
+            payment={props.payment}
+          ></Accordion>
+
+          {!oldaccommodation && !props.payment.are_prices_hidden ? (
+            <div className="flex flex-row justify-between">
+              <div
+                className={
+                  props.blur
+                    ? 'font-lexend text-enter blurry-text '
+                    : 'font-lexend text-enter text-sm font-normal'
+                }
+              >
+                {'Service Fee'}
+              </div>
+              <div
+                className={
+                  props.blur
+                    ? 'font-lexend text-enter blurry-text font-bold'
+                    : 'font-lexend text-enter font-bold'
+                }
+              >
+                {'₹ ' +
+                  getIndianPrice(
+                    Math.round(props.payment.total_service_fee / 100)
+                  )}
+              </div>
+            </div>
+          ) : null}
+          {!oldaccommodation && !props.payment.are_prices_hidden ? (
+            <div className="flex flex-row justify-between">
+              <div
+                className={
+                  props.blur
+                    ? 'font-lexend text-enter blurry-text  '
+                    : 'font-lexend text-enter text-sm font-normal'
+                }
+              >
+                {'GST'}
+              </div>
+              <div
+                className={
+                  props.blur
+                    ? 'font-lexend text-enter blurry-text '
+                    : 'font-lexend text-enter font-bold'
+                }
+              >
+                {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
+              </div>
+            </div>
+          ) : null}
+          {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
+                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{'GST'}</p>
+                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"Rs 1000 /-"}</p>
+        </div> */}
+          {props.payment.show_per_person_cost ? (
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                fontSize: '0.75rem',
-                fontWeight: '400',
-                letterSpacing: '1px',
-                marginBottom: '0',
+                borderWidth: '1px',
+                borderColor: 'hsl(0,0%,95%)',
+                borderStyle: 'solid none none none ',
+                display: 'grid',
+                gridTemplateColumns: '3fr 1fr',
+                padding: '0.5rem 0',
+                gridGap: '1rem',
               }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
             >
-              {props.payment.meta_info
-                ? props.payment.meta_info.start_date
-                  ? getHumanDate(
-                      props.payment.meta_info.start_date.replaceAll('-', '/')
-                    )
-                  : null
-                : null}
-            </div>
-          }
-          {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{props.payment.number_of_people}</p> */}
-          {props.payment.meta_info ? (
-            <div>
-              <FontAwesomeIcon
-                icon={faMale}
-                style={{ marginRight: '0.25rem' }}
-              ></FontAwesomeIcon>
               <p
-                className="font-lexend"
                 style={{
-                  marginRight: '1rem',
-                  display: 'inline',
-                  fontWeight: '100',
+                  fontSize: '0.75rem',
+                  fontWeight: '300',
+                  letterSpacing: '1px',
+                  marginBottom: '0.25rem',
                 }}
+                className={
+                  props.blur
+                    ? 'font-lexend text-enter blurry-text'
+                    : 'font-lexend text-enter'
+                }
               >
-                {props.payment.meta_info.number_of_adults}
+                {'Total cost'}
               </p>
-              <FontAwesomeIcon
-                icon={faChild}
-                style={{ marginRight: '0.25rem' }}
-              ></FontAwesomeIcon>
               <p
-                className="font-lexend"
                 style={{
-                  marginRight: '1rem',
-                  display: 'inline',
-                  fontWeight: '100',
+                  fontSize: '0.75rem',
+                  fontWeight: '300',
+                  letterSpacing: '1px',
+                  marginBottom: '0.25rem',
                 }}
+                className={
+                  props.blur
+                    ? 'font-lexend text-enter blurry-text'
+                    : 'font-lexend text-enter'
+                }
               >
-                {props.payment.meta_info.number_of_children}
-              </p>
-              <FontAwesomeIcon
-                icon={faBaby}
-                style={{ marginRight: '0.25rem' }}
-              ></FontAwesomeIcon>
-              <p
-                className="font-lexend"
-                style={{
-                  marginRight: '1rem',
-                  display: 'inline',
-                  fontWeight: '100',
-                }}
-              >
-                {props.payment.meta_info.number_of_infants}
+                {'₹ ' +
+                  getIndianPrice(Math.round(props.payment.total_cost / 100))}
               </p>
             </div>
           ) : null}
         </div>
-      ) : null}
-      <div>
-        {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
-        {/* <BookingListCostContainer>
-           {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
-           </BookingListCostContainer> */}
-        <Accordion
-          stayBookings={props.stayBookings}
-          flightBookings={props.flightBookings}
-          activityBookings={props.activityBookings}
-          transferBookings={props.transferBookings}
-          payment={props.payment}
-        ></Accordion>
-
-        {!oldaccommodation && !props.payment.are_prices_hidden ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto max-content',
-              margin: '0.5rem 0',
-              gridGap: '1rem',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
-              {'Service Fee'}
-            </p>
-            <p
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                textAlign: 'right',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-                marginRight: '24px',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
-              {'₹ ' +
-                getIndianPrice(
-                  Math.round(props.payment.total_service_fee / 100)
-                )}
-            </p>
-          </div>
-        ) : null}
-        {!oldaccommodation && !props.payment.are_prices_hidden ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto max-content',
-              margin: '0.5rem 0',
-              gridGap: '1rem',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
-              {'GST'}
-            </p>
-            <p
-              style={{
-                fontSize: '0.75rem',
-                textAlign: 'right',
-                fontWeight: '500',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-                marginRight: '24px',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
-              {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
-            </p>
-          </div>
-        ) : null}
-        {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{'GST'}</p>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"Rs 1000 /-"}</p>
-        </div> */}
-        {props.payment.show_per_person_cost ? (
-          <div
-            style={{
-              borderWidth: '1px',
-              borderColor: 'hsl(0,0%,95%)',
-              borderStyle: 'solid none none none ',
-              display: 'grid',
-              gridTemplateColumns: '3fr 1fr',
-              padding: '0.5rem 0',
-              gridGap: '1rem',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '300',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
-              {'Total cost'}
-            </p>
-            <p
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: '300',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-              }}
-              className={
-                props.blur
-                  ? 'font-lexend text-enter blurry-text'
-                  : 'font-lexend text-enter'
-              }
-            >
-              {'₹ ' +
-                getIndianPrice(Math.round(props.payment.total_cost / 100))}
-            </p>
-          </div>
-        ) : null}
       </div>
+
       <div>
         {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-lexend text-enter">29th July 2021</p> */}
         {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
@@ -652,7 +503,7 @@ const Details = (props) => {
       ) : null}
       {props?.payment?.allow_coupon_discount ? (
         <form onSubmit={(e) => handleSubmit(e)}>
-          <div className="relative mb-4  rounded-md shadow-sm cursor-pointer">
+          <div className="relative mb-0  rounded-md shadow-sm cursor-pointer">
             <input
               class=" px-3 w-9/12 py-2 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
               type="text"
@@ -676,6 +527,31 @@ const Details = (props) => {
           </div>
         </form>
       ) : null}
+      <div className="border-y-2 border-[#F0F0F0] my-3">
+        <div className="flex flex-row gap-3 items-center py-[0.7rem]">
+          <BsCalendar2 className="text-md text-[#7A7A7A]" />
+          <div>
+            <div className="text-md font-semibold text-black">
+              {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
+              {props.payment.meta_info
+                ? props.payment.meta_info.start_date
+                  ? getHumanDate(
+                      props.payment.meta_info.start_date.replaceAll('-', '/')
+                    )
+                  : null
+                : null}{' '}
+              - Feb 09, 2023
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="text-md font-medium gap-3 flex flex-row items-center">
+        <BsPeopleFill className="text-md text-[#7A7A7A]" />
+        <div className="text-md font-semibold text-black">
+          {/* {booking.number_of_adults} */}
+          {props.payment.meta_info.number_of_adults} Adults
+        </div>
+      </div>
       {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
       {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
           <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
@@ -683,6 +559,7 @@ const Details = (props) => {
       {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
        Proceed to Payment</Button> */}
       {/* <Accordion></Accordion> */}
+
       {props.payment && props.token ? (
         props.payment.itinerary_status ===
           ITINERARY_STATUSES.itinerary_finalized &&

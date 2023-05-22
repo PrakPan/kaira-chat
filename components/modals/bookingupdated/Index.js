@@ -20,12 +20,13 @@ import SectionOne from './SectionOne';
 import SectionTwo from './SectionTwo';
 import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
+import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
     display: grid;
     grid-template-columns: 1fr;
- 
+    width: 100vw;
     @media screen and (min-width: 768px) {
       width: 50vw;
     }
@@ -766,11 +767,11 @@ const Booking = (props) => {
                 {!noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: 'right' }}>
-                      <AccommodationSelected
+                      <HotelBookingContainer
                         _setImagesHandler={props._setImagesHandler}
                         selectedBooking={props.selectedBooking}
-                        currentBooking={props.currentBooking}
-                      ></AccommodationSelected>
+                        booking={props.currentBooking}
+                      ></HotelBookingContainer>
 
                       {optionsJSX.length
                         ? optionsJSX

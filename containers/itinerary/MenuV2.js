@@ -629,23 +629,37 @@ const SimpleTabsV2 = (props) => {
                       : false
                     : false
                 }
+                budget={props.budget}
                 stayBookings={props.stayBookings}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                payment={props.payment}
+                booking={props.booking}
               ></HotelsBooking>
             </div>
 
             <div id={items[3].link}>
               <TransfersContainer
-                dayslab={props.itinerary?.day_slabs}
-                breif={props.breif}
-                routes={RoutesData}
-                transfers={TransfersData}
+                dayslab={props?.itinerary?.day_slabs}
+                breif={props?.breif}
                 showTaxiModal={props.showTaxiModal}
                 setShowTaxiModal={props.setShowTaxiModal}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
                 _updateBookingHandler={props._updateBookingHandler}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                showFlightModal={props.showFlightModal}
+                setShowFlightModal={_handleFlighModalShow}
+                setHideFlightModal={_handleFlightModalClose}
                 setShowBookingModal={() => props.setShowBookingModal(true)}
-                transferBookings={props.transferBookings}
+                setHideBookingModal={props.setHideBookingModal}
+                routes={RoutesData}
+                transfers={TransfersData}
+                transferBookings={props?.transferBookings}
               />
             </div>
           </>
