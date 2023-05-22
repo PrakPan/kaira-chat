@@ -249,6 +249,7 @@ useEffect(() => {
                  if (res.data.is_stock) setIsStock(true);
                  setItinerary(res.data);
                  setItineraryLoading(false);
+                 getPaymentHandler()
                } else {
                  router.push("/thank-you");
                }
