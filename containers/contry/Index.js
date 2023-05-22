@@ -14,6 +14,7 @@ import OldLocations from "../../components/containers/plannerlocations/Index";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
 import Reviews from '../travelplanner/CaseStudies/Index'
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
+import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -125,7 +126,7 @@ const Index = (props) => {
 
           {props.data.states && props.data.states.length ? (
             <>
-              <Heading>Destionations across {props.data.name}</Heading>
+              <Heading>Trending destionations across {props.data.name}</Heading>
               <OldLocations
                 locations={props.data.states}
                 page_id={props.data.id}
@@ -134,6 +135,20 @@ const Index = (props) => {
                 // country={country}
                 planner
               ></OldLocations>
+            </>
+          ) : null}
+
+          {props.locations && props.locations.length ? (
+            <>
+              <Heading>Trending destinations across the world</Heading>
+              <SwiperLocations
+                locations={props.locations}
+                page_id={props.data.id}
+                destination={props.data.name}
+                viewall
+                // country={country}
+                country
+              ></SwiperLocations>
             </>
           ) : null}
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>

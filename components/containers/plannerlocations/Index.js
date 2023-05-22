@@ -54,12 +54,13 @@ const LocationsBlog = (props) => {
           heading={props.locations[i].tagline}
           img={props.locations[i].image}
           slug={props.locations[i].link}
-          link={props.locations[i].link}
+            link={props.locations[i].link}
+            country={props.country}
            >
           </Card>
         )
       }
-      if(count%4 !=0){
+      if(count%4 !=0 || count==0){
         const el = cardsArr.slice(count*4,cardsArr.length)
         MobileCardsArr.push(
           <MobileCardsContainer>
@@ -109,9 +110,9 @@ const LocationsBlog = (props) => {
             cards={MobilecardsToShowJSX}
             pageDots
           ></SwiperCarousel>
-        ) : (
-          <MobileSkeleton />
-        )}
+        ) : 
+          null
+        }
       </div>
     </div>
   );

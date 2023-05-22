@@ -9,36 +9,45 @@ const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
 
    const router = useRouter();
-   let cardsarr = [];
-
+  let cardsarr = [];
+  
+const _handleRedirect = (path) => {
+  // router.push('/travel-guide/city/'+slug)
+  if(path) window.location.href = '/' + path
+};
 
 
   for (var i = 0; i < props.locations.length; i++){
-      const slug  = props.locations[i].slug;
     let name = '';
     let id 
+    let path
      if (props.locations[i].name) name = props.locations[i].name;
-     if (props.locations[i].id) id= props.locations[i].id;
+    if (props.locations[i].id) id = props.locations[i].id;
+    if(props.locations[i].path) path= props.locations[i].path
 
-    if(props.locations[i].image)
-    cardsarr.push(
-      <Card
-        key={i}
-        location={props.locations[i].name ? props.locations[i].name : ""}
-        heading={props.locations[i].tagline ? props.locations[i].tagline : ""}
-        img={props.locations[i].image}
-        onclick={() => _handleRedirect(slug)}
-      ></Card>
-    );
+    if (props.locations[i].image)
+      cardsarr.push(
+          <Card
+            key={i}
+            location={props.locations[i].name ? props.locations[i].name : ""}
+            heading={
+              props.locations[i].tagline ? props.locations[i].tagline : ""
+            }
+            img={props.locations[i].image}
+            onclick={() => _handleRedirect(path)}
+          ></Card>
+      );
 }
-      const _handleRedirect = (slug) => {
-        // router.push('/travel-guide/city/'+slug)
-      }
+      
     
    if(isPageWide) {
   if(props.locations.length)
-  return(
-    <SwiperCarousel cards={cardsarr} slidesPerView={5}></SwiperCarousel>
+  return (
+    <SwiperCarousel
+      navigationButtons
+      cards={cardsarr}
+      slidesPerView={5}
+    ></SwiperCarousel>
   ); 
   else return null;
   } 

@@ -514,7 +514,6 @@ const Homepage = (props) => {
       <SetWidthContainer>
         {props.locations && props.locations.length ? (
           <>
-            {" "}
             <Heading>Other Destinations</Heading>
             <OldLocations
               locations={props.locations}

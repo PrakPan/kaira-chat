@@ -36,7 +36,7 @@ const TravelPlanner = (props) => {
         experienceData={props.Data}
         locations={props.locations}
       ></LadakhContainer> */}
-      <CountryPage data={props.Data}></CountryPage>
+      <CountryPage data={props.Data} locations={props.locations}></CountryPage>
     </Layout>
   );
 };
@@ -59,7 +59,6 @@ export async function getStaticPaths() {
   for (var i = 0; i < data.length; i++) {
     const pathArr = data[i].path.split("/");
     var [continentSlug, countrySlug, stateSlug] = pathArr;
-    if (data[i].id !== 1) {
       paths.push({
         params: {
           continent: continentSlug,
@@ -67,7 +66,6 @@ export async function getStaticPaths() {
           // state: stateSlug,
         },
       });
-    }
   }
 
   return {
@@ -85,10 +83,13 @@ export async function getStaticProps(context) {
   const res = await axios.get(
     `https://apis.tarzanway.com/poi/country/${context.params.country}`
   );
-
-  // const res = await axioscountrydetailsinstance.get(context.params.country);
-
   const data = res.data;
+
+  const response = await axios.get(
+    "https://apis.tarzanway.com/poi/country/all"
+  );
+  const locations = response.data
+
   // var locations = [];
   // var country = "India";
   // if (data.ancestors) {
@@ -114,7 +115,7 @@ export async function getStaticProps(context) {
   return {
     props: {
       Data: data,
-      // locations,
+      locations,
     },
   };
 }
