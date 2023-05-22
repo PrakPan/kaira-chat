@@ -52,7 +52,6 @@ const Heading = styled.h2`
 `;
 
 const Index = (props) => {
-  console.log(props.data)
    let isPageWide = media("(min-width: 768px)");
 
   return (

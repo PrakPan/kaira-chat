@@ -305,7 +305,6 @@ const Enquiry = (props) => {
   };
   const _SlideOneSubmitHandler = () => {
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
-      console.log("destination popup");
       return setShowPopup({ ...showPopup, InputOne: true });
     }
     if (!valueStart && !flexible)
@@ -319,7 +318,6 @@ const Enquiry = (props) => {
     if (props.HeroBanner && isPageWide)
       window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  console.log("showPopup: ", showPopup);
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);

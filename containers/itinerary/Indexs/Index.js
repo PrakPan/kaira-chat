@@ -232,7 +232,6 @@ useEffect(() => {
     if (router.query.t) IntervalTiming = ((+router.query.t) + 2) * 1000;
     if(!IntervalTiming) fetchData()
     else setTimeout(() => {
-      console.log("setTimeout fetchData");
       fetchData()
     }, [IntervalTiming]);
        
