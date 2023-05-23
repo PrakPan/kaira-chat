@@ -11,6 +11,7 @@ import {
   useNavigationMarker,
 } from '../hooks/useNavigationMarker';
 import useHorizontalScroll from '../hooks/useHorizontalScroll';
+import useFieldOfView from '../hooks/useFieldOfView';
 
 ///////// Style
 
@@ -49,7 +50,8 @@ const NavbarContainer = styled.div`
 
   display: flex;
   width: ${({ Isvertical }) => (Isvertical ? 'fit-content' : 'auto')};
-  height: ${({ Isvertical }) => (Isvertical ? '0vh' : 'auto')};
+  height: ${({ isInView, Isvertical }) =>
+    isInView && Isvertical ? '50vh' : 'auto'};
   -webkit-flex-direction: row;
   -ms-flex-direction: row;
   flex-direction: row;
@@ -77,7 +79,7 @@ const ScrollableMenuTabs = ({
 
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
-
+  const isInView = useFieldOfView('Stays');
   /////// functionality
   //////////////////////////
 
@@ -156,6 +158,7 @@ const ScrollableMenuTabs = ({
       style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
       Isvertical={vertical}
       className={classStyle}
+      isInView={isInView}
     >
       {icons ? (
         <IoIosArrowBack

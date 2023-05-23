@@ -66,7 +66,7 @@ const HotelBookingContainer = ({
   };
   const noOfWords = (sentence, number) => {
     if (sentence) {
-      const words = sentence.trim().split(/\s+/);
+      const words = sentence.toString().trim().split(/\s+/);
       if (words.length > number) {
         return true;
       } else {
@@ -225,7 +225,7 @@ const HotelBookingContainer = ({
                 currentBooking.number_of_adults && (
                   <div
                     className={`flex ${
-                      noOfWords(room[0].toString(), 4)
+                      noOfWords(room[0], 4)
                         ? 'lg:flex-row flex-col'
                         : 'flex-row'
                     } gap-3`}
@@ -257,7 +257,7 @@ const HotelBookingContainer = ({
             </div>
 
             {currentBooking && (
-              <div className="flex flex-row gap-3 items-center w-full">
+              <div className="flex flex-row gap-3 items-center w-full font-bold">
                 {booking.price_lower_range_ext ? (
                   <div className="font-lexend">
                     {'₹ ' +
@@ -331,7 +331,7 @@ const HotelBookingContainer = ({
           </div>
         )}
         {currentBooking && (
-          <div className="absolute  bottom-10 right-8 -m-3">
+          <div className="absolute  bottom-4 right-8 -m-3">
             {alternates ? (
               <div className="hidden-mobile">
                 <div
@@ -368,8 +368,11 @@ const HotelBookingContainer = ({
                     tailored_id: tailored_id,
                   }}
                 >
-                  <div className="flex flex-row gap-1 items-center  cursor-pointer">
-                    <CheckboxFormComponent checked={isSelect} />
+                  <div className="flex flex-row gap-1 items-center justify-center  cursor-pointer">
+                    <CheckboxFormComponent
+                      checked={isSelect}
+                      className="mt-1"
+                    />
                     <label className="text-center">
                       {isSelect ? 'Selected' : 'Select'}
                     </label>
