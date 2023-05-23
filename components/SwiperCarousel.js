@@ -66,15 +66,18 @@ const SwiperCarousel = (props) => {
       )
     });
   const handleNextClick = (swiper) => {
-    const currentIndex = swiper.activeIndex;
+    const currentIndex = swiper.activeIndex -1;
     const slidesPerView = swiper.params.slidesPerView;
    const newIndex = currentIndex + slidesPerView; 
    swiper.slideTo(newIndex);
       };
         const handlePrevClick = (swiper) => {
-          const currentIndex = swiper.activeIndex;
+          const currentIndex = swiper.activeIndex +1;
+          console.log('currentIndex: ', currentIndex);
           const slidesPerView = swiper.params.slidesPerView;
+          console.log('slidesPerView: ', slidesPerView);
           const newIndex = currentIndex - slidesPerView; 
+          console.log('newIndex : ', newIndex );
           swiper.slideTo(newIndex);
         };
         return (

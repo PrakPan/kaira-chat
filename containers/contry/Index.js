@@ -1,20 +1,21 @@
-import React from 'react'
+import React from "react";
 import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import MobileBanner from "../city/Banner/Mobile";
 import media from "../../components/media";
 import validateTextSize from "../../services/textSizeValidator";
 import styled from "styled-components";
-import WhatsappFloating from '../../components/WhatsappFloating';
-import Overview from '../travelplanner/Overview';
+import WhatsappFloating from "../../components/WhatsappFloating";
+import Overview from "../travelplanner/Overview";
 import openTailoredModal from "../../services/openTailoredModal";
 import Button from "../../components/ui/button/Index";
-import BannerTwo from '../travelplanner/BannerTwo'
+import BannerTwo from "../travelplanner/BannerTwo";
 import OldLocations from "../../components/containers/plannerlocations/Index";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
-import Reviews from '../travelplanner/CaseStudies/Index'
-import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
+import Reviews from "../travelplanner/CaseStudies/Index";
+import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
+import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -53,7 +54,7 @@ const Heading = styled.h2`
 `;
 
 const Index = (props) => {
-   let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 768px)");
 
   return (
     <div>
@@ -151,6 +152,19 @@ const Index = (props) => {
               ></SwiperLocations>
             </>
           ) : null}
+
+          <>
+            <Heading>Plan your trip to anywhere in the world</Heading>
+            <Continentcarousel
+              locations={props.locations}
+              page_id={props.data.id}
+              destination={props.data.name}
+              viewall
+              // country={country}
+              country
+            ></Continentcarousel>
+          </>
+
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?
           </Heading>
@@ -170,6 +184,6 @@ const Index = (props) => {
       </div>
     </div>
   );
-}
+};
 
-export default Index
+export default Index;
