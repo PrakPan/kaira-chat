@@ -252,17 +252,72 @@ const Itinerary = (props) => {
       });
   };
   useEffect(() => {
-    getPaymentHandler();
-  }, [props.token]);
-  useEffect(() => {
-    // if(!props.token && !props.otpSent)
+    var IntervalTiming;
+    if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
+    if (!IntervalTiming) fetchData();
+    else
+      setTimeout(() => {
+        fetchData();
+      }, [IntervalTiming]);
+
+    // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
-  });
-  async function getRoutes(itinaryId) {
-    const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
-    const data = res.data;
-    return data;
-  }
+    //  'itinerary token',props.token)
+    function fetchData() {
+      window.scrollTo(0, 0);
+      if (TRAVELER_ITINERARIES.includes(props.id))
+        setIsPastTravelerItinerary(true);
+      axiosdaybydayinstance
+        .get(`/?itinerary_id=` + props.id)
+        .then((res) => {
+          if (res.data.day_slabs.length) {
+            if (res.data.is_stock) setIsStock(true);
+            setItinerary(res.data);
+            setItineraryLoading(false);
+            getPaymentHandler();
+          } else {
+            router.push('/thank-you');
+          }
+        })
+        .catch((error) => {
+          setItineraryLoading(false);
+          router.push('/thank-you');
+        });
+      getBreifHandler();
+
+      axios
+        .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
+        .then((res) => {
+          setPlan(res.data);
+          if (
+            res.data.itinerary_status ===
+            ITINERARY_STATUSES.itinerary_not_created
+          ) {
+            setItineraryNotCreated(false);
+            alert(
+              'Looks like the response took too long, please refresh and try again.'
+            );
+          } else {
+            setUserEmail(res.data.user_email);
+            if (res.data.start_date) setIsDatePresent(true);
+            setItineraryReleased(res.data.is_visible_to_customer);
+            setItineraryDate(res.data.created_at);
+            setTimeRequired(res.data.time_needed_for_itinerary_completion);
+          }
+        })
+        .catch((error) => {});
+
+      getAccommodationAndActivitiesHandler();
+    }
+
+    // if(itineraryLoading && !itineraryNotCreated){
+    // if(stayLoading && !stayBookings){
+  }, []);
+
+  const _updateFlightBookingHandler = (json) => {
+    setShowFlightModal(false);
+    setFlightBookings(json);
+  };
   useEffect(() => {
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();

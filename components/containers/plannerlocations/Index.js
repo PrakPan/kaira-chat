@@ -48,15 +48,16 @@ const LocationsBlog = (props) => {
             key={props.locations[i].id}
             ancestors={props.locations[i].ancestors}
             path={props.locations[i].path}
-            location={props.locations[i].destination}
+            location={props.locations[i].destination || props.locations[i].name}
             heading={props.locations[i].tagline}
             img={props.locations[i].image}
             slug={props.locations[i].link}
             link={props.locations[i].link}
+            country={props.country}
           ></Card>
         );
       }
-      if (count % 4 != 0) {
+      if (count % 4 != 0 || count == 0) {
         const el = cardsArr.slice(count * 4, cardsArr.length);
         MobileCardsArr.push(
           <MobileCardsContainer>
@@ -80,22 +81,7 @@ const LocationsBlog = (props) => {
             slidesPerView={6}
             cards={cards}
           ></SwiperCarousel>
-        ) : (
-          <DesktopSkeleton />
-        )}
-        <Button
-          onclick={() =>
-            openTailoredModal(router, props.page_id, props.destination)
-          }
-          borderWidth="1px"
-          fontSizeDesktop="16px"
-          fontWeight="500"
-          borderRadius="6px"
-          margin="2rem auto"
-          padding="0.5rem 2rem"
-        >
-          Unlock your personalized adventure
-        </Button>
+        ) : null}
       </div>
     );
   else

@@ -142,7 +142,6 @@ export default function Drawer(props) {
   useEffect(() => {
       
     if (props.show === true) {
-        console.log("props.show: ", props.show);
         
           setOpen(true)
         document.body.style.overflow = "hidden";
