@@ -111,7 +111,7 @@ const FAQs = (props) => {
               content={'span'}
               className="font-lexend"
               style={{
-                fontWeight: '600',
+                fontWeight: '700',
                 fontSize: '0.95rem',
                 margin: '0',
                 flexGrow: '1',
