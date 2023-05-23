@@ -41,7 +41,6 @@ const Continentcarousel = () => {
       "https://apis.tarzanway.com/page/list?page_type=Continents"
     );
     const data = [];
-    console.log("res.data: ", res.data);
     for (let i = 0; i < res.data.length; i++) {
       const hot_destinations = await axios.get(
         `https://apis.tarzanway.com/poi/country/all?continent=${res.data[i].link}&hot_destinations=true`
@@ -54,12 +53,10 @@ const Continentcarousel = () => {
             heading={res.data[i].tagline}
             img={res.data[i].image}
             continent
+          
+            path={res.data[i].path}
           />
-          {/* <ImageLoader
-                  height="71vh"
-                  borderRadius="8px"
-                  url={res.data[i].image}
-                /> */}
+         
           <CardsContainer>
             {hot_destinations.data.map((e) => (
               <Card
@@ -67,22 +64,18 @@ const Continentcarousel = () => {
                 location={e.name}
                 heading={e.tagline}
                 img={e.image}
-                onclick={() => {
-                  window.location.href = e.path;
-                }}
+                path={e.path}
               />
             ))}
           </CardsContainer>
         </GridContainer>
       );
     }
-    console.log("data: ", data);
     setContinents(cardsArr);
   }
   useEffect(() => {
     fetchData();
   }, []);
-  console.log("cardsArr: ", continents);
 
   return (
     <>
