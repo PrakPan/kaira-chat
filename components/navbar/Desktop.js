@@ -24,6 +24,9 @@ const NavItemsContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    > div {
+      margin-right: 0rem !important;
+    }
   }
 `;
 
@@ -48,7 +51,7 @@ const CenterNav = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: ${(props) =>
-    props.hidecta ? '3.5fr 2fr 0.95fr' : '0fr 2fr 0.5fr'};
+    props.hidecta ? '0fr 2fr 0fr' : '0fr 2fr 0.5fr'};
   align-items: center;
   &:hover {
     cursor: pointer;
@@ -347,9 +350,7 @@ const Navbar = (props) => {
               <div></div>
             )}
             {/* <SearchBar />  */}
-            <NavItemsContainer
-              style={{ marginRight: props.token ? '0rem' : '0' }}
-            >
+            <NavItemsContainer>
               {/* <NavItem>
               <Link href={urls.travel_experiences.BASE} className="next-link" passHref={true}>
                {router.pathname === '/travel-experiences' ? <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Experiences</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Experiences</StyledLink>}
