@@ -30,6 +30,7 @@ const HotelBookingContainer = ({
   handleClick,
   handleClickAc,
   _updateSearchedAccommodation,
+  _SelectedBookingHandler,
   itinerary_id,
   alternates,
   tailored_id,
@@ -83,6 +84,12 @@ const HotelBookingContainer = ({
     }
   }
   function handleCheckboxChange(e) {
+    _SelectedBookingHandler({
+      itinerary_id: itinerary_id,
+      tailored_id: tailored_id,
+      user_selected: !booking?.user_selected,
+      index: index,
+    });
     setaddboking(!addbooking);
     e.stopPropagation();
   }

@@ -875,7 +875,7 @@ const TransfersContainer = (props) => {
         // );
         {
           props?.transferBookings &&
-          props?.transferBookings[i]?.booking_type == 'Flight'
+          props?.transferBookings[i].booking_type === 'Flight'
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
@@ -932,7 +932,8 @@ const TransfersContainer = (props) => {
       }
     }
   }
-
+  console.log('locationsArr')
+  console.log(locationsArr)
   return (
     <Container>
       <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-4xl group text-[#262626] transition duration-300 max-w-fit">

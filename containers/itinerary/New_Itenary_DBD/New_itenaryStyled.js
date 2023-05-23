@@ -10,7 +10,7 @@ export const Container = styled.div`
   align-items: flex-start;
 
   @media screen and (min-width: 768px) {
-    flex-direction: row;
+    flex-direction: column;
   }
 `;
 export const ArriveContainer = styled.div`

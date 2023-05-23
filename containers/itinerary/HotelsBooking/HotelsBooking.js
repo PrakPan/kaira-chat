@@ -7,6 +7,7 @@ import { ImSpoonKnife } from 'react-icons/im';
 import FullScreenGallery from '../../../components/fullscreengallery/Index';
 import BookingModal from '../../../components/modals/bookingupdated/Index';
 import * as ga from '../../../services/ga/Index';
+import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 
 import ButtonYellow from '../../../components/ButtonYellow';
 import AccommodationModal from '../../../components/modals/accommodation/Index';
@@ -32,12 +33,15 @@ const HotelsBooking = (props) => {
   });
   const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
     useState([]);
+  const [updateBookingState, setUpdateBookingState] = useState(false);
+  const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
     useState([]);
   const [showDetails, setShowDetails] = useState(false);
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [currentBooking, setCurrentBooking] = useState(null);
+  const [unauthorized, setUnauthorized] = useState(false);
   const [alternates, setAlternates] = useState(null);
   console.log(props.stayBookings);
   const _changeBookingHandler = (
@@ -123,7 +127,60 @@ const HotelsBooking = (props) => {
   const _setImagesHandler = (images) => {
     setImages(images);
   };
+  const _SelectedBookingHandler = ({
+    itinerary_id,
+    tailored_id,
+    itinerary_name,
+    user_selected,
+    index,
+  }) => {
+    setUpdateBookingState(true);
+    // const token = localStorage.getItem('access_token');
+    let updated_bookings_arr = [
+      {
+        id: props.stayBookings[index]['id'],
+        costings_breakdown: props.stayBookings[index]['costings_breakdown'],
+        accommodation: props.stayBookings[index]['accommodation'],
+        is_estimated_price: true,
+        alternate_to: null,
+        booking_type: 'Accommodation',
+        itinerary_type: 'Tailored',
+        user_selected: user_selected,
+        itinerary_id: props.stayBookings[index]['itinerary_id'],
+        tailored_itinerary: tailored_id,
+        itinerary_name: itinerary_name,
+        itinerary_db_id: null,
+      },
+    ];
 
+    // const token = localStorage.getItem('access_token');
+    axiosbookingupdateinstance
+      .post(
+        '?booking_type=Accommodation&itinerary_id=' +
+          props.stayBookings[index]['itinerary_id'],
+        updated_bookings_arr,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        props._updateStayBookingHandler(res.data.bookings);
+        setTimeout(function () {
+          props.getPaymentHandler();
+        }, 1000);
+        // props._updatePaymentHandler(res.data.payment_info);
+        setUpdateBookingState(false);
+      })
+      .catch((err) => {
+        // setUpdateLoadingState(false);
+        setUpdateBookingState(false);
+        setUnauthorized(true);
+
+        // window.alert("There seems to be a problem, please try again!")
+      });
+  };
   //   <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
   // );
   // setBookingAccommodationsMobileJSX(
@@ -402,6 +459,7 @@ const HotelsBooking = (props) => {
               key={index}
               handleClick={handleClick}
               handleClickAc={handleClickAc}
+              _SelectedBookingHandler={_SelectedBookingHandler}
             ></HotelBookingContainer>
           ))
         : null}

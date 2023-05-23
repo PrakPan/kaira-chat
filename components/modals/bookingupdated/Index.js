@@ -121,6 +121,7 @@ const Booking = (props) => {
             itinerary_id={props.selectedBooking.itinerary_id}
             accommodation={props.alternates[i]}
             _updateSearchedAccommodation={_newUpdateBookingHandler}
+            _SelectedBookingHandler={_SelectedBookingHandler}
             key={i}
           ></AccommodationSearched>
         );
@@ -206,6 +207,7 @@ const Booking = (props) => {
                       _updateSearchedAccommodation={
                         _updateSearchedAccommodation
                       }
+                      _SelectedBookingHandler={_SelectedBookingHandler}
                       currentBooking={props.currentBooking}
                       itinerary_id={props.selectedBooking.itinerary_id}
                       tailored_id={props.tailored_id}
@@ -223,6 +225,7 @@ const Booking = (props) => {
                     currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
                     itinerary_id={props.selectedBooking.itinerary_id}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
@@ -366,6 +369,7 @@ const Booking = (props) => {
                   _setImagesHandler={props._setImagesHandler}
                   s
                   _updateSearchedAccommodation={_newUpdateBookingHandler}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
                   itinerary_id={props.selectedBooking.itinerary_id}
                   tailored_id={props.tailored_id}
                   _updateBookingHandler={_newUpdateBookingHandler}
@@ -503,6 +507,7 @@ const Booking = (props) => {
         // window.alert("There seems to be a problem, please try again!")
       });
   };
+
   const _newUpdateBookingHandler = ({
     alternates,
     new_booking,
@@ -584,6 +589,54 @@ const Booking = (props) => {
         // window.alert("There seems to be a problem, please try again!")
       });
   };
+  const _SelectedBookingHandler = ({
+    itinerary_id,
+    tailored_id,
+    itinerary_name,
+    user_selected,
+  }) => {
+    setUpdateBookingState(true);
+    // const token = localStorage.getItem('access_token');
+    let updated_bookings_arr = [
+      {
+        id: props.selectedBooking.id,
+        costings_breakdown: props.selectedBooking.costings_breakdown,
+        accommodation: props.selectedBooking.accommodation,
+        is_estimated_price: true,
+        alternate_to: null,
+        booking_type: 'Accommodation',
+        itinerary_type: 'Tailored',
+        user_selected: user_selected,
+        itinerary_id: itinerary_id,
+        tailored_itinerary: tailored_id,
+        itinerary_name: itinerary_name,
+        itinerary_db_id: null,
+      },
+    ];
+
+    // const token = localStorage.getItem('access_token');
+    axiosbookingupdateinstance
+      .post('?booking_type=Accommodation', updated_bookings_arr, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {
+        props._updateStayBookingHandler(res.data.bookings);
+        setTimeout(function () {
+          props.getPaymentHandler();
+        }, 1000);
+        // props._updatePaymentHandler(res.data.payment_info);
+        setUpdateBookingState(false);
+      })
+      .catch((err) => {
+        // setUpdateLoadingState(false);
+        setUpdateBookingState(false);
+        setUnauthorized(true);
+
+        // window.alert("There seems to be a problem, please try again!")
+      });
+  };
   const _loadAccommodationsHandler = () => {
     setUpdateLoadingState(true);
     setViewMoreStatus(false);
@@ -622,6 +675,7 @@ const Booking = (props) => {
                     _setImagesHandler={props._setImagesHandler}
                     token={props.token}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
                     itinerary_id={props.selectedBooking.itinerary_id}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
@@ -639,6 +693,7 @@ const Booking = (props) => {
                   _setImagesHandler={props._setImagesHandler}
                   token={props.token}
                   _updateSearchedAccommodation={_updateSearchedAccommodation}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
                   itinerary_id={props.selectedBooking.itinerary_id}
                   tailored_id={props.tailored_id}
                   _updateBookingHandler={_newUpdateBookingHandler}

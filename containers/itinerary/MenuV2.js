@@ -876,35 +876,38 @@ const SimpleTabsV2 = (props) => {
                     setShowLoginModal={setShowLoginModal}
                   ></SummaryContainer>
                 ) : (
-                  <GITSummaryContainer
-                    hasUserPaid={
-                      props.payment
-                        ? props.payment.paid_user
-                          ? true
+                  // width 27vw
+                  <div>
+                    <GITSummaryContainer
+                      hasUserPaid={
+                        props.payment
+                          ? props.payment.paid_user
+                            ? true
+                            : false
                           : false
-                        : false
-                    }
-                    payment_status={props.payment_status}
-                    plan={props.plan}
-                    itinerary={props.itinerary}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setUserDetails={props.setUserDetails}
-                    id={props.id}
-                    stayBookings={props.stayBookings}
-                    flightBookings={props.flightBookings}
-                    activityBookings={props.activityBookings}
-                    transferBookings={props.transferBookings}
-                    setShowFooterBannerMobile={() =>
-                      setShowFooterBannerMobile(true)
-                    }
-                    payment={props.payment}
-                    traveleritinerary={props.traveleritinerary}
-                    blur={props.blur}
-                    hide={_hidePaymentHandler}
-                    experienceId={props.experienceId}
-                    token={props.token}
-                    setShowLoginModal={setShowLoginModal}
-                  ></GITSummaryContainer>
+                      }
+                      payment_status={props.payment_status}
+                      plan={props.plan}
+                      itinerary={props.itinerary}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setUserDetails={props.setUserDetails}
+                      id={props.id}
+                      stayBookings={props.stayBookings}
+                      flightBookings={props.flightBookings}
+                      activityBookings={props.activityBookings}
+                      transferBookings={props.transferBookings}
+                      setShowFooterBannerMobile={() =>
+                        setShowFooterBannerMobile(true)
+                      }
+                      payment={props.payment}
+                      traveleritinerary={props.traveleritinerary}
+                      blur={props.blur}
+                      hide={_hidePaymentHandler}
+                      experienceId={props.experienceId}
+                      token={props.token}
+                      setShowLoginModal={setShowLoginModal}
+                    ></GITSummaryContainer>
+                  </div>
                 )}
               </div>
             ) : null}

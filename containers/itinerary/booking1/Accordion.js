@@ -1,13 +1,28 @@
 import React from 'react';
-
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-
-import { Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import MuiAccordion from '@mui/material/Accordion';
+import Accordion, {
+  AccordionDetails,
+  AccordionSummary,
+} from '../../../components/ui/Accordion';
+// import AccordionSummary from "@mui/material/AccordionSummary";
+// import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 import { getIndianPrice } from '../../../services/getIndianPrice';
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    zIndex: '1',
+  },
+  heading: {
+    fontSize: '1rem',
+    fontFamily: "'Open Sans', sans-serif !important;",
+  },
+}));
 
 const FAQs = (props) => {
+  const classes = useStyles();
   const HEADINGS = ['Stays', 'Transfers', 'Flights', 'Activities'];
   let FAQS = [];
   let HeadingsJSX = [];
@@ -54,16 +69,13 @@ const FAQs = (props) => {
       for (var i = 0; i < props.payment.summary[key].bookings.length; i++) {
         try {
           bookingslist.push(
-            <div className="text-sm font-normal">
+            <div className={'text-sm font-normal'}>
               {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
           bookinglistwithcost.push(
-            <div>
-              <div className="text-sm font-normal">
-                {bookings[props.payment.summary[key].bookings[i].id].name}
-              </div>
-              {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
+            <div className={' text-sm font-normal'}>
+              {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
         } catch {}
@@ -72,33 +84,70 @@ const FAQs = (props) => {
         // );
       }
       HeadingsJSX.push(
-        <div key={key}>
-          <div className="flex flex-row justify-between w-full font-bold">
-            <div>{key}</div>
-
-            <div className="text-lg">
+        <Accordion
+          key={key}
+          style={{
+            marginBottom: 10,
+            // border: "1px solid #e4e4e4",
+            // border: "1px solid red",
+            boxShadow: 'none',
+            zIndex: '1',
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="itinerary-booking-summary-accordion"
+            style={{ zIndex: '1', height: '1rem' }}
+          >
+            <Typography
+              content={'span'}
+              className="font-lexend"
+              style={{ fontWeight: '600', fontSize: '0.95rem', margin: '0' }}
+            >
+              {key}
+            </Typography>
+            <Typography
+              content={'span'}
+              className="font-lexend"
+              style={{
+                fontWeight: '600',
+                fontSize: '0.95rem',
+                margin: '0',
+                flexGrow: '1',
+                textAlign: 'right',
+                marginRight: '1.5rem',
+              }}
+            >
               {!props.payment.are_prices_hidden
                 ? '₹ ' +
                   getIndianPrice(
                     Math.round(props.payment.summary[key].cost / 100)
                   )
                 : null}
-            </div>
-          </div>
-
-          <div>
+            </Typography>
+          </AccordionSummary>
+          {/* <div
+            style={{
+              margin: "0 1rem",
+              borderStyle: "none none none none",
+              borderWidth: "1px",
+              borderColor: "#F7e700",
+              position: "relative",
+              top: "-0.5rem",
+            }}
+          ></div> */}
+          <AccordionDetails style={{ display: 'block', padding: '0.1rem' }}>
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}
-          </div>
-        </div>
+          </AccordionDetails>
+        </Accordion>
       );
     }
   }
 
-  return (
-    <div className="max-h-32 overflow-y-auto Hide_scrollBar">{HeadingsJSX}</div>
-  );
+  return <div className={classes.root}>{HeadingsJSX}</div>;
 };
 
 export default FAQs;

@@ -27,7 +27,7 @@ const TransferElementsM = ({
 }) => {
   return (
     <>
-      <Container className="pt-1">
+      <Container className="pt-1 relative">
         <Timecontainer>
           {/* <div className="text-base">{time}</div> */}
 
@@ -89,6 +89,17 @@ const TransferElementsM = ({
           ) : null
         ) : null}
         {/* <TransferInfo className="text-sm">{text}</TransferInfo> */}
+        {meta ? (
+          <div className="absolute -bottom-[0px] left-[20%] bg-white px-2 ">
+            <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
+              <TransportIconFetcher
+                TransportMode={modes}
+                classname="w-fit lg:text-[1.05rem] text-[1.25rem]"
+              />{' '}
+              {convertNumToTime(meta.duration)} {modes}
+            </div>
+          </div>
+        ) : null}
       </Container>
 
       {/* {newcity !== null ? (

@@ -50,6 +50,7 @@ const Accommodation = (props) => {
           alternates={props.alternates}
           handleClick={false}
           _updateSearchedAccommodation={props._updateSearchedAccommodation}
+          _SelectedBookingHandler={props._SelectedBookingHandler}
           openDetails={() => setShowDetails(true)}
           // handleClickAc={handleClickAc}
         ></HotelBookingContainer>
@@ -95,6 +96,7 @@ const Accommodation = (props) => {
         <Buttons
           alternates={props.alternates}
           _updateSearchedAccommodation={props._updateSearchedAccommodation}
+          _SelectedBookingHandler={props._SelectedBookingHandler}
           itinerary_id={props.itinerary_id}
           tailored_id={props.tailored_id}
           accommodation={props.accommodation}

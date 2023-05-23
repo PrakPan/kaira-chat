@@ -35,6 +35,7 @@ import RegisteredUsersModal from '../../../../components/modals/registeredusers/
 import ButtonYellow from '../../../../components/ButtonYellow';
 const SummaryContainer = styled.div`
   height: max-content;
+
   border-radius: 10px;
   padding: 1rem;
   margin: 1rem 0;

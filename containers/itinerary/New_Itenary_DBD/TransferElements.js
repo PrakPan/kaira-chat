@@ -32,46 +32,44 @@ const TransferElements = ({
   return (
     <>
       <Container className="pt-3  ">
-        <Timecontainer>
-          {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
-        </Timecontainer>
-        <div>
-          {modes ? (
-            <div className="w-[6.15rem] grid place-items-center">
-              <TransportIconFetcher
-                TransportMode={modes}
-                classname="text-black lg:text-[3.05rem] text-[1.25rem]"
-              />
-            </div>
-          ) : (
-            <div className="w-[3.05rem]"></div>
-          )}
-          {/* <ImageLoader
+        <div className="flex flex-row relative">
+          <div>
+            {modes ? (
+              <div className="w-[6.15rem] grid place-items-center">
+                <TransportIconFetcher
+                  TransportMode={modes}
+                  classname="text-black lg:text-[3.05rem] text-[1.25rem]"
+                />
+              </div>
+            ) : (
+              <div className="w-[3.05rem]"></div>
+            )}
+            {/* <ImageLoader
             url={icon}
             leftalign
             dimensions={{ width: 200, height: 200 }}
             width="4.05rem"
             widthmobile="1.25rem"
           ></ImageLoader> */}
-        </div>
-        <TInfoContainer>
-          {/* <HLine style={{ width: '2rem' }}></HLine> */}
+          </div>
+          <TInfoContainer>
+            {/* <HLine style={{ width: '2rem' }}></HLine> */}
 
-          <div>
             <div>
-              <div className="text-xl font-normal pr-2 ">{heading}</div>
+              <div>
+                <div className="text-xl font-normal pr-2 ">{heading}</div>
 
-              {meta == null || meta.estimated_cost == undefined ? null : (
-                <TransparentButton>
-                  {modes ? `${modes} From ` : null} ₹
-                  {formatNumber(meta.estimated_cost)}
-                </TransparentButton>
-              )}
-            </div>
-            {transfers !== undefined ? (
-              <TransportContainer>
-                <div>
-                  {/* {modes && (
+                {meta == null || meta.estimated_cost == undefined ? null : (
+                  <TransparentButton>
+                    {modes ? `${modes} From ` : null} ₹
+                    {formatNumber(meta.estimated_cost)}
+                  </TransparentButton>
+                )}
+              </div>
+              {transfers !== undefined ? (
+                <TransportContainer>
+                  <div>
+                    {/* {modes && (
                     <TransportIconFetcher
                       TransportMode={modes}
                       Instyle={{
@@ -81,36 +79,45 @@ const TransferElements = ({
                       }}
                     />
                   )} */}
-                  {/* <ImageLoader
+                    {/* <ImageLoader
                     url={icon}
                     leftalign
                     dimensions={{ width: 200, height: 200 }}
                     width="1.25rem"
                     widthmobile="1.25rem"
                   ></ImageLoader> */}
-                </div>
-                {transfers.routes[0]?.legs[0].origin.shortName ? (
-                  <div
-                    style={{ display: 'flex', flexDirection: 'column' }}
-                    className="text-md font-medium"
-                  >
-                    <div>
-                      {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
-                      {transfers.routes[0]?.legs[0].destination.shortName}
-                    </div>
-                    {meta ? (
-                      <div>Duration: {convertNumToTime(meta.duration)}</div>
-                    ) : null}
                   </div>
-                ) : null}
-              </TransportContainer>
-            ) : null}
+                  {transfers.routes[0]?.legs[0].origin.shortName ? (
+                    <div
+                      style={{ display: 'flex', flexDirection: 'column' }}
+                      className="text-md font-medium"
+                    >
+                      <div>
+                        {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
+                        {transfers.routes[0]?.legs[0].destination.shortName}
+                      </div>
+                    </div>
+                  ) : null}
+                </TransportContainer>
+              ) : null}
 
-            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
-              {text}
+              <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+                {text}
+              </div>
             </div>
-          </div>
-        </TInfoContainer>
+          </TInfoContainer>
+          {meta ? (
+            <div className="absolute -bottom-[20px] left-1/2 bg-white px-2 ">
+              <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
+                <TransportIconFetcher
+                  TransportMode={modes}
+                  classname=" lg:text-[1.05rem] text-[0.25rem]"
+                />{' '}
+                {convertNumToTime(meta.duration)} {modes}
+              </div>
+            </div>
+          ) : null}
+        </div>
       </Container>
     </>
   );
