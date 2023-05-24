@@ -1,7 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import Header from './navbar/Index';
 import Footer from './newfooter/Index';
-import LoginModal from '../components/modals/Login';
+import LogInModal from '../components/modals/Login';
 import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth';
 import TailoredFormMobileModal from './modals/TailoredFomrMobile';
