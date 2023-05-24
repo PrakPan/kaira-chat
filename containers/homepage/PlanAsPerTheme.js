@@ -77,29 +77,29 @@ to {
 `;
 
 const TextContainer = styled.div`
-position : absolute;
-z-index : 2;
-top : 9px;
-right : ${props=>props.right? '9px' : null};
-left : ${props=>props.right? null : '9px'};
-text-align : ${props=>props.right? 'right' : 'left'};
-color : white;
-animation: 0.5s ${TopSlideOut};
+  position: absolute;
+  z-index: 2;
+  top: 9px;
+  right: ${(props) => (props.right ? "9px" : null)};
+  left: ${(props) => (props.right ? null : "9px")};
+  text-align: ${(props) => (props.right ? "right" : "left")};
+  color: white;
+  animation: 0.5s ${TopSlideOut};
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 
-& >p{
-    margin-top : -5px;
-    font-weight : 500;
-    font-size : 14px;
- @media screen and (min-width: 768px){
-    font-size : 20px;
-}
-}
-@media screen and (min-width: 768px){
-    top : 30px;
-    left : 30px;
-}
-
-`
+  & > p {
+    margin-top: -5px;
+    font-weight: 500;
+    font-size: 14px;
+    @media screen and (min-width: 768px) {
+      font-size: 20px;
+    }
+  }
+  @media screen and (min-width: 768px) {
+    top: 30px;
+    left: 30px;
+  }
+`;
 
 const Heading = styled.div`
 font-size : 16px;
@@ -204,7 +204,6 @@ useEffect(()=>{
 
     {!props.nostart ? <Button onclick={()=>openTailoredModal(router,props.page_id , props.destination)}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
             {isPageWide? 'Create your free itinerary' :'Create your personalised Itinerary'}
-            {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button> : null}
     </>
    

@@ -16,6 +16,7 @@ import Reviews from "../travelplanner/CaseStudies/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
+import PlanAsPerContinent from '../../containers/homepage/PlanAsPerContinent'
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -113,7 +114,6 @@ const Index = (props) => {
           >
             Create your travel plan now!
           </Button>
-
           <Heading align="left" style={{ margin: "3.5rem 0 3.5rem 0" }}>
             How it works?
           </Heading>
@@ -123,7 +123,6 @@ const Index = (props) => {
               destination={props.data.destination}
             ></BannerTwo>
           </div>
-
           {/* {props.data.states && props.data.states.length ? (
             <>
               <Heading>Trending destionations across {props.data.destination}</Heading>
@@ -137,10 +136,11 @@ const Index = (props) => {
               ></OldLocations>
             </>
           ) : null} */}
-
           {props.locations && props.locations.length ? (
             <>
-              <Heading>Trending destinations across {props.data.destination}</Heading>
+              <Heading>
+                Trending destinations across {props.data.destination}
+              </Heading>
               <SwiperLocations
                 locations={props.locations}
                 page_id={props.data.id}
@@ -151,7 +151,6 @@ const Index = (props) => {
               ></SwiperLocations>
             </>
           ) : null}
-
           <>
             <Heading>Plan your trip to anywhere in the world</Heading>
             <Continentcarousel
@@ -162,8 +161,23 @@ const Index = (props) => {
               // country={country}
               country
             ></Continentcarousel>
+            <Button
+              onclick={() =>
+                openTailoredModal(router, props.data.id, props.data.destination)
+              }
+              borderWidth="1px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="2rem auto"
+              padding="0.5rem 2rem"
+            >
+              Create your free itinerary
+            </Button>
           </>
-
+          <>
+            <Heading>Plan as per continents across the world</Heading>
+            <PlanAsPerContinent />
+          </>
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?
           </Heading>
@@ -171,13 +185,10 @@ const Index = (props) => {
             page_id={props.data.id}
             destination={props.data.destination}
           />
-
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             What our customers say?
           </Heading>
-
           <Reviews></Reviews>
-
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
       </div>
