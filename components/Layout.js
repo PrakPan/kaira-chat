@@ -38,10 +38,10 @@ const Layout = (props) => {
         destination={props.destination}
       />
       <div style={{ marginTop: '72px' }}>{props.children}</div>
-      <LoginModal
+      <LogInModal
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}
-      ></LoginModal>
+      ></LogInModal>
       {router.query.id && (
         <TailoredFormMobileModal
           destinationType={'city-planner'}

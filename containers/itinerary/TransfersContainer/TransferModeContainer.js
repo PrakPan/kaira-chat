@@ -97,8 +97,8 @@ const TransferModeContainer = (props) => {
     let city_id = props.booking['city_id'];
     let destination_city = props.booking['destination_city'];
     let duration = props.booking['duration'];
-    let origin_iata = props.booking['origin_city_iata_code'];
-    let destination_iata = props.booking['destination_city_iata_code'];
+    let origin_iata = props.booking['origin_code'];
+    let destination_iata = props.booking['destination_code'];
     props._changeFlightHandler(
       name,
       itinerary_id,

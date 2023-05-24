@@ -314,10 +314,6 @@ const Itinerary = (props) => {
     // if(stayLoading && !stayBookings){
   }, []);
 
-  const _updateFlightBookingHandler = (json) => {
-    setShowFlightModal(false);
-    setFlightBookings(json);
-  };
   useEffect(() => {
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
