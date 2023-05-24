@@ -71,12 +71,12 @@ export async function getStaticProps(context){
 const res = await axiosTravelPlannerInstance.get(`/?link=${context.params.state}`)
 const data = res.data
 var locations = []
-var country = 'India'
-      if(data.ancestors){
-        if(data.ancestors.length && data.ancestors[0].level == 'Country' && data.ancestors[0].name){
-          country = data.ancestors[0].name
-        }
-      }
+// var country = 'India'
+//       if(data.ancestors){
+//         if(data.ancestors.length && data.ancestors[0].level == 'Country' && data.ancestors[0].name){
+//           country = data.ancestors[0].name
+//         }
+//       }
 try{
       const loc = await axiospagelistinstance.get(`/?country=${context.params.country}`)
        locations = loc.data

@@ -65,7 +65,7 @@ options={{disableDefaultUI : true ,  fullscreenControl: true}}
       onClick={() => setActiveMarker(null)}
       mapContainerStyle={containerStyle}
       // zoom={props.defaultZoom?props.defaultZoom:6}
-      center={{ lat: props.locations[0].lat, lng: props.locations[0].long}}
+      center={{ lat: props.locations[0]?.lat, lng: props.locations[0]?.long}}
  
     >
       <MarkerClusterer>

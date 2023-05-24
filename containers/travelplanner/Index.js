@@ -465,22 +465,30 @@ const Homepage = (props) => {
     : null
   } */}
 
-        <Heading
-          align="center"
-          aligndesktop="left"
-          margin={
-            !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"
-          }
-          bold
-        >
-          {props.experienceData.destination
-            ? "Top locations across " + props.experienceData.destination
-            : "Top Locations"}
-        </Heading>
-        <Locations
-          locations={props.experienceData.locations}
-          viewall
-        ></Locations>
+        {props.experienceData.locations.length ? (
+          <>
+            <Heading
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "2.5rem 0 4.5rem 0"
+              }
+              bold
+            >
+              {props.experienceData.destination
+                ? "Top locations across " + props.experienceData.destination
+                : "Top Locations"}
+            </Heading>
+            <Locations
+              locations={props.experienceData.locations}
+              viewall
+            ></Locations>{" "}
+          </>
+        ) : (
+          <></>
+        )}
         {/* <Carousel cards={props.experienceData.locations} /> */}
       </SetWidthContainer>
       {/* <Map locations={props.experienceData.locations}></Map> */}
@@ -542,13 +550,10 @@ const Homepage = (props) => {
           What our customers say?
         </Heading>
         <Reviews></Reviews>
-
       </SetWidthContainer>
 
       <SetWidthContainer>
-
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
-
       </SetWidthContainer>
       <WhatsappFloating
         message={

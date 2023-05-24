@@ -28,7 +28,7 @@ const SkeletonCardContainer = styled.div`
 `;
 const Skeleton = (
   <SkeletonCardContainer>
-    <SkeletonCard lottieDimension={"20rem"} />
+    <SkeletonCard lottieDimension={"35vh"} />
   </SkeletonCardContainer>
 );
 const Continentcarousel = () => {
