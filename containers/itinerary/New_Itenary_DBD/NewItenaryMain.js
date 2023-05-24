@@ -84,10 +84,7 @@ const NewItenaryMain = (props) => {
               ? `(${props.city_slabs[i].duration}N)`
               : ` `
           } `,
-          link:
-            itenaryId !== undefined
-              ? itenaryId.slab_id
-              : props.itinerary.day_slabs[1].slab_id,
+          link: props.city_slabs[i].city_name,
 
           date:
             itenaryId !== undefined
@@ -97,7 +94,7 @@ const NewItenaryMain = (props) => {
       }
     }
   }
-  console.log(items);
+
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -162,6 +159,17 @@ const NewItenaryMain = (props) => {
       }
     };
   };
+  console.log('items');
+  console.log(items);
+  function extractCityName(arr) {
+    const cityObject = arr.find((obj) => obj.element_type === 'newcity');
+
+    if (cityObject && cityObject.city_name) {
+      return cityObject.city_name;
+    }
+
+    return null;
+  }
   return (
     <Wrapper>
       <div className="text-3xl font-bold mb-8 mt-4"> Day By Day Itinerary</div>
@@ -203,10 +211,12 @@ const NewItenaryMain = (props) => {
         <div className="itenaryContainer">
           {props.itinerary.day_slabs.map((element, index) => (
             <div key={element.slab_id} id={element.slab_id}>
-              <Day_I_Container
-                Days={element}
-                indexDay={index}
-              ></Day_I_Container>
+              <div id={extractCityName(element.slab_elements)}>
+                <Day_I_Container
+                  Days={element}
+                  indexDay={index}
+                ></Day_I_Container>
+              </div>
             </div>
           ))}
         </div>
