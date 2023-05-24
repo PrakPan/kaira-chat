@@ -2,15 +2,15 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import IconsFetcher from './IconsFetcher';
 import SkeletonCard from '../ui/SkeletonCard';
-
+import { format, addDays, isWithinInterval } from 'date-fns';
 const WeatherGrid = styled.div`
   display: grid;
-  margin-top: 0.2rem;
+
   grid-template-columns: max-content max-content;
   grid-gap: 0.8rem;
   height: 50px;
 `;
-const TextBold = styled.p`
+const TextBold = styled.div`
   line-height: 21px;
   font-weight: 600;
   font-size: 14px;
@@ -19,9 +19,24 @@ const TextBold = styled.p`
 `;
 const WeatherWidget = ({
   city,
+  travelDate,
   cnt = 7,
   apiKey = 'e2fe4bf0d3954e25a493b899a559f43d',
 }) => {
+  // const [showWidget, setShowWidget] = useState(false);
+  // const currentDate = new Date();
+  // const travelDateRange = new Date(travelDate);
+  // travelDateRange.setDate(travelDateRange.getDate() - 7);
+  // const travelDateEndRange = new Date(travelDate);
+  // travelDateEndRange.setDate(travelDateEndRange.getDate() + 7);
+
+  // if (currentDate >= travelDateRange && currentDate <= travelDateEndRange) {
+  //   setShowWidget(true);
+  // } else {
+  //   setShowWidget(false);
+  // }
+  // console.log('showWidget');
+  // console.log(showWidget);
   const [weather, setWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [weatherText, setWeatherText] = useState(null);

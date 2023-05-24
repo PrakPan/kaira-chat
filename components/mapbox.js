@@ -16,6 +16,7 @@ import ImageLoader from './ImageLoader';
 import { ITbutton } from '../containers/newitinerary/breif/cities/City';
 import WeatherWidget from './WeatherWidget/WeatherWidget';
 import DistanceBetweenCoords from '../helper/DistanceBetweenCoords';
+import { getHumanDate } from '../services/getHumanDate';
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
@@ -262,8 +263,8 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
                   <div className={`font-bold text-lg text-[#270e0e]`}>
                     {location.name} - {location?.duration} Nights
                   </div>
-                  <div className="flex flex-row gap-2">
-                    <span>Date</span>:<div>{location.date}</div>
+                  <div className="flex flex-row gap-2 font-semibold">
+                    <div>{getHumanDate(location.date)}</div>
                   </div>
                 </div>
 
@@ -271,11 +272,8 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
                 <div className="font-bold text-md">
                   Tours · Wildlife · Museums
                 </div> */}
-                {/* <WeatherWidget
-                  city={location.city_name}
-                  lat={location.lat}
-                  lon={location.long}
-                /> */}
+
+                <WeatherWidget city={location.name} travelDate={'28/05/2023'} />
                 {/* <a
                   href="#_"
                   class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
@@ -334,6 +332,10 @@ const Mapbox = React.memo(({ locations, currentPopup, setCurrentPopup }) => {
                 <div className="flex flex-row gap-2">
                   <span>Date</span>:<div>{currentPopup[0].date} </div>
                 </div>
+                <WeatherWidget
+                  city={currentPopup[0].name}
+                  travelDate={currentPopup[0].date}
+                />
               </div>
 
               {/* <div>Things to do</div>
