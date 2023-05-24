@@ -15,7 +15,19 @@ const GridContainer = styled.div`
 `;
 const CardsContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+
+  grid-template-areas: ${(props) =>
+    props.length == 1
+      ? 'a'
+      : props.length == 2
+      ? "'a' 'b'"
+      : props.length == 3
+      ? "'a b' 'c c'"
+      : props.length == 4
+      ? "'a b' 'c d'"
+      : props.length == 5
+      ? "'a a b b c c' 'd d d e e e'"
+      : "'a b c' 'd e f'"};
   gap: 1vh;
 `;
 const SkeletonCardContainer = styled.div`
@@ -31,6 +43,7 @@ const Skeleton = (
     <SkeletonCard lottieDimension={"35vh"} />
   </SkeletonCardContainer>
 );
+const cardsClasses = ['a','b','c','d','e','f']
 const Continentcarousel = () => {
   const [continents, setContinents] = useState([]);
   let isPageWide = media("(min-width: 768px)");
@@ -45,7 +58,8 @@ const Continentcarousel = () => {
       const hot_destinations = await axios.get(
         `https://apis.tarzanway.com/poi/country/all?continent=${res.data[i].link}&hot_destinations=true`
       );
-      data.push({ ...res.data[i], hot_destinations: hot_destinations.data });
+      const hot_data = hot_destinations.data.filter((e,i)=>{if(i<6) return e} )
+      data.push({ ...res.data[i], hot_destinations: hot_data });
       cardsArr.push(
         <GridContainer>
           <Card
@@ -53,19 +67,20 @@ const Continentcarousel = () => {
             heading={res.data[i].tagline}
             img={res.data[i].image}
             continent
-          
             path={res.data[i].path}
           />
-         
-          <CardsContainer>
-            {hot_destinations.data.map((e) => (
-              <Card
-                key={e.id}
-                location={e.name}
-                heading={e.tagline}
-                img={e.image}
-                path={e.path}
-              />
+
+          <CardsContainer length={hot_data.length}>
+            {hot_data.map((e, i) => (
+              <div className={cardsClasses[i]} style={{gridArea : cardsClasses[i]}}>
+                <Card
+                  key={e.id}
+                  location={e.name}
+                  heading={e.tagline}
+                  img={e.image}
+                  path={e.path}
+                />
+              </div>
             ))}
           </CardsContainer>
         </GridContainer>

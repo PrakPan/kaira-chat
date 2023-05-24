@@ -8,36 +8,35 @@ import axiosPageListInstance from '../../services/pages/list'
 import SkeletonCard from "../../components/ui/SkeletonCard";
 import openTailoredModal from "../../services/openTailoredModal";
 const Container = styled.div`
-  height: 450px;
+  height: 90vh;
   display: grid;
   gap: 0.2rem;
   grid-template-areas:
-    "a a a a b b"
-    "a a a a b b"
-    "a a a a b b"
-    "c c d d b b"
-    "c c d d f f"
-    "c c d d f f"
-    "e e e e f f"
-    "e e e e g g"
-    "e e e e g g";
+    "a a a a a b b b b b"
+    "a a a a a b b b b b"
+    "c c c d d d e e e e"
+    "c c c d d d e e e e"
+    "c c c d d d e e e e"
+    "c c c d d d e e e e"
+    "f f f f f f e e e e"
+    "f f f f f f g g g g";
 
   padding: 10px;
 
   @media screen and (min-width: 768px) {
-    height: 90vh;
+    height: 95vh;
     gap: 0.5rem;
     grid-template-areas:
-      "a a b b"
-      "a a b b"
-      "a a b b"
-      "a a f f"
-      "c d f f"
-      "c d f f"
-      "c d f f"
-      "e e g g"
-      "e e g g"
-      "e e g g";
+      "a a a a b b b b b"
+      "a a a a b b b b b"
+      "a a a a b b b b b"
+      "a a a a e e e e e"
+      "c d d d e e e e e"
+      "c d d d e e e e e"
+      "c d d d e e e e e"
+      "f f f g g g g g g"
+      "f f f g g g g g g"
+      "f f f g g g g g g";
   }
 
  
@@ -184,7 +183,7 @@ const PlanAsPerTheme = (props) => {
       <ImageContainer
       >
         <TextContainer className="AnimateTop">
-          <Heading>{e.banner_heading}</Heading>
+          <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
           {isPageWide && <div className="StartNow">Explore!</div>}
         </TextContainer>
         <ImageLoader
