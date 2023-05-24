@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CityContainer from '../CityContainer';
 import CityConnect from '../CityConnection';
@@ -10,6 +10,7 @@ import Banner from '../../../containers/homepage/banner/Mobile';
 import { useRouter } from 'next/router';
 import isinview from '../../isinview';
 import { connect } from 'react-redux';
+import openTailoredModal from '../../../services/openTailoredModal';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -26,31 +27,22 @@ const Itinerary = (props) => {
   const router = useRouter();
   const [citySelected, setCitySelected] = useState(0);
 
-  // const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-  // const [hideTimer, setHideTimer] = useState(false);
+  const [hideTimer, setHideTimer] = useState(false);
 
-  // const _handleTimerClose = () => {
-  //   window.scrollTo(0, window.innerHeight);
-  //   setHideTimer(true);
-  //   props._hideTimerHandler();
-  // };
-  // const showModalHandler = () => {
-  //   setShowModal(true);
-  // };
-  // const hideModalHandler = () => {
-  //   setShowModal(false);
-  // };
-  const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel');
+  const _handleTimerClose = () => {
+    window.scrollTo(0, window.innerHeight);
+    setHideTimer(true);
+    props._hideTimerHandler();
+  };
+  const showModalHandler = () => {
+    setShowModal(true);
+  };
+  const hideModalHandler = () => {
+    setShowModal(false);
   };
 
-  // let links = [];
-  // const StyledLink = styled(Link)`
-  //   &:hover {
-  //     cursor: pointer;
-  //   }
-  // `;
   let classnames = '';
   if (props.blur) classnames = 'blurry-text ';
   let LinksArr = [];
@@ -256,7 +248,7 @@ const Itinerary = (props) => {
 
   if (isPageWide)
     return (
-      <div id="Itinerary">
+      <div>
         {/*If timer not expired*/}
         {/* {props.showTimer? <Timer hours={props.hours} minutes={props.minutes} seconds={props.seconds} startingTimer={props.startingTimer} timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
 
@@ -274,7 +266,7 @@ const Itinerary = (props) => {
               height: 'max-content',
             }}
           >
-            <div style={{ fontSize: theme.fontsizes.desktop.text.three }}>
+            <div style={{ fontSize: '1.25rem' }}>
               <div
                 style={{ backgroundColor: '#F7e700', padding: '0.75rem' }}
                 className={
@@ -295,7 +287,7 @@ const Itinerary = (props) => {
         </Container>
         {props.traveleritinerary ? (
           <DesktopBanner
-            onclick={_handleTailoredRedirect}
+            onclick={() => openTailoredModal(router)}
             text="Want to personalize your own experience like this?"
           ></DesktopBanner>
         ) : null}
@@ -313,7 +305,7 @@ const Itinerary = (props) => {
     );
   else
     return (
-      <div id="Itenary">
+      <div>
         {/*If timer not expired*/}
         {/* {props.showTimer? <Timer timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
 

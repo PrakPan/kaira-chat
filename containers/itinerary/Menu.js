@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { Link } from 'react-scroll';
-
-import { AppBar } from '@mui/material';
-import { Tabs, Tab } from '@mui/material';
-
-import { Typography } from '@mui/material';
-import { Box } from '@mui/material';
-import GITSummaryContainer from './booking1/gittailored/Index';
-import SummaryContainer from './booking1/TailoredDetails';
-
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { makeStyles, Theme } from '@mui/styles';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Booking from './booking1/CheckLoginWrapper';
 import Register from './register/Index';
 import Breif from './breif/NewIndex';
@@ -23,42 +19,8 @@ import PriceBannerMobile from './PriceBannerMobile';
 // import Accommodation from '../../components/modals/accommodation/Index';
 import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
 import * as ga from '../../services/ga/Index';
-import Spinner from '../../components/Spinner';
 import { useRouter } from 'next/router';
-import CustomMenu from './CustomMenu';
-import { useSticky } from '../../hooks/useSticky';
-import StackedComponents from './StackedComponents';
-import NewItenary from './New_Itenary_DBD/NewItenaryDBDMob';
-import NewItenaryDBD from './New_Itenary_DBD/NewItenaryDBDMob';
-import useMediaQuery from '../../hooks/useMedia';
-import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
-import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
-import ScrollableMenuTabs from '../../components/ScrollableMenuTabs';
-import NewBooking from './HotelsBooking/HotelsBooking';
-import ActivityBookings from './ActivityBookings/ActivitiesBookings';
 
-import HotelsBooking from './HotelsBooking/HotelsBooking';
-import { SplitScreen } from '../../components/SplitScreen';
-import BookingContainer from '../../components/BookingContainer/BookingContainer';
-import ButtonYellow from '../../components/ButtonYellow';
-import { Navigation } from '../../components/NewNavigation';
-import TransfersContainer from './TransfersContainer/TransfersContainer';
-const Container = styled.div`
-  margin-top: 1rem;
-  display: grid;
-  position: sticky;
-  top: 0;
-  padding-top: 0.5rem;
-  background-color: white;
-  z-index: 10 !important;
-  height: max-content;
-  max-width: 100vw;
-  overflow-x: hidden;
-  grid-template-columns: max-content max-content max-content max-content max-content max-content;
-  @media screen and (min-width: 768px) {
-    top: 10vh;
-  }
-`;
 const Location = styled.div`
   padding: 1rem;
   display: flex;
@@ -85,25 +47,6 @@ const CostContainer = styled.div`
     z-index: 1000;
     align-items: center;
   }
-`;
-const SelectedMenu = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  color: #f7e700;
-  background-color: #262626;
-  padding: 0.75rem 1.5rem;
-  border-style: none none solid none;
-  border-width: 4px;
-  border-color: #f7e700;
-  border-radius: 10px 10px 0 0;
-`;
-const NotSelectedMenu = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  color: rgb(122, 122, 122);
-
-  background-color: transparent;
-  padding: 0.75rem 1.5rem;
 `;
 const StrikedCost = styled.p`
   position: relative;
@@ -195,19 +138,24 @@ function TabPanel(props) {
   );
 }
 
-const useStyles = {
-  root: `
-  flex-grow-1
-  `,
-};
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  appbar: {
+    backgroundColor: 'black !important',
+    color: 'white !important',
+    height: '66px !important',
+    justifyContent: 'center',
+    top: '0 !important',
+  },
+}));
 
 const SimpleTabs = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
   const [isGroup, setIsGroup] = useState(false);
-
   const router = useRouter();
-
   useEffect(() => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -222,7 +170,7 @@ const SimpleTabs = (props) => {
     }
   }, []);
 
-  const classes = useStyles;
+  const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const [show, setShow] = useState(true);
   const [location, setLocation] = useState(0);
@@ -235,23 +183,18 @@ const SimpleTabs = (props) => {
   const [minimiseTimer, setMinimiseTimer] = useState(false);
   const [minimseBookingTimer, setMinimiseBookingTimer] = useState(false);
   const [blurBooking, setBlurBooking] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBookingTimer, setShowBookingTimer] = useState(true);
-  const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
+
   const [timerValid, setTimerValid] = useState(false);
-  const [mapArray, setmapArray] = useState(false);
+
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
-  const _hidePaymentHandler = () => {
-    setShowFooterBannerMobile(true);
-    setShowpayment(false);
-  };
+
   const _setLocationHandler = (event) => {
     window.scrollTo(0, window.innerHeight / 2);
     setLocation(event.target.id);
   };
 
   const handleChange = (event, newValue) => {
-    // console.log('nw', event, newValue)
     const tabs = ['brief', 'itinerary', 'booking'];
     ga.event({
       action: 'Itinerary-tabs-' + tabs[newValue],
@@ -298,8 +241,6 @@ const SimpleTabs = (props) => {
 
   //Location tabs for mobile
   let locationsArr = [];
-  let RoutesData = [];
-  let TransfersData = [];
   let totalcityslabs = 0;
   if (props.breif)
     if (props.breif.city_slabs)
@@ -311,38 +252,23 @@ const SimpleTabs = (props) => {
   const locationtabwidth = 100 / totalcityslabs + 'vw';
   if (props.breif)
     if (props.breif.city_slabs)
-      if (props.routes) {
-        console.log('inside routes');
-        console.log(props.routes);
-
-        for (var i = 0; i < props.routes.length; i++) {
-          if (props.routes[i].long) {
-            RoutesData.push(props.routes[i]);
-          } else {
-            TransfersData.push(props.routes[i]);
-          }
+      for (var i = 0; i < props.breif.city_slabs.length; i++) {
+        if (!props.breif.city_slabs[i].is_trip_terminated) {
+          locationsArr.push(
+            <Location
+              id={i}
+              style={{ minWidth: locationtabwidth }}
+              className={
+                'font-lexend center-div border-top ' +
+                (location == i ? 'bg-yellow font-bold' : 'bg-white')
+              }
+              onClick={(event) => _setLocationHandler(event)}
+            >
+              {props.breif.city_slabs[i].city_name}
+            </Location>
+          );
         }
-        console.log(' routes finished');
-        console.log(RoutesData);
-        console.log(TransfersData);
       }
-  for (var i = 0; i < props.breif.city_slabs.length; i++) {
-    if (!props.breif.city_slabs[i].is_trip_terminated) {
-      locationsArr.push(
-        <Location
-          id={i}
-          style={{ minWidth: locationtabwidth }}
-          className={
-            'font-opensans center-div border-top ' +
-            (location == i ? 'bg-yellow font-bold' : 'bg-white')
-          }
-          onClick={(event) => _setLocationHandler(event)}
-        >
-          {props.breif.city_slabs[i].city_name}
-        </Location>
-      );
-    }
-  }
 
   useEffect(() => {
     if (props.itineraryReleased) {
@@ -355,53 +281,7 @@ const SimpleTabs = (props) => {
     }
     return () => {};
   }, [props.itineraryDate, props.itineraryReleased, props.timeRequired]);
-  useLayoutEffect(() => {
-    const handleScroll = () => {
-      const currentPos = window.scrollY;
-      items.forEach((item) => {
-        const element = document.getElementById(item.link);
-        if (
-          element.offsetTop - 100 <= currentPos &&
-          element.offsetTop + element.offsetHeight > currentPos
-        ) {
-          setActiveItem(item.id);
-        }
-      });
-    };
 
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [items]);
-  const [activeItem, setActiveItem] = useState(1);
-  const items = props?.activityBookings
-    ? [
-        { id: 1, label: 'Brief', link: 'Brief' },
-        { id: 2, label: 'Itinerary', link: 'Itenary' },
-        // { id: 3, label: 'Flights',link: 'Flights' },
-        { id: 3, label: 'Stays', link: 'Stays' },
-        { id: 4, label: 'Transfers', link: 'Transfers' },
-        {
-          id: 5,
-          label: 'Activities',
-          link: 'Activities',
-        },
-      ]
-    : [
-        { id: 1, label: 'Brief', link: 'Brief' },
-        { id: 2, label: 'Itinerary', link: 'Itenary' },
-        // { id: 3, label: 'Flights',link: 'Flights' },
-        { id: 3, label: 'Stays', link: 'Stays' },
-        { id: 4, label: 'Transfers', link: 'Transfers' },
-      ];
-
-  const { ref, isSticky } = useSticky(90);
-  const isDesktop = useMediaQuery('(min-width:1148px)');
-  const handleSelect = (itemId) => {
-    setActiveItem(itemId);
-  };
   const _previewItineraryHandler = () => {
     setBlurItinerary(false);
     setValue(1);
@@ -437,111 +317,184 @@ const SimpleTabs = (props) => {
   const _handleFlightModalClose = () => {
     props.setShowFlightModal(false);
   };
-  const Navbar = styled.div`
-    position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
-    z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
-    top: 15px;
-    display: flex;
-    ::-webkit-scrollbar {
-      display: none;
-    }
-    background-color: white;
-    height: 50px;
-    margin: 0px -20px 0px -20px;
-    overflow-x: scroll;
-    align-items: center;
-
-    background-color: white;
-  `;
-  const MenuContainer = styled.div`
-    border-bottom: 1px solid #f0f0f0;
-    width: 100vw;
-    margin-left: -1rem;
-    margin-bottom: 1rem;
-    > div {
-      margin: 0px 0px 0px -50px;
-    }
-  `;
-  const AppContainer = styled.div`
-    width: 100vw;
-    height: 100vh;
-    overflow: scroll;
-    font-family: sans-serif;
-  `;
-
-  // const getdayId = (id) => {
-  //   return props.itinerary?.day_slabs[id]?.slab_id;
-  // };
-  // const getdateId = (id) => {
-  //   return props.itinerary?.day_slabs[id]?.slab;
-  // };
-  // const Locationlatlong = [];
-  // useEffect(() => {
-  //   if (RoutesData.length >= 1) {
-  //     console.log('itsrendering');
-  //     for (var i = 0; i < RoutesData.length; i++) {
-  //       var postion = props.breif.city_slabs[i + 1];
-
-  //       // console.log(`response city data${JSON.stringify(citydetails)}`);
-  //       // console.log(`lat,long${citydetails.lat}`);
-  //       if (RoutesData[i].duration && RoutesData[i].duration !== '0') {
-  //         Locationlatlong.push({
-  //           dayId: getdayId(
-  //             RoutesData[i].day_slab_location.start_day_slab_index
-  //           ),
-  //           cityData: postion,
-  //           id: RoutesData[i].gmaps_place_id,
-  //           city_id: RoutesData[i].city_id,
-  //           lat: RoutesData[i].lat,
-  //           long: RoutesData[i].long,
-  //           name: RoutesData[i].city_name,
-  //           duration: RoutesData[i].duration,
-  //           color: RoutesData[i].color,
-  //           date: getdateId(
-  //             RoutesData[i].day_slab_location.start_day_slab_index
-  //           ),
-  //         });
-  //       }
-  //     }
-  //   } else {
-  //     for (var i = 0; i < props.breif.city_slabs.length; i++) {
-  //       var postion = props.breif.city_slabs[i];
-
-  //       // console.log(`response city data${JSON.stringify(citydetails)}`);
-  //       // console.log(`lat,long${citydetails.lat}`);
-  //       if (
-  //         !postion.is_departure_only &&
-  //         !postion.is_trip_terminated &&
-  //         postion.duration &&
-  //         postion.duration !== '0'
-  //       ) {
-  //         Locationlatlong.push({
-  //           dayId: getdayId(postion.day_slab_location.start_day_slab_index),
-  //           cityData: postion,
-  //           id: postion.gmaps_place_id,
-  //           city_id: postion.city_id,
-  //           lat: postion.lat ?? '18.5204',
-  //           long: postion.long ?? '73.8567',
-  //           name: postion.city_name,
-  //           duration: postion.duration,
-  //           color: postion.color,
-  //           date: getdateId(postion.day_slab_location.start_day_slab_index),
-  //         });
-  //       }
-  //     }
-  //   }
-  //   setmapArray(true);
-  // }, []);
-
-  // console.log(Locationlatlong);
   return (
-    <div className={classes.root} style={{ paddingTop: '20px' }}>
-      {isGroup ? (
-        <div id={items[2].link}>
+    <div className={classes.root}>
+      <AppBar position="sticky" className={classes.appbar}>
+        <Tabs
+          id="itinerary-tabs"
+          value={value}
+          onChange={handleChange}
+          aria-label="simple tabs example"
+          centered
+          style={{ zIndex: '2' }}
+          indicatorColor=""
+        >
+          <Tab label="Brief" className="font-lexend experience-tab" />
+          <Tab label="Itinerary" className="font-lexend experience-tab" />
+          {!isGroup ? (
+            <Tab label="Booking" className="font-lexend experience-tab" />
+          ) : (
+            <Tab label="Register" className="font-lexend experience-tab" />
+          )}
+        </Tabs>
+        {value !== 2 && props.payment ? (
+          <CostContainer>
+            {true ? (
+              <DiscountContainer>
+                <div style={{ display: 'flex' }}>
+                  {props.payment ? (
+                    props.payment.is_registration_needed ? (
+                      <StrikedCost>
+                        {'₹ ' +
+                          getIndianPrice(
+                            Math.round(
+                              Math.round(
+                                props.payment.per_person_total_cost / 100
+                              ) * 2
+                            )
+                          )}
+                      </StrikedCost>
+                    ) : null
+                  ) : null}
+
+                  {props.payment ? (
+                    !props.payment.is_registration_needed ? (
+                      <Cost className="font-lexend">
+                        {'₹ ' +
+                          getIndianPrice(
+                            Math.round(
+                              props.payment.per_person_total_cost / 100
+                            )
+                          ) +
+                          ' /-'}
+                      </Cost>
+                    ) : (
+                      <GITCost className="font-lexend">
+                        {'₹ ' +
+                          getIndianPrice(
+                            Math.round(
+                              props.payment.per_person_total_cost / 100
+                            )
+                          ) +
+                          ' /-'}
+                      </GITCost>
+                    )
+                  ) : null}
+                </div>
+              </DiscountContainer>
+            ) : null}
+            <Button
+              onclick={openBookingDesktop}
+              hoverBgColor="white"
+              hoverColor="black"
+              bgColor="#F7e700"
+              borderStyle="none"
+              borderRadius="5px"
+              margin="0 2rem 0 0"
+              padding="0.25rem 1rem"
+            >
+              {props.payment
+                ? props.payment.paid_user
+                  ? 'Details'
+                  : props.payment.bookings_count
+                  ? 'View ' + props.payment.bookings_count + ' bookings'
+                  : 'Book Now'
+                : 'Book Now'}
+            </Button>
+          </CostContainer>
+        ) : null}
+      </AppBar>
+      {!isPageWide && value !== 2 ? (
+        <PriceBannerMobile
+          hasUserPaid={props.payment ? props.payment.paid_user : false}
+          is_registration_needed={
+            props.payment ? props.payment.is_registration_needed : false
+          }
+          openBooking={openBookingMobile}
+          payment={props.payment}
+        ></PriceBannerMobile>
+      ) : null}
+      <TabPanel value={value} index={0}>
+        {/* <Breif
+          traveleritinerary={props.traveleritinerary}
+          hours={hours}
+          minutes={minutes}
+          seconds={seconds}
+          breif={props.breif}
+          hideTimer={minimiseTimer}
+          timeRequired={props.timeRequired}
+          itineraryReleased={props.itineraryReleased}
+          itineraryDate={props.itineraryDate}
+          showTimer={showItineraryTimer}
+          _hideTimerHandler={_minimiseTimerHandler}
+          blur={blurItinerary}
+        ></Breif> */}
+      </TabPanel>
+      <TabPanel value={value} index={1} style={{ padding: '0' }}>
+        {
+          isPageWide ? (
+            <ItineraryContainer
+              is_registration_needed={
+                props.payment ? props.payment.is_registration_needed : false
+              }
+              selectedPoi={selectedPoi}
+              user_email={props.user_email}
+              is_preview={props.preview}
+              is_stock={props.is_stock}
+              setShowPoiModal={_handlePoiEditModalOpen}
+              traveleritinerary={props.traveleritinerary}
+              hideTimer={minimiseTimer}
+              timeRequired={props.timeRequired}
+              itineraryReleased={props.itineraryReleased}
+              itineraryDate={props.itineraryDate}
+              showTimer={false}
+              _hideTimerHandler={_minimiseTimerHandler}
+              blur={false}
+              city_slabs={props.breif.city_slabs}
+              itinerary={props.itinerary}
+              newData={props.newData}
+              demoitinerary={props.demoitinerary}
+            ></ItineraryContainer>
+          ) : (
+            <div>
+              <ItineraryContainerMobile
+                is_registration_needed={
+                  props.payment ? props.payment.is_registration_needed : false
+                }
+                selectedPoi={selectedPoi}
+                user_email={props.user_email}
+                is_preview={props.preview}
+                is_stock={props.is_stock}
+                setShowPoiModal={_handlePoiEditModalOpen}
+                traveleritinerary={props.traveleritinerary}
+                day_slabs={props.itinerary.day_slabs}
+                hours={hours}
+                minutes={minutes}
+                seconds={seconds}
+                timeRequired={props.timeRequired}
+                hideTimer={minimiseTimer}
+                itineraryDate={props.itineraryDate}
+                showTimer={false}
+                _hideTimerHandler={_minimiseTimerHandler}
+                blur={false}
+                location_selected={location}
+                city_slabs={props.breif.city_slabs}
+                itinerary={props.itinerary}
+                newData={props.newData}
+                demoitinerary={props.demoitinerary}
+              ></ItineraryContainerMobile>
+              {/* <LocationsContainer >
+                {locationsArr}
+              </LocationsContainer> */}
+            </div>
+          )
+          // <NewMobileItinerary city_slabs={props.breif.city_slabs} day_slabs={props.itinerary.day_slabs} hours={hours} minutes={minutes} seconds={seconds}  timeRequired={props.timeRequired}  hideTimer={minimiseTimer} itineraryDate={props.itineraryDate}  showTimer={showItineraryTimer}   _hideTimerHandler={_minimiseTimerHandler} blur={blurItinerary} location_selected={location} city_slabs={props.breif.city_slabs}  itinerary={props.itinerary} newData={props.newData} demoitinerary={props.demoitinerary}/>
+        }
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        {isGroup ? (
           <Register></Register>
-        </div>
-      ) : (
-        <div id={items[2].link}>
+        ) : (
           <Booking
             itinerary={props.itinerary}
             _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -592,8 +545,6 @@ const SimpleTabs = (props) => {
             setShowBookingModal={() => props.setShowBookingModal(true)}
             showBookingModal={props.showBookingModal}
             setHideBookingModal={props.setHideBookingModal}
-            payment={props.payment}
-            booking={props.booking}
             hours={hours}
             minutes={minutes}
             seconds={seconds}
@@ -605,33 +556,11 @@ const SimpleTabs = (props) => {
             openItinerary={_previewItineraryHandler}
             _handleTimerClose={_minimiseBookingTimerHandler}
             setImagesHandler={props.setImagesHandler}
+            payment={props.payment}
+            booking={props.booking}
           ></Booking>
-        </div>
-      )}
-      <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
-        <div className="flex flex-row justify-between mx-3">
-          <div className="flex flex-col">
-            <div>Total trip cost</div>
-            {props.payment ? (
-              <div>
-                <span className="font-bold">
-                  ₹{' '}
-                  {getIndianPrice(
-                    Math.round(
-                      Math.round(props.payment.per_person_total_cost) / 100
-                    )
-                  )}
-                </span>{' '}
-                per person
-              </div>
-            ) : null}
-          </div>
-          <div className="">
-            <ButtonYellow>Book now</ButtonYellow>
-          </div>
-        </div>
-      </div>
-
+        )}
+      </TabPanel>
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}

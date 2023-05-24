@@ -53,7 +53,6 @@ const Itinerary = (props) => {
     images: ['null'],
   });
   const [breif, setBreif] = useState(defaultbreif);
-  const [routes, setRoutes] = useState(defaultbreif);
 
   const [booking, setBooking] = useState(null);
 
@@ -314,6 +313,10 @@ const Itinerary = (props) => {
     // if(stayLoading && !stayBookings){
   }, []);
 
+  const _updateFlightBookingHandler = (json) => {
+    setShowFlightModal(false);
+    setFlightBookings(json);
+  };
   useEffect(() => {
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
@@ -340,13 +343,7 @@ const Itinerary = (props) => {
         //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
       });
     getBreifHandler();
-    getRoutes(props.id)
-      .then((res) => {
-        setRoutes(res);
-      })
-      .catch((err) => {
-        console.log(`error in routes${err}`);
-      });
+
     axios
       .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
       .then((res) => {
@@ -376,11 +373,6 @@ const Itinerary = (props) => {
     // if(itineraryLoading && !itineraryNotCreated){
     // if(stayLoading && !stayBookings){
   }, []);
-
-  const _updateFlightBookingHandler = (json) => {
-    setShowFlightModal(false);
-    setFlightBookings(json);
-  };
 
   const _updateBookingHandler = (json) => {
     setShowBookingModal(false);
@@ -800,7 +792,6 @@ const Itinerary = (props) => {
             itineraryDate={itineraryDate}
             showbooking={showbooking}
             payment={payment}
-            routes={routes}
             itinerary={itinerary}
             breif={breif}
             booking={booking}
