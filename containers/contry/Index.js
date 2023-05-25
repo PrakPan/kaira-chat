@@ -15,6 +15,7 @@ import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry"
 import Reviews from '../travelplanner/CaseStudies/Index'
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
+import { useRouter } from 'next/router';
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -54,7 +55,7 @@ const Heading = styled.h2`
 
 const Index = (props) => {
    let isPageWide = media("(min-width: 768px)");
-
+    const router = useRouter()
   return (
     <div>
       {isPageWide ? (
