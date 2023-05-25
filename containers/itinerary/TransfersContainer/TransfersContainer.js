@@ -572,6 +572,7 @@ const TransfersContainer = (props) => {
                         transferbookings={props.transferBookings}
                         _changeTaxiHandler={_changeTaxiHandler}
                         setShowTaxiModal={props.setShowTaxiModal}
+                        userSelected={props?.transferBookings[i]?.user_selected}
                         icon={props?.transferBookings[i + 1]?.images?.image}
                         taxi_type={props?.transferBookings[i + 1]?.taxi_type}
                         transportMode={getTransportationType(
@@ -593,6 +594,7 @@ const TransfersContainer = (props) => {
                         heading={
                           props?.transferBookings[i]?.booking_display_name
                         }
+                        userSelected={props?.transferBookings[i]?.user_selected}
                         icon={props?.transfers[i]?.icon}
                         modes={getTransportationType(props?.transfers[i]?.icon)}
                         icon={props?.transferBookings[i]?.images?.image}
@@ -615,6 +617,7 @@ const TransfersContainer = (props) => {
                         heading={
                           props?.transferBookings[i]?.booking_display_name
                         }
+                        userSelected={props?.transferBookings[i]?.user_selected}
                         transferbookings={props.transferBookings}
                         _changeTaxiHandler={_changeTaxiHandler}
                         setShowTaxiModal={props.setShowTaxiModal}
@@ -709,6 +712,7 @@ const TransfersContainer = (props) => {
                     icon={props?.transferBookings[i]?.images?.image}
                     setShowBookingModal={props?.setShowBookingModal}
                     taxi_type={props?.transferBookings[i]?.taxi_type}
+                    userSelected={props?.transferBookings[i]?.user_selected}
                     index={i}
                     transferbookings={props.transferBookings}
                     _changeTaxiHandler={_changeTaxiHandler}
@@ -893,6 +897,7 @@ const TransfersContainer = (props) => {
                     _changeFlightHandler={_changeFlightHandler}
                     _changeTaxiHandler={_changeTaxiHandler}
                     setShowTaxiModal={props.setShowTaxiModal}
+                    userSelected={props?.transferBookings[i]?.user_selected}
                     icon={props?.transferBookings[i]?.images?.image}
                     taxi_type={props?.transferBookings[i]?.taxi_type}
                     transportMode={getTransportationType(
@@ -918,6 +923,7 @@ const TransfersContainer = (props) => {
                     icon={props?.transfers[i]?.icon}
                     index={i}
                     booking={props?.transferBookings[i]}
+                    userSelected={props?.transferBookings[i]?.user_selected}
                     modes={getTransportationType(props?.transfers[i]?.icon)}
                     icon={props?.transferBookings[i]?.images?.image}
                     taxi_type={props?.transferBookings[i]?.taxi_type}

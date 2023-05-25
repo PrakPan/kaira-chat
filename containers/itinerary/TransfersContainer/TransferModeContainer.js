@@ -6,6 +6,7 @@ import { format, parseISO } from 'date-fns';
 import * as ga from '../../../services/ga/Index';
 import { FaPlane } from 'react-icons/fa';
 import { LivelyButton } from '../../../components/LiveleyButton';
+import { MdEdit } from 'react-icons/md';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -181,7 +182,7 @@ const TransferModeContainer = (props) => {
         <Line pinColour={props.pinColour} Transfers={true} />
       </div>
       {props.booking_type == 'Flight' ? (
-        <div className="py-[20px]">
+        <div className="group py-[20px]">
           <div className="flex flex-row gap-2 w-full  lg:ml-8 ml-2">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
               <TransportIconFetcher
@@ -194,19 +195,30 @@ const TransferModeContainer = (props) => {
               />
             </div>
             <div className="flex flex-col gap-1 w-[80%]">
-              <div className="flex lg:flex-row flex-col justify-between w-full">
-                <div className="font-semibold w-full">{props.heading}</div>
-                {
-                  <LivelyButton
+              <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
+                <div className="flex flex-row  gap-2 ">
+                  <div className="font-semibold w-full">{props.heading}</div>
+                  <div
                     onClick={() => HandleFlights(props.index)}
-                    className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                    className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                   >
-                    Change
-                  </LivelyButton>
-                }
+                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                  </div>
+                </div>
+                <div>
+                  {props.userSelected ? (
+                    <div className=" text-md font-bold  text-[#277004] ">
+                      Included
+                    </div>
+                  ) : (
+                    <div className=" text-md font-bold text-[#E00000]  ">
+                      Excluded
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="lg:flex flex-row  gap-3  ">
+              <div className="lg:flex hidden  flex-row  gap-3  ">
                 <div className="flex flex-col">
                   <div className="text-[#01202B] font-medium">
                     ({props.booking.origin_code})
@@ -288,7 +300,7 @@ const TransferModeContainer = (props) => {
           </div>
         </div>
       ) : (
-        <div className="flex flex-row gap-2 w-full py-[20px] lg:ml-8 ml-2 ">
+        <div className="group flex flex-row gap-2 w-full py-[20px] lg:ml-8 ml-2 ">
           {props.modes && (
             <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
@@ -316,17 +328,37 @@ const TransferModeContainer = (props) => {
             </div>
           )}
 
-          <div className="flex flex-col w-[80%]">
-            <div className="text-[#01202B] flex lg:flex-row flex-col w-full justify-between gap-1 font-medium">
-              <div className="font-semibold w-full">{props.heading}</div>
+          <div className=" flex flex-col w-[80%]">
+            <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium">
+              <div className="flex flex-row gap-3 items-center">
+                <div className="font-semibold ">{props.heading}</div>
+
+                <div>
+                  {props.booking_type == 'Taxi' && (
+                    <div
+                      onClick={() => HandleTransport(props.index)}
+                      className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                    >
+                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                    </div>
+                    // <LivelyButton
+
+                    //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                    // >
+                    //   Change
+                    // </LivelyButton>
+                  )}
+                </div>
+              </div>
               <div>
-                {props.booking_type == 'Taxi' && (
-                  <LivelyButton
-                    onClick={() => HandleTransport(props.index)}
-                    className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                  >
-                    Change
-                  </LivelyButton>
+                {props.userSelected ? (
+                  <div className=" text-md font-bold  text-[#277004] ">
+                    Included
+                  </div>
+                ) : (
+                  <div className=" text-md font-bold text-[#E00000]  ">
+                    Excluded
+                  </div>
                 )}
               </div>
             </div>

@@ -29,8 +29,8 @@ export const DayContainerStyle = styled.div`
       margin-top: 10px;
     }
 
-    margin-bottom: 15px;
-    margin-top: 15px; /* adjust this as needed */
+    margin-bottom: 25px;
+    margin-top: 25px; /* adjust this as needed */
     margin-left: auto;
   }
 `;

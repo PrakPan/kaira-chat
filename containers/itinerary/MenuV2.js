@@ -648,6 +648,8 @@ const SimpleTabsV2 = (props) => {
                 dayslab={props?.itinerary?.day_slabs}
                 breif={props?.breif}
                 showTaxiModal={props.showTaxiModal}
+                getPaymentHandler={props.getPaymentHandler}
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
                 setShowTaxiModal={props.setShowTaxiModal}
                 _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
@@ -802,7 +804,11 @@ const SimpleTabsV2 = (props) => {
                     dayslab={props?.itinerary?.day_slabs}
                     breif={props?.breif}
                     showTaxiModal={props.showTaxiModal}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
                     setShowTaxiModal={props.setShowTaxiModal}
+                    getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
                     _updateBookingHandler={props._updateBookingHandler}

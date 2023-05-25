@@ -335,6 +335,7 @@ const Booking = (props) => {
       .catch((err) => {
         // setUpdateLoadingState(false);
         setUpdateBookingState(false);
+        console.log(err);
         setUnauthorized(true);
         window.alert('There seems to be a problem, please try again!');
       });

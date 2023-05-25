@@ -3,12 +3,13 @@ import styled from 'styled-components';
 import Heading from '../../../components/newheading/heading/Index';
 import Option from '../../../components/forms/Option';
 import Dropdown from '../../../components/forms/Dropdown';
-import { RiWhatsappFill } from 'react-icons/ri';
+import { RiArrowDropDownLine, RiWhatsappFill } from 'react-icons/ri';
 import Button from '../../../components/Button';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { connect } from 'react-redux';
 import * as orderaction from '../../../store/actions/order';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { MdEdit } from 'react-icons/md';
 import {
   faRupeeSign,
   faTimes,
@@ -40,14 +41,14 @@ const SummaryContainer = styled.div`
   }
 `;
 const INR = styled.div`
-  font-weight: 600;
-  font-size: 1.5rem;
+  font-weight: 500;
+  font-size: 1.8rem;
 
   &:after {
     content: 'Per Adult';
     display: ${(props) => (props.show_per_person_cost ? 'block' : 'none')};
-    font-size: 0.85rem;
-    font-weight: 300;
+    font-size: 1.5rem;
+    font-weight: 800;
   }
 `;
 const BookingListCostContainer = styled.div`
@@ -63,10 +64,15 @@ const Details = (props) => {
   const [iscouponApplied, setiscouponApplied] = useState(false);
   const [percentoff, setPercentoff] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [showAdultsModal, setShowAdultsModal] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
 
   const router = useRouter();
-
+  function handleSubmit(e) {
+    setInputValue('');
+  }
   const setBookingSummary = () => {
     try {
       if (props.payment) {
@@ -335,28 +341,30 @@ const Details = (props) => {
         )}
       </div>
       <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-2">
-        <div className="flex flex-col m-[1rem]">
+        <div className="flex flex-col mx-[1rem] mt-[1rem]">
           {props?.payment && (
             <div className="flex flex-row gap-1">
-              <INR
+              <div
                 show_per_person_cost={props.payment.show_per_person_cost}
                 className={
                   props.blur
                     ? 'font-lexend blurry-text'
-                    : 'font-lexend  font-bold'
+                    : 'font-lexend text-3xl flex flex-row items-center font-bold'
                 }
               >
-                <FontAwesomeIcon icon={faRupeeSign} />
-                {!props.payment.show_per_person_cost
-                  ? ' ' +
-                    getIndianPrice(Math.round(props.payment.total_cost / 100))
-                  : ' ' +
-                    getIndianPrice(
-                      Math.round(
-                        Math.round(props.payment.per_person_total_cost) / 100
-                      )
-                    )}
-              </INR>
+                <span>₹</span>
+                <div>
+                  {!props.payment.show_per_person_cost
+                    ? ' ' +
+                      getIndianPrice(Math.round(props.payment.total_cost / 100))
+                    : ' ' +
+                      getIndianPrice(
+                        Math.round(
+                          Math.round(props.payment.per_person_total_cost) / 100
+                        )
+                      )}
+                </div>
+              </div>
               {/* <div className="flex flex-row items-center text-black font-bold text-2xl">
               <span>₹</span>
               <div>
@@ -374,115 +382,139 @@ const Details = (props) => {
           </div>
         </div>
 
-        <div className="m-[1rem]">
-          {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
-          {/* <BookingListCostContainer>
+        <div
+          className="mx-[1rem]  font-semibold flex gap-0 flex-row cursor-pointer"
+          onClick={() => setAcordianOpen(!acoordianceOpen)}
+        >
+          <div>
+            {acoordianceOpen ? <span>Hide</span> : <span>View</span>} breakup
+          </div>
+
+          <RiArrowDropDownLine
+            className={` text-2xl  mt-1 transition-all duration-100 ${
+              acoordianceOpen ? '-rotate-180 ' : 'rotate-180 animate-bounce'
+            }`}
+          ></RiArrowDropDownLine>
+        </div>
+        <div
+          className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
+            acoordianceOpen ? 'in' : 'out'
+          } `}
+        >
+          {acoordianceOpen && (
+            <div className="">
+              {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
+              {/* <BookingListCostContainer>
            {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
            </BookingListCostContainer> */}
-          <Accordion
-            stayBookings={props.stayBookings}
-            flightBookings={props.flightBookings}
-            activityBookings={props.activityBookings}
-            transferBookings={props.transferBookings}
-            payment={props.payment}
-          ></Accordion>
+              <Accordion
+                stayBookings={props.stayBookings}
+                flightBookings={props.flightBookings}
+                activityBookings={props.activityBookings}
+                transferBookings={props.transferBookings}
+                payment={props.payment}
+              ></Accordion>
 
-          {!oldaccommodation && !props.payment.are_prices_hidden ? (
-            <div className="flex flex-row justify-between">
-              <div
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text '
-                    : 'font-lexend text-enter text-sm font-normal'
-                }
-              >
-                {'Service Fee'}
-              </div>
-              <div
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text font-bold'
-                    : 'font-lexend text-enter font-bold'
-                }
-              >
-                {'₹ ' +
-                  getIndianPrice(
-                    Math.round(props.payment.total_service_fee / 100)
-                  )}
-              </div>
-            </div>
-          ) : null}
-          {!oldaccommodation && !props.payment.are_prices_hidden ? (
-            <div className="flex flex-row justify-between">
-              <div
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text  '
-                    : 'font-lexend text-enter text-sm font-normal'
-                }
-              >
-                {'GST'}
-              </div>
-              <div
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text '
-                    : 'font-lexend text-enter font-bold'
-                }
-              >
-                {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
-              </div>
-            </div>
-          ) : null}
-          {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
+              {!oldaccommodation && !props.payment.are_prices_hidden ? (
+                <div className="flex flex-row justify-between">
+                  <div
+                    className={
+                      props.blur
+                        ? 'font-lexend text-enter blurry-text '
+                        : 'font-lexend text-enter text-sm font-normal'
+                    }
+                  >
+                    {'Service Fee'}
+                  </div>
+                  <div
+                    className={
+                      props.blur
+                        ? 'font-lexend text-enter blurry-text font-bold'
+                        : 'font-lexend text-enter font-bold'
+                    }
+                  >
+                    {'₹ ' +
+                      getIndianPrice(
+                        Math.round(props.payment.total_service_fee / 100)
+                      )}
+                  </div>
+                </div>
+              ) : null}
+              {!oldaccommodation && !props.payment.are_prices_hidden ? (
+                <div className="flex flex-row justify-between">
+                  <div
+                    className={
+                      props.blur
+                        ? 'font-lexend text-enter blurry-text  '
+                        : 'font-lexend text-enter text-sm font-normal'
+                    }
+                  >
+                    {'GST'}
+                  </div>
+                  <div
+                    className={
+                      props.blur
+                        ? 'font-lexend text-enter blurry-text '
+                        : 'font-lexend text-enter font-bold'
+                    }
+                  >
+                    {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
+                  </div>
+                </div>
+              ) : null}
+              {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{'GST'}</p>
                   <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"Rs 1000 /-"}</p>
         </div> */}
-          {props.payment.show_per_person_cost ? (
-            <div
-              style={{
-                borderWidth: '1px',
-                borderColor: 'hsl(0,0%,95%)',
-                borderStyle: 'solid none none none ',
-                display: 'grid',
-                gridTemplateColumns: '3fr 1fr',
-                padding: '0.5rem 0',
-                gridGap: '1rem',
-              }}
-            >
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '300',
-                  letterSpacing: '1px',
-                  marginBottom: '0.25rem',
-                }}
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text'
-                    : 'font-lexend text-enter'
-                }
-              >
-                {'Total cost'}
-              </p>
-              <p
-                style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '300',
-                  letterSpacing: '1px',
-                  marginBottom: '0.25rem',
-                }}
-                className={
-                  props.blur
-                    ? 'font-lexend text-enter blurry-text'
-                    : 'font-lexend text-enter'
-                }
-              >
-                {'₹ ' +
-                  getIndianPrice(Math.round(props.payment.total_cost / 100))}
-              </p>
+              {props.payment.show_per_person_cost ? (
+                <div
+                  style={{
+                    borderWidth: '1px',
+                    borderColor: 'hsl(0,0%,95%)',
+                    borderStyle: 'solid none none none ',
+                    display: 'grid',
+                    gridTemplateColumns: '3fr 1fr',
+                    padding: '0.5rem 0',
+                    gridGap: '1rem',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '300',
+                      letterSpacing: '1px',
+                      marginBottom: '0.25rem',
+                    }}
+                    className={
+                      props.blur
+                        ? 'font-lexend text-enter blurry-text'
+                        : 'font-lexend text-enter'
+                    }
+                  >
+                    {'Total cost'}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: '300',
+                      letterSpacing: '1px',
+                      marginBottom: '0.25rem',
+                    }}
+                    className={
+                      props.blur
+                        ? 'font-lexend text-enter blurry-text'
+                        : 'font-lexend text-enter'
+                    }
+                  >
+                    {'₹ ' +
+                      getIndianPrice(
+                        Math.round(props.payment.total_cost / 100)
+                      )}
+                  </p>
+                </div>
+              ) : null}
             </div>
-          ) : null}
+          )}
         </div>
       </div>
 
@@ -502,55 +534,71 @@ const Details = (props) => {
           ) : null
         ) : null
       ) : null}
-      {props?.payment?.allow_coupon_discount ? (
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <div className="relative mb-0  rounded-md shadow-sm cursor-pointer">
-            <input
-              class=" px-3 w-9/12 py-2 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              id="name"
-              name="name"
-              placeholder="Have a coupon code?"
-            />
-            <button
-              className="pointer-events-none absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
-              type="submit"
-            >
-              <div
-                className=" font-bold text-black cursor-pointer"
-                aria-hidden="true"
+
+      <div className="px-3 pb-2">
+        {props?.payment?.allow_coupon_discount ? (
+          <form onSubmit={(e) => handleSubmit(e)}>
+            <div className="relative  rounded-md shadow-sm cursor-pointer">
+              <input
+                class=" px-3 w-9/12 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                id="name"
+                name="name"
+                placeholder="Have a coupon code?"
+              />
+              <button
+                className="pointer-events-none absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+                type="submit"
               >
-                Apply
+                <div
+                  className=" font-bold text-black cursor-pointer"
+                  aria-hidden="true"
+                >
+                  Apply
+                </div>
+              </button>
+            </div>
+          </form>
+        ) : null}
+
+        <div className="border-y-2 border-[#F0F0F0] my-3">
+          <div className=" group flex flex-row gap-3 items-center py-[0.7rem]">
+            <BsCalendar2 className="text-md text-[#7A7A7A]" />
+            <div className="text-md font-semibold text-black flex flex-row items-center gap-2">
+              <div>
+                {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
+                {props.payment.meta_info
+                  ? props.payment.meta_info.start_date
+                    ? getHumanDate(
+                        props.payment.meta_info.start_date.replaceAll('-', '/')
+                      )
+                    : null
+                  : null}{' '}
+                - Feb 09, 2023
               </div>
-            </button>
-          </div>
-        </form>
-      ) : null}
-      <div className=" border-[#F0F0F0] my-1">
-        <div className="flex flex-row gap-3 items-center py-[0.7rem]">
-          <BsCalendar2 className="text-md text-[#7A7A7A]" />
-          <div>
-            <div className="text-md font-semibold text-black">
-              {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
-              {props.payment.meta_info
-                ? props.payment.meta_info.start_date
-                  ? getHumanDate(
-                      props.payment.meta_info.start_date.replaceAll('-', '/')
-                    )
-                  : null
-                : null}{' '}
-              - Feb 09, 2023
+              <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
+                <MdEdit
+                  className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                  onClick={() => props.setShowDateModal(true)}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="text-md font-medium gap-3 flex flex-row items-center mb-2">
-        <BsPeopleFill className="text-md text-[#7A7A7A]" />
-        <div className="text-md font-semibold text-black">
-          {/* {booking.number_of_adults} */}
-          {props.payment.meta_info.number_of_adults} Adults
+        <div className="group text-md font-medium gap-3 flex flex-row items-center">
+          <BsPeopleFill className="text-md text-[#7A7A7A]" />
+          <div className="gap-2 flex flex-row items-center text-md font-semibold text-black">
+            {/* {booking.number_of_adults} */}
+            <div> {props.payment.meta_info.number_of_adults} Adults</div>
+            <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+              <MdEdit
+                className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                onClick={() => props.setShowAdultsModal(true)}
+              />
+            </div>
+          </div>
         </div>
       </div>
       {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
@@ -566,14 +614,8 @@ const Details = (props) => {
           ITINERARY_STATUSES.itinerary_finalized &&
         !props.payment.paid_user &&
         props.payment.user_allowed_to_pay ? (
-          <Button
-            borderRadius="5px"
-            bgColor="#f7e700"
-            width="100%"
-            margin="0 0 0.25rem 0"
-            hoverBgColor="black"
-            hoverColor="white"
-            borderWidth="0"
+          <ButtonYellow
+            styleClass="w-full"
             onclick={_saleCreateHandler}
             onclickparam={props.id}
           >
@@ -586,44 +628,31 @@ const Details = (props) => {
                 margin="0 0.5rem"
               ></Spinner>
             ) : null}
-          </Button>
+          </ButtonYellow>
         ) : null
       ) : null}
       {props.payment && props.token ? (
         props.payment.paid_user ? (
-          <Button
-            borderRadius="5px"
-            bgColor="#f7e700"
-            width="100%"
-            margin="0 0 0.25rem 0"
-            hoverBgColor="#f7e700"
-            hoverColor="black"
-            borderWidth="0"
-            fontWeight="600"
+          <ButtonYellow
+            styleClass="w-full"
             onclick={() => console.log(' ')}
             onclickparam={null}
           >
             PAID
-          </Button>
+          </ButtonYellow>
         ) : null
       ) : null}
       {!props.token ? (
-        <Button
-          borderRadius="5px"
-          bgColor="#f7e700"
-          width="100%"
-          margin="0 0 0.25rem 0"
-          hoverBgColor="black"
-          hoverColor="white"
-          borderWidth="0"
+        <ButtonYellow
+          styleClass="w-full"
           onclick={props.setShowLoginModal}
           onclickparam={true}
         >
           Login
-        </Button>
+        </ButtonYellow>
       ) : null}
       <ButtonYellow
-        styleClass="w-full"
+        styleClass="w-full mt-2"
         primary={false}
         onclick={() =>
           (window.location.href = urls.WHATSAPP + '?text=' + message)
