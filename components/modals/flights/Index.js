@@ -19,7 +19,7 @@ min-height: 65vh;
 max-height: 40vh;
 
 @media screen and (min-width: 768px) {
-    min-height: 80vh;
+    min-height: 90vh;
   
     overflow-y: scroll;
  

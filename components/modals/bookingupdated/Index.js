@@ -728,12 +728,7 @@ const Booking = (props) => {
       });
   };
   const FILTERS = {
-    budget: [
-      'Below ₹3,000',
-      '₹3,000 - ₹6,000',
-      '₹6,000 - ₹10,000',
-      'Above ₹10,000',
-    ],
+    budget: ['Affordable', 'Average', 'Luxury', 'Luxury+'],
     type: [
       'Hotels',
       'Homestays',
