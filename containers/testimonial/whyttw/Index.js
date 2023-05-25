@@ -86,8 +86,8 @@ const WhyTarzan = () => {
           <Card className="font-nunito">
             <ImageLoader
               height="133px"
-              width="30%"
-              widthmobile="25%"
+              width="133px"
+              widthmobile="133px"
               dimensions={{ height: 150, width: 150 }}
               url={"media/icons/whyus/color-line/transparency.png"}
             />
@@ -101,7 +101,7 @@ const WhyTarzan = () => {
           <Card className="font-nunito">
             <ImageLoader
               height="133px"
-              width="30%"
+              width="133px"
               widthmobile="133px"
               dimensions={{ height: 150, width: 150 }}
               url={"media/icons/whyus/color-line/personalise.png"}
@@ -116,7 +116,7 @@ const WhyTarzan = () => {
           <Card className="font-nunito">
             <ImageLoader
               height="133px"
-              width="30%"
+              width="133px"
               widthmobile="133px"
               dimensions={{ height: 150, width: 150 }}
               url={"media/icons/whyus/color-line/community.png"}
@@ -131,7 +131,7 @@ const WhyTarzan = () => {
           <Card className="font-nunito">
             <ImageLoader
               height="133px"
-              width="30%"
+              width="133px"
               widthmobile="133px"
               dimensions={{ height: 150, width: 150 }}
               url={"media/icons/whyus/color-line/culture.png"}
@@ -146,7 +146,7 @@ const WhyTarzan = () => {
           <Card className="font-nunito">
             <ImageLoader
               height="133px"
-              width="30%"
+              width="133px"
               widthmobile="133px"
               dimensions={{ height: 150, width: 150 }}
               url={"media/icons/whyus/color-line/flexibility.png"}
@@ -161,7 +161,7 @@ const WhyTarzan = () => {
           <Card className="font-nunito">
             <ImageLoader
               height="133px"
-              width="30%"
+              width="133px"
               widthmobile="133px"
               dimensions={{ height: 150, width: 150 }}
               url={"media/icons/whyus/color-line/service.png"}

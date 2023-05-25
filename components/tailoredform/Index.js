@@ -5,7 +5,7 @@ import Button from "../ui/button/Index";
 import * as ga from "../../services/ga/Index";
 import { format } from "date-fns";
 import media from "../media";
-
+import ButtonLoader from '../ui/button/ButtonLoader'
 import axiostailoredinstance from "../../services/leads/tailored";
 import Spinner from "../Spinner";
 import LoadingLottie from "../ui/LoadingLottie";
@@ -93,6 +93,12 @@ const BlackContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: initial;
   }
+`;
+const LoadingText = styled.div`
+font-size: 1.2rem;
+    position: absolute;
+    bottom: 30%;
+    opacity: 0.8;
 `;
 const Enquiry = (props) => {
   const router = useRouter();
@@ -524,6 +530,7 @@ const Enquiry = (props) => {
                   onclick={() => _SlideOneSubmitHandler()}
                 >
                   Continue
+                  {/* <ButtonLoader height={'1.25rem'} /> */}
                 </Button>
               </div>
             ) : null}
@@ -577,7 +584,9 @@ const Enquiry = (props) => {
                     bgColor="#f7e700"
                     onclick={_submitDataHandler}
                   >
-                    Submit
+                      {loading ? <ButtonLoader height={'1.25rem'} /> : 'Submit'}
+
+                    
                   </Button>
                 </div>
               )
@@ -603,17 +612,19 @@ const Enquiry = (props) => {
       </div>
     );
   else
-    return (
-      <div>
-        {showBlack ? (
-          <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
-        ) : null}
+   return (
+     <div>
+       {showBlack ? (
+         <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
+       ) : null}
 
-        <Container className="border center-div">
-          <LoadingLottie height="50%" width="50%"></LoadingLottie>
-        </Container>
-      </div>
-    );
+       <Container className="border center-div">
+         <LoadingLottie height="50%" width="50%"></LoadingLottie>
+         <LoadingText>Submitting...</LoadingText>
+       </Container>
+     </div>
+   );
+
 };
 
 const mapStateToPros = (state) => {
