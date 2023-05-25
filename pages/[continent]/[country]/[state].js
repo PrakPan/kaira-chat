@@ -106,7 +106,6 @@ export async function getStaticProps(context) {
       Data: data,
       locations,
     },
-    dddddd,
   };
 }
 
