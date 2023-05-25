@@ -54,7 +54,7 @@ var locations = []
   }
 
   try{
-   const loc = await axiospagelistinstance.get(``)
+   const loc = await axiospagelistinstance.get(`?country=india`)
     locations = loc.data
   }
 catch(e){

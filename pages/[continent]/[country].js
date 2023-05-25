@@ -52,8 +52,7 @@ export async function getStaticPaths() {
   //   "https://apis.tarzanway.com/search/all/?type=State"
   // );
 
-  const res = await axios.get("https://apis.tarzanway.com/poi/country/all");
-  // const res = await axioscountrydetailsinstance.get("all");
+  const res = await axioscountrydetailsinstance.get("all");
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -80,14 +79,12 @@ export async function getStaticProps(context) {
   //   `/?link=${context.params.state}`
   // );
 
-  const res = await axios.get(
-    `https://apis.tarzanway.com/poi/country/${context.params.country}`
+  const res = await await axioscountrydetailsinstance.get(
+    context.params.country
   );
-  const data = res.data;
+    const data = res.data;
 
-  const response = await axios.get(
-    "https://apis.tarzanway.com/poi/country/all"
-  );
+  const response = await axioscountrydetailsinstance.get("all");
   const locations = response.data
 
   // var locations = [];

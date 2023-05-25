@@ -5,6 +5,8 @@ import Card from "./Card";
 import SwiperCarousel from "../SwiperCarousel";
 import media from "../media";
 import SkeletonCard from "../ui/SkeletonCard";
+import aixiospagelistinsance from "../../services/pages/list";
+import aixioscountryinsance from "../../services/pages/country";
 const GridContainer = styled.div`
   display: grid;
   gap: 0.5rem;
@@ -50,14 +52,10 @@ const Continentcarousel = () => {
 
   const cardsArr = [];
   async function fetchData() {
-    const res = await axios.get(
-      "https://apis.tarzanway.com/page/list?page_type=Continents"
-    );
+    const res = await aixiospagelistinsance('?page_type=Continents');
     const data = [];
     for (let i = 0; i < res.data.length; i++) {
-      const hot_destinations = await axios.get(
-        `https://apis.tarzanway.com/poi/country/all?continent=${res.data[i].link}&hot_destinations=true`
-      );
+      const hot_destinations = await aixioscountryinsance(`/all?continent=${res.data[i].link}&hot_destinations=true`);
       const hot_data = hot_destinations.data.filter((e,i)=>{if(i<6) return e} )
       data.push({ ...res.data[i], hot_destinations: hot_data });
       cardsArr.push(

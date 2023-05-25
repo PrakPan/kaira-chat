@@ -56,15 +56,9 @@ export async function getStaticPaths() {
 }
 export async function getStaticProps(context) {
 
-  // const res = await axios.get(
-  //   `https://apis.tarzanway.com/poi/country/${context.params.country}`
-  // );
   const res = await axiospagedetailsinstance('?link=' + context.params.continent);
   const data = res.data;
 
-  // const response = await axios.get(
-    // "https://apis.tarzanway.com/poi/country/all"
-  // );
 const response = await axioscountrydetailsinstance("/all?continent=" + context.params.continent);
   const locations = response.data;
   if (!data) {

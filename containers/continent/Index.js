@@ -83,7 +83,7 @@ const Index = (props) => {
         <HeroBanner
           image={props.data.image}
           page_id={props.data.id}
-          destination={props.data.destination}
+          // destination={props.data.destination}
           // cities={props.reccomendedCitiesData}
           title={`${props.data.destination} Trip Planner`}
         />
@@ -139,14 +139,8 @@ const Index = (props) => {
             </>
           ) : null}
           <>
-            <Heading>Plan your trip to anywhere in the world</Heading>
+            <Heading>Plan your trip anywhere in the world</Heading>
             <Continentcarousel
-              locations={props.locations}
-              page_id={props.data.id}
-              destination={props.data.destination}
-              viewall
-              // country={country}
-              country
             ></Continentcarousel>
             <Button
               onclick={() =>
