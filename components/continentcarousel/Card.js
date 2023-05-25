@@ -13,7 +13,7 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  height: ${(props) => (props.continent ? "25vh" : "15vh")};
+  height: ${(props) => (props.continent ? "35vh" : "23vh")};
 
   &:hover {
     ${ImageFade} {
@@ -85,11 +85,15 @@ const Experiences = (props) => {
         <ImageLoader
           url={props.img}
           dimensions={
-            props.continent
-              ? { width: 1200, height: 1200 }
-              : { width: 800, height: 800 }
+            props.continent || props.hd
+              ? { width: 1500, height: 1000 }
+              : { width: 800, height: 900 }
           }
-          dimensionsMobile={{ width: 800, height: 800 }}
+          dimensionsMobile={
+            props.continent || props.hd
+              ? { width: 800, height: 700 }
+              : { width: 300, height: 400 }
+          }
           height={props.continent ? "71vh" : "35vh"}
         ></ImageLoader>
       </ImageFade>

@@ -79,6 +79,7 @@ const Continentcarousel = () => {
                   heading={e.tagline}
                   img={e.image}
                   path={e.path}
+                  hd={hot_data.length<4}
                 />
               </div>
             ))}

@@ -1,16 +1,10 @@
 import content from '../../public/content/termsconditions';
 import styled from "styled-components";
-import YellowContainer from '../contact/YellowContainer';
-import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import media from '../../components/media'
 import { useState } from 'react';
 import { useEffect } from 'react';
-
 import Navbar from "./Components/Navbar";
 import Section from "./Components/Section";
-import { faChargingStation } from '@fortawesome/free-solid-svg-icons';
-
-
 
 const Container = styled.div`
   text-align: center;

@@ -123,19 +123,6 @@ const Index = (props) => {
               destination={props.data.destination}
             ></BannerTwo>
           </div>
-          {/* {props.data.states && props.data.states.length ? (
-            <>
-              <Heading>Trending destionations across {props.data.destination}</Heading>
-              <OldLocations
-                locations={props.data.states}
-                page_id={props.data.id}
-                destination={props.data.destination}
-                viewall
-                // country={country}
-                planner
-              ></OldLocations>
-            </>
-          ) : null} */}
           {props.locations && props.locations.length ? (
             <>
               <Heading>
