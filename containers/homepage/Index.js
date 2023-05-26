@@ -16,6 +16,7 @@ import Heading from '../../components/newheading/heading/Index';
 import TravelStyles from '../../components/containers/TravelStyles';
 import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import HowItWorks from '../../components/containers/HowItWorksSlideshow';
+import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Banner from './banner/Mobile';
 import Locations from '../../components/containers/plannerlocations/Index';
 import FullImgContent from './search/SearchFullImgContent';
@@ -279,6 +280,48 @@ useEffect(() => {
                 Plan a trip to India's best destinations
               </Heading>
               <Locations locations={props.locations} viewall></Locations>
+            </>
+          ) : null}
+
+          {props.asiaLocations && props.asiaLocations.length ? (
+            <>
+              <Heading
+                noline
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Trending destinations across Asia
+              </Heading>
+              <SwiperLocations
+                locations={props.asiaLocations}
+                country
+              ></SwiperLocations>
+            </>
+          ) : null}
+
+          {props.europeLocations && props.europeLocations.length ? (
+            <>
+              <Heading
+                noline
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Trending destinations across Europe
+              </Heading>
+              <SwiperLocations
+                locations={props.europeLocations}
+                country
+              ></SwiperLocations>
             </>
           ) : null}
 

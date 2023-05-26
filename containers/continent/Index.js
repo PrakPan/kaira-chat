@@ -17,6 +17,7 @@ import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PlanAsPerContinent from '../../containers/homepage/PlanAsPerContinent'
+import CountryCarousel from "./CountryCarousel";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -138,10 +139,13 @@ const Index = (props) => {
               ></SwiperLocations>
             </>
           ) : null}
+          {/* <CountryCarousel
+            destination={props.data.destination}
+            slug={props.data.link}
+          /> */}
           <>
             <Heading>Plan your trip anywhere in the world</Heading>
-            <Continentcarousel
-            ></Continentcarousel>
+            <Continentcarousel></Continentcarousel>
             <Button
               onclick={() =>
                 openTailoredModal(router, props.data.id, props.data.destination)

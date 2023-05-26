@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import { useState, useEffect } from "react";
 import ContinentPage from "../containers/continent/Index";
 import axioscountrydetailsinstance from "../services/pages/country";
+import axiospagelistinstance from '../services/pages/list'
 import axiospagedetailsinstance from '../services/pages/pagedetails'
 import axios from "axios";
 const TravelPlanner = (props) => {
@@ -34,9 +35,11 @@ const TravelPlanner = (props) => {
 
 export async function getStaticPaths() {
 
-  const res = await axios.get(
-    "https://apis.tarzanway.com/page/list?page_type=Continents"
-  );
+  // const res = await axios.get(
+  //   "https://apis.tarzanway.com/page/list?page_type=Continents"
+  // );
+const res = await axiospagelistinstance("?page_type=Continents");
+  
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -58,8 +61,9 @@ export async function getStaticProps(context) {
 
   const res = await axiospagedetailsinstance('?link=' + context.params.continent);
   const data = res.data;
+  
 
-const response = await axioscountrydetailsinstance("/all?continent=" + context.params.continent);
+const response = await axioscountrydetailsinstance("/all?continent=" + data.destination);
   const locations = response.data;
   if (!data) {
     return {

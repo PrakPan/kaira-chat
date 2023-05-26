@@ -108,6 +108,7 @@ const Heading = styled.h2`
   }
 `;
 const Homepage = (props) => {
+  console.log('props: ', props);
   let isPageWide = media("(min-width: 768px)");
 
   // const [loading, setLoading] = useState(true);

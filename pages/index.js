@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth';
 import { useEffect } from 'react';
 import axiospagelistinstance from '../services/pages/list'
+import axioscountrydetailsinstance from "../services/pages/country";
+
 import axios from 'axios'
 const  Home = (props) =>  {
   useEffect(() => {
@@ -22,7 +24,8 @@ const  Home = (props) =>  {
           <meta property='keywords' content='travel in india, tour in india, india travel, travel agents near me, plan a trip, travel and experience culture, local travel experience, customized trip planner india, customized holiday packages, customized packages in computer, customized travel, honeymoon travel packages, personalized travel package'></meta>
       </Head>
        
-     <HomepageContainer token={props.token} locations={props.locations} ThemeData={props.ThemeData}></HomepageContainer>
+     <HomepageContainer asiaLocations={props.asiaLocations}
+          europeLocations={props.europeLocations} token={props.token} locations={props.locations} ThemeData={props.ThemeData}></HomepageContainer>
     </Layout>
   )
  
@@ -43,36 +46,47 @@ const mapDispatchToProps = (dispatch) => {
 
 export async function getStaticProps(){
 var data = []
-var locations = []
+  var locations = []
+  var asiaLocations = []
+  var europeLocations = []
   try{
     const res = await axios.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
     data = res.data
   }
   catch(e){
     data = []
-    
   }
-
   try{
-   const loc = await axiospagelistinstance.get(`?country=india`)
-    locations = loc.data
+    const loc = await axiospagelistinstance.get(`?country=india`)
+    locations = loc.data;
+
+  const response = await axioscountrydetailsinstance("/all?continent=asia");
+    asiaLocations = response.data;  
+      const resp = await axioscountrydetailsinstance("/all?continent=europe");
+      europeLocations = resp.data;  
   }
 catch(e){
   console.log(e)
-  locations = []
-}
+    locations = []
+    asiaLocations = []
+    europeLocations = []
+  }
+  
+
   const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading , path : e.path}})
       if (!data) {
             return {
               notFound: true,
             }
           }
-      return{
-            props: {
-                  ThemeData,
-                  locations
-            }
-      }
+      return {
+        props: {
+          ThemeData,
+          locations,
+          asiaLocations,
+          europeLocations,
+        },
+      };
   }
 
 export default  connect(mapStateToPros, mapDispatchToProps)(Home);
