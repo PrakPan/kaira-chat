@@ -584,7 +584,9 @@ const Enquiry = (props) => {
                     bgColor="#f7e700"
                     onclick={_submitDataHandler}
                   >
-                    Submit
+                      {loading ? <ButtonLoader height={'1.25rem'} /> : 'Submit'}
+
+                    
                   </Button>
                 </div>
               )
