@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 const FAQs = (props) => {
   const classes = useStyles();
-  const HEADINGS = ['Stays', 'Transfers', 'Flights', 'Activities'];
+  const HEADINGS = ['Stays ', 'Transfers', 'Flights', 'Activities'];
   let FAQS = [];
   let HeadingsJSX = [];
   let bookings = {};
@@ -69,7 +69,7 @@ const FAQs = (props) => {
       for (var i = 0; i < props.payment.summary[key].bookings.length; i++) {
         try {
           bookingslist.push(
-            <div className={'text-sm font-normal'}>
+            <div className={'text-sm font-thin'}>
               {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
@@ -103,9 +103,15 @@ const FAQs = (props) => {
             <Typography
               content={'span'}
               className="font-lexend"
-              style={{ fontWeight: '600', fontSize: '0.95rem', margin: '0' }}
+              style={{ fontWeight: '700', fontSize: '0.80rem', margin: '0' }}
             >
-              {key}
+              <div className="flex flex-row gap-1">
+                {key} ({props.payment.meta_info.number_of_adults}
+                {props.payment.meta_info.number_of_adults == 1
+                  ? ' Adult'
+                  : ' Adults'}
+                )
+              </div>
             </Typography>
             <Typography
               content={'span'}

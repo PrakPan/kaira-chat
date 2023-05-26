@@ -439,7 +439,7 @@ const Details = (props) => {
         </div>
 
         <div
-          className="mx-[1rem]  font-semibold flex gap-0 flex-row cursor-pointer"
+          className="mx-[1rem]  font-semibold text-sm flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
         >
           <div>
