@@ -21,6 +21,8 @@ const Heading = styled.div`
 
 const PinSection = ({
   dayslab,
+  setShowDrawer,
+  setShowDrawerData,
   cityData,
   dayId,
   setCurrentPopup,
@@ -33,37 +35,41 @@ const PinSection = ({
   handlemap,
   Mapid,
 }) => {
-  const [pinhover, isPinhover] = useHover();
-  const getdayId = (id) => {
-    return dayslab[id]?.slab_id;
+  // const [pinhover, isPinhover] = useHover();
+  // const getdayId = (id) => {
+  //   return dayslab[id]?.slab_id;
+  // };
+  // const getdateId = (id) => {
+  //   return dayslab[id]?.slab;
+  // };
+  // useEffect(() => {
+  //   if (isPinhover) {
+  //     if (lat) {
+  //       setCurrentPopup &&
+  //         setCurrentPopup([
+  //           {
+  //             dayId: getdayId(dayId),
+  //             date: getdateId(dayId),
+  //             cityData: cityData,
+  //             id: Mapid,
+  //             city_id: cityId,
+  //             lat: lat,
+  //             long: long,
+  //             name: city,
+  //             duration: duration,
+  //             color: pinColour,
+  //           },
+  //         ]);
+  //     }
+  //   }
+  // }, [isPinhover]);
+  // ref={pinhover}
+  const handleClick = () => {
+    setShowDrawer(true);
+    setShowDrawerData(cityData);
   };
-  const getdateId = (id) => {
-    return dayslab[id]?.slab;
-  };
-  useEffect(() => {
-    if (isPinhover) {
-      if (lat) {
-        setCurrentPopup &&
-          setCurrentPopup([
-            {
-              dayId: getdayId(dayId),
-              date: getdateId(dayId),
-              cityData: cityData,
-              id: Mapid,
-              city_id: cityId,
-              lat: lat,
-              long: long,
-              name: city,
-              duration: duration,
-              color: pinColour,
-            },
-          ]);
-      }
-    }
-  }, [isPinhover]);
-
   return (
-    <Container className="cursor-pointer " ref={pinhover}>
+    <Container className="cursor-pointer " onClick={() => handleClick()}>
       <Pin duration={duration} pinColour={pinColour}></Pin>
       <Heading className={`${setCurrentPopup ? 'ml-4' : 'lg:ml-8 ml-2'} `}>
         {duration ? city + ` - ${duration}` : city}

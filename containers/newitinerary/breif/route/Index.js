@@ -110,6 +110,8 @@ const Route = (props) => {
               dayId={
                 props.breif.city_slabs[i].day_slab_location.start_day_slab_index
               }
+              setShowDrawer={props.setShowDrawer}
+              setShowDrawerData={props.setShowDrawerData}
               cityData={props.breif.city_slabs[i]}
               dayslab={props.dayslab}
               lat={props.breif.city_slabs[i].lat}
@@ -151,8 +153,12 @@ const Route = (props) => {
 
       <PinSection
         setCurrentPopup={props.setCurrentPopup}
+        setShowDrawer={props.setShowDrawer}
+        setShowDrawerData={props.setShowDrawerData}
         cityData={props.breif.city_slabs[0]}
         dayId={props.breif.city_slabs[0].day_slab_location.start_day_slab_index}
+        setShowDrawer={props.setShowDrawer}
+        setShowDrawerData={props.setShowDrawerData}
         cityData={props.breif.city_slabs[0]}
         dayslab={props.dayslab}
         lat={props.breif.city_slabs[0].lat}
@@ -186,6 +192,8 @@ const Route = (props) => {
       <PinSection
         setCurrentPopup={props.setCurrentPopup}
         dayId={props.breif.city_slabs[0].day_slab_location.start_day_slab_index}
+        setShowDrawer={props.setShowDrawer}
+        setShowDrawerData={props.setShowDrawerData}
         cityData={props.breif.city_slabs[0]}
         dayslab={props.dayslab}
         lat={props.breif.city_slabs[0].lat}

@@ -12,6 +12,7 @@ import {
   newDayContainerTextpadding,
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import StarRating from '../../../components/StarRating';
+import { MdEdit } from 'react-icons/md';
 
 const padding = {
   initialLeft: '60px',
@@ -92,7 +93,7 @@ const ItineraryPoiElement = (props) => {
   return (
     <Container>
       {/* <div>{props.time}</div> */}
-      <div className="flex flex-row items-center pt-3">
+      <div className="group flex flex-row items-center pt-3">
         <div className="bg-white w-[6rem]">
           {props.image ? (
             <ImageLoader
@@ -119,7 +120,12 @@ const ItineraryPoiElement = (props) => {
                 style={{ lineHeight: '1' }}
               >
                 <div className="text-xl font-normal ">{props.heading}</div>
-                <HiPencil className="text-lg min-w-max pl-3"></HiPencil>
+                <div
+                  onClick={() => HandleTransport(props.index)}
+                  className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                >
+                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                </div>
               </div>
               <div className="flex flex-row">
                 <div

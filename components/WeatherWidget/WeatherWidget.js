@@ -18,9 +18,12 @@ const TextBold = styled.div`
   color: rgb(1, 32, 43);
 `;
 const WeatherWidget = ({
+  location,
   city,
   travelDate,
   description,
+  setShowDrawer,
+  setShowDrawerData,
   cnt = 7,
   apiKey = 'e2fe4bf0d3954e25a493b899a559f43d',
 }) => {
@@ -66,6 +69,7 @@ const WeatherWidget = ({
 
     const today = new Date();
     const post = new Date(new Date().setDate(new Date().getDate() + 7));
+
     const [, todayMonth, todayDate, todayYear] = today.toString().split(' ');
     const [, postMonth, postDate, postYear] = post.toString().split(' ');
     setWeatherText(
@@ -74,6 +78,11 @@ const WeatherWidget = ({
       } - ${postDate} ${postMonth} ${postYear})`
     );
   }, [city, apiKey]);
+
+  function handleView() {
+    setShowDrawer(true);
+    setShowDrawerData(location.cityData);
+  }
 
   if (isLoading) {
     return (
@@ -86,8 +95,16 @@ const WeatherWidget = ({
 
   if (!weather) {
     return description ? (
-      <div className="line-clamp-3 max-w-[15rem] subpixel-antialiased ">
-        {description}
+      <div>
+        <div className="line-clamp-3 max-w-[15rem] subpixel-antialiased ">
+          {description}
+        </div>
+        <div
+          onClick={() => handleView()}
+          className="cursor-pointer text-blue-500 hover:text-blue-600 transition-all delay-75 duration-100 hover:scale-105"
+        >
+          view more
+        </div>
       </div>
     ) : null;
   }

@@ -26,6 +26,10 @@ import InclusionExclusion from '../../../components/InclusionExclusion/Inclusion
 import Map from '../../../components/Map';
 
 import dynamic from 'next/dynamic';
+import CityDetails from './CityDetails';
+import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
+import Drawer from '../../../components/ui/Drawer';
+import { TbArrowBack } from 'react-icons/tb';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -63,7 +67,8 @@ const Details = (props) => {
   let offsets = {};
   const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
-
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
 
   // async function getRoutes(itinaryId) {
@@ -214,11 +219,19 @@ const Details = (props) => {
   const LeafMap = dynamic(() => import('../../../components/mapbox.js'), {
     ssr: false,
   });
-  const MapWithNoSSR = ({ locations, currentPopup, setCurrentPopup }) => (
+  const MapWithNoSSR = ({
+    locations,
+    currentPopup,
+    setCurrentPopup,
+    setShowDrawer,
+    setShowDrawerData,
+  }) => (
     <LeafMap
       locations={Locationlatlong}
       currentPopup={currentPopup}
       setCurrentPopup={setCurrentPopup}
+      setShowDrawer={setShowDrawer}
+      setShowDrawerData={setShowDrawerData}
     />
   );
   // const LeafMap = dynamic(
@@ -248,6 +261,8 @@ const Details = (props) => {
                 locations={Locationlatlong}
                 currentPopup={currentPopup}
                 setCurrentPopup={setCurrentPopup}
+                setShowDrawer={setShowDrawer}
+                setShowDrawerData={setShowDrawerData}
               />
             </div>
           </div>
@@ -264,6 +279,8 @@ const Details = (props) => {
                 setPlaceID={setActive}
                 active={active}
                 setCurrentPopup={setCurrentPopup}
+                setShowDrawer={setShowDrawer}
+                setShowDrawerData={setShowDrawerData}
               />
             </div>
           ) : null}
@@ -304,6 +321,34 @@ const Details = (props) => {
           </div>
         ) : null} */}
       </DetailsContainer>
+      <Drawer
+        show={showDrawer}
+        anchor={'right'}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
+        onHide={() => setShowDrawer(false)}
+        // zIndex='1501'
+      >
+        <div>
+          <TbArrowBack
+            onClick={() => setShowDrawer(false)}
+            className="hover-pointer"
+            style={{
+              margin: '0.5rem',
+              fontSize: '1.75rem',
+              textAlign: 'right',
+            }}
+          ></TbArrowBack>
+          <CityDetails data={showDrawerData}></CityDetails>
+          {/* <Tabs data={data}></Tabs> */}
+          <div>
+            {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
+            {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
+            {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
+          </div>
+        </div>
+      </Drawer>
       {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
       </ContainerBt>
