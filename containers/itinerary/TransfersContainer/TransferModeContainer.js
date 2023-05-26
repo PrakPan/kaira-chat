@@ -185,7 +185,7 @@ const TransferModeContainer = (props) => {
       </div>
       {props.booking_type == 'Flight' ? (
         <div className="group py-[20px]">
-          <div className="flex flex-row gap-2 w-full  lg:ml-8 ml-2">
+          <div className="flex flex-row gap-2 w-[80%]  lg:ml-8 ml-2">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
               <TransportIconFetcher
                 TransportMode={props.booking_type}
@@ -303,7 +303,7 @@ const TransferModeContainer = (props) => {
           </div>
         </div>
       ) : (
-        <div className="group flex flex-row gap-2 w-full py-[20px] lg:ml-8 ml-2 ">
+        <div className="group flex flex-row gap-2 w-[80%] py-[20px] lg:ml-8 ml-2 ">
           {props.modes && (
             <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (

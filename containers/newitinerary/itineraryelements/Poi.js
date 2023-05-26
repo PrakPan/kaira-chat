@@ -13,6 +13,9 @@ import {
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import StarRating from '../../../components/StarRating';
 import { MdEdit } from 'react-icons/md';
+import Drawer from '../../../components/ui/Drawer';
+import { TbArrowBack } from 'react-icons/tb';
+import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
 
 const padding = {
   initialLeft: '60px',
@@ -85,7 +88,14 @@ const ColorTags = styled.span`
   padding: 0.25rem 0.5rem;
 `;
 const ItineraryPoiElement = (props) => {
-  useEffect(() => {}, []);
+  const [show, setShow] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawerData, setShowDrawerData] = useState(false);
+  const handleCloseDrawer = (e) => {
+    if (e) e.stopPropagation(e);
+    setShow(false);
+  };
+
   function stringCompare(arr, str) {}
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
@@ -94,7 +104,7 @@ const ItineraryPoiElement = (props) => {
     <Container>
       {/* <div>{props.time}</div> */}
       <div className="group flex flex-row items-center pt-3">
-        <div className="bg-white w-[6rem]">
+        <div className="bg-white w-[6rem]" onClick={() => setShow(true)}>
           {props.image ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
@@ -119,7 +129,12 @@ const ItineraryPoiElement = (props) => {
                 className="flex flex-row w-full  justify-start items-center"
                 style={{ lineHeight: '1' }}
               >
-                <div className="text-xl font-normal ">{props.heading}</div>
+                <div
+                  className="text-xl font-normal cursor-pointer"
+                  onClick={() => setShow(true)}
+                >
+                  {props.heading}
+                </div>
                 <div
                   onClick={() => HandleTransport(props.index)}
                   className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
@@ -179,6 +194,16 @@ const ItineraryPoiElement = (props) => {
           </div>
         </div>
       </div>
+      {props.poi_id && (
+        <POIDetailsDrawer
+          // show={props.showDrawer.isOpen}
+          show={show}
+          iconId={props.poi_id}
+          // handleCloseDrawer={props.handleCloseDrawer}
+          handleCloseDrawer={handleCloseDrawer}
+          name={props.heading}
+        />
+      )}
 
       {/* <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>

@@ -8,6 +8,7 @@ import { HiPencil } from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
 import StarRating from '../../../components/StarRating';
+import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -64,6 +65,11 @@ const ItineraryPoiElementM = (props) => {
     return elem === undefined || elem === null || !elem;
   }
   const [viewMore, setViewMore] = useState(false);
+  const [show, setShow] = useState(false);
+  const handleCloseDrawer = (e) => {
+    if (e) e.stopPropagation(e);
+    setShow(false);
+  };
   return (
     <Container className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -176,6 +182,14 @@ const ItineraryPoiElementM = (props) => {
       <span onClick={() => setViewMore(!viewMore)} className="font-semibold">
         {viewMore ? 'Less' : 'More'}
       </span>
+      <POIDetailsDrawer
+        // show={props.showDrawer.isOpen}
+        show={show}
+        iconId={props.poi.id}
+        // handleCloseDrawer={props.handleCloseDrawer}
+        handleCloseDrawer={handleCloseDrawer}
+        name={props.heading}
+      />
       {/* {!ErrorNotDef(props.poi) ? (
         !ErrorNotDef(props.poi.tips) ? (
           <Tips tips={props.poi.tips}></Tips>

@@ -413,10 +413,7 @@ const Details = (props) => {
                         )
                       : ' ' +
                         getIndianPrice(
-                          Math.round(
-                            Math.round(props.payment.per_person_total_cost) /
-                              100
-                          )
+                          Math.round(Math.round(props.payment.total_cost) / 100)
                         )}
                   </div>
                 </div>
