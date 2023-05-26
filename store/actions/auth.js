@@ -6,12 +6,12 @@ import axiosfbauthinstance from '../../services/user/fbAuth';
 import axiosuserinstance from '../../services/user/info';
 import * as ga from '../../services/ga/Index';
 //Open login modal
-export const authShowLogin = () => {
+export const setUpdateLoading = (isLoading) => {
   return {
-    type: actionTypes.AUTH_SHOWLOGIN,
+    type: 'SET_UPDATE_LOADING',
+    payload: isLoading,
   };
 };
-
 //Close login modal
 export const authCloseLogin = () => {
   return {
@@ -169,7 +169,7 @@ export const setAuthRedirect = (path) => {
   };
 };
 
-export const auth = (mobile, password, name, email, whatsapp, itinary_id) => {
+export const auth = (mobile, password, name, email, whatsapp) => {
   //name and email null incase of old user
 
   const authData = {

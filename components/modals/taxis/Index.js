@@ -23,6 +23,8 @@ import LoadingLottie from '../../ui/LoadingLottie';
 import TaxiSelected from './taxi-selected/Index';
 import TaxiSearched from './taxi-searched/Index';
 import Drawer from '../../ui/Drawer';
+import { setUpdateLoading } from '../../../store/actions/auth';
+
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
