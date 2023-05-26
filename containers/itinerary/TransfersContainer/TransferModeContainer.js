@@ -7,6 +7,7 @@ import * as ga from '../../../services/ga/Index';
 import { FaPlane } from 'react-icons/fa';
 import { LivelyButton } from '../../../components/LiveleyButton';
 import { MdEdit } from 'react-icons/md';
+import useMediaQuery from '../../../components/media';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -48,10 +49,10 @@ const Line = styled.hr`
 
   border: 2px;
 
-  width: ${(props) => (props.Transfers ? `10rem` : `5rem`)};
+  width: ${(props) => (props.Transfers ? `12rem` : `5rem`)};
 
-  top: ${(props) => (props.Transfers ? `54px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-64px` : `-25px`)};
+  top: ${(props) => (props.Transfers ? `75px` : `23px`)};
+  right: ${(props) => (props.Transfers ? `-80px` : `-25px`)};
   opacity: initial;
 
   @media screen and (min-width: 768px) {
@@ -73,6 +74,7 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
+  const isDesktop = useMediaQuery('(min-width:1024px)');
   function HandleFlights(i) {
     let name = props.booking['name'];
     let costings_breakdown = props.booking['costings_breakdown'];
@@ -196,7 +198,7 @@ const TransferModeContainer = (props) => {
             </div>
             <div className="flex flex-col gap-1 w-[80%]">
               <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
-                <div className="flex flex-row  gap-2 ">
+                <div className="flex flex-row  gap-2 items-center ">
                   <div className="font-semibold w-full">{props.heading}</div>
                   <div
                     onClick={() => HandleFlights(props.index)}
@@ -217,46 +219,47 @@ const TransferModeContainer = (props) => {
                   )}
                 </div>
               </div>
-
-              <div className="lg:flex hidden  flex-row  gap-3  ">
-                <div className="flex flex-col">
-                  <div className="text-[#01202B] font-medium">
-                    ({props.booking.origin_code})
-                  </div>
-                  <div className="min-w-max">
-                    {formatDate(props.booking.check_in)}
-                  </div>
-                  <div>{props.booking.city}</div>
-                </div>
-                <div className="flex flex-row justify-center items-center">
-                  <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-                  <div className="relative w-32 flex justify-center items-center">
-                    <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
-                    <div className="flex flex-col  justify-center items-center">
-                      <FaPlane className="" />
-                      <div>
-                        Nonstop
-                        {props.booking.duration
-                          ? ` (${props.booking.duration}h)`
-                          : null}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-                </div>
-                <div className="flex flex-row justify-between w-full">
-                  <div>
+              {isDesktop && (
+                <div className="lg:flex   flex-row  gap-3  ">
+                  <div className="flex flex-col">
                     <div className="text-[#01202B] font-medium">
-                      ({props.booking.destination_code})
+                      ({props.booking.origin_code})
                     </div>
                     <div className="min-w-max">
-                      {formatDate(props.booking.check_out)}
+                      {formatDate(props.booking.check_in)}
                     </div>
-                    <div>{props.booking.destination_city}</div>
+                    <div>{props.booking.city}</div>
+                  </div>
+                  <div className="flex flex-row justify-center items-center">
+                    <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                    <div className="relative w-32 flex justify-center items-center">
+                      <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
+                      <div className="flex flex-col  justify-center items-center">
+                        <FaPlane className="" />
+                        <div>
+                          Nonstop
+                          {props.booking.duration
+                            ? ` (${props.booking.duration}h)`
+                            : null}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                  </div>
+                  <div className="flex flex-row justify-between w-full">
+                    <div>
+                      <div className="text-[#01202B] font-medium">
+                        ({props.booking.destination_code})
+                      </div>
+                      <div className="min-w-max">
+                        {formatDate(props.booking.check_out)}
+                      </div>
+                      <div>{props.booking.destination_city}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
           <div className="lg:hidden flex flex-row gap-3 ml-2">

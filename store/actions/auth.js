@@ -169,7 +169,7 @@ export const setAuthRedirect = (path) => {
   };
 };
 
-export const auth = (mobile, password, name, email, whatsapp) => {
+export const auth = (mobile, password, name, email, whatsapp, itinary_id) => {
   //name and email null incase of old user
 
   const authData = {
@@ -373,9 +373,8 @@ export const changeUserDetails = (userdetails) => {
       .catch((err) => {
         //set error
         if (err.response.data.phone)
-          dispatch(
-            authMobileFail(err.response.data.phone[0])
-          ); //Invalid / already taken  mobile
+          dispatch(authMobileFail(err.response.data.phone[0]));
+        //Invalid / already taken  mobile
         else dispatch(authMobileFail()); //Invalid / already taken  mobile
       });
   };

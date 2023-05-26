@@ -227,7 +227,8 @@ const LogIn = (props) => {
           otp,
           userDetails.userName,
           userDetails.email,
-          whatsapp
+          whatsapp,
+          props.itinary_id
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
@@ -235,7 +236,8 @@ const LogIn = (props) => {
         otp,
         userDetails.userName,
         null,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
@@ -243,7 +245,8 @@ const LogIn = (props) => {
         otp,
         userDetails.userName,
         userDetails.email,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -251,7 +254,8 @@ const LogIn = (props) => {
         otp,
         null,
         userDetails.email,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     } else {
       props.onAuth(
@@ -259,7 +263,8 @@ const LogIn = (props) => {
         otp,
         null,
         null,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     }
   };
@@ -762,8 +767,10 @@ const mapStateToPros = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (mobile, password, name, email, whatsapp) =>
-      dispatch(authaction.auth(mobile, password, name, email, whatsapp)),
+    onAuth: (mobile, password, name, email, whatsapp, itinary_id) =>
+      dispatch(
+        authaction.auth(mobile, password, name, email, whatsapp, itinary_id)
+      ),
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
     onResetLogin: () => dispatch(authaction.authResetLogin()),

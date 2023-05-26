@@ -1041,7 +1041,11 @@ const SimpleTabsV2 = (props) => {
   } else {
     return (
       <div>
-        <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
+        <LogInModal
+          show={true}
+          onhide={_handleLoginClose}
+          itinary_id={props.id}
+        ></LogInModal>
       </div>
     );
   }

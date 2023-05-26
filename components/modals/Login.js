@@ -126,7 +126,11 @@ const Enquiry = (props) => {
               </ImgTagsContainer>
             </ImgContainer>
             <div style={{ padding: '20px' }}>
-              <Login ref={myref} onhide={props.onhide}></Login>
+              <Login
+                ref={myref}
+                onhide={props.onhide}
+                itinary_id={props.itinary_id}
+              ></Login>
             </div>
           </div>
           {/* </Modal.Body> */}
@@ -146,7 +150,7 @@ const Enquiry = (props) => {
         >
           {/* <Modal.Body style={{padding: "0"}} > */}
           <div style={{ padding: '20px' }}>
-            <Login onhide={props.onhide}></Login>
+            <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
           </div>
           {/* </Modal.Body> */}
         </Modal>
