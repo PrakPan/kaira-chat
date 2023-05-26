@@ -20,6 +20,7 @@ const TextBold = styled.div`
 const WeatherWidget = ({
   city,
   travelDate,
+  description,
   cnt = 7,
   apiKey = 'e2fe4bf0d3954e25a493b899a559f43d',
 }) => {
@@ -84,7 +85,11 @@ const WeatherWidget = ({
   }
 
   if (!weather) {
-    return <></>;
+    return description ? (
+      <div className="line-clamp-3 max-w-[15rem] subpixel-antialiased ">
+        {description}
+      </div>
+    ) : null;
   }
   return (
     <div>

@@ -64,7 +64,9 @@ const BookingListCostContainer = styled.div`
   }
 `;
 const Details = (props) => {
-  const [iscouponApplied, setiscouponApplied] = useState(true);
+  const [iscouponApplied, setiscouponApplied] = useState(
+    props.payment.show_per_person_cost ? true : false
+  );
   const [percentoff, setPercentoff] = useState(
     props?.payment?.coupon?.discount_value
   );
