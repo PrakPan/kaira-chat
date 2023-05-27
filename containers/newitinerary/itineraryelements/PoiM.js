@@ -8,7 +8,15 @@ import { HiPencil } from 'react-icons/hi';
 import Rating from './Rating';
 import Tips from './Tips';
 import StarRating from '../../../components/StarRating';
+import { MdEdit } from 'react-icons/md';
+import Drawer from '../../../components/ui/Drawer';
+import { TbArrowBack } from 'react-icons/tb';
 import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
+import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
+import axiositineraryeditinstance from '../../../services/itinerary/edit';
+import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
+import PoiList from './PoiList';
+import PoiListSkeleton from './PoiListSkeleton';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -60,16 +68,63 @@ const ColorTags = styled.span`
   padding: 0.25rem 0.5rem;
 `;
 const ItineraryPoiElementM = (props) => {
+  const [show, setShow] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawerListData, setshowDrawerListData] = useState(false);
+  const [showDrawerData, setShowDrawerData] = useState(false);
+  const [fetchingPoi, setFetchingPoi] = useState(false);
+  const [optionsJSX, setOptionsJSX] = useState([]);
+  const [viewMore, setViewMore] = useState(false);
   useEffect(() => {}, []);
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
   }
-  const [viewMore, setViewMore] = useState(false);
-  const [show, setShow] = useState(false);
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
+
+  function Poi_activities() {
+    setFetchingPoi(true);
+    if (props.city_id) setShowDrawer(true);
+    axiosaxtivitiesinstance
+      .post('/', {
+        location: props.city_id,
+        duration: 10,
+      })
+      .then((res) => {
+        if (res.data.length) {
+          let options = [];
+
+          for (var i = 0; i < res.data.length; i++) {
+            if (res.data[i].heading !== props.heading)
+              // if(res.data.results[i].name !== props.selectedBooking.name)
+              options.push(
+                <PoiList
+                  key={i}
+                  // _updatePoiHandler={_updatePoiHandler}
+                  // _openPoiModal={_openPoiModal}
+                  data={res.data[i]}
+                  // tailored_id={props.tailored_id}
+                  // updateLoadingState={updateLoadingState}
+                  // itinerary_id={
+                  //   props.selectedBooking
+                  //     ? props.selectedBooking.itinerary_id
+                  //     : ''
+                  // }
+                ></PoiList>
+              );
+          }
+          setOptionsJSX(options);
+        } else {
+          setOptionsJSX([]);
+        }
+        setFetchingPoi(false);
+      })
+      .catch((err) => {});
+  }
+
   return (
     <Container className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -117,6 +172,12 @@ const ItineraryPoiElementM = (props) => {
           <div className=" " style={{ lineHeight: '1' }}>
             <div className="flex flex-row text-[1.2rem]">
               {props.heading}{' '}
+              <div
+                onClick={() => Poi_activities(props.index)}
+                className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+              >
+                <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+              </div>
               {/* <HiPencil className="text-lg min-w-max"></HiPencil> */}
             </div>
           </div>
@@ -182,14 +243,44 @@ const ItineraryPoiElementM = (props) => {
       <span onClick={() => setViewMore(!viewMore)} className="font-semibold">
         {viewMore ? 'Less' : 'More'}
       </span>
-      <POIDetailsDrawer
-        // show={props.showDrawer.isOpen}
-        show={show}
-        iconId={props.poi.id}
-        // handleCloseDrawer={props.handleCloseDrawer}
-        handleCloseDrawer={handleCloseDrawer}
-        name={props.heading}
-      />
+      {props.poi.id && (
+        <POIDetailsDrawer
+          // show={props.showDrawer.isOpen}
+          show={show}
+          iconId={props.poi.id}
+          // handleCloseDrawer={props.handleCloseDrawer}
+          handleCloseDrawer={handleCloseDrawer}
+          name={props.heading}
+        />
+      )}
+      <Drawer
+        show={showDrawer}
+        anchor={'right'}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
+        onHide={() => setShowDrawer(false)}
+        // zIndex='1501'
+      >
+        <div>
+          <TbArrowBack
+            onClick={() => setShowDrawer(false)}
+            className="hover-pointer"
+            style={{
+              margin: '0.5rem',
+              fontSize: '1.75rem',
+              textAlign: 'right',
+            }}
+          ></TbArrowBack>
+        </div>
+        {!fetchingPoi ? (
+          // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
+          optionsJSX
+        ) : (
+          <PoiListSkeleton name={'Activity'} />
+        )}
+      </Drawer>
+
       {/* {!ErrorNotDef(props.poi) ? (
         !ErrorNotDef(props.poi.tips) ? (
           <Tips tips={props.poi.tips}></Tips>

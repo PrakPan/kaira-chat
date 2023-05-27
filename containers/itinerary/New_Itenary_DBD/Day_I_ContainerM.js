@@ -139,7 +139,9 @@ const Day_I_ContainerM = (props) => {
               booking
               heading={element.heading}
               text={element.text}
+              poi_id={element.activity_data.id}
               poi={element.activity_data.poi}
+              city_id={element.activity_data.city.id}
             ></ItineraryPoiElementM>
           );
           break;

@@ -27,7 +27,9 @@ const PoiList = ({ data }) => {
   const [isSelect, setisSelect] = useState(false);
   console.log(data);
   return (
-    <div className={`flex gap-1 pt-4 w-[50vw]  flex-col justify-start `}>
+    <div
+      className={`flex gap-1 pt-4 lg:w-[50vw] w-[100vw]  flex-col justify-start `}
+    >
       <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
         {data.activity_data.activity.image ? (
           <div
