@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useLayoutEffect} from 'react';
 import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styled, { keyframes } from 'styled-components';
@@ -33,6 +33,8 @@ import TailoredFormMobileModal from '../../components/modals/TailoredFomrMobile'
 import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
 import openTailoredModal from '../../services/openTailoredModal'
 import Continentcarousel from '../../components/continentcarousel/continentcarousel';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -77,10 +79,39 @@ const  Homepage = (props) =>{
   const [plansLoading, setPlansLoading ] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
 const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
-
   let isPageWide = media('(min-width: 768px)');
+  
+  
+  useLayoutEffect(() => {
+
+    if (!Cookies.get("userLocation")) getUserIp();
+
+    async function getUserIp() {
+      try {
+        const res = await axios.get("https://api.ipify.org?format=json");
+        const IpAddress = res.data.ip;
+        if (IpAddress) getUserLocation(IpAddress);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    async function getUserLocation(ip) {
+      try {
+        const res = await axios.get(
+          `https://apis.tarzanway.com/search/user_location/?ip=${ip}`
+        );
+        const data = JSON.stringify(res.data);
+        if (res.data) Cookies.set("userLocation", data, { expires: 7 });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }, []);
+
+
+
+
   useEffect(() => {
-    
     if(props.token){
 const MyPlans = JSON.parse(localStorage.getItem('MyPlans'))
 if(MyPlans && MyPlans.access_token === props.token){
@@ -110,7 +141,9 @@ else{
   }
 }
  
- },[props.token]);
+  }, [props.token]);
+  
+
 
 //JSX for How it works 
 const HowitWorksHeadingsArr=[

@@ -17,6 +17,7 @@ import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
+import Cookies from "js-cookie";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -143,6 +144,20 @@ const Enquiry = (props) => {
     setShowSearchStarting(false);
   };
   let isPageWide = media("(min-width: 768px)");
+          const LocationCookie = Cookies.get("userLocation");
+
+  useEffect(() => {
+      if (!startingLocation) {
+        if (LocationCookie) {
+          const userLocation = JSON.parse(LocationCookie);
+          if (userLocation.text && userLocation.place_id)
+            setStartingLocation({
+              name: userLocation.text,
+              place_id: userLocation.place_id,
+            });
+        }
+      }
+  }, [LocationCookie]);
 
   const [selectedCities, setSelectedCities] = useState(
     !router.pathname.split("/").includes("[city]")

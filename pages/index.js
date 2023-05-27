@@ -6,7 +6,7 @@ import * as authaction from '../store/actions/auth';
 import { useEffect } from 'react';
 import axiospagelistinstance from '../services/pages/list'
 import axioscountrydetailsinstance from "../services/pages/country";
-
+import Cookies from 'js-cookie';
 import axios from 'axios'
 const  Home = (props) =>  {
   useEffect(() => {
@@ -71,7 +71,6 @@ catch(e){
     asiaLocations = []
     europeLocations = []
   }
-  
 
   const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading , path : e.path}})
       if (!data) {
