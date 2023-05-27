@@ -16,7 +16,11 @@ import { MdEdit } from 'react-icons/md';
 import Drawer from '../../../components/ui/Drawer';
 import { TbArrowBack } from 'react-icons/tb';
 import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
-
+import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
+import axiositineraryeditinstance from '../../../services/itinerary/edit';
+import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
+import PoiList from './PoiList';
+import PoiListSkeleton from './PoiListSkeleton';
 const padding = {
   initialLeft: '60px',
 };
@@ -90,7 +94,11 @@ const ColorTags = styled.span`
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawerListData, setshowDrawerListData] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
+  const [fetchingPoi, setFetchingPoi] = useState(false);
+  const [optionsJSX, setOptionsJSX] = useState([]);
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
@@ -99,6 +107,46 @@ const ItineraryPoiElement = (props) => {
   function stringCompare(arr, str) {}
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
+  }
+
+  function Poi_activities() {
+    setFetchingPoi(true);
+    if (props.city_id) setShowDrawer(true);
+    axiosaxtivitiesinstance
+      .post('/', {
+        location: props.city_id,
+        duration: 10,
+      })
+      .then((res) => {
+        if (res.data.length) {
+          let options = [];
+
+          for (var i = 0; i < res.data.length; i++) {
+            if (res.data[i].heading !== props.heading)
+              // if(res.data.results[i].name !== props.selectedBooking.name)
+              options.push(
+                <PoiList
+                  key={i}
+                  // _updatePoiHandler={_updatePoiHandler}
+                  // _openPoiModal={_openPoiModal}
+                  data={res.data[i]}
+                  // tailored_id={props.tailored_id}
+                  // updateLoadingState={updateLoadingState}
+                  // itinerary_id={
+                  //   props.selectedBooking
+                  //     ? props.selectedBooking.itinerary_id
+                  //     : ''
+                  // }
+                ></PoiList>
+              );
+          }
+          setOptionsJSX(options);
+        } else {
+          setOptionsJSX([]);
+        }
+        setFetchingPoi(false);
+      })
+      .catch((err) => {});
   }
   return (
     <Container>
@@ -136,7 +184,7 @@ const ItineraryPoiElement = (props) => {
                   {props.heading}
                 </div>
                 <div
-                  onClick={() => HandleTransport(props.index)}
+                  onClick={() => Poi_activities(props.index)}
                   className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                 >
                   <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -194,17 +242,43 @@ const ItineraryPoiElement = (props) => {
           </div>
         </div>
       </div>
-      {props.poi_id && (
+      {props.poi.id && (
         <POIDetailsDrawer
           // show={props.showDrawer.isOpen}
           show={show}
-          iconId={props.poi_id}
+          iconId={props.poi.id}
           // handleCloseDrawer={props.handleCloseDrawer}
           handleCloseDrawer={handleCloseDrawer}
           name={props.heading}
         />
       )}
-
+      <Drawer
+        show={showDrawer}
+        anchor={'right'}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
+        onHide={() => setShowDrawer(false)}
+        // zIndex='1501'
+      >
+        <div>
+          <TbArrowBack
+            onClick={() => setShowDrawer(false)}
+            className="hover-pointer"
+            style={{
+              margin: '0.5rem',
+              fontSize: '1.75rem',
+              textAlign: 'right',
+            }}
+          ></TbArrowBack>
+        </div>
+        {!fetchingPoi ? (
+          // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
+          optionsJSX
+        ) : (
+          <PoiListSkeleton name={'Activity'} />
+        )}
+      </Drawer>
       {/* <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>
                 <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>

@@ -65,13 +65,19 @@ const Experiences = (props) => {
   //           </BackroundImageLoader>
   //       </Container>
   //   );
+
+  const _handleRedirect = (e) => {
+    e.preventDefault();
+    if (props.path) window.location.href = '/' + props.path;
+    console.log('props.path: ', props.path);
+  };
   const path = props.city
-    ? 'https://dev.thetarzanway.com/travel-guide/city/'
-    : 'https://dev.thetarzanway.com/travel-planner/';
+    ? 'https://thetarzanway.com/travel-guide/city/'
+    : 'https://thetarzanway.com/travel-planner/';
   return (
     <ImageContainer
       className="hover-pointer"
-      onClick={(e) => (window.location.href = path + props.link)}
+      onClick={(e) => _handleRedirect(e)}
     >
       <ImageFade>
         <ImageLoader

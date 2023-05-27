@@ -9,7 +9,7 @@ const CityDetails = ({ data }) => {
   console.log('data');
   console.log(data);
   return (
-    <div className="px-3 w-[100vw] lg:w-[50vw]">
+    <div className="px-3 w-[100vw] lg:w-[35vw]">
       <div style={imageLoading ? { display: 'none' } : { display: 'initial' }}>
         <ImageLoader
           borderRadius="8px"
