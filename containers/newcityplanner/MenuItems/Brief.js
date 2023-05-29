@@ -29,6 +29,7 @@ const P = styled.p`
 
 const WeatherContainer = styled.div`
 border : 1px solid #ECEAEA;
+margin-top : 1rem;
 border-radius : 10px;
 padding : 25px;
 height: max-content;

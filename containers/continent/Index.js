@@ -168,7 +168,7 @@ const Index = (props) => {
           </Heading>
           <WhyPlanWithUs
             page_id={props.data.id}
-            destination={props.data.destination}
+            // destination={props.data.destination}
           />
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             What our customers say?
