@@ -6,6 +6,13 @@ import axiosfbauthinstance from '../../services/user/fbAuth';
 import axiosuserinstance from '../../services/user/info';
 import * as ga from '../../services/ga/Index';
 //Open login modal
+export const authShowLogin = () => {
+  return {
+    type: actionTypes.AUTH_SHOWLOGIN,
+  };
+};
+
+//Open login modal
 export const setUpdateLoading = (isLoading) => {
   return {
     type: 'SET_UPDATE_LOADING',
