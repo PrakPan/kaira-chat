@@ -1,4 +1,4 @@
-import content from "../../public/content/termsconditions";
+import content from "../../public/content/privacypolicy";
 import styled from "styled-components";
 import media from "../../components/media";
 import { useState } from "react";

@@ -71,24 +71,45 @@ padding:0.5rem 1rem 1rem 1rem;
 
         for(var i =0;i<content.length;i++){
     
-           
-            for(var j=0;j<content[i].content.length;j++){
+          var text = (
+            <ul>
+              {content[i].content.map((e) => (
+                <li>
+                  {e.text ? (
+                    e.text
+                  ) : (
+                    <div>
+                      <b>{e.subheading}</b>
+                      <ul>
+                        {e.content.map((el) => (
+                          <li style={{listStyleType: 'circle'}}>{el.text}</li>
+                        ))}
+                      </ul>{" "}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          );
+          //   for(var j=0;j<content[i].content.length;j++){
+                
                 
                
-               
             
+        
+          // }
           textfield.push(
             <Section
-            key={content[i].subheading}
-            title={content[i].subheading}
-            
-            subtitle={content[i].content[j].text}
-            
-            dark={true}
-            id={content[i].subheading}
+              key={content[i].subheading}
+              title={content[i].subheading}
+              // subtitle={content[i].content[j].text}
+              subtitle={text}
+              dark={true}
+              id={content[i].subheading}
             />
-          )
-        } }
+          );
+        
+        }
 
     
     settextfieldText(textfield);
@@ -96,32 +117,30 @@ padding:0.5rem 1rem 1rem 1rem;
 
   let isPageWide = media('(min-width: 768px)')
      
-    return(
+    return (
       <>
-      <Heading className='font-lexend' >
-          Terms And Conditions
-      </Heading>
-     
-        
-        
-           
-        <Container className='font-lexend'>
-        {isPageWide && <Linkcardstyle 
-        // className='border-thin'
-           ><Navbar/></Linkcardstyle>}
-        <Cardstyle
-        //  className='border-thin'
-           >   <div> {textfieldText} </div> </Cardstyle>
-      
-         
-        </Container>
-        
-        
-        
-       
+        <Heading className="font-lexend">Terms And Conditions</Heading>
 
-        </>
-    )
+        <Container className="font-lexend">
+          {isPageWide && (
+            <Linkcardstyle
+            // className='border-thin'
+            >
+              <Navbar />
+            </Linkcardstyle>
+          )}
+          <Cardstyle
+          //  className='border-thin'
+          >
+            {" "}
+            <div> {textfieldText} </div>{" "}
+            
+          </Cardstyle>
+
+          
+        </Container>
+      </>
+    );
   
  }
 
