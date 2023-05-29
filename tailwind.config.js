@@ -10,10 +10,10 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
+    fontFamily: {
+      sans: ['lexend'],
+    },
     extend: {
-      fontFamily: {
-        sans: ['Lexend'],
-      },
       height: {
         300: '300px',
         557: '557px',

@@ -75,9 +75,14 @@ const Details = (props) => {
   const [inputValue, setInputValue] = useState('');
   const [showAdultsModal, setShowAdultsModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
-
+  const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
-
+  useEffect(() => {
+    if (props.payment?.coupon?.code) {
+      setInputValue(props.payment?.coupon?.code);
+      setIsDisabled(true);
+    }
+  });
   const getPaymentHandler = (coupon) => {
     setPaymentLoading(true);
     //  props.checkAuthState();
@@ -98,7 +103,7 @@ const Details = (props) => {
       .then((res) => {
         console.log(res.data);
         setPaymentLoading(false);
-        iscouponApplied(true);
+        setIsDisabled(true);
         setPercentoff();
         //check if user has already paid
         // try{
@@ -110,14 +115,55 @@ const Details = (props) => {
       })
       .catch((error) => {
         setPaymentLoading(false);
+        setIsDisabled(false);
+        setInputValue('');
         console.log(error);
       });
   };
+  const RemoveCoupon = () => {
+    setPaymentLoading(true);
+    //  props.checkAuthState();
 
+    axios
+      .post(
+        MIS_SERVER_HOST + '/payment/coupon/apply/',
+        {
+          itinerary_id: props.id,
+          coupon: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+        setPaymentLoading(false);
+        setIsDisabled(false);
+        setInputValue('');
+        setPercentoff();
+        //check if user has already paid
+        // try{
+        // let email = localStorage.getItem('email');
+
+        // }catch{
+
+        // }
+      })
+      .catch((error) => {
+        setPaymentLoading(false);
+        setIsDisabled(true);
+
+        console.log(error);
+      });
+  };
   function handleSubmit(e) {
     console.log(inputValue);
     getPaymentHandler(inputValue);
-    setInputValue('');
+  }
+  function handleSubmitRemove(e) {
+    RemoveCoupon();
   }
   const setBookingSummary = () => {
     try {
@@ -650,18 +696,33 @@ const Details = (props) => {
                 name="name"
                 placeholder="Have a coupon code?"
               />
-              <button
-                className=" absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
-                type="submit"
-                onClick={(e) => handleSubmit(e)}
-              >
-                <div
-                  className=" font-bold text-black cursor-pointer"
-                  aria-hidden="true"
+              {isDisabled ? (
+                <button
+                  className=" absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+                  type="submit"
+                  onClick={(e) => handleSubmit(e)}
                 >
-                  Apply
-                </div>
-              </button>
+                  <div
+                    className=" font-bold text-black cursor-pointer"
+                    aria-hidden="true"
+                  >
+                    Apply
+                  </div>
+                </button>
+              ) : (
+                <button
+                  className=" absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+                  type="submit"
+                  onClick={(e) => handleSubmitRemove(e)}
+                >
+                  <div
+                    className=" font-bold text-black cursor-pointer"
+                    aria-hidden="true"
+                  >
+                    Remove
+                  </div>
+                </button>
+              )}
             </div>
           </div>
         ) : null}

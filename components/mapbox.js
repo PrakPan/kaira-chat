@@ -222,8 +222,6 @@ const Mapbox = React.memo(
         <TileLayer
           url={`
        https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2hpdmFhbmsiLCJhIjoiY2xob3Vjbnd6MDBsNjNkbXNkanp2Nzd5dyJ9.Nikg8Qt4OOYGthgMQ5zH1w`}
-
-          // attribution='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>'
         />
 
         {/* <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" /> */}
@@ -331,7 +329,7 @@ const Mapbox = React.memo(
             </Popup>
           </Marker>
         ))}
-        {currentPopup ? (
+        {/* {currentPopup ? (
           <Popup
             className="w-[26rem]"
             position={[currentPopup[0].lat, currentPopup[0].long]}
@@ -362,47 +360,18 @@ const Mapbox = React.memo(
                   />
                 </div>
 
-                {/* <div>Things to do</div>
-              <div className="font-bold text-md">
-                Tours · Wildlife · Museums
-              </div> */}
-                {/* <WeatherWidget
-                city={currentPopup[0].city_name}
-                lat={currentPopup[0].lat}
-                lon={currentPopup[0].long}
-              /> */}
-                {/* <a
-            href="#_"
-            class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-gray-600 whitespace-no-wrap bg-white border border-gray-200 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:shadow-none"
-          >
-            View {currentPopup[0].cityData.city_name} in your Itinerary
-            <span class="relative flex h-3 w-3">
-              <span
-                className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400  opacity-75`}
-              ></span>
-              <span
-                className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
-              ></span>
-            </span>
-          </a> */}
+              
                 <div
                   className={`relative rounded min-w-fit flex flex-row cursor-pointer bg-slate-600 px-2 py-2 text-xs font-semibold text-white shadow-sm  hover:bg-[#BF3535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
                   onClick={() => scrollToTargetAdjusted(currentPopup[0].dayId)}
                 >
                   View {currentPopup[0].cityData.city_name} in your Itinerary
-                  {/* <span class="absolute -right-1 -top-2 flex h-3 w-3">
-                  <span
-                    className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75`}
-                  ></span>
-                  <span
-                    className={`relative inline-flex rounded-full h-3 w-3 bg-sky-500`}
-                  ></span>
-                </span> */}
+                  
                 </div>
               </div>
             </div>
           </Popup>
-        ) : null}
+        ) : null} */}
       </MapContainer>
     ) : null;
   }
