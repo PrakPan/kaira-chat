@@ -14,6 +14,9 @@ const Container = styled.div`
   margin: 0 auto 0 auto;
   height: 6vh;
 `;
+const SearchText = styled.span`
+  opacity: 0.7;
+`;
 const MobileBar = (props) => {
   let isPageWide = media('(min-width: 768px)');
   const isPageLoaded = usePageLoaded();

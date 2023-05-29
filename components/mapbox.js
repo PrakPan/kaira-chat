@@ -17,6 +17,7 @@ import { ITbutton } from '../containers/newitinerary/breif/cities/City';
 import WeatherWidget from './WeatherWidget/WeatherWidget';
 import DistanceBetweenCoords from '../helper/DistanceBetweenCoords';
 import { getHumanDate } from '../services/getHumanDate';
+import useMediaQuery from './media';
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
@@ -46,6 +47,7 @@ const Mapbox = React.memo(
   }) => {
     const [mapZoom, setMapZoom] = useState(() => NearestLocation());
     const [mapCenter, setMapCenter] = useState(() => findCenterPoint());
+    const isDesktop = useMediaQuery('(min-width:768px)');
     function findCenterPoint() {
       const points = locations.map((place) => ({
         lat: place.lat,
@@ -107,7 +109,12 @@ const Mapbox = React.memo(
 
       const longestroute = sortWholeNumbersDescending(distanceArray)[0];
       console.log(longestroute);
-      return getDegree(longestroute);
+      const degree = getDegree(longestroute);
+      if (isDesktop) {
+        return degree - 1;
+      } else {
+        return degree;
+      }
       // var firstelement = filtered.sort()[0];
       // const firstData = distanceArray.filter((element, index) => {
       //   return firstelement === filtered;

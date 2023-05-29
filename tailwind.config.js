@@ -11,6 +11,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Lexend'],
+      },
       height: {
         300: '300px',
         557: '557px',

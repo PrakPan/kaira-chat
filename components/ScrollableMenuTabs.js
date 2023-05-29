@@ -28,8 +28,7 @@ const Navbar = styled.div`
   overflow-x: scroll;
   align-items: center;
   flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
-  margin: ${({ Isvertical }) =>
-    Isvertical ? '0px -20px 0px -120px' : '0px -20px 0px -20px'};
+  margin: ${({ Isvertical }) => (Isvertical ? '0px -20px 0px -120px' : '')};
   position: ${({ Isvertical }) => (Isvertical ? 'absolute' : 'inherit')};
   background-color: white;
 `;
@@ -155,7 +154,7 @@ const ScrollableMenuTabs = ({
   const { markerPos, ...markerHandlers } = useNavigationMarker();
   return (
     <NavbarContainer
-      style={{ top: offset, marginLeft: icons ? '0px' : '20px' }}
+      style={{ top: offset, marginLeft: icons ? '0px' : '0px' }}
       Isvertical={vertical}
       className={classStyle}
       isInView={isInView}

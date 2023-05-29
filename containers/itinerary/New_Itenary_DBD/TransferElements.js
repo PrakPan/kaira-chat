@@ -16,6 +16,7 @@ import { convertNumToTime } from '../../../helper/convertNumToTime';
 import { formatNumber } from '../../../helper/formatNumber';
 import { Text } from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
+import { Link } from 'react-scroll';
 const TransferElements = ({
   time,
   heading,
@@ -60,10 +61,12 @@ const TransferElements = ({
                 <div className="text-xl font-normal pr-2 ">{heading}</div>
 
                 {meta == null || meta.estimated_cost == undefined ? null : (
-                  <TransparentButton>
-                    {modes ? `${modes} From ` : null} ₹
-                    {formatNumber(meta.estimated_cost)}
-                  </TransparentButton>
+                  <Link to={'Transfer_Container'}>
+                    <TransparentButton>
+                      {modes ? `${modes} From ` : null} ₹
+                      {formatNumber(meta.estimated_cost)}
+                    </TransparentButton>
+                  </Link>
                 )}
               </div>
               {transfers !== undefined ? (
