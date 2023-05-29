@@ -44,7 +44,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export async function getStaticProps(){
+export async function getStaticProps() {
 var data = []
   var locations = []
   var asiaLocations = []
