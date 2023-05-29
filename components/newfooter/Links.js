@@ -3,17 +3,19 @@ const linksArr = [
   {
     heading: "Travel Destinations",
     data: [
-      { title: "Andaman & Nicobar", link: urls.travel_planner.ANDAMAN },
-      { title: "Himachal Pradesh", link: urls.travel_planner.HIMACHAL },
-      { title: "Goa", link: urls.travel_planner.GOA },
-      { title: "Jammu & Kashmir", link: urls.travel_planner.KASHMIR },
-      { title: "Ladakh", link: urls.travel_planner.LADAKH },
+      { title: "Europe", link: "/europe" },
+      { title: "Asia", link: "/asia" },
+      { title: "North America", link: "/north_america" },
+      { title: "South America", link: "/south_america" },
+      { title: "Australia & New Zealand", link: "/oceania" },
+      { title: "Africa", link: "/africa" },
+      { title: "Caribbean", link: "/caribbean" },
     ],
   },
   {
     heading: "Travel Styles",
     data: [
-      { title: "Personalise", link: '' },
+      { title: "Personalise", link: "" },
       { title: "Workcation", link: urls.travel_planner.WORKCATION },
       { title: "Volunteer", link: urls.travel_planner.VOLUNTEER },
       // { title: "Treks", link: urls.travel_planner.TREKS },
