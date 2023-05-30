@@ -53,12 +53,13 @@ const Logo = styled.img`
 const Heading2 = styled.div`
   font-size: 1rem;
   margin: 0.5rem 0 0 0;
-  font-weight: 500;
+  font-weight: 400;
 
   display: block;
   @media screen and (min-width: 768px) {
-    margin: 1.5rem 0 0 0;
-    font-size: 1.5rem;
+    margin: 1.3rem 0 0 0;
+    font-size: 1rem;
+
     top: 66vh;
   }
 `;
@@ -75,7 +76,7 @@ const Index = () => {
     for (var i = 0; i < content.length; i++) {
       if (content[i].heading) {
         cards.push(
-          <Heading2 className="font-opensans">{content[i].heading}</Heading2>
+          <Heading2 className="font-lexend">{content[i].heading}</Heading2>
         );
       }
     }
