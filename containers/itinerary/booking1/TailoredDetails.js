@@ -418,13 +418,16 @@ const Details = (props) => {
       <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-2">
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
-            <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
-              <span>₹</span>
-              <div>
-                {' '}
-                {getIndianPrice(Math.round(props.payment.total_cost / 100))}
+            {iscouponApplied && (
+              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                <span>₹</span>
+                <div>
+                  {' '}
+                  {getIndianPrice(Math.round(props.payment.total_cost / 100))}
+                </div>
               </div>
-            </div>
+            )}
+
             {iscouponApplied && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 text-white">
                 <div>{props?.payment?.coupon?.discount_value}</div>
