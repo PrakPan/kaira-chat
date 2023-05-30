@@ -620,7 +620,7 @@ const Enquiry = (props) => {
 
        <Container className="border center-div">
          <LoadingLottie height="50%" width="50%"></LoadingLottie>
-         <LoadingText>Submitting...</LoadingText>
+         <LoadingText>Finalizing your plan...</LoadingText>
        </Container>
      </div>
    );
