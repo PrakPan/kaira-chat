@@ -120,13 +120,13 @@ const FullImgContent = (props) => {
           <SubHeading>
             Bid farewell to generic holiday packages.
             <br />
-            Craft AI-personalized itineraries.
+            Get Your AI-Personalised Itineraries
           </SubHeading>
         ) : (
           <SubHeading>
             Say goodbye to packages.
             <br />
-            Craft AI-personalized itineraries.
+            Get Your AI-Personalised Itineraries
           </SubHeading>
         )}
         <div className="hidden-mobile">

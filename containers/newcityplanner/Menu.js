@@ -162,7 +162,7 @@ const Menu = (props)=>{
 
       <MenuItem id="Customers">
         <Heading style={{ marginBottom: "1.5rem" }}>
-          What our customers say?
+          Happy Community of The Tarzan Way
         </Heading>
         <Reviews />
       </MenuItem>

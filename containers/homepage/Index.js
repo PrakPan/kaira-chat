@@ -111,31 +111,37 @@ else{
  },[props.token]);
 
 //JSX for How it works 
-const HowitWorksHeadingsArr=[
-
-  <HowItWorksHeading className="font-lexend">Select your preferences</HowItWorksHeading>,
-
-  <HowItWorksHeading className="font-lexend">Let our AI plan your itinerary</HowItWorksHeading>,
-
-  <HowItWorksHeading className="font-lexend">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
-
-  <HowItWorksHeading className="font-lexend">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
-
-];
-
-const HowitWorksContentsArr = [
-
-  <HowItWorksText className="font-lexend">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
-
-    <HowItWorksText  className="font-lexend">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
-
-  <HowItWorksText  className="font-lexend">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
-
-  <HowItWorksText  className="font-lexend">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
-
-
-
-];
+ const HowitWorksHeadingsArr = [
+   <HowItWorksHeading className="font-lexend">
+     Handpick Your Selection
+   </HowItWorksHeading>,
+   <HowItWorksHeading className="font-lexend">
+     Unleash AI's Itinerary Wizardry!
+   </HowItWorksHeading>,
+   <HowItWorksHeading className="font-lexend">
+     Easy Bookings with 24x7 Concierge
+   </HowItWorksHeading>,
+   <HowItWorksHeading className="font-lexend">
+     No Commissions - Pay for what you get
+   </HowItWorksHeading>,
+ ];
+ const HowitWorksContentsArr = [
+   <HowItWorksText className="font-lexend">
+     From solo travel to workcation, honeymoon to family travel, tell us about
+     your mood, budget & timeline.
+   </HowItWorksText>,
+   <HowItWorksText className="font-lexend">
+     Get a unique itinerary completely personalized for you, with all bookings
+     in one place.
+   </HowItWorksText>,
+   <HowItWorksText className="font-lexend">
+     From your stays to activities, book-it-all in one click, and enjoy 24x7
+     assistance while you explore.
+   </HowItWorksText>,
+   <HowItWorksText className="font-lexend">
+     No hidden charges during & after bookings. Pay For What You Get.
+   </HowItWorksText>,
+ ];
 
 
 
@@ -168,88 +174,189 @@ useEffect(() => {
  setEscapeState(true)
 },[]);
   return (
-    
-    <div className={  "Homepage font-lexend" } id="homepage-anchor" style={{visibility: props.hidden ? 'hidden' : 'visible'}}>
+    <div
+      className={"Homepage font-lexend"}
+      id="homepage-anchor"
+      style={{ visibility: props.hidden ? "hidden" : "visible" }}
+    >
       {/* <Snowflakes></Snowflakes> */}
-   
+
       {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
        <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
       </FullImage> */}
 
       <HeroBanner
-                   image={isPageWide?'media/website/homepage-herobanner.jpg' :'media/website/homepage-banner-mobile.png'}
-                   destinationType={'city-planner'}
-                   title={<p>Travel planning a chore,<br/>
-                   Let our AI Explore.</p>}
-                  _startPlanningFunction={()=>openTailoredModal(router)}
-                 />
+        image={
+          isPageWide
+            ? "media/website/homepage-herobanner.jpg"
+            : "media/website/homepage-banner-mobile.png"
+        }
+        destinationType={"city-planner"}
+        title={
+          <p style={!isPageWide ? { fontSize: "22px" } : {}}>
+            Effortless Travel Planning!
+            <br />
+            Let AI Be Your Expert Guide.
+          </p>
+        }
+        _startPlanningFunction={() => openTailoredModal(router)}
+      />
 
+      <div
+        style={{ zIndex: "1", backgroundColor: "white", position: "relative" }}
+      >
+        <DesktopBanner
+          loading={desktopBannerLoading}
+          onclick={() => openTailoredModal(router)}
+          text="Want to personalize your own experience?"
+        ></DesktopBanner>
 
-       <div style={{zIndex: '1', backgroundColor: 'white', position: 'relative'}}>
+        <SetWidthContainer>
+          <Heading
+            textAlign="left"
+            bold
+            noline
+            fontSize={isPageWide ? "32px" : "24px"}
+            align="center"
+            aligndesktop="left"
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+          >
+            How it works?
+          </Heading>
+          <HowItWorksContainer>
+            <HowItWorks
+              images={howitworksimgs}
+              content={HowitWorksContentsArr}
+              headings={HowitWorksHeadingsArr}
+            ></HowItWorks>
+          </HowItWorksContainer>
 
-    <DesktopBanner loading={desktopBannerLoading} onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience?"></DesktopBanner>
+          {props.token && myPlansArr.length && plansCount ? (
+            <Heading
+              noline
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="left"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+              textAlign="left"
+            >
+              {"My Trips (" + plansCount + ")"}
+            </Heading>
+          ) : null}
+          {props.token && myPlansArr.length ? (
+            <>
+              <Experiences
+                margin="2.5rem 0"
+                experiences={myPlansArr}
+              ></Experiences>
+              <Button
+                link="/dashboard"
+                onclickparams={null}
+                borderWidth="1px"
+                fontSizeDesktop="12px"
+                fontWeight="500"
+                borderRadius="6px"
+                margin="1.5rem auto"
+                padding="0.5rem 2rem"
+              >
+                View All
+              </Button>
+            </>
+          ) : null}
+        </SetWidthContainer>
 
-    <SetWidthContainer>
-    <Heading textAlign='left' bold noline  fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"} >How it works?</Heading>        
-    <HowItWorksContainer><HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks></HowItWorksContainer>
-    
-    {props.token && myPlansArr.length && plansCount? 
-              <Heading  noline fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>{"My Trips ("+plansCount+")"}</Heading>        
-: null
+        <SetWidthContainer style={{}}>
+          {props.locations && props.locations.length ? (
+            <>
+              <Heading
+                noline
+                textAlign="left"
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Plan as per the best destinations
+              </Heading>
+              <Locations locations={props.locations} viewall></Locations>
+            </>
+          ) : null}
+
+          {props.ThemeData && props.ThemeData.length ? (
+            <>
+              <Heading
+                noline
+                textAlign="left"
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Plan trip as per mood
+              </Heading>
+              <PlanAsPerTheme ThemeData={props.ThemeData} />
+            </>
+          ) : null}
+
+          <Heading
+            noline
+            textAlign="left"
+            fontSize={isPageWide ? "32px" : "24px"}
+            align="center"
+            aligndesktop="left"
+            margin={
+              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
             }
-            {
-              props.token && myPlansArr.length ? 
-              <>
-              <Experiences  margin="2.5rem 0" experiences={myPlansArr} ></Experiences>
-             <Button  link='/dashboard'  onclickparams={null} borderWidth="1px" fontSizeDesktop="12px" fontWeight="500" borderRadius="6px" margin="1.5rem auto" padding="0.5rem 2rem" >View All</Button>
-              
-              </>
-: null
+            bold
+          >
+            Why plan with us?
+          </Heading>
+          <PlanWithUs />
+
+          <Heading
+            noline
+            textAlign="left"
+            fontSize={isPageWide ? "32px" : "24px"}
+            align="center"
+            aligndesktop="left"
+            margin={
+              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
             }
+            bold
+          >
+            Happy Community of The Tarzan Way
+          </Heading>
+          <CaseStudies></CaseStudies>
+        </SetWidthContainer>
 
-    </SetWidthContainer>
-   
+        <SetWidthContainer>
+          {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
+          {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
+        </SetWidthContainer>
 
-      <SetWidthContainer style={{}}>
-      {props.locations && props.locations.length ?<><Heading  noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan as per the best destinations</Heading>
-       <Locations locations={props.locations} viewall></Locations></> : null}
-
-      {
-        props.ThemeData && props.ThemeData.length ? <>
-      <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Plan your trip as per theme</Heading>
-              <PlanAsPerTheme ThemeData={props.ThemeData} />  
-        </> : null
-      }
-      
-      <Heading noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Why plan with us?</Heading>
-      <PlanWithUs />
-
-
-
-
-         <Heading  noline textAlign='left' fontSize={isPageWide?'32px':'24px'} align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}  bold>Our happy customers say about us </Heading>        
-         <CaseStudies></CaseStudies>
-
-
-      
-
-      </SetWidthContainer>
-
-    
- 
-
-      <SetWidthContainer>
-
-      {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
-         {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
-       </SetWidthContainer>
-     
-
-
-            <br></br>
-      {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-     {!isPageWide &&  <div><Banner onclick={()=>openTailoredModal(router)} text="Want to craft your own travel experience?"  buttontext="Start Now" color="black" buttonbgcolor="#f7e700"></Banner></div>}
-      {/* <Chatbot history={props.history}/>     */}
+        <br></br>
+        {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
+        {!isPageWide && (
+          <div>
+            <Banner
+              onclick={() => openTailoredModal(router)}
+              text="Want to craft your own travel experience?"
+              buttontext="Start Now"
+              color="black"
+              buttonbgcolor="#f7e700"
+            ></Banner>
+          </div>
+        )}
+        {/* <Chatbot history={props.history}/>     */}
       </div>
       <WhatsappFloating message="Hey, I need help planning my trip." />
     </div>

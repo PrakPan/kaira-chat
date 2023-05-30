@@ -10,7 +10,7 @@ import styled from 'styled-components'
 
 const SwiperContainer = styled.div`
   position: relative;
-  ${props => props.pageDots && 'margin-bottom : 2rem' };
+  ${(props) => props.pageDots && "margin-bottom : 2rem"};
   @media screen and (max-width: 768px) {
     ${(props) => !props.noPadding && "margin-inline: 0.5rem;"}
   }
@@ -27,8 +27,12 @@ const SwiperContainer = styled.div`
   .swiper-button-next,
   .swiper-button-prev {
     background: rgba(1, 32, 43, 0.7);
-    border: none;
     color: white;
+    ${(props) =>
+      props.navButtonBackground && `background : ${props.navButtonBackground}`};
+    ${(props) =>
+      props.navButtonColor && `color : ${props.navButtonColor}`};
+    border: none;
     border-radius: 100%;
     width: 40px;
     height: 40px;
@@ -82,6 +86,8 @@ const SwiperCarousel = (props) => {
             pageDots={props.pageDots}
             style={props.style}
             navButtonsTop={props.navButtonsTop}
+            navButtonBackground={props.navButtonBackground}
+            navButtonColor={props.navButtonColor}
             noPadding={props.noPadding}
           >
             <Swiper

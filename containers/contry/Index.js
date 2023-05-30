@@ -115,7 +115,10 @@ const Index = (props) => {
             Create your travel plan now!
           </Button>
 
-          <Heading align="left" style={{ margin: "3.5rem 0 3.5rem 0" }}>
+          <Heading
+            align="left"
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+          >
             How it works?
           </Heading>
           <div>
@@ -161,7 +164,7 @@ const Index = (props) => {
           />
 
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
-            What our customers say?
+            Happy Community of The Tarzan Way
           </Heading>
 
           <Reviews></Reviews>

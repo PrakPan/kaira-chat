@@ -98,44 +98,37 @@ const Index = (props) => {
   }, [props.token]);
 
   //JSX for How it works
-  const HowitWorksHeadingsArr = [
-    <HowItWorksHeading className="font-lexend">
-      Select your preferences
-    </HowItWorksHeading>,
-
-    <HowItWorksHeading className="font-lexend">
-      Let our AI plan your itinerary
-    </HowItWorksHeading>,
-
-    <HowItWorksHeading className="font-lexend">
-      Easy Bookings with 24x7 Concierge
-    </HowItWorksHeading>,
-
-    <HowItWorksHeading className="font-lexend">
-      No Commissions - <br /> Pay for what you get
-    </HowItWorksHeading>,
-  ];
-
-  const HowitWorksContentsArr = [
-    <HowItWorksText className="font-lexend">
-      From solo travel to workcation, honeymoon to family travel, tell us about
-      your mood, budget & timeline.
-    </HowItWorksText>,
-
-    <HowItWorksText className="font-lexend">
-      Get a unique itinerary completely personalized for you, with all bookings
-      in one place.
-    </HowItWorksText>,
-
-    <HowItWorksText className="font-lexend">
-      From your stays to activities, book-it-all in one click, and enjoy 24x7
-      assistance while you explore.
-    </HowItWorksText>,
-
-    <HowItWorksText className="font-lexend">
-      We only take a small service fees for negotiated-bookings & live support.
-    </HowItWorksText>,
-  ];
+   const HowitWorksHeadingsArr = [
+     <HowItWorksHeading className="font-lexend">
+       Handpick Your Selection
+     </HowItWorksHeading>,
+     <HowItWorksHeading className="font-lexend">
+       Unleash AI's Itinerary Wizardry!
+     </HowItWorksHeading>,
+     <HowItWorksHeading className="font-lexend">
+       Easy Bookings with 24x7 Concierge
+     </HowItWorksHeading>,
+     <HowItWorksHeading className="font-lexend">
+       No Commissions - Pay for what you get
+     </HowItWorksHeading>,
+   ];
+   const HowitWorksContentsArr = [
+     <HowItWorksText className="font-lexend">
+       From solo travel to workcation, honeymoon to family travel, tell us about
+       your mood, budget & timeline.
+     </HowItWorksText>,
+     <HowItWorksText className="font-lexend">
+       Get a unique itinerary completely personalized for you, with all bookings
+       in one place.
+     </HowItWorksText>,
+     <HowItWorksText className="font-lexend">
+       From your stays to activities, book-it-all in one click, and enjoy 24x7
+       assistance while you explore.
+     </HowItWorksText>,
+     <HowItWorksText className="font-lexend">
+       No hidden charges during & after bookings. Pay For What You Get.
+     </HowItWorksText>,
+   ];
 
   const howitworksimgs = [
     "media/website/whyus-1.webp",
@@ -194,7 +187,7 @@ const Index = (props) => {
             fontSize={isPageWide ? "32px" : "24px"}
             align="center"
             aligndesktop="left"
-            margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"}
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
           >
             How it works?
           </Heading>
@@ -216,6 +209,7 @@ const Index = (props) => {
                 !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
               }
               bold
+              textAlign="left"
             >
               {"My Trips (" + plansCount + ")"}
             </Heading>
@@ -275,7 +269,7 @@ const Index = (props) => {
                 }
                 bold
               >
-                Plan your trip as per theme
+                Plan trip as per mood
               </Heading>
               <PlanAsPerTheme ThemeData={props.ThemeData} />
             </>
@@ -307,7 +301,7 @@ const Index = (props) => {
             }
             bold
           >
-            Our happy customers say about us{" "}
+            Happy Community of The Tarzan Way
           </Heading>
           <CaseStudies></CaseStudies>
         </SetWidthContainer>
