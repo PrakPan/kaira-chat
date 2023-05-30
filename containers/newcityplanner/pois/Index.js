@@ -3,12 +3,15 @@ import PoiCard from "./PoiCard"
 import {useState} from 'react'
 import media from '../../../components/media'
 import validateTextSize from "../../../services/textSizeValidator"
-import Map from '../../../components/Map'
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget"
 import openTailoredModal from "../../../services/openTailoredModal"
 import { useRouter } from "next/router"
 import Drawer from "../../../components/ui/Drawer"
 import SwiperCarousel from "../../../components/SwiperCarousel"
+import dynamic from "next/dynamic";
+const MapBox = dynamic(() => import("../../../components/mapbox.js"), {
+  ssr: false,
+});
 const GridContainer 
 = styled.div`
 @media screen and (min-width: 768px){
@@ -128,12 +131,7 @@ const Poi = props=>{
         </div>
 
         <div className="hidden-desktop">
-          <SwiperCarousel
-            slidesPerView={1}
-            pageDots
-            noPadding
-            cards={cards}
-          />
+          <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
         </div>
         <div>
           {props.thingsToDoPage && (
@@ -158,7 +156,7 @@ const Poi = props=>{
             </WeatherContainer>
           )}
 
-          <Map
+          <MapBox
             locations={props.pois}
             defaultZoom={12}
             height={

@@ -16,11 +16,16 @@ import Button from "../../components/ui/button/Index";
 import Locations from "../../components/containers/newplannerlocations/Index";
 import OldLocations from "../../components/containers/plannerlocations/Index";
 import MobileBanner from "./MobileBanner";
-import Map from "../../components/Map";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
 import WhatsappFloating from "../../components/WhatsappFloating";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
+// import MapBox from "../../components/mapbox";
+import dynamic from "next/dynamic";
+const MapBox = dynamic(() => import("../../components/mapbox.js"), {
+  ssr: false,
+});
+import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 // import Experiences from '../../components/containers/Experiences';
 // import qs from qs;
 var qs = require("qs");
@@ -110,6 +115,7 @@ const Heading = styled.h2`
 const Homepage = (props) => {
   console.log('props: ', props);
   let isPageWide = media("(min-width: 768px)");
+    const isPageLoaded = usePageLoaded();
 
   // const [loading, setLoading] = useState(true);
   const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
@@ -381,12 +387,11 @@ const Homepage = (props) => {
             overview_text={props.experienceData.overview_text}
           ></Overview>
           <MapContainer>
-            <Map
-              locations={props.experienceData.locations}
+            <MapBox
               InfoWindowContainer={InfoWindowContainer}
+              locations={props.experienceData.locations}
               height="300px"
-              defaultZoom={12}
-            ></Map>
+            />
           </MapContainer>
         </MapGridContainer>
         <Button
