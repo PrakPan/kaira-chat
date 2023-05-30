@@ -23,23 +23,21 @@ const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
-const PoiList = ({ data }) => {
+const PoiList = ({ _updatePoiHandler, selectedData, data, setShowDrawer }) => {
   const [isSelect, setisSelect] = useState(false);
-  console.log(data);
+  function handleCheckboxChange(e) {
+    _updatePoiHandler(data);
+    setisSelect(!isSelect);
+    setShowDrawer(false);
+    e.stopPropagation();
+  }
   return (
     <div
-      className={`flex gap-1 pt-4 lg:w-[50vw] w-[100vw]  flex-col justify-start `}
+      className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
     >
-      <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
-        {data.activity_data.activity.image ? (
-          <div
-            onClick={() => {
-              currentBooking
-                ? openDetails()
-                : handleClick(index, booking.accommodation, booking);
-            }}
-            className={`relative flex lg:flex-row w-full flex-col gap-4 `}
-          >
+      <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
+        {data.activity_data.activity.name ? (
+          <div className={`relative flex lg:flex-row w-full flex-col gap-4 `}>
             <div
               className={`relative 'lg:h-[15rem]'
               lg:w-[30%] w-full  h-[12rem]`}
@@ -59,7 +57,7 @@ const PoiList = ({ data }) => {
             </div>
             <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
               <div>
-                <div className="text-xl font-bold">
+                <div className="text-xl font-bold  w-[80%]">
                   {data.activity_data.activity.name}
                 </div>
                 <div className="text-sm font-normal">
@@ -83,18 +81,27 @@ const PoiList = ({ data }) => {
                   </div>
                 </div>
               </div>
+            </div>{' '}
+            <div
+              onClick={(e) => {
+                handleCheckboxChange(e);
+              }}
+              className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
+            >
+              <CheckboxFormComponent checked={isSelect} className="mt-1" />
+              <label className="text-center">
+                {isSelect ? 'Selected' : 'Select'}
+              </label>
             </div>
+            {data.activity_data?.activity?.experience_filters[0] && (
+              <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
+                {data.activity_data?.activity?.experience_filters[0]}
+              </ClippathComp>
+            )}
           </div>
         ) : (
-          <div
-            onClick={() => {
-              currentBooking
-                ? openDetails()
-                : handleClick(index, booking.accommodation, booking);
-            }}
-            className={`relative flex lg:flex-row w-full flex-col gap-4 `}
-          >
-            <div className="flex flex-col lg:w-[30%] w-full">
+          <div className={`relative flex lg:flex-row w-full flex-col gap-4 `}>
+            <div className="flex flex-col lg:w-[50%] w-full">
               {' '}
               <div
                 className={`relative 'lg:h-[15rem]'
@@ -113,43 +120,55 @@ const PoiList = ({ data }) => {
                   url={data.activity_data.poi.image}
                 ></ImageLoader>
               </div>
-              <div className="flex mt-2 flex-row gap-1 items-center justify-start  cursor-pointer">
-                <CheckboxFormComponent checked={isSelect} className="mt-1" />
-                <label className="text-center">
-                  {isSelect ? 'Selected' : 'Select'}
-                </label>
-              </div>
             </div>
 
-            <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
+            <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full  justify-between">
               <div>
-                <div className="text-xl font-bold">
+                <div className="text-xl font-bold block w-[80%]">
                   {data.activity_data.poi.name}
                 </div>
                 <div className="text-sm font-normal">
                   {data.activity_data.city.name}
                 </div>
-                <div className="text-base font-normal my-2 text-[#01202B] line-clamp-2">
+                <div className="text-base font-normal my-2 text-[#01202B] line-clamp-3">
                   {data.text}
                 </div>
-                <div>
-                  <div className="font-bold">Tips</div>
-                  {data.activity_data.poi?.tips
-                    .slice(0, 2)
-                    .map((tip, index) => (
-                      <div className='text-base font-normal text-[#01202B] line-clamp-2"'>
-                        {tip}
+
+                {data.activity_data.poi?.tips.slice(0, 1).map((tip, index) => (
+                  <div>
+                    <div className='text-base  font-normal text-[#01202B] line-clamp-2"'>
+                      <div className="font-bold inline pr-1">
+                        Tips & Tricks:
                       </div>
-                    ))}
-                </div>
+                      {tip}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
+            <div
+              onClick={(e) => {
+                handleCheckboxChange(e);
+              }}
+              className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
+            >
+              <CheckboxFormComponent checked={isSelect} className="mt-1" />
+              <label className="text-center">
+                {isSelect ? 'Selected' : 'Select'}
+              </label>
+            </div>
+            {data.activity_data?.poi?.experience_filters[0] && (
+              <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
+                {data.activity_data?.poi?.experience_filters[0]}
+              </ClippathComp>
+            )}
           </div>
         )}
-
-        {/* <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
-        TTW Recommendation
-      </ClippathComp> */}
+        {/* {data.activity_data?.poi?.experience_filters[0] && (
+          <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
+            {data.activity_data?.poi?.experience_filters[0]}
+          </ClippathComp>
+        )} */}
       </div>
     </div>
   );

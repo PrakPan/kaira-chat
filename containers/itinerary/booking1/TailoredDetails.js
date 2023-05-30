@@ -65,24 +65,19 @@ const BookingListCostContainer = styled.div`
 `;
 const Details = (props) => {
   const [iscouponApplied, setiscouponApplied] = useState(
-    props.payment.show_per_person_cost ? true : false
+    props.payment?.coupon ? true : false
   );
-  const [percentoff, setPercentoff] = useState(
-    props?.payment?.coupon?.discount_value
-  );
+
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [acoordianceOpen, setAcordianOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(
+    props.payment?.coupon ? props.payment?.coupon?.code : ''
+  );
   const [showAdultsModal, setShowAdultsModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
-  useEffect(() => {
-    if (props.payment?.coupon?.code) {
-      setInputValue(props.payment?.coupon?.code);
-      setIsDisabled(true);
-    }
-  });
+
   const getPaymentHandler = (coupon) => {
     setPaymentLoading(true);
     //  props.checkAuthState();
@@ -101,10 +96,12 @@ const Details = (props) => {
         }
       )
       .then((res) => {
+        props.getPaymentHandler();
         console.log(res.data);
         setPaymentLoading(false);
         setIsDisabled(true);
-        setPercentoff();
+        setiscouponApplied(true);
+
         //check if user has already paid
         // try{
         // let email = localStorage.getItem('email');
@@ -116,6 +113,7 @@ const Details = (props) => {
       .catch((error) => {
         setPaymentLoading(false);
         setIsDisabled(false);
+        setiscouponApplied(false);
         setInputValue('');
         console.log(error);
       });
@@ -138,11 +136,13 @@ const Details = (props) => {
         }
       )
       .then((res) => {
+        props.getPaymentHandler();
         console.log(res.data);
         setPaymentLoading(false);
         setIsDisabled(false);
+        setiscouponApplied(false);
         setInputValue('');
-        setPercentoff();
+
         //check if user has already paid
         // try{
         // let email = localStorage.getItem('email');
@@ -159,7 +159,6 @@ const Details = (props) => {
       });
   };
   function handleSubmit(e) {
-    console.log(inputValue);
     getPaymentHandler(inputValue);
   }
   function handleSubmitRemove(e) {
@@ -423,14 +422,12 @@ const Details = (props) => {
               <span>₹</span>
               <div>
                 {' '}
-                {getIndianPrice(
-                  Math.round(props.payment.per_person_total_cost / 100) * 2
-                )}
+                {getIndianPrice(Math.round(props.payment.total_cost / 100))}
               </div>
             </div>
             {iscouponApplied && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 text-white">
-                <div>{percentoff}</div>
+                <div>{props?.payment?.coupon?.discount_value}</div>
                 <div>
                   {props?.payment?.coupon?.discount_type == 'Flat'
                     ? 'Flat'
@@ -452,7 +449,12 @@ const Details = (props) => {
                 >
                   <span>₹</span>
                   <div>
-                    {!props.payment.show_per_person_cost
+                    {getIndianPrice(
+                      Math.round(
+                        Math.round(props.payment.discounted_cost) / 100
+                      )
+                    )}
+                    {/* {!props.payment.show_per_person_cost
                       ? ' ' +
                         getIndianPrice(
                           Math.round(props.payment.total_cost / 100)
@@ -460,7 +462,7 @@ const Details = (props) => {
                       : ' ' +
                         getIndianPrice(
                           Math.round(Math.round(props.payment.total_cost) / 100)
-                        )}
+                        )} */}
                   </div>
                 </div>
                 {/* <div className="flex flex-row items-center text-black font-bold text-2xl">
@@ -562,7 +564,7 @@ const Details = (props) => {
                 </div>
               ) : null}
               {props.payment ? (
-                props.payment.coupon ? (
+                props.payment.coupon && iscouponApplied ? (
                   props.payment.coupon.code ? (
                     <div className="flex flex-row justify-between pt-2">
                       <div
@@ -690,13 +692,27 @@ const Details = (props) => {
               <input
                 class=" px-3 w-9/12 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
                 type="text"
+                readOnly={iscouponApplied}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 id="name"
                 name="name"
                 placeholder="Have a coupon code?"
               />
-              {isDisabled ? (
+              {iscouponApplied ? (
+                <button
+                  className=" absolute  inset-y-0 -right-1 top-4 flex items-center pr-3  "
+                  type="submit"
+                  onClick={(e) => handleSubmitRemove(e)}
+                >
+                  <div
+                    className=" font-bold text-black cursor-pointer"
+                    aria-hidden="true"
+                  >
+                    Remove
+                  </div>
+                </button>
+              ) : (
                 <button
                   className=" absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
                   type="submit"
@@ -707,19 +723,6 @@ const Details = (props) => {
                     aria-hidden="true"
                   >
                     Apply
-                  </div>
-                </button>
-              ) : (
-                <button
-                  className=" absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
-                  type="submit"
-                  onClick={(e) => handleSubmitRemove(e)}
-                >
-                  <div
-                    className=" font-bold text-black cursor-pointer"
-                    aria-hidden="true"
-                  >
-                    Remove
                   </div>
                 </button>
               )}

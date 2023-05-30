@@ -681,6 +681,7 @@ const SimpleTabsV2 = (props) => {
                     <NewItenaryMain
                       city_slabs={props?.breif?.city_slabs}
                       itinerary={props?.itinerary}
+                      setItinerary={props.setItinerary}
                     ></NewItenaryMain>
                   )}
                 </div>
@@ -709,6 +710,7 @@ const SimpleTabsV2 = (props) => {
                     // location_selected={location}
                     city_slabs={props.breif.city_slabs}
                     itinerary={props.itinerary}
+                    setItinerary={props.setItinerary}
                     // newData={props.newData}
                     // demoitinerary={props.demoitinerary}
                   ></NewItenaryDBDMob>
@@ -873,6 +875,7 @@ const SimpleTabsV2 = (props) => {
                     setShowFooterBannerMobile={() =>
                       setShowFooterBannerMobile(true)
                     }
+                    getPaymentHandler={props.getPaymentHandler}
                     payment={props.payment}
                     traveleritinerary={props.traveleritinerary}
                     blur={props.blur}

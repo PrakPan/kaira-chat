@@ -23,13 +23,13 @@ const PoiListSkeleton = (props) => {
   return (
     <Container>
       <Title>{props.name}</Title>
-      <SkeletonCard width={isPageWide ? '468px' : '100%'} height={'188px'} />
+      <SkeletonCard width={'100%'} height={'188px'} />
 
-      <SkeletonCard width={isPageWide ? '468px' : '100%'} height={'188px'} />
-      <SkeletonCard width={isPageWide ? '468px' : '100%'} height={'188px'} />
-      <SkeletonCard width={isPageWide ? '468px' : '100%'} height={'188px'} />
+      <SkeletonCard width={'100%'} height={'188px'} />
+      <SkeletonCard width={'100%'} height={'188px'} />
+      <SkeletonCard width={'100%'} height={'188px'} />
 
-      <SkeletonCard width={isPageWide ? '468px' : '100%'} height={'150px'} />
+      <SkeletonCard width={'100%'} height={'150px'} />
     </Container>
   );
 };

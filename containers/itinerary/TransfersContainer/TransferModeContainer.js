@@ -187,14 +187,26 @@ const TransferModeContainer = (props) => {
         <div className="group py-[20px]">
           <div className="flex flex-row gap-2 w-[80%]  lg:ml-8 ml-2">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
-              <TransportIconFetcher
-                TransportMode={props.booking_type}
-                Instyle={{
-                  fontSize: '2.75rem',
+              {props.booking?.airline_code ? (
+                <ImageLoader
+                  className="aspect-[3/2] object-contain"
+                  url={`/media/airline/${props.booking?.airline_code}.png`}
+                  leftalign
+                  dimensions={{ width: 800, height: 500 }}
+                  height="2rem"
+                  width="auto"
+                  widthmobile="4rem"
+                ></ImageLoader>
+              ) : (
+                <TransportIconFetcher
+                  TransportMode={props.booking_type}
+                  Instyle={{
+                    fontSize: '2.75rem',
 
-                  color: 'black',
-                }}
-              />
+                    color: 'black',
+                  }}
+                />
+              )}
             </div>
             <div className="flex flex-col gap-1 w-[80%]">
               <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">

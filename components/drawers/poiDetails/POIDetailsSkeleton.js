@@ -10,7 +10,7 @@ const POIDetailsSkeleton = (props) => {
     padding: 16px;
     width: 360px;
     @media screen and (min-width: 768px) {
-      width: 50vw;
+      width: 35vw;
     }
   `;
   const Title = styled.p`

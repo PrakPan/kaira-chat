@@ -111,71 +111,12 @@ const Mapbox = React.memo(
       console.log(longestroute);
       const degree = getDegree(longestroute);
       if (isDesktop) {
-        return degree - 1;
-      } else {
         return degree;
+      } else {
+        return degree - 1;
       }
-      // var firstelement = filtered.sort()[0];
-      // const firstData = distanceArray.filter((element, index) => {
-      //   return firstelement === filtered;
-      // });
     }
-    // function createTripPointsGeoJson({ locations } = {}) {
-    //   return {
-    //     type: 'FeatureCollection',
-    //     features: locations.map(
-    //       ({ placename, location = {}, image, date, todo = [] } = {}) => {
-    //         const { lat, lng } = location;
-    //         return {
-    //           type: 'Feature',
-    //           properties: {
-    //             placename,
-    //             todo,
-    //             date,
-    //             image,
-    //           },
-    //           geometry: {
-    //             type: 'Point',
-    //             coordinates: [lng, lat],
-    //           },
-    //         };
-    //       }
-    //     ),
-    //   };
-    // }
-    // function createTripLinesGeoJson({ locations } = {}) {
-    //   return {
-    //     type: 'FeatureCollection',
-    //     features: locations.map((stop = {}, index) => {
-    //       const prevStop = locations[index - 1];
 
-    //       if (!prevStop) return [];
-
-    //       const { placename, location = {}, date, todo = [] } = stop;
-    //       const { lat, lng } = location;
-    //       const properties = {
-    //         placename,
-    //         todo,
-    //         date,
-    //       };
-
-    //       const { location: prevLocation = {} } = prevStop;
-    //       const { lat: prevLat, lng: prevLng } = prevLocation;
-
-    //       return {
-    //         type: 'Feature',
-    //         properties,
-    //         geometry: {
-    //           type: 'LineString',
-    //           coordinates: [
-    //             [prevLng, prevLat],
-    //             [lng, lat],
-    //           ],
-    //         },
-    //       };
-    //     }),
-    //   };
-    // }
     const [polylines, setPolylines] = useState();
     const convertDFormat = (dt) => {
       const date = parseISO(dt);

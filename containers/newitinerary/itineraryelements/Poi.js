@@ -108,14 +108,48 @@ const ItineraryPoiElement = (props) => {
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
   }
+  const _updatePoiHandler = (poi) => {
+    // setUpdateLoadingState(true);
 
-  function Poi_activities() {
+    axiositineraryeditinstance
+      .post(
+        '/',
+        {
+          itinerary_id: props.itinerary_id,
+          day_slab_index: props.day_slab_index,
+          slab_element_index: props.slab_elements_index,
+
+          element_data: {
+            ...poi,
+            element_index: props.data.element_index,
+            keys: ['icon', 'heading', 'text', 'activity_data', 'meta'],
+            element_type: ITINERARY_ELEMENT_TYPES.activity,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        }
+      )
+      .then((res) => {
+        props.setItinerary(res.data);
+      })
+      .catch((err) => {
+        // setUpdateLoadingState(false);
+
+        window.alert('There seems to be a problem, please try again!');
+      });
+  };
+
+  function Poi_activities(activity) {
     setFetchingPoi(true);
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
       .post('/', {
         location: props.city_id,
         duration: 10,
+        element_type: `${activity.id ? 'Activity' : 'POI'}`,
       })
       .then((res) => {
         if (res.data.length) {
@@ -127,7 +161,9 @@ const ItineraryPoiElement = (props) => {
               options.push(
                 <PoiList
                   key={i}
-                  // _updatePoiHandler={_updatePoiHandler}
+                  _updatePoiHandler={_updatePoiHandler}
+                  selectedData={props.data}
+                  setShowDrawer={setShowDrawer}
                   // _openPoiModal={_openPoiModal}
                   data={res.data[i]}
                   // tailored_id={props.tailored_id}
@@ -184,7 +220,7 @@ const ItineraryPoiElement = (props) => {
                   {props.heading}
                 </div>
                 <div
-                  onClick={() => Poi_activities(props.index)}
+                  onClick={() => Poi_activities(props.activity)}
                   className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                 >
                   <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -242,16 +278,17 @@ const ItineraryPoiElement = (props) => {
           </div>
         </div>
       </div>
-      {props.poi.id && (
-        <POIDetailsDrawer
-          // show={props.showDrawer.isOpen}
-          show={show}
-          iconId={props.poi.id}
-          // handleCloseDrawer={props.handleCloseDrawer}
-          handleCloseDrawer={handleCloseDrawer}
-          name={props.heading}
-        />
-      )}
+
+      <POIDetailsDrawer
+        // show={props.showDrawer.isOpen}
+        show={show}
+        iconId={props.poi.id}
+        ActivityiconId={props.activity.id}
+        // handleCloseDrawer={props.handleCloseDrawer}
+        handleCloseDrawer={handleCloseDrawer}
+        name={props.heading}
+      />
+
       <Drawer
         show={showDrawer}
         anchor={'right'}

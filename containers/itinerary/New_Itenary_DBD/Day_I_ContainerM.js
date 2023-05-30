@@ -159,7 +159,7 @@ const Day_I_ContainerM = (props) => {
         className="pb-4"
       >
         <div className="font-bold  text-black text-2xl">
-          Day {props.indexDay + 1}
+          {convertDateFormat(props.Days?.slab)}
         </div>
         {/* {Arslab_elements[0].data[0][0] !== undefined &&
         Arslab_elements[0].data[0][0].transfers !== undefined &&
