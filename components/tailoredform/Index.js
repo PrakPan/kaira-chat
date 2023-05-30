@@ -199,6 +199,7 @@ const Enquiry = (props) => {
     let cityids = [];
     let locations = [];
     let stateIds = [];
+    let countryIds = []
     // let starting_location = null;
     let preferences = [];
     for (var i = 0; i < selectedPreferences.length; i++) {
@@ -219,6 +220,7 @@ const Enquiry = (props) => {
         ) {
           if (selectedCities[i].type == "State")
             stateIds.push(parseInt(selectedCities[i].id));
+          else if (selectedCities[i].type == "Country") countryIds.push(parseInt(selectedCities[i].id))
           else {
             cityids.push(parseInt(selectedCities[i].id));
           }
@@ -266,6 +268,7 @@ const Enquiry = (props) => {
     if (selectedCities[0].destination_id)
       data.destination_id = [selectedCities[0].destination_id];
     if (stateIds.length) data.state_id = stateIds;
+    if(countryIds.length) data.country_ids = countryIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
 
