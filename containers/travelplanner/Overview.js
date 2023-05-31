@@ -54,7 +54,7 @@ const  Overview = (props) =>{
   const ref = useRef()
   useEffect(() => {
     setClientHeight(ref.current.offsetHeight);
-  },[])
+  }, [isPageWide]);
   return (
     <Container>
       {/* <GridContainer> */}

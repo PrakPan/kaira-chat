@@ -58,7 +58,7 @@ const Brief = (props)=>{
    const ref = useRef();
    useEffect(() => {
      setClientHeight(ref.current.offsetHeight);
-   }, []);
+   }, [isPageWide]);
     
 return (
   <Container>
