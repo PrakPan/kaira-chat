@@ -44,18 +44,6 @@ const MapInfo = styled.div`
   }
 `;
 
-const HowItWorksText = styled.p`
-  font-size: 1rem;
-  width: 100%;
-  margin: 0 0;
-  font-weight: 300;
-
-  @media screen and (min-width: 768px) {
-    font-size: 1.25rem;
-    font-weight: 300;
-    margin: 0 0;
-  }
-`;
 
 const MapGridContainer = styled.div`
   display: grid;
@@ -71,7 +59,7 @@ const MapGridContainer = styled.div`
 `;
 const MapContainer = styled.div`
   @media screen and (min-width: 768px) {
-    padding-top: 3rem;
+    padding-top: 116px;
   }
 `;
 
@@ -413,7 +401,10 @@ const Homepage = (props) => {
         </Button>
       </SetWidthContainer>
       <SetWidthContainer>
-        <Heading align="left" style={{ margin: "3.5rem 0 3.5rem 0" }}>
+        <Heading
+          align="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+        >
           How it works?
         </Heading>
         <div>
@@ -554,7 +545,7 @@ const Homepage = (props) => {
         />
 
         <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
-          What our customers say?
+          Happy Community of The Tarzan Way
         </Heading>
         <Reviews></Reviews>
       </SetWidthContainer>

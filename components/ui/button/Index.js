@@ -3,43 +3,47 @@ import React, { useEffect, useState } from "react";
 import Externallinkbutton from "./Externallinkbutton";
 import Generalbutton from "./Generallinkbutton";
 import Internallinkbutton from "./Internallinkbutton";
+import PulseLoader from "react-spinners/PulseLoader";
 
 const Index = (props) => {
   const [JSX, setJSX] = useState("");   
  useEffect(() => {
     if (props.onclick) {
        setJSX(
-          <Generalbutton
-          className="font-lexend"
-            onclick={() => props.onclick(props.onclickparam)}
-            color={props.color}
-            borderRadius={props.borderRadius}
-            bgColor={props.bgColor}
-            textDecor={props.textDecor}
-            margin={props.margin}
-            marginMobile={props.marginMobile}
-            padding={props.padding}
-            lineHeight={props.lineHeight}
-            width={props.width}
-            height={props.height}
-            fontSize={props.fontSize}
-            borderStyle={props.borderStyle}
-            borderWidth={props.borderWidth}
-            borderColor={props.borderColor}
-            fontWeight={props.fontWeight}
-            fontSizeDesktop={props.fontSizeDesktop}
-            hoverColor={props.hoverColor}
-            hoverBgColor={props.hoverBgColor}
-            hoverBrColor={props.hoverBrColor}
-            boxShadow={props.boxShadow}
-            display={props.display}
-            textAlign={props.textAlign}
+         <Generalbutton
+           className="font-lexend"
+           onclick={() => props.onclick(props.onclickparam)}
+           color={props.color}
+           borderRadius={props.borderRadius}
+            bgColor={props.loading ? 'black' : props.bgColor}
+           textDecor={props.textDecor}
+           margin={props.margin}
+           marginMobile={props.marginMobile}
+           padding={props.padding}
+           lineHeight={props.lineHeight}
+           width={props.width}
+           height={props.height}
+           fontSize={props.fontSize}
+           borderStyle={props.borderStyle}
+           borderWidth={props.borderWidth}
+           borderColor={props.borderColor}
+           fontWeight={props.fontWeight}
+           fontSizeDesktop={props.fontSizeDesktop}
+           hoverColor={props.hoverColor}
+           hoverBgColor={props.hoverBgColor}
+           hoverBrColor={props.hoverBrColor}
+           boxShadow={props.boxShadow}
+           display={props.display}
+           textAlign={props.textAlign}
            center={props.center}
            style={props.style}
-          >
-            {props.children}
-          </Generalbutton>
-       )
+         >
+           <div style={{position : 'relative'}}>
+             <div style={props.loading ? { visibility: "hidden" } : {}}>{props.children}</div>
+            {props.loading &&  <PulseLoader style={{position : "absolute" , top : '55%' , left : '50%' , transform : 'translate(-50% , -50%)'}} size={12} speedMultiplier={0.6} color="#ffffff" />}
+           </div>
+         </Generalbutton>
+       );
       } else if (props.link) {
        setJSX(
          <>
@@ -48,7 +52,7 @@ const Index = (props) => {
              link={props.link}
              color={props.color}
              borderRadius={props.borderRadius}
-             bgColor={props.bgColor}
+             bgColor={props.loading ? "black" : props.bgColor}
              textDecor={props.textDecor}
              margin={props.margin}
              marginMobile={props.marginMobile}
@@ -70,7 +74,24 @@ const Index = (props) => {
              textAlign={props.textAlign}
              style={props.style}
            >
-             {props.children}
+             <div style={{ position: "relative" }}>
+               <div style={props.loading ? { visibility: "hidden" } : {}}>
+                 {props.children}
+               </div>
+               {props.loading && (
+                 <PulseLoader
+                   style={{
+                     position: "absolute",
+                     top: "55%",
+                     left: "50%",
+                     transform: "translate(-50% , -50%)",
+                   }}
+                   size={12}
+                   speedMultiplier={0.6}
+                   color="#ffffff"
+                 />
+               )}
+             </div>
            </Internallinkbutton>
          </>
        );
@@ -82,7 +103,7 @@ const Index = (props) => {
            external_link={props.external_link}
            color={props.color}
            borderRadius={props.borderRadius}
-           bgColor={props.bgColor}
+           bgColor={props.loading ? "black" : props.bgColor}
            textDecor={props.textDecor}
            margin={props.margin}
            marginMobile={props.marginMobile}
@@ -104,7 +125,24 @@ const Index = (props) => {
            textAlign={props.textAlign}
            style={props.style}
          >
-           {props.children}
+           <div style={{ position: "relative" }}>
+             <div style={props.loading ? { visibility: "hidden" } : {}}>
+               {props.children}
+             </div>
+             {props.loading && (
+               <PulseLoader
+                 style={{
+                   position: "absolute",
+                   top: "55%",
+                   left: "50%",
+                   transform: "translate(-50% , -50%)",
+                 }}
+                 size={12}
+                 speedMultiplier={0.6}
+                 color="#ffffff"
+               />
+             )}
+           </div>
          </Externallinkbutton>
        );
       } else {

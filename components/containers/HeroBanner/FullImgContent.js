@@ -26,7 +26,7 @@ const Heading = styled.h1`
   width: 99%;
   font-weight: 800;
   margin-bottom: 1rem;
-  font-size: 26px;
+  font-size: 28px;
   @media screen and (min-width: 768px) {
     font-size: 48px;
     font-weight: 700;
@@ -87,30 +87,27 @@ const IconsContainer = styled.div`
   }
 `;
 const FullImgContent = (props) => {
-    let isPageWide = media("(min-width: 768px)");
-    const router = useRouter()
+  let isPageWide = media("(min-width: 768px)");
+  const router = useRouter();
   return (
     <Container className="font-lexend center-di text-cente">
       <PaddingContianer>
         <Heading>{props.title}</Heading>
-        {
-          props.subheading ? 
-            <SubHeading>{props.subheading}</SubHeading>
-            : 
- isPageWide ? (
+        {props.subheading ? (
+          <SubHeading>{props.subheading}</SubHeading>
+        ) : isPageWide ? (
           <SubHeading>
             Bid farewell to generic holiday packages.
             <br />
-            Craft AI-personalized itineraries.
+            Get Your AI-Personalised Itineraries
           </SubHeading>
         ) : (
           <SubHeading>
             Say goodbye to packages.
             <br />
-            Craft AI-personalized itineraries.
+            Get Your AI-Personalised Itineraries
           </SubHeading>
-        )
-        }
+        )}
 
         {!isPageWide && (
           <div>
@@ -122,7 +119,9 @@ const FullImgContent = (props) => {
               borderRadius="10px"
               color="black"
               borderWidth="1px"
-              onclick={() => openTailoredModal(router , props.page_id , props.destination)}
+              onclick={() =>
+                openTailoredModal(router, props.page_id, props.destination)
+              }
               margin="1rem auto 1rem auto"
             >
               Start Planning
@@ -131,7 +130,7 @@ const FullImgContent = (props) => {
         )}
       </PaddingContianer>
       {isPageWide && (
-        <div style={{ marginTop : '1.2rem'}}>
+        <div style={{ marginTop: "1.2rem" }}>
           <TailoredForm
             page_id={props.page_id}
             children_cities={props.children_cities}
@@ -141,7 +140,6 @@ const FullImgContent = (props) => {
           ></TailoredForm>
         </div>
       )}
-
 
       <IconsContainer>
         <div>
@@ -163,7 +161,8 @@ const FullImgContent = (props) => {
             url="media/icons/general/booking.png"
           />
           <IconText>
-            Fast, Flexible <br /> Bookings
+            Affordable & <br />
+            Flexible Bookings
           </IconText>
         </div>
         <div>
@@ -174,8 +173,7 @@ const FullImgContent = (props) => {
             url="media/icons/general/money.png"
           />
           <IconText>
-            No hidden <br />
-            commissions
+          Zero Hidden <br /> Charges
           </IconText>
         </div>
       </IconsContainer>

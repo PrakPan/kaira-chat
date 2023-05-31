@@ -18,17 +18,21 @@ padding-right : 5px;
 }
     `
     const Flex = styled.div`
-    display : grid;
-    grid-template-columns : max-content auto;
-     grid-column-gap : 20px;
- 
-@media screen and (min-width: 768px){
-}
-`
+      display: grid;
+      grid-template-columns: max-content auto;
+      grid-column-gap: 20px;
+      @media screen and (min-width: 768px) {
+        margin-block: 0.75rem;
+      }
+    `;
 const Icon = styled.div`
-    font-size : 55px;
-    margin-top : -15px
-`
+  font-size: 55px;
+  margin-top: -20px;
+  height: 4.5rem;
+  width: 4.5rem;
+text-align : center;
+// border : 1px solid red;
+`;
 
     const Items = styled.div`
     display : grid;

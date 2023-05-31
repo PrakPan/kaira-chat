@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import media from '../../components/media'
    import * as ga from '../../services/ga/Index';
    import Button from '../../components/ui/button/Index'
 import ImageLoader from '../../components/ImageLoader';
-import axiosCountInstance from '../../services/itinerary/count';
 import SkeletonCard from '../../components/ui/SkeletonCard'
 import openTailoredModal from '../../services/openTailoredModal';
+import TripsCounter from './TripsCounter';
 const Container = styled.div`
 height : 430px;
   display : grid;
@@ -160,14 +160,8 @@ const PlanAsPerTheme = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [count,setCount] = useState(null);
-    const[ImgLoading , setImgLoading] = useState(true)
-
-useEffect(()=>{
-  axiosCountInstance.get('').then(res=>setCount(res.data.user))
-},[])    
+  const [ImgLoading, setImgLoading] = useState(true)
     const _handleTripRedirect = (path)=>{
-      // router.push(`/travel-planner/${link}`)
       if(path) window.location.href = '/asia/india/' + path
     }
 
@@ -192,22 +186,51 @@ useEffect(()=>{
 
   return (
     <>
-     <Container>
+      <Container>
         {ThemeContainer}
-        <GridItem className='d' >
-        <h2 style={isPageWide?{fontSize : '50px', fontWeight : 700}:{fontSize : '18px', fontWeight : 700}}>{count}</h2>
-        <p style={isPageWide?{}:{marginTop : '-10px' , marginBottom:'0px'}}>Trips Planned</p>
-        <p style={isPageWide?{marginTop : "-15px"}:{marginTop : '-5px' , marginBottom:'0px'}}>so far.</p>
-        </GridItem >
-        
-    </Container>
+        <GridItem className="d">
+          
+           <TripsCounter />
+          <p
+            style={
+              isPageWide ? {} : { marginTop: "-10px", marginBottom: "0px" }
+            }
+          >
+            Trips Planned
+          </p>
+          <p
+            style={
+              isPageWide
+                ? { marginTop: "-15px" }
+                : { marginTop: "-5px", marginBottom: "0px" }
+            }
+          >
+            so far.
+          </p>
+        </GridItem>
+      </Container>
 
-    {!props.nostart ? <Button onclick={()=>openTailoredModal(router,props.page_id , props.destination)}  fontWeight='500' boxShadow borderRadius="8px" bgColor='#F7E700' margin="1rem auto" width='20rem'  borderWidth="1px">
-            {isPageWide? 'Create your free itinerary' :'Create your personalised Itinerary'}
-        </Button> : null}
+      {!props.nostart ? (
+        <Button
+          onclick={() =>
+            openTailoredModal(router, props.page_id, props.destination)
+          }
+          fontWeight="500"
+          boxShadow
+          borderRadius="8px"
+          bgColor="#F7E700"
+          margin="1rem auto"
+          width="20rem"
+          borderWidth="1px"
+        >
+          {isPageWide
+            ? "Create your free itinerary"
+            : "Create your personalised Itinerary"}
+          {/* {loading ? <Spinner size={16}></Spinner> : null} */}
+        </Button>
+      ) : null}
     </>
-   
-  )
+  );
 }
 
 

@@ -146,31 +146,37 @@ else{
 
 
 //JSX for How it works 
-const HowitWorksHeadingsArr=[
-
-  <HowItWorksHeading className="font-lexend">Select your preferences</HowItWorksHeading>,
-
-  <HowItWorksHeading className="font-lexend">Let our AI plan your itinerary</HowItWorksHeading>,
-
-  <HowItWorksHeading className="font-lexend">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
-
-  <HowItWorksHeading className="font-lexend">No Commissions - <br/> Pay for what you get</HowItWorksHeading>,
-
-];
-
-const HowitWorksContentsArr = [
-
-  <HowItWorksText className="font-lexend">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
-
-    <HowItWorksText  className="font-lexend">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
-
-  <HowItWorksText  className="font-lexend">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
-
-  <HowItWorksText  className="font-lexend">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
-
-
-
-];
+ const HowitWorksHeadingsArr = [
+   <HowItWorksHeading className="font-lexend">
+     Handpick Your Selection
+   </HowItWorksHeading>,
+   <HowItWorksHeading className="font-lexend">
+     Unleash AI's Itinerary Wizardry!
+   </HowItWorksHeading>,
+   <HowItWorksHeading className="font-lexend">
+     Easy Bookings with 24x7 Concierge
+   </HowItWorksHeading>,
+   <HowItWorksHeading className="font-lexend">
+     No Commissions - Pay for what you get
+   </HowItWorksHeading>,
+ ];
+ const HowitWorksContentsArr = [
+   <HowItWorksText className="font-lexend">
+     From solo travel to workcation, honeymoon to family travel, tell us about
+     your mood, budget & timeline.
+   </HowItWorksText>,
+   <HowItWorksText className="font-lexend">
+     Get a unique itinerary completely personalized for you, with all bookings
+     in one place.
+   </HowItWorksText>,
+   <HowItWorksText className="font-lexend">
+     From your stays to activities, book-it-all in one click, and enjoy 24x7
+     assistance while you explore.
+   </HowItWorksText>,
+   <HowItWorksText className="font-lexend">
+     No hidden charges during & after bookings. Pay For What You Get.
+   </HowItWorksText>,
+ ];
 
 
 
@@ -222,10 +228,10 @@ useEffect(() => {
         }
         destinationType={"city-planner"}
         title={
-          <p>
-            Travel planning a chore,
+          <p style={!isPageWide ? { fontSize: "22px" } : {}}>
+            Effortless Travel Planning!
             <br />
-            Let our AI Explore.
+            Let AI Be Your Expert Guide.
           </p>
         }
         _startPlanningFunction={() => openTailoredModal(router)}
@@ -248,7 +254,7 @@ useEffect(() => {
             fontSize={isPageWide ? "32px" : "24px"}
             align="center"
             aligndesktop="left"
-            margin={!isPageWide ? "2.5rem 0.5rem 3.5rem 0.5rem" : "3rem 0"}
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
           >
             How it works?
           </Heading>
@@ -264,12 +270,13 @@ useEffect(() => {
             <Heading
               noline
               fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
+              align="left"
               aligndesktop="left"
               margin={
                 !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
               }
               bold
+              textAlign="left"
             >
               {"My Trips (" + plansCount + ")"}
             </Heading>
@@ -310,7 +317,7 @@ useEffect(() => {
                 }
                 bold
               >
-                Plan a trip to India's best destinations
+                Plan as per the best destinations
               </Heading>
               <Locations locations={props.locations} viewall></Locations>
             </>
@@ -387,7 +394,7 @@ useEffect(() => {
                 }
                 bold
               >
-                Plan your trip as per theme
+                Plan trip as per mood
               </Heading>
               <PlanAsPerTheme ThemeData={props.ThemeData} />
             </>
@@ -419,7 +426,7 @@ useEffect(() => {
             }
             bold
           >
-            Our happy customers say about us{" "}
+            Happy Community of The Tarzan Way
           </Heading>
           <CaseStudies></CaseStudies>
         </SetWidthContainer>
