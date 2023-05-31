@@ -35,6 +35,9 @@ const HotelBookingContainer = ({
   alternates,
   tailored_id,
   openDetails,
+  loginModal,
+  setLoginModal,
+  token,
 }) => {
   const [addbooking, setaddboking] = useState(
     !currentBooking ? booking?.user_selected : true
@@ -84,14 +87,18 @@ const HotelBookingContainer = ({
     }
   }
   function handleCheckboxChange(e) {
-    _SelectedBookingHandler({
-      itinerary_id: itinerary_id,
-      tailored_id: tailored_id,
-      user_selected: !booking?.user_selected,
-      index: index,
-    });
-    setaddboking(!addbooking);
-    e.stopPropagation();
+    if (token) {
+      _SelectedBookingHandler({
+        itinerary_id: itinerary_id,
+        tailored_id: tailored_id,
+        user_selected: !booking?.user_selected,
+        index: index,
+      });
+      setaddboking(!addbooking);
+      e.stopPropagation();
+    } else {
+      setLoginModal(!loginModal);
+    }
   }
   function handleSelectChange() {
     setisSelect(!isSelect);

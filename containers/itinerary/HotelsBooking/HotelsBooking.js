@@ -19,6 +19,7 @@ import {
 } from '../../../helper/ConvertDateFormat';
 import { connect } from 'react-redux';
 import HotelBookingContainer from './HotelBookingContainer';
+import LogInModal from '../../../components/modals/Login';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -33,6 +34,7 @@ const HotelsBooking = (props) => {
   });
   const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
     useState([]);
+  const [loginModal, setLoginModal] = useState(false);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
@@ -460,6 +462,10 @@ const HotelsBooking = (props) => {
               handleClick={handleClick}
               handleClickAc={handleClickAc}
               _SelectedBookingHandler={_SelectedBookingHandler}
+              setHideBookingModal={props.setHideBookingModal}
+              loginModal={loginModal}
+              setLoginModal={setLoginModal}
+              token={props.token}
             ></HotelBookingContainer>
           ))
         : null}
@@ -470,7 +476,14 @@ const HotelsBooking = (props) => {
         currentBooking={currentBooking}
         show={showDetails}
       ></AccommodationModal>
-
+      {loginModal && (
+        <div>
+          <LogInModal
+            show={true}
+            onhide={props.setHideBookingModal}
+          ></LogInModal>
+        </div>
+      )}
       {props.showBookingModal ? (
         <BookingModal
           _setImagesHandler={_setImagesHandler}
