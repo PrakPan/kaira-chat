@@ -21,18 +21,30 @@ useEffect(() => {
   }
 }, [countToShow, inViewport]);
   return (
-      <div ref={ref} style={{ display: "flex", alignItems: "center" , width : '138px' }}>
-        <h2
-          style={
-            isPageWide
-              ? { fontSize: "50px", fontWeight: 700 }
-              : { fontSize: "18px", fontWeight: 700 }
-          }
-        >
-          {countToShow}
-        </h2>
-        <h2>+</h2>
-      </div>
+    <div
+      ref={ref}
+      style={{ display: "flex", alignItems: "center", width: "138px" }}
+    >
+      <h2
+        style={
+          isPageWide
+            ? { fontSize: "50px", fontWeight: 700 }
+            : { fontSize: "18px", fontWeight: 700 }
+        }
+      >
+        {countToShow}
+      </h2>
+      <h2
+        style={
+          isPageWide
+            ? { fontSize: "50px", fontWeight: 700, marginBottom: "0.7rem" }
+            : { fontSize: "18px", fontWeight: 700, marginBottom: "0.7rem" }
+        }
+        // style={{ marginBottom: "0.7rem" }}
+      >
+        +
+      </h2>
+    </div>
   );
 }
 

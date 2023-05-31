@@ -1,14 +1,12 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, {  useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import media from '../../components/media'
    import * as ga from '../../services/ga/Index';
    import Button from '../../components/ui/button/Index'
 import ImageLoader from '../../components/ImageLoader';
-import axiosCountInstance from '../../services/itinerary/count';
 import SkeletonCard from '../../components/ui/SkeletonCard'
 import openTailoredModal from '../../services/openTailoredModal';
-import useInViewport from '../../components/custom hooks/useInViewport';
 import TripsCounter from './TripsCounter';
 const Container = styled.div`
 height : 430px;
@@ -162,22 +160,7 @@ const PlanAsPerTheme = (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-  // const [count, setCount] = useState(null);
-  // const [countToShow , setCountShow] = useState(0)
   const [ImgLoading, setImgLoading] = useState(true)
-  // const [ref , inViewport] = useInViewport()
-
-// useEffect(()=>{
-//   axiosCountInstance.get('').then(res=>setCount(res.data.user))
-// }, [])    
-//   useEffect(() => {
-//     if (countToShow != count) {
-//       setTimeout(() => {
-//         if (countToShow < count) setCountShow((prev) => prev + 9);
-//         else setCountShow(count);
-//       }, [1]);
-//     }
-//   }, [countToShow, inViewport]);
     const _handleTripRedirect = (path)=>{
       if(path) window.location.href = '/asia/india/' + path
     }
