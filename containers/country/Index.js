@@ -17,6 +17,7 @@ import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import { useRouter } from 'next/router';
+import AsSeenIn from "../testimonial/AsSeenIn";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -179,7 +180,10 @@ const Index = (props) => {
           </Heading>
 
           <Reviews></Reviews>
-
+          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+            What they say?
+          </Heading>
+          <AsSeenIn />
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
       </div>

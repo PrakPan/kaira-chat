@@ -74,14 +74,14 @@ margin-bottom: 1rem;
 
 `;
 const InnerContainer = styled.div`
-    min-height: 50vh;
+    height: 30rem;
 `;
 const GridContainer = styled.div`
     margin: auto;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     @media screen and (min-width: 768px){
-            width: 80%;
+            // width: 80%;
 
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
@@ -196,10 +196,10 @@ const AsSeenIn = (props) => {
       <Container>
         <InnerContainer>
           <div>
-            <HeadingNew className="font-lexend" margin={props.margin}>
+            {/* <HeadingNew className="font-lexend" margin={props.margin}>
               What They Say
-            </HeadingNew>
-            <HeadingContainer></HeadingContainer>
+            </HeadingNew> */}
+            {/* <HeadingContainer></HeadingContainer> */}
           </div>
           <GridContainer>
             <LogoOuterContainer

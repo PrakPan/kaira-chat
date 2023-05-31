@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
 import { useState, useEffect } from "react";
-import CountryPage from '../../containers/contry/Index';
+import CountryPage from '../../containers/country/Index';
 import axioscountrydetailsinstance from '../../services/pages/country'
 import axios from "axios";
 const TravelPlanner = (props) => {

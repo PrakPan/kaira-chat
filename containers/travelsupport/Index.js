@@ -105,6 +105,9 @@ const AffiliatePage = () => {
           Key Benefits
         </Heading>
         <KeyBenefits width={1200} height={900} />
+        <Heading margin="3.5rem auto" align="center" bold>
+          What they say?
+        </Heading>
         <AsSeenIn></AsSeenIn>
         <ChatWithUs link="/contact"></ChatWithUs>
       </SetWidthContainer>

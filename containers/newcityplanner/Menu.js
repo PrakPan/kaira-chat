@@ -7,6 +7,7 @@ import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry'
  import Reviews from '../travelplanner/CaseStudies/Index';
   import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import NearbyLocations from "./MenuItems/NearbyLocations"
+import AsSeenIn from "../testimonial/AsSeenIn"
 
 const MenuContainer = styled.div`
 width : 95%;    
@@ -168,6 +169,10 @@ const Menu = (props)=>{
       </MenuItem>
 
       <MenuItem>
+        <Heading style={{ marginBottom: "1.5rem" }}>
+          What they say? 
+        </Heading>
+        <AsSeenIn />
         <ChatWithUs />
       </MenuItem>
     </MenuContainer>

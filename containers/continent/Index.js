@@ -18,6 +18,7 @@ import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import PlanAsPerContinent from '../../containers/homepage/PlanAsPerContinent'
 import CountryCarousel from "./CountryCarousel";
+import AsSeenIn from "../testimonial/AsSeenIn";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -174,6 +175,8 @@ const Index = (props) => {
             What our customers say?
           </Heading>
           <Reviews></Reviews>
+          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>What they say?</Heading>
+          <AsSeenIn />
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
       </div>

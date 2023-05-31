@@ -26,6 +26,7 @@ const MapBox = dynamic(() => import("../../components/mapbox.js"), {
   ssr: false,
 });
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
+import AsSeenIn from "../testimonial/AsSeenIn";
 // import Experiences from '../../components/containers/Experiences';
 // import qs from qs;
 var qs = require("qs");
@@ -559,6 +560,10 @@ const Homepage = (props) => {
       </SetWidthContainer>
 
       <SetWidthContainer>
+        <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+          What they say?
+        </Heading>
+        <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
       </SetWidthContainer>
       <WhatsappFloating

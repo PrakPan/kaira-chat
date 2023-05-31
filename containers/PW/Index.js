@@ -452,9 +452,18 @@ const EXPERIENCE = {
        {/*Add Banner*/}
 
        <SetWidthContainer>
-         <AsSeenIn disablelinks></AsSeenIn>
+       <Heading
+         textAlign='center'
+         align="center"
+         aligndesktop="left"
+         margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem auto"}
+         bold
+       >
+         What They Say?
+       </Heading>
+       <AsSeenIn disablelinks></AsSeenIn>
 
-         <ChatWithUs></ChatWithUs>
+       <ChatWithUs></ChatWithUs>
        </SetWidthContainer>
        <div className="hidden-desktop">
          {/* <FooterBannerMobile></FooterBannerMobile> */}
