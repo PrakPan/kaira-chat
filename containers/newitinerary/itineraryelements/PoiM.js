@@ -85,13 +85,48 @@ const ItineraryPoiElementM = (props) => {
     setShow(false);
   };
 
-  function Poi_activities() {
+  const _updatePoiHandler = (poi) => {
+    // setUpdateLoadingState(true);
+
+    axiositineraryeditinstance
+      .post(
+        '/',
+        {
+          itinerary_id: props.itinerary_id,
+          day_slab_index: props.day_slab_index,
+          slab_element_index: props.slab_elements_index,
+
+          element_data: {
+            ...poi,
+            element_index: props.data.element_index,
+            keys: ['icon', 'heading', 'text', 'activity_data', 'meta'],
+            element_type: ITINERARY_ELEMENT_TYPES.activity,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        }
+      )
+      .then((res) => {
+        props.setItinerary(res.data);
+      })
+      .catch((err) => {
+        // setUpdateLoadingState(false);
+
+        window.alert('There seems to be a problem, please try again!');
+      });
+  };
+
+  function Poi_activities(activity) {
     setFetchingPoi(true);
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
       .post('/', {
         location: props.city_id,
         duration: 10,
+        element_type: `${activity.id ? 'Activity' : 'POI'}`,
       })
       .then((res) => {
         if (res.data.length) {
@@ -103,7 +138,10 @@ const ItineraryPoiElementM = (props) => {
               options.push(
                 <PoiList
                   key={i}
-                  // _updatePoiHandler={_updatePoiHandler}
+                  _updatePoiHandler={_updatePoiHandler}
+                  selectedData={props.data}
+                  setShowDrawer={setShowDrawer}
+                  getPaymentHandler={props.getPaymentHandler}
                   // _openPoiModal={_openPoiModal}
                   data={res.data[i]}
                   // tailored_id={props.tailored_id}
@@ -157,6 +195,7 @@ const ItineraryPoiElementM = (props) => {
       <GridContainer image={props.image}>
         {props.image ? (
           <ImageLoader
+            onClick={() => setShow(true)}
             dimensions={{ width: 250, height: 200 }}
             dimensionsMobile={{ width: 250, height: 200 }}
             borderRadius="8px"
@@ -171,10 +210,13 @@ const ItineraryPoiElementM = (props) => {
         <div>
           <div className=" " style={{ lineHeight: '1' }}>
             <div className="flex flex-row text-[1.2rem]">
-              {props.heading}{' '}
+              <div onClick={() => setShow(true)} className="inline">
+                {props.heading}
+              </div>
+
               <div
-                onClick={() => Poi_activities(props.index)}
-                className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                onClick={() => Poi_activities(props.activity)}
+                className="inline cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
               >
                 <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
               </div>
@@ -243,16 +285,17 @@ const ItineraryPoiElementM = (props) => {
       <span onClick={() => setViewMore(!viewMore)} className="font-semibold">
         {viewMore ? 'Less' : 'More'}
       </span>
-      {props.poi.id && (
-        <POIDetailsDrawer
-          // show={props.showDrawer.isOpen}
-          show={show}
-          iconId={props.poi.id}
-          // handleCloseDrawer={props.handleCloseDrawer}
-          handleCloseDrawer={handleCloseDrawer}
-          name={props.heading}
-        />
-      )}
+
+      <POIDetailsDrawer
+        // show={props.showDrawer.isOpen}
+        show={show}
+        iconId={props.poi.id}
+        ActivityiconId={props.activity.id}
+        // handleCloseDrawer={props.handleCloseDrawer}
+        handleCloseDrawer={handleCloseDrawer}
+        name={props.heading}
+      />
+
       <Drawer
         show={showDrawer}
         anchor={'right'}

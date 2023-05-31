@@ -164,6 +164,7 @@ const ItineraryPoiElement = (props) => {
                   _updatePoiHandler={_updatePoiHandler}
                   selectedData={props.data}
                   setShowDrawer={setShowDrawer}
+                  getPaymentHandler={props.getPaymentHandler}
                   // _openPoiModal={_openPoiModal}
                   data={res.data[i]}
                   // tailored_id={props.tailored_id}

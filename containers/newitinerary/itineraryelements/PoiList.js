@@ -23,12 +23,20 @@ const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
-const PoiList = ({ _updatePoiHandler, selectedData, data, setShowDrawer }) => {
+const PoiList = ({
+  _updatePoiHandler,
+  selectedData,
+  getPaymentHandler,
+  data,
+  setShowDrawer,
+}) => {
   const [isSelect, setisSelect] = useState(false);
   function handleCheckboxChange(e) {
     _updatePoiHandler(data);
     setisSelect(!isSelect);
+
     setShowDrawer(false);
+    getPaymentHandler();
     e.stopPropagation();
   }
   return (

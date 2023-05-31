@@ -56,7 +56,7 @@ const Container = styled.div`
   padding: 16px;
   width: 360px;
   @media screen and (min-width: 768px) {
-    width: 500px;
+    width: 100vw;
   }
 `;
 

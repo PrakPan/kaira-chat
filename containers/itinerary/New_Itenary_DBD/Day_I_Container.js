@@ -173,6 +173,7 @@ const Day_I_Container = (props) => {
         case 'activity':
           dayIcontainer.push(
             <ItineraryPoiElement
+              getPaymentHandler={props.getPaymentHandler}
               day_slab_index={props.indexDay}
               setItinerary={props.setItinerary}
               slab_elements_index={index}

@@ -615,6 +615,8 @@ const SimpleTabsV2 = (props) => {
                 // location_selected={location}
                 city_slabs={props.breif.city_slabs}
                 itinerary={props.itinerary}
+                setItinerary={props.setItinerary}
+                getPaymentHandler={props.getPaymentHandler}
                 // newData={props.newData}
                 // demoitinerary={props.demoitinerary}
               ></NewItenaryDBDMob>
@@ -682,6 +684,7 @@ const SimpleTabsV2 = (props) => {
                       city_slabs={props?.breif?.city_slabs}
                       itinerary={props?.itinerary}
                       setItinerary={props.setItinerary}
+                      getPaymentHandler={props.getPaymentHandler}
                     ></NewItenaryMain>
                   )}
                 </div>
@@ -712,6 +715,8 @@ const SimpleTabsV2 = (props) => {
                     itinerary={props.itinerary}
                     setItinerary={props.setItinerary}
                     // newData={props.newData}
+                    getPaymentHandler={props.getPaymentHandler}
+
                     // demoitinerary={props.demoitinerary}
                   ></NewItenaryDBDMob>
                 </div>
