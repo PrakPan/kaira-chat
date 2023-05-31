@@ -141,7 +141,7 @@ const POIDetails = (props) => {
         {props.data.address && (
           <div>
             {' '}
-            <span className="font-bold pr-1">Addresss:</span>{' '}
+            <span className="font-bold pr-1">Address:</span>{' '}
             {props.data.address}
           </div>
         )}
@@ -168,8 +168,8 @@ const POIDetails = (props) => {
       </div>
       {props.data.cost && (
         <div className="flex flex-row">
-          Cost: <div className="font-semibold px-1">₹</div>{' '}
-          {props.data.cost / 100}{' '}
+          Cost: <div className="font-semibold px-1">₹</div> {getHumanDate}{' '}
+          {props.data.cost}{' '}
           <div>
             {props.data.price_category == 'individual' ? 'Per person' : null}
           </div>
