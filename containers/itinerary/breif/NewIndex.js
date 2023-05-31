@@ -37,7 +37,7 @@ const DetailsContainer = styled.div`
   gap: 10;
   flex-direction: column-reverse;
   margin: 0 auto 2vh auto;
-  padding: 0 1rem;
+  padding: 0 0rem;
   @media screen and (min-width: 768px) {
     flex-direction: row-reverse;
     padding: 0;

@@ -149,7 +149,9 @@ const Route = (props) => {
     }
   return (
     <Container>
-      <div className="font-lexend mb-4 mt-2 font-bold text-4xl">Route</div>
+      <div className="font-lexend mb-4 lg:mb-10  mt-4 font-bold text-4xl">
+        Route
+      </div>
 
       <PinSection
         setCurrentPopup={props.setCurrentPopup}

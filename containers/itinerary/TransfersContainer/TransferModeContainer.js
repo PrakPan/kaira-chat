@@ -54,7 +54,7 @@ const Line = styled.hr`
   top: ${(props) => (props.Transfers ? `75px` : `23px`)};
   right: ${(props) => (props.Transfers ? `-80px` : `-25px`)};
   opacity: initial;
-
+  z-index: -1;
   @media screen and (min-width: 768px) {
     width: 9.4rem;
     height: 2px;
@@ -185,7 +185,7 @@ const TransferModeContainer = (props) => {
       </div>
       {props.booking_type == 'Flight' ? (
         <div className="group py-[20px]">
-          <div className="flex flex-row gap-2 w-[80%]  lg:ml-8 ml-2">
+          <div className="flex flex-row gap-2 lg:w-[80%] w-full  lg:ml-8 ml-2">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
               {props.booking?.airline_code ? (
                 <ImageLoader
@@ -208,16 +208,27 @@ const TransferModeContainer = (props) => {
                 />
               )}
             </div>
-            <div className="flex flex-col gap-1 w-[80%]">
+            <div className="flex flex-col gap-1 lg:w-[80%] w-[80%]">
               <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
-                <div className="flex flex-row  gap-2 items-center ">
-                  <div className="font-semibold w-full">{props.heading}</div>
-                  <div
-                    onClick={() => HandleFlights(props.index)}
-                    className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                  >
-                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                  </div>
+                <div className="inline  gap-2 items-center ">
+                  <span className="font-semibold w-full inline">
+                    {props.heading}
+                  </span>
+                  {props.userSelected ? (
+                    <div
+                      onClick={() => HandleFlights(props.index)}
+                      className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                    >
+                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => HandleFlights(props.index)}
+                      className="px-2 py-1 inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-2 border-black  text-black font-semibold text-sm"
+                    >
+                      Add Flight
+                    </div>
+                  )}
                 </div>
                 <div>
                   {props.userSelected ? (
@@ -315,7 +326,7 @@ const TransferModeContainer = (props) => {
           </div>
         </div>
       ) : (
-        <div className="group flex flex-row gap-2 w-[80%] py-[20px] lg:ml-8 ml-2 ">
+        <div className="group flex flex-row gap-2 lg:w-[80%] w-full py-[20px] lg:ml-8 ml-2 ">
           {props.modes && (
             <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
@@ -345,26 +356,24 @@ const TransferModeContainer = (props) => {
 
           <div className=" flex flex-col w-[80%]">
             <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium">
-              <div className="flex flex-row gap-3 items-center">
-                <div className="font-semibold ">{props.heading}</div>
+              <span className="inline  gap-3 items-center">
+                <span className="font-semibold  inline">{props.heading}</span>
 
-                <div>
-                  {props.booking_type == 'Taxi' && (
-                    <div
-                      onClick={() => HandleTransport(props.index)}
-                      className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                    >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                    // <LivelyButton
+                {props.booking_type == 'Taxi' && (
+                  <div
+                    onClick={() => HandleTransport(props.index)}
+                    className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  >
+                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                  </div>
+                  // <LivelyButton
 
-                    //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                    // >
-                    //   Change
-                    // </LivelyButton>
-                  )}
-                </div>
-              </div>
+                  //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                  // >
+                  //   Change
+                  // </LivelyButton>
+                )}
+              </span>
               <div>
                 {props.userSelected ? (
                   <div className=" text-md font-bold  text-[#277004] ">

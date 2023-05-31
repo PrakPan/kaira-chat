@@ -217,19 +217,17 @@ const ItineraryPoiElementM = (props) => {
         ) : null}
         <div>
           <div className=" " style={{ lineHeight: '1' }}>
-            <div className="flex flex-row text-[1.2rem]">
-              <div className="inline">
-                {props.heading}
-                <div
-                  onClick={() => Poi_activities(props.activity)}
-                  className="inline cursor-pointer min-w-max text-lg w-4 h-4 pl-1 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                >
-                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                </div>
+            <span className="inline text-[1.2rem]">
+              <span className="inline ">{props.heading}</span>
+              <div
+                onClick={() => Poi_activities(props.activity)}
+                className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+              >
+                <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
               </div>
 
               {/* <HiPencil className="text-lg min-w-max"></HiPencil> */}
-            </div>
+            </span>
           </div>
 
           {props?.rating && <StarRating initialRating={4}></StarRating>}

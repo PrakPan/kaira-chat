@@ -64,7 +64,7 @@ const ItineraryElementM = (props) => {
         </div>
 
         <div>
-          <div className="pb-3 pt-2 text-md font-[350]">
+          <div className="pb-0 pt-2 text-md font-[350]">
             {props.text ? props.text : null}
           </div>
           {props.booking ? (
