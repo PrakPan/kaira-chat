@@ -53,7 +53,7 @@ const MapGridContainer = styled.div`
 `;
 const MapContainer = styled.div`
   @media screen and (min-width: 768px) {
-    padding-top: 108px;
+    padding-top: 116px;
   }
 `;
 

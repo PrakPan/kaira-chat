@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 // import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from '../../components/ui/button/Index';
@@ -7,7 +7,7 @@ import media from '../../components/media';
 
 import styled from 'styled-components';
 // import ImageLoader from '../../components/ImageLoader';
- import {BiChevronDown} from 'react-icons/bi'
+ import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 const Container = styled.div`
  padding: 0 1rem;
 @media screen and (min-width: 768px){
@@ -18,31 +18,23 @@ const Container = styled.div`
 
 `;
 
- 
-// const Heading = styled.div`
-// font-size: 1.75rem;
-// font-weight: 800;
- 
-// `;
 const Text = styled.div`
-font-size: 1rem;
-position: relative;
-font-weight: 300;
-margin: 0;
-text-align: justify;
-overflow: hidden;
-line-height: 1.5;
-text-overflow: ellipsis;
-display: -webkit-box;
--webkit-line-clamp:  ${(props) => (props.more ? 'none' : "6")};
-
--webkit-box-orient: vertical;
-   @media screen and (min-width: 768px){
+  font-size: 1rem;
+  position: relative;
+  font-weight: 300;
+  margin: 0;
+  text-align: justify;
+  overflow: hidden;
+  line-height: 1.58;
+  text-overflow: ellipsis;
+  ${props=>`height : ${props.clientHeight}px`};
+  ${(props) => !props.more && "overflow : hidden ; height: 300px"};
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  transition: height 0.3s ease;
+  @media screen and (min-width: 768px) {
     text-align: justify;
-    -webkit-line-clamp:  ${(props) => (props.more ? 'none' : "6")};
-
-
-}
+  }
 `;
  
 const Heading = styled.h2`
@@ -58,21 +50,62 @@ const  Overview = (props) =>{
 
   let isPageWide = media('(min-width: 768px)');
   const [more, setMore] = useState(false);
+  const [clientHeight, setClientHeight] = useState(false);
+  const ref = useRef()
+  useEffect(() => {
+    setClientHeight(ref.current.offsetHeight);
+  },[])
   return (
-   <Container>
-    {/* <GridContainer> */}
+    <Container>
+      {/* <GridContainer> */}
       <div>
-        <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 3.5rem 0"}  bold>{props.overview_heading}</Heading>        
-      <Text more={more} className='font-lexend'>
-        <p>{props.overview_text}</p>
-        {!more ? <div className='hover-pointer' onClick={()=> setMore(true)} style={{position: 'absolute', right: '0', bottom: '0', backgroundColor: 'white', zIndex: '2', paddingLeft: '0.25rem', fontWeight: '600'}}>more
-        <BiChevronDown style={{fontSize: '1rem'}}></BiChevronDown>
-        </div>  : null}
-      </Text>      
-     
-        </div>
+        <Heading
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "0 0 3.5rem 0"}
+          bold
+        >
+          {props.overview_heading}
+        </Heading>
+        <Text more={more} clientHeight={clientHeight} className="font-lexend">
+          <p ref={ref}>
+            {props.overview_text}
+          </p>
+          {/* {!more ? ( */}
+         {clientHeight > 300 &&  <p
+            className="hover-pointer text-container"
+            onClick={() => setMore(!more)}
+            style={{
+              position: "absolute",
+              right: "0",
+              bottom: "-3px",
+              marginBottom: "0px",
+              backgroundColor: "white",
+              zIndex: "2",
+              paddingLeft: "0.25rem",
+              fontWeight: "600",
+            }}
+          >
+            {!more ? (
+              <>
+                ...more
+                <BiChevronDown
+                  style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
+                ></BiChevronDown>
+              </>
+            ) : (
+              <>
+                ...less
+                <BiChevronUp
+                  style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
+                ></BiChevronUp>
+              </>
+            )}
+          </p>}
+          {/* ) : null} */}
+        </Text>
+      </div>
       {/* </GridContainer> */}
-
     </Container>
   );
 }
