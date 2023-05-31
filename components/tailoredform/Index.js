@@ -18,6 +18,7 @@ import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
 import Cookies from "js-cookie";
+import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -121,6 +122,7 @@ const Enquiry = (props) => {
   const [focusedDate, setFocusedDate] = useState(null);
   const [groupType, setGroupType] = useState(null);
   const [startingLocation, setStartingLocation] = useState(false);
+  const isPageLoaded = usePageLoaded()
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -530,7 +532,7 @@ const Enquiry = (props) => {
                   fontSize="1rem"
                   width={!isPageWide ? "auto" : "100%"}
                   style={
-                    !isPageWide
+                    !isPageWide && isPageLoaded
                       ? {
                           position: "fixed",
                           left: "1rem",
