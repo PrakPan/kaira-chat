@@ -159,7 +159,9 @@ const Details = (props) => {
       });
   };
   function handleSubmit(e) {
-    getPaymentHandler(inputValue);
+    if (inputValue !== '') {
+      getPaymentHandler(inputValue);
+    }
   }
   function handleSubmitRemove(e) {
     RemoveCoupon();

@@ -313,11 +313,11 @@ const HotelBookingContainer = ({
         {!currentBooking && (
           <div>
             {addbooking ? (
-              <div className="absolute text-md font-bold  text-[#277004] top-6 right-8 -m-3">
+              <div className="absolute text-md font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
                 Included
               </div>
             ) : (
-              <div className="absolute text-md font-bold text-[#E00000] top-6 right-8 -m-3">
+              <div className="absolute text-md font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
                 Excluded
               </div>
             )}
