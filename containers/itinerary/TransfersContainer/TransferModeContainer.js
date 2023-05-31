@@ -39,13 +39,13 @@ const Line = styled.hr`
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 15px 3px, 100% 3px;
+  background-size: 8px 3px, 100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
 
-  height: 2px;
+  height: 1px;
 
   border: 2px;
 
@@ -57,9 +57,9 @@ const Line = styled.hr`
   z-index: -1;
   @media screen and (min-width: 768px) {
     width: 9.4rem;
-    height: 2px;
+    height: 1px;
     top: 61px;
-    right: -60px;
+    right: -57px;
   }
   /* border-style: dashed;
   border-width: 1.4px;
@@ -211,7 +211,7 @@ const TransferModeContainer = (props) => {
             <div className="flex flex-col gap-1 lg:w-[80%] w-[80%]">
               <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
                 <div className="inline  gap-2 items-center ">
-                  <span className="font-semibold w-full inline">
+                  <span className="font-medium w-full inline">
                     {props.heading}
                   </span>
                   {props.userSelected ? (
@@ -224,7 +224,7 @@ const TransferModeContainer = (props) => {
                   ) : (
                     <div
                       onClick={() => HandleFlights(props.index)}
-                      className="px-2 py-1 inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-2 border-black  text-black font-semibold text-sm"
+                      className="px-2 py-1 inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-2 border-black  text-black font-medium text-sm"
                     >
                       Add Flight
                     </div>
@@ -357,7 +357,7 @@ const TransferModeContainer = (props) => {
           <div className=" flex flex-col w-[80%]">
             <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium">
               <span className="inline  gap-3 items-center">
-                <span className="font-semibold  inline">{props.heading}</span>
+                <span className="font-medium  inline">{props.heading}</span>
 
                 {props.booking_type == 'Taxi' && (
                   <div

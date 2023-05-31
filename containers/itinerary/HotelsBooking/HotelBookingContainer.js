@@ -157,7 +157,7 @@ const HotelBookingContainer = ({
             {booking.star_category ? (
               <starHotel
                 starHotel
-                className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-md font-semibold transition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
+                className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-md font-mediumnsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
               >
                 {booking.star_category} star hotel
               </starHotel>
@@ -168,7 +168,7 @@ const HotelBookingContainer = ({
               <div
                 className={`${
                   currentBooking ? 'text-lg' : 'text-2xl'
-                } font-bold `}
+                } font-semibold `}
               >
                 {booking?.name}
               </div>
@@ -184,7 +184,7 @@ const HotelBookingContainer = ({
                     </div>
                     <div>{booking?.user_rating}</div>
                     {booking.number_of_reviews && (
-                      <div className="text-md text-[#7A7A7A] font-semibold underline">
+                      <div className="text-md text-[#7A7A7A] font-medium underline">
                         {booking.number_of_reviews} Google reviews
                       </div>
                     )}
@@ -196,14 +196,14 @@ const HotelBookingContainer = ({
                   <div className="flex flex-row gap-2 items-center">
                     <BsCalendar2 className="text-md text-[#7A7A7A]" />
                     <div>
-                      <div className="text-md font-semibold ">
+                      <div className="text-md font-medium ">
                         {getDate(booking.check_in)}-{getDate(booking.check_out)}
                       </div>
                     </div>
                   </div>
-                  <div className="text-md font-semibold gap-2 flex flex-row items-center">
+                  <div className="text-md font-medium gap-2 flex flex-row items-center">
                     <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                    <div className="text-md font-semibold min-w-fit">
+                    <div className="text-md font-medium min-w-fit">
                       {booking.number_of_adults} Adults
                     </div>
                   </div>
@@ -214,15 +214,15 @@ const HotelBookingContainer = ({
                     <div className="flex flex-row gap-2 items-center">
                       <BsCalendar2 className="text-md text-[#7A7A7A]" />
                       <div>
-                        <div className="text-md font-semibold ">
+                        <div className="text-md font-medium ">
                           {getDate(currentBooking.check_in)}-
                           {getDate(currentBooking.check_out)}
                         </div>
                       </div>
                     </div>
-                    <div className="text-md font-semibold gap-2 flex flex-row items-center">
+                    <div className="text-md font-medium gap-2 flex flex-row items-center">
                       <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                      <div className="text-md font-semibold min-w-fit">
+                      <div className="text-md font-medium min-w-fit">
                         {booking.number_of_adults} Adults
                       </div>
                     </div>
@@ -232,9 +232,9 @@ const HotelBookingContainer = ({
 
               {booking.costings_breakdown ? (
                 <div className={`flex ${'flex-row'} gap-3`}>
-                  <div className="text-md font-semibold gap-2 flex flex-row items-center">
+                  <div className="text-md font-medium gap-2 flex flex-row items-center">
                     <FaBed className="text-md text-[#7A7A7A]" />
-                    <div className="text-md font-semibold">
+                    <div className="text-md font-medium">
                       {booking.costings_breakdown[0].room_type}
                     </div>
                   </div>
@@ -243,9 +243,9 @@ const HotelBookingContainer = ({
                 currentBooking.number_of_adults && (
                   <div className={`flex ${'flex-row'} gap-3`}>
                     {room[0] && (
-                      <div className="text-md font-semibold gap-2 flex flex-row items-center">
+                      <div className="text-md font-medium gap-2 flex flex-row items-center">
                         <FaBed className="text-md min-w-fit text-[#7A7A7A]" />
-                        <div className="text-md font-semibold">{room[0]}</div>
+                        <div className="text-md font-medium">{room[0]}</div>
                       </div>
                     )}
                   </div>
@@ -255,7 +255,7 @@ const HotelBookingContainer = ({
               Addons(booking.costings_breakdown[0].pricing_type) ? (
                 <div className="flex flex-row gap-2 items-center">
                   <ImSpoonKnife className="text-md text-[#7A7A7A]" />
-                  <div className="text-md font-semibold">
+                  <div className="text-md font-medium">
                     {Addons(booking.costings_breakdown[0].pricing_type)}
                   </div>
                 </div>

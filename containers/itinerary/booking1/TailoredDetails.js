@@ -449,7 +449,7 @@ const Details = (props) => {
                   className={
                     props.blur
                       ? 'font-lexend blurry-text'
-                      : 'font-lexend text-3xl flex flex-row items-center font-bold'
+                      : 'font-lexend text-3xl flex flex-row items-center font-semibold'
                   }
                 >
                   <span>₹</span>
@@ -489,7 +489,7 @@ const Details = (props) => {
         </div>
 
         <div
-          className="mx-[1rem]  font-semibold text-sm flex gap-0 flex-row cursor-pointer"
+          className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
         >
           <div>
@@ -724,7 +724,7 @@ const Details = (props) => {
                   onClick={(e) => handleSubmit(e)}
                 >
                   <div
-                    className=" font-bold text-black cursor-pointer"
+                    className=" font-semibold text-black cursor-pointer"
                     aria-hidden="true"
                   >
                     Apply
@@ -738,7 +738,7 @@ const Details = (props) => {
         <div className="border-y-2 border-[#F0F0F0] my-3">
           <div className=" group flex flex-row gap-3 items-center py-[0.7rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
-            <div className="text-md font-semibold text-black flex flex-row items-center gap-2">
+            <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               <div>
                 {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
                 {props.payment.meta_info
@@ -761,7 +761,7 @@ const Details = (props) => {
         </div>
         <div className="group text-md font-medium gap-3 flex flex-row items-center">
           <BsPeopleFill className="text-md text-[#7A7A7A]" />
-          <div className="gap-2 flex flex-row items-center text-md font-semibold text-black">
+          <div className="gap-2 flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div> {props.payment.meta_info.number_of_adults} Adults</div>
             <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">

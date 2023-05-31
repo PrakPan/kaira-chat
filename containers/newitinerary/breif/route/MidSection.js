@@ -27,13 +27,13 @@ const Line = styled.hr`
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 15px 3px, 100% 3px;
+  background-size: 8px 3px, 100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
   width: 5rem;
-  height: 2px;
+  height: 1px;
   top: 23px;
   right: -25px;
 
@@ -42,7 +42,7 @@ const Line = styled.hr`
 
   @media screen and (min-width: 768px) {
     width: 8rem;
-    height: 2px;
+    height: 1px;
     top: 46px;
     right: -48px;
   }

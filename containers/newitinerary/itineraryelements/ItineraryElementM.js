@@ -72,7 +72,7 @@ const ItineraryElementM = (props) => {
               <LivelyButton className="font-bold border-2 border-black rounded-md px-3 py-1  bg-white text-black">
                 View Booking
               </LivelyButton>
-              <div className="text-sm font-semibold">
+              <div className="text-sm font-medium">
                 {props.booking.user_selected ? (
                   <div className="text-[#287E00]">Included</div>
                 ) : (

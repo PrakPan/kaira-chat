@@ -81,7 +81,7 @@ const TransferElementsM = ({
                 {formatNumber(meta.estimated_cost)}
               </LivelyButton>
 
-              <div className="text-sm font-semibold">
+              <div className="text-sm font-medium">
                 {booking.user_selected ? (
                   <div className="text-[#287E00]">Included</div>
                 ) : (
@@ -99,7 +99,7 @@ const TransferElementsM = ({
                 TransportMode={modes}
                 classname="w-fit lg:text-[1.05rem] text-[1.25rem]"
               />{' '}
-              {convertNumToTime(meta.duration)}
+              {meta.Time}
               {/* {modes} */}
             </div>
           </div>

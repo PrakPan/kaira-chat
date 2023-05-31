@@ -4,16 +4,16 @@ import { useState, useEffect } from 'react';
 const Container = styled.div`
   border-radius: 50%;
   background-color: ${(props) => (props.pinColour ? props.pinColour : 'black')};
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   z-index: 0;
 `;
 const InnerContainer = styled.div`
   border-radius: 50%;
 
   background-color: ${(props) => (props.pinColour ? 'white' : '#f7e700')};
-  width: 10px;
-  height: 10px;
+  width: 5px;
+  height: 5px;
 `;
 
 const Pin = (props) => {

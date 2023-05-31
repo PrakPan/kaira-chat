@@ -96,7 +96,7 @@ const City = (props) => {
             </div>
 
             <div className="flex flex-col">
-              <div className="text-xl font-semibold">
+              <div className="text-xl font-medium">
                 Lemon Tree Premium Hotel
               </div>
               <div className="text-xs font-light">
@@ -106,7 +106,7 @@ const City = (props) => {
           </div>
           <div className="flex flex-col py-2">
             {/* <div className="text-sm">Things to do</div>
-            <div className="font-semibold text-sm">
+            <div className="font-medium text-sm">
               Tours · Wildlife · Museums · Historic Sites
             </div> */}
           </div>

@@ -288,7 +288,7 @@ const ItineraryPoiElementM = (props) => {
       >
         {props.text}
       </div>
-      <span onClick={() => setShow(true)} className="font-semibold">
+      <span onClick={() => setShow(true)} className="font-medium">
         {viewMore ? 'Less' : 'More'}
       </span>
       {showLoginModal && (

@@ -18,7 +18,7 @@ const StyledButton = styled.button`
   background-color: ${(props) => (props.primary ? '#F7E700' : '#FFFFFF')};
   color: ${(props) => (props.primary ? '#01202B' : '#3498db')};
   border: 2px solid #000000;
-  font-weight: 600;
+  font-weight: 500;
   font-family: lexend;
   box-shadow: 0px 1px 0px #f0f0f0;
   border-radius: 6px;
