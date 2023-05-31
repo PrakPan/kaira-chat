@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 // Styled Components
 const CheckboxContainer = styled.div`
-  display: inline-block;
+  display: grid;
   vertical-align: middle;
 `;
 

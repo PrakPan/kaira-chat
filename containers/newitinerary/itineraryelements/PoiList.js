@@ -167,7 +167,7 @@ const PoiList = ({
               }}
               className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
             >
-              <CheckboxFormComponent checked={isSelect} className="mt-1" />
+              <CheckboxFormComponent checked={isSelect} className="mb-1" />
               <label className="text-center">
                 {isSelect ? 'Selected' : 'Select'}
               </label>

@@ -693,7 +693,7 @@ const Details = (props) => {
           <div>
             <div className="relative  rounded-md shadow-sm cursor-pointer">
               <input
-                class=" px-3 w-9/12 py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+                class=" px-3 w-full py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
                 type="text"
                 readOnly={iscouponApplied}
                 value={inputValue}
