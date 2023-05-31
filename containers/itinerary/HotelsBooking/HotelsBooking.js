@@ -34,12 +34,13 @@ const HotelsBooking = (props) => {
   });
   const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
     useState([]);
-  const [loginModal, setLoginModal] = useState(false);
+
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
     useState([]);
   const [showDetails, setShowDetails] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [currentBooking, setCurrentBooking] = useState(null);
@@ -128,6 +129,10 @@ const HotelsBooking = (props) => {
   };
   const _setImagesHandler = (images) => {
     setImages(images);
+  };
+  const _handleLoginClose = () => {
+    // props.getPaymentHandler();
+    setShowLoginModal(false);
   };
   const _SelectedBookingHandler = ({
     itinerary_id,
@@ -463,8 +468,8 @@ const HotelsBooking = (props) => {
               handleClickAc={handleClickAc}
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
-              loginModal={loginModal}
-              setLoginModal={setLoginModal}
+              loginModal={showLoginModal}
+              setLoginModal={setShowLoginModal}
               token={props.token}
             ></HotelBookingContainer>
           ))
@@ -476,12 +481,9 @@ const HotelsBooking = (props) => {
         currentBooking={currentBooking}
         show={showDetails}
       ></AccommodationModal>
-      {loginModal && (
+      {showLoginModal && (
         <div>
-          <LogInModal
-            show={true}
-            onhide={props.setHideBookingModal}
-          ></LogInModal>
+          <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
         </div>
       )}
       {props.showBookingModal ? (

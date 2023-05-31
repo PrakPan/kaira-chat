@@ -17,6 +17,7 @@ import axiositineraryeditinstance from '../../../services/itinerary/edit';
 import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
 import PoiList from './PoiList';
 import PoiListSkeleton from './PoiListSkeleton';
+import LogInModal from '../../../components/modals/Login';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -75,6 +76,8 @@ const ItineraryPoiElementM = (props) => {
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [viewMore, setViewMore] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   useEffect(() => {}, []);
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
@@ -118,7 +121,10 @@ const ItineraryPoiElementM = (props) => {
         window.alert('There seems to be a problem, please try again!');
       });
   };
-
+  const _handleLoginClose = () => {
+    // props.getPaymentHandler();
+    setShowLoginModal(false);
+  };
   function Poi_activities(activity) {
     setFetchingPoi(true);
     if (props.city_id) setShowDrawer(true);
@@ -144,6 +150,9 @@ const ItineraryPoiElementM = (props) => {
                   getPaymentHandler={props.getPaymentHandler}
                   // _openPoiModal={_openPoiModal}
                   data={res.data[i]}
+                  loginModal={showLoginModal}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
                   // tailored_id={props.tailored_id}
                   // updateLoadingState={updateLoadingState}
                   // itinerary_id={
@@ -195,7 +204,6 @@ const ItineraryPoiElementM = (props) => {
       <GridContainer image={props.image}>
         {props.image ? (
           <ImageLoader
-            onClick={() => setShow(true)}
             dimensions={{ width: 250, height: 200 }}
             dimensionsMobile={{ width: 250, height: 200 }}
             borderRadius="8px"
@@ -210,7 +218,7 @@ const ItineraryPoiElementM = (props) => {
         <div>
           <div className=" " style={{ lineHeight: '1' }}>
             <div className="flex flex-row text-[1.2rem]">
-              <div onClick={() => setShow(true)} className="inline-block">
+              <div className="inline">
                 {props.heading}
                 <div
                   onClick={() => Poi_activities(props.activity)}
@@ -282,10 +290,14 @@ const ItineraryPoiElementM = (props) => {
       >
         {props.text}
       </div>
-      <span onClick={() => setViewMore(!viewMore)} className="font-semibold">
+      <span onClick={() => setShow(true)} className="font-semibold">
         {viewMore ? 'Less' : 'More'}
       </span>
-
+      {showLoginModal && (
+        <div>
+          <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
+        </div>
+      )}
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
         show={show}

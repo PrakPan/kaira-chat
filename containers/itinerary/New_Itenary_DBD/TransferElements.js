@@ -109,7 +109,7 @@ const TransferElements = ({
               </div>
             </div>
           </TInfoContainer>
-          {meta ? (
+          {meta.duration ? (
             <div className="absolute -bottom-[20px] left-1/2 bg-white px-2 ">
               <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
                 <TransportIconFetcher

@@ -29,15 +29,22 @@ const PoiList = ({
   getPaymentHandler,
   data,
   setShowDrawer,
+  loginModal,
+  setLoginModal,
+  token,
 }) => {
   const [isSelect, setisSelect] = useState(false);
   function handleCheckboxChange(e) {
-    _updatePoiHandler(data);
-    setisSelect(!isSelect);
+    if (token) {
+      _updatePoiHandler(data);
+      setisSelect(!isSelect);
 
-    setShowDrawer(false);
-    getPaymentHandler();
-    e.stopPropagation();
+      setShowDrawer(false);
+      getPaymentHandler();
+      e.stopPropagation();
+    } else {
+      setLoginModal(!loginModal);
+    }
   }
   return (
     <div

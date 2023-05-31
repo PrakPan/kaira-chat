@@ -58,11 +58,14 @@ const TransferElementsM = ({
               ></ImageLoader> */}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div className="text-md">
-                {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
-                {transfers.routes[0]?.legs[0].destination.shortName}
-              </div>
-              {meta ? (
+              {transfers.routes[0]?.legs[0].origin.shortName && (
+                <div className="text-md">
+                  {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
+                  {transfers.routes[0]?.legs[0].destination.shortName}
+                </div>
+              )}
+
+              {meta.duration ? (
                 <div className="text-md">
                   Duration: {convertNumToTime(meta.duration)}
                 </div>
@@ -88,8 +91,8 @@ const TransferElementsM = ({
             </div>
           ) : null
         ) : null}
-        {/* <TransferInfo className="text-sm">{text}</TransferInfo> */}
-        {meta ? (
+        <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">{text}</div>
+        {meta.duration ? (
           <div className="absolute bottom-[14px] left-[35%] bg-white px-2 ">
             <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
               <TransportIconFetcher

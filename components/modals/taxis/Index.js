@@ -375,7 +375,7 @@ const Booking = (props) => {
   else
     return (
       <div>
-        <LogInModal show={true} onhide={props.setHideBookingModal}></LogInModal>
+        <LogInModal show={true} onhide={props.setHideTaxiModal}></LogInModal>
       </div>
     );
 };

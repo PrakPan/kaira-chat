@@ -593,6 +593,7 @@ const SimpleTabsV2 = (props) => {
           <>
             <div id={items[1].link}>
               <NewItenaryDBDMob
+                token={props.token}
                 // is_registration_needed={
                 //   props.payment ? props.payment.is_registration_needed : false
                 // }
@@ -685,12 +686,14 @@ const SimpleTabsV2 = (props) => {
                       itinerary={props?.itinerary}
                       setItinerary={props.setItinerary}
                       getPaymentHandler={props.getPaymentHandler}
+                      token={props.token}
                     ></NewItenaryMain>
                   )}
                 </div>
               ) : (
                 <div id={items[1].link}>
                   <NewItenaryDBDMob
+                    token={props.token}
                     // is_registration_needed={
                     //   props.payment ? props.payment.is_registration_needed : false
                     // }

@@ -54,9 +54,9 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1rem;
   padding: 16px;
-  width: 360px;
+  width: 100vw;
   @media screen and (min-width: 768px) {
-    width: 100vw;
+    width: 500px;
   }
 `;
 
@@ -130,9 +130,21 @@ const POIDetails = (props) => {
           Approx Time : {props.data.ideal_duration_hours} hrs
         </TimeStamp>
       )}
+      {props.data.ideal_duration_number && (
+        <TimeStamp>
+          Approx Time : {props.data.ideal_duration_number} hrs
+        </TimeStamp>
+      )}
 
       <div>
         <Title>{props.data.name}</Title>
+        {props.data.address && (
+          <div>
+            {' '}
+            <span className="font-bold pr-1">Addresss:</span>{' '}
+            {props.data.address}
+          </div>
+        )}
         <Reviews>
           {props.data.rating && (
             <div
@@ -154,7 +166,15 @@ const POIDetails = (props) => {
         </Reviews>
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </div>
-
+      {props.data.cost && (
+        <div className="flex flex-row">
+          Cost: <div className="font-semibold px-1">₹</div>{' '}
+          {props.data.cost / 100}{' '}
+          <div>
+            {props.data.price_category == 'individual' ? 'Per person' : null}
+          </div>
+        </div>
+      )}
       {props.data.short_description && (
         <div>
           <Heading>About</Heading>

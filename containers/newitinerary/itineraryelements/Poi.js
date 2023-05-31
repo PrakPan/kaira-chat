@@ -21,6 +21,8 @@ import axiositineraryeditinstance from '../../../services/itinerary/edit';
 import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
 import PoiList from './PoiList';
 import PoiListSkeleton from './PoiListSkeleton';
+import LogInModal from '../../../components/modals/Login';
+
 const padding = {
   initialLeft: '60px',
 };
@@ -98,7 +100,7 @@ const ItineraryPoiElement = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
@@ -141,7 +143,10 @@ const ItineraryPoiElement = (props) => {
         window.alert('There seems to be a problem, please try again!');
       });
   };
-
+  const _handleLoginClose = () => {
+    // props.getPaymentHandler();
+    setShowLoginModal(false);
+  };
   function Poi_activities(activity) {
     setFetchingPoi(true);
     if (props.city_id) setShowDrawer(true);
@@ -167,6 +172,9 @@ const ItineraryPoiElement = (props) => {
                   getPaymentHandler={props.getPaymentHandler}
                   // _openPoiModal={_openPoiModal}
                   data={res.data[i]}
+                  loginModal={showLoginModal}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
                   // tailored_id={props.tailored_id}
                   // updateLoadingState={updateLoadingState}
                   // itinerary_id={
@@ -289,7 +297,11 @@ const ItineraryPoiElement = (props) => {
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
       />
-
+      {showLoginModal && (
+        <div>
+          <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
+        </div>
+      )}
       <Drawer
         show={showDrawer}
         anchor={'right'}

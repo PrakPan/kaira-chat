@@ -218,6 +218,7 @@ const NewItenaryMain = (props) => {
                   getPaymentHandler={props.getPaymentHandler}
                   itinerary_id={props.itinerary.tailor_made_id}
                   setItinerary={props.setItinerary}
+                  token={props.token}
                 ></Day_I_Container>
               </div>
             </div>
