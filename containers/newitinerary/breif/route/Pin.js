@@ -12,8 +12,8 @@ const InnerContainer = styled.div`
   border-radius: 50%;
 
   background-color: ${(props) => (props.pinColour ? 'white' : '#f7e700')};
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
 `;
 
 const Pin = (props) => {

@@ -27,7 +27,11 @@ const Navbar = styled.div`
   scrollbar-width: none;
   overflow-x: scroll;
   align-items: center;
+  overflow-y: ${({ Isvertical }) => (Isvertical ? 'scroll' : 'auto')};
+  height: ${({ Isvertical }) => (Isvertical ? '80vh' : 'auto')};
+
   flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
+
   margin: ${({ Isvertical }) => (Isvertical ? '0px -20px 0px -101px' : '')};
   position: ${({ Isvertical }) => (Isvertical ? 'absolute' : 'inherit')};
   background-color: white;

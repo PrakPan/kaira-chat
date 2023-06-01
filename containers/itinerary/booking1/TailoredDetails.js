@@ -31,6 +31,7 @@ import Accordion from './Accordion';
 import Spinner from '../../../components/Spinner';
 import ButtonYellow from '../../../components/ButtonYellow';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
+import Slide from '../../../Animation/framerAnimation/Slide';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -73,12 +74,20 @@ const Details = (props) => {
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ''
   );
+  const [isError, setIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
+  const [isSucess, setIsSucess] = useState({
+    value: false,
+    errorMsg: '',
+  });
   const [showAdultsModal, setShowAdultsModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
 
-  const getPaymentHandler = (coupon) => {
+  const getCouponHandler = (coupon) => {
     setPaymentLoading(true);
     //  props.checkAuthState();
 
@@ -96,12 +105,20 @@ const Details = (props) => {
         }
       )
       .then((res) => {
-        props.getPaymentHandler();
+        setIsSucess({
+          value: true,
+          Msg: 'Coupon Applied Successfully',
+        });
         console.log(res.data);
         setPaymentLoading(false);
         setIsDisabled(true);
         setiscouponApplied(true);
+        setIsError({
+          error: false,
+          errorMsg: '',
+        });
 
+        props.getPaymentHandler();
         //check if user has already paid
         // try{
         // let email = localStorage.getItem('email');
@@ -114,6 +131,10 @@ const Details = (props) => {
         setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
+        setIsError({
+          error: true,
+          errorMsg: 'Coupon Invalid or Expired',
+        });
         setInputValue('');
         console.log(error);
       });
@@ -136,13 +157,17 @@ const Details = (props) => {
         }
       )
       .then((res) => {
-        props.getPaymentHandler();
+        setIsSucess({
+          value: true,
+          Msg: 'Coupon Removed Successfully',
+        });
         console.log(res.data);
         setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
         setInputValue('');
 
+        props.getPaymentHandler();
         //check if user has already paid
         // try{
         // let email = localStorage.getItem('email');
@@ -154,13 +179,25 @@ const Details = (props) => {
       .catch((error) => {
         setPaymentLoading(false);
         setIsDisabled(true);
-
+        setIsError({
+          error: true,
+          errorMsg: 'Coupon Removed Failed',
+        });
         console.log(error);
       });
   };
   function handleSubmit(e) {
-    if (inputValue !== '') {
-      getPaymentHandler(inputValue);
+    if (props.token) {
+      if (inputValue !== '') {
+        getCouponHandler(inputValue);
+      } else {
+        setIsError({
+          error: true,
+          errorMsg: 'Please Enter Something',
+        });
+      }
+    } else {
+      props.setShowLoginModal(true);
     }
   }
   function handleSubmitRemove(e) {
@@ -693,9 +730,9 @@ const Details = (props) => {
       <div className="px-3 pb-2">
         {props?.payment?.allow_coupon_discount ? (
           <div>
-            <div className="relative  rounded-md shadow-sm cursor-pointer">
+            <div className="relative  rounded-md shadow-sm cursor-pointer mt-3">
               <input
-                class=" px-3 w-full py-2 mt-3 border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+                class=" px-3 w-full py-2  border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
                 type="text"
                 readOnly={iscouponApplied}
                 value={inputValue}
@@ -704,9 +741,50 @@ const Details = (props) => {
                 name="name"
                 placeholder="Have a coupon code?"
               />
+              <div className="absolute right-[30%] -bottom-[18px]">
+                {isError.error && (
+                  <Slide
+                    hideTime={4}
+                    onUnmount={() =>
+                      setIsError({
+                        error: false,
+                        errorMsg: '',
+                      })
+                    }
+                    isActive={isError.error}
+                    direction={-1}
+                    duration={0.2}
+                    ydistance={20}
+                  >
+                    <div className="text-red-500 text-center font-normal text-sm ">
+                      {isError.errorMsg}
+                    </div>
+                  </Slide>
+                )}
+                {isSucess.value && (
+                  <Slide
+                    hideTime={4}
+                    onUnmount={() =>
+                      setIsSucess({
+                        value: false,
+                        Msg: '',
+                      })
+                    }
+                    isActive={isSucess.value}
+                    direction={-1}
+                    duration={0.1}
+                    ydistance={10}
+                  >
+                    <div className="text-green-500 text-center font-normal text-sm ">
+                      {isSucess.Msg}
+                    </div>
+                  </Slide>
+                )}
+              </div>
+
               {iscouponApplied ? (
                 <button
-                  className=" absolute  inset-y-0 -right-1 top-4 flex items-center pr-3  "
+                  className=" absolute  inset-y-0 -right-1 top-1 flex items-center pr-3  "
                   type="submit"
                   onClick={(e) => handleSubmitRemove(e)}
                 >
@@ -719,7 +797,7 @@ const Details = (props) => {
                 </button>
               ) : (
                 <button
-                  className=" absolute  inset-y-0 right-1 top-4 flex items-center pr-3  "
+                  className=" absolute  inset-y-0 right-1 top-1 flex items-center pr-3  "
                   type="submit"
                   onClick={(e) => handleSubmit(e)}
                 >

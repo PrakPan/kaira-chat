@@ -8,7 +8,7 @@ import { MdOutlineFlightTakeoff } from 'react-icons/md';
 import { IoMdRestaurant } from 'react-icons/io';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
-import { GiKnifeFork } from 'react-icons/gi';
+import { MdRestaurant } from 'react-icons/md';
 
 const SectionOneText = styled.span``;
 
@@ -57,7 +57,7 @@ const ItineraryFoodElementM = (props) => {
           <div className="flex flex-row ">
             <div className="text-center">
               <div className="grid place-items-center">
-                <GiKnifeFork className="text-black text-[28px] mr-4" />
+                <MdRestaurant className="text-black text-[28px] mr-4" />
               </div>
 
               {/* {props.icon ? (

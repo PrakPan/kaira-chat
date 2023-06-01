@@ -222,7 +222,7 @@ const HotelBookingContainer = ({
                     </div>
                     <div className="text-md font-medium gap-2 flex flex-row items-center">
                       <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                      <div className="text-md font-medium min-w-fit">
+                      <div className=" text-md font-medium min-w-fit">
                         {booking.number_of_adults} Adults
                       </div>
                     </div>
@@ -232,8 +232,8 @@ const HotelBookingContainer = ({
 
               {booking.costings_breakdown ? (
                 <div className={`flex ${'flex-row'} gap-3`}>
-                  <div className="text-md font-medium gap-2 flex flex-row items-center">
-                    <FaBed className="text-md text-[#7A7A7A]" />
+                  <div className="text-md font-medium gap-2 flex flex-row items-start ">
+                    <FaBed className="text-md w-[20px] pt-1 text-[#7A7A7A] min-w-fit" />
                     <div className="text-md font-medium">
                       {booking.costings_breakdown[0].room_type}
                     </div>
@@ -243,8 +243,8 @@ const HotelBookingContainer = ({
                 currentBooking.number_of_adults && (
                   <div className={`flex ${'flex-row'} gap-3`}>
                     {room[0] && (
-                      <div className="text-md font-medium gap-2 flex flex-row items-center">
-                        <FaBed className="text-md min-w-fit text-[#7A7A7A]" />
+                      <div className="text-md font-medium gap-2 flex flex-row items-start ">
+                        <FaBed className="text-md w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
                         <div className="text-md font-medium">{room[0]}</div>
                       </div>
                     )}

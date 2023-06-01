@@ -877,7 +877,7 @@ const TransfersContainer = (props) => {
                   NoOfNights(props?.breif?.city_slabs[i]?.duration)
                 : null
             }
-            pinColour={props.breif.city_slabs[i].color}
+            pinColour={props?.breif?.city_slabs[i]?.color}
             index={i}
           ></PinSection>
         );
@@ -919,7 +919,7 @@ const TransfersContainer = (props) => {
                 props?.transferBookings && (
                   <TransferModeContainer
                     booking_type={props?.transferBookings[i]?.booking_type}
-                    pinColour={props.breif.city_slabs[i].color}
+                    pinColour={props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
                       props?.transferBookings[i]?.costings_breakdown
                     }
@@ -938,7 +938,7 @@ const TransfersContainer = (props) => {
                     transportMode={getTransportationType(
                       props?.transfers[i]?.icon
                     )}
-                    duration={props.breif.city_slabs[i].duration}
+                    duration={props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 )
               );

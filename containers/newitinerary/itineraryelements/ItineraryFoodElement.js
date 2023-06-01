@@ -12,7 +12,7 @@ import {
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import FoodItem from './FoodItem';
 import { isJson } from '../../../services/isJSON';
-import { GiKnifeFork } from 'react-icons/gi';
+import { MdRestaurant } from 'react-icons/md';
 const padding = {
   initialLeft: '8.5rem',
 };
@@ -98,7 +98,7 @@ const ItineraryFoodElement = (props) => {
         <div className="flex flex-row ">
           <div className="w-[6.15rem] flex flex-col justify-center items-center">
             <div className="w-[6.15rem] grid place-items-center">
-              <GiKnifeFork className="text-black text-[3.05rem] " />
+              <MdRestaurant className="text-black text-[3.05rem] " />
             </div>
           </div>
 
