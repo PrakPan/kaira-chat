@@ -35,7 +35,7 @@ const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
   padding: 1rem;
-  margin: 1rem 0;
+  margin: 0rem 0;
   @media screen and (min-width: 768px) {
     margin: 0;
     width: 27vw;

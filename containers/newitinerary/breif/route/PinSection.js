@@ -9,7 +9,7 @@ const Container = styled.div`
   grid-template-columns: max-content auto max-content;
 `;
 const Heading = styled.div`
-  font-weight: 650;
+  font-weight: 500;
 
   color: black;
 

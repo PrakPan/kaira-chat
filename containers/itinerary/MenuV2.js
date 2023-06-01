@@ -44,6 +44,7 @@ import ButtonYellow from '../../components/ButtonYellow';
 import { Navigation } from '../../components/NewNavigation';
 import TransfersContainer from './TransfersContainer/TransfersContainer';
 import LogInModal from '../../components/modals/Login';
+import Modal from '../../components/ui/Modal';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -239,6 +240,7 @@ const SimpleTabsV2 = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBookingTimer, setShowBookingTimer] = useState(true);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
+
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
@@ -667,6 +669,82 @@ const SimpleTabsV2 = (props) => {
                 transferBookings={props?.transferBookings}
               />
             </div>
+            <Modal
+              centered
+              show={showFooterBannerMobile}
+              mobileWidth="90%"
+              backdrop
+              closeIcon
+              onHide={() => setShowFooterBannerMobile(false)}
+              borderRadius={'12px'}
+            >
+              {props.payment ? (
+                <div className=" ">
+                  {/* <BookingContainer
+        payment={props.payment}
+        plan={props.plan}
+        stayBookings={props.stayBookings}
+        flightBookings={props.flightBookings}
+        activityBookings={props.activityBookings}
+        transferBookings={props.transferBookings}
+      ></BookingContainer> */}
+                  {!props.payment.is_registration_needed ? (
+                    <SummaryContainer
+                      setUserDetails={props.setUserDetails}
+                      id={props.id}
+                      stayBookings={props.stayBookings}
+                      flightBookings={props.flightBookings}
+                      activityBookings={props.activityBookings}
+                      transferBookings={props.transferBookings}
+                      setShowFooterBannerMobile={() =>
+                        setShowFooterBannerMobile(true)
+                      }
+                      getPaymentHandler={props.getPaymentHandler}
+                      payment={props.payment}
+                      traveleritinerary={props.traveleritinerary}
+                      blur={props.blur}
+                      hide={_hidePaymentHandler}
+                      experienceId={props.experienceId}
+                      token={props.token}
+                      setShowLoginModal={setShowLoginModal}
+                    ></SummaryContainer>
+                  ) : (
+                    // width 27vw
+                    <div>
+                      <GITSummaryContainer
+                        hasUserPaid={
+                          props.payment
+                            ? props.payment.paid_user
+                              ? true
+                              : false
+                            : false
+                        }
+                        payment_status={props.payment_status}
+                        plan={props.plan}
+                        itinerary={props.itinerary}
+                        getPaymentHandler={props.getPaymentHandler}
+                        setUserDetails={props.setUserDetails}
+                        id={props.id}
+                        stayBookings={props.stayBookings}
+                        flightBookings={props.flightBookings}
+                        activityBookings={props.activityBookings}
+                        transferBookings={props.transferBookings}
+                        setShowFooterBannerMobile={() =>
+                          setShowFooterBannerMobile(true)
+                        }
+                        payment={props.payment}
+                        traveleritinerary={props.traveleritinerary}
+                        blur={props.blur}
+                        hide={_hidePaymentHandler}
+                        experienceId={props.experienceId}
+                        token={props.token}
+                        setShowLoginModal={setShowLoginModal}
+                      ></GITSummaryContainer>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </Modal>
           </>
         )}
         {/* // for 0000000000000000000000  desktop */}
@@ -1025,7 +1103,11 @@ const SimpleTabsV2 = (props) => {
               ) : null}
             </div>
             <div className="">
-              <ButtonYellow onclick={setShowLoginModal} onclickparam={true}>
+              <ButtonYellow
+                onClick={() =>
+                  setShowFooterBannerMobile(!showFooterBannerMobile)
+                }
+              >
                 Book now
               </ButtonYellow>
             </div>

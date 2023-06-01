@@ -35,7 +35,7 @@ const Line = styled.hr`
   width: 5rem;
   height: 1.7px;
   top: 23px;
-  right: -25px;
+  right: -22px;
 
   border: 2px;
   opacity: initial;
