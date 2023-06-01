@@ -64,20 +64,19 @@ let MobileCardsArr = []
         cardsarr.push(
           <>
             <Card
-            data={props.locations[i]}
-            key={props.locations[i].tagline}
-            location={props.locations[i].name}
-            heading={props.locations[i].tagline}
-            img={props.locations[i].image}
-            path={props.locations[i].path}
-            filters={props.locations[i].most_popular_for}
-            _handleCityRedirect={_handleCityRedirect}
+              data={props.locations[i]}
+              key={props.locations[i].tagline}
+              location={props.locations[i].name}
+              heading={props.locations[i].tagline}
+              img={props.locations[i].image}
+              path={props.locations[i].path}
+              filters={props.locations[i].most_popular_for}
+              _handleCityRedirect={_handleCityRedirect}
 
-            // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
-            > 
-            </Card>
+              // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+            ></Card>
           </>
-          )
+        );
       }
         }
         catch{

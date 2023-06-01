@@ -55,9 +55,11 @@ const SaifBackgroundImageLoader = (props) => {
     const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
     let imageRequest;
     const [fullLoaded, setFullLoaded] = useState(false);
-    const fullImageLoadedHandler = () => {
+  const fullImageLoadedHandler = () => {
+    if (props.onload) props.onload();
       setFullLoaded(true);
-    };
+  };
+
 const [JSX, setJSX] = useState("");
 useEffect(() => {
     let smallImageRequest = JSON.stringify({

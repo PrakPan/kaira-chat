@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import BackroundImageLoader from '../UpdatedBackgroundImageLoader';
 import media from '../media';
@@ -37,7 +37,9 @@ const Name = styled.p`
     }
 `;
 const Experiences= (props) => {
-    let isPageWide = media('(min-width: 768px)')
+  let isPageWide = media('(min-width: 768px)')
+  const [ImageLoaded, setImageLoaded] = useState(false);
+  
     /*Require props: imgWidth*/
   
 
@@ -53,19 +55,24 @@ const Experiences= (props) => {
           height={isPageWide ? "50vh" : "60vh"}
           filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"
           url={props.img}
+          onload={() => setImageLoaded(true)}
         >
-          <Name className="font-lexend">{props.heading}</Name>
-          <Name
-            className="font-lexend"
-            style={{
-              fontSize: "36px",
-              fontWeight: "700",
-              letterSpacing: "0",
-              marginTop: "0.5rem",
-            }}
-          >
-            {props.location}
-          </Name>
+          {ImageLoaded && (
+            <>
+              <Name className="font-lexend">{props.heading}</Name>
+              <Name
+                className="font-lexend"
+                style={{
+                  fontSize: "36px",
+                  fontWeight: "700",
+                  letterSpacing: "0",
+                  marginTop: "0.5rem",
+                }}
+              >
+                {props.location}
+              </Name>
+            </>
+          )}
         </BackroundImageLoader>
         {/* <ImageLoader borderRadius="10px" url={props.img} dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}></ImageLoader> */}
       </Container>

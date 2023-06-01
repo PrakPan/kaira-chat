@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import media from '../../media';
 import ImageLoader from '../../ImageLoader';
+import { useState } from 'react';
+import SkeletonCard from '../../ui/SkeletonCard';
 
 const Container = styled.div`
 width: 100%;
@@ -68,6 +70,7 @@ const Name = styled.p`
 
 const Experiences= (props) => {
     let isPageWide = media('(min-width: 768px)');
+    const [ImageLoaded , setImageLoaded] = useState(false)
     let filters_to_show = "";
      try{
     for(var i = 0 ; i < props.filters.length; i++){
@@ -81,43 +84,56 @@ const Experiences= (props) => {
     }catch{
 
     }
-    /*Require props: imgWidth*/
-  
+    return (
+      <>
+          <div
+            className="hover-pointer"
+            onClick={() => {
+              props.path
+                ? props._handleCityRedirect(props.path)
+                : console.log("");
+            }}
+          >
+            <div style={{ display: ImageLoaded ? "initial" : "none" }}>
+              <ImageLoader
+                hoverpointer
+                url={props.img}
+                dimensions={{ width: 800, height: 800 }}
+                borderRadius="10px"
+                dimensionsMobile={{ width: 800, height: 800 }}
+                onload={() => setImageLoaded(true)}
+              ></ImageLoader>
+            </div>
+            {!ImageLoaded && <SkeletonCard />}
 
-//     return(
-//       <Container onClick={props.onclick ? props.onclick : null} >  
-//           <BackroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   padding="0.25rem" zoomonhover center dimensions={{width: 900, height: 900}} height={isPageWide ? "30vh" : '60vh'} filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"  url={props.img}>
-//               <Name className="font-lexend">{props.heading}</Name>
-//               <Name className="font-lexend" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
-//           </BackroundImageLoader>
-//       </Container>
-//   ); 
-return(
-    <div className='hover-pointer' onClick={() => {props.path ?props._handleCityRedirect(props.path) : console.log('')}}>
-  {/* <ImageLoader
-
-url={'media'}
-dimensions={{width: 800, height: 800}}
-borderRadius="10px"
-dimensionsMobile={{width: 200, height: 200}}
-
-></ImageLoader> */}
-            <ImageLoader
-            hoverpointer
-            url={props.img}
-            dimensions={{width: 800, height: 800}}
-            borderRadius="10px"
-            dimensionsMobile={{width: 800, height: 800}}
-          
-            ></ImageLoader>
-    <div style={{padding: '0.5rem 0'}} className='hover-pointer'>
-              {/* <Name className="font-lexend">{props.heading}</Name> */}
-               <Name className="font-lexend">{props.location}</Name>
-               <Subtext className="font-lexend">{filters_to_show}</Subtext>
-               </div>
-
-        </div>
-)
+            <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
+              {ImageLoaded ? (
+                <>
+                  <Name className="font-lexend">{props.location}</Name>
+                  <Subtext className="font-lexend">{filters_to_show}</Subtext>
+                </>
+              ) : (
+                <>
+                  <Name className="font-lexend">
+                    <SkeletonCard
+                      width={"60%"}
+                      height="15px"
+                      borderRadius={"3px"}
+                    />
+                  </Name>
+                  <Subtext className="font-lexend">
+                    <SkeletonCard
+                      width={"85%"}
+                      height="35px"
+                      borderRadius={"3px"}
+                    />
+                  </Subtext>
+                </>
+              )}
+            </div>
+          </div>
+        </>
+    );
 }
 
 export default Experiences;

@@ -48,4 +48,4 @@ useEffect(() => {
   );
 }
 
-export default TripsCounter
+export default React.memo(TripsCounter)

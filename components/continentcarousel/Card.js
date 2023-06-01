@@ -3,6 +3,7 @@ import styled from "styled-components";
 import media from "../media";
 import ImageLoader from "../ImageLoader";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -66,11 +67,11 @@ const Subheading = styled.p`
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
+  const [ImageLoaded, setImageLoaded] = useState(false);
 
   const _handleRedirect = (e) => {
     e.preventDefault();
     if (props.path) window.location.href = "/" + props.path;
-    console.log("props.path: ", props.path);
   };
   const path = props.city
     ? "https://thetarzanway.com/travel-guide/city/"
@@ -95,13 +96,16 @@ const Experiences = (props) => {
               : { width: 300, height: 400 }
           }
           height={props.continent ? "71vh" : "35vh"}
+          onload={() => setImageLoaded(true)}
         ></ImageLoader>
       </ImageFade>
       <BlackContainer continent={props.continent} className="font-lexend">
-        <Heading continent={props.continent}>{props.location}</Heading>
-        {isPageWide && (
-          <Subheading continent={props.continent}>{props.heading}</Subheading>
-        )}
+        {ImageLoaded && <>
+          <Heading continent={props.continent}>{props.location}</Heading>
+          {isPageWide && (
+            <Subheading continent={props.continent}>{props.heading}</Subheading>
+          )}
+        </>}
       </BlackContainer>
     </ImageContainer>
   );

@@ -104,8 +104,10 @@ const Continentcarousel = () => {
       ) : (
         <>
           <GridContainer style={{ marginInline: "0.5rem" }}>
-            <div>
-              <SkeletonCard height={isPageWide ? "71vh" : "25vh"} />
+            <div style={{ height : isPageWide ? '71vh' : '25vh' ,borderRadius : '7px', overflow : 'hidden' }}>
+              <SkeletonCard
+                lottieDimension={'75vw'}
+              />
             </div>
             <CardsContainer>
               {[Skeleton, Skeleton, Skeleton, Skeleton, Skeleton, Skeleton]}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import media from './media';
 import usePageLoaded from './custom hooks/usePageLoaded';
@@ -8,6 +8,7 @@ const ImageLoader = (props) => {
   const [error, setError] = useState(false);
   let isPageWide = media('(min-width: 768px)')
   const isPageLoaded = usePageLoaded();
+  const [fullLoaded, setFullLoaded] = useState(false);
 
   const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
 
@@ -127,7 +128,7 @@ const ImageLoader = (props) => {
   }
   
  
-  const [fullLoaded, setFullLoaded] = useState(false);
+  
   const smallurl = imgUrlEndPoint + '40x30/' + props.url;
   const Container = styled.div`
  

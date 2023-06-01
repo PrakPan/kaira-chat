@@ -160,8 +160,10 @@ const BlackContainer = styled.div`
 
 const PlanAsPerTheme = (props) => {
   let isPageWide = media("(min-width: 768px)");
-    const router = useRouter();
-    const [data  ,setData] = useState([])
+  const router = useRouter();
+  const [data, setData] = useState([])
+  const order = ["a", "b", "c", "d", 'e', 'f', 'g'];
+  const [ImagesLoading , setImagesLoading] = useState(order.length)
   useEffect(() => {
       async function fetchData() {
           const res = await axiosPageListInstance("?page_type=Continents");     
@@ -173,29 +175,32 @@ const PlanAsPerTheme = (props) => {
   const _handleTripRedirect = (path) => {
       if(path) window.location.href = '/' + path
   };
-
-  const order = ["a", "b", "c", "d" , 'e' , 'f' , 'g'];
+  const _handleImageLoaded = () => {
+    if (ImagesLoading !== 0) {
+      setImagesLoading(prev=>prev-1)
+    }
+  }
   const ThemeContainer = data?.map((e, i) => (
     <GridItem
       className={order[i]}
       key={i}
       onClick={() => _handleTripRedirect(e.path)}
     >
-      <ImageContainer
-      >
-        <TextContainer className="AnimateTop">
+      <ImageContainer>
+       {!ImagesLoading &&  <TextContainer className="AnimateTop">
           <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
           {isPageWide && <div className="StartNow">Explore!</div>}
-        </TextContainer>
+        </TextContainer>}
         <ImageLoader
           fit="cover"
           width="100%"
-                  height="100%"
-                  dimensions={{ width: 1500, height: 800}}
-        dimensionsMobile={{width : 500 , height : 500}}
+          height="100%"
+          dimensions={{ width: 1500, height: 800 }}
+          dimensionsMobile={{ width: 500, height: 500 }}
           url={e.image}
+          onload={_handleImageLoaded}
         ></ImageLoader>
-        <BlackContainer />
+       {!ImagesLoading &&  <BlackContainer />}
       </ImageContainer>
     </GridItem>
   ));
@@ -204,7 +209,6 @@ const PlanAsPerTheme = (props) => {
     <GridItem
       className={e}
       key={i}
-      onClick={() => _handleTripRedirect(e.path)}
     >
      <SkeletonCard />
     </GridItem>
@@ -232,4 +236,4 @@ const PlanAsPerTheme = (props) => {
   );
 };
 
-export default PlanAsPerTheme;
+export default React.memo(PlanAsPerTheme);

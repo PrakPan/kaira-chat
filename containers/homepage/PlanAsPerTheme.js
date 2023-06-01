@@ -234,4 +234,4 @@ const PlanAsPerTheme = (props) => {
 }
 
 
-export default PlanAsPerTheme
+export default React.memo(PlanAsPerTheme)

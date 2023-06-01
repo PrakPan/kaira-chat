@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import media from '../../media';
 import ImageLoader from '../../ImageLoader';
@@ -59,7 +59,8 @@ padding: 0.5rem;
  `;
 
 const Experiences= (props) => {
-    let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media('(min-width: 768px)');
+  const [ImageLoaded, setImageLoaded] = useState(false)
     const router = useRouter();
     /*Require props: imgWidth*/
   
@@ -79,23 +80,28 @@ const Experiences= (props) => {
       console.log('props.path: ', props.path);
     }
     const path = props.city ? "https://thetarzanway.com/travel-guide/city/" : "https://thetarzanway.com/travel-planner/"
-return (
-    <ImageContainer className="hover-pointer" onClick={(e) => _handleRedirect(e)}>
-        
+  return (
+    <>
+      <ImageContainer
+        className="hover-pointer"
+        onClick={(e) => _handleRedirect(e)}
+      >
         <ImageFade>
-      <ImageLoader
-        url={props.img}
-        dimensions={{ width: 800, height: 800 }}
-        dimensionsMobile={{ width: 800, height: 800 }}
-        height="35vh"
-      ></ImageLoader>
-    </ImageFade>
-    <BlackContainer className="font-lexend">
-      <Heading>{props.location}</Heading>
-      <Subheading>{props.heading}</Subheading>
-    </BlackContainer>
-  </ImageContainer>
-);
+          <ImageLoader
+            url={props.img}
+            dimensions={{ width: 800, height: 800 }}
+            dimensionsMobile={{ width: 800, height: 800 }}
+            height="35vh"
+            onload={() => setImageLoaded(true)}
+          ></ImageLoader>
+        </ImageFade>
+        <BlackContainer className="font-lexend">
+          {ImageLoaded && <Heading>{props.location}</Heading>}
+          {ImageLoaded && <Subheading>{props.heading}</Subheading>}
+        </BlackContainer>
+      </ImageContainer>
+    </>
+  );
 }
 
 export default Experiences;
