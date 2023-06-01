@@ -471,6 +471,13 @@ const TransfersContainer = (props) => {
       return url;
     }
   }
+  function NoOfNights(days) {
+    if (days > 1) {
+      return ' Nights';
+    } else {
+      return ' Night';
+    }
+  }
   function scrollToTargetAdjusted() {
     // if (window.location.pathname === '/') {
     //   router.push({ pathname: '/locations', query: { scroll: target } });
@@ -866,7 +873,8 @@ const TransfersContainer = (props) => {
             city={props?.transferBookings[i - 1]?.destination_city}
             duration={
               props?.breif?.city_slabs[i]?.duration
-                ? props?.breif?.city_slabs[i]?.duration + ' Night'
+                ? props?.breif?.city_slabs[i]?.duration +
+                  NoOfNights(props?.breif?.city_slabs[i]?.duration)
                 : null
             }
             pinColour={props.breif.city_slabs[i].color}
@@ -995,7 +1003,8 @@ const TransfersContainer = (props) => {
             cityId={props.breif.city_slabs[0].city_id}
             duration={
               props.breif.city_slabs[0].duration
-                ? props.breif.city_slabs[0].duration + ' Night'
+                ? props.breif.city_slabs[0].duration +
+                  NoOfNights(props.breif.city_slabs[0].duration)
                 : null
             }
             pinColour={props.breif.city_slabs[0].color}
@@ -1041,7 +1050,8 @@ const TransfersContainer = (props) => {
             cityId={props.breif.city_slabs[0].city_id}
             duration={
               props.breif.city_slabs[0].duration
-                ? props.breif.city_slabs[0].duration + ' Night'
+                ? props.breif.city_slabs[0].duration +
+                  NoOfNights(props.breif.city_slabs[0].duration)
                 : null
             }
             pinColour={props.breif.city_slabs[0].color}

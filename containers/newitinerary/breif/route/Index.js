@@ -27,7 +27,9 @@ const Route = (props) => {
     },
   };
   let locationsArr = [];
+  console.log('props.transfers');
 
+  console.log(props.transfers);
   const [order, setOrder] = useState(initialorder);
   const _moveDownHandler = (index) => {
     if (index === 3) {
@@ -86,11 +88,18 @@ const Route = (props) => {
       return url;
     }
   }
+  function NoOfNights(days) {
+    if (days > 1) {
+      return ' Nights';
+    } else {
+      return ' Night';
+    }
+  }
   let startingcity = null;
   let endingcity = null;
   if (props.breif)
     if (props.breif.city_slabs) {
-      for (var i = 0; i < props.breif.city_slabs.length; i++) {
+      for (var i = 1; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].is_departure_only)
           startingcity = props.breif.city_slabs[0].city_name;
         if (props.breif.city_slabs[i].is_trip_terminated)
@@ -121,7 +130,8 @@ const Route = (props) => {
               cityId={props.breif.city_slabs[i].city_id}
               duration={
                 props.breif.city_slabs[i].duration
-                  ? props.breif.city_slabs[i].duration + ' Night'
+                  ? props.breif.city_slabs[i].duration +
+                    NoOfNights(props.breif.city_slabs[i].duration)
                   : null
               }
               pinColour={props.breif.city_slabs[i].color}
@@ -134,7 +144,11 @@ const Route = (props) => {
           locationsArr.push(
             <MidSection
               pinColour={props.breif.city_slabs[i].color}
-              modes={'Taxi'}
+              modes={
+                props.transfers[i + 1].modes
+                  ? props.transfers[i + 1].modes[0]
+                  : 'Taxi'
+              }
               icon={null}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
@@ -170,7 +184,8 @@ const Route = (props) => {
         cityId={props.breif.city_slabs[0].city_id}
         duration={
           props.breif.city_slabs[0].duration
-            ? props.breif.city_slabs[0].duration + ' Night'
+            ? props.breif.city_slabs[0].duration +
+              NoOfNights(props.breif.city_slabs[0].duration)
             : null
         }
         pinColour={props.breif.city_slabs[0].color}
@@ -179,7 +194,7 @@ const Route = (props) => {
       ></PinSection>
       <MidSection
         pinColour={props.breif.city_slabs[0].color}
-        modes={'Taxi'}
+        modes={props.transfers[1].modes[0]}
         icon={props?.transfers[0]?.icon}
         transportMode={'Taxi'}
         duration={'2'}
@@ -205,7 +220,8 @@ const Route = (props) => {
         cityId={props.breif.city_slabs[0].city_id}
         duration={
           props.breif.city_slabs[0].duration
-            ? props.breif.city_slabs[0].duration + ' Night'
+            ? props.breif.city_slabs[0].duration +
+              NoOfNights(props.breif.city_slabs[0].duration)
             : null
         }
         pinColour={props.breif.city_slabs[0].color}

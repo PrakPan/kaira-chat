@@ -259,12 +259,14 @@ const TransferModeContainer = (props) => {
                       <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
                       <div className="flex flex-col  justify-center items-center">
                         <FaPlane className="" />
-                        <div>
-                          Nonstop
-                          {props.booking.duration
-                            ? ` (${props.booking.duration}h)`
-                            : null}
-                        </div>
+                        {props.userSelected ? (
+                          <div>
+                            Nonstop
+                            {props.booking.duration
+                              ? ` (${props.booking.duration}h)`
+                              : null}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
 

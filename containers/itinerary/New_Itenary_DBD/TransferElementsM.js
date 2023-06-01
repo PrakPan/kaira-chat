@@ -41,7 +41,7 @@ const TransferElementsM = ({
             <div style={{ paddingRight: '10px' }}>
               {modes && (
                 <TransportIconFetcher
-                  TransportMode={modes}
+                  TransportMode={modes[0]}
                   Instyle={{
                     fontSize: '1.75rem',
                     marginRight: '0.5rem',
@@ -78,7 +78,7 @@ const TransferElementsM = ({
             <div className="flex mt-2 flex-row items-center justify-between w-full">
               <LivelyButton className="font-bold  border-2 border-black rounded-md px-3 py-1  bg-white text-black">
                 {modes ? `${modes} From ` : null} ₹
-                {formatNumber(meta.estimated_cost)}
+                {formatNumber(Math.round(meta.estimated_cost))}
               </LivelyButton>
 
               <div className="text-sm font-medium">
@@ -96,7 +96,7 @@ const TransferElementsM = ({
           <div className="absolute bottom-[14px] left-[35%] bg-white px-2 ">
             <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
               <TransportIconFetcher
-                TransportMode={modes}
+                TransportMode={modes[0]}
                 classname="w-fit lg:text-[1.05rem] text-[1.25rem]"
               />{' '}
               {meta.Time}

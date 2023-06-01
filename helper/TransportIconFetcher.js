@@ -1,6 +1,6 @@
 import { FaTaxi } from 'react-icons/fa';
 import { MdOutlineFlightTakeoff } from 'react-icons/md';
-import { IoMdTrain } from 'react-icons/io';
+import { IoMdTrain, IoMdBoat } from 'react-icons/io';
 export function TransportIconFetcher({ TransportMode, Instyle, classname }) {
   // const Icons = {
   //   "clear sky": clearsky,
@@ -21,7 +21,8 @@ export function TransportIconFetcher({ TransportMode, Instyle, classname }) {
       return <FaTaxi style={Instyle} className={classname} />;
     case 'Train':
       return <IoMdTrain style={Instyle} className={classname} />;
-
+    case 'Ferry':
+      return <IoMdBoat style={Instyle} className={classname} />;
     default:
       return <FaTaxi style={Instyle} className={classname} />;
   }

@@ -64,7 +64,7 @@ const TransferElements = ({
                   <Link to={'Transfer_Container'}>
                     <TransparentButton>
                       {modes ? `${modes} From ` : null} ₹
-                      {formatNumber(meta.estimated_cost)}
+                      {formatNumber(Math.round(meta.estimated_cost))}
                     </TransparentButton>
                   </Link>
                 )}

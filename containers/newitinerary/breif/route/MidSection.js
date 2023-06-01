@@ -33,7 +33,7 @@ const Line = styled.hr`
   -webkit-transform: rotate(90deg);
   position: absolute;
   width: 5rem;
-  height: 1.4px;
+  height: 1.7px;
   top: 23px;
   right: -25px;
 
@@ -42,7 +42,7 @@ const Line = styled.hr`
 
   @media screen and (min-width: 768px) {
     width: 8rem;
-    height: 1px;
+    height: 1.7px;
     top: 46px;
     right: -46px;
   }
@@ -58,9 +58,9 @@ const Line = styled.hr`
   margin: 0rem 0 0rem 0rem; */
 `;
 const Text = styled.div`
-  color: #111;
+  color: #4d4d4d;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 300;
   font-size: 18px;
   line-height: 28px;
   display: flex;
@@ -90,9 +90,9 @@ const MidSection = (props) => {
           <TransportIconFetcher
             TransportMode={props.modes}
             Instyle={{
-              fontSize: '1.75rem',
+              fontSize: '1.4rem',
               marginRight: '0.8rem',
-              color: 'black',
+              color: '#4d4d4d',
             }}
           />
         )}
