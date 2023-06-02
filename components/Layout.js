@@ -37,7 +37,7 @@ const Layout = (props) => {
         id={props.id}
         destination={props.destination}
       />
-      <div style={{ marginTop: '72px' }}>{props.children}</div>
+      <div>{props.children}</div>
       <LogInModal
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}

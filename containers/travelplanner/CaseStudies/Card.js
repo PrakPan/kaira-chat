@@ -42,6 +42,10 @@ const RatingContainer = styled.div`
     flex-direction: row;
     gap: 0.75rem;
   }
+  > div {
+    display: flex;
+    flex-direction: row;
+  }
 `;
 const CardContainer = (props) => {
   const router = useRouter();

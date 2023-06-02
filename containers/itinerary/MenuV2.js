@@ -674,7 +674,7 @@ const SimpleTabsV2 = (props) => {
               show={showFooterBannerMobile}
               mobileWidth="90%"
               backdrop
-              closeIcon={false}
+              closeIcon={true}
               onHide={() => setShowFooterBannerMobile(false)}
               borderRadius={'12px'}
             >

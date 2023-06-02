@@ -18,7 +18,9 @@ import media from '../media';
 import openTailoredModal from '../../services/openTailoredModal';
 const NavItemsContainer = styled.div`
   display: none;
-
+  >div {
+    margin-right: 1.7rem;
+  }
   @media screen and (min-width: 768px) {
     margin-right: 0rem;
     display: flex;

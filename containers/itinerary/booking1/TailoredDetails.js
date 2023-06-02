@@ -468,7 +468,7 @@ const Details = (props) => {
             )}
 
             {iscouponApplied && (
-              <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 text-white">
+              <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 mt-4 text-white">
                 <div>{props?.payment?.coupon?.discount_value}</div>
                 <div>
                   {props?.payment?.coupon?.discount_type == 'Flat'
