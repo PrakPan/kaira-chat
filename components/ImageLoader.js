@@ -185,6 +185,7 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            
             src={
               !is_url
                 ? isPageLoaded
@@ -199,6 +200,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
+            loading="lazy"
             src={
               !is_url
                 ? error
@@ -249,6 +251,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
+            loading="lazy"
             src={
               !is_url
                 ? error
@@ -300,6 +303,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
+            loading="lazy"
             src={
               !is_url
                 ? error
@@ -353,6 +357,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
+            loading="lazy"
             src={
               !is_url
                 ? error

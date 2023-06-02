@@ -6,6 +6,7 @@ import "swiper/swiper-bundle.css";
 import "swiper/css/navigation";
 import "swiper/swiper.min.css";
 import styled from 'styled-components'
+import LazyLoad from 'react-lazyload';
 
 
 const SwiperContainer = styled.div`
@@ -112,7 +113,9 @@ const SwiperCarousel = (props) => {
               modules={[Navigation, Pagination]}
             >
               {cards.map((e) => (
-                <SwiperSlide>{e}</SwiperSlide>
+                <SwiperSlide>
+                  <LazyLoad>{e}</LazyLoad>
+                </SwiperSlide>
               ))}
             </Swiper>
           </SwiperContainer>
