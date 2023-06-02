@@ -59,6 +59,7 @@
     "react-hotjar": "^5.0.0",
     "react-icons": "^4.8.0",
     "react-infinite-scroll-component": "^6.1.0",
+    "react-lazyload": "^3.2.0",
     "react-leaflet": "^4.2.1",
     "react-leaflet-google-layer": "^2.2.0",
     "react-lottie": "^1.2.3",

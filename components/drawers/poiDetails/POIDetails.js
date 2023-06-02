@@ -98,17 +98,20 @@ const POIDetails = (props) => {
           onClick={(e) => {props.handleCloseDrawer(e)}}
         />
       </div>
-      <div style={imageLoading ? { display: "none" } : { display: "initial" }}>
+      <div>
         <ImageLoader
           borderRadius="8px"
           marginTop="23px"
           widthMobile="100%"
+          style={imageLoading ? { display: 'none' } : {}}
           url={props.data.image}
           dimensionsMobile={{ width: 500, height: 280 }}
           dimensions={{ width: 468, height: 188 }}
+          yuu
           onload={() => {
             setImageLoading(false);
           }}
+          noLazy
         ></ImageLoader>
       </div>
       {imageLoading && (

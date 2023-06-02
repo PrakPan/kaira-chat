@@ -175,7 +175,7 @@ const PlanAsPerTheme = (props) => {
                 <Heading>{e.banner_heading}</Heading>
             {isPageWide && <div className='StartNow'>Explore!</div> }
             </TextContainer>
-            <ImageLoader onload={()=>setImgLoading(false)} fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
+            <ImageLoader noLazy onload={()=>setImgLoading(false)} fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
             <BlackContainer/>
 
             </ImageContainer>

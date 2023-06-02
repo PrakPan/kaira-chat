@@ -118,6 +118,7 @@ export default function PoiCard(props) {
             url={props.data.image}
             dimensions={{ height: 250, width: 500 }}
             dimensionsMobile={{ width: 500, height: 350 }}
+            noLazy
           />
         </ImageContainer>
         <Overlay />
