@@ -7,6 +7,8 @@ import content from '../../public/content/loaderbar';
 import Linecirclecontainer from './linecirclecontainer';
 import LottieAnimation from './Lottie';
 import ResponsiveProgressBar from './linecirclecontainer';
+import { useRouter } from 'next/router';
+import { ConnectingAirportsOutlined } from '@mui/icons-material';
 
 const COLORS = {
   black: '#212529',
@@ -64,8 +66,11 @@ const Heading2 = styled.div`
 
 const Index = () => {
   let cards = [];
-  const [currentStep, updateCurrentStep] = useState(1);
-  const [counter, setCounter] = useState(0);
+  const [currentStep, setCurrentStep] = useState(1);
+  const router = useRouter();
+  var IntervalTiming;
+  if (router.query.t) IntervalTiming = (+router.query.t / 5) * 1000;
+
   const [CardJSX, setCardJSX] = useState(false);
   useEffect(() => {
     for (var i = 0; i < content.length; i++) {
@@ -97,9 +102,9 @@ const Index = () => {
       {/* <Logo style={{ margin: '1rem 0 4rem 0' }} className='center-div' src={img1} ></Logo> */}
       {/* <Linecirclecontainer/> */}
       <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
-      <Heading2 className=" font-opensans font-medium text-lg">
+      <Heading2 className=" font-lexend font-medium text-lg">
         {' '}
-        {content[currentStep + 1].heading}{' '}
+        {content[currentStep - 1].heading}{' '}
       </Heading2>
     </Container1>
   );
