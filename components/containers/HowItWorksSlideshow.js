@@ -6,6 +6,7 @@ import * as ga from '../../services/ga/Index';
  import { useRouter } from 'next/router';
 import ImageLoader from '../ImageLoader';
 import openTailoredModal from '../../services/openTailoredModal';
+import SwiperCarousel from '../SwiperCarousel';
 const Container = styled.div`
 margin-top : -50px;
     @media screen and (min-width: 768px){
@@ -22,12 +23,8 @@ const Arrow = styled.img`
 `;
 
 const TextContainer = styled.div`
-font-size: 16px;
-// margin-inline : 10px;
-@media screen and (min-width: 768px){
-    text-align : center;
-    }
-
+  font-size: 16px;
+  text-align: center;
 `;
  
 const ImageContainer = styled.div`
@@ -39,9 +36,6 @@ const ImageContainer = styled.div`
     `;
 
 const GridContainer = styled.div`
-display: grid;
-grid-gap: 0.2rem;
-grid-template-columns: 2fr 3fr;
 margin-block : 15px;
     @media screen and (min-width: 768px){
         display: block;
@@ -54,7 +48,8 @@ const HowItWorksSlideshow = (props) =>{
     const router = useRouter();
     const [slideSelected, setSlideSelected] = useState(0);
     
-    let isPageWide = media('(min-width: 768px)');    
+    let isPageWide = media("(min-width: 768px)");
+    let isTablet = media("(min-width: 500px)");    
     let touchstart = null;
     const _prevSlideHandler = (val) => {
 
@@ -89,7 +84,7 @@ const HowItWorksSlideshow = (props) =>{
         </GridContainer>,
         <GridContainer style={{}}>
             <ImageContainer className="center-div">
-                <ImageLoader url={props.images[1]} width="50%" margin="auto" dimensions={{width: 400, height: 400}} widthmobile={props.vertical ? '40%' : '60%'} />
+                <ImageLoader url={props.images[1]} width="50%" margin="auto" dimensions={{width: 500, height: 500}} widthmobile={props.vertical ? '40%' : '60%'} />
             </ImageContainer>
             <TextContainer className="center-div">
             {props.headings[1]}
@@ -100,7 +95,7 @@ const HowItWorksSlideshow = (props) =>{
         </GridContainer>,
         <GridContainer style={{}}>
             <ImageContainer className="center-div">
-                <ImageLoader url={props.images[2]} width="50%" margin="auto"  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
+                <ImageLoader url={props.images[2]} width="50%" margin="auto"  dimensions={{width: 500, height: 500}}  widthmobile={props.vertical ? '40%' : '60%'} />
             </ImageContainer>
             <TextContainer className="center-div">
             {props.headings[2]}
@@ -112,7 +107,7 @@ const HowItWorksSlideshow = (props) =>{
     const slidesdesktop = [
         <GridContainer key={0} style={{}} >
                 <ImageContainer>
-                <ImageLoader url={props.images[0]} width="80%"  height='auto' dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '100%'} />
+                <ImageLoader url={props.images[0]} width="80%"  height='auto' dimensions={{width: 500, height: 500}}  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
         <TextContainer>
         {props.headings[0]}
@@ -122,7 +117,7 @@ const HowItWorksSlideshow = (props) =>{
     </GridContainer>,
     <GridContainer  key={1} style={{}}>
             <ImageContainer>
-            <ImageLoader url={props.images[1]} resizeMode='contain' width="80%"  height='auto'  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '100%'} />
+            <ImageLoader url={props.images[1]} resizeMode='contain' width="80%"  height='auto'  dimensions={{width: 500, height: 500}}  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
         <TextContainer>
         {props.headings[1]}
@@ -132,7 +127,7 @@ const HowItWorksSlideshow = (props) =>{
     </GridContainer>,
     <GridContainer  key={2} style={{}}>
          <ImageContainer >
-         <ImageLoader url={props.images[2]} width="80%" resizeMode='contain'  height='auto' dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '100%'} />
+         <ImageLoader url={props.images[2]} width="80%" resizeMode='contain'  height='auto' dimensions={{width: 500, height: 500}} widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
         <TextContainer>
         {props.headings[2]}
@@ -143,7 +138,7 @@ const HowItWorksSlideshow = (props) =>{
 
 <GridContainer  key={3} style={{}}>
 <ImageContainer >
-<ImageLoader url={props.images[3]} width="80%"  resizeMode='contain'  height='auto'  dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '100%'} />
+<ImageLoader url={props.images[3]} width="80%"  resizeMode='contain'  height='auto'  dimensions={{width: 500, height: 500}} widthmobile={props.vertical ? '40%' : '60%'} />
 </ImageContainer>
 <TextContainer>
 {props.headings[3]}
@@ -154,12 +149,42 @@ const HowItWorksSlideshow = (props) =>{
 
     
     ]
+
+    // if (!isPageWide) return (
+    //   <div>
+    //     <div>
+    //       <SwiperCarousel
+    //         slidesPerView={isTablet ? 2 : 1}
+    //         cards={slidesdesktop}
+    //         pageDots
+    //       ></SwiperCarousel>
+    //     </div>
+    //   </div>
+    // );
+
     return (
       <div>
-        <Container>{slidesdesktop}</Container>
+        {isPageWide ? (
+          <>
+            <Container>{slidesdesktop}</Container>
+          </>
+        ) : (
+          <div style={{ padding: "0rem 1rem" }}>
+            <SwiperCarousel
+              navButtonBackground={"white"}
+              navButtonColor={'black'}
+              slidesPerView={isTablet ? 2 : 1}
+              cards={slidesdesktop}
+              // pageDots
+              navigationButtons
+            ></SwiperCarousel>
+          </div>
+        )}
         {!props.nostart ? (
           <Button
-            onclick={()=>openTailoredModal(router,props.page_id,props.destination)}
+            onclick={() =>
+              openTailoredModal(router, props.page_id, props.destination)
+            }
             fontWeight="500"
             boxShadow
             borderRadius="8px"
@@ -169,7 +194,7 @@ const HowItWorksSlideshow = (props) =>{
             padding="0.5rem 2rem"
             borderWidth="1px"
           >
-            {isPageWide ? "Create your free itinerary" : "Start Now"}
+            {"Plan Itinerary For Free"}
           </Button>
         ) : null}
       </div>

@@ -441,7 +441,7 @@ const EXPERIENCE = {
            margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}
            bold
          >
-           What our customers say?
+           Happy Community of The Tarzan Way
          </Heading>
          <Reviews></Reviews>
          {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        

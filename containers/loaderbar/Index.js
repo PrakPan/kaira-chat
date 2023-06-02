@@ -51,12 +51,13 @@ const Logo = styled.img`
 const Heading2 = styled.div`
   font-size: 1rem;
   margin: 0.5rem 0 0 0;
-  font-weight: 500;
+  font-weight: 400;
 
   display: block;
   @media screen and (min-width: 768px) {
-    margin: 1.5rem 0 0 0;
-    font-size: 1.5rem;
+    margin: 1.3rem 0 0 0;
+    font-size: 1rem;
+
     top: 66vh;
   }
 `;
@@ -66,37 +67,28 @@ const Index = () => {
   const [currentStep, updateCurrentStep] = useState(1);
   const [counter, setCounter] = useState(0);
   const [CardJSX, setCardJSX] = useState(false);
-  // useEffect(() => {
-  //   for (var i = 0; i < content.length; i++) {
-  //     if (content[i].heading) {
-  //       cards.push(
-  //         <Heading2 className="font-opensans">{content[i].heading}</Heading2>
-  //       );
-  //     }
-  //   }
-  //   setCardJSX(cards);
-  // }, []);
+  useEffect(() => {
+    for (var i = 0; i < content.length; i++) {
+      if (content[i].heading) {
+        cards.push(
+          <Heading2 className="font-lexend">{content[i].heading}</Heading2>
+        );
+      }
+    }
+    setCardJSX(cards);
+  }, []);
+  useEffect(() => {
+    if (!IntervalTiming) setCurrentStep(5);
+    else if (currentStep < 5) {
+      setTimeout(() => {
+        setCurrentStep((prevCount) => prevCount + 1);
+      }, IntervalTiming);
+    }
+  }, [currentStep]);
 
-  // if (currentStep < 5) {
-  //   const interval = setInterval(() => {
-  //     console.log('interval');
-  //     updateCurrentStep(currentStep + 1);
-  //   }, 1000);
-
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }
-
-  // function updateStep(step) {
-  //   updateCurrentStep(step);
-  // }
-
-  // useEffect(() => {
-  //   const timer =
-  //     counter < 100 && setInterval(() => setCounter(counter + 1), 1000);
-  //   return () => clearInterval(timer);
-  // }, [counter]);
+  function updateStep(step) {
+    setCurrentStep(step);
+  }
 
   return (
     <Container1 className="center-div">

@@ -5,7 +5,6 @@ import Button from "../ui/button/Index";
 import * as ga from "../../services/ga/Index";
 import { format } from "date-fns";
 import media from "../media";
-import ButtonLoader from '../ui/button/ButtonLoader'
 import axiostailoredinstance from "../../services/leads/tailored";
 import Spinner from "../Spinner";
 import LoadingLottie from "../ui/LoadingLottie";
@@ -530,7 +529,6 @@ const Enquiry = (props) => {
                   onclick={() => _SlideOneSubmitHandler()}
                 >
                   Continue
-                  {/* <ButtonLoader height={'1.25rem'} /> */}
                 </Button>
               </div>
             ) : null}
@@ -582,31 +580,14 @@ const Enquiry = (props) => {
                     borderRadius="5px"
                     borderWidth="1px"
                     bgColor="#f7e700"
+                    loading={loading}
                     onclick={_submitDataHandler}
                   >
-                      {loading ? <ButtonLoader height={'1.25rem'} /> : 'Submit'}
-
-                    
+                    Submit
                   </Button>
                 </div>
               )
             ) : null}
-            {/* <Grid container spacing={2}> */}
-            {/* <Grid item xs={12}>
-                    {!loading ? 
-                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
-                        : 
-                        <Button onclickparam={null} onclick={() => null} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
-                            Preparing Plan
-                            <Spinner display="inline-block" size={16} margin="0 0 0 0.5rem" color={loading ? 'white' : 'black'}></Spinner>
-                        </Button>
-
-                    }
-                    </Grid> */}
-            {/* </Grid> */}
-
-            {/* </Modal.Body> */}
-            {/* </Modal> */}
           </div>
         </Container>
       </div>
@@ -620,7 +601,7 @@ const Enquiry = (props) => {
 
        <Container className="border center-div">
          <LoadingLottie height="50%" width="50%"></LoadingLottie>
-         <LoadingText>Submitting...</LoadingText>
+         <LoadingText>Finalizing your plan...</LoadingText>
        </Container>
      </div>
    );

@@ -58,7 +58,7 @@ const Generalbuttonstyle = styled.div`
       border-color: ${(props) =>
         props.hoverBrColor ? props.hoverBrColor : "black"};
       cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
+      transition: background-color 0.3s ease-in-out;
     }
   }
   &:focus {

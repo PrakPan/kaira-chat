@@ -57,7 +57,6 @@ const FullImgContent = (props) => {
          <SwiperCarousel
            slidesPerView={1}
            pageDots
-           noPadding
            cards={cards}
          ></SwiperCarousel>
        )}

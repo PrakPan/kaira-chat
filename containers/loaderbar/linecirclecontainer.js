@@ -189,11 +189,15 @@ const Text = styled.div`
 `;
 
 const ProgressBarWrapper = styled.div`
-  width: 33.33%;
+  width: 95%;
+
   height: 1rem;
   background-color: #f4f4f4;
   border-radius: 9999px;
   margin-top: 8px;
+  @media screen and (min-width: 768px) {
+    width: 33.33%;
+  }
 `;
 
 const ProgressBar = styled(animated.div)`

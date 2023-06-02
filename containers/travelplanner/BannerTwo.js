@@ -51,18 +51,36 @@ font-weight: 300;
 
 const  Banner = (props) =>{
 
-  const HowitWorksHeadingsArr=[
-    <HowItWorksHeading className="font-lexend">Select your preferences</HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">Let our AI plan your itinerary</HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">Easy Bookings with 24x7 Concierge</HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">No Commissions - Pay for what you get</HowItWorksHeading>,
+  const HowitWorksHeadingsArr = [
+    <HowItWorksHeading className="font-lexend">
+      Handpick Your Selection
+    </HowItWorksHeading>,
+    <HowItWorksHeading className="font-lexend">
+      Unleash AI's Itinerary Wizardry!
+    </HowItWorksHeading>,
+    <HowItWorksHeading className="font-lexend">
+      Easy Bookings with 24x7 Concierge
+    </HowItWorksHeading>,
+    <HowItWorksHeading className="font-lexend">
+      No Commissions - Pay for what you get
+    </HowItWorksHeading>,
   ];
   const HowitWorksContentsArr = [
-    <HowItWorksText className="font-lexend">From solo travel to workcation, honeymoon to family travel, tell us about your mood, budget & timeline.</HowItWorksText>,
-      <HowItWorksText  className="font-lexend">Get a unique itinerary completely personalized for you, with all bookings in one place.</HowItWorksText>,
-    <HowItWorksText  className="font-lexend">From your stays to activities, book-it-all in one click, and enjoy 24x7 assistance while you explore.</HowItWorksText>,
-    <HowItWorksText  className="font-lexend">We only take a small service fees for negotiated-bookings & live support.</HowItWorksText>
-  
+    <HowItWorksText className="font-lexend">
+      From solo travel to workcation, honeymoon to family travel, tell us about
+      your mood, budget & timeline.
+    </HowItWorksText>,
+    <HowItWorksText className="font-lexend">
+      Get a unique itinerary completely personalized for you, with all bookings
+      in one place.
+    </HowItWorksText>,
+    <HowItWorksText className="font-lexend">
+      From your stays to activities, book-it-all in one click, and enjoy 24x7
+      assistance while you explore.
+    </HowItWorksText>,
+    <HowItWorksText className="font-lexend">
+      No hidden charges during & after bookings. Pay For What You Get.
+    </HowItWorksText>,
   ];
 
 
@@ -73,21 +91,21 @@ const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.web
   
   return (
     <Container>
-      <GridContainer>
+      {/* <GridContainer> */}
         <div className="">
           <HowItWorks
             nostart
-            page_id={props.page_id}
+            // page_id={props.page_id}
             images={howitworksimgs}
             content={HowitWorksContentsArr}
-            destination={props.destination}
+            // destination={props.destination}
             headings={HowitWorksHeadingsArr}
           ></HowItWorks>
 
           {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}
         </div>
         {/* <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div> */}
-      </GridContainer>
+      {/* </GridContainer> */}
     </Container>
   );
 }

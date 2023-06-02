@@ -111,9 +111,9 @@ showCities={props.showCities}
            <div
              onClick={() => props.setFlexible(!props.flexible)}
              className="font-lexend"
-             style={{ fontSize: "0.85rem" }}
+             style={{ fontSize: "0.8rem" }}
            >
-             I'm flexible with my dates
+             Not sure? Let us decide best time for your trip.
            </div>
          </div>
        </Section>

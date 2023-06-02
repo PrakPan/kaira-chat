@@ -79,12 +79,11 @@ const Menu = (props)=>{
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
       {props.data.short_description && !props.thingsToDoPage && (
         <MenuItem id="Brief">
-          <Brief
-            heading={
-              <Heading style={{ margin: "0 0 30px 0" }}>
+           <Heading style={{ margin: "30px 0 30px 0" }}>
                 {"A little about " + props.data.name}
               </Heading>
-            }
+          <Brief
+           
             short_description={props.data.short_description}
             lat={props.data.lat}
             lon={props.data.long}
@@ -162,7 +161,7 @@ const Menu = (props)=>{
 
       <MenuItem id="Customers">
         <Heading style={{ marginBottom: "1.5rem" }}>
-          What our customers say?
+          Happy Community of The Tarzan Way
         </Heading>
         <Reviews />
       </MenuItem>

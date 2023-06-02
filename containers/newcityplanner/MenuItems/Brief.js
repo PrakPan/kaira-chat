@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components"
 import media from '../../../components/media'
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
+import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 const Container = styled.div`
 margin-top : 30px;
 
@@ -12,14 +13,20 @@ margin-top : 30px;
 
       }
 `
-const P = styled.p`
-      font-weight: 300;
-      text-align: left;
-      line-height: 32px;
-      @media screen and (min-width: 768px) {
-       font-size:18px ;
-      }
-    `;
+const P = styled.div`
+  font-weight: 300;
+  text-align: left;
+  line-height: 30px;
+  position : relative;
+  ${(props) => `height : ${props.clientHeight}px`};
+  // max-height : none;
+  ${(props) => !props.more && "overflow : hidden ; height: 201px"};
+  transition: height 0.3s ease;
+
+  @media screen and (min-width: 768px) {
+    font-size: 18px;
+  }
+`;
     const TextBold = styled.p`
   line-height: 24px;
   font-weight: 600;
@@ -28,38 +35,84 @@ const P = styled.p`
 `;
 
 const WeatherContainer = styled.div`
-border : 1px solid #ECEAEA;
-border-radius : 10px;
-padding : 25px;
-height: max-content;
-display : flex;
-flex-direction : column;
-gap : 20px;
-`
+  border: 1px solid #eceaea;
+  border-radius: 10px;
+  padding: 25px;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  margin-top: 1rem;
+  @media screen and (min-width: 768px) {
+    margin-top: 0rem;
+  }
+`;
 
 
 
 const Brief = (props)=>{
     const isPageWide = media('(min-width: 768px)')
-    const [moreText,setMoreText] = useState(false)
-    const textLength = isPageWide?1000:500
+  const [more, setMore] = useState(false)
+  const [clientHeight, setClientHeight] = useState(false);
+   const ref = useRef();
+   useEffect(() => {
+     setClientHeight(ref.current.offsetHeight);
+   }, [isPageWide]);
     
-return <Container>
-     <P>
-        {props.heading}
-        {moreText?props.short_description:props.short_description.substr(0, textLength)}
-     {props.short_description.length>textLength&&<span style={{fontWeight : '700',cursor : 'pointer'}} onClick={()=>setMoreText(!moreText)}>{moreText?' ...less' : ' ...more'}</span>}
-     </P>
-     <WeatherContainer elevation={props.elevation}>
-     <WeatherWidget city={props.name} lat={props.lat} lon={props.lon} />
-     {props.elevation && 
-    <div>
-    <TextBold>Altitude</TextBold>
-    <p style={{fontWeight : '300', marginBottom : '0'}}>{Math.floor(props.elevation)} metres ({Math.floor(props.elevation*3.281)} feet) above sea level</p>
-    </div>
-}
-     </WeatherContainer>
-    </Container>
+return (
+  <Container>
+    <P more={more} clientHeight={clientHeight}>
+      <p ref={ref}>
+        {props.short_description}
+      </p>
+      {clientHeight > 201 && (
+        <p
+          className="hover-pointer text-container"
+          onClick={() => setMore(!more)}
+          style={{
+            position: "absolute",
+            right: "0",
+            bottom: "-8px",
+            marginBottom: "0px",
+            backgroundColor: "white",
+            zIndex: "2",
+            paddingLeft: "0.25rem",
+            fontWeight: "600",
+          }}
+        >
+          {!more ? (
+            <>
+              ...more
+              <BiChevronDown
+                style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
+              ></BiChevronDown>
+            </>
+          ) : (
+            <>
+              ...less
+              <BiChevronUp
+                style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
+              ></BiChevronUp>
+            </>
+          )}
+        </p>
+      )}
+    </P>
+    <WeatherContainer elevation={props.elevation}>
+      <WeatherWidget city={props.name} lat={props.lat} lon={props.lon} />
+      {props.elevation && (
+        <div>
+          <TextBold>Altitude</TextBold>
+          <p style={{ fontWeight: "300", marginBottom: "0" }}>
+            {Math.floor(props.elevation)} metres (
+            {Math.floor(props.elevation * 3.281)} feet) above sea level
+          </p>
+        </div>
+      )}
+    </WeatherContainer>
+  </Container>
+);
 }
 
 export default Brief
