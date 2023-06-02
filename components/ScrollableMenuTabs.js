@@ -129,11 +129,21 @@ const ScrollableMenuTabs = ({
   };
 
   useEffect(() => {
+    const tabContainer = ref.current;
     const activeTabElement = document.getElementById(
       `${BarName} ${activeItem}`
     );
     if (activeTabElement) {
-      setActiveTabPosition(activeTabElement.offsetLeft);
+      if (vertical) {
+        const containerTop = tabContainer.getBoundingClientRect().top;
+        const activeTabTop = activeTabElement.getBoundingClientRect().top;
+        const containerHeight = tabContainer.offsetHeight;
+        const activeTabHeight = activeTabElement.offsetHeight;
+        const scrollDistance = activeTabTop - containerTop;
+        setActiveTabPosition(scrollDistance);
+      } else {
+        setActiveTabPosition(activeTabElement.offsetLeft);
+      }
     }
   }, [activeItem]);
 
@@ -143,11 +153,20 @@ const ScrollableMenuTabs = ({
     (isInView) => {
       if (!isInView) {
         const containerElement = ref.current;
-        if (containerElement) {
-          containerElement.scrollTo({
-            left: activeTabPosition,
-            behavior: 'smooth',
-          });
+        if (vertical) {
+          if (containerElement) {
+            containerElement.scrollTo({
+              top: activeTabPosition,
+              behavior: 'smooth',
+            });
+          }
+        } else {
+          if (containerElement) {
+            containerElement.scrollTo({
+              left: activeTabPosition,
+              behavior: 'smooth',
+            });
+          }
         }
       }
     }
