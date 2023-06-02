@@ -92,7 +92,7 @@ const TransferElementsM = ({
           ) : null
         ) : null}
         <div className="pt-1 line-clamp-3 font-normal text-sm mb-0">{text}</div>
-        {meta.duration ? (
+        {meta?.duration ? (
           <div className="absolute bottom-[14px] left-[35%] bg-white px-2 ">
             <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
               <TransportIconFetcher

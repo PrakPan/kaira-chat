@@ -173,6 +173,7 @@ const Day_I_Container = (props) => {
         case 'activity':
           dayIcontainer.push(
             <ItineraryPoiElement
+              activity_data={element?.activity_data}
               getPaymentHandler={props.getPaymentHandler}
               day_slab_index={props.indexDay}
               setItinerary={props.setItinerary}
@@ -186,9 +187,13 @@ const Day_I_Container = (props) => {
               heading={element.heading}
               text={element.text}
               poi_id={element.activity_data.id}
-              poi={element.activity_data?.poi}
-              activity={element.activity_data?.activity}
-              city_id={element.activity_data.city.id}
+              poi={
+                element?.activity_data?.poi
+                  ? element?.activity_data?.poi
+                  : element?.activity_data
+              }
+              activity={element?.activity_data?.activity}
+              city_id={element?.activity_data?.city?.id}
               token={props.token}
             ></ItineraryPoiElement>
           );

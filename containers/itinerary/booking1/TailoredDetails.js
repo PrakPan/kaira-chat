@@ -741,7 +741,7 @@ const Details = (props) => {
                 name="name"
                 placeholder="Have a coupon code?"
               />
-              <div className="absolute right-[30%] -bottom-[18px]">
+              <div className="absolute left-[15px] -bottom-[18px]">
                 {isError.error && (
                   <Slide
                     hideTime={4}

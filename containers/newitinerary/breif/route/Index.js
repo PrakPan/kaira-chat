@@ -145,8 +145,8 @@ const Route = (props) => {
             <MidSection
               pinColour={props.breif.city_slabs[i].color}
               modes={
-                props.transfers[i + 1].modes
-                  ? props.transfers[i + 1].modes[0]
+                props?.transfers[i + 1]?.modes
+                  ? props?.transfers[i + 1]?.modes[0]
                   : 'Taxi'
               }
               icon={null}
@@ -194,7 +194,9 @@ const Route = (props) => {
       ></PinSection>
       <MidSection
         pinColour={props.breif.city_slabs[0].color}
-        modes={props.transfers[1].modes[0]}
+        modes={
+          props?.transfers[1]?.modes[0] ? props?.transfers[1]?.modes[0] : 'Taxi'
+        }
         icon={props?.transfers[0]?.icon}
         transportMode={'Taxi'}
         duration={'2'}

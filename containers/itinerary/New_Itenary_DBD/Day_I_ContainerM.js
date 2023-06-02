@@ -134,22 +134,27 @@ const Day_I_ContainerM = (props) => {
         case 'activity':
           dayIcontainer.push(
             <ItineraryPoiElementM
-              getPaymentHandler={props.getPaymentHandler}
-              day_slab_index={props.indexDay}
-              setItinerary={props.setItinerary}
+              activity_data={element?.activity_data}
+              getPaymentHandler={props?.getPaymentHandler}
+              day_slab_index={props?.indexDay}
+              setItinerary={props?.setItinerary}
               slab_elements_index={index}
-              itinerary_id={props.itinerary_id}
+              itinerary_id={props?.itinerary_id}
               data={element}
-              key={element.activity_data.id}
+              key={element?.activity_data.id}
               time="11:00AM"
-              image={element.icon !== undefined ? element.icon : null}
+              image={element?.icon !== undefined ? element?.icon : null}
               booking
-              heading={element.heading}
-              text={element.text}
-              poi_id={element.activity_data.id}
-              poi={element.activity_data?.poi}
-              activity={element.activity_data?.activity}
-              city_id={element.activity_data.city.id}
+              heading={element?.heading}
+              text={element?.text}
+              poi_id={element?.activity_data?.id}
+              poi={
+                element?.activity_data?.poi
+                  ? element?.activity_data?.poi
+                  : element?.activity_data
+              }
+              activity={element?.activity_data?.activity}
+              city_id={element?.activity_data?.city?.id}
             ></ItineraryPoiElementM>
           );
           break;

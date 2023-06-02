@@ -152,9 +152,9 @@ const ItineraryPoiElement = (props) => {
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
       .post('/', {
-        location: props.city_id,
+        location: props?.city_id,
         duration: 10,
-        element_type: `${activity.id ? 'Activity' : 'POI'}`,
+        element_type: `${activity?.id ? 'Activity' : 'POI'}`,
       })
       .then((res) => {
         if (res.data.length) {
@@ -228,12 +228,14 @@ const ItineraryPoiElement = (props) => {
                 >
                   {props.heading}
                 </div>
-                <div
-                  onClick={() => Poi_activities(props.activity)}
-                  className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                >
-                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                </div>
+                {props.city_id && (
+                  <div
+                    onClick={() => Poi_activities(props?.activity)}
+                    className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  >
+                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                  </div>
+                )}
               </div>
               <div className="flex flex-row">
                 <div
@@ -291,8 +293,8 @@ const ItineraryPoiElement = (props) => {
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
         show={show}
-        iconId={props.poi.id}
-        ActivityiconId={props.activity.id}
+        iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
+        ActivityiconId={props?.activity?.id}
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
