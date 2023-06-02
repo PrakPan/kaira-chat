@@ -69,12 +69,12 @@ const FAQs = (props) => {
       for (var i = 0; i < props.payment.summary[key].bookings.length; i++) {
         try {
           bookingslist.push(
-            <div className={'text-sm font-thin'}>
+            <div className={'text-sm font-normal text-[#000]'}>
               {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
           bookinglistwithcost.push(
-            <div className={' text-sm font-normal'}>
+            <div className={' text-sm font-normal text-[#000]'}>
               {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
