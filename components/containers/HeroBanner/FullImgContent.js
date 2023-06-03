@@ -148,6 +148,7 @@ const FullImgContent = (props) => {
             width="2.5rem"
             widthmobile="2.5rem"
             url="media/icons/general/travel.png"
+            noLazy
           />
           <IconText>
             Free Personalized <br /> Itineraries
@@ -159,6 +160,7 @@ const FullImgContent = (props) => {
             width="2.5rem"
             widthmobile="2.5rem"
             url="media/icons/general/booking.png"
+            noLazy
           />
           <IconText>
             Affordable & <br />
@@ -171,9 +173,10 @@ const FullImgContent = (props) => {
             width="2.5rem"
             widthmobile="2.5rem"
             url="media/icons/general/money.png"
+            noLazy
           />
           <IconText>
-          Zero Hidden <br /> Charges
+            Zero Hidden <br /> Charges
           </IconText>
         </div>
       </IconsContainer>

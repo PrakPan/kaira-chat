@@ -32,7 +32,7 @@ const fullimage = (props) =>{
         return(
         <Container height={props.height} heightmobile={props.heightmobile} className="center-dv">
 
- <BackgroundImageLoader padding={props.padding}  filter={props.filter} url={props.url} dimensions={{width: 3206, height: 1202}} dimensionsMobile={{width: 900, height: 1200}} className="center-dv">{props.children}</BackgroundImageLoader>       
+ <BackgroundImageLoader padding={props.paddinzg}  filter={props.filter} url={props.url} dimensions={{width: 3206, height: 1202}} dimensionsMobile={{width: 900, height: 1200}} className="center-dv">{props.children}</BackgroundImageLoader>       
   </Container>
     );
     }

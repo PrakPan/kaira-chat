@@ -5,6 +5,7 @@ import 'swiper/css'
 import "swiper/swiper-bundle.css";
 import "swiper/css/navigation";
 import "swiper/swiper.min.css";
+import "swiper/swiper-bundle.min.css";
 import styled from 'styled-components'
 import LazyLoad from 'react-lazyload';
 
@@ -111,6 +112,7 @@ const SwiperCarousel = (props) => {
               pagination={props.pageDots ? { clickable: true } : false}
               slidesPerView={props.slidesPerView || 6}
               modules={[Navigation, Pagination]}
+              lazy={true}
             >
               {cards.map((e) => (
                 <SwiperSlide>

@@ -200,7 +200,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
-            loading="lazy"
+            // loading="lazy"
             src={
               !is_url
                 ? error
@@ -251,7 +251,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
-            loading="lazy"
+            // loading="lazy"
             src={
               !is_url
                 ? error
@@ -303,7 +303,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
-            loading="lazy"
+            // loading="lazy"
             src={
               !is_url
                 ? error
@@ -357,7 +357,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
-            loading="lazy"
+            // loading="lazy"
             src={
               !is_url
                 ? error
