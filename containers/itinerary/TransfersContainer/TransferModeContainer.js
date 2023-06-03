@@ -184,19 +184,27 @@ const TransferModeContainer = (props) => {
         <Line pinColour={props.pinColour} Transfers={true} />
       </div>
       {props.booking_type == 'Flight' ? (
-        <div className="group py-[20px]">
-          <div className="flex flex-row gap-2 lg:w-[80%] w-full  lg:ml-8 ml-2">
+        <div className="group lg:ml-8 ml-2 my-8 py-[20px] cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out  border-[#ECEAEA]   shadow-[#ECEAEA] lg:p-4 p-3 ">
+          <div className="flex flex-row gap-2 lg:w-[80%] w-full  ">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
               {props.booking?.airline_code ? (
-                <ImageLoader
-                  className="aspect-[3/2] object-contain"
-                  url={`/media/airline/${props.booking?.airline_code}.png`}
-                  leftalign
-                  dimensions={{ width: 800, height: 500 }}
-                  height="2rem"
-                  width="auto"
-                  widthmobile="4rem"
-                ></ImageLoader>
+                // <ImageLoader
+                //   className="aspect-[3/2] object-contain"
+                //   url={`/media/airline/${props.booking?.airline_code}.png`}
+                //   leftalign
+                //   dimensions={{ width: 800, height: 500 }}
+                //   height="2rem"
+                //   width="auto"
+                //   widthmobile="4rem"
+                // ></ImageLoader>
+                <TransportIconFetcher
+                  TransportMode={props.booking_type}
+                  Instyle={{
+                    fontSize: '2.75rem',
+
+                    color: 'black',
+                  }}
+                />
               ) : (
                 <TransportIconFetcher
                   TransportMode={props.booking_type}

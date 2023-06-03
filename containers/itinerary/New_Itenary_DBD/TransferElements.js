@@ -114,7 +114,7 @@ const TransferElements = ({
               <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
                 <TransportIconFetcher
                   TransportMode={modes}
-                  classname=" text-sm"
+                  classname=" text-[20px]"
                 />{' '}
                 {meta?.Time}
               </div>

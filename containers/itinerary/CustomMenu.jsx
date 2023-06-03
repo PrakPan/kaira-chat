@@ -51,14 +51,13 @@ const RoundMenuItem = styled.div`
   margin: ${({ Isvertical }) =>
     Isvertical ? '12px 0px 0px 0px' : '0px 7px 0px 0px'};
 
-  background-color: ${({ isActive }) => (isActive ? '#01202B' : 'none')};
-  color: ${({ isActive }) => (isActive ? '#fff' : '#111')};
-  border-radius: 8px;
-
+  background-color: ${({ isActive }) => (isActive ? '#262626' : 'none')};
+  color: ${({ isActive }) => (isActive ? '#F7E700' : '#111')};
+  border-radius: 8px 8px 0 0;
+  /* border-bottom: 3px solid #f7e700; */
   transition: border-color 0.3s ease;
   border: ${({ isActive }) => (!isActive ? '1.5px solid #ECEAEA' : 'none')};
-  /* border-bottom: ${({ isActive }) =>
-    isActive ? '4px solid #F7E700' : 'none'}; */
+  border-bottom: ${({ isActive }) => (isActive ? '4px solid #F7E700' : 'none')};
   &:hover {
     background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};
     color: white;
