@@ -187,7 +187,7 @@ const TransferModeContainer = (props) => {
       {props.booking_type == 'Flight' ? (
         <div
           id={props.booking.id}
-          className="group  lg:ml-8 my-8 py-[20px]  relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out  border-[#ECEAEA]   shadow-[#ECEAEA] lg:p-4 p-3 "
+          className="group lg:w-[95%]  lg:ml-8  py-[20px]  relative rounded-2xl transition-all  duration-300 ease-in-out  "
         >
           <div className="flex flex-row gap-2 lg:w-[100%] w-full  ">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
@@ -220,7 +220,7 @@ const TransferModeContainer = (props) => {
                 />
               )}
             </div>
-            <div className="flex lg:flex-row flex-col">
+            <div className="flex lg:flex-row flex-col justify-between w-full">
               <div className="flex flex-col gap-1 lg:w-[70%] w-[100%]">
                 <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
                   <div className="inline  gap-2 items-center ">
@@ -301,12 +301,9 @@ const TransferModeContainer = (props) => {
               </div>
 
               {props.userSelected ? (
-                <div
-                  className="flex lg:w-[40%] w-full flex-col justify-center items-center
-              "
-                >
+                <div className="flex lg:w-[40%] w-full flex-col lg:justify-end justify-start lg:items-end items-start">
                   <div>
-                    <div className="flex flex-row w-full justify-center items-center gap-2 text-sm font-normal mb-3 text-[#277004] ">
+                    <div className="flex flex-row w-full justify-end items-center gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#277004] ">
                       <IoCheckmark></IoCheckmark> Flight Added
                     </div>
                   </div>
@@ -319,10 +316,10 @@ const TransferModeContainer = (props) => {
                 </div>
               ) : (
                 <div
-                  className="flex lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-center items-start
+                  className="flex lg:w-[40%] w-full flex-col lg:justify-end justify-start lg:items-end items-start
               "
                 >
-                  <div className="flex flex-row w-full lg:justify-center justify-start items-center t gap-2 text-sm font-normal mb-3 text-[#E00000]  ">
+                  <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
                     <IoClose></IoClose> No Flight Added Yet
                   </div>
 
@@ -353,10 +350,14 @@ const TransferModeContainer = (props) => {
                 <div className="flex flex-col  justify-center items-center">
                   <FaPlane className="" />
                   <div>
-                    Nonstop
-                    {props.booking.duration
-                      ? ` (${props.booking.duration}h)`
-                      : null}
+                    {props.userSelected ? (
+                      <div>
+                        Nonstop
+                        {props.booking.duration
+                          ? ` (${props.booking.duration}h)`
+                          : null}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -379,7 +380,7 @@ const TransferModeContainer = (props) => {
       ) : (
         <div
           id={props.booking.id}
-          className="group flex flex-row gap-2 lg:w-[80%] w-full py-[20px] lg:ml-8 ml-2 "
+          className="group flex flex-row gap-2 lg:w-[100%] w-full py-[20px] lg:ml-8 ml-2 "
         >
           {props.icon && (
             <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">

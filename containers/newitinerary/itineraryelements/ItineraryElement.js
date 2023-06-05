@@ -5,9 +5,10 @@ import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { FaHome } from 'react-icons/fa';
-
+import { Link } from 'react-scroll';
 import {
   HLine,
+  TransparentButton,
   newDayContainerTextpadding,
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 const padding = {
@@ -96,6 +97,20 @@ const ItineraryElement = (props) => {
         >
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>
+            <Link
+              to={
+                props.data.bookings
+                  ? `${props.data.bookings[0].id}`
+                  : 'Stays-Head'
+              }
+              offset={-90}
+            >
+              <TransparentButton>
+                {props.data.bookings
+                  ? props.data?.bookings[0]?.detail?.name
+                  : 'Booking'}
+              </TransparentButton>
+            </Link>
             <div>
               <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
                 {props.text ? props.text : null}

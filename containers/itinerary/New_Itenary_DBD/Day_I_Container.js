@@ -132,6 +132,7 @@ const Day_I_Container = (props) => {
         case 'accommodation':
           dayIcontainer.push(
             <ItineraryElement
+              data={element}
               icon={element.icon}
               time="9:00AM"
               heading={element.heading}

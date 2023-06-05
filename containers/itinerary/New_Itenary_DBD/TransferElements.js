@@ -64,10 +64,11 @@ const TransferElements = ({
                 {meta == null || meta.estimated_cost == undefined ? null : (
                   <Link
                     to={
-                      data.bookings[0]
+                      data.bookings
                         ? `${data.bookings[0].id}`
                         : 'Transfer_Container'
                     }
+                    offset={-90}
                   >
                     <TransparentButton>
                       {modes ? `${modes} For ` : null} ₹

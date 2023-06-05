@@ -107,11 +107,14 @@ const HotelBookingContainer = ({
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
       {handleClick && (
         <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-          {booking?.city} Hotel <span>({booking?.duration}N)</span>
+          {booking?.city} <span>({booking?.duration}N)</span>
         </div>
       )}
 
-      <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
+      <div
+        id={booking?.id}
+        className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 "
+      >
         <div
           onClick={() => {
             currentBooking
