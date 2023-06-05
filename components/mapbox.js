@@ -70,9 +70,9 @@ const Mapbox = React.memo(
     }
     function getDegree(value) {
       const degrees = [
-        { range: [0, 49], degree: 12 },
-        { range: [50, 99], degree: 11 },
-        { range: [100, 149], degree: 10 },
+        { range: [0, 49], degree: 10 },
+        { range: [50, 99], degree: 9 },
+        { range: [100, 149], degree: 9 },
         { range: [150, 199], degree: 9 },
         { range: [200, 249], degree: 8 },
         { range: [250, 299], degree: 7 },
