@@ -28,7 +28,7 @@ const Navbar = styled.div`
   overflow-x: scroll;
   align-items: center;
   overflow-y: ${({ Isvertical }) => (Isvertical ? 'scroll' : 'auto')};
-  height: ${({ Isvertical }) => (Isvertical ? '80vh' : 'auto')};
+  height: ${({ Isvertical }) => (Isvertical ? '85vh' : 'auto')};
 
   flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
 
@@ -54,7 +54,7 @@ const NavbarContainer = styled.div`
   display: flex;
   width: ${({ Isvertical }) => (Isvertical ? 'fit-content' : 'auto')};
   height: ${({ isInView, Isvertical }) =>
-    isInView && Isvertical ? '80vh' : 'auto'};
+    isInView && Isvertical ? '85vh' : 'auto'};
   -webkit-flex-direction: row;
   -ms-flex-direction: row;
   flex-direction: row;
@@ -82,7 +82,7 @@ const ScrollableMenuTabs = ({
 
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
-  const isInView = useFieldOfView('Stays');
+  const isInView = useFieldOfView('Stays-Head');
   /////// functionality
   //////////////////////////
 
@@ -214,8 +214,10 @@ const ScrollableMenuTabs = ({
             />
           </>
         ))}
+        {/* {vertical ? <div className="font-bold">Scroll down</div> : null} */}
         <NavigationMarker x={markerPos.x} width={markerPos.width} />
       </Navbar>
+
       {icons ? (
         <IoIosArrowForward
           style={{

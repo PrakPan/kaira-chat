@@ -57,7 +57,8 @@ const RoundMenuItem = styled.div`
   /* border-bottom: 3px solid #f7e700; */
   transition: border-color 0.3s ease;
   border: ${({ isActive }) => (!isActive ? '1.5px solid #ECEAEA' : 'none')};
-  border-bottom: ${({ isActive }) => (isActive ? '4px solid #F7E700' : 'none')};
+  border-bottom: ${({ isActive, Isvertical }) =>
+    isActive & Isvertical ? '4px solid #F7E700' : 'none'};
   &:hover {
     background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};
     color: white;

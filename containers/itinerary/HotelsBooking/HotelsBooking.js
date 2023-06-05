@@ -454,7 +454,10 @@ const HotelsBooking = (props) => {
   }
   return (
     <div className="lg:w-[60vw] w-full">
-      <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
+      <div
+        id="Stays-Head"
+        className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
+      >
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
