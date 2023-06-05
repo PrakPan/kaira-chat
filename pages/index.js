@@ -8,7 +8,9 @@ import axiospagelistinstance from '../services/pages/list'
 import axioscountrydetailsinstance from "../services/pages/country";
 import Cookies from 'js-cookie';
 import axios from 'axios'
-const  Home = (props) =>  {
+import { useRouter } from 'next/router';
+const Home = (props) => {
+  const router = useRouter()
   useEffect(() => {
     props.checkAuthState();
  

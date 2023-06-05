@@ -19,7 +19,14 @@ height: 60vh;
 }
 
 `;
-
+const TextContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items : center;
+  width : 100%;
+  flex-direction: column;
+  margin-bottom: 2rem;
+`;
 
 const Name = styled.p`
     text-align: center;
@@ -29,7 +36,7 @@ const Name = styled.p`
     margin: 0;
     line-height: 1;
     font-weight: 300;
-    font-size: 22px;
+    font-size: 18px;
     width: 100%;
     letter-spacing: 1px;
     @media screen and (min-width: 768px){
@@ -49,7 +56,7 @@ const Experiences= (props) => {
           filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
           padding="0"
           zoomonhover
-          center
+          // center
           dimensions={{ width: 700, height: 800 }}
           dimensionsMobile={{ width: 700, height: 800 }}
           height={isPageWide ? "50vh" : "60vh"}
@@ -58,12 +65,12 @@ const Experiences= (props) => {
           onload={() => setImageLoaded(true)}
         >
           {ImageLoaded && (
-            <>
+            <TextContainer>
               <Name className="font-lexend">{props.heading}</Name>
               <Name
                 className="font-lexend"
                 style={{
-                  fontSize: "36px",
+                  fontSize: "28px",
                   fontWeight: "700",
                   letterSpacing: "0",
                   marginTop: "0.5rem",
@@ -71,7 +78,7 @@ const Experiences= (props) => {
               >
                 {props.location}
               </Name>
-            </>
+            </TextContainer>
           )}
         </BackroundImageLoader>
         {/* <ImageLoader borderRadius="10px" url={props.img} dimensions={{width: 200, height: 200}} dimensionsMobile={{width: 200, height: 200}}></ImageLoader> */}

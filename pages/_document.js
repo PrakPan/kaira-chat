@@ -4,7 +4,7 @@ import { ServerStyleSheet } from 'styled-components';
 import Layout from '../components/Layout';
 import { GOOGLE_ANALTICS_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
-
+import { CONTENT_SERVER_HOST } from '../services/constants';
   
 // import Script from 'next/script';
 export default class MyDocument extends Document {
@@ -52,16 +52,18 @@ export default class MyDocument extends Document {
   `,
             }}
           />
-          <script
-            type="text/javascript"
-            dangerouslySetInnerHTML={{
-              __html: ` (function(c,l,a,r,i,t,y){
+          {process.env.NODE_ENV === 'production' && (
+            <script
+              type="text/javascript"
+              dangerouslySetInnerHTML={{
+                __html: ` (function(c,l,a,r,i,t,y){
     c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
     t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
     y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
 })(window, document, "clarity", "script", "dxk3hzpt0s");`,
-            }}
-          />
+              }}
+            />
+          )}
 
           <script
             type="text/javascript"
@@ -75,21 +77,24 @@ export default class MyDocument extends Document {
    `,
             }}
           ></script>
-          <script
-            async
-            src={
-              "https://www.googletagmanager.com/gtag/js?id=" +
-              GOOGLE_ANALTICS_ID
-            }
-          />
+          {process.env.NODE_ENV === 'production' && (
+            <script
+              async
+              src={
+                "https://www.googletagmanager.com/gtag/js?id=" +
+                GOOGLE_ANALTICS_ID
+              }
+            />
+          )}
 
           <script
             src="//in.fw-cdn.com/30401267/225580.js"
             chat="false"
           ></script>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
+          {process.env.NODE_ENV === 'production' && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
@@ -97,8 +102,9 @@ export default class MyDocument extends Document {
               page_path: window.location.pathname,
             });
           `,
-            }}
-          />
+              }}
+            />
+          )}
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
