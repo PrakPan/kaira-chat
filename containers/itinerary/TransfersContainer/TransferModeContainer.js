@@ -5,6 +5,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import { format, parseISO } from 'date-fns';
 import * as ga from '../../../services/ga/Index';
 import { FaPlane } from 'react-icons/fa';
+import { IoCheckmark, IoClose } from 'react-icons/io5';
 import { LivelyButton } from '../../../components/LiveleyButton';
 import { MdEdit } from 'react-icons/md';
 import useMediaQuery from '../../../components/media';
@@ -184,8 +185,11 @@ const TransferModeContainer = (props) => {
         <Line pinColour={props.pinColour} Transfers={true} />
       </div>
       {props.booking_type == 'Flight' ? (
-        <div className="group lg:ml-8 ml-2 my-8 py-[20px] cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out  border-[#ECEAEA]   shadow-[#ECEAEA] lg:p-4 p-3 ">
-          <div className="flex flex-row gap-2 lg:w-[80%] w-full  ">
+        <div
+          id={props.booking.id}
+          className="group  lg:ml-8 my-8 py-[20px]  relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out  border-[#ECEAEA]   shadow-[#ECEAEA] lg:p-4 p-3 "
+        >
+          <div className="flex flex-row gap-2 lg:w-[100%] w-full  ">
             <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
               {props.booking?.airline_code ? (
                 // <ImageLoader
@@ -216,13 +220,14 @@ const TransferModeContainer = (props) => {
                 />
               )}
             </div>
-            <div className="flex flex-col gap-1 lg:w-[80%] w-[80%]">
-              <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
-                <div className="inline  gap-2 items-center ">
-                  <span className="font-medium w-full inline">
-                    {props.heading}
-                  </span>
-                  {props.userSelected ? (
+            <div className="flex lg:flex-row flex-col">
+              <div className="flex flex-col gap-1 lg:w-[70%] w-[100%]">
+                <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
+                  <div className="inline  gap-2 items-center ">
+                    <span className="font-medium w-full inline">
+                      {props.heading}
+                    </span>
+                    {/* {props.userSelected ? (
                     <div
                       onClick={() => HandleFlights(props.index)}
                       className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
@@ -236,9 +241,9 @@ const TransferModeContainer = (props) => {
                     >
                       Add Flight
                     </div>
-                  )}
-                </div>
-                <div>
+                  )} */}
+                  </div>
+                  {/* <div>
                   {props.userSelected ? (
                     <div className=" text-md font-bold  text-[#277004] ">
                       Included
@@ -248,48 +253,84 @@ const TransferModeContainer = (props) => {
                       Excluded
                     </div>
                   )}
+                </div> */}
                 </div>
-              </div>
-              {isDesktop && (
-                <div className="lg:flex   flex-row  gap-3  ">
-                  <div className="flex flex-col">
-                    <div className="text-[#01202B] font-medium">
-                      ({props.booking.origin_code})
-                    </div>
-                    <div className="min-w-max">
-                      {formatDate(props.booking.check_in)}
-                    </div>
-                    <div>{props.booking.city}</div>
-                  </div>
-                  <div className="flex flex-row justify-center items-center">
-                    <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-                    <div className="relative w-32 flex justify-center items-center">
-                      <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
-                      <div className="flex flex-col  justify-center items-center">
-                        <FaPlane className="" />
-                        {props.userSelected ? (
-                          <div>
-                            Nonstop
-                            {props.booking.duration
-                              ? ` (${props.booking.duration}h)`
-                              : null}
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-                  </div>
-                  <div className="flex flex-row justify-between w-full">
-                    <div>
+                {isDesktop && (
+                  <div className="lg:flex   flex-row  gap-3  ">
+                    <div className="flex flex-col">
                       <div className="text-[#01202B] font-medium">
-                        ({props.booking.destination_code})
+                        ({props.booking.origin_code})
                       </div>
                       <div className="min-w-max">
-                        {formatDate(props.booking.check_out)}
+                        {formatDate(props.booking.check_in)}
                       </div>
-                      <div>{props.booking.destination_city}</div>
+                      <div>{props.booking.city}</div>
                     </div>
+                    <div className="flex flex-row justify-center items-center">
+                      <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                      <div className="relative w-32 flex justify-center items-center">
+                        <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
+                        <div className="flex flex-col  justify-center items-center">
+                          <FaPlane className="" />
+                          {props.userSelected ? (
+                            <div>
+                              Nonstop
+                              {props.booking.duration
+                                ? ` (${props.booking.duration}h)`
+                                : null}
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                    </div>
+                    <div className="flex flex-row justify-between w-full">
+                      <div>
+                        <div className="text-[#01202B] font-medium">
+                          ({props.booking.destination_code})
+                        </div>
+                        <div className="min-w-max">
+                          {formatDate(props.booking.check_out)}
+                        </div>
+                        <div>{props.booking.destination_city}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {props.userSelected ? (
+                <div
+                  className="flex lg:w-[40%] w-full flex-col justify-center items-center
+              "
+                >
+                  <div>
+                    <div className="flex flex-row w-full justify-center items-center gap-2 text-sm font-normal mb-3 text-[#277004] ">
+                      <IoCheckmark></IoCheckmark> Flight Added
+                    </div>
+                  </div>
+                  <div
+                    onClick={() => HandleFlights(props.index)}
+                    className="px-2 py-1 inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-2 border-black  text-black font-medium text-sm"
+                  >
+                    Change Flight
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="flex lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-center items-start
+              "
+                >
+                  <div className="flex flex-row w-full lg:justify-center justify-start items-center t gap-2 text-sm font-normal mb-3 text-[#E00000]  ">
+                    <IoClose></IoClose> No Flight Added Yet
+                  </div>
+
+                  <div
+                    onClick={() => HandleFlights(props.index)}
+                    className="px-4 py-1 inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                  >
+                    Add Flight
                   </div>
                 </div>
               )}
@@ -336,7 +377,10 @@ const TransferModeContainer = (props) => {
           </div>
         </div>
       ) : (
-        <div className="group flex flex-row gap-2 lg:w-[80%] w-full py-[20px] lg:ml-8 ml-2 ">
+        <div
+          id={props.booking.id}
+          className="group flex flex-row gap-2 lg:w-[80%] w-full py-[20px] lg:ml-8 ml-2 "
+        >
           {props.icon && (
             <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
@@ -351,12 +395,12 @@ const TransferModeContainer = (props) => {
               ) : (
                 props.icon && (
                   <ImageLoader
-                    className="aspect-[3/2] object-contain"
+                    className=" object-contain"
                     url={props.icon}
                     leftalign
-                    dimensions={{ width: 800, height: 500 }}
+                    // dimensions={{ width: 900, height: 500 }}
                     height="2rem"
-                    width="auto"
+                    width="4rem"
                     widthmobile="4rem"
                   ></ImageLoader>
                 )

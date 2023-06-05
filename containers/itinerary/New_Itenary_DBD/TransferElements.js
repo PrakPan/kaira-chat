@@ -22,6 +22,7 @@ const TransferElements = ({
   heading,
   meta,
   modes,
+  data,
   transfers,
   icon,
   text,
@@ -61,9 +62,15 @@ const TransferElements = ({
                 <div className="text-xl font-normal pr-2 ">{heading}</div>
 
                 {meta == null || meta.estimated_cost == undefined ? null : (
-                  <Link to={'Transfer_Container'}>
+                  <Link
+                    to={
+                      data.bookings[0]
+                        ? `${data.bookings[0].id}`
+                        : 'Transfer_Container'
+                    }
+                  >
                     <TransparentButton>
-                      {modes ? `${modes} From ` : null} ₹
+                      {modes ? `${modes} For ` : null} ₹
                       {formatNumber(Math.round(meta.estimated_cost))}
                     </TransparentButton>
                   </Link>
