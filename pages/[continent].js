@@ -39,7 +39,6 @@ export async function getStaticPaths() {
   //   "https://apis.tarzanway.com/page/list?page_type=Continents"
   // );
 const res = await axiospagelistinstance("?page_type=Continents");
-  
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
