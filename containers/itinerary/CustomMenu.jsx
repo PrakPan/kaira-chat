@@ -52,8 +52,9 @@ const RoundMenuItem = styled.div`
     Isvertical ? '12px 0px 0px 0px' : '0px 7px 0px 0px'};
 
   background-color: ${({ isActive }) => (isActive ? '#262626' : 'none')};
-  color: ${({ isActive }) => (isActive ? '#F7E700' : '#111')};
-  border-radius: 8px 8px 0 0;
+  color: ${({ isActive, Isvertical }) => (isActive ? '#F7E700' : '#111')};
+  border-radius: ${({ isActive, Isvertical }) =>
+    isActive & Isvertical ? '8px 8px 0 0;' : '8px'};
   /* border-bottom: 3px solid #f7e700; */
   transition: border-color 0.3s ease;
   border: ${({ isActive }) => (!isActive ? '1.5px solid #ECEAEA' : 'none')};

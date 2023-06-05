@@ -189,8 +189,8 @@ const TransferModeContainer = (props) => {
           id={props.booking.id}
           className="group lg:w-[95%]  lg:ml-8  py-[20px]  relative rounded-2xl transition-all  duration-300 ease-in-out  "
         >
-          <div className="flex flex-row gap-2 lg:w-[100%] w-full  ">
-            <div className="grid bg-[#F4F4F4]  place-items-center w-[7rem] rounded-2xl">
+          <div className="flex flex-row gap-2    ">
+            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
               {props.booking?.airline_code ? (
                 // <ImageLoader
                 //   className="aspect-[3/2] object-contain"
@@ -205,7 +205,8 @@ const TransferModeContainer = (props) => {
                   TransportMode={props.booking_type}
                   Instyle={{
                     fontSize: '2.75rem',
-
+                    height: '3rem',
+                    width: '4rem',
                     color: 'black',
                   }}
                 />
@@ -221,7 +222,7 @@ const TransferModeContainer = (props) => {
               )}
             </div>
             <div className="flex lg:flex-row flex-col justify-between w-full">
-              <div className="flex flex-col gap-1 lg:w-[70%] w-[100%]">
+              <div className="flex flex-col gap-1 lg:w-[40%] w-[100%]">
                 <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
                   <div className="inline  gap-2 items-center ">
                     <span className="font-medium w-full inline">
@@ -400,7 +401,7 @@ const TransferModeContainer = (props) => {
                     url={props.icon}
                     leftalign
                     // dimensions={{ width: 900, height: 500 }}
-                    height="2rem"
+                    height="3rem"
                     width="4rem"
                     widthmobile="4rem"
                   ></ImageLoader>
