@@ -635,6 +635,7 @@ const SimpleTabsV2 = (props) => {
                     : false
                 }
                 budget={props.budget}
+                breif={props.breif}
                 stayBookings={props.stayBookings}
                 _updateBookingHandler={props._updateBookingHandler}
                 _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -871,6 +872,7 @@ const SimpleTabsV2 = (props) => {
                           : false
                         : false
                     }
+                    breif={props.breif}
                     budget={props.budget}
                     stayBookings={props.stayBookings}
                     _updateBookingHandler={props._updateBookingHandler}

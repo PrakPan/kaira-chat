@@ -29,6 +29,7 @@ const HotelBookingContainer = ({
   index,
   handleClick,
   handleClickAc,
+  cityName,
   _updateSearchedAccommodation,
   _SelectedBookingHandler,
   itinerary_id,
@@ -107,180 +108,181 @@ const HotelBookingContainer = ({
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
       {handleClick && (
         <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-          {booking?.city} <span>({booking?.duration}N)</span>
+          {cityName} <span>({booking ? booking?.duration : 1}N)</span>
         </div>
       )}
-
-      <div
-        id={booking?.id}
-        className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 "
-      >
+      {booking ? (
         <div
-          onClick={() => {
-            currentBooking
-              ? openDetails()
-              : handleClick(index, booking.accommodation, booking);
-          }}
-          className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-            addbooking ? 'grayscale-0' : 'grayscale'
-          } `}
+          id={booking?.id}
+          className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 "
         >
           <div
-            className={`relative  ${
-              currentBooking ? 'lg:h-[11rem]' : 'lg:h-[15rem]'
-            }  lg:w-[30%] w-full  h-[12rem]`}
+            onClick={() => {
+              currentBooking
+                ? openDetails()
+                : handleClick(index, booking.accommodation, booking);
+            }}
+            className={`relative flex lg:flex-row w-full flex-col gap-4  ${
+              addbooking ? 'grayscale-0' : 'grayscale'
+            } `}
           >
-            {booking.images[0]?.image ? (
-              <ImageLoader
-                dimensions={{ width: 400, height: 400 }}
-                dimensionsMobile={{ width: 400, height: 400 }}
-                borderRadius="16px"
-                hoverpointer
-                onclick={() => console.log('')}
-                width="100%"
-                height="100%"
-                leftalign
-                widthmobile="100%"
-                url={booking.images[0]?.image}
-              ></ImageLoader>
-            ) : (
-              <ImageLoader
-                dimensions={{ width: 400, height: 400 }}
-                dimensionsMobile={{ width: 400, height: 400 }}
-                borderRadius="16px"
-                hoverpointer
-                onclick={() => console.log('')}
-                width="100%"
-                height="100%"
-                leftalign
-                widthmobile="100%"
-                url={'media/website/grey.png'}
-              ></ImageLoader>
-            )}
-            {booking.star_category ? (
-              <starHotel
-                starHotel
-                className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-md font-mediumnsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
-              >
-                {booking.star_category} star hotel
-              </starHotel>
-            ) : null}
-          </div>
-          <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
-            <div className="flex flex-col gap-2">
-              <div
-                className={`${
-                  currentBooking ? 'text-lg' : 'text-2xl'
-                } font-semibold `}
-              >
-                {booking?.name}
-              </div>
-              <div className="flex flex-col gap-1">
-                {!currentBooking && (
-                  <div className="text-md font-normal">{booking?.city}</div>
-                )}
-
-                {booking?.user_rating && (
-                  <div className="gap-1 flex flex-row  items-center">
-                    <div className="flex flex-row text-[#FFD201]">
-                      {starRating(booking?.user_rating)}
-                    </div>
-                    <div>{booking?.user_rating}</div>
-                    {booking.number_of_reviews && (
-                      <div className="text-md text-[#7A7A7A] font-medium underline">
-                        {booking.number_of_reviews} Google reviews
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              {booking.check_in ? (
-                <div className="flex flex-row gap-3">
-                  <div className="flex flex-row gap-2 items-center">
-                    <BsCalendar2 className="text-md text-[#7A7A7A]" />
-                    <div>
-                      <div className="text-md font-medium ">
-                        {getDate(booking.check_in)}-{getDate(booking.check_out)}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-md font-medium gap-2 flex flex-row items-center">
-                    <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                    <div className="text-md font-medium min-w-fit">
-                      {booking.number_of_adults} Adults
-                    </div>
-                  </div>
-                </div>
+            <div
+              className={`relative  ${
+                currentBooking ? 'lg:h-[11rem]' : 'lg:h-[15rem]'
+              }  lg:w-[30%] w-full  h-[12rem]`}
+            >
+              {booking.images[0]?.image ? (
+                <ImageLoader
+                  dimensions={{ width: 400, height: 400 }}
+                  dimensionsMobile={{ width: 400, height: 400 }}
+                  borderRadius="16px"
+                  hoverpointer
+                  onclick={() => console.log('')}
+                  width="100%"
+                  height="100%"
+                  leftalign
+                  widthmobile="100%"
+                  url={booking.images[0]?.image}
+                ></ImageLoader>
               ) : (
-                currentBooking && (
+                <ImageLoader
+                  dimensions={{ width: 400, height: 400 }}
+                  dimensionsMobile={{ width: 400, height: 400 }}
+                  borderRadius="16px"
+                  hoverpointer
+                  onclick={() => console.log('')}
+                  width="100%"
+                  height="100%"
+                  leftalign
+                  widthmobile="100%"
+                  url={'media/website/grey.png'}
+                ></ImageLoader>
+              )}
+              {booking.star_category ? (
+                <starHotel
+                  starHotel
+                  className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-md font-mediumnsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
+                >
+                  {booking.star_category} star hotel
+                </starHotel>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
+              <div className="flex flex-col gap-2">
+                <div
+                  className={`${
+                    currentBooking ? 'text-lg' : 'text-2xl'
+                  } font-semibold `}
+                >
+                  {booking?.name}
+                </div>
+                <div className="flex flex-col gap-1">
+                  {!currentBooking && (
+                    <div className="text-md font-normal">{booking?.city}</div>
+                  )}
+
+                  {booking?.user_rating && (
+                    <div className="gap-1 flex flex-row  items-center">
+                      <div className="flex flex-row text-[#FFD201]">
+                        {starRating(booking?.user_rating)}
+                      </div>
+                      <div>{booking?.user_rating}</div>
+                      {booking.number_of_reviews && (
+                        <div className="text-md text-[#7A7A7A] font-medium underline">
+                          {booking.number_of_reviews} Google reviews
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {booking.check_in ? (
                   <div className="flex flex-row gap-3">
                     <div className="flex flex-row gap-2 items-center">
                       <BsCalendar2 className="text-md text-[#7A7A7A]" />
                       <div>
                         <div className="text-md font-medium ">
-                          {getDate(currentBooking.check_in)}-
-                          {getDate(currentBooking.check_out)}
+                          {getDate(booking.check_in)}-
+                          {getDate(booking.check_out)}
                         </div>
                       </div>
                     </div>
                     <div className="text-md font-medium gap-2 flex flex-row items-center">
                       <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                      <div className=" text-md font-medium min-w-fit">
+                      <div className="text-md font-medium min-w-fit">
                         {booking.number_of_adults} Adults
                       </div>
                     </div>
                   </div>
-                )
-              )}
+                ) : (
+                  currentBooking && (
+                    <div className="flex flex-row gap-3">
+                      <div className="flex flex-row gap-2 items-center">
+                        <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                        <div>
+                          <div className="text-md font-medium ">
+                            {getDate(currentBooking.check_in)}-
+                            {getDate(currentBooking.check_out)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-md font-medium gap-2 flex flex-row items-center">
+                        <BsPeopleFill className="text-md text-[#7A7A7A]" />
+                        <div className=" text-md font-medium min-w-fit">
+                          {booking.number_of_adults} Adults
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
 
-              {booking.costings_breakdown ? (
-                <div className={`flex ${'flex-row'} gap-3`}>
-                  <div className="text-md font-medium gap-2 flex flex-row items-start ">
-                    <FaBed className="text-md w-[20px] pt-1 text-[#7A7A7A] min-w-fit" />
-                    <div className="text-md font-medium">
-                      {booking.costings_breakdown[0].room_type}
+                {booking.costings_breakdown ? (
+                  <div className={`flex ${'flex-row'} gap-3`}>
+                    <div className="text-md font-medium gap-2 flex flex-row items-start ">
+                      <FaBed className="text-md w-[20px] pt-1 text-[#7A7A7A] min-w-fit" />
+                      <div className="text-md font-medium">
+                        {booking.costings_breakdown[0].room_type}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                currentBooking.number_of_adults && (
-                  <div className={`flex ${'flex-row'} gap-3`}>
-                    {room[0] && (
-                      <div className="text-md font-medium gap-2 flex flex-row items-start ">
-                        <FaBed className="text-md w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
-                        <div className="text-md font-medium">{room[0]}</div>
-                      </div>
-                    )}
-                  </div>
-                )
-              )}
-              {booking.costings_breakdown &&
-              Addons(booking.costings_breakdown[0].pricing_type) ? (
-                <div className="flex flex-row gap-2 items-center">
-                  <ImSpoonKnife className="text-md text-[#7A7A7A]" />
-                  <div className="text-md font-medium">
-                    {Addons(booking.costings_breakdown[0].pricing_type)}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-
-            {currentBooking && (
-              <div className="flex flex-row gap-3 items-center w-full font-bold">
-                {booking.price_lower_range_ext ? (
-                  <div className="font-lexend">
-                    {'₹ ' +
-                      getIndianPrice(
-                        Math.round(booking.price_lower_range_ext / 100)
-                      ) +
-                      ' /-'}
+                ) : (
+                  currentBooking.number_of_adults && (
+                    <div className={`flex ${'flex-row'} gap-3`}>
+                      {room[0] && (
+                        <div className="text-md font-medium gap-2 flex flex-row items-start ">
+                          <FaBed className="text-md w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
+                          <div className="text-md font-medium">{room[0]}</div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                )}
+                {booking.costings_breakdown &&
+                Addons(booking.costings_breakdown[0].pricing_type) ? (
+                  <div className="flex flex-row gap-2 items-center">
+                    <ImSpoonKnife className="text-md text-[#7A7A7A]" />
+                    <div className="text-md font-medium">
+                      {Addons(booking.costings_breakdown[0].pricing_type)}
+                    </div>
                   </div>
                 ) : null}
               </div>
-            )}
-            {handleClick && (
-              <div className="flex flex-row gap-3 items-center justify-between w-full">
-                {/* <ButtonYellow
+
+              {currentBooking && (
+                <div className="flex flex-row gap-3 items-center w-full font-bold">
+                  {booking.price_lower_range_ext ? (
+                    <div className="font-lexend">
+                      {'₹ ' +
+                        getIndianPrice(
+                          Math.round(booking.price_lower_range_ext / 100)
+                        ) +
+                        ' /-'}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+              {handleClick && (
+                <div className="flex flex-row gap-3 items-center justify-between w-full">
+                  {/* <ButtonYellow
                   className=" w-1/2"
                   onClick={() =>
                     handleClick(index, booking.accommodation, booking)
@@ -288,15 +290,15 @@ const HotelBookingContainer = ({
                 >
                   <div className="text-[#01202B] ">View Detail</div>
                 </ButtonYellow> */}
-                <ButtonYellow
-                  className="w-1/2"
-                  onClick={() => {
-                    handleClickAc(index, booking);
-                  }}
-                >
-                  <div className="text-[#01202B] ">Change</div>
-                </ButtonYellow>
-                {/* <div
+                  <ButtonYellow
+                    className="w-1/2"
+                    onClick={() => {
+                      handleClickAc(index, booking);
+                    }}
+                  >
+                    <div className="text-[#01202B] ">Change</div>
+                  </ButtonYellow>
+                  {/* <div
                   onClick={(e) => {
                     handleCheckboxChange(e);
                   }}
@@ -305,93 +307,96 @@ const HotelBookingContainer = ({
                   <CheckboxFormComponent checked={addbooking} />
                   <label>{addbooking ? 'Added Booking' : 'Add Booking'}</label>
                 </div> */}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
-        TTW Recommendation
-      </ClippathComp> */}
-        {!currentBooking && (
-          <div>
-            {addbooking ? (
-              <div className="absolute text-md font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
-                Included
-              </div>
-            ) : (
-              <div className="absolute text-md font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
-                Excluded
-              </div>
-            )}
-            <div className="absolute bottom-10 right-8 -m-3">
-              <div
-                onClick={(e) => {
-                  handleCheckboxChange(e);
-                }}
-                className="flex flex-row gap-1 items-center  cursor-pointer"
-              >
-                <CheckboxFormComponent checked={addbooking} />
-                <label className="text-center">
-                  {addbooking ? 'Added Booking' : 'Add Booking'}
-                </label>
-              </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-        {currentBooking && (
-          <div className="absolute  bottom-4 right-8 -m-3">
-            {alternates ? (
-              <div className="hidden-mobile">
+
+          {/* <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
+        TTW Recommendation
+      </ClippathComp> */}
+          {!currentBooking && (
+            <div>
+              {addbooking ? (
+                <div className="absolute text-md font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
+                  Included
+                </div>
+              ) : (
+                <div className="absolute text-md font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
+                  Excluded
+                </div>
+              )}
+              <div className="absolute bottom-10 right-8 -m-3">
                 <div
-                  fontSize="1rem"
-                  fontSizeDesktop="1.25rem"
                   onClick={(e) => {
-                    e.stopPropagation();
-                    _updateSearchedAccommodation;
+                    handleCheckboxChange(e);
                   }}
-                  onclickparam={{
-                    alternates: alternates,
-                    new_booking: booking,
-                    itinerary_id: itinerary_id,
-                    tailored_id: tailored_id,
-                  }}
+                  className="flex flex-row gap-1 items-center  cursor-pointer"
                 >
-                  Select
+                  <CheckboxFormComponent checked={addbooking} />
+                  <label className="text-center">
+                    {addbooking ? 'Added Booking' : 'Add Booking'}
+                  </label>
                 </div>
               </div>
-            ) : (
-              <div className="hidden-mobile z-50">
-                <DropDown
-                  itinerary_id={itinerary_id}
-                  tailored_id={tailored_id}
-                  fontSize="1rem"
-                  new_booking={booking}
-                  fontSizeDesktop="1.25rem"
-                  onclick={_updateSearchedAccommodation}
-                  onclick1={() => handleSelectChange()}
-                  onclickparam={{
-                    alternates: alternates,
-                    new_booking: booking,
-                    itinerary_id: itinerary_id,
-                    tailored_id: tailored_id,
-                  }}
-                >
-                  <div className="flex flex-row gap-1 items-center justify-center  cursor-pointer">
-                    <CheckboxFormComponent
-                      checked={isSelect}
-                      className="mt-1"
-                    />
-                    <label className="text-center">
-                      {isSelect ? 'Selected' : 'Select'}
-                    </label>
+            </div>
+          )}
+          {currentBooking && (
+            <div className="absolute  bottom-4 right-8 -m-3">
+              {alternates ? (
+                <div className="hidden-mobile">
+                  <div
+                    fontSize="1rem"
+                    fontSizeDesktop="1.25rem"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      _updateSearchedAccommodation;
+                    }}
+                    onclickparam={{
+                      alternates: alternates,
+                      new_booking: booking,
+                      itinerary_id: itinerary_id,
+                      tailored_id: tailored_id,
+                    }}
+                  >
+                    Select
                   </div>
-                </DropDown>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+                </div>
+              ) : (
+                <div className="hidden-mobile z-50">
+                  <DropDown
+                    itinerary_id={itinerary_id}
+                    tailored_id={tailored_id}
+                    fontSize="1rem"
+                    new_booking={booking}
+                    fontSizeDesktop="1.25rem"
+                    onclick={_updateSearchedAccommodation}
+                    onclick1={() => handleSelectChange()}
+                    onclickparam={{
+                      alternates: alternates,
+                      new_booking: booking,
+                      itinerary_id: itinerary_id,
+                      tailored_id: tailored_id,
+                    }}
+                  >
+                    <div className="flex flex-row gap-1 items-center justify-center  cursor-pointer">
+                      <CheckboxFormComponent
+                        checked={isSelect}
+                        className="mt-1"
+                      />
+                      <label className="text-center">
+                        {isSelect ? 'Selected' : 'Select'}
+                      </label>
+                    </div>
+                  </DropDown>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div>Add Hotels</div>
+      )}
     </div>
   );
 };
