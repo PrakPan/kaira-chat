@@ -4,8 +4,9 @@ import Drawer from '@mui/material/Drawer';
 import Pannel from './Pannel';
 import styled from 'styled-components';
 import { Tabs, Tab } from '@mui/material';
-
+import { IoMdStar } from 'react-icons/io';
 import media from '../../../media';
+import UiDropdown from '../../../uiDropdown';
 const FiltersContainer = styled.div`
   display: flex;
   margin: 0.5rem 0;
@@ -70,6 +71,15 @@ export default function TemporaryDrawer(props) {
     setState(false);
   };
   const _handleChange = (event, value) => {};
+  const _onChangeHandler = (checked, filter, heading) => {
+    if (checked) props._addFilterHandler(filter, heading);
+    else props._removeFilterHandler(filter, heading);
+  };
+  const handleSelectOption = (option) => {
+    console.log('Selected option:', option);
+    // Perform additional actions with the selected option
+    _onChangeHandler(true, option, 'type');
+  };
   return (
     <div>
       <React.Fragment key={'bottom'}>
@@ -80,7 +90,7 @@ export default function TemporaryDrawer(props) {
                 <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Star Category</Filter>
 
             </FiltersContainer> */}
-        <Tabs
+        {/* <Tabs
           value={filterSelected}
           onChange={_selectFilter}
           variant={'scrollable'}
@@ -102,11 +112,56 @@ export default function TemporaryDrawer(props) {
             label={'Type'}
             className={'booking-filter-tab font-lexend'}
           ></Tab>
-          {/* <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab> */}
-        </Tabs>
+          <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab>
+        </Tabs> */}
+        <div className="flex flex-row justify-between px-2">
+          <div className="flex flex-col justify-start items-baseline">
+            <div>User ratings</div>
+            <div className="flex flex-row gap-1">
+              {props.filters['star_category'].map((currentfilter, i) => (
+                <div
+                  className="flex font-normal text-sm cursor-pointer  gap-2 justify-center items-center bg-black text-white rounded-lg px-2 py-1"
+                  key={i}
+                >
+                  {currentfilter}
+                  <IoMdStar />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col justify-start items-baseline">
+            <div>Budget</div>
+            <div className="flex flex-row gap-1">
+              {props.filters['budget'].map((currentfilter, i) => (
+                <div
+                  onClick={(event) =>
+                    _onChangeHandler(
+                      event.target.textContent,
+                      currentfilter,
+                      'budget'
+                    )
+                  }
+                  className="flex font-normal text-sm cursor-pointer  justify-center items-center bg-black text-white rounded-lg px-2 py-1"
+                  key={i}
+                >
+                  {currentfilter}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        <TabPanel value={filterSelected} index={0}>
-          {/* <Rooms data={props.data}></Rooms> */}
+          <div className="flex flex-col justify-start items-baseline">
+            <div>Type</div>
+            <div>
+              <UiDropdown
+                options={props.filters['type']}
+                onSelect={handleSelectOption}
+              ></UiDropdown>
+            </div>
+          </div>
+        </div>
+        {/* <TabPanel value={filterSelected} index={0}>
+          <Rooms data={props.data}></Rooms>
           <Pannel
             filtersState={props.filtersState}
             _updateStarFilterHandler={props._updateStarFilterHandler}
@@ -119,7 +174,7 @@ export default function TemporaryDrawer(props) {
           ></Pannel>
         </TabPanel>
         <TabPanel value={filterSelected} index={1}>
-          {/* <Rooms data={props.data}></Rooms> */}
+          <Rooms data={props.data}></Rooms>
           <Pannel
             filtersState={props.filtersState}
             _updateStarFilterHandler={props._updateStarFilterHandler}
@@ -130,10 +185,10 @@ export default function TemporaryDrawer(props) {
             _removeFilterHandler={props._removeFilterHandler}
             _addFilterHandler={props._addFilterHandler}
           ></Pannel>
-        </TabPanel>
-        {isPageWide && state ? (
+        </TabPanel> */}
+        {/* {isPageWide && state ? (
           <TabPanel value={filterSelected} index={1}>
-            {/* <Rooms data={props.data}></Rooms> */}
+            <Rooms data={props.data}></Rooms>
             <Pannel
               filtersState={props.filtersState}
               _updateStarFilterHandler={props._updateStarFilterHandler}
@@ -148,7 +203,7 @@ export default function TemporaryDrawer(props) {
         ) : null}
         {isPageWide && state ? (
           <TabPanel value={filterSelected} index={2}>
-            {/* <Rooms data={props.data}></Rooms> */}
+            <Rooms data={props.data}></Rooms>
             <Pannel
               filtersState={props.filtersState}
               _updateStarFilterHandler={props._updateStarFilterHandler}
@@ -179,7 +234,7 @@ export default function TemporaryDrawer(props) {
               _addFilterHandler={props._addFilterHandler}
             ></Pannel>
           </Drawer>
-        ) : null}
+        ) : null} */}
       </React.Fragment>
     </div>
   );

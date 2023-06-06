@@ -1,0 +1,93 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import styled from 'styled-components';
+
+const DropdownContainer = styled.div`
+  position: relative;
+  width: 200px;
+  width: fit-content;
+  display: inline-block;
+`;
+
+const DropdownHeader = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  padding: 2px 6px 2px 6px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 999;
+  gap: 0.3rem;
+  user-select: none;
+`;
+
+const DropdownOptions = styled(motion.ul)`
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 0;
+  margin: 0;
+  z-index: 999;
+  list-style: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+`;
+
+const DropdownOption = styled(motion.li)`
+  padding: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+`;
+
+const UiDropdown = ({ options, onSelect }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleSelect = (option) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+    onSelect(option);
+  };
+
+  return (
+    <DropdownContainer>
+      <DropdownHeader onClick={handleToggle}>
+        <span>{selectedOption || 'Select an option'}</span>
+        {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+      </DropdownHeader>
+      <AnimatePresence>
+        {isOpen && (
+          <DropdownOptions
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            {options.map((option) => (
+              <DropdownOption
+                key={option}
+                onClick={() => handleSelect(option)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {option}
+              </DropdownOption>
+            ))}
+          </DropdownOptions>
+        )}
+      </AnimatePresence>
+    </DropdownContainer>
+  );
+};
+
+export default UiDropdown;

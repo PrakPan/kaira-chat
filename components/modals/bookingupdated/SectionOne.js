@@ -3,11 +3,11 @@ import styled from 'styled-components';
 // import media from '../../media';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { TbArrowBack } from 'react-icons/tb';
+import { IoMdClose } from 'react-icons/io';
 const Container = styled.div`
   margin: 0;
   display: flex;
-  justify-content: space-between;
+
   @media screen and (min-width: 768px) {
   }
 `;
@@ -16,9 +16,9 @@ const Section = (props) => {
   // let isPageWide = media('(min-width: 768px)')
 
   return (
-    <Container className="font-lexend">
+    <Container className="font-lexend px-3">
       {/* <div></div> */}
-      <FontAwesomeIcon
+      {/* <FontAwesomeIcon
         className="hover-pointer"
         icon={faChevronLeft}
         onClick={props.setHideBookingModal}
@@ -40,12 +40,13 @@ const Section = (props) => {
           fontSize: '1.5rem',
           visibility: 'hidden',
         }}
-      ></FontAwesomeIcon>
-      <TbArrowBack
+      ></FontAwesomeIcon> */}
+      <IoMdClose
         className="hover-pointer"
         onClick={props.setHideBookingModal}
-        style={{ margin: '0.5rem', fontSize: '1.75rem' }}
-      ></TbArrowBack>
+        style={{ margin: '0.5rem', fontSize: '2rem' }}
+      ></IoMdClose>
+      <div className="text-2xl font-normal mt-[0.5rem]">Change Hotel</div>
     </Container>
   );
 };

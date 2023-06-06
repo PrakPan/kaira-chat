@@ -743,7 +743,7 @@ const Booking = (props) => {
       'Entire House',
       'Capsule Hotel',
     ],
-    star_category: ['1 star', '2 star', '3 star', '4 star', '5 star'],
+    star_category: ['3', '4', '5'],
   };
   let room = [];
   try {
