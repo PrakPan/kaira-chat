@@ -205,8 +205,8 @@ const TransferModeContainer = (props) => {
                   TransportMode={props.booking_type}
                   Instyle={{
                     fontSize: '2.75rem',
-                    height: '1rem',
-                    width: '2rem',
+                    height: '3rem',
+                    width: '5rem',
                     color: 'black',
                   }}
                 />
@@ -215,7 +215,8 @@ const TransferModeContainer = (props) => {
                   TransportMode={props.booking_type}
                   Instyle={{
                     fontSize: '2.75rem',
-
+                    height: '3rem',
+                    width: '5rem',
                     color: 'black',
                   }}
                 />
@@ -321,7 +322,7 @@ const TransferModeContainer = (props) => {
               "
                 >
                   <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
-                    <IoClose></IoClose> No Flight Added Yet
+                    <IoClose></IoClose> No Flight Yet
                   </div>
 
                   <div

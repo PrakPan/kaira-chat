@@ -3,6 +3,7 @@ import ImageLoader from '../../../components/ImageLoader';
 import StarRating from '../../../components/StarRating';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import { BiBed } from 'react-icons/bi';
 import { ImSpoonKnife } from 'react-icons/im';
 import {
   getDate,
@@ -237,9 +238,9 @@ const HotelBookingContainer = ({
 
                 {booking.costings_breakdown ? (
                   <div className={`flex ${'flex-row'} gap-3 mt-2`}>
-                    <div className="text-sm font-[400] gap-2 flex flex-row items-start ">
-                      <FaBed className="text-sm w-[20px] pt-1 text-[#7A7A7A] min-w-fit" />
-                      <div className="text-sm font-[400]">
+                    <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                      <BiBed className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400] line-clamp-1">
                         {booking.costings_breakdown[0].room_type}
                       </div>
                     </div>
@@ -249,7 +250,7 @@ const HotelBookingContainer = ({
                     <div className={`flex ${'flex-row'} gap-3 mt-2`}>
                       {room[0] && (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-start ">
-                          <FaBed className="text-sm w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
+                          <BiBed className="text-sm w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
                           <div className="text-sm font-[400]">{room[0]}</div>
                         </div>
                       )}

@@ -182,7 +182,7 @@ const ScrollableMenuTabs = ({
       className={classStyle}
       isInView={isInView}
     >
-      {icons ? (
+      {/* {icons ? (
         <IoIosArrowBack
           style={{
             color: 'black',
@@ -195,7 +195,7 @@ const ScrollableMenuTabs = ({
           }}
           onClick={handleScrollLeft}
         />
-      ) : null}
+      ) : null} */}
 
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
         {vertical ? <div className="font-bold">{year}</div> : null}
@@ -218,7 +218,7 @@ const ScrollableMenuTabs = ({
         <NavigationMarker x={markerPos.x} width={markerPos.width} />
       </Navbar>
 
-      {icons ? (
+      {/* {icons ? (
         <IoIosArrowForward
           style={{
             color: 'black',
@@ -230,7 +230,7 @@ const ScrollableMenuTabs = ({
           }}
           onClick={handleScrollRight}
         />
-      ) : null}
+      ) : null} */}
     </NavbarContainer>
   );
 };

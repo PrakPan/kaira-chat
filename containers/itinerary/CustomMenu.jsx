@@ -42,7 +42,7 @@ const MenuItem = styled.div`
 `;
 const RoundMenuItem = styled.div`
   padding: ${({ Isvertical }) =>
-    Isvertical ? '4px 9px 6px 9px' : '2px 20px 4px 20px'};
+    Isvertical ? '4px 9px 6px 9px' : '4px 20px 8px 20px'};
   cursor: pointer;
   width: ${({ Isvertical }) => (Isvertical ? '95px' : 'max-content')};
 
@@ -59,7 +59,7 @@ const RoundMenuItem = styled.div`
   transition: border-color 0.3s ease;
   border: ${({ isActive }) => (!isActive ? '1.5px solid #ECEAEA' : 'none')};
   border-bottom: ${({ isActive, Isvertical }) =>
-    isActive & Isvertical ? '4px solid #F7E700' : 'none'};
+    isActive & Isvertical ? '4px solid #F7E700' : '1.5px solid #ECEAEA'};
   &:hover {
     background-color: ${({ isActive }) => (isActive ? '#262626' : '#262626c7')};
     color: white;

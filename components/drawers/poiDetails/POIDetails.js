@@ -6,6 +6,7 @@ import media from '../../media';
 import { TbArrowBack } from 'react-icons/tb';
 import SkeletonCard from '../../ui/SkeletonCard';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import FloatingButton from '../../FloatingButton';
 const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -205,7 +206,7 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
-
+      {/* <FloatingButton></FloatingButton> */}
       {props.data.tips && (
         <div>
           <Heading>Tips</Heading>
