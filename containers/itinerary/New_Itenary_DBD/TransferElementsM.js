@@ -32,13 +32,7 @@ const TransferElementsM = ({
           {/* <div className="text-base">{time}</div> */}
 
           <Timecontainer>
-            <div className="text-[1.2rem] font-normal ">{heading}</div>
-          </Timecontainer>
-        </Timecontainer>
-
-        {transfers !== undefined ? (
-          <TransportContainer className="pt-2">
-            <div style={{ paddingRight: '10px' }}>
+            <div className="w-[28px] mr-2">
               {modes && (
                 <TransportIconFetcher
                   TransportMode={modes[0]}
@@ -49,6 +43,27 @@ const TransferElementsM = ({
                   }}
                 />
               )}
+            </div>
+
+            <div className="text-[1.2rem] font-normal line-clamp-2 ">
+              {heading}
+            </div>
+          </Timecontainer>
+        </Timecontainer>
+
+        {transfers !== undefined ? (
+          <TransportContainer className="pt-2">
+            <div style={{ paddingRight: '10px' }}>
+              {/* {modes && (
+                <TransportIconFetcher
+                  TransportMode={modes[0]}
+                  Instyle={{
+                    fontSize: '1.75rem',
+                    marginRight: '0.5rem',
+                    color: 'black',
+                  }}
+                />
+              )} */}
               {/* <ImageLoader
                 url={icon}
                 leftalign
@@ -58,25 +73,25 @@ const TransferElementsM = ({
               ></ImageLoader> */}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {transfers.routes[0]?.legs[0].origin.shortName && (
+              {/* {transfers.routes[0]?.legs[0].origin.shortName && (
                 <div className="text-md">
                   {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
                   {transfers.routes[0]?.legs[0].destination.shortName}
                 </div>
-              )}
+              )} */}
 
-              {meta.duration ? (
+              {/* {meta.duration ? (
                 <div className="text-md">
                   Duration: {convertNumToTime(meta.duration)}
                 </div>
-              ) : null}
+              ) : null} */}
             </div>
           </TransportContainer>
         ) : null}
         {booking ? (
           meta.estimated_cost ? (
-            <div className="flex mt-2 flex-row items-center justify-between w-full">
-              <LivelyButton className="font-bold  border-2 border-black rounded-md px-3 py-1  bg-white text-black">
+            <div className="flex mt-2 flex-row items-end justify-between w-full">
+              <LivelyButton className="font-medium  border-2 border-black rounded-md px-4 py-2  bg-white text-black">
                 {modes ? `${modes} From ` : null} ₹
                 {formatNumber(Math.round(meta.estimated_cost))}
               </LivelyButton>
@@ -91,7 +106,9 @@ const TransferElementsM = ({
             </div>
           ) : null
         ) : null}
-        <div className="pt-1 line-clamp-3 font-normal text-sm mb-0">{text}</div>
+        <div className="pt-1 line-clamp-3 text-sm font-[350] mb-0 mt-2">
+          {text}
+        </div>
         {meta?.duration ? (
           <div className="absolute bottom-[14px] left-[35%] bg-white px-2 ">
             <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">

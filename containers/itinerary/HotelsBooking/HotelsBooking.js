@@ -452,52 +452,53 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     setShowDetails(true);
   }
-  const HotelArray = [];
-  if (props.breif) {
-    if (props.breif.city_slabs) {
-      if (props.stayBookings) {
-        for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
-          if (
-            props.breif.city_slabs[i].city_name ==
-            props.stayBookings[i - 1].city
-          ) {
-            HotelArray.push(
-              <HotelBookingContainer
-                booking={props.stayBookings[i - 1]}
-                index={i - 1}
-                cityName={props.breif.city_slabs[i].city_name}
-                key={i}
-                handleClick={handleClick}
-                handleClickAc={handleClickAc}
-                _SelectedBookingHandler={_SelectedBookingHandler}
-                setHideBookingModal={props.setHideBookingModal}
-                loginModal={showLoginModal}
-                setLoginModal={setShowLoginModal}
-                token={props.token}
-              ></HotelBookingContainer>
-            );
-          } else {
-            HotelArray.push(
-              <HotelBookingContainer
-                booking={null}
-                index={i - 1}
-                key={i}
-                handleClick={handleClick}
-                handleClickAc={handleClickAc}
-                _SelectedBookingHandler={_SelectedBookingHandler}
-                setHideBookingModal={props.setHideBookingModal}
-                loginModal={showLoginModal}
-                setLoginModal={setShowLoginModal}
-                token={props.token}
-              ></HotelBookingContainer>
-            );
-          }
-        }
-      }
-    }
-  }
+  // const HotelArray = [];
+  // if (props.breif) {
+  //   if (props.breif.city_slabs) {
+  //     if (props.stayBookings) {
+  //       for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
+  //         if (
+  //           props.breif.city_slabs[i].city_name ==
+  //           props?.stayBookings[i - 1]?.city
+  //         ) {
+  //           HotelArray.push(
+  //             <HotelBookingContainer
+  //               booking={props.stayBookings[i - 1]}
+  //               index={i - 1}
+  //               cityName={props.breif.city_slabs[i].city_name}
+  //               key={i}
+  //               handleClick={handleClick}
+  //               handleClickAc={handleClickAc}
+  //               _SelectedBookingHandler={_SelectedBookingHandler}
+  //               setHideBookingModal={props.setHideBookingModal}
+  //               loginModal={showLoginModal}
+  //               setLoginModal={setShowLoginModal}
+  //               token={props.token}
+  //             ></HotelBookingContainer>
+  //           );
+  //         } else {
+  //           HotelArray.push(
+  //             <HotelBookingContainer
+  //               booking={null}
+  //               index={i - 1}
+  //               key={i}
+  //               handleClick={handleClick}
+  //               cityName={props.breif.city_slabs[i].city_name}
+  //               handleClickAc={handleClickAc}
+  //               _SelectedBookingHandler={_SelectedBookingHandler}
+  //               setHideBookingModal={props.setHideBookingModal}
+  //               loginModal={showLoginModal}
+  //               setLoginModal={setShowLoginModal}
+  //               token={props.token}
+  //             ></HotelBookingContainer>
+  //           );
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
   return (
-    <div className="lg:w-[60vw] w-full">
+    <div className="lg:w-[60vw] w-full lg:mx-0 ">
       <div
         id="Stays-Head"
         className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
@@ -505,12 +506,13 @@ const HotelsBooking = (props) => {
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {/* {props.stayBookings
+      {props.stayBookings
         ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
               booking={booking}
               index={index}
               key={index}
+              cityName={props.breif.city_slabs[index].city_name}
               handleClick={handleClick}
               handleClickAc={handleClickAc}
               _SelectedBookingHandler={_SelectedBookingHandler}
@@ -520,8 +522,8 @@ const HotelsBooking = (props) => {
               token={props.token}
             ></HotelBookingContainer>
           ))
-        : null} */}
-      {HotelArray}
+        : null}
+      {/* {HotelArray} */}
       <AccommodationModal
         _setImagesHandler={_setImagesHandler}
         onHide={() => setShowDetails(false)}

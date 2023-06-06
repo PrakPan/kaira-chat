@@ -64,12 +64,12 @@ const ItineraryElementM = (props) => {
         </div>
 
         <div>
-          <div className="pb-0 pt-2 text-md font-[350]">
+          <div className="pb-0 pt-2 text-sm font-[350]">
             {props.text ? props.text : null}
           </div>
           {props.booking ? (
-            <div className="flex flex-row items-center justify-between w-full">
-              <LivelyButton className="font-bold border-2 border-black rounded-md px-3 py-1  bg-white text-black">
+            <div className="flex flex-row items-end justify-between w-full">
+              <LivelyButton className="font-medium mt-3  border-2 border-black rounded-md px-4 py-2  bg-white text-black">
                 View Booking
               </LivelyButton>
               <div className="text-sm font-medium">

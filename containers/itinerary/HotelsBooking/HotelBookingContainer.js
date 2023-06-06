@@ -161,7 +161,7 @@ const HotelBookingContainer = ({
               {booking.star_category ? (
                 <starHotel
                   starHotel
-                  className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-md font-mediumnsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
+                  className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
                 >
                   {booking.star_category} star hotel
                 </starHotel>
@@ -178,7 +178,7 @@ const HotelBookingContainer = ({
                 </div>
                 <div className="flex flex-col gap-1">
                   {!currentBooking && (
-                    <div className="text-md font-normal">{booking?.city}</div>
+                    <div className="text-sm font-normal">{booking?.city}</div>
                   )}
 
                   {booking?.user_rating && (
@@ -188,7 +188,7 @@ const HotelBookingContainer = ({
                       </div>
                       <div>{booking?.user_rating}</div>
                       {booking.number_of_reviews && (
-                        <div className="text-md text-[#7A7A7A] font-medium underline">
+                        <div className="text-sm text-[#7A7A7A] font-[400] underline">
                           {booking.number_of_reviews} Google reviews
                         </div>
                       )}
@@ -196,38 +196,38 @@ const HotelBookingContainer = ({
                   )}
                 </div>
                 {booking.check_in ? (
-                  <div className="flex flex-row gap-3">
+                  <div className="flex flex-row gap-3 mt-2">
                     <div className="flex flex-row gap-2 items-center">
-                      <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                      <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                       <div>
-                        <div className="text-md font-medium ">
+                        <div className="text-sm font-[400] ">
                           {getDate(booking.check_in)}-
                           {getDate(booking.check_out)}
                         </div>
                       </div>
                     </div>
-                    <div className="text-md font-medium gap-2 flex flex-row items-center">
-                      <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                      <div className="text-md font-medium min-w-fit">
+                    <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                      <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400] min-w-fit">
                         {booking.number_of_adults} Adults
                       </div>
                     </div>
                   </div>
                 ) : (
                   currentBooking && (
-                    <div className="flex flex-row gap-3">
+                    <div className="flex flex-row gap-3 mt-2">
                       <div className="flex flex-row gap-2 items-center">
-                        <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                        <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                         <div>
-                          <div className="text-md font-medium ">
+                          <div className="text-sm font-[400] ">
                             {getDate(currentBooking.check_in)}-
                             {getDate(currentBooking.check_out)}
                           </div>
                         </div>
                       </div>
-                      <div className="text-md font-medium gap-2 flex flex-row items-center">
-                        <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                        <div className=" text-md font-medium min-w-fit">
+                      <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                        <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                        <div className=" text-sm font-[400] min-w-fit">
                           {booking.number_of_adults} Adults
                         </div>
                       </div>
@@ -236,21 +236,21 @@ const HotelBookingContainer = ({
                 )}
 
                 {booking.costings_breakdown ? (
-                  <div className={`flex ${'flex-row'} gap-3`}>
-                    <div className="text-md font-medium gap-2 flex flex-row items-start ">
-                      <FaBed className="text-md w-[20px] pt-1 text-[#7A7A7A] min-w-fit" />
-                      <div className="text-md font-medium">
+                  <div className={`flex ${'flex-row'} gap-3 mt-2`}>
+                    <div className="text-sm font-[400] gap-2 flex flex-row items-start ">
+                      <FaBed className="text-sm w-[20px] pt-1 text-[#7A7A7A] min-w-fit" />
+                      <div className="text-sm font-[400]">
                         {booking.costings_breakdown[0].room_type}
                       </div>
                     </div>
                   </div>
                 ) : (
                   currentBooking.number_of_adults && (
-                    <div className={`flex ${'flex-row'} gap-3`}>
+                    <div className={`flex ${'flex-row'} gap-3 mt-2`}>
                       {room[0] && (
-                        <div className="text-md font-medium gap-2 flex flex-row items-start ">
-                          <FaBed className="text-md w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
-                          <div className="text-md font-medium">{room[0]}</div>
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-start ">
+                          <FaBed className="text-sm w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
+                          <div className="text-sm font-[400]">{room[0]}</div>
                         </div>
                       )}
                     </div>
@@ -258,9 +258,9 @@ const HotelBookingContainer = ({
                 )}
                 {booking.costings_breakdown &&
                 Addons(booking.costings_breakdown[0].pricing_type) ? (
-                  <div className="flex flex-row gap-2 items-center">
-                    <ImSpoonKnife className="text-md text-[#7A7A7A]" />
-                    <div className="text-md font-medium">
+                  <div className="flex flex-row gap-2 items-center my-2">
+                    <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
+                    <div className="text-sm font-[400]">
                       {Addons(booking.costings_breakdown[0].pricing_type)}
                     </div>
                   </div>
@@ -312,17 +312,17 @@ const HotelBookingContainer = ({
             </div>
           </div>
 
-          {/* <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
+          {/* <ClippathComp className="absolute text-sm font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
         TTW Recommendation
       </ClippathComp> */}
           {!currentBooking && (
             <div>
               {addbooking ? (
-                <div className="absolute text-md font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
+                <div className="absolute text-sm font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
                   Included
                 </div>
               ) : (
-                <div className="absolute text-md font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
+                <div className="absolute text-sm font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
                   Excluded
                 </div>
               )}

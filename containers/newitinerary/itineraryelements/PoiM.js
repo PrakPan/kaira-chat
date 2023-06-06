@@ -284,7 +284,7 @@ const ItineraryPoiElementM = (props) => {
         </div>
       </GridContainer>
       <div
-        className={`pt-2 text-md font-[350] ${
+        className={`pt-2 text-sm font-[350] ${
           viewMore ? 'line-clamp-0' : 'line-clamp-3'
         }`}
       >

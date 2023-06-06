@@ -37,7 +37,7 @@ const FoodItem = (props) => {
         <Heading className="font-normal text-lg lg:text-xl">
           {props.heading}
         </Heading>
-        <div className="pt-1 text-sm font-normal line-clamp-3  ">
+        <div className="pt-1 text-sm font-[350] line-clamp-3  ">
           {cutSentence(props.text, 18)}
         </div>
       </div>

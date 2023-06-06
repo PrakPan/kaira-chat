@@ -38,7 +38,7 @@ export const TransparentButton = styled.button`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 4px 10px;
+  padding: 6px 15px;
   margin: 10px 0px 10px 0px;
 `;
 export const TransportContainer = styled.div`
@@ -64,8 +64,9 @@ export const Timecontainer = styled.div`
   font-weight: 500;
   font-size: 13px;
   display: flex;
-
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
 
   @media screen and (min-width: 768px) {
     flex-direction: row;

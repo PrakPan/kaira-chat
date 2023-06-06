@@ -190,7 +190,7 @@ const TransferModeContainer = (props) => {
           className="group lg:w-[95%]  lg:ml-8  py-[20px]  relative rounded-2xl transition-all  duration-300 ease-in-out  "
         >
           <div className="flex flex-row gap-2    ">
-            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
+            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[4rem] lg:min-h-[7rem] min-h-[4rem]  rounded-2xl">
               {props.booking?.airline_code ? (
                 // <ImageLoader
                 //   className="aspect-[3/2] object-contain"
@@ -205,8 +205,8 @@ const TransferModeContainer = (props) => {
                   TransportMode={props.booking_type}
                   Instyle={{
                     fontSize: '2.75rem',
-                    height: '3rem',
-                    width: '4rem',
+                    height: '1rem',
+                    width: '2rem',
                     color: 'black',
                   }}
                 />
@@ -384,7 +384,7 @@ const TransferModeContainer = (props) => {
           className="group flex flex-row gap-2 lg:w-[100%] w-full py-[20px] lg:ml-8 ml-2 "
         >
           {props.icon && (
-            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[6rem] lg:min-h-[7rem] min-h-[6rem]  rounded-2xl">
+            <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[7rem] min-w-[4rem] lg:min-h-[7rem] min-h-[4rem]  rounded-2xl">
               {props.booking_type == 'Flight' ? (
                 <TransportIconFetcher
                   TransportMode={props.booking_type}
@@ -402,7 +402,7 @@ const TransferModeContainer = (props) => {
                     leftalign
                     // dimensions={{ width: 900, height: 500 }}
                     height="3rem"
-                    width="4rem"
+                    width="5rem"
                     widthmobile="4rem"
                   ></ImageLoader>
                 )
