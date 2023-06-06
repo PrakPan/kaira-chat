@@ -17,13 +17,13 @@ const POIDetailsDrawer = (props) => {
   }, [props.show]);
 
   function fetchData() {
-    if (props.iconId) {
-      axiosPOIdetailsInstance
-        .get(`/?id=${props.iconId}`)
-        .then((res) => setData(res.data));
-    } else {
+    if (props.ActivityiconId) {
       axiosPOIActivityInstance
         .get(`/?id=${props.ActivityiconId}`)
+        .then((res) => setData(res.data));
+    } else {
+      axiosPOIdetailsInstance
+        .get(`/?id=${props.iconId}`)
         .then((res) => setData(res.data));
     }
   }

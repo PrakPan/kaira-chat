@@ -185,8 +185,7 @@ const POIDetails = (props) => {
       </div>
       {props.data.cost && (
         <div className="flex flex-row">
-          Cost: <div className="font-semibold px-1">₹</div> {getHumanDate}{' '}
-          {props.data.cost}{' '}
+          Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}{' '}
           <div>
             {props.data.price_category == 'individual' ? 'Per person' : null}
           </div>
