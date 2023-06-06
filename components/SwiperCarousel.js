@@ -17,6 +17,7 @@ const SwiperContainer = styled.div`
   .swiper,
   .swiper-wrapper {
     position: initial;
+    height : auto;
   }
   .swiper-button-prev {
     left: -20px;
@@ -30,8 +31,7 @@ const SwiperContainer = styled.div`
     color: white;
     ${(props) =>
       props.navButtonBackground && `background : ${props.navButtonBackground}`};
-    ${(props) =>
-      props.navButtonColor && `color : ${props.navButtonColor}`};
+    ${(props) => props.navButtonColor && `color : ${props.navButtonColor}`};
     border: none;
     border-radius: 100%;
     width: 40px;

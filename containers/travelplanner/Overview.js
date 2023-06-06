@@ -68,40 +68,48 @@ const  Overview = (props) =>{
           {props.overview_heading}
         </Heading>
         <Text more={more} clientHeight={clientHeight} className="font-lexend">
-          <p ref={ref}>
-            {props.overview_text}
-          </p>
+          <p ref={ref}>{props.overview_text}</p>
           {/* {!more ? ( */}
-         {clientHeight > 300 &&  <p
-            className="hover-pointer text-container"
-            onClick={() => setMore(!more)}
-            style={{
-              position: "absolute",
-              right: "0",
-              bottom: "-3px",
-              marginBottom: "0px",
-              backgroundColor: "white",
-              zIndex: "2",
-              paddingLeft: "0.25rem",
-              fontWeight: "600",
-            }}
-          >
-            {!more ? (
-              <>
-                ...more
-                <BiChevronDown
-                  style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
-                ></BiChevronDown>
-              </>
-            ) : (
-              <>
-                ...less
-                <BiChevronUp
-                  style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
-                ></BiChevronUp>
-              </>
-            )}
-          </p>}
+          {clientHeight > 300 && (
+            <p
+              className="hover-pointer text-container"
+              onClick={() => setMore(!more)}
+              style={{
+                position: "absolute",
+                right: "0",
+                bottom: "-3px",
+                marginBottom: "0px",
+                backgroundColor: "white",
+                zIndex: "2",
+                paddingLeft: "0.25rem",
+                fontWeight: "600",
+              }}
+            >
+              {!more ? (
+                <>
+                  ...more
+                  <BiChevronDown
+                    style={{
+                      display: "inline",
+                      fontSize: "1.2rem",
+                      marginBottom: "0.2rem",
+                    }}
+                  ></BiChevronDown>
+                </>
+              ) : (
+                <>
+                  ...less
+                  <BiChevronUp
+                    style={{
+                      display: "inline",
+                      fontSize: "1.2rem",
+                      marginBottom: "0.2rem",
+                    }}
+                  ></BiChevronUp>
+                </>
+              )}
+            </p>
+          )}
           {/* ) : null} */}
         </Text>
       </div>

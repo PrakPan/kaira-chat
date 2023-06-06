@@ -1,14 +1,14 @@
-import styled from 'styled-components';
-import ImageLoader from '../ImageLoader';
-import Socials from './Socials';
-import { FiPhoneCall } from 'react-icons/fi';
-import { HiOutlineMail } from 'react-icons/hi';
-import Subscribe from './Subscribe';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import linksArr from './Links';
-import openTailoredModal from '../../services/openTailoredModal';
-import { useRouter } from 'next/router';
+import styled from "styled-components";
+import ImageLoader from "../ImageLoader";
+import Socials from "./Socials";
+import { FiPhoneCall } from "react-icons/fi";
+import { HiOutlineMail } from "react-icons/hi";
+import Subscribe from "./Subscribe";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import linksArr from "./Links";
+import openTailoredModal from "../../services/openTailoredModal";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   min-height: 10vw;
@@ -55,6 +55,11 @@ const CompanyName = styled.div`
   font-size: 16px;
   font-weight: 700;
 `;
+const CompanyText = styled.div`
+  font-size: 14px;
+  margin: 1.5rem 0;
+`;
+
 const LinksContainer = styled.div`
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -81,7 +86,7 @@ const Links = styled.div`
   a:hover,
   p:hover {
     color: white;
-    text-decoration: none;
+    text-decoration: underline;
     cursor: pointer;
     text-underline-offset: 10px;
     text-decoration-thickness: 2px;
@@ -120,13 +125,13 @@ const NewFooter = (props) => {
       <Heading>{e.heading}</Heading>
       {e.data.map((data) => (
         <Links>
-          {typeof data.link != 'string' ? (
+          {typeof data.link != "string" ? (
             <a href={data.link[0]} target="_blank">
               {data.title}
             </a>
-          ) : data.title == 'Personalise' ? (
+          ) : data.title == "Personalise" ? (
             <p onClick={() => openTailoredModal(router)}>{data.title}</p>
-          ) : data.title == 'Subscribe' ? (
+          ) : data.title == "Subscribe" ? (
             <p onClick={() => setShadow(!shadow)}>{data.title}</p>
           ) : (
             <p onClick={() => (window.location.href = data.link)}>
@@ -162,25 +167,25 @@ const NewFooter = (props) => {
             ) : (
               <div></div>
             )}
-            <div>
+            <CompanyText>
               The Tarzan Way is a travel based startup with the vision to
               simplify travel and build immersive travel programs across India.
-            </div>
+            </CompanyText>
             <Socials></Socials>
 
-            <CompanyName style={{ margin: '1rem 0' }}>Contact Us</CompanyName>
-            <div style={{ display: 'flex', margin: '0' }}>
-              <div style={{ display: 'flex' }}>
+            <CompanyName style={{ margin: "1rem 0" }}>Contact Us</CompanyName>
+            <CompanyText style={{ display: "flex", margin: "0" }}>
+              <div style={{ display: "flex" }}>
                 <FiPhoneCall
-                  style={{ fontSize: '1.15rem', marginRight: '0.5rem' }}
+                  style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
                 ></FiPhoneCall>
                 +91 95821 25476, +91 87872 00342
               </div>
-            </div>
-            <div style={{ display: 'flex', margin: '0.25rem 0 0 0' }}>
-              <div style={{ display: 'flex' }}>
+            </CompanyText>
+            <CompanyText style={{ display: "flex", margin: "0.25rem 0 0 0" }}>
+              <div style={{ display: "flex" }}>
                 <HiOutlineMail
-                  style={{ fontSize: '1.15rem', marginRight: '0.5rem' }}
+                  style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
                 ></HiOutlineMail>
                 <Links>
                   <a href="mailto:info@thetarzanway.com">
@@ -188,15 +193,15 @@ const NewFooter = (props) => {
                   </a>
                 </Links>
               </div>
-            </div>
+            </CompanyText>
           </Box>
           <LinksContainer>{LinksComponent}</LinksContainer>
         </SubContainer>
         <div
           style={{
-            borderBottom: '1px solid rgba(255, 255, 255, 0.5)',
-            width: '80%',
-            margin: 'auto',
+            borderBottom: "1px solid rgba(255, 255, 255, 0.5)",
+            width: "80%",
+            margin: "auto",
           }}
         ></div>
         <CopyWrite className="text-center">
