@@ -15,6 +15,7 @@ import styled from 'styled-components';
 import { getIndianPrice } from '../../../services/getIndianPrice';
 import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
+import useMediaQuery from '../../../hooks/useMedia';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -105,6 +106,7 @@ const HotelBookingContainer = ({
   function handleSelectChange() {
     setisSelect(!isSelect);
   }
+  const isMobile = useMediaQuery('(min-width:768px)');
   return (
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
       {handleClick && (
@@ -237,7 +239,7 @@ const HotelBookingContainer = ({
                 )}
 
                 {booking.costings_breakdown ? (
-                  <div className={`flex ${'flex-row'} gap-3 mt-2`}>
+                  <div className={`flex ${'flex-row'} gap-3 lg:mt-2 mt-0`}>
                     <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                       <BiBed className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400] line-clamp-1">
@@ -247,11 +249,13 @@ const HotelBookingContainer = ({
                   </div>
                 ) : (
                   currentBooking.number_of_adults && (
-                    <div className={`flex ${'flex-row'} gap-3 mt-2`}>
+                    <div className={`flex ${'flex-row'} gap-3 lg:mt-2 mt-0`}>
                       {room[0] && (
-                        <div className="text-sm font-[400] gap-2 flex flex-row items-start ">
-                          <BiBed className="text-sm w-[20px] min-w-fit pt-1 text-[#7A7A7A]" />
-                          <div className="text-sm font-[400]">{room[0]}</div>
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                          <BiBed className="text-sm text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] line-clamp-1">
+                            {room[0]}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -259,7 +263,7 @@ const HotelBookingContainer = ({
                 )}
                 {booking.costings_breakdown &&
                 Addons(booking.costings_breakdown[0].pricing_type) ? (
-                  <div className="flex flex-row gap-2 items-center my-2">
+                  <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                     <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                     <div className="text-sm font-[400]">
                       {Addons(booking.costings_breakdown[0].pricing_type)}
@@ -316,17 +320,23 @@ const HotelBookingContainer = ({
           {/* <ClippathComp className="absolute text-sm font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
         TTW Recommendation
       </ClippathComp> */}
+
           {!currentBooking && (
             <div>
-              {addbooking ? (
-                <div className="absolute text-sm font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
-                  Included
-                </div>
-              ) : (
-                <div className="absolute text-sm font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
-                  Excluded
+              {isMobile && (
+                <div>
+                  {addbooking ? (
+                    <div className="absolute text-sm font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
+                      Included
+                    </div>
+                  ) : (
+                    <div className="absolute text-sm font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
+                      Excluded
+                    </div>
+                  )}
                 </div>
               )}
+
               <div className="absolute bottom-10 right-8 -m-3">
                 <div
                   onClick={(e) => {
@@ -345,7 +355,7 @@ const HotelBookingContainer = ({
           {currentBooking && (
             <div className="absolute  bottom-4 right-8 -m-3">
               {alternates ? (
-                <div className="hidden-mobile">
+                <div className="">
                   <div
                     fontSize="1rem"
                     fontSizeDesktop="1.25rem"
@@ -364,7 +374,7 @@ const HotelBookingContainer = ({
                   </div>
                 </div>
               ) : (
-                <div className="hidden-mobile z-50">
+                <div className=" z-50">
                   <DropDown
                     itinerary_id={itinerary_id}
                     tailored_id={tailored_id}
@@ -383,7 +393,7 @@ const HotelBookingContainer = ({
                     <div className="flex flex-row gap-1 items-center justify-center  cursor-pointer">
                       <CheckboxFormComponent
                         checked={isSelect}
-                        className="mt-1"
+                        className="mb-0"
                       />
                       <label className="text-center">
                         {isSelect ? 'Selected' : 'Select'}

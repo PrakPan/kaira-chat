@@ -92,7 +92,7 @@ const Accommodation = (props) => {
           star={props.accommodation.star_category}
         />
       </GridContainer> */}
-      <div className="hidden-desktop">
+      {/* <div className="hidden-desktop">
         <Buttons
           alternates={props.alternates}
           _updateSearchedAccommodation={props._updateSearchedAccommodation}
@@ -103,7 +103,7 @@ const Accommodation = (props) => {
           bookings={props.bookings}
           setShowDetails={() => setShowDetails(true)}
         ></Buttons>
-      </div>
+      </div> */}
       <AccommodationModal
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}

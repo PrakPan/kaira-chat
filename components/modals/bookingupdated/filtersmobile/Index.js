@@ -104,21 +104,33 @@ export default function TemporaryDrawer(props) {
           ></Tab>
           {/* <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab> */}
         </Tabs>
-        {isPageWide && state ? (
-          <TabPanel value={filterSelected} index={0}>
-            {/* <Rooms data={props.data}></Rooms> */}
-            <Pannel
-              filtersState={props.filtersState}
-              _updateStarFilterHandler={props._updateStarFilterHandler}
-              onclose={_closePannel}
-              heading={filterHeading}
-              filterSelected={filterSelected}
-              filters={props.filters}
-              _removeFilterHandler={props._removeFilterHandler}
-              _addFilterHandler={props._addFilterHandler}
-            ></Pannel>
-          </TabPanel>
-        ) : null}
+
+        <TabPanel value={filterSelected} index={0}>
+          {/* <Rooms data={props.data}></Rooms> */}
+          <Pannel
+            filtersState={props.filtersState}
+            _updateStarFilterHandler={props._updateStarFilterHandler}
+            onclose={_closePannel}
+            heading={filterHeading}
+            filterSelected={filterSelected}
+            filters={props.filters}
+            _removeFilterHandler={props._removeFilterHandler}
+            _addFilterHandler={props._addFilterHandler}
+          ></Pannel>
+        </TabPanel>
+        <TabPanel value={filterSelected} index={1}>
+          {/* <Rooms data={props.data}></Rooms> */}
+          <Pannel
+            filtersState={props.filtersState}
+            _updateStarFilterHandler={props._updateStarFilterHandler}
+            onclose={_closePannel}
+            heading={filterHeading}
+            filterSelected={filterSelected}
+            filters={props.filters}
+            _removeFilterHandler={props._removeFilterHandler}
+            _addFilterHandler={props._addFilterHandler}
+          ></Pannel>
+        </TabPanel>
         {isPageWide && state ? (
           <TabPanel value={filterSelected} index={1}>
             {/* <Rooms data={props.data}></Rooms> */}
