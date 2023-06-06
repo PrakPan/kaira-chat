@@ -63,9 +63,7 @@ const Brief = (props)=>{
 return (
   <Container>
     <P more={more} clientHeight={clientHeight}>
-      <p ref={ref}>
-        {props.short_description}
-      </p>
+      <p ref={ref}>{props.short_description}</p>
       {clientHeight > 201 && (
         <p
           className="hover-pointer text-container"
@@ -82,17 +80,25 @@ return (
           }}
         >
           {!more ? (
-            <>
+            <div style={{ dispay: "flex" }}>
               ...more
               <BiChevronDown
-                style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
+                style={{
+                  display: "inline",
+                  fontSize: "1.2rem",
+                  marginBottom: "0.2rem",
+                }}
               ></BiChevronDown>
-            </>
+            </div>
           ) : (
             <>
               ...less
               <BiChevronUp
-                style={{ fontSize: "1.2rem", marginBottom: "0.2rem" }}
+                style={{
+                  display: "inline",
+                  fontSize: "1.2rem",
+                  marginBottom: "0.2rem",
+                }}
               ></BiChevronUp>
             </>
           )}
