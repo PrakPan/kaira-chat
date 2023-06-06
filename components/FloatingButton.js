@@ -1,36 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const FloatingButton = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
+const FloatingButton = ({
+  isVisible,
+  setIsVisible,
+  buttonLabel,
+  duration,
+  backgroundColor,
+}) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 20000);
+    }, duration);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [duration]);
 
-  const handleTouchStart = () => {
-    setIsVisible(true);
+  const handleButtonClick = () => {
+    setIsVisible(!isVisible);
   };
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.button
-          initial={{ x: '100%' }}
-          animate={{ x: 0 }}
-          exit={{ x: '100%' }}
-          transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-          className="floating-button"
-          onTouchStart={handleTouchStart}
-        >
-          Floating Button
-        </motion.button>
-      )}
-    </AnimatePresence>
+    <div style={{ position: 'fixed', right: 20, bottom: 20 }}>
+      <button onClick={handleButtonClick}>{buttonLabel}</button>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.5 }}
+            style={{
+              position: 'absolute',
+              width: 50,
+              height: 50,
+              backgroundColor: backgroundColor || 'red',
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

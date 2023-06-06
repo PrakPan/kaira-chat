@@ -7,6 +7,8 @@ import { TbArrowBack } from 'react-icons/tb';
 import SkeletonCard from '../../ui/SkeletonCard';
 import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import FloatingButton from '../../FloatingButton';
+import Slide from '../../../Animation/framerAnimation/Slide';
+import useMediaQuery from '../../media';
 const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -60,11 +62,25 @@ const Container = styled.div`
     width: 500px;
   }
 `;
+const Floating = styled.div`
+  position: fixed;
 
+  bottom: 50px;
+  background-color: #f7e700;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 50px;
+
+  cursor: pointer;
+`;
 const POIDetails = (props) => {
   let isPageWide = media('(min-width: 768px)');
   const [imageLoading, setImageLoading] = useState(true);
-
+  const [floatingButtonView, setFloatingButtonView] = useState(false);
   var about = (
     <p>
       {props.data.short_description?.substr(0, 250)}{' '}
@@ -97,9 +113,9 @@ const POIDetails = (props) => {
   }
   if (Math.floor(props.data.rating) < props.data.rating)
     stars.push(<FaStarHalfAlt />);
-
+  const isDesktop = useMediaQuery('(min-width:1148px)');
   return (
-    <Container>
+    <Container onClick={() => setFloatingButtonView(true)}>
       <div>
         <TbArrowBack
           style={{ height: '32px', width: '32px' }}
@@ -206,11 +222,33 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
-      {/* <FloatingButton></FloatingButton> */}
+
       {props.data.tips && (
         <div>
           <Heading>Tips</Heading>
           <Text>{tips}</Text>
+        </div>
+      )}
+      {!isDesktop && floatingButtonView && (
+        <div className="absolute bottom-0 right-0 z-40">
+          <Slide
+            hideTime={4}
+            onUnmount={() => setFloatingButtonView(!floatingButtonView)}
+            isActive={floatingButtonView}
+            direction={5}
+            duration={2}
+            xdistance={-50}
+          >
+            <Floating>
+              <TbArrowBack
+                style={{ height: '32px', width: '32px' }}
+                cursor={'pointer'}
+                onClick={(e) => {
+                  props.handleCloseDrawer(e);
+                }}
+              />
+            </Floating>
+          </Slide>
         </div>
       )}
     </Container>
