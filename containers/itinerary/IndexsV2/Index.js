@@ -753,6 +753,7 @@ const Itinerary = (props) => {
             itinerary={itinerary}
             breif={breif}
             booking={booking}
+            token={props.token}
           ></Menu>
           {/* <ItineraryMobile></ItineraryMobile> */}
           {/* <Cities></Cities> */}
