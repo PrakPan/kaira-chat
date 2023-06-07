@@ -73,6 +73,19 @@ height: 50vw;
   height: 30vw;
 }
 `;
+
+const GridContainer = styled.div`
+display: grid;
+padding: 1rem;
+grid-gap: 1rem;
+
+@media screen and (min-width: 768px){
+  padding: 2rem 0;
+  grid-gap: 2rem;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+`;
+
 const  Homepage = (props) =>{
   const isPageLoaded = usePageLoaded();
  
@@ -368,20 +381,21 @@ const EXPERIENCE = {
   </GridContainer> : <MinHeightContainer className='center-div'><img src={gif} style={{width: '3rem', height: '3rem', display: 'block', margin: 'auto'}}/> </MinHeightContainer>
   } */}
          {!loading ? (
-           isPageWide ? (
-             <SwiperCarousel
-               navigationButtons={true}
-               slidesPerView={3}
-               cards={itinerariesJSX}
-             ></SwiperCarousel>
-           ) : (
-             <SwiperCarousel
-               slidesPerView={1}
-               initialIndex={0}
-               pageDots
-               cards={itinerariesJSX}
-             ></SwiperCarousel>
-           )
+           //  isPageWide ? (
+           //    <SwiperCarousel
+           //      navigationButtons={true}
+           //      slidesPerView={3}
+           //      cards={itinerariesJSX}
+           //    ></SwiperCarousel>
+           //  ) : (
+           //    <SwiperCarousel
+           //      slidesPerView={1}
+           //      initialIndex={0}
+           //      pageDots
+           //      cards={itinerariesJSX}
+           //    ></SwiperCarousel>
+           //  )
+           <GridContainer>{itinerariesJSX}</GridContainer>
          ) : (
            <MinHeightContainer className="center-div">
              <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />{" "}
