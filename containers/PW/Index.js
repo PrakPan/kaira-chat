@@ -11,7 +11,7 @@ import Republic from './FullImgContentRepublic';
 import media from '../../components/media';
   import * as ga from '../../services/ga/Index';
  import BannerOne from './BannerOne';
- import WhyUs from '../testimonial/whyttw/Index';
+ import WhyUs from "../../components/WhyPlanWithUs/Index";
  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
 import FullImgContent from './FullImgContent';
  import Reviews from './CaseStudies/Index';
@@ -21,6 +21,7 @@ import ExperienceCard from '../../components/cards/newitinerarycard-main/Experie
 import usePageLoaded from '../../components/custom hooks/usePageLoaded';
 import LoadingLottie from '../../components/ui/LoadingLottie'
 import SwiperCarousel from '../../components/SwiperCarousel';
+import CaseStudies from '../travelplanner/CaseStudies/Index'
 const SetWidthContainer = styled.div`
 width: 100%;
 margin: auto;
@@ -412,10 +413,11 @@ const EXPERIENCE = {
          <Heading
            align="center"
            aligndesktop="center"
-           margin={!isPageWide ? "2.5rem 0.5rem" : "4rem"}
-           thincaps
+           bold
+           margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
+           className="text-center font-lexend"
          >
-           HOW IT WORKS?
+           How it works?
          </Heading>
          {/* <div style={{width: '100%' , position: 'relative', paddingBottom:  '56.25%', height: '0'}}>
           <iframe style={{position: 'relative', top: '0', left: '0', border: '0', height: '100%'}} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
@@ -449,25 +451,38 @@ const EXPERIENCE = {
          {/* {isPageLoaded ? <div className="hidden-desktop" style={{width: 'max-content', margin: 'auto', display: 'block'}}>
           <iframe width={Math.round(window.innerWidth*0.9)} height={Math.round(window.innerWidth * 0.5)} src="https://www.youtube.com/embed/NQ5aHR_HNzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>      
         </div>:null} */}
-         <Heading
-           align="center"
-           aligndesktop="left"
-           margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}
-           bold
-         >
-           Happy Community of The Tarzan Way
-         </Heading>
-         <Reviews></Reviews>
+
          {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Unique Andaman</Heading>        
         <Experiences  three margin="2.5rem 0" experiences={andamancontent["Unique Andaman"]} ></Experiences> */}
          {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
+         <Heading
+           align="center"
+           aligndesktop="center"
+           bold
+           margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
+           className="text-center font-lexend"
+         >
+           Why plan with us?
+         </Heading>
+         <div style={{ marginBottom: "3rem" }}>
+           <WhyUs></WhyUs>
+         </div>
+         {/*Add Banner*/}
        </SetWidthContainer>
-       <WhyUs></WhyUs>
-       {/*Add Banner*/}
 
        <SetWidthContainer>
          <AsSeenIn disablelinks></AsSeenIn>
-
+         <Heading
+           align="center"
+           aligndesktop="center"
+           bold
+           margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
+           className="text-center font-lexend"
+         >
+           Happy Community of The Tarzan Way
+         </Heading>
+         {/* <Reviews></Reviews> */}
+         <CaseStudies></CaseStudies>
          <ChatWithUs></ChatWithUs>
        </SetWidthContainer>
        <div className="hidden-desktop">
