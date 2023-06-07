@@ -5,13 +5,15 @@ import styled from 'styled-components';
 
 const DropdownContainer = styled.div`
   position: relative;
-  width: 200px;
-  width: fit-content;
+
+  width: inherit;
+  min-width: 6rem;
   display: inline-block;
 `;
 
 const DropdownHeader = styled(motion.div)`
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 2px 6px 2px 6px;
   background-color: #f5f5f5;
