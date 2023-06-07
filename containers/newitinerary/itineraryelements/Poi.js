@@ -349,13 +349,13 @@ const ItineraryPoiElement = (props) => {
               }}
             ></IoMdClose>
             <div className="text-2xl font-normal ">
-              Select Our Point Of Interest
+              Replacing {props.heading}
             </div>
           </div>
 
           <div className="flex flex-row justify-between mt-0">
             <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 text-sm font-normal">Experience</div>
+              <div className="mb-2 text-sm font-normal">Experience Types</div>
               <div className="flex flex-row gap-1">
                 {Experiences.map((currentfilter, i) => (
                   <button
@@ -375,7 +375,7 @@ const ItineraryPoiElement = (props) => {
           </div>
 
           <div>
-            Showing 40 POI
+            Showing 40 attractions
             {props?.data?.activity_data?.city?.name
               ? ` in ${props?.data?.activity_data?.city?.name}`
               : null}

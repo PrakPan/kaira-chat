@@ -233,9 +233,9 @@ const POIDetails = (props) => {
         </div>
       )}
       {!isDesktop && floatingButtonView && (
-        <div className="absolute bottom-0 right-0 z-40">
+        <div className="absolute bottom-0 right-10 z-40">
           <Slide
-            hideTime={4}
+            hideTime={99}
             onUnmount={() => setFloatingButtonView(!floatingButtonView)}
             isActive={floatingButtonView}
             direction={5}
