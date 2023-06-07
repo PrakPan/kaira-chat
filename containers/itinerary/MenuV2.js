@@ -45,6 +45,7 @@ import { Navigation } from '../../components/NewNavigation';
 import TransfersContainer from './TransfersContainer/TransfersContainer';
 import LogInModal from '../../components/modals/Login';
 import Modal from '../../components/ui/Modal';
+import { ClaimItinary } from '../../store/actions/auth';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -379,6 +380,7 @@ const SimpleTabsV2 = (props) => {
     };
   }, [items]);
   const _handleLoginClose = () => {
+    ClaimItinary(props.id, props.token);
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };

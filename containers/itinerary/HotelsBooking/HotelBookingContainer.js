@@ -131,7 +131,9 @@ const HotelBookingContainer = ({
           >
             <div
               className={`relative  ${
-                currentBooking ? 'lg:h-[11rem]' : 'lg:h-[15rem]'
+                currentBooking
+                  ? 'lg:h-[12rem]'
+                  : `${handleClick ? 'lg:h-[15rem]' : 'lg:h-[12rem]'}`
               }  lg:w-[30%] w-full  h-[12rem]`}
             >
               {booking.images[0]?.image ? (
@@ -323,7 +325,7 @@ const HotelBookingContainer = ({
 
           {!currentBooking && (
             <div>
-              {isMobile && (
+              {/* {isMobile && (
                 <div>
                   {addbooking ? (
                     <div className="absolute text-sm font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
@@ -335,7 +337,7 @@ const HotelBookingContainer = ({
                     </div>
                   )}
                 </div>
-              )}
+              )} */}
 
               <div className="absolute bottom-10 right-8 -m-3">
                 <div

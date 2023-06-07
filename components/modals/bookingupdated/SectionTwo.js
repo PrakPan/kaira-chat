@@ -20,6 +20,7 @@ const Section = (props) => {
         _removeFilterHandler={props._removeFilterHandler}
         _addFilterHandler={props._addFilterHandler}
         filters={props.FILTERS}
+        booking_city={props.booking_city}
       ></FiltersMobile>
     </Container>
   );

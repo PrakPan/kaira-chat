@@ -16,7 +16,7 @@ const Section = (props) => {
   // let isPageWide = media('(min-width: 768px)')
 
   return (
-    <Container className="font-lexend px-3">
+    <Container className="font-lexend px-3 flex flex-row gap-2 justify-start mt-3 items-center">
       {/* <div></div> */}
       {/* <FontAwesomeIcon
         className="hover-pointer"
@@ -44,9 +44,9 @@ const Section = (props) => {
       <IoMdClose
         className="hover-pointer"
         onClick={props.setHideBookingModal}
-        style={{ margin: '0.5rem', fontSize: '2rem' }}
+        style={{ fontSize: '2rem' }}
       ></IoMdClose>
-      <div className="text-2xl font-normal mt-[0.5rem]">Change Hotel</div>
+      <div className="text-2xl font-normal ">Change Hotel</div>
     </Container>
   );
 };

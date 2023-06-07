@@ -9,6 +9,7 @@ import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import FloatingButton from '../../FloatingButton';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import useMediaQuery from '../../media';
+import { IoMdClose } from 'react-icons/io';
 const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -117,7 +118,7 @@ const POIDetails = (props) => {
   return (
     <Container onClick={() => setFloatingButtonView(true)}>
       <div className="flex flex-row gap-3">
-        <TbArrowBack
+        <IoMdClose
           style={{ height: '32px', width: '32px' }}
           cursor={'pointer'}
           onClick={(e) => {

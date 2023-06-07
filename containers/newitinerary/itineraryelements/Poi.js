@@ -15,6 +15,7 @@ import StarRating from '../../../components/StarRating';
 import { MdEdit } from 'react-icons/md';
 import Drawer from '../../../components/ui/Drawer';
 import { TbArrowBack } from 'react-icons/tb';
+import { IoMdClose } from 'react-icons/io';
 import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
 import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
 import axiositineraryeditinstance from '../../../services/itinerary/edit';
@@ -22,6 +23,7 @@ import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetail
 import PoiList from './PoiList';
 import PoiListSkeleton from './PoiListSkeleton';
 import LogInModal from '../../../components/modals/Login';
+import { Navigation } from '../../../components/NewNavigation';
 
 const padding = {
   initialLeft: '60px',
@@ -101,6 +103,11 @@ const ItineraryPoiElement = (props) => {
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [SelectedExprience, SetSelectedExprience] = useState();
+  const items = [
+    { id: 1, label: 'Point of Interest', link: 'POI' },
+    { id: 2, label: 'Activities', link: 'Activities' },
+  ];
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
@@ -194,6 +201,22 @@ const ItineraryPoiElement = (props) => {
       })
       .catch((err) => {});
   }
+
+  const Experiences = [
+    'Adventure',
+    'Heritage',
+    'Spiritual',
+    'Hidden Gem',
+    'Very popular',
+  ];
+  const ClickHandler = (child) => {
+    if (child == 'Activities') {
+      Poi_activities({ id: 3 });
+    } else {
+      Poi_activities();
+    }
+    console.log(child);
+  };
   return (
     <Container>
       {/* <div>{props.time}</div> */}
@@ -299,7 +322,7 @@ const ItineraryPoiElement = (props) => {
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
-        Topheading={'Back To the Itinerary'}
+        Topheading={'Select Our Point Of Interest'}
       />
       {showLoginModal && (
         <div>
@@ -315,19 +338,53 @@ const ItineraryPoiElement = (props) => {
         onHide={() => setShowDrawer(false)}
         // zIndex='1501'
       >
-        <div className="flex flex-row gap-3">
-          <TbArrowBack
-            onClick={() => setShowDrawer(false)}
-            className="hover-pointer"
-            style={{
-              margin: '0.5rem',
-              fontSize: '1.75rem',
-              textAlign: 'right',
-            }}
-          ></TbArrowBack>
-          <div className="text-2xl font-normal mt-[0.5rem]">
-            Choose Your Desired Location
+        <div className="flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
+          <div className="flex flex-row gap-3 my-0 justify-start items-center">
+            <IoMdClose
+              onClick={() => setShowDrawer(false)}
+              className="hover-pointer"
+              style={{
+                fontSize: '1.75rem',
+                textAlign: 'right',
+              }}
+            ></IoMdClose>
+            <div className="text-2xl font-normal ">
+              Select Our Point Of Interest
+            </div>
           </div>
+
+          <div className="flex flex-row justify-between mt-0">
+            <div className="flex flex-col justify-start items-baseline">
+              <div className="mb-2 text-sm font-normal">Experience</div>
+              <div className="flex flex-row gap-1">
+                {Experiences.map((currentfilter, i) => (
+                  <button
+                    onClick={() => SetSelectedExprience(i)}
+                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
+                      SelectedExprience == i
+                        ? 'text-white border-0 bg-black '
+                        : 'border-2 bg-white text-black'
+                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                    key={i}
+                  >
+                    {currentfilter}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            Showing 40 POI
+            {props?.data?.activity_data?.city?.name
+              ? ` in ${props?.data?.activity_data?.city?.name}`
+              : null}
+          </div>
+          <Navigation
+            items={items}
+            BarName="TabsName"
+            ClickHandler={ClickHandler}
+          />
         </div>
         {!fetchingPoi ? (
           // <POIDetails data={data}  handleCloseDrawer={props.handleCloseDrawer} />

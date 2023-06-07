@@ -24,7 +24,7 @@ const InnerContainer = styled.div`
   height: 100%;
 `;
 
-export const Navigation = ({ items, BarName }) => {
+export const Navigation = ({ items, BarName, ClickHandler }) => {
   const [selectedTab, setSelectedTab] = useState(`${items[0].id}`);
   const { markerPos, ...markerHandlers } = useNavigationMarker();
 
@@ -34,7 +34,13 @@ export const Navigation = ({ items, BarName }) => {
         {items.map((item, index) => (
           <NavigationLink
             {...markerHandlers}
-            onClick={() => setSelectedTab(`${item.id}`)}
+            onClick={() => {
+              if (ClickHandler) {
+                ClickHandler(item.label);
+              }
+
+              setSelectedTab(`${item.id}`);
+            }}
             isSelected={selectedTab === `${item.id}`}
             item={item}
             BarName={BarName}

@@ -16,7 +16,8 @@ const DropdownHeader = styled(motion.div)`
   justify-content: space-between;
   align-items: center;
   padding: 2px 6px 2px 6px;
-  background-color: #f5f5f5;
+  background-color: #fff;
+  border: 2px solid #d0d5dd;
   border-radius: 8px;
   cursor: pointer;
   z-index: 999;
@@ -65,7 +66,11 @@ const UiDropdown = ({ options, onSelect }) => {
     <DropdownContainer>
       <DropdownHeader onClick={handleToggle}>
         <span>{selectedOption || 'Select an option'}</span>
-        {isOpen ? <FaChevronUp /> : <FaChevronDown />}
+        {isOpen ? (
+          <FaChevronUp className="font-thin text-sm" />
+        ) : (
+          <FaChevronDown className="font-thin text-sm" />
+        )}
       </DropdownHeader>
       <AnimatePresence>
         {isOpen && (

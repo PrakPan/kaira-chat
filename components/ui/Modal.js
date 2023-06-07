@@ -3,6 +3,7 @@ import { RxCross2 } from 'react-icons/rx';
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import media from '../media';
+import { ClaimItinary } from '../../store/actions/auth';
 const TopSlideIn = keyframes`
 from { 
   transform: translate(-50%,-100%);
@@ -88,6 +89,7 @@ export default function Modal(props) {
   const [fade, setFade] = useState('out');
   function onCLose() {
     setFade('out');
+    ClaimItinary(props.itinary_id, props.token);
     setTimeout(() => {
       if (props.onHide) props.onHide();
       // document.body.style.overflowY = 'scroll'

@@ -147,6 +147,8 @@ const Enquiry = (props) => {
           onHide={props.hideloginclose ? null : props.onhide}
           width={modalWidth + '%'}
           borderRadius={'12px'}
+          token={props.token}
+          itinary_id={props.itinary_id}
         >
           {/* <Modal.Body style={{padding: "0"}} > */}
           <div style={{ padding: '20px' }}>

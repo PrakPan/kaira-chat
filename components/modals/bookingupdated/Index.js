@@ -774,6 +774,7 @@ const Booking = (props) => {
             _updateStarFilterHandler={_updateStarFilterHandler}
             _removeFilterHandler={_removeFilterHandler}
             _addFilterHandler={_addFilterHandler}
+            booking_city={props?.currentBooking?.city}
           ></SectionTwo>
           <div>
             {unauthorized ? (

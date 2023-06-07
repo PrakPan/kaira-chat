@@ -124,9 +124,9 @@ export default function TemporaryDrawer(props) {
           ></Tab>
           <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab>
         </Tabs> */}
-        <div className="flex flex-row justify-between px-2">
+        <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4">
           <div className="flex flex-col justify-start items-baseline">
-            <div>User ratings</div>
+            <div className="mb-2 text-sm font-normal">Stars ratings</div>
             <div className="flex flex-row gap-1">
               {props.filters['star_category'].map((currentfilter, i) => (
                 <button
@@ -145,7 +145,7 @@ export default function TemporaryDrawer(props) {
             </div>
           </div>
           <div className="flex flex-col justify-start items-baseline">
-            <div>Budget</div>
+            <div className="mb-2 text-sm font-normal">Budget</div>
             <div className="flex flex-row gap-1">
               {props.filters['budget'].map((currentfilter, i) => (
                 <button
@@ -171,14 +171,17 @@ export default function TemporaryDrawer(props) {
           </div>
 
           <div className="flex flex-col justify-start items-baseline">
-            <div>Type</div>
-            <div className="w-[10rem]">
+            <div className="mb-2 text-sm font-normal">Type</div>
+            <div className="w-[12rem]">
               <UiDropdown
                 options={props.filters['type']}
                 onSelect={handleSelectOption}
               ></UiDropdown>
             </div>
           </div>
+        </div>
+        <div className="text-sm font-normal w-[95%] mx-auto mt-3">
+          Showing 40 stays in {props.booking_city}
         </div>
         {/* <TabPanel value={filterSelected} index={0}>
           <Rooms data={props.data}></Rooms>
