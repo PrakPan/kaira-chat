@@ -57,6 +57,7 @@ const POIDetailsDrawer = (props) => {
       >
         {!!data.name ? (
           <POIDetails
+            Topheading={props?.Topheading}
             setFloatingButtonView={setFloatingButtonView}
             floatingButtonView={floatingButtonView}
             data={data}

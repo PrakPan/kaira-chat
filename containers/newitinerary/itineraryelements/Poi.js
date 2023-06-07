@@ -175,6 +175,7 @@ const ItineraryPoiElement = (props) => {
                   loginModal={showLoginModal}
                   setLoginModal={setShowLoginModal}
                   token={props.token}
+
                   // tailored_id={props.tailored_id}
                   // updateLoadingState={updateLoadingState}
                   // itinerary_id={
@@ -298,6 +299,7 @@ const ItineraryPoiElement = (props) => {
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
+        Topheading={'Back To the Itinerary'}
       />
       {showLoginModal && (
         <div>
@@ -313,7 +315,7 @@ const ItineraryPoiElement = (props) => {
         onHide={() => setShowDrawer(false)}
         // zIndex='1501'
       >
-        <div>
+        <div className="flex flex-row gap-3">
           <TbArrowBack
             onClick={() => setShowDrawer(false)}
             className="hover-pointer"
@@ -323,9 +325,12 @@ const ItineraryPoiElement = (props) => {
               textAlign: 'right',
             }}
           ></TbArrowBack>
+          <div className="text-2xl font-normal mt-[0.5rem]">
+            Choose Your Desired Location
+          </div>
         </div>
         {!fetchingPoi ? (
-          // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
+          // <POIDetails data={data}  handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX
         ) : (
           <PoiListSkeleton name={'Activity'} />

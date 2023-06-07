@@ -24,6 +24,7 @@ const TransferElementsM = ({
   text,
   newcity,
   booking,
+  LastTransfer,
 }) => {
   return (
     <>
@@ -111,14 +112,16 @@ const TransferElementsM = ({
         </div>
         {meta?.duration ? (
           <div className="absolute bottom-[14px] left-[35%] bg-white px-2 ">
-            <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
-              <TransportIconFetcher
-                TransportMode={modes[0]}
-                classname="w-fit lg:text-[1.05rem] text-[1.25rem]"
-              />{' '}
-              {meta.Time}
-              {/* {modes} */}
-            </div>
+            {!LastTransfer && (
+              <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
+                <TransportIconFetcher
+                  TransportMode={modes[0]}
+                  classname="w-fit lg:text-[1.05rem] text-[1.25rem]"
+                />{' '}
+                {meta.Time}
+                {/* {modes} */}
+              </div>
+            )}
           </div>
         ) : null}
       </Container>

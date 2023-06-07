@@ -116,7 +116,7 @@ const POIDetails = (props) => {
   const isDesktop = useMediaQuery('(min-width:1148px)');
   return (
     <Container onClick={() => setFloatingButtonView(true)}>
-      <div>
+      <div className="flex flex-row gap-3">
         <TbArrowBack
           style={{ height: '32px', width: '32px' }}
           cursor={'pointer'}
@@ -124,6 +124,9 @@ const POIDetails = (props) => {
             props.handleCloseDrawer(e);
           }}
         />
+        {props?.Topheading && (
+          <div className="text-2xl font-normal">{props.Topheading}</div>
+        )}
       </div>
       <div style={imageLoading ? { display: 'none' } : { display: 'initial' }}>
         <ImageLoader

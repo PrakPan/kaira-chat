@@ -77,6 +77,7 @@ const Day_I_ContainerM = (props) => {
               bookings={element.bookings}
               text={props.Days.slab_elements[0].text}
               booking={element?.bookings ? element?.bookings[0] : null}
+              LastTransfer={JsonArray.length == index + 1}
               // newcity={
               //   Arslab_elements[1].data[0].length != 0
               //     ? Arslab_elements[1].data[0][0]
