@@ -16,6 +16,7 @@ import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
+import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -131,7 +132,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
- 
+ const isPageLoaded = usePageLoaded();
   useEffect(() => {
     if (slideIndex === 2 && props.token) _submitDataHandler();
     setShowPopup(popupObj);
@@ -511,7 +512,7 @@ const Enquiry = (props) => {
                   fontSize="1rem"
                   width={!isPageWide ? "auto" : "100%"}
                   style={
-                    !isPageWide
+                    !isPageWide && isPageLoaded
                       ? {
                           position: "fixed",
                           left: "1rem",
