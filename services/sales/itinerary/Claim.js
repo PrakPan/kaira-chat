@@ -6,3 +6,4 @@ const Claims = axios.create({
 });
 
 export default Claims;
+
