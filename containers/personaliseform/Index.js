@@ -78,6 +78,7 @@ const Personaliseform = (props) => {
   let isPageWide = media('(min-width: 768px)')
   const WORKCATION_MIN_DURATION= 13;
   const [showPax, setShowPax] = useState(false);
+    const [questionIndex, setQuestionIndex] = useState(0);
 
   const [selectedCities, setSelectedCities] = useState([]);
   const [toggle, setToggle] = useState(false);
@@ -184,7 +185,6 @@ const _addCityHandler = (city_id, city) => {
 
     const router = useRouter()
 
-    const [questionIndex , setQuestionIndex] = useState(0);
 
   
    
@@ -382,7 +382,7 @@ const _addCityHandler = (city_id, city) => {
     //Show options for specific question
     else option =  <Options setNewAnswers={setNewAnswers} newAnswers={newAnswers} showPax={showPax} setShowPax={setShowPax} toggle={toggle} setToggle={setToggle} questionIndex={questionIndex} nextQuestionHandler={_nextQuestionHandler} ></Options> ;
 
-
+  
     let NextArrowJSX = <Button padding="0.2rem" width="100%" borderColor="#f7e700" bgColor="#f7e700" color="black" borderRadius='2rem' onclick={_nextQuestionHandler} style={{margin: "0"}} >Next 
     </Button> ;
     // try{

@@ -29,20 +29,20 @@ const HowItWorksHeading = styled.p`
      font-weight: 600;
     margin: 1rem 0 0.5rem 0;
     @media screen and (min-width: 768px){
-      font-size: 1.25rem;
+      font-size: 18px;
       margin: 2rem 0 0.5rem 0;
 
     }
 `;
 
 const HowItWorksText = styled.p`
-font-size: 1rem;
+font-size: 15px;
  width: 100%;
 margin: 0 0;
 font-weight: 300;
 
 @media screen and (min-width: 768px){
-  font-size: 1.25rem;
+  font-size: 15px
   font-weight: 300;
   margin: 0 0;
 

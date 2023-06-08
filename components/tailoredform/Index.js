@@ -134,7 +134,6 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
- 
   useEffect(() => {
     if (slideIndex === 2 && props.token) _submitDataHandler();
     setShowPopup(popupObj);
@@ -246,18 +245,17 @@ const Enquiry = (props) => {
       number_of_infants = numberOfInfants;
     }
     let data = null;
-
     data = {
       // "locations": locations,
       experience_filters_selected: preferences,
       budget: budget,
+      start_date: start_date,
+      end_date : end_date,
       // "city_id": cityids,
       group_type: groupType,
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
-      start_date: start_date,
-      end_date: end_date,
       flexible_dates: flexible,
       user_location: {
         place_id: startingLocation
@@ -272,8 +270,9 @@ const Enquiry = (props) => {
     if(countryIds.length) data.country_ids = countryIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
-
-    if (startingLocation) data;
+    if (start_date === "1970-01-01") data.start_date = "";
+    if (end_date === "1970-01-01") data.end_date = "";
+      if (startingLocation) data;
 
     setLoading(true);
     localStorage.removeItem("MyPlans");
@@ -285,7 +284,6 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
-        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =

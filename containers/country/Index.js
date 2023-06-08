@@ -132,7 +132,7 @@ const Index = (props) => {
 
           {props.data.states && props.data.states.length ? (
             <>
-              <Heading>Trending destionations across {props.data.name}</Heading>
+              <Heading>Trending destinations across {props.data.name}</Heading>
               <OldLocations
                 locations={props.data.states}
                 page_id={props.data.id}
