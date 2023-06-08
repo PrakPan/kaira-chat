@@ -349,7 +349,7 @@ const ItineraryPoiElement = (props) => {
                 textAlign: 'right',
               }}
             ></IoMdClose>
-            <div className="text-2xl font-normal ">
+            <div className="line-clamp-1 text-2xl font-normal ">
               Replacing {props.heading}
             </div>
           </div>

@@ -20,7 +20,10 @@ import PoiListSkeleton from './PoiListSkeleton';
 import LogInModal from '../../../components/modals/Login';
 import { Navigation } from '../../../components/NewNavigation';
 import { IoMdClose } from 'react-icons/io';
-
+import { FaFilter } from 'react-icons/fa';
+import ButtonYellow from '../../../components/ButtonYellow';
+import useMediaQuery from '../../../hooks/useMedia';
+import Slide from '../../../Animation/framerAnimation/Slide';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
@@ -70,9 +73,48 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
+const Floating = styled.div`
+  position: fixed;
+
+  bottom: 10px;
+  background: #01202b;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 10px;
+
+  cursor: pointer;
+`;
+const FloatingView = styled.div`
+  position: fixed;
+
+  bottom: 100px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 10px;
+
+  cursor: pointer;
+`;
+const GridResponsive = styled.div`
+  display: grid;
+  width: 90%;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-column-gap: 1rem;
+  grid-row-gap: 1rem;
+`;
 const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [showFilter, setshowFilter] = useState(false);
+
   const [showDrawerListData, setshowDrawerListData] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
@@ -80,6 +122,7 @@ const ItineraryPoiElementM = (props) => {
   const [viewMore, setViewMore] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState();
+  const [floatingButtonView, setFloatingButtonView] = useState(false);
   const items = [
     { id: 1, label: 'Point of Interest', link: 'POI' },
     { id: 2, label: 'Activities', link: 'Activities' },
@@ -149,6 +192,7 @@ const ItineraryPoiElementM = (props) => {
               // if(res.data.results[i].name !== props.selectedBooking.name)
               options.push(
                 <PoiList
+                  setFloatingButtonView={setFloatingButtonView}
                   key={i}
                   _updatePoiHandler={_updatePoiHandler}
                   selectedData={props.data}
@@ -192,6 +236,7 @@ const ItineraryPoiElementM = (props) => {
     }
     console.log(child);
   };
+  const isDesktop = useMediaQuery('(min-width:1148px)');
   return (
     <Container className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -342,7 +387,10 @@ const ItineraryPoiElementM = (props) => {
         // zIndex='1501'
       >
         <div></div>
-        <div className="flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
+        <div
+          onClick={() => setFloatingButtonView(true)}
+          className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]"
+        >
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
               onClick={() => setShowDrawer(false)}
@@ -352,29 +400,8 @@ const ItineraryPoiElementM = (props) => {
                 textAlign: 'right',
               }}
             ></IoMdClose>
-            <div className="text-2xl font-normal ">
+            <div className="line-clamp-1 text-2xl font-normal ">
               Replacing {props.heading}
-            </div>
-          </div>
-
-          <div className="flex flex-row justify-between mt-0">
-            <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 text-sm font-normal">Experience Types</div>
-              <div className="flex flex-row gap-1 overflow-x-scroll w-[95%]">
-                {Experiences.map((currentfilter, i) => (
-                  <button
-                    onClick={() => SetSelectedExprience(i)}
-                    className={`flex font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                      SelectedExprience == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
-                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                    key={i}
-                  >
-                    {currentfilter}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
@@ -397,6 +424,106 @@ const ItineraryPoiElementM = (props) => {
           <PoiListSkeleton name={'Activity'} />
         )}
       </Drawer>
+      <Drawer
+        show={showFilter}
+        anchor={'right'}
+        backdrop
+        style={{ zIndex: 1503 }}
+        className="font-lexend"
+        onHide={() => setshowFilter(false)}
+      >
+        <div
+          onClick={() => setFloatingButtonView(true)}
+          className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto "
+        >
+          <div className="w-[100%]">
+            <div className="flex flex-row gap-3 my-0 justify-start items-center">
+              <IoMdClose
+                onClick={() => setshowFilter(false)}
+                className="hover-pointer"
+                style={{
+                  fontSize: '1.75rem',
+                  textAlign: 'right',
+                }}
+              ></IoMdClose>
+              <div className="text-2xl font-normal line-clamp-1">Filters</div>
+            </div>
+
+            <div className="flex w-[100%] flex-row justify-between mt-0">
+              <div className="flex w-[100%] flex-col justify-start items-baseline">
+                <div className="mb-2 text-sm font-normal">Experience Types</div>
+                <GridResponsive>
+                  {Experiences.map((currentfilter, i) => (
+                    <button
+                      onClick={() => SetSelectedExprience(i)}
+                      className={`flex  font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
+                        SelectedExprience == i
+                          ? 'text-white border-0 bg-black '
+                          : 'border-2 bg-white text-black'
+                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      key={i}
+                    >
+                      {currentfilter}
+                    </button>
+                  ))}
+                </GridResponsive>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full flex gap-3 flex-row justify-between mt-0">
+            <ButtonYellow
+              primary={false}
+              className="w-1/2 "
+              onClick={() => setshowFilter(false)}
+            >
+              <div className="text-[#01202B] ">Cancel</div>
+            </ButtonYellow>
+            <ButtonYellow
+              className="w-1/2"
+              // onClick={() => {
+              //   handleClickAc(index, booking);
+              // }}
+            >
+              <div className="text-[#01202B] ">Apply</div>
+            </ButtonYellow>
+          </div>
+        </div>
+      </Drawer>
+      {showDrawer && (
+        <div className="absolute bottom-0 right-10 z-[1502]">
+          <Floating>
+            <FaFilter
+              className="text-white"
+              style={{ height: '32px', width: '32px' }}
+              cursor={'pointer'}
+              onClick={(e) => {
+                setshowFilter(true);
+              }}
+            />
+          </Floating>
+        </div>
+      )}
+      {!isDesktop && floatingButtonView && (
+        <div className="absolute bottom-0 right-10 z-[1509]">
+          <Slide
+            hideTime={4}
+            onUnmount={() => setFloatingButtonView(!floatingButtonView)}
+            isActive={floatingButtonView}
+            direction={5}
+            duration={2}
+            xdistance={-50}
+          >
+            <FloatingView>
+              <TbArrowBack
+                style={{ height: '32px', width: '32px' }}
+                cursor={'pointer'}
+                onClick={() => setShowDrawer(false)}
+              />
+            </FloatingView>
+          </Slide>
+        </div>
+      )}
 
       {/* {!ErrorNotDef(props.poi) ? (
         !ErrorNotDef(props.poi.tips) ? (

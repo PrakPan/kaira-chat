@@ -66,15 +66,15 @@ const Container = styled.div`
 const Floating = styled.div`
   position: fixed;
 
-  bottom: 50px;
-  background-color: #f7e700;
+  bottom: 10px;
+  background: #f7e700;
   border-radius: 50%;
   width: 80px;
   height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  right: 50px;
+  right: 10px;
 
   cursor: pointer;
 `;
@@ -126,7 +126,9 @@ const POIDetails = (props) => {
           }}
         />
         {props?.Topheading && (
-          <div className="text-2xl font-normal">{props.Topheading}</div>
+          <div className="text-2xl font-normal line-clamp-1">
+            {props.Topheading}
+          </div>
         )}
       </div>
       <div style={imageLoading ? { display: 'none' } : { display: 'initial' }}>

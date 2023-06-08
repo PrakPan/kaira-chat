@@ -25,6 +25,7 @@ const ClippathComp = styled.div`
 `;
 
 const PoiList = ({
+  setFloatingButtonView,
   _updatePoiHandler,
   selectedData,
   getPaymentHandler,
@@ -58,6 +59,7 @@ const PoiList = ({
   return (
     <>
       <div
+        onClick={() => setFloatingButtonView(true)}
         className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
       >
         {data.activity_data.activity.name ? (
