@@ -15,8 +15,6 @@ const Layout = (props) => {
   }, []);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
-  console.log('router');
-  console.log(router);
 
   useEffect(() => {
     if (router.isReady) {
@@ -31,13 +29,15 @@ const Layout = (props) => {
     <div className="layout">
       <Header
         PW={props.PW}
+        staticnav={props.staticnav}
         ctaonclick={props.ctaonclick}
         hidecta={props.hidecta}
         hidehomecta={props.hidehomecta}
         id={props.id}
         destination={props.destination}
       />
-      <div>{props.children}</div>
+      <div style={{ marginTop: "72px" }}>{props.children}</div>
+
       <LogInModal
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}

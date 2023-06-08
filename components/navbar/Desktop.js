@@ -1,34 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 
-import ProfilDropDown from './ProfileDropDown';
-import ProfileDropDownLoggedOut from './ProfileDropDownLoggedOut';
-import Link from 'next/link';
-import * as logout from '../../store/actions/logout';
-import * as authaction from '../../store/actions/auth';
-import { connect } from 'react-redux';
-import { useRouter } from 'next/router';
-import Button from '../ui/button/Index';
-import Notifications from '../modals/Notifications/Index';
-import urls from '../../services/urls';
-import ImageLoader from '../ImageLoader';
-import DesktopSearch from '../search/header/desktop/Index';
-import { ImSearch } from 'react-icons/im';
-import media from '../media';
-import openTailoredModal from '../../services/openTailoredModal';
+import ProfilDropDown from "./ProfileDropDown";
+import ProfileDropDownLoggedOut from "./ProfileDropDownLoggedOut";
+import Link from "next/link";
+import * as logout from "../../store/actions/logout";
+import * as authaction from "../../store/actions/auth";
+import { connect } from "react-redux";
+import { useRouter } from "next/router";
+import Button from "../ui/button/Index";
+import Notifications from "../modals/Notifications/Index";
+import urls from "../../services/urls";
+import ImageLoader from "../ImageLoader";
+import DesktopSearch from "../search/header/desktop/Index";
+import { ImSearch } from "react-icons/im";
+import media from "../media";
+import openTailoredModal from "../../services/openTailoredModal";
 const NavItemsContainer = styled.div`
   display: none;
-  >div {
-    margin-right: 1.7rem;
-  }
+
   @media screen and (min-width: 768px) {
     margin-right: 0rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    > div {
-      margin-right: 0rem !important;
-    }
   }
 `;
 
@@ -53,7 +48,7 @@ const CenterNav = styled.div`
   height: 100%;
   display: grid;
   grid-template-columns: ${(props) =>
-    props.hidecta ? '0fr 2fr 0fr' : '0fr 2fr 0.5fr'};
+    props.hidecta ? "3.5fr 2fr 0.95fr" : "0fr 2fr 0.5fr"};
   align-items: center;
   &:hover {
     cursor: pointer;
@@ -85,8 +80,8 @@ const NavItem = styled.div`
 `;
 
 const Header = styled.div`
-  position: static !important;
-  z-index: 900;
+  position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
+  z-index: 1003;
   height: 80px;
 
   transition: height ease-out 0.5s;
@@ -106,23 +101,11 @@ position: absolute;
 }
   &:hover{
     cursor: pointer;
-  }
+  };
   margin-left: 0.5rem;
 `;
 
 const StyledLink = styled.a`
-text-decoration: none;
-display: block;
-margin: auto;
-width: max-content;
-padding : 0.5rem 0;
-border-style: none none solid none;
-border-color: transparent;
-border-width: 1px;
-font-weight: 600;
-
-&:hover {
-  color: black;
   text-decoration: none;
   display: block;
   margin: auto;
@@ -131,8 +114,9 @@ font-weight: 600;
   border-style: none none solid none;
   border-color: transparent;
   border-width: 1px;
+  font-weight: 600;
+
   &:hover {
-    font-weight: 600;
     color: black;
     text-decoration: none;
     border-style: none none solid none;
@@ -167,7 +151,7 @@ const Search = styled.input`
 `;
 const Navbar = (props) => {
   const router = useRouter();
-  const isTablet = media('(min-width: 950px)');
+  const isTablet = media("(min-width: 950px)");
 
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
 
@@ -180,6 +164,7 @@ const Navbar = (props) => {
     /* toggle mobile profilelist */
   }
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
+
   const [Height, setHeight] = useState(false);
 
   const toggleMobileNavItems = () => {
@@ -209,23 +194,23 @@ const Navbar = (props) => {
   };
   // const router  = useRouter();
   const _handleHomepageRedirect = () => {
-    router.push('/');
+    router.push("/");
   };
   const _handlePWRedirect = () => {
-    router.push('/corporates/physicswallah');
+    router.push("/corporates/physicswallah");
   };
 
   const [toggleSearch, setToggleSearch] = useState(false);
   return (
     <div>
-      <Header changeHeight={Height}>
+      <Header staticnav={props.staticnav} changeHeight={Height}>
         <NavbarContainer
           bgColor={props.bgColor}
           hideNav={props.hideNav}
           style={{
             backgroundColor:
-              props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white',
-            opacity: props.hideNav ? '0' : '1',
+              props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
+            opacity: props.hideNav ? "0" : "1",
           }}
         >
           <CenterNav hidecta={props.hidecta}>
@@ -237,12 +222,12 @@ const Navbar = (props) => {
                   width="55px"
                   widthmobile="55px"
                   margin="0.5rem 0.5rem 0.5rem 2rem"
-                  url={'media/website/logo-only.svg'}
+                  url={"media/website/logo-only.svg"}
                 ></ImageLoader>
-              ) : props.headerColor === 'black' ? (
+              ) : props.headerColor === "black" ? (
                 <Link
-                  style={{ textDecoration: 'none' }}
-                  href={!props.PW ? urls.HOMEPAGE : '/corporates/physicswallah'}
+                  style={{ textDecoration: "none" }}
+                  href={!props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"}
                 >
                   <ImageLoader
                     hoverpointer
@@ -252,7 +237,7 @@ const Navbar = (props) => {
                     width="55px"
                     widthmobile="55px"
                     leftalign
-                    url={'media/website/logowhite.svg'}
+                    url={"media/website/logowhite.svg"}
                     margin="0.5rem 0.5rem 0.5rem 2rem"
                   ></ImageLoader>
                 </Link>
@@ -267,40 +252,40 @@ const Navbar = (props) => {
                     width="55px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={'media/website/logo-only.svg'}
+                    url={"media/website/logo-only.svg"}
                   ></ImageLoader>
                 </Link>
-              )}{' '}
+              )}{" "}
               <div>
                 {props.hidehomecta ? (
                   <CompanyName
                     style={{
-                      color: props.headerColor === 'black' ? 'white' : 'black',
-                      margin: '0 0rem 0 0.25rem',
-                      fontSize: '2.25vh',
-                      fontWeight: '700',
+                      color: props.headerColor === "black" ? "white" : "black",
+                      margin: "0 0rem 0 0.25rem",
+                      fontSize: "2.25vh",
+                      fontWeight: "700",
                       lineHeight: 1,
-                      display: !props.PW ? 'inline' : 'block',
-                      letterSpacing: '0',
+                      display: !props.PW ? "inline" : "block",
+                      letterSpacing: "0",
                     }}
                   >
-                    {'thetarzanway'}
+                    {"thetarzanway"}
                   </CompanyName>
                 ) : (
                   <Link
                     href={
-                      !props.PW ? urls.HOMEPAGE : '/corporates/physicswallah'
+                      !props.PW ? urls.HOMEPAGE : "/corporates/physicswallah"
                     }
                   >
                     <CompanyName
                       style={{
                         color:
-                          props.headerColor === 'black' ? 'white' : 'black',
-                        margin: '0 0 0 0.25rem',
-                        fontWeight: '600',
+                          props.headerColor === "black" ? "white" : "black",
+                        margin: "0 0 0 0.25rem",
+                        fontWeight: "600",
                         lineHeight: 1,
-                        display: 'inline',
-                        letterSpacing: '0',
+                        display: "inline",
+                        letterSpacing: "0",
                       }}
                     >
                       thetarzanway
@@ -320,10 +305,10 @@ const Navbar = (props) => {
             {!props.hidecta && (
               <div
                 style={{
-                  position: 'absolute',
-                  left: isTablet ? '32%' : '26%',
-                  height: '100%',
-                  width: '37%',
+                  position: "absolute",
+                  left: isTablet ? "32%" : "26%",
+                  height: "100%",
+                  width: "37%",
                 }}
                 className="center-div"
                 onClick={() => setToggleSearch(true)}
@@ -333,11 +318,11 @@ const Navbar = (props) => {
                     <Search placeholder="Where do you want to go?"></Search>
                     <ImSearch
                       style={{
-                        position: 'absolute',
-                        top: '17px',
-                        left: '13px',
-                        color: '#B0BABF',
-                        pointerEvents: 'none',
+                        position: "absolute",
+                        top: "17px",
+                        left: "13px",
+                        color: "#B0BABF",
+                        pointerEvents: "none",
                       }}
                     />
                   </SearchContainer>
@@ -352,7 +337,9 @@ const Navbar = (props) => {
               <div></div>
             )}
             {/* <SearchBar />  */}
-            <NavItemsContainer>
+            <NavItemsContainer
+              style={{ marginRight: props.token ? "0rem" : "0" }}
+            >
               {/* <NavItem>
               <Link href={urls.travel_experiences.BASE} className="next-link" passHref={true}>
                {router.pathname === '/travel-experiences' ? <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Experiences</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Experiences</StyledLink>}
@@ -361,7 +348,7 @@ const Navbar = (props) => {
               {/* <NavItem>
                 <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
             </NavItem> */}
-              <NavItem style={{ paddingInline: '1.5rem' }}>
+              <NavItem style={{ paddingInline: "1.5rem" }}>
                 {/* <Link href={urls.CONTACT} passHref={true}>
               {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700' , fontWeight : '500'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
               </Link> */}

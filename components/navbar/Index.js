@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import * as logout from '../../store/actions/logout';
-import * as authaction from '../../store/actions/auth';
-import { connect } from 'react-redux';
+import * as logout from "../../store/actions/logout";
+import * as authaction from "../../store/actions/auth";
+import { connect } from "react-redux";
 
-import IndexDesktop from './Desktop';
-import media from '../media';
-import NewMobile from './mobile/Index';
-import axiosnotificationsinstance from '../../services/user/notifications/notifications';
+import IndexDesktop from "./Desktop";
+import media from "../media";
+import NewMobile from "./mobile/Index";
+import axiosnotificationsinstance from "../../services/user/notifications/notifications";
 
 const Navbar = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const [hideNav, setHideNav] = useState(false);
-
-  const [headerColor, setHeaderColor] = useState('black');
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [headerColor, setHeaderColor] = useState("black");
   const [notOpenCount, setNotOpenCount] = useState();
 
   let notopencount = 0;
@@ -22,14 +22,14 @@ const Navbar = (props) => {
   useEffect(() => {
     if (props.token)
       axiosnotificationsinstance
-        .get('', {
+        .get("", {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
         })
         .then((res) => {
           for (var i = 0; i < res.data.length; i++) {
-            if (res.data[i].status == 'Not opened') {
+            if (res.data[i].status == "Not opened") {
               notopencount = notopencount + 1;
             }
           }
@@ -44,8 +44,8 @@ const Navbar = (props) => {
     let scrollhandler = () => {
       if (window.pageYOffset < 10) {
         setHideNav(false);
-        setHeaderColor('black');
-      } else setHeaderColor('white');
+        setHeaderColor("black");
+      } else setHeaderColor("white");
       let currentScroll = window.pageYOffset;
       //sfroll up
       if (prevScroll >= currentScroll) {
@@ -53,22 +53,24 @@ const Navbar = (props) => {
       }
       //scroll down
       else {
-        if (window.pageYOffset < 10) setHeaderColor('black');
+        if (window.pageYOffset < 10) setHeaderColor("black");
         else setHideNav(true);
         // else setHeaderColor('black');
       }
       prevScroll = currentScroll;
     };
-    window.addEventListener('scroll', scrollhandler);
-    return () => {
-      window.removeEventListener('scroll', scrollhandler);
-    };
+    if (!props.staticnav) {
+      window.addEventListener("scroll", scrollhandler);
+      return () => {
+        window.removeEventListener("scroll", scrollhandler);
+      };
+    }
   });
 
   const _deleteNotificationHandler = (id) => {
     if (props.token)
       axiosnotificationsinstance
-        .delete('?id=' + id, {
+        .delete("?id=" + id, {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
@@ -82,7 +84,7 @@ const Navbar = (props) => {
     if (props.token)
       axiosnotificationsinstance
         .patch(
-          '',
+          "",
           {},
           {
             headers: {
@@ -109,6 +111,9 @@ const Navbar = (props) => {
             _deleteNotificationHandler={_deleteNotificationHandler}
             notifications={notifications}
             hideNav={hideNav}
+            showMobileSearch={showMobileSearch}
+            setShowMobileSearch={setShowMobileSearch}
+            setHideNav={setHideNav}
             notOpenCount={notOpenCount}
           ></NewMobile>
         )}
@@ -121,6 +126,7 @@ const Navbar = (props) => {
           > */}
         {!hideNav && (
           <IndexDesktop
+            staticnav={props.staticnav}
             id={props.id}
             destination={props.destination}
             PW={props.PW}

@@ -30,6 +30,7 @@ const LayoutV2 = (props) => {
   return (
     <div className="layout">
       <Header
+        staticnav={props.staticnav}
         PW={props.PW}
         ctaonclick={props.ctaonclick}
         hidecta={props.hidecta}
@@ -37,14 +38,14 @@ const LayoutV2 = (props) => {
         id={props.id}
         destination={props.destination}
       />
-      <div style={{ marginTop: '72px' }}>{props.children}</div>
+      <div style={{ marginTop: "72px" }}>{props.children}</div>
       <LoginModal
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}
       ></LoginModal>
       {router.query.id && (
         <TailoredFormMobileModal
-          destinationType={'city-planner'}
+          destinationType={"city-planner"}
           onHide={() => {
             setShowMobilePlanner(false);
             closeTailoredModal(router, router.query.id);

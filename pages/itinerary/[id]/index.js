@@ -1,11 +1,11 @@
-import ItineraryContainer from '../../../containers/itinerary/Indexs/Index';
-import { useRouter } from 'next/router';
-import Layout from '../../../components/Layout';
-import Head from 'next/head';
-import { connect } from 'react-redux';
-import * as authaction from '../../../store/actions/auth';
+import ItineraryContainer from "../../../containers/itinerary/Indexs/Index";
+import { useRouter } from "next/router";
+import Layout from "../../../components/Layout";
+import Head from "next/head";
+import { connect } from "react-redux";
+import * as authaction from "../../../store/actions/auth";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 // import Script from "next/script";
 const Itinerary = (props) => {
   const router = useRouter();
@@ -19,7 +19,7 @@ const Itinerary = (props) => {
     props.checkAuthState();
   }, []);
   return (
-    <Layout itinerary hidecta>
+    <Layout staticnav itinerary hidecta>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
