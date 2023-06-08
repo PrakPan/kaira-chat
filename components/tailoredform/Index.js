@@ -228,11 +228,12 @@ const Enquiry = (props) => {
       number_of_infants = numberOfInfants;
     }
     let data = null;
-
     data = {
       // "locations": locations,
       experience_filters_selected: preferences,
       budget: budget,
+      start_date: start_date,
+      end_date : end_date,
       // "city_id": cityids,
       group_type: groupType,
       number_of_adults: number_of_adults,
@@ -251,12 +252,9 @@ const Enquiry = (props) => {
     if (stateIds.length) data.state_id = stateIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
-    if (!flexible) {
-      data.start_date = start_date;
-      data.end_date = end_date;
-
-    }
-    if (startingLocation) data;
+    if (start_date === "1970-01-01") data.start_date = "";
+    if (end_date === "1970-01-01") data.end_date = "";
+      if (startingLocation) data;
 
     setLoading(true);
     localStorage.removeItem("MyPlans");
@@ -268,7 +266,6 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
-        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
