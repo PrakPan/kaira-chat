@@ -201,7 +201,7 @@ const TransferModeContainer = (props) => {
           >
             <div className="flex flex-row gap-2    ">
               {props.userSelected && (
-                <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
+                <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-full">
                   {props.booking?.airline_code ? (
                     // <ImageLoader
                     //   className="aspect-[3/2] object-contain"
@@ -236,7 +236,7 @@ const TransferModeContainer = (props) => {
               )}
 
               <div className="flex lg:flex-row flex-col justify-between w-full">
-                <div className="flex flex-col gap-1 lg:w-[40%] w-[100%]">
+                <div className="flex flex-col lg:justify-center justify-start gap-1 lg:w-[40%] w-[100%]">
                   <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
                     <div className="inline  gap-2 items-center ">
                       {/* {props.userSelected ? (
@@ -313,28 +313,29 @@ const TransferModeContainer = (props) => {
                 </div>
 
                 {props.userSelected ? (
-                  <div className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-end justify-start lg:items-end items-start">
+                  <div className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-end items-start">
                     <div>
                       <div className="flex flex-row w-full justify-end items-center gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#277004] ">
-                        <IoCheckmark></IoCheckmark> Vistara
+                        <IoCheckmark></IoCheckmark>
+                        {props?.booking.airline_name}
                       </div>
                     </div>
                     {/* <div>airline_name</div> */}
                     <div
                       onClick={() => HandleFlights(props.index)}
-                      className="px-2 bg-[#F7E700] py-[6px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-[1px] border-black  text-black font-medium text-sm"
+                      className="px-2 bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                     >
                       Change Flight
                     </div>
                   </div>
                 ) : (
                   <div
-                    className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-end justify-start lg:items-end items-start
+                    className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-end items-start
               "
                   >
-                    <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
+                    {/* <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
                       <IoClose></IoClose> No Flight Yet
-                    </div>
+                    </div> */}
 
                     <div
                       onClick={() => HandleFlights(props.index)}
@@ -410,7 +411,7 @@ const TransferModeContainer = (props) => {
 
           <div
             id={props.booking.id}
-            className="mb-4 mt-3 group w-full flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3  "
+            className="mb-4 mt-3 group w-full flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2  "
           >
             {props.icon && (
               <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
