@@ -45,7 +45,8 @@ const ResponsiveDatePickers = (props) => {
 
   return (
     <Container className="center-div">
-        <NewDatePicker
+      <NewDatePicker
+        personaliseForm
  valueStart={props.startDate}
  valueEnd={props.endDate}
  setValueStart={props.setStartDate}

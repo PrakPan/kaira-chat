@@ -114,7 +114,7 @@ font-size: 20px;
 z-index: 0;
 display: flex;
 justify-content: space-between;
-width: 100%;
+width: 100% !important;
 height : 3rem;
 gap : ${props=>props.tailoredFormModal ? '10px' : '22px'};
 
@@ -126,6 +126,7 @@ font-weight: 400;
 font-size: 14px;
 height: 25px;
 width: 100%;
+${props=>props.personaliseForm && 'width : 28.5rem !important'};
 gap : 22px;
 ${props=>props.tailoredFormModal && 'gap : 10px'};
 `
@@ -162,8 +163,10 @@ const DatePicker = (props) => {
 const [focusedInput, setFocusedInput] = useState(props.focusedDate || null);
 
   useEffect(() => {
-    if (focusedInput) props.setFocusedDate(focusedInput);
-    else props.setFocusedDate(undefined)
+   if (props.setFocusedDate) {
+     if (focusedInput) props.setFocusedDate(focusedInput);
+     else props.setFocusedDate(undefined);
+   }
   
 },[focusedInput])
 
@@ -176,6 +179,7 @@ let isPageWide = media('(min-width: 768px)');
 return (
   <>
     <TextContainer
+      personaliseForm={props.personaliseForm}
       tailoredFormModal={props.tailoredFormModal}
       className={"TextContainer"}
     >
@@ -225,12 +229,14 @@ return (
           <Button
             width={!isPageWide ? "auto" : "100%"}
             style={
-              !isPageWide ? {
-                position: "fixed",
-                left: "1rem",
-                right: "1rem",
-                bottom: "0",
-              } : {}
+              !isPageWide
+                ? {
+                    position: "fixed",
+                    left: "1rem",
+                    right: "1rem",
+                    bottom: "0",
+                  }
+                : {}
             }
             padding="0.5rem 2rem"
             fontWeight="500"

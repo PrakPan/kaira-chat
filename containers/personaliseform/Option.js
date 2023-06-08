@@ -85,7 +85,7 @@ const Option = (props) => {
         }
         //Option is selected
         else{
-            ga.event({action: 'TTForm-'+questionIndex+ "-"+ props.heading ? props.heading : props.text, params: { options_selected: props.heading ? props.heading : props.text}})
+            ga.event({action: 'TTForm-'+props.questionIndex+ "-"+ props.heading ? props.heading : props.text, params: { options_selected: props.heading ? props.heading : props.text}})
             
             let UPDATED_NEW_ANSWERS = {...props.newAnswers} || { };
 
