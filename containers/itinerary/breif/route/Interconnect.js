@@ -5,7 +5,7 @@ const Container = styled.div`
     height: 10vh;
     border-style: none none none solid;
     border-width: 1px;
- 
+ borderColor : 'black';
     margin-left: 1.5rem;
 `;
 const InterConnect = () => {
