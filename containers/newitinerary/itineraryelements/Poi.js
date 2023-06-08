@@ -105,8 +105,8 @@ const ItineraryPoiElement = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState();
   const items = [
-    { id: 1, label: 'Point of Interest', link: 'POI' },
-    { id: 2, label: 'Activities', link: 'Activities' },
+    { id: 1, label: 'Places To Visit', link: 'POI' },
+    { id: 2, label: 'Things To Do', link: 'Activities' },
   ];
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -316,6 +316,7 @@ const ItineraryPoiElement = (props) => {
 
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
+        width={'50vw'}
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
@@ -338,7 +339,7 @@ const ItineraryPoiElement = (props) => {
         onHide={() => setShowDrawer(false)}
         // zIndex='1501'
       >
-        <div className="flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
+        <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 justify-start items-start mx-auto w-[96%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
               onClick={() => setShowDrawer(false)}
@@ -390,7 +391,7 @@ const ItineraryPoiElement = (props) => {
           // <POIDetails data={data}  handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX
         ) : (
-          <PoiListSkeleton name={'Activity'} />
+          <PoiListSkeleton />
         )}
       </Drawer>
       {/* <div style={{display: 'flex', alignItems: 'center'}}>

@@ -776,7 +776,7 @@ const Booking = (props) => {
             _addFilterHandler={_addFilterHandler}
             booking_city={props?.currentBooking?.city}
           ></SectionTwo>
-          <div>
+          <div className="w-[93%] mx-auto">
             {unauthorized ? (
               <p
                 style={{

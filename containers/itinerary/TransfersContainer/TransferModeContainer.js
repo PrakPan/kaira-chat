@@ -316,12 +316,13 @@ const TransferModeContainer = (props) => {
                   <div className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-end justify-start lg:items-end items-start">
                     <div>
                       <div className="flex flex-row w-full justify-end items-center gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#277004] ">
-                        <IoCheckmark></IoCheckmark> Flight Added
+                        <IoCheckmark></IoCheckmark> Vistara
                       </div>
                     </div>
+                    {/* <div>airline_name</div> */}
                     <div
                       onClick={() => HandleFlights(props.index)}
-                      className="px-4 py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-2 border-black  text-black font-medium text-sm"
+                      className="px-2 bg-[#F7E700] py-[6px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-[1px] border-black  text-black font-medium text-sm"
                     >
                       Change Flight
                     </div>
@@ -345,9 +346,9 @@ const TransferModeContainer = (props) => {
                 )}
               </div>
             </div>
-            <div className="lg:hidden flex flex-row gap-3 ml-2">
+            <div className="lg:hidden flex flex-row gap-3 ml-2 mt-3 text-sm">
               <div className="flex flex-col">
-                <div className="text-[#01202B] font-medium">
+                <div className="text-[#01202B] font-normal">
                   ({props.booking.origin_code})
                 </div>
                 <div className="min-w-max">
@@ -412,7 +413,7 @@ const TransferModeContainer = (props) => {
             className="mb-4 mt-3 group w-full flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3  "
           >
             {props.icon && (
-              <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
+              <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
                 {props.booking_type == 'Flight' ? (
                   <TransportIconFetcher
                     TransportMode={props.booking_type}
@@ -495,7 +496,7 @@ const TransferModeContainer = (props) => {
                   <span className="flex flex-row  ">
                     {Facilities.map((data, index) => (
                       <div className="gap-1 block  min-w-fit">
-                        <div className="flex flex-row">
+                        <div className="flex flex-row text-sm font-normal">
                           {index > 0 ? <span className="pl-1">|</span> : null}
 
                           <div className="min-w-fit">{data}</div>

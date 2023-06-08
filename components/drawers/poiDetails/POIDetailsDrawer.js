@@ -57,6 +57,7 @@ const POIDetailsDrawer = (props) => {
       >
         {!!data.name ? (
           <POIDetails
+            width={props.width}
             Topheading={props?.Topheading}
             setFloatingButtonView={setFloatingButtonView}
             floatingButtonView={floatingButtonView}
@@ -65,6 +66,7 @@ const POIDetailsDrawer = (props) => {
           />
         ) : (
           <POIDetailsSkeleton
+            width={props.width}
             name={props.name}
             handleCloseDrawer={props.handleCloseDrawer}
           />

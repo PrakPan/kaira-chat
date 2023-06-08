@@ -49,8 +49,8 @@ const TimeStamp = styled.p`
   top: 185px;
   left: 20px;
   @media screen and (min-width: 768px) {
-    top: 185px;
-    left: 320px;
+    top: 280px;
+    left: 547px;
   }
 `;
 const Container = styled.div`
@@ -60,7 +60,7 @@ const Container = styled.div`
   padding: 16px;
   width: 100vw;
   @media screen and (min-width: 768px) {
-    width: 500px;
+    width: 50vw;
   }
 `;
 const Floating = styled.div`
@@ -116,8 +116,8 @@ const POIDetails = (props) => {
     stars.push(<FaStarHalfAlt />);
   const isDesktop = useMediaQuery('(min-width:1148px)');
   return (
-    <Container onClick={() => setFloatingButtonView(true)}>
-      <div className="flex flex-row gap-3">
+    <Container width={props.width} onClick={() => setFloatingButtonView(true)}>
+      <div className="flex flex-row gap-3 sticky px-2 top-0 z-[900] bg-white">
         <IoMdClose
           style={{ height: '32px', width: '32px' }}
           cursor={'pointer'}

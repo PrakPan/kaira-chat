@@ -22,7 +22,6 @@ const PoiListSkeleton = (props) => {
 
   return (
     <Container>
-      <Title>{props.name}</Title>
       <SkeletonCard width={'100%'} height={'188px'} />
 
       <SkeletonCard width={'100%'} height={'188px'} />

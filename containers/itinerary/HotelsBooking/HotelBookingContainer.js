@@ -339,7 +339,7 @@ const HotelBookingContainer = ({
                 </div>
               )} */}
 
-              <div className="absolute bottom-10 right-8 -m-3">
+              <div className="absolute lg:bottom-10 bottom-6 right-8 -m-3">
                 <div
                   onClick={(e) => {
                     handleCheckboxChange(e);
