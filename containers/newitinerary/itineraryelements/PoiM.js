@@ -490,7 +490,7 @@ const ItineraryPoiElementM = (props) => {
           </div>
         </div>
       </Drawer>
-      {showDrawer && (
+      {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1502]">
           <Floating>
             <FaFilter

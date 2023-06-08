@@ -12,7 +12,7 @@ import axiosbookingupdateinstance from '../../../services/bookings/UpdateBooking
 import ButtonYellow from '../../../components/ButtonYellow';
 import AccommodationModal from '../../../components/modals/accommodation/Index';
 import styled from 'styled-components';
-
+import { FaFilter } from 'react-icons/fa';
 import {
   getDate,
   convertDateYearFormat,
@@ -20,6 +20,7 @@ import {
 import { connect } from 'react-redux';
 import HotelBookingContainer from './HotelBookingContainer';
 import LogInModal from '../../../components/modals/Login';
+import useMediaQuery from '../../../hooks/useMedia';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -27,14 +28,30 @@ const starHotel = styled.div`
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
+const Floating = styled.div`
+  position: fixed;
+
+  bottom: 10px;
+  background: #01202b;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 10px;
+
+  cursor: pointer;
+`;
 const HotelsBooking = (props) => {
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
   });
+  const isDesktop = useMediaQuery('(min-width:1148px)');
   const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
     useState([]);
-
+  const [showFilter, setshowFilter] = useState(false);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
@@ -538,6 +555,8 @@ const HotelsBooking = (props) => {
       )}
       {props.showBookingModal ? (
         <BookingModal
+          showFilter={showFilter}
+          setshowFilter={setshowFilter}
           _setImagesHandler={_setImagesHandler}
           getPaymentHandler={props.getPaymentHandler}
           _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -556,6 +575,20 @@ const HotelsBooking = (props) => {
           setHideBookingModal={props.setHideBookingModal}
         ></BookingModal>
       ) : null}
+      {!isDesktop && props.showBookingModal && (
+        <div className="absolute bottom-0 right-10 z-[1502]">
+          <Floating>
+            <FaFilter
+              className="text-white"
+              style={{ height: '32px', width: '32px' }}
+              cursor={'pointer'}
+              onClick={(e) => {
+                setshowFilter(true);
+              }}
+            />
+          </Floating>
+        </div>
+      )}
       {images ? (
         <FullScreenGallery
           closeGalleryHandler={() => setImages(null)}

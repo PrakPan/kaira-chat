@@ -16,7 +16,7 @@ const Section = (props) => {
   // let isPageWide = media('(min-width: 768px)')
 
   return (
-    <Container className="font-lexend px-3 flex flex-row gap-2 justify-start mt-3 items-center">
+    <Container className=" font-lexend line-clamp-1  px-3 flex flex-row gap-2 justify-start mt-3 items-center">
       {/* <div></div> */}
       {/* <FontAwesomeIcon
         className="hover-pointer"

@@ -765,18 +765,23 @@ const Booking = (props) => {
           onHide={props.setHideBookingModal}
           // zIndex='1501'
         >
-          <SectionOne
-            setHideBookingModal={props.setHideBookingModal}
-          ></SectionOne>
-          <SectionTwo
-            filtersState={filtersState}
-            FILTERS={FILTERS}
-            _updateStarFilterHandler={_updateStarFilterHandler}
-            _removeFilterHandler={_removeFilterHandler}
-            _addFilterHandler={_addFilterHandler}
-            booking_city={props?.currentBooking?.city}
-          ></SectionTwo>
-          <div className="w-[93%] mx-auto">
+          <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+            <SectionOne
+              setHideBookingModal={props.setHideBookingModal}
+            ></SectionOne>
+            <SectionTwo
+              showFilter={props.showFilter}
+              setshowFilter={props.setshowFilter}
+              filtersState={filtersState}
+              FILTERS={FILTERS}
+              _updateStarFilterHandler={_updateStarFilterHandler}
+              _removeFilterHandler={_removeFilterHandler}
+              _addFilterHandler={_addFilterHandler}
+              booking_city={props?.currentBooking?.city}
+            ></SectionTwo>
+          </div>
+
+          <div className="lg:w-[100%] w-[95%] mx-auto">
             {unauthorized ? (
               <p
                 style={{
