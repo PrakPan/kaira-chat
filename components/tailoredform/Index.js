@@ -238,8 +238,6 @@ const Enquiry = (props) => {
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
-      start_date: start_date,
-      end_date: end_date,
       flexible_dates: flexible,
       user_location: {
         place_id: startingLocation
@@ -253,7 +251,11 @@ const Enquiry = (props) => {
     if (stateIds.length) data.state_id = stateIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
+    if (!flexible) {
+      data.start_date = start_date;
+      data.end_date = end_date;
 
+    }
     if (startingLocation) data;
 
     setLoading(true);
