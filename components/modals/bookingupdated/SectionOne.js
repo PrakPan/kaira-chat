@@ -46,7 +46,9 @@ const Section = (props) => {
         onClick={props.setHideBookingModal}
         style={{ fontSize: '2rem' }}
       ></IoMdClose>
-      <div className="text-2xl font-normal ">Change Hotel</div>
+      <div className="text-2xl font-normal ">
+        Changing Stays in {props?.booking_city ? props?.booking_city : 'City'}
+      </div>
     </Container>
   );
 };

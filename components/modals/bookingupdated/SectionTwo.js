@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import FiltersMobile from './filtersmobile/Index';
 import Drawer from '../../ui/Drawer';
 import { useState } from 'react';
-import { IoMdStar } from 'react-icons/io';
+import { IoMdClose, IoMdStar } from 'react-icons/io';
 import UiDropdown from '../../UiDropdown';
 import ButtonYellow from '../../ButtonYellow';
 
@@ -64,6 +64,17 @@ const Section = (props) => {
       >
         <div className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
           <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4">
+            <div className="flex flex-row gap-3 my-0 justify-start items-center">
+              <IoMdClose
+                onClick={() => props.setshowFilter(false)}
+                className="hover-pointer"
+                style={{
+                  fontSize: '1.75rem',
+                  textAlign: 'right',
+                }}
+              ></IoMdClose>
+              <div className="text-2xl font-normal line-clamp-1">Filters</div>
+            </div>
             <div className="flex flex-col justify-start items-baseline">
               <div className="mb-2 text-sm font-normal">Stars ratings</div>
               <div className="flex flex-row gap-1">

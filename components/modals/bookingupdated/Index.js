@@ -767,6 +767,7 @@ const Booking = (props) => {
         >
           <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
             <SectionOne
+              booking_city={props?.currentBooking?.city}
               setHideBookingModal={props.setHideBookingModal}
             ></SectionOne>
             <SectionTwo

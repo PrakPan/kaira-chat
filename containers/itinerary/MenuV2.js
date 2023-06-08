@@ -240,7 +240,7 @@ const SimpleTabsV2 = (props) => {
   const [blurBooking, setBlurBooking] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBookingTimer, setShowBookingTimer] = useState(true);
-  const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
+  const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
 
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);

@@ -3,7 +3,7 @@ import axios from 'axios';
 import axiosauthinstance from '../../services/user/auth';
 import axiosgoogleauthinstance from '../../services/user/googleAuth';
 import axiosfbauthinstance from '../../services/user/fbAuth';
-import axiosClaims from '../../services/sales/itinerary/claim';
+import axiosClaims from '../../services/sales/itinerary/Claim';
 import axiosuserinstance from '../../services/user/info';
 import * as ga from '../../services/ga/Index';
 //Open login modal
@@ -411,7 +411,7 @@ export const uploadProfilePic = (image) => {
   };
 };
 
-export const ClaimItinary = (itinaryId ,token) => {
+export const ClaimItinary = (itinaryId, token) => {
   axiosClaims.patch(
     '/',
     {

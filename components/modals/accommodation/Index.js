@@ -16,6 +16,7 @@ import media from '../../media';
 import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import POIDetailsSkeleton from '../../drawers/poiDetails/POIDetailsSkeleton';
+import { IoMdClose } from 'react-icons/io';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
@@ -54,15 +55,18 @@ const POI = (props) => {
       >
         {!loading ? (
           <div>
-            <TbArrowBack
-              onClick={props.onHide}
-              className="hover-pointer"
-              style={{
-                margin: '0.5rem',
-                fontSize: '1.75rem',
-                textAlign: 'right',
-              }}
-            ></TbArrowBack>
+            <div className="sticky z-[999] top-0 bg-white py-2 pl-2 flex flex-row">
+              <IoMdClose
+                onClick={props.onHide}
+                className="hover-pointer"
+                style={{
+                  fontSize: '1.75rem',
+                  textAlign: 'right',
+                }}
+              ></IoMdClose>
+              <div className="font-medium text-xl">Back to Itinerary</div>
+            </div>
+
             <Overview
               _setImagesHandler={props._setImagesHandler}
               user_rating={props.user_rating}
