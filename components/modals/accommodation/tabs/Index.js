@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import Rooms from "../roomtypes/Index";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Timings from "../Timings";
-import media from "../../../media";
-import Ammenities from "../Ammenities";
-import Location from "../Location";
-import Policies from "../Policies";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import Rooms from '../roomtypes/Index';
+import { Tabs, Tab } from '@mui/material';
+
+import Timings from '../Timings';
+import media from '../../../media';
+import Ammenities from '../Ammenities';
+import Location from '../Location';
+import Policies from '../Policies';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
@@ -47,6 +47,7 @@ const Heading = styled.p`
 `;
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
+
   return (
     <div
       role="tabpanel"
@@ -60,7 +61,7 @@ function TabPanel(props) {
   );
 }
 const Tabscomponent = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
 
   const [selectedState, setSelectedState] = useState(0);
   const [value, setValue] = React.useState(0);
@@ -95,7 +96,7 @@ const Tabscomponent = (props) => {
       <Tabs
         value={value}
         onChange={handleChange}
-        variant={!isPageWide ? "scrollable" : "fullWidth"}
+        variant={!isPageWide ? 'scrollable' : 'fullWidth'}
         scrollButtons={!isPageWide ? true : false}
         allowScrollButtonsMobile
         indicatorColor="#f7e700"

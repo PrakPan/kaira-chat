@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios'
 const Sitemap = () => {
-    return null;
+  return null;
 };
 
 export const getServerSideProps = async ({ res }) => {
@@ -106,7 +106,7 @@ export const getServerSideProps = async ({ res }) => {
             </url>
           `;
         })
-        .join("")}
+        .join('')}
     </urlset>
 `;
 

@@ -4,6 +4,7 @@ import POIDetailsSkeleton from "./POIDetailsSkeleton";
 import POIDetails from "./POIDetails";
 import { useEffect } from "react";
 import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
+import axiosPOIActivityInstance from "../../../services/poi/poiActivities";
 
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState([]);
@@ -13,9 +14,15 @@ const POIDetailsDrawer = (props) => {
   }, [props.show]);
 
   function fetchData() {
-    axiosPOIdetailsInstance
-      .get(`/?id=${props.iconId}`)
-      .then((res) => setData(res.data));
+    if (props.iconId) {
+      axiosPOIdetailsInstance
+        .get(`/?id=${props.iconId}`)
+        .then((res) => setData(res.data));
+    } else {
+      axiosPOIActivityInstance
+        .get(`/?id=${props.ActivityiconId}`)
+        .then((res) => setData(res.data));
+    }
   }
 
   return (
@@ -23,7 +30,7 @@ const POIDetailsDrawer = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      style={{ zIndex: 1501}}
+      style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={props.handleCloseDrawer}
       // zIndex='1501'

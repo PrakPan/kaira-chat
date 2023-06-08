@@ -1,7 +1,6 @@
-import React, { useRef, useState } from "react";
-import styled from "styled-components";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import React, { useRef, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { Tabs, Tab } from '@mui/material';
 
 const Container = styled.div``;
 
@@ -26,6 +25,8 @@ const Locations = (props) => {
   const ref = useRef();
 
   const [value, setValue] = React.useState(0);
+  const [dayTabsJSX, setDayTabsJSX] = useState([]);
+  const [dayPanelsJSX, setDayPannelsJSX] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -38,9 +39,9 @@ const Locations = (props) => {
         city_tabs_jsx.push(
           <Tab
             style={{
-              textTransform: "none",
-              padding: "0.25rem 1rem",
-              color: "white !important",
+              textTransform: 'none',
+              padding: '0.25rem 1rem',
+              color: 'white !important',
             }}
             label={props.city_slabs[i].city_name}
             className="itinerary-city-tab font-lexend"
@@ -59,7 +60,7 @@ const Locations = (props) => {
         onChange={props.handleChange}
         indicatorColor="false"
         disableRippled
-        variant={"scrollable"}
+        variant={'scrollable'}
         scrollButtons={true}
         allowScrollButtonsMobile
       >

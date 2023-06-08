@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import { makeStyles } from "@mui/styles";
-import usePageLoaded from "../../../components/custom hooks/usePageLoaded";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import { makeStyles } from '@mui/styles';
+import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
 
 const useStyles = makeStyles((theme) => ({
   noPadding: {
     padding: 0,
   },
   fullWidth: {
-    width: "100%",
+    width: '100%',
     padding: 0,
   },
   relative: {
-    position: "relative",
+    position: 'relative',
   },
 }));
 const Option = styled.option`
@@ -31,20 +31,20 @@ const Option = styled.option`
 `;
 const QueryType = (props) => {
   const isPageLoaded = usePageLoaded();
-    const classes = useStyles();
-    const [queryType, setQueryType] = useState("");
+  const classes = useStyles();
+  const [queryType, setQueryType] = useState('');
 
   if (isPageLoaded) {
     const queries = [
-      "Conferences or offsites",
-      "Workcations or retreats",
-      "Central Booking platform",
-      "Partnerships",
-      "Others",
+      'Conferences or offsites',
+      'Workcations or retreats',
+      'Central Booking platform',
+      'Partnerships',
+      'Others',
     ];
     const _handleQueryTypeChange = (event) => {
       setQueryType(event.target.value);
-      props._changeDetailsHandler(event, "type");
+      props._changeDetailsHandler(event, 'type');
     };
     return (
       <FormControl className={classes.fullWidth} variant="outlined">
@@ -59,7 +59,7 @@ const QueryType = (props) => {
           onChange={_handleQueryTypeChange}
           className={classes.relative}
         >
-          <Option aria-label="None" value="" style={{ display: "none" }} />
+          <Option aria-label="None" value="" style={{ display: 'none' }} />
           <Option value={queries[0]} className="font-nunito">
             {queries[0]}
           </Option>

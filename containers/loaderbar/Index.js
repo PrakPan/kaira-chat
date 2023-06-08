@@ -67,9 +67,9 @@ const Heading2 = styled.div`
 const Index = () => {
   let cards = [];
   const [currentStep, setCurrentStep] = useState(1);
-  const router = useRouter()
-  var IntervalTiming
-  if (router.query.t) IntervalTiming = (+router.query.t) / 5 * 1000
+  const router = useRouter();
+  var IntervalTiming;
+  if (router.query.t) IntervalTiming = (+router.query.t / 5) * 1000;
 
   const [CardJSX, setCardJSX] = useState(false);
   useEffect(() => {
@@ -83,14 +83,14 @@ const Index = () => {
     setCardJSX(cards);
   }, []);
   useEffect(() => {
-if(!IntervalTiming) setCurrentStep(5)
-   else if (currentStep < 5) {
+    if (!IntervalTiming) setCurrentStep(5);
+    else if (currentStep < 5) {
       setTimeout(() => {
         setCurrentStep((prevCount) => prevCount + 1);
       }, IntervalTiming);
-}
+    }
   }, [currentStep]);
-  
+
   function updateStep(step) {
     setCurrentStep(step);
   }

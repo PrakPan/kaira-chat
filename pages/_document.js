@@ -1,11 +1,9 @@
-import Document, {Html, Head, Main, NextScript } from 'next/document';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
 // Import styled components ServerStyleSheet
 import { ServerStyleSheet } from 'styled-components';
 import Layout from '../components/Layout';
 import { GOOGLE_ANALTICS_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
-import { CONTENT_SERVER_HOST } from '../services/constants';
-  
 // import Script from 'next/script';
 export default class MyDocument extends Document {
   //   constructor() {
@@ -209,4 +207,3 @@ export default class MyDocument extends Document {
     );
   }
 }
-

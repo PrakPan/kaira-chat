@@ -1,16 +1,16 @@
-import React, {useEffect} from 'react';
-import Image from './Image';
-import ContactForm from './Form/TestForm';
-import ContactInfo from './ContactInfo';
- import YellowContainer from './YellowContainer';
-import dynamic from 'next/dynamic';
- const MapBox = dynamic(() => import("../../components/mapbox.js"), {
-   ssr: false,
- });
+import React, { useEffect } from "react";
+import Image from "./Image";
+import ContactForm from "./Form/TestForm";
+import ContactInfo from "./ContactInfo";
+import YellowContainer from "./YellowContainer";
+import dynamic from "next/dynamic";
+const MapBox = dynamic(() => import("../../components/Map.js"), {
+  ssr: false,
+});
 const Contact = () => {
-  useEffect(()=> {
-    window.scrollTo(0,0)
-  },[])
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div style={{ marginTop: "72px" }}>
@@ -33,6 +33,6 @@ const Contact = () => {
       {/* <Footer></Footer> */}
     </div>
   );
-}
+};
 
 export default Contact;

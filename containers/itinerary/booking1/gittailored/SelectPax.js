@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import LogInModal from "../../../../components/modals/Login";
-import usePageLoaded from "../../../../components/custom hooks/usePageLoaded";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import LogInModal from '../../../../components/modals/Login';
+import usePageLoaded from '../../../../components/custom hooks/usePageLoaded';
 const Option = styled.option`
   padding: 0.75rem;
   background-color: white;
@@ -19,9 +19,7 @@ const Option = styled.option`
 const QueryType = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selected, setSelected] = useState(false);
-    const [queryType, setQueryType] = useState("");
-  
-  
+  const [queryType, setQueryType] = useState('');
 
   const isPageLoaded = usePageLoaded();
 
@@ -36,11 +34,11 @@ const QueryType = (props) => {
       );
     }
     const queries = [
-      "Conferences or offsites",
-      "Workcations or retreats",
-      "Central Booking platform",
-      "Partnerships",
-      "Others",
+      'Conferences or offsites',
+      'Workcations or retreats',
+      'Central Booking platform',
+      'Partnerships',
+      'Others',
     ];
 
     const _handleQueryTypeChange = (event) => {
@@ -53,11 +51,11 @@ const QueryType = (props) => {
       <div>
         <FormControl
           id="bookingsummary-pax"
-          style={{ width: "100%", padding: 0 }}
+          style={{ width: '100%', padding: 0 }}
           variant="outlined"
         >
           <InputLabel htmlFor="contact-query-select" id="contact-query-label">
-            {"Adults"}
+            {'Adults'}
           </InputLabel>
           <Select
             disabled={true ? false : true}
@@ -66,9 +64,9 @@ const QueryType = (props) => {
             label="Topic of interest"
             value={queryType}
             onChange={_handleQueryTypeChange}
-            style={{ position: "relative"}}
+            style={{ position: 'relative' }}
           >
-            <Option aria-label="None" value="" style={{ display: "none" }} />
+            <Option aria-label="None" value="" style={{ display: 'none' }} />
             {optionsJSX}
           </Select>
         </FormControl>

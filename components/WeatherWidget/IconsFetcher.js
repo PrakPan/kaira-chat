@@ -1,4 +1,4 @@
- function WeatherIcon(weather) {
+function WeatherIcon(weather) {
   switch (weather) {
     case '01':
       return 'media/icons/weather/clear-sky.png';
@@ -9,7 +9,7 @@
     case '03':
       return 'media/icons/weather/scattered-clouds.png';
 
-      case '04':
+    case '04':
       return 'media/icons/weather/broken-clouds.png';
 
     case '09':
@@ -29,16 +29,20 @@
 
     default:
       return 'media/icons/weather/overcast-clouds.png';
-  } 
+  }
 }
 
-import React from 'react'
+import React from 'react';
 import ImageLoader from '../ImageLoader';
 
-const IconsFetcher = ({iconId}) => {
-  return (  
-    <ImageLoader url={WeatherIcon(iconId)} height="50px" width="50px"></ImageLoader> 
-  )
-}
+const IconsFetcher = ({ iconId }) => {
+  return (
+    <ImageLoader
+      url={WeatherIcon(iconId)}
+      height="40px"
+      width="100%"
+    ></ImageLoader>
+  );
+};
 
-export default IconsFetcher
+export default IconsFetcher;

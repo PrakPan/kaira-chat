@@ -1,32 +1,190 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html {
+  scroll-behavior: auto !important;
+}
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+  /* overflow-x: hidden;
+  overflow-y: scroll; */
+  font-family: Lexend !important;
+}
+.font-lexend {
+  font-family: Lexend;
 }
 
-.next-link{
+.next-link {
   /* color: inherit;
   text-decoration: none; */
   color: black;
 }
-a.termsnavunderlinelink{
+a.termsnavunderlinelink {
   text-decoration: none;
   color: black;
-  
-  
-  
-
 }
 
 * {
   box-sizing: border-box;
 }
-.MuiButtonBase-root:focus{
-  outline: none;
-
+.grid-rows-2 {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
-.MuiButtonBase-root.Mui-selected{
-font-weight: 600;
+.MuiButtonBase-root:focus {
+  outline: none;
+}
+.MuiButtonBase-root.Mui-selected {
+  font-weight: 600;
+}
+.svg-container {
+  width: 40%;
+  z-index: 1;
+
+  @media (max-width: 1024px) {
+    width: 60%;
+  }
+  @media (max-width: 768px) {
+    width: 40%;
+  }
+}
+.Transition-Height-out {
+  max-height: 0;
+  transition: max-height 0.65s ease-out;
+
+  background: #d5d5d5;
+}
+
+.Transition-Height-in {
+  max-height: 450px;
+  transition: max-height 0.95s ease-in;
+
+  overflow: hidden !important;
+}
+
+.Hide_scrollBar {
+  -ms-overflow-style: none;
+  scrollbar-width: 5px;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.Hide_scrollBar::-webkit-scrollbar {
+  display: none;
+}
+.Hide_scrollBar:hover::-webkit-scrollbar {
+  display: block;
+  width: 8px !important;
+}
+/* .Hide_scrollBar::-webkit-scrollbar {
+  display: none;
+} */
+/* Track for webkit-based browsers */
+.Hide_scrollBar::-webkit-scrollbar-track {
+  background-color: #888;
+}
+
+/* Handle for webkit-based browsers */
+.Hide_scrollBar::-webkit-scrollbar-thumb {
+  background-color: black;
+  border-radius: 100vw;
+  height: 1rem !important;
+  width: 0.3rem !important;
+  background-image: linear-gradient(rgba(247, 231, 0, 1));
+}
+
+/* Handle on hover for webkit-based browsers */
+.Hide_scrollBar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  width: 0.2rem;
+}
+
+/* Firefox */
+.Hide_scrollBar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Track for Firefox */
+.Hide_scrollBar::-moz-scrollbar-track {
+  background-color: #888;
+}
+
+/* Handle for Firefox */
+.Hide_scrollBar::-moz-scrollbar-thumb {
+  background-color: black;
+  border-radius: 100vw;
+  height: 1rem !important;
+  width: 0.3rem !important;
+  border: 0.025em solid #f7e700 !important;
+  background-image: linear-gradient(rgba(247, 231, 0, 1));
+}
+
+/* Handle on hover for Firefox */
+.Hide_scrollBar::-moz-scrollbar-thumb:hover {
+  background: #555;
+  width: 0.5rem;
+}
+
+/* Safari */
+.Hide_scrollBar {
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Firefox Track */
+.Hide_scrollBar-moz-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Firefox Handle */
+.Hide_scrollBar-moz-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Firefox Handle on hover */
+.Hide_scrollBar-moz-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.swiper {
+  width: 100%;
+  height: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.swiper-slide {
+  background-size: cover;
+  background-position: center;
+}
+
+.mySwiper2 {
+  height: 80vh;
+  width: 100%;
+}
+
+.mySwiper {
+  height: 20vh;
+  box-sizing: border-box;
+  padding: 10px 0;
+}
+
+.mySwiper .swiper-slide {
+  width: 25%;
+  height: 100%;
+  opacity: 0.4;
+}
+
+.mySwiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

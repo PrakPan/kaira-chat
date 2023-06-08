@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Pannel from "./Pannel";
-import styled from "styled-components";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import React, { useState } from 'react';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import Pannel from './Pannel';
+import styled from 'styled-components';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
 const FiltersContainer = styled.div`
   display: flex;
@@ -26,11 +26,11 @@ const NewFilter = styled.div`
 export default function TemporaryDrawer(props) {
   const [state, setState] = React.useState(false);
   const [filterSelected, setFilterSelected] = useState(null);
-  const [filterHeading, setFilterHeading] = useState("Budget");
+  const [filterHeading, setFilterHeading] = useState('Budget');
 
   const _selectFilter = (event, filter) => {
-    if (filter === 0) setFilterHeading("Budget");
-    else if (filter === 1) setFilterHeading("Type");
+    if (filter === 0) setFilterHeading('Budget');
+    else if (filter === 1) setFilterHeading('Type');
     // else setFilterHeading('Star Category');
     setFilterSelected(filter);
     setState(true);
@@ -38,8 +38,8 @@ export default function TemporaryDrawer(props) {
 
   const toggleDrawer = (open) => (event) => {
     if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return;
     }
@@ -53,7 +53,7 @@ export default function TemporaryDrawer(props) {
   const _handleChange = (event, value) => {};
   return (
     <div>
-      <React.Fragment key={"bottom"}>
+      <React.Fragment key={'bottom'}>
         {/* <FiltersContainer>
                 <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Budget</Filter>
                 <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Type</Filter>
@@ -64,7 +64,7 @@ export default function TemporaryDrawer(props) {
         <Tabs
           value={filterSelected}
           onChange={_selectFilter}
-          variant={"scrollable"}
+          variant={'scrollable'}
           scrollButtons={true}
           allowScrollButtonsMobile
           indicatorColor="#f7e700"
@@ -74,18 +74,18 @@ export default function TemporaryDrawer(props) {
           <Tab
             id="filter-budget"
             key="filter-budget"
-            label={"Budget"}
-            className={"booking-filter-tab font-lexend"}
+            label={'Budget'}
+            className={'booking-filter-tab font-lexend'}
           ></Tab>
           <Tab
             id="filter-type"
             key="filter-type"
-            label={"Type"}
-            className={"booking-filter-tab font-lexend"}
+            label={'Type'}
+            className={'booking-filter-tab font-lexend'}
           ></Tab>
           {/* <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab> */}
         </Tabs>
-        <Drawer anchor={"bottom"} open={state} onClose={toggleDrawer(false)}>
+        <Drawer anchor={'bottom'} open={state} onClose={toggleDrawer(false)}>
           <Pannel
             filtersState={props.filtersState}
             _updateStarFilterHandler={props._updateStarFilterHandler}

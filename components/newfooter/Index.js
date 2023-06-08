@@ -1,30 +1,30 @@
-import styled from 'styled-components';
-import ImageLoader from '../ImageLoader';
-import  Socials from './Socials';
-import {FiPhoneCall} from 'react-icons/fi';
-import {HiOutlineMail} from 'react-icons/hi';
-import Subscribe from './Subscribe';
-import Link from 'next/link'
-import { useEffect, useState } from 'react';
-import linksArr from './Links';
-import openTailoredModal from '../../services/openTailoredModal';
-import { useRouter } from 'next/router';
+import styled from "styled-components";
+import ImageLoader from "../ImageLoader";
+import Socials from "./Socials";
+import { FiPhoneCall } from "react-icons/fi";
+import { HiOutlineMail } from "react-icons/hi";
+import Subscribe from "./Subscribe";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import linksArr from "./Links";
+import openTailoredModal from "../../services/openTailoredModal";
+import { useRouter } from "next/router";
 
- const Container = styled.div`
-   min-height: 10vw;
-   background-color: rgb(35, 35, 35);
-   padding: 1.5rem 1rem;
-   color: white;
-   z-index: 1000;
-   position: relative;
+const Container = styled.div`
+  min-height: 10vw;
+  background-color: rgb(35, 35, 35);
+  padding: 1.5rem 1rem;
+  color: white;
+  z-index: 1000;
+  position: relative;
 
-   @media screen and (min-width: 768px) {
+  @media screen and (min-width: 768px) {
     padding: 9.5rem 0rem 1.5rem 0rem;
   }
-   @media screen and (min-width: 1300px) {
-     padding: 9.5rem 5rem 1.5rem 5rem;
-   }
- `;
+  @media screen and (min-width: 1300px) {
+    padding: 9.5rem 5rem 1.5rem 5rem;
+  }
+`;
 const SubContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -35,56 +35,56 @@ const SubContainer = styled.div`
 `;
 const Box = styled.div`
   &.linkContainer {
-  
   }
 `;
- const LogoContainer = styled.div`
-   position: relative;
-   top : -5px;
-   img{
-    filter  :invert(1);
-   }
-   .CompanyName {
-     position: absolute;
-     top: 22px;
-     left: 40px;
-   }
- `;
- const CompanyName = styled.div`
-   display: flex;
-   align-items: flex-end;
-   font-size: 16px;
-   font-weight: 700;
+const LogoContainer = styled.div`
+  position: relative;
+  top: -5px;
+  img {
+    filter: invert(1);
+  }
+  .CompanyName {
+    position: absolute;
+    top: 22px;
+    left: 40px;
+  }
+`;
+const CompanyName = styled.div`
+  display: flex;
+  align-items: flex-end;
+  font-size: 16px;
+  font-weight: 700;
+`;
+const CompanyText = styled.div`
+  font-size: 14px;
+  margin: 1.5rem 0;
+`;
 
- `;
- const CompanyText= styled.div`
- font-size: 14px;
- margin: 1.5rem 0;
- `;
+const LinksContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  margin: 0;
+  @media screen and (min-width: 768px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    margin-top: 1.5rem;
+  }
+`;
 
- const LinksContainer = styled.div`
-   display: grid;
-   grid-template-columns: 1.2fr 1fr;
-   margin: 0;
-@media screen and (min-width: 768px){
-   display: grid;
-   grid-template-columns: 1fr 1fr 1fr 1fr;
-   margin-top : 1.5rem;
-}
- `;
-
- const CopyWrite = styled.div`
-    font-size: 10px;
-    margin: 1.5rem 0 0 0;
- `;
+const CopyWrite = styled.div`
+  font-size: 10px;
+  margin: 1.5rem 0 0 0;
+`;
 const Links = styled.div`
   font-size: 14px;
   margin: 0 0 1rem 0;
-  a,p {
+  a,
+  p {
     text-decoration: none;
     color: white;
-  };
-  a:hover ,p:hover {
+  }
+  a:hover,
+  p:hover {
     color: white;
     text-decoration: underline;
     cursor: pointer;
@@ -114,30 +114,34 @@ const SubscribeBox = styled.div`
 `;
 
 const NewFooter = (props) => {
-  const [shadow, setShadow] = useState(false)
-  const [showLogo , setShowLogo] = useState(false)
-  useEffect(()=>{
-    setShowLogo(true)
-  }, [])
-  const router = useRouter()
- const LinksComponent = linksArr.map((e) => (
-   <div>
-     <Heading>{e.heading}</Heading>
-     {e.data.map((data) => (
-       <Links>
-         {typeof data.link != "string" ? (
-           <a href={data.link[0]} target='_blank'>{data.title}</a>
-         ) : data.title == "Personalise" ? (
-           <p onClick={() => openTailoredModal(router)}>{data.title}</p>
-         ) : data.title == "Subscribe" ? (
-           <p onClick={() => setShadow(!shadow)}>{data.title}</p>
-         ) : (
-           <p onClick={()=>window.location.href = data.link}>{data.title}</p>
-         )}
-       </Links>
-     ))}
-   </div>
- ));
+  const [shadow, setShadow] = useState(false);
+  const [showLogo, setShowLogo] = useState(false);
+  useEffect(() => {
+    setShowLogo(true);
+  }, []);
+  const router = useRouter();
+  const LinksComponent = linksArr.map((e) => (
+    <div>
+      <Heading>{e.heading}</Heading>
+      {e.data.map((data) => (
+        <Links>
+          {typeof data.link != "string" ? (
+            <a href={data.link[0]} target="_blank">
+              {data.title}
+            </a>
+          ) : data.title == "Personalise" ? (
+            <p onClick={() => openTailoredModal(router)}>{data.title}</p>
+          ) : data.title == "Subscribe" ? (
+            <p onClick={() => setShadow(!shadow)}>{data.title}</p>
+          ) : (
+            <p onClick={() => (window.location.href = data.link)}>
+              {data.title}
+            </p>
+          )}
+        </Links>
+      ))}
+    </div>
+  ));
   return (
     <>
       <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
@@ -147,18 +151,22 @@ const NewFooter = (props) => {
       <Container className="font-lexend">
         <SubContainer>
           <Box>
-           {showLogo ? <LogoContainer>
-              <ImageLoader
-                dimensions={{ width: 122, height: 100 }}
-                dimensionsMobile={{ width: 120, height: 100 }}
-                url="media/website/logo-only.svg"
-                widthmobile="60px"
-                leftalign
-                height="50px"
-                width="3.8rem"
-              ></ImageLoader>
-              <CompanyName className="CompanyName">thetarzanway</CompanyName>
-            </LogoContainer> : <div></div>}
+            {showLogo ? (
+              <LogoContainer>
+                <ImageLoader
+                  dimensions={{ width: 122, height: 100 }}
+                  dimensionsMobile={{ width: 120, height: 100 }}
+                  url="media/website/logo-only.svg"
+                  widthmobile="60px"
+                  leftalign
+                  height="50px"
+                  width="3.8rem"
+                ></ImageLoader>
+                <CompanyName className="CompanyName">thetarzanway</CompanyName>
+              </LogoContainer>
+            ) : (
+              <div></div>
+            )}
             <CompanyText>
               The Tarzan Way is a travel based startup with the vision to
               simplify travel and build immersive travel programs across India.
@@ -203,6 +211,6 @@ const NewFooter = (props) => {
       </Container>
     </>
   );
- }
+};
 
 export default NewFooter;

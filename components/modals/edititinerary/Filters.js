@@ -1,46 +1,35 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import { makeStyles } from "@mui/styles";
-import Grid from "@mui/material/Grid";
+import React, { useState } from 'react';
+import styled from 'styled-components';
 
-import Typography from "@mui/material/Typography";
-import Slider from "@mui/material/Slider";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox, { CheckboxProps } from "@mui/material/Checkbox";
 
-const useStyles = makeStyles({
-  root: {
-    width: "100%",
-    backgroundColor: "hsl(0,0%,97%)",
-    padding: "0.5rem",
-    position: "sticky",
-    height: "90vh",
-    overflow: "scroll",
-    top: "0",
-  },
-  gridSlab: {
-    margin: "1.5rem 0",
-  },
-  checkbox: {
-    padding: "0.25rem",
-  },
-});
+import { muisty}
+import { Grid } from '@mui/material';
+
+import { Typography } from '@mui/material';
+import Slider from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
+
+const useStyles = {
+  root: `w-[100%]
+  bg-[hsl(0,0%,97%)]
+ p-[0.5rem]
+  sticky
+  h-['90vh']
+  overflow-scroll
+  top-0
+`,
+  gridSlab: `
+    m-[1.5rem 0]
+  `,
+  checkbox: `
+    p-[0.25rem]
+  `,
+};
 
 const Filters = (props) => {
   const classes = useStyles();
-  const [value, setValue] = useState(30);
-  const [state, setState] = useState({
-    checkedA: true,
-    checkedB: true,
-    checkedC: false,
-    checkedD: true,
-    checkedE: false,
-    checkedJ: false,
-    checkedF: false,
-    checkedG: false,
-    checkedH: false,
-    checkedI: false,
-  });
+  const [value, setValue] = React.useState(30);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -66,14 +55,26 @@ const Filters = (props) => {
   const marks = [
     {
       value: 0,
-      label: "Free",
+      label: 'Free',
     },
     {
       value: 100,
-      label: "Luxury",
+      label: 'Luxury',
     },
   ];
-  
+  const CustomCheckbox =  <Checkbox color="default" {...props} />
+  const [state, setState] = React.useState({
+    checkedA: true,
+    checkedB: true,
+    checkedC: false,
+    checkedD: true,
+    checkedE: false,
+    checkedJ: false,
+    checkedF: false,
+    checkedG: false,
+    checkedH: false,
+    checkedI: false,
+  });
   const handleCheckboxChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
@@ -83,18 +84,18 @@ const Filters = (props) => {
         id="continuous-slider"
         gutterBottom
         className="font-lexend"
-        style={{ fontSize: "1rem", fontWeight: "600" }}
+        style={{ fontSize: '1rem', fontWeight: '600' }}
       >
         COST
       </Typography>
-      <Grid container spacing={2} style={{ textAlign: "center" }}>
+      <Grid container spacing={2} style={{ textAlign: 'center' }}>
         <Grid item xs>
           <Slider
             marks={marks}
             value={value}
             onChange={handleChange}
             aria-labelledby="continuous-slider"
-            style={{ width: "80%" }}
+            style={{ width: '80%' }}
           />
         </Grid>
       </Grid>
@@ -103,21 +104,19 @@ const Filters = (props) => {
           id="continuous-slider"
           gutterBottom
           className="font-lexend"
-          style={{ fontSize: "1rem", fontWeight: "600" }}
+          style={{ fontSize: '1rem', fontWeight: '600' }}
         >
           EXPERIENCE FILTERS
         </Typography>
         <Grid item xs spacing={0}>
           <FormControlLabel
             control={
-              <Checkbox
-                color="default"
-                style={{ margin: "0 !important" }}
+              <CustomCheckbox
                 checked={state.checkedA}
                 onChange={handleCheckboxChange}
                 name="checkedA"
                 className={classes.checkbox}
-                iconStyle={{ fill: "black" }}
+                iconStyle={{ fill: 'black' }}
               />
             }
             className={classes.checkbox}
@@ -127,14 +126,11 @@ const Filters = (props) => {
         <Grid item xs>
           <FormControlLabel
             control={
-              <Checkbox
-                color="default"
-                style={{ margin: "0 !important" }}
+              <CustomCheckbox
                 checked={state.checkedB}
                 onChange={handleCheckboxChange}
                 name="checkedB"
                 className={classes.checkbox}
-                style={{ margin: "0 !important" }}
               />
             }
             label="Adventure"
@@ -144,9 +140,7 @@ const Filters = (props) => {
         <Grid item xs>
           <FormControlLabel
             control={
-              <Checkbox
-                color="default"
-                style={{ margin: "0 !important" }}
+              <CustomCheckbox
                 checked={state.checkedC}
                 onChange={handleCheckboxChange}
                 name="checkedC"
@@ -160,9 +154,7 @@ const Filters = (props) => {
         <Grid item xs>
           <FormControlLabel
             control={
-              <Checkbox
-                color="default"
-                style={{ margin: "0 !important" }}
+              <CustomCheckbox
                 checked={state.checkedE}
                 onChange={handleCheckboxChange}
                 name="checkedE"
@@ -178,21 +170,19 @@ const Filters = (props) => {
           id="continuous-slider"
           gutterBottom
           className="font-lexend"
-          style={{ fontSize: "1rem", fontWeight: "600" }}
+          style={{ fontSize: '1rem', fontWeight: '600' }}
         >
           GROUP TYPE
         </Typography>
         <Grid item>
           <FormControlLabel
             control={
-              <Checkbox
-                color="default"
-                style={{ margin: "0 !important" }}
+              <CustomCheckbox
                 checked={state.checkedF}
                 onChange={handleCheckboxChange}
                 name="checkedF"
                 className={classes.checkbox}
-                iconStyle={{ fill: "black" }}
+                iconStyle={{ fill: 'black' }}
               />
             }
             label="Solo"
@@ -200,9 +190,7 @@ const Filters = (props) => {
           <Grid item>
             <FormControlLabel
               control={
-                <Checkbox
-                  color="default"
-                  style={{ margin: "0 !important" }}
+                <CustomCheckbox
                   checked={state.checkedG}
                   onChange={handleCheckboxChange}
                   name="checkedG"
@@ -215,9 +203,7 @@ const Filters = (props) => {
           <Grid item>
             <FormControlLabel
               control={
-                <Checkbox
-                  color="default"
-                  style={{ margin: "0 !important" }}
+                <CustomCheckbox
                   checked={state.checkedH}
                   onChange={handleCheckboxChange}
                   name="checkedH"
@@ -230,9 +216,7 @@ const Filters = (props) => {
           <Grid item>
             <FormControlLabel
               control={
-                <Checkbox
-                  color="default"
-                  style={{ margin: "0 !important" }}
+                <CustomCheckbox
                   checked={state.checkedI}
                   onChange={handleCheckboxChange}
                   name="checkedI"

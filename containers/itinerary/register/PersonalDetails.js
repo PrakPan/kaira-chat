@@ -1,46 +1,50 @@
-import React, { useEffect, useState } from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Typography from "@mui/material/Typography";
-import { makeStyles } from "@mui/styles";
-import Container from "@mui/material/Container";
+import React, { useEffect, useState } from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
+import Container from '@mui/material/Container';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link style={{textDecoration : 'none'}} color="inherit" href="https://material-ui.com/">
+      {'Copyright © '}
+      <Link
+        style={{ textDecoration: 'none' }}
+        color="inherit"
+        href="https://material-ui.com/"
+      >
         Your Website
-      </Link>{" "}
+      </Link>{' '}
       {new Date().getFullYear()}
-      {"."}
+      {'.'}
     </Typography>
   );
 }
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
-    backgroundColor: "#F7e700",
-    color: "black",
-    fontFamily: "Open Sans",
-    fontWeight: "600",
+    backgroundColor: '#F7e700',
+    color: 'black',
+    fontFamily: 'Open Sans',
+    fontWeight: '600',
   },
 }));
 
@@ -142,7 +146,7 @@ export default function SignIn(props) {
             label="Remember me"
           /> */}
           <div
-            style={{ display: "grid", gridTemplateColumns: "max-content auto" }}
+            style={{ display: 'grid', gridTemplateColumns: 'max-content auto' }}
           >
             <Checkbox
               value="remember"
@@ -152,20 +156,20 @@ export default function SignIn(props) {
             />
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: "1rem",
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: '1rem',
               }}
               className="font-lexend"
             >
-              <p style={{ margin: "0" }}>
-                I agree to the{" "}
+              <p style={{ margin: '0' }}>
+                I agree to the{' '}
                 <a
-                  style={{ color: "blue", textDecoration: "underline" }}
+                  style={{ color: 'blue', textDecoration: 'underline' }}
                   href="https://drive.google.com/file/d/1TKbGccatSPfmZRee0ybwYGmvSK12eY2M/view?usp=sharing"
                   target="_blank"
                 >
-                  {" "}
+                  {' '}
                   terms & conditions
                 </a>
               </p>

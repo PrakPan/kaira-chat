@@ -1,12 +1,12 @@
-import React, {useEffect} from 'react';
-import styled from 'styled-components'
- import AsSeenIn from './AsSeenIn';
-import Reviews from './Reviews';
-import StoriesMap from './StoriesMap';
-import TravellerCounter from './TravellerCounter';
-import WhyTarzan from './whyttw/Index';
-import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
-import usePageLoaded from '../../components/custom hooks/usePageLoaded';
+import React, { useEffect } from "react";
+import styled from "styled-components";
+import AsSeenIn from "./AsSeenIn";
+import Reviews from "./Reviews";
+import StoriesMap from "./StoriesMap";
+import TravellerCounter from "./TravellerCounter";
+import WhyTarzan from "./whyttw/Index";
+import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
+import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 const HeadingContainer = styled.div`
   border-style: solid none none none;
   border-color: #f7e700;
@@ -37,29 +37,28 @@ const SetWidthContainer = styled.div`
 const Testimonial = (props) => {
   const isPageLoaded = usePageLoaded();
 
-    useEffect(() => {
-        if (isPageLoaded) {
-        window.scrollTo(0, 0);            
-        }
-    },[])
-   
-    
-    return (
-      <div>
-        <StoriesMap></StoriesMap>
-        <TravellerCounter></TravellerCounter>
-        <Reviews />
-        <WhyTarzan />
-        <SetWidthContainer>
-          <div style={{ margin: "3rem 0" }}>
-            <HeadingNew className="font-lexend">What they say?</HeadingNew>
-            <HeadingContainer></HeadingContainer>
-          </div>
-          <AsSeenIn />
-          <ChatWithUs link="/contact" />
-        </SetWidthContainer>
-      </div>
-    );
-}
+  useEffect(() => {
+    if (isPageLoaded) {
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
+  return (
+    <div>
+      <StoriesMap></StoriesMap>
+      <TravellerCounter></TravellerCounter>
+      <Reviews />
+      <WhyTarzan />
+      <SetWidthContainer>
+        <div style={{ margin: "3rem 0" }}>
+          <HeadingNew className="font-lexend">What they say?</HeadingNew>
+          <HeadingContainer></HeadingContainer>
+        </div>
+        <AsSeenIn />
+        <ChatWithUs link="/contact" />
+      </SetWidthContainer>
+    </div>
+  );
+};
 
 export default Testimonial;

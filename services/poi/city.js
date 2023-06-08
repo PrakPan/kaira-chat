@@ -1,8 +1,8 @@
 import axios from 'axios';
-import {CONTENT_SERVER_HOST} from '../constants';
+import { CONTENT_SERVER_HOST } from '../constants';
 
 const instance = axios.create({
-    baseURL: CONTENT_SERVER_HOST+"/poi/city"
-})
+  baseURL: CONTENT_SERVER_HOST + '/poi/city',
+});
 
 export default instance;

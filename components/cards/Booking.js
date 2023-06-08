@@ -1,16 +1,14 @@
-import React from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faImages,
-} from "@fortawesome/free-solid-svg-icons";
+import React from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImages } from '@fortawesome/free-solid-svg-icons';
 
-import ImageLoader from "../ImageLoader";
-import MuiAccordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ImageLoader from '../ImageLoader';
+import MuiAccordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const Container = styled.div`
   width: 100%;
@@ -52,14 +50,13 @@ const PhotosButton = styled.div`
 `;
 
 const Booking = (props) => {
-
   const detailsarr = [];
   for (var i = 0; i < props.details.length; i++) {
     detailsarr.push(
       <li
         key={props.details[i]}
-        className={props.blur ? "blurry-text" : ""}
-        style={{ fontSize: "0.75rem", margin: "0.5rem 0", fontWeight: "300" }}
+        className={props.blur ? 'blurry-text' : ''}
+        style={{ fontSize: '0.75rem', margin: '0.5rem 0', fontWeight: '300' }}
       >
         {props.details[i]}
       </li>
@@ -80,7 +77,7 @@ const Booking = (props) => {
             url={
               props.images.length
                 ? props.images[0].image
-                : "media/website/grey.png"
+                : 'media/website/grey.png'
             }
             dimensions={{ width: 1600, height: 900 }}
             dimensionsMobile={{ width: 1600, height: 900 }}
@@ -91,19 +88,19 @@ const Booking = (props) => {
               onClick={() => props.setImagesHandler(imagesarr)}
               className="font-lexend"
               style={{
-                backgroundColor: "white",
-                opacity: "0.7",
-                borderRadius: "5px",
-                position: "absolute",
-                right: "0.5rem",
-                bottom: "0.5rem",
-                padding: "0.5rem",
-                fontSize: "0.75rem",
+                backgroundColor: 'white',
+                opacity: '0.7',
+                borderRadius: '5px',
+                position: 'absolute',
+                right: '0.5rem',
+                bottom: '0.5rem',
+                padding: '0.5rem',
+                fontSize: '0.75rem',
               }}
             >
               <FontAwesomeIcon
                 icon={faImages}
-                style={{ marginRight: "0.5rem" }}
+                style={{ marginRight: '0.5rem' }}
               ></FontAwesomeIcon>
               All Photos
             </PhotosButton>
@@ -119,9 +116,9 @@ const Booking = (props) => {
               <div>
                 <Typography
                   className={
-                    props.blur ? "font-lexend blurry-text" : " font-lexend"
+                    props.blur ? 'font-lexend blurry-text' : ' font-lexend'
                   }
-                  style={{ fontSize: "1rem", fontWeight: "600", width: "100%" }}
+                  style={{ fontSize: '1rem', fontWeight: '600', width: '100%' }}
                 >
                   {props.heading}
                 </Typography>
@@ -142,7 +139,7 @@ const Booking = (props) => {
             url={
               props.images.length
                 ? props.images[0].image
-                : "media/website/grey.png"
+                : 'media/website/grey.png'
             }
             dimensionsMobile={{ width: 1600, height: 900 }}
             fit="cover"
@@ -153,41 +150,39 @@ const Booking = (props) => {
             onClick={() => props.setImagesHandler(imagesarr)}
             className="font-lexend"
             style={{
-              backgroundColor: "white",
-              opacity: "0.7",
-              borderRadius: "5px",
-              position: "absolute",
-              right: "0.5rem",
-              bottom: "0.5rem",
-              padding: "0.5rem",
-              fontSize: "0.75rem",
+              backgroundColor: 'white',
+              opacity: '0.7',
+              borderRadius: '5px',
+              position: 'absolute',
+              right: '0.5rem',
+              bottom: '0.5rem',
+              padding: '0.5rem',
+              fontSize: '0.75rem',
             }}
           >
-            {" "}
+            {' '}
             <FontAwesomeIcon
               icon={faImages}
-              style={{ marginRight: "0.5rem" }}
+              style={{ marginRight: '0.5rem' }}
             ></FontAwesomeIcon>
             All Photos
           </PhotosButton>
         </ImageContainer>
-        <div style={{ padding: "1rem" }}>
+        <div style={{ padding: '1rem' }}>
           <div>
             <Typography
               className={
-                props.blur
-                  ?"font-lexend blurry-text"
-                  :" font-lexend"
+                props.blur ? 'font-lexend blurry-text' : ' font-lexend'
               }
-              style={{ fontSize: "1rem", fontWeight: "600", width: "100%" }}
+              style={{ fontSize: '1rem', fontWeight: '600', width: '100%' }}
             >
               {props.heading}
             </Typography>
             <p
               style={{
-                fontSize: "0.75rem",
-                margin: "0.5rem 0",
-                fontWeight: "300",
+                fontSize: '0.75rem',
+                margin: '0.5rem 0',
+                fontWeight: '300',
               }}
               className="font-lexend"
             >

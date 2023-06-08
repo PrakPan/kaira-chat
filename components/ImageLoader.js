@@ -124,7 +124,7 @@ const ImageLoader = (props) => {
   }
 
   const smallurl = imgUrlEndPoint + "40x30/" + props.url;
-  const Container = styled(props.noLazy ? 'div' :  LazyLoad)`
+  const Container = styled(props.noLazy ? "div" : LazyLoad)`
     @media screen and (min-width: 768px) {
       width: ${props.width ? props.width : "100%"};
     }
@@ -185,7 +185,6 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
-            
             src={
               !is_url
                 ? isPageLoaded

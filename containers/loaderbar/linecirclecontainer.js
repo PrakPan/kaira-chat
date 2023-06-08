@@ -251,9 +251,7 @@ const ResponsiveProgressBar = ({ progress }) => {
     <Container>
       <Text>{`${progress * 20}%`} Done</Text>
       <ProgressBarWrapper>
-        <ProgressBar
-          style={progressBarAnimation}
-        />
+        <ProgressBar style={progressBarAnimation} />
       </ProgressBarWrapper>
     </Container>
   );

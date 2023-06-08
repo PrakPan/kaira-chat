@@ -1,101 +1,111 @@
-import React from 'react'
-import styled from 'styled-components'
-import { useState } from 'react';
-import ImageLoader from '../../ImageLoader'
-import media from '../../media'
-import {TbArrowBack} from 'react-icons/tb'
-import SkeletonCard from '../../ui/SkeletonCard';
-import {FaStar, FaStarHalfAlt} from 'react-icons/fa'
+import React from "react";
+import styled from "styled-components";
+import { useState } from "react";
+import ImageLoader from "../../ImageLoader";
+import media from "../../media";
+import { TbArrowBack } from "react-icons/tb";
+import SkeletonCard from "../../ui/SkeletonCard";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 const Title = styled.p`
-font-weight : 800;
-font-size : 20px;
-`
+  font-weight: 800;
+  font-size: 20px;
+`;
 const Reviews = styled.div`
-display : flex;
-align-items : center;
-margin-block : 0.5rem;
-gap : 0.2rem;
-p ,u {
- font-size : 12px;
- color : #7A7A7A
-}
-u{
- margin-inline : 0.2rem;
-}
-`
+  display: flex;
+  align-items: center;
+  margin-block: 0.5rem;
+  gap: 0.2rem;
+  p,
+  u {
+    font-size: 12px;
+    color: #7a7a7a;
+  }
+  u {
+    margin-inline: 0.2rem;
+  }
+`;
 const Text = styled.p`
-font-size : 14px
-`
+  font-size: 14px;
+`;
 
 const Heading = styled.p`
-font-size: 18px;
-font-weight: 800;
+  font-size: 18px;
+  font-weight: 800;
 `;
 
 const TimeStamp = styled.p`
-height : 31px;
-padding : 4px 8px;
-background-color : #000000BF;
-border-radius : 20px;
-color : white;
-font-size : 14px;
-font-weight : 600;
-position : absolute;
-top : 185px;
-left : 20px;
-    @media screen and (min-width: 768px){
-    top : 185px;
-left : 320px;
-    }
-`
+  height: 31px;
+  padding: 4px 8px;
+  background-color: #000000bf;
+  border-radius: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  position: absolute;
+  top: 185px;
+  left: 20px;
+  @media screen and (min-width: 768px) {
+    top: 185px;
+    left: 320px;
+  }
+`;
 const Container = styled.div`
-display: flex;
-flex-direction: column;
-gap: 1rem;
-padding: 16px;
-width: 360px;
-@media screen and (min-width: 768px){
-  width: 500px;
-}
-`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 16px;
+  width: 100vw;
+  @media screen and (min-width: 768px) {
+    width: 500px;
+  }
+`;
 
 const POIDetails = (props) => {
-  let isPageWide = media('(min-width: 768px)')
-  const [imageLoading, setImageLoading] = useState(true)
-  
+  let isPageWide = media("(min-width: 768px)");
+  const [imageLoading, setImageLoading] = useState(true);
+
   var about = (
     <p>
-      {props.data.short_description?.substr(0, 250)} <b className='hover-pointer'>...more</b>
+      {props.data.short_description?.substr(0, 250)}{" "}
+      <b className="hover-pointer">...more</b>
     </p>
   );
   const [aboutText, setAboutText] = useState(about);
-   
-      var experience_filters = <div>
-        {
-          props.data.experience_filters?.map((e,i)=><span key={i}>{e} {props.data.experience_filters.length-1 == i ? '' : <b>·</b>} </span>)
-        }
+
+  var experience_filters = (
+    <div>
+      {props.data.experience_filters?.map((e, i) => (
+        <span key={i}>
+          {e} {props.data.experience_filters.length - 1 == i ? "" : <b>·</b>}{" "}
+        </span>
+      ))}
     </div>
-  
-    var tips = <ul>
-      {
-        props.data.tips?.map((e,i) => <li key={i}>{e}</li>)
-  }
+  );
+
+  var tips = (
+    <ul>
+      {props.data.tips?.map((e, i) => (
+        <li key={i}>{e}</li>
+      ))}
     </ul>
-  
-  var stars = []
-  for(let i = 0;i<Math.floor(props.data.rating);i++){
-    stars.push(<FaStar />)
+  );
+
+  var stars = [];
+  for (let i = 0; i < Math.floor(props.data.rating); i++) {
+    stars.push(<FaStar />);
   }
-  if(Math.floor(props.data.rating) < props.data.rating) stars.push(<FaStarHalfAlt />)
-  
-  
+  if (Math.floor(props.data.rating) < props.data.rating)
+    stars.push(<FaStarHalfAlt />);
+
   return (
     <Container>
       <div>
         <TbArrowBack
           style={{ height: "32px", width: "32px" }}
           cursor={"pointer"}
-          onClick={(e) => {props.handleCloseDrawer(e)}}
+          onClick={(e) => {
+            props.handleCloseDrawer(e);
+          }}
         />
       </div>
       <div>
@@ -103,7 +113,7 @@ const POIDetails = (props) => {
           borderRadius="8px"
           marginTop="23px"
           widthMobile="100%"
-          style={imageLoading ? { display: 'none' } : {}}
+          style={imageLoading ? { display: "none" } : {}}
           url={props.data.image}
           dimensionsMobile={{ width: 500, height: 280 }}
           dimensions={{ width: 468, height: 188 }}
@@ -115,7 +125,11 @@ const POIDetails = (props) => {
         ></ImageLoader>
       </div>
       {imageLoading && (
-        <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"188px"} />
+        <div
+          style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
+          // width={isPageWide ? "468px" : "100%"}
+          // height={"188px"}
+        />
       )}
 
       {props.data.ideal_duration_hours && (
@@ -123,12 +137,27 @@ const POIDetails = (props) => {
           Approx Time : {props.data.ideal_duration_hours} hrs
         </TimeStamp>
       )}
+      {props.data.ideal_duration_number && (
+        <TimeStamp>
+          Approx Time : {props.data.ideal_duration_number} hrs
+        </TimeStamp>
+      )}
 
       <div>
         <Title>{props.data.name}</Title>
+        {props.data.address && (
+          <div>
+            {" "}
+            <span className="font-bold pr-1">Address:</span>{" "}
+            {props.data.address}
+          </div>
+        )}
         <Reviews>
           {props.data.rating && (
-            <div style={{ color: "#ffa500", marginBottom: "0.3rem" }}>
+            <div
+              style={{ color: "#ffa500", marginBottom: "0.3rem" }}
+              className="flex flex-row"
+            >
               {stars}
             </div>
           )}
@@ -144,7 +173,15 @@ const POIDetails = (props) => {
         </Reviews>
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </div>
-
+      {props.data.cost && (
+        <div className="flex flex-row">
+          Cost: <div className="font-semibold px-1">₹</div> {getHumanDate}{" "}
+          {props.data.cost}{" "}
+          <div>
+            {props.data.price_category == "individual" ? "Per person" : null}
+          </div>
+        </div>
+      )}
       {props.data.short_description && (
         <div>
           <Heading>About</Heading>
@@ -184,6 +221,6 @@ const POIDetails = (props) => {
       )}
     </Container>
   );
-}
+};
 
-export default POIDetails
+export default POIDetails;

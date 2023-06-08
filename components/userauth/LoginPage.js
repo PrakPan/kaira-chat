@@ -269,7 +269,7 @@ const LogIn = (props) => {
       <TextField
         key="otp"
         error={props.otpFail ? true : false}
-        helperText={props.otpFail ? "OTP is not valid" : null}
+        helperText={props.otpFail ? 'OTP is not valid' : null}
         variant="outlined"
         required
         fullWidth

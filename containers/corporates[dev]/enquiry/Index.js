@@ -1,18 +1,18 @@
-import React, { useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
+import React, { useState } from 'react';
+import dayjs, { Dayjs } from 'dayjs';
 
-import styled from "styled-components";
-import { Modal } from "react-bootstrap";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import Button from "../../../components/ui/button/Index";
-import DateTime from "./DateTime";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import Types from "./Type";
-import axiosbdinstance from "../../../services/leads/bd";
-import Spinner from "../../../components/Spinner";
+import styled from 'styled-components';
+import { Modal } from 'react-bootstrap';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Button from '../../../components/ui/button/Index';
+import DateTime from './DateTime';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import Types from './Type';
+import axiosbdinstance from '../../../services/leads/bd';
+import Spinner from '../../../components/Spinner';
 
 const Heading = styled.p`
   font-size: 2.5rem;
@@ -39,7 +39,7 @@ const Enquiry = (props) => {
   const [value, setValue] = useState(dayjs());
 
   const _handleMobileChange = (event) => {
-    if (event.target.value === "1") null;
+    if (event.target.value === '1') null;
   };
 
   const [loading, setLoading] = useState(false);
@@ -69,12 +69,12 @@ const Enquiry = (props) => {
   const _submitDataHandler = () => {
     setLoading(true);
     axiosbdinstance
-      .post("/", {
+      .post('/', {
         organization_name: companyName,
         phone: phone,
         person_name: name,
         email: email,
-        service: "wiejdn",
+        service: 'wiejdn',
       })
       .then((res) => {
         setLoading(false);
@@ -115,14 +115,14 @@ const Enquiry = (props) => {
         size="md"
         centered
         onHide={_hideModalHandler}
-        style={{ padding: "0" }}
+        style={{ padding: '0' }}
       >
         <Modal.Body
-          style={{ padding: "1rem", minHeight: "60vh" }}
+          style={{ padding: '1rem', minHeight: '60vh' }}
           className="center-div"
         >
           <Heading>
-            {submitted ? "Thank you for reaching out" : "Let's Connect"}
+            {submitted ? 'Thank you for reaching out' : "Let's Connect"}
           </Heading>
           <div></div>
           {!submitted ? (

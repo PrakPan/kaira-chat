@@ -1,132 +1,252 @@
-import React, { useState} from 'react';
-import styled from 'styled-components'
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import CityContainer from '../CityContainer';
 import CityConnect from '../CityConnection';
-import { Link, animateScroll as scroll} from "react-scroll";
+import { Link, animateScroll as scroll } from 'react-scroll';
 import media from '../../media';
 import Timer from '../../../containers/itinerary/timer/Index';
 import DesktopBanner from '../../containers/Banner';
 import Banner from '../../../containers/homepage/banner/Mobile';
-import { useRouter  } from 'next/router';
+import { useRouter } from 'next/router';
 import isinview from '../../isinview';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import openTailoredModal from '../../../services/openTailoredModal';
 
-
 const Container = styled.div`
-@media screen and (min-width: 768px){
+  @media screen and (min-width: 768px) {
     width: 80%;
-        margin: auto;
-        display: grid;
-        grid-template-columns: 20% 80%;
-        padding:  2rem 0;
-}
-    `;
-   
-const Itinerary = (props) =>{
-     let isPageWide = media('(min-width: 768px)')
-    const router = useRouter();
-    const [citySelected, setCitySelected] = useState(0);
+    margin: auto;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    padding: 2rem 0;
+  }
+`;
 
-  
-    const [showModal, setShowModal] = useState(false);
+const Itinerary = (props) => {
+  let isPageWide = media('(min-width: 768px)');
+  const router = useRouter();
+  const [citySelected, setCitySelected] = useState(0);
 
-    const [hideTimer, setHideTimer] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-    const _handleTimerClose = () => {
-        window.scrollTo(0,window.innerHeight)
-        setHideTimer(true);
-        props._hideTimerHandler();
+  const [hideTimer, setHideTimer] = useState(false);
 
-    }
-    const showModalHandler = () => {
-        setShowModal(true);
-        
-    }
-    const hideModalHandler = () => {
-        setShowModal(false);
-    }
-      
-        let classnames="";
-        if(props.blur) classnames="blurry-text "
-    let LinksArr = [];
-    let ContainerArr = [];
-    if(props.city_slabs)
-     for( var i=0; i<props.city_slabs.length; i++){
-         const index = i;
-        //Don't do anything if ending city
-        if(props.city_slabs[i].is_trip_terminated) break;
-        else{
-             LinksArr.push(
-            <Link to={props.city_slabs[i].city_name} smooth={true} duration={500} style={{display: "block", padding: "0.5rem", margin: "0", color: "white", textDecoration: 'none'}} onClick={()=> setCitySelected(index)} className= {`${citySelected === i ? classnames+"city-active": classnames+"city-inactive"}`}>{props.city_slabs[i].city_name}</Link>,
+  const _handleTimerClose = () => {
+    window.scrollTo(0, window.innerHeight);
+    setHideTimer(true);
+    props._hideTimerHandler();
+  };
+  const showModalHandler = () => {
+    setShowModal(true);
+  };
+  const hideModalHandler = () => {
+    setShowModal(false);
+  };
+
+  let classnames = '';
+  if (props.blur) classnames = 'blurry-text ';
+  let LinksArr = [];
+  let ContainerArr = [];
+  if (props.city_slabs)
+    for (var i = 0; i < props.city_slabs.length; i++) {
+      const index = i;
+      //Don't do anything if ending city
+      if (props.city_slabs[i].is_trip_terminated) break;
+      else {
+        LinksArr.push(
+          <Link
+            to={props.city_slabs[i].city_name}
+            smooth={true}
+            duration={500}
+            style={{
+              display: 'block',
+              padding: '0.5rem',
+              margin: '0',
+              color: 'white',
+              textDecoration: 'none',
+            }}
+            onClick={() => setCitySelected(index)}
+            className={`${
+              citySelected === i
+                ? classnames + 'city-active'
+                : classnames + 'city-inactive'
+            }`}
+          >
+            {props.city_slabs[i].city_name}
+          </Link>
         );
         ContainerArr.push(
-            <div >
-                <div style={{position: 'relative', top: '-66px'}} id={"city-scroller-"+i}></div>
-                <CityContainer  is_registration_needed = {props.is_registration_needed}  selectedPoi={props.selectedPoi} is_auth={props.email === props.user_email ? true: false} setCitySelected={setCitySelected} id={"city-scroller-"+i} traveleritinerary={props.traveleritinerary} is_preview={props.is_preview} is_stock={props.is_stock} is_experience={props.is_experience}  city_id={props.city_slabs[i].city_id} setShowPoiModal={props.setShowPoiModal} blur={props.blur} day_slabs={props.itinerary.day_slabs}  city={props.city_slabs[i].city_name} startingslab={props.city_slabs[i].day_slab_location.start_day_slab_index} endingslab={props.city_slabs[i].day_slab_location.end_day_slab_index} startingindex={props.city_slabs[i].day_slab_location.start_element_index} endingindex={props.city_slabs[i].day_slab_location.end_element_index}></CityContainer>
-                
-                </div>
-        
+          <div>
+            <div
+              style={{ position: 'relative', top: '-66px' }}
+              id={'city-scroller-' + i}
+            ></div>
+            <CityContainer
+              is_registration_needed={props.is_registration_needed}
+              selectedPoi={props.selectedPoi}
+              is_auth={props.email === props.user_email ? true : false}
+              setCitySelected={setCitySelected}
+              id={'city-scroller-' + i}
+              traveleritinerary={props.traveleritinerary}
+              is_preview={props.is_preview}
+              is_stock={props.is_stock}
+              is_experience={props.is_experience}
+              city_id={props.city_slabs[i].city_id}
+              setShowPoiModal={props.setShowPoiModal}
+              blur={props.blur}
+              day_slabs={props.itinerary.day_slabs}
+              city={props.city_slabs[i].city_name}
+              startingslab={
+                props.city_slabs[i].day_slab_location.start_day_slab_index
+              }
+              endingslab={
+                props.city_slabs[i].day_slab_location.end_day_slab_index
+              }
+              startingindex={
+                props.city_slabs[i].day_slab_location.start_element_index
+              }
+              endingindex={
+                props.city_slabs[i].day_slab_location.end_element_index
+              }
+            ></CityContainer>
+          </div>
         );
-        if( i === props.city_slabs.length-1) ContainerArr.push(
-            null
-        );
-        else{
-            //Don't show interconnection if next city is ending city
-            if(props.city_slabs[i+1].is_trip_terminated) break;
-            else{
-                 //meta data present in newcity
-                // if(props.itinerary.day_slabs[props.city_slabs[i+1].day_slab_location.start_day_slab_index].slab_elements[props.city_slabs[i+1].day_slab_location.start_element_index].meta)
-                if(i){
-                if(props.itinerary.day_slabs[props.city_slabs[i].day_slab_location.end_day_slab_index].slab_elements[props.city_slabs[i].day_slab_location.end_element_index].meta)
-                {
-
-                    //distance present in meta data
-                    if(props.itinerary.day_slabs[props.city_slabs[i].day_slab_location.end_day_slab_index].slab_elements[props.city_slabs[i].day_slab_location.end_element_index].meta.Distance ){
-
- 
-                        ContainerArr.push(
-                        <div id={props.city_slabs[i+1].city_name}><CityConnect  blur={props.blur} distance={props.itinerary.day_slabs[props.city_slabs[i].day_slab_location.end_day_slab_index].slab_elements[props.city_slabs[i].day_slab_location.end_element_index].meta.Distance} time={props.itinerary.day_slabs[props.city_slabs[i].day_slab_location.end_day_slab_index].slab_elements[props.city_slabs[i].day_slab_location.end_element_index].meta.Time}></CityConnect></div>
-                    );
-                    }
-                    else 
-                    ContainerArr.push(
-                        <div id={props.city_slabs[i+1].city_name}><CityConnect  blur={props.blur}  distance={props.itinerary.day_slabs[props.city_slabs[i].day_slab_location.end_day_slab_index].slab_elements[props.city_slabs[i].day_slab_location.end_element_index].meta.Distance} time={props.itinerary.day_slabs[props.city_slabs[i].day_slab_location.end_day_slab_index].slab_elements[props.city_slabs[i].day_slab_location.end_element_index].meta.Time}></CityConnect></div>
-                    );
-                }
-                else {
- 
-                    ContainerArr.push(
-
-                        <div id={props.city_slabs[i+1].city_name}><CityConnect  blur={props.blur}  dsitance={null}></CityConnect></div>
-                    ); 
-                }
-                }
-                else{
-                    if(props.itinerary.day_slabs[0].slab_elements[0].meta){
-                        if(props.itinerary.day_slabs[0].slab_elements[0].meta.Distance){
-                        
-                            ContainerArr.push(
-                                <div id={props.city_slabs[1].city_name}><CityConnect  blur={props.blur} distance={props.itinerary.day_slabs[0].slab_elements[0].meta.Distance} time={props.itinerary.day_slabs[0].slab_elements[0].meta.Time}></CityConnect></div>
-                            )}
-                        else 
-                            ContainerArr.push(
-                                <div id={props.city_slabs[1].city_name}><CityConnect  blur={props.blur}  distance={props.itinerary.day_slabs[0].slab_elements[0].meta.Distance} time={props.itinerary.day_slabs[0].slab_elements[0].meta.Time}></CityConnect></div>
-                            );
-                    }
-                    else 
-                    ContainerArr.push(
-
-                        <div id={props.city_slabs[0].city_name}><CityConnect  blur={props.blur}  dsitance={null}></CityConnect></div>
-                    ); 
-                }
+        if (i === props.city_slabs.length - 1) ContainerArr.push(null);
+        else {
+          //Don't show interconnection if next city is ending city
+          if (props.city_slabs[i + 1].is_trip_terminated) break;
+          else {
+            //meta data present in newcity
+            // if(props.itinerary.day_slabs[props.city_slabs[i+1].day_slab_location.start_day_slab_index].slab_elements[props.city_slabs[i+1].day_slab_location.start_element_index].meta)
+            if (i) {
+              if (
+                props.itinerary.day_slabs[
+                  props.city_slabs[i].day_slab_location.end_day_slab_index
+                ].slab_elements[
+                  props.city_slabs[i].day_slab_location.end_element_index
+                ].meta
+              ) {
+                //distance present in meta data
+                if (
+                  props.itinerary.day_slabs[
+                    props.city_slabs[i].day_slab_location.end_day_slab_index
+                  ].slab_elements[
+                    props.city_slabs[i].day_slab_location.end_element_index
+                  ].meta.Distance
+                ) {
+                  ContainerArr.push(
+                    <div id={props.city_slabs[i + 1].city_name}>
+                      <CityConnect
+                        blur={props.blur}
+                        distance={
+                          props.itinerary.day_slabs[
+                            props.city_slabs[i].day_slab_location
+                              .end_day_slab_index
+                          ].slab_elements[
+                            props.city_slabs[i].day_slab_location
+                              .end_element_index
+                          ].meta.Distance
+                        }
+                        time={
+                          props.itinerary.day_slabs[
+                            props.city_slabs[i].day_slab_location
+                              .end_day_slab_index
+                          ].slab_elements[
+                            props.city_slabs[i].day_slab_location
+                              .end_element_index
+                          ].meta.Time
+                        }
+                      ></CityConnect>
+                    </div>
+                  );
+                } else
+                  ContainerArr.push(
+                    <div id={props.city_slabs[i + 1].city_name}>
+                      <CityConnect
+                        blur={props.blur}
+                        distance={
+                          props.itinerary.day_slabs[
+                            props.city_slabs[i].day_slab_location
+                              .end_day_slab_index
+                          ].slab_elements[
+                            props.city_slabs[i].day_slab_location
+                              .end_element_index
+                          ].meta.Distance
+                        }
+                        time={
+                          props.itinerary.day_slabs[
+                            props.city_slabs[i].day_slab_location
+                              .end_day_slab_index
+                          ].slab_elements[
+                            props.city_slabs[i].day_slab_location
+                              .end_element_index
+                          ].meta.Time
+                        }
+                      ></CityConnect>
+                    </div>
+                  );
+              } else {
+                ContainerArr.push(
+                  <div id={props.city_slabs[i + 1].city_name}>
+                    <CityConnect
+                      blur={props.blur}
+                      dsitance={null}
+                    ></CityConnect>
+                  </div>
+                );
+              }
+            } else {
+              if (props.itinerary.day_slabs[0].slab_elements[0].meta) {
+                if (
+                  props.itinerary.day_slabs[0].slab_elements[0].meta.Distance
+                ) {
+                  ContainerArr.push(
+                    <div id={props.city_slabs[1].city_name}>
+                      <CityConnect
+                        blur={props.blur}
+                        distance={
+                          props.itinerary.day_slabs[0].slab_elements[0].meta
+                            .Distance
+                        }
+                        time={
+                          props.itinerary.day_slabs[0].slab_elements[0].meta
+                            .Time
+                        }
+                      ></CityConnect>
+                    </div>
+                  );
+                } else
+                  ContainerArr.push(
+                    <div id={props.city_slabs[1].city_name}>
+                      <CityConnect
+                        blur={props.blur}
+                        distance={
+                          props.itinerary.day_slabs[0].slab_elements[0].meta
+                            .Distance
+                        }
+                        time={
+                          props.itinerary.day_slabs[0].slab_elements[0].meta
+                            .Time
+                        }
+                      ></CityConnect>
+                    </div>
+                  );
+              } else
+                ContainerArr.push(
+                  <div id={props.city_slabs[0].city_name}>
+                    <CityConnect
+                      blur={props.blur}
+                      dsitance={null}
+                    ></CityConnect>
+                  </div>
+                );
             }
+          }
         }
-        
-        }
+      }
     }
-  
-    if(isPageWide)
+
+  if (isPageWide)
     return (
       <div>
         {/*If timer not expired*/}
@@ -135,22 +255,22 @@ const Itinerary = (props) =>{
         <Container
           id="kochi-anchor"
           style={{
-            marginTop: props.showTimer && !props.hideTimer ? "-50vh" : "0",
+            marginTop: props.showTimer && !props.hideTimer ? '-50vh' : '0',
           }}
         >
           <div
             style={{
-              textAlign: "center",
-              position: "sticky",
-              top: "66px",
-              height: "max-content",
+              textAlign: 'center',
+              position: 'sticky',
+              top: '66px',
+              height: 'max-content',
             }}
           >
-            <div style={{ fontSize: "1.25rem" }}>
+            <div style={{ fontSize: '1.25rem' }}>
               <div
-                style={{ backgroundColor: "#F7e700", padding: "0.75rem" }}
+                style={{ backgroundColor: '#F7e700', padding: '0.75rem' }}
                 className={
-                  props.blur ? "font-lexend blurry-text" : "font-lexend"
+                  props.blur ? 'font-lexend blurry-text' : 'font-lexend'
                 }
               >
                 <b>Locations Covered</b>
@@ -160,7 +280,7 @@ const Itinerary = (props) =>{
           </div>
           <div>
             <div
-              id={props.city_slabs ? props.city_slabs[0].city_name : ""}
+              id={props.city_slabs ? props.city_slabs[0].city_name : ''}
             ></div>
             {ContainerArr}
           </div>
@@ -183,28 +303,33 @@ const Itinerary = (props) =>{
         ) : null}
       </div>
     );
+  else
+    return (
+      <div>
+        {/*If timer not expired*/}
+        {/* {props.showTimer? <Timer timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
 
-     else return(
-<div>
-            {/*If timer not expired*/}
-            {/* {props.showTimer? <Timer timeRequired={props.timeRequired} itineraryDate={props.itineraryDate} hideTimer={props.hideTimer} _handleTimerClose={_handleTimerClose} showTimer={props.showTimer} _hideTimerHandler={props._hideTimerHandler}></Timer> : null} */}
-
-    <Container id="kochi-anchor" style={{marginTop : props.showTimer && !props.hideTimer  ? '-50vh' : '0' }}>
-        <div >
-        <div id={props.city_slabs ? props.city_slabs[0].city_name : ''} ></div>
-        {ContainerArr}
-            </div>
-     </Container>
-     </div>
-     );
-    
-}
-
+        <Container
+          id="kochi-anchor"
+          style={{
+            marginTop: props.showTimer && !props.hideTimer ? '-50vh' : '0',
+          }}
+        >
+          <div>
+            <div
+              id={props.city_slabs ? props.city_slabs[0].city_name : ''}
+            ></div>
+            {ContainerArr}
+          </div>
+        </Container>
+      </div>
+    );
+};
 
 const mapStateToPros = (state) => {
-    return{
-      token: state.auth.token,
-      email: state.auth.email
-    }
-}
+  return {
+    token: state.auth.token,
+    email: state.auth.email,
+  };
+};
 export default connect(mapStateToPros)(Itinerary);

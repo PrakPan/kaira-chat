@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRupeeSign } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from "next/router";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRupeeSign } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/router';
 // import Button from '../../../components/Button';
-import Button from "../../../components/ui/button/Index";
-import Menu from "./Menu";
-import MenuButton from "./MenuButton";
+import Button from '../../../components/ui/button/Index';
+import Menu from './Menu';
+import MenuButton from './MenuButton';
 
 const FixedContainer = styled.div`
   width: 100vw;
@@ -30,20 +30,19 @@ const NavigationHeading = styled.p`
   margin: 0;
 `;
 
-
 const Banner = (props) => {
   const router = useRouter();
-  const [heading, setHeading] = useState("Overview");
+  const [heading, setHeading] = useState('Overview');
   useEffect(() => {
-    window.addEventListener("scroll", _handleScroll);
+    window.addEventListener('scroll', _handleScroll);
     return () => {
-      window.removeEventListener("scroll", _handleScroll);
+      window.removeEventListener('scroll', _handleScroll);
     };
   });
   const _handlePlanning = () => {
-    localStorage.setItem("search_city_selected_id", props.data.id);
-    localStorage.setItem("search_city_selected_name", props.data.name);
-    localStorage.setItem("search_city_selected_parent", props.data.state_name);
+    localStorage.setItem('search_city_selected_id', props.data.id);
+    localStorage.setItem('search_city_selected_name', props.data.name);
+    localStorage.setItem('search_city_selected_parent', props.data.state_name);
     openTailoredModal(router, props.data.id, props.data.name);
   };
   const _handleScroll = () => {
@@ -51,54 +50,54 @@ const Banner = (props) => {
       if (window.pageYOffset > 350) {
         if (props.data.short_description) {
           if (
-            props.offsets["Overview"] - window.pageYOffset <= 70 &&
-            props.offsets["Overview"] - window.pageYOffset > 0
+            props.offsets['Overview'] - window.pageYOffset <= 70 &&
+            props.offsets['Overview'] - window.pageYOffset > 0
           ) {
-            if (heading !== "Overview") setHeading("Overview");
+            if (heading !== 'Overview') setHeading('Overview');
           }
         }
         if (props.data.pois.length) {
           if (
-            props.offsets["Things to do"] - window.pageYOffset <= 70 &&
-            props.offsets["Things to do"] - window.pageYOffset > 0
+            props.offsets['Things to do'] - window.pageYOffset <= 70 &&
+            props.offsets['Things to do'] - window.pageYOffset > 0
           ) {
-            if (heading !== "Things to do") setHeading("Things to do");
+            if (heading !== 'Things to do') setHeading('Things to do');
           }
         }
         if (props.data.survival_tips_and_tricks) {
           if (
-            props.offsets["Survival Tips & Tricks"] - window.pageYOffset <=
+            props.offsets['Survival Tips & Tricks'] - window.pageYOffset <=
               70 &&
-            props.offsets["Survival Tips & Tricks"] - window.pageYOffset > 0
+            props.offsets['Survival Tips & Tricks'] - window.pageYOffset > 0
           ) {
             // if(heading !== 'Route') setHeading('Route')
-            if (heading !== "Survival Tips & Tricks")
-              setHeading("Survival Tips & Tricks");
+            if (heading !== 'Survival Tips & Tricks')
+              setHeading('Survival Tips & Tricks');
           }
         }
         if (props.data.folklore_or_story) {
           if (
-            props.offsets["Folklore or Story"] - window.pageYOffset <= 70 &&
-            props.offsets["Folklore or Story"] - window.pageYOffset > 0
+            props.offsets['Folklore or Story'] - window.pageYOffset <= 70 &&
+            props.offsets['Folklore or Story'] - window.pageYOffset > 0
           ) {
-            if (heading !== "Folklore or Story")
-              setHeading("Folklore or Story");
+            if (heading !== 'Folklore or Story')
+              setHeading('Folklore or Story');
           }
         }
         if (props.data.foods.length) {
           if (
-            props.offsets["What to Eat"] - window.pageYOffset <= 70 &&
-            props.offsets["What to Eat"] - window.pageYOffset > 0
+            props.offsets['What to Eat'] - window.pageYOffset <= 70 &&
+            props.offsets['What to Eat'] - window.pageYOffset > 0
           ) {
-            if (heading !== "What to Eat") setHeading("What to Eat");
+            if (heading !== 'What to Eat') setHeading('What to Eat');
           }
         }
         if (props.data.conveyance_available) {
           if (
-            props.offsets["Getting Around"] - window.pageYOffset <= 70 &&
-            props.offsets["Getting Around"] - window.pageYOffset > 0
+            props.offsets['Getting Around'] - window.pageYOffset <= 70 &&
+            props.offsets['Getting Around'] - window.pageYOffset > 0
           ) {
-            if (heading !== "Getting Around") setHeading("Getting Around");
+            if (heading !== 'Getting Around') setHeading('Getting Around');
           }
         }
         // else if(props.offsets['Things to Do'] -  window.pageYOffset <= 65 && props.offsets['Things to Do'] -  window.pageYOffset > 0){
@@ -106,10 +105,10 @@ const Banner = (props) => {
         // }
         if (props.data.experiences.length) {
           if (
-            props.offsets["Experiences"] - window.pageYOffset <= 70 &&
-            props.offsets["Experiences"] - window.pageYOffset > 0
+            props.offsets['Experiences'] - window.pageYOffset <= 70 &&
+            props.offsets['Experiences'] - window.pageYOffset > 0
           ) {
-            if (heading !== "Experinces") setHeading("Experiences");
+            if (heading !== 'Experinces') setHeading('Experiences');
           }
         }
       }
@@ -126,7 +125,7 @@ const Banner = (props) => {
 
   return (
     <FixedContainer
-      style={{ display: props.experienceLoaded ? "initial" : "none" }}
+      style={{ display: props.experienceLoaded ? 'initial' : 'none' }}
     >
       {anchorEl ? (
         <Menu
@@ -136,7 +135,7 @@ const Banner = (props) => {
         />
       ) : null}
       <Container className="border">
-        <div style={{ display: "flex" }}>
+        <div style={{ display: 'flex' }}>
           {/* <FontAwesomeIcon icon={faSortUp} style={{margin: "0"}}/> */}
           <MenuButton handleClick={handleMenuClick}></MenuButton>
           <NavigationHeading

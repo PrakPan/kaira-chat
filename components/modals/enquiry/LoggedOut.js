@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import Heading from "../../newheading/heading/Index";
-import styled, { keyframes } from "styled-components";
-import TextField from "@mui/material/TextField";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleLeft } from "@fortawesome/free-solid-svg-icons";
-import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import { fadeIn } from "react-animations";
+import React, { useState } from 'react';
+import Heading from '../../newheading/heading/Index';
+import styled, { keyframes } from 'styled-components';
+import TextField from '@mui/material/TextField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import { fadeIn } from 'react-animations';
 
 const LoggedOut = (props) => {
   const fadeInAnimation = keyframes`${fadeIn}`;
@@ -25,7 +25,7 @@ const LoggedOut = (props) => {
     setIndex(index + 1);
   };
   const _nextQuestionEnterHandler = (event) => {
-    if (event.key === "Enter") setIndex(index + 1);
+    if (event.key === 'Enter') setIndex(index + 1);
   };
   const StyledHeading = styled(Heading)``;
   const Animate = styled.div`
@@ -74,23 +74,23 @@ const LoggedOut = (props) => {
   return (
     <div>
       <ModalTitle className="font-nunito">
-        {index === 4 ? "Your reponse has been submitted :)" : props.title}
+        {index === 4 ? 'Your reponse has been submitted :)' : props.title}
       </ModalTitle>
       <Animate>{Questions[index]}</Animate>
-      <div style={{ textAlign: "center" }}>
+      <div style={{ textAlign: 'center' }}>
         <Animate>{Options[index]}</Animate>
         <br></br>
         {index === 4 ? null : (
           <FontAwesomeIcon
             icon={faAngleLeft}
-            style={{ fontSize: "4rem", margin: "3rem 2rem" }}
+            style={{ fontSize: '4rem', margin: '3rem 2rem' }}
             onClick={_prevQuestionHandler}
           ></FontAwesomeIcon>
         )}
         {index === 4 ? null : (
           <FontAwesomeIcon
             icon={faAngleRight}
-            style={{ fontSize: "4rem", margin: "3rem 2rem" }}
+            style={{ fontSize: '4rem', margin: '3rem 2rem' }}
             onClick={_nextQuestionHandler}
           ></FontAwesomeIcon>
         )}

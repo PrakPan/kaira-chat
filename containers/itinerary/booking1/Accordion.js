@@ -1,27 +1,29 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
-import MuiAccordion from "@mui/material/Accordion";
-import Accordion , {AccordionDetails , AccordionSummary}  from "../../../components/ui/Accordion";
+import React from 'react';
+import { makeStyles } from '@mui/styles';
+import MuiAccordion from '@mui/material/Accordion';
+import Accordion, {
+  AccordionDetails,
+  AccordionSummary,
+} from '../../../components/ui/Accordion';
 // import AccordionSummary from "@mui/material/AccordionSummary";
 // import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { getIndianPrice } from "../../../services/getIndianPrice";
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { getIndianPrice } from '../../../services/getIndianPrice';
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
-    zIndex: "1",
+    width: '100%',
+    zIndex: '1',
   },
   heading: {
-    fontSize: "1rem",
+    fontSize: '1rem',
     fontFamily: "'Open Sans', sans-serif !important;",
   },
 }));
 
-
 const FAQs = (props) => {
   const classes = useStyles();
-  const HEADINGS = ["Stays", "Transfers", "Flights", "Activities"];
+  const HEADINGS = ['Stays ', 'Transfers', 'Flights', 'Activities'];
   let FAQS = [];
   let HeadingsJSX = [];
   let bookings = {};
@@ -67,47 +69,13 @@ const FAQs = (props) => {
       for (var i = 0; i < props.payment.summary[key].bookings.length; i++) {
         try {
           bookingslist.push(
-            <p
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: "400",
-                letterSpacing: "1px",
-                marginBottom: "0.25rem",
-              }}
-              className={
-                props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
-              }
-            >
+            <div className={'text-sm font-normal text-[#000]'}>
               {bookings[props.payment.summary[key].bookings[i].id].name}
-            </p>
+            </div>
           );
           bookinglistwithcost.push(
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "auto max-content",
-                margin: "0.5rem 0",
-                gridGap: "1rem",
-              }}
-            >
-              <p
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: "300",
-                  letterSpacing: "1px",
-                  marginBottom: "0.25rem",
-                }}
-                className={
-                  props.blur
-                    ? "font-lexend text-enter blurry-text"
-                    : "font-lexend text-enter"
-                }
-              >
-                {bookings[props.payment.summary[key].bookings[i].id].name}
-              </p>
-              {/* <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem', textAlign: 'right', marginRight: '24px'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ " + getIndianPrice(Math.ceil(bookings[props.payment.summary[key].bookings[i].id].booking_cost/100)) }</p>  */}
+            <div className={' text-sm font-normal text-[#000]'}>
+              {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
         } catch {}
@@ -122,37 +90,43 @@ const FAQs = (props) => {
             marginBottom: 10,
             // border: "1px solid #e4e4e4",
             // border: "1px solid red",
-            boxShadow: "none",
-            zIndex: "1",
+            boxShadow: 'none',
+            zIndex: '1',
           }}
         >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="itinerary-booking-summary-accordion"
-            style={{ zIndex: "1" , height : '1rem'}}
+            style={{ zIndex: '1', height: '1rem' }}
           >
             <Typography
-              content={"span"}
+              content={'span'}
               className="font-lexend"
-              style={{ fontWeight: "600", fontSize: "0.75rem", margin: "0" }}
+              style={{ fontWeight: '700', fontSize: '0.80rem', margin: '0' }}
             >
-              {key}
+              <div className="flex flex-row gap-1">
+                {key} ({props.payment.meta_info.number_of_adults}
+                {props.payment.meta_info.number_of_adults == 1
+                  ? ' Adult'
+                  : ' Adults'}
+                )
+              </div>
             </Typography>
             <Typography
-              content={"span"}
+              content={'span'}
               className="font-lexend"
               style={{
-                fontWeight: "600",
-                fontSize: "0.75rem",
-                margin: "0",
-                flexGrow: "1",
-                textAlign: "right",
-                marginRight : '1.5rem'
+                fontWeight: '700',
+                fontSize: '0.95rem',
+                margin: '0',
+                flexGrow: '1',
+                textAlign: 'right',
+                marginRight: '1.5rem',
               }}
             >
               {!props.payment.are_prices_hidden
-                ? "₹ " +
+                ? '₹ ' +
                   getIndianPrice(
                     Math.round(props.payment.summary[key].cost / 100)
                   )
@@ -169,7 +143,7 @@ const FAQs = (props) => {
               top: "-0.5rem",
             }}
           ></div> */}
-          <AccordionDetails style={{ display: "block", padding: "0.1rem" }}>
+          <AccordionDetails style={{ display: 'block', padding: '0.1rem' }}>
             {props.payment.are_prices_hidden
               ? bookingslist
               : bookinglistwithcost}

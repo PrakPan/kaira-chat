@@ -22,7 +22,7 @@ import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 // import MapBox from "../../components/mapbox";
 import dynamic from "next/dynamic";
-const MapBox = dynamic(() => import("../../components/mapbox.js"), {
+const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";

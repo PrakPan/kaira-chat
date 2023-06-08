@@ -1,95 +1,114 @@
-import React, { useState } from "react";
-import { GoogleMap, InfoWindow, Marker,useJsApiLoader,MarkerClusterer } from "@react-google-maps/api";
-import SkeletonCard from "./ui/SkeletonCard";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import React, { useEffect } from "react";
+import leaflet from "leaflet";
+import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
+import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
+import "@changey/react-leaflet-markercluster/dist/styles.min.css";
 
-function Map(props) {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E"
-  })
-  const [activeMarker, setActiveMarker] = useState(null);
+const customIcon = leaflet.icon({
+  iconUrl:
+    "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png",
+  iconSize: [28, 32],
+  iconAnchor: [14, 32],
+});
+const Mapbox = React.memo((props) => {
+  const FitBoundsOnMount = () => {
+    const map = useMap();
 
-  const mapOptions = 
-    {
-      zoomControl: false,
-      mapTypeControl: false,
-      scaleControl: false,
-      streetViewControl: false,
-      rotateControl: false,
-      fullscreenControl: true
-    }
-    
+    useEffect(() => {
+      if (props.locations) {
+        const bounds = leaflet
+          .featureGroup(
+            props.locations.map((location) =>
+              leaflet.marker([location.lat, location.long])
+            )
+          )
+          .getBounds();
 
-  const handleActiveMarker = (marker) => {
-    if (marker === activeMarker) {
-      return;
-    }
-    setActiveMarker(marker);
+        if (bounds.isValid()) {
+          map.fitBounds(bounds);
+        }
+      }
+    }, [map]);
+
+    return null;
   };
 
-  const handleOnLoad = (map) => {
-    const bounds = new window.google.maps.LatLngBounds();
-      props.locations.forEach(location=> bounds.extend({lat : location.lat , lng : location.long}))
-      map.fitBounds(bounds);  
-    };
-
-  const containerStyle={
-    width: props.width || '100%', 
-    height: props.height || '100%',
-    borderRadius : props.borderRadius || '10px'
-    }
-
-  if(props.center){
-    return isLoaded?(<GoogleMap
-    center={props.center}
-    zoom = { 14 }
-    onClick={() => setActiveMarker(null)}
-    mapContainerStyle={containerStyle}
-    
-options={{disableDefaultUI : true ,  fullscreenControl: true}}
-  >
-      <Marker onClick={() => handleActiveMarker(props.center.lat + props.center.lng)}  position={props.center} icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png'}>
-      {activeMarker === (props.center.lat + props.center.lng) ? (
-      <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-              {props.InfoWindowContainer || ''}
-            </InfoWindow>) : null}
-      </Marker>
-  </GoogleMap>) : (<SkeletonCard {...containerStyle}></SkeletonCard>)
+  if (props.center) {
+    // props.center ? props.center :
+    return (
+      <MapContainer
+        center={props.center}
+        zoom={props.defaultZoom || 1}
+        style={{
+          height: props.height || "100%",
+          width: "100%",
+          borderRadius: "1rem",
+        }}
+      >
+        <TileLayer
+          url={`
+       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2hpdmFhbmsiLCJhIjoiY2xob3Vjbnd6MDBsNjNkbXNkanp2Nzd5dyJ9.Nikg8Qt4OOYGthgMQ5zH1w`}
+          // attribution="The Tarzan Way"
+        />
+        <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
+        <MarkerClusterGroup>
+          <Marker
+            key={props.center.lat}
+            animate
+            position={[props.center.lat, props.center.lng]}
+            draggable={false}
+            icon={customIcon}
+          >
+            <Popup>
+              {props.InfoWindowContainer ? props.InfoWindowContainer : ""}
+            </Popup>
+          </Marker>
+        </MarkerClusterGroup>
+        {/* <FitBoundsOnMount /> */}
+      </MapContainer>
+    );
   }
 
-
-
-  return isLoaded? (
-    <GoogleMap
-      onLoad={handleOnLoad}
-      options={mapOptions}
-      onClick={() => setActiveMarker(null)}
-      mapContainerStyle={containerStyle}
-      // zoom={props.defaultZoom?props.defaultZoom:6}
-      center={{ lat: props.locations[0]?.lat, lng: props.locations[0]?.long}}
- 
+  return props.locations ? (
+    <MapContainer
+      center={{ lat: props.locations[0]?.lat, lng: props.locations[0]?.long }}
+      zoom={props.defaultZoom || 1}
+      style={{
+        height: props.height || "100%",
+        width: "100%",
+        borderRadius: "1rem",
+      }}
     >
-      <MarkerClusterer>
-        { clusterer=>props.locations.map((location) => (
-        <Marker
-          key={location.id}
-          position={{lat : location.lat,lng : location.long}}
-          onClick={() => handleActiveMarker(location.id)}
-          icon={'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png'}
-        clusterer={clusterer}
-        >
-          {activeMarker === location.id ? (
-            <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-              {props.InfoWindowContainer? props.InfoWindowContainer(location) : <b>{location.name}</b>}
-            </InfoWindow>
-          ) : null}
-        </Marker>
-      ))
-        }
- 
-      </MarkerClusterer>
-     
-    </GoogleMap>
-  ) : <SkeletonCard {...containerStyle}></SkeletonCard>
-}
+      <TileLayer
+        url={`
+       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2hpdmFhbmsiLCJhIjoiY2xob3Vjbnd6MDBsNjNkbXNkanp2Nzd5dyJ9.Nikg8Qt4OOYGthgMQ5zH1w`}
+        // attribution="The Tarzan Way"
+      />
+      <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
+      <MarkerClusterGroup>
+        {props.locations.map((location, index) => (
+          <Marker
+            key={location.id}
+            animate
+            position={[location.lat, location.long]}
+            draggable={false}
+            icon={customIcon}
+          >
+            <Popup>
+              {props.InfoWindowContainer ? (
+                props.InfoWindowContainer(location)
+              ) : (
+                <b>{location.name}</b>
+              )}
+            </Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
+      <FitBoundsOnMount />
+    </MapContainer>
+  ) : null;
+});
 
-export default Map;
+export default Mapbox;

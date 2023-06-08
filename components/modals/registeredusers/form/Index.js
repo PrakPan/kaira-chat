@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import styled from "styled-components";
-import Grid from "@mui/material/Grid";
-import Person from "./person/Index";
+import styled from 'styled-components';
+import Grid from '@mui/material/Grid';
+import Person from './person/Index';
 const Container = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -31,11 +31,11 @@ const Enquiry = (props) => {
           className="text-center borde"
           style={{
             borderStyle: i
-              ? "solid none solid solid"
-              : "solid none solid solid",
-            borderWidth: "1px",
-            padding: "1rem",
-            borderRadius: "10px 0 0 10px",
+              ? 'solid none solid solid'
+              : 'solid none solid solid',
+            borderWidth: '1px',
+            padding: '1rem',
+            borderRadius: '10px 0 0 10px',
           }}
         >
           {props.registered_users[i].name}
@@ -46,17 +46,17 @@ const Enquiry = (props) => {
           className="text-center bordr"
           style={{
             borderStyle: i
-              ? "solid solid solid none"
-              : "solid solid solid none",
-            borderWidth: "1px",
-            padding: "1rem",
+              ? 'solid solid solid none'
+              : 'solid solid solid none',
+            borderWidth: '1px',
+            padding: '1rem',
             color: props.registered_users[i].payment_status
-              ? "green"
-              : "orange",
-            borderRadius: "0 10px 10px 0",
+              ? 'green'
+              : 'orange',
+            borderRadius: '0 10px 10px 0',
           }}
         >
-          {!props.registered_users[i].payment_status ? "Invited" : "Paid"}
+          {!props.registered_users[i].payment_status ? 'Invited' : 'Paid'}
         </Text>
       );
       //  pax.push(
