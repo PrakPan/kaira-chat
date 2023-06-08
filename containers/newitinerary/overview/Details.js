@@ -1,74 +1,3 @@
-<<<<<<< HEAD
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import Button from '../../../components/ui/button/Index';
-  const Container = styled.div`
-    display: grid;
-    grid-template-columns: auto auto auto auto auto;
-    max-width: 100vw;
-    overflow-x: hidden;
-    grid-gap: 1rem;
-    @media screen and (min-width: 768px){
-        grid-template-columns: max-content max-content max-content max-content max-content max-content;
-        grid-column-gap: 2.5rem; 
-
-    }
-`;
-
-const Heading = styled.p`
-    font-size: 12px;
-    font-weight: 400;
-    color: #7A7A7A;
-    margin: 0;
-    
-
-`;
-const Text = styled.p`
-    font-size: 14px;
-    font-weight: 500;
-    margin: 0;
-
-`;
-const Details = (props) => {
-   
-    useEffect(() => {
-      
-    },[]);
-console.log('f', props.filters)
-    return(
-        <Container className='font-poppins'>
-               <div style={{width: 'max-content'}} >
-                <Heading>Destination</Heading>
-                <Text>Lorem</Text>
-               </div>
-               <div style={{width: 'max-content'}} >
-                <Heading>Type of Travel</Heading>
-                <Text>{
-                    props.filters.length > 1 ? 
-                    (props.filters[0] + " +" + (props.filters.length-1))
-                    : props.filters[0]
-                    }</Text>
-               </div>
-               <div style={{width: 'max-content'}} >
-                <Heading>Group Type</Heading>
-                <Text>{props.group_type}</Text>
-               </div>
-               <div style={{width: 'max-content'}} >
-                <Heading>Duration</Heading>
-                <Text>{props.duration ? props.duration : ''}</Text>
-               </div>
-              
-               <div className='hidden-mobile'><Button borderRadius="6px" borderWidth="1.5px" onclick={() => console.log('')}>
-                        Trip Settings
-                    </Button>
-                    </div>
-        </Container>
-        
-    );
- }
-
-export default Details;
-=======
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import Button from '../../../components/ui/button/Index';
@@ -172,4 +101,3 @@ const Details = (props) => {
 };
 
 export default Details;
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707

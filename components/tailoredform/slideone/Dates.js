@@ -23,49 +23,6 @@ const Dates = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
   return (
-<<<<<<< HEAD
-   <Grid container spacing={2} style={{visibility: props.showCities && props.destination ? 'hidden' : 'visible'}}>
- <Grid item xs={6}   >
-               
-               <LocalizationProvider dateAdapter={AdapterDateFns}>
-             <DatePicker
-             inputFormat='dd/MM/yyyy'
-              open={openStart}
-              onOpen={() => setOpenStart(true)}
-              onClose={() => setOpenStart(false)}
-              disablePast
-               label={<div style={{backgroundColor: 'transparent !important'}}>Start Date</div>}
-               value={props.valueStart}
-               onChange={(newValue) => {
-                 props.setValueStart(newValue);
-               }}
-               renderInput={(params) => <TextField style={{backgroundColor: 'white'}}  onClick={(e) => setOpenStart(true)} {...params} />}
-             />
-           </LocalizationProvider>
-                            </Grid>
-                            {/* <Grid item xs={1} className="font-opensans">
-                                    to
-                            </Grid> */}
-                            <Grid item xs={6}>
-                          
-                          <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DatePicker
-                          inputFormat='dd/MM/yyyy'
-                          open={openEnd}
-                          disablePast
-                          minDate={props.valueStart}
-                          onOpen={() => setOpenEnd(true)}
-                          onClose={() => setOpenEnd(false)}
-                          label={<div style={{backgroundColor: 'transparent !important'}}>End Date</div>}
-                          value={props.valueEnd}
-                          onChange={(newValue) => {
-                            props.setValueEnd(newValue);
-                          }}
-                          renderInput={(params) => <TextField style={{backgroundColor: 'white'}}   onClick={(e) => setOpenEnd(true)} {...params}/>}
-                        />
-                      </LocalizationProvider>
-       </Grid>
-=======
     <Grid
       container
       spacing={2}
@@ -132,7 +89,6 @@ const Dates = (props) => {
           />
         </LocalizationProvider>
       </Grid>
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
     </Grid>
   );
 };

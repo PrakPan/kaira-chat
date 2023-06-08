@@ -21,6 +21,7 @@ import { connect } from 'react-redux';
 import HotelBookingContainer from './HotelBookingContainer';
 import LogInModal from '../../../components/modals/Login';
 import useMediaQuery from '../../../hooks/useMedia';
+import { TbArrowBack } from 'react-icons/tb';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -33,6 +34,21 @@ const Floating = styled.div`
 
   bottom: 10px;
   background: #01202b;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 10px;
+
+  cursor: pointer;
+`;
+const FloatingView = styled.div`
+  position: fixed;
+
+  bottom: 100px;
+  background: #f7e700;
   border-radius: 50%;
   width: 80px;
   height: 80px;
@@ -587,6 +603,26 @@ const HotelsBooking = (props) => {
               }}
             />
           </Floating>
+        </div>
+      )}
+      {!isDesktop && props.showBookingModal && (
+        <div className="absolute bottom-0 right-10 z-[1510]">
+          {/* <Slide
+              hideTime={4}
+              onUnmount={() => setFloatingButtonView(!floatingButtonView)}
+              isActive={floatingButtonView}
+              direction={5}
+              duration={2}
+              xdistance={-50}
+            > */}
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: '32px', width: '32px' }}
+              cursor={'pointer'}
+              onClick={props.setHideBookingModal}
+            />
+          </FloatingView>
+          {/* </Slide> */}
         </div>
       )}
       {images ? (

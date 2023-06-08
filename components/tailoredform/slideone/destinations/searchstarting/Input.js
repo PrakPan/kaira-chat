@@ -61,17 +61,10 @@ const SearchInput = (props) => {
     props.setStartingLocation({'name': text, 'place_id': place_id});
   }
   const _getResults = (query) => {
-<<<<<<< HEAD
-    setLoading(true);
-    if(query)
-    if(query.length > 1)
-
-=======
     if(query)
     if(query.length > 1)
 {
   setLoading(true);
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
   axiossearchstartinginstance.get(
         `?q=`+query
       )

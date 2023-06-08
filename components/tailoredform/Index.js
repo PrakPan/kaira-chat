@@ -9,38 +9,16 @@ import axiostailoredinstance from "../../services/leads/tailored";
 import Spinner from "../Spinner";
 import LoadingLottie from "../ui/LoadingLottie";
 import { useRouter } from "next/router";
-<<<<<<< HEAD
-import {connect} from 'react-redux';
-import {TbArrowBack} from 'react-icons/tb';
-import {BiArrowBack} from 'react-icons/bi';
-// import SlideOne from "./SlideOne";
-import Flickity from './Flickity';
-=======
 import { connect } from "react-redux";
 import { BiArrowBack } from "react-icons/bi";
 import Flickity from "./Flickity";
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
-import Cookies from "js-cookie";
-import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
-<<<<<<< HEAD
-height: max-content;
-color: black;
-z-index :2;
-
-position: relative;
-  background-color: ${props => props.slideIndex  ? 'white' : 'rgba(255,255,255,0.9)'};
- width: 100%;
- border: none !important;
-
- @media screen and (min-width: 768px){
-=======
   height: max-content;
   color: black;
   z-index: ${(props) => (props.showBlack ? "1006" : "2")};
@@ -55,7 +33,6 @@ position: relative;
     props.tailoredFormModal ? "12px !important" : "8px !important"};
   @media screen and (min-width: 768px) {
     ${(props) => props.tailoredFormModal && "height : 100%"};
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
     margin: auto 0;
 
     min-height: 400px;
@@ -142,7 +119,6 @@ const Enquiry = (props) => {
   const [focusedDate, setFocusedDate] = useState(null);
   const [groupType, setGroupType] = useState(null);
   const [startingLocation, setStartingLocation] = useState(false);
-  const isPageLoaded = usePageLoaded()
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -155,6 +131,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
+ 
   useEffect(() => {
     if (slideIndex === 2 && props.token) _submitDataHandler();
     setShowPopup(popupObj);
@@ -165,37 +142,7 @@ const Enquiry = (props) => {
     setShowSearchStarting(false);
   };
   let isPageWide = media("(min-width: 768px)");
-          const LocationCookie = Cookies.get("userLocation");
 
-  useEffect(() => {
-      if (!startingLocation) {
-        if (LocationCookie) {
-          const userLocation = JSON.parse(LocationCookie);
-          if (userLocation.text && userLocation.place_id)
-            setStartingLocation({
-              name: userLocation.text,
-              place_id: userLocation.place_id,
-            });
-        }
-      }
-  }, [LocationCookie]);
-
-<<<<<<< HEAD
-    // const [budgetLower,setBudgetLower] = useState(0);
-    if(!loading && !submitted)
- return(
-    <div style={{}}>
-                {showBlack ? <BlackContainer onClick={_handleHideBlack}></BlackContainer> : null}
-               
-    <Container slideIndex={slideIndex} className={isPageWide ? "border center-di"  : "center-div"} onClick={() => setShowBlack(true)}>
-        {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
-            {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-           
-            {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-            <div style={{padding: '0.5rem 1rem', width: '100%', marginBottom: slideIndex === 2 ? '0rem' : '0rem', display: 'grid', gridTemplateColumns: 'max-content auto'}}>
-            {slideIndex ? <div className="center-div"><BiArrowBack onClick={_prevSlideHandler} className="hover-pointer" style={{ marginTop: '2px', fontSize: '1.5rem'}}></BiArrowBack></div> : <div></div>}
-            <Heading style={{textAlign: !slideIndex ? 'left' : 'center'}}>{!slideIndex ? "Get your free travel plan now"  : "Trip Planner"}</Heading> 
-=======
   const [selectedCities, setSelectedCities] = useState(
     !router.pathname.split("/").includes("[city]")
       ? [
@@ -226,7 +173,6 @@ const Enquiry = (props) => {
      selectedCities.length,
      slideIndex
    ]);
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 
   // const ContainerRef = useRef()
 
@@ -237,7 +183,6 @@ const Enquiry = (props) => {
     let cityids = [];
     let locations = [];
     let stateIds = [];
-    let countryIds = []
     // let starting_location = null;
     let preferences = [];
     for (var i = 0; i < selectedPreferences.length; i++) {
@@ -258,7 +203,6 @@ const Enquiry = (props) => {
         ) {
           if (selectedCities[i].type == "State")
             stateIds.push(parseInt(selectedCities[i].id));
-          else if (selectedCities[i].type == "Country") countryIds.push(parseInt(selectedCities[i].id))
           else {
             cityids.push(parseInt(selectedCities[i].id));
           }
@@ -283,17 +227,18 @@ const Enquiry = (props) => {
       number_of_infants = numberOfInfants;
     }
     let data = null;
+
     data = {
       // "locations": locations,
       experience_filters_selected: preferences,
       budget: budget,
-      start_date: start_date,
-      end_date : end_date,
       // "city_id": cityids,
       group_type: groupType,
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
+      start_date: start_date,
+      end_date: end_date,
       flexible_dates: flexible,
       user_location: {
         place_id: startingLocation
@@ -305,12 +250,10 @@ const Enquiry = (props) => {
     if (selectedCities[0].destination_id)
       data.destination_id = [selectedCities[0].destination_id];
     if (stateIds.length) data.state_id = stateIds;
-    if(countryIds.length) data.country_ids = countryIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
-    if (start_date === "1970-01-01") data.start_date = "";
-    if (end_date === "1970-01-01") data.end_date = "";
-      if (startingLocation) data;
+
+    if (startingLocation) data;
 
     setLoading(true);
     localStorage.removeItem("MyPlans");
@@ -322,6 +265,7 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
+        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
@@ -552,33 +496,6 @@ const Enquiry = (props) => {
             </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
             Submit
             </Button> } */}
-<<<<<<< HEAD
-            {
-                slideIndex === 0? <div style={{display: 'flex', justifyContent: 'flex-end', visibility: showCities && props.cities ? 'hidden' : 'visible'}}><Button width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={() => setSlideIndex(slideIndex+1)}>
-                Next
-                </Button></div>  : null
-            }
-            {
-                slideIndex === 1 ? !props.token ? <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button fontSize="12px" width="100%" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"   onclick={() => setSlideIndex(slideIndex+1)}>
-                Next
-                </Button></div> :  <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button width="100%" padding="0.5rem 2rem" fontSize="12px" fontWeight="600"  margin="1rem 0" borderRadius="5px" borderWidth="1px" bgColor="#f7e700"  onclick={_submitDataHandler}>
-            Submit
-            </Button></div> : null
-            }
-            <Grid container spacing={2}>
-           
- 
-    
-                {/* <Grid item xs={12}>
-                    {!loading ? 
-                    <Button onclickparam={null} onclick={_submitDataHandler} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">Continue</Button>
-                        : 
-                        <Button onclickparam={null} onclick={() => null} margin="0rem 0 0 0"  width="100%" borderRadius="5px" borderWidth="0" bgColor="#f7e700" hoverBgColor="black" color="black" hoverColor="white">
-                            Preparing Plan
-                            <Spinner display="inline-block" size={16} margin="0 0 0 0.5rem" color={loading ? 'white' : 'black'}></Spinner>
-                        </Button>
-=======
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 
             {slideIndex === 0 ? (
               <div
@@ -594,7 +511,7 @@ const Enquiry = (props) => {
                   fontSize="1rem"
                   width={!isPageWide ? "auto" : "100%"}
                   style={
-                    !isPageWide && isPageLoaded
+                    !isPageWide
                       ? {
                           position: "fixed",
                           left: "1rem",

@@ -7,15 +7,11 @@ import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
 import SearchInput from './Input';
 import SearchResults from './results/Index';
-<<<<<<< HEAD
-import axios from 'axios';
-=======
 import HotLocations from './results/HotLocations';
 import axios from 'axios';
 import Spinner from '../../../../Spinner';
 import axioslocationsinstance from '../../../../../services/search/search'
 import { useRouter } from 'next/router';
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 const Container = styled.div`
  
 width: 100%;
@@ -32,29 +28,6 @@ const Search = (props) => {
   let isPageWide = media('(min-width: 768px)');
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
-<<<<<<< HEAD
-  // const [selectedCities, setSelectedCities] = useState([]);
-  const _handleKey = (e) => {
-    if(e.target.value)
-    if(e.target.value.length > 1)
-    axios.get(`https://dev.apis.tarzanway.com/search/?q=`+e.target.value).then(res=>{
-        if(res.data.length){
-          setShowResults(true);
-            console.log('res', res.data);
-            setResults(res.data)
-            // props._showSearchedLocations(res.data);
-        }
-        else setShowResults(false);
-
-        // else props._showSearchedLocations([]);
-
-    });
-  }
-  return (
-   <Container>
-        <SearchInput onfocus={props.onfocus} onblur={props.onblur} searchFinalized={props.searchFinalized} _handleKey={_handleKey}  setSearchFinalized={props.setSearchFinalized} setResults={setResults}  setShowResults={setShowResults}></SearchInput>
-        {showResults && !props.searchFinalized? <SearchResults top="5.75rem" results={results} setSearchFinalized={props.setSearchFinalized}></SearchResults> : null}
-=======
   const [loading, setLoading] = useState(false);
   const [hotLocationsData, setHotLocationsData] = useState([]);
   const [showHotLocations, setShowHotLocations] = useState(false)
@@ -98,13 +71,22 @@ const Search = (props) => {
 }
   }
   useEffect(() => {
-    var params = ''
-    if (query.state) params = `?state=${query.state}`;
-    else if (query.country) params = `?country=${query.country}`;
-    else if (query.continent) params = `?continent=${query.continent}`;
-    
+    if (query.city || query.link) {
+      axios
+        .get(
+          `https://apis.tarzanway.com/poi/city/recommended/?slug=${
+            query.city || query.link
+          }`
+
+        )
+        .then((res) => {
+          if (res.data.length) setHotLocationsData(res.data);
+          else setShowHotLocations(false);
+        })
+        .catch((e) => setShowHotLocations(false));
+    } else
       axioslocationsinstance
-        .get("hot_destinations" + params)
+        .get("hot_destinations")
         .then((response) => {
           if (response.data.length) setHotLocationsData(response.data);
           else setShowHotLocations(false);
@@ -112,8 +94,6 @@ const Search = (props) => {
         .catch((e) => {
           setShowHotLocations(false);
         });
-
-    
      }, []);
   // useEffect(() => {
   //   if (showResults) setShowHotLocations(false)
@@ -178,7 +158,6 @@ const Search = (props) => {
         ></SearchResults>
       
       )} 
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
     </Container>
   );
 }

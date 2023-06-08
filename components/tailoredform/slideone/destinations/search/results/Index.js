@@ -1,19 +1,7 @@
 
 import React, {useState, useEffect } from 'react';
-<<<<<<< HEAD
-  
-import media from '../../../../../media';
-//  import Button from '../../../../ui/button/Index';
-import styled from 'styled-components';
-//  import ImageLoader from '../../../ImageLoader';
-//  import Location from './Destination';
-//  import { TbArrowBack } from 'react-icons/tb';
-// import Search from './search/Index';
-// import Animate from '../../../HOC/'
-=======
 import SkeletonCard from '../../../../../ui/SkeletonCard'
 import styled from 'styled-components';
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 import Result from './Result';
  const AbsoluteContainer = styled.div`
  background-color: white;
@@ -22,11 +10,7 @@ position: absolute;
 top: ${props => props.top};
 width: 100%;
 left: 0;
-<<<<<<< HEAD
-z-index: 10;
-=======
 z-index: 1500;
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
  `
  const LocationContainer = styled.div`
  padding: 0.25rem 0;
@@ -42,57 +26,6 @@ z-index: 1500;
  }
  
  `;
-<<<<<<< HEAD
- 
-const SearchResults = (props) => {
-
-  const [locationsJSX, setLocationsJSX] = useState([]);
-  const [moreLocationsJSX, setMoreLocationJSX] = useState([]);
-  const [showMore, setShowMore] = useState(false);
-
-  const [searchedLocationsJSX, setSearchedLocationJSX] = useState([]);
-
-  let isPageWide = media('(min-width: 768px)');
-
-  const _isCityAdded =  (city) => {
- 
-  }
-
-  const _handleClick = (city) => {
-    
-  }
-   useEffect(() => {
-    
-
-  },[]);
-
-  const _showSearchedLocations = (results) => {
-    let seaarchedlocationsarr = [];
-    for(var i = 0 ; i < results.length; i++) {
-      seaarchedlocationsarr.push(
-        // <Location image={results[i]["_source"].image} text={results[i]["_source"].name} onclick={_handleClick} onclickparam={results[i]["_source"]} is_selected={_isCityAdded(results[i]["_source"])} ></Location>
-
-      )
-    }
-    setSearchedLocationJSX(seaarchedlocationsarr.slice())
-  }
-
-  return (
-    <AbsoluteContainer className='border' top={props.top}>{
-      props.results.length ?
-      props.results.map(result => {
-        return(
-          <Result name={result["_source"].name} type={result["_source"].type} setSearchFinalized={props.setSearchFinalized}></Result>
-
-        )
-      })
-      : null
-    }
-     
-
-
-   </AbsoluteContainer>
-=======
  const Heading = styled.p`
    font-weight: 500;
    font-style: normal;
@@ -157,7 +90,6 @@ const SearchResults = (props) => {
         (props.results && props.results.type === 'error') ?<>{props.results.data}</>:null
         }
     </AbsoluteContainer>
->>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
   );
 }
 
