@@ -42,16 +42,14 @@ const Layout = (props) => {
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}
       ></LogInModal>
-      {router.query.id && (
-        <TailoredFormMobileModal
-          destinationType={'city-planner'}
-          onHide={() => {
-            setShowMobilePlanner(false);
-            closeTailoredModal(router, router.query.id);
-          }}
-          show={showMoiblePlanner}
-        />
-      )}
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
 
       {!props.itinerary ? <Footer></Footer> : null}
     </div>
