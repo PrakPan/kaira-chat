@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import media from '../../../media';
 import Bar from './Bar';
 import Pannel from './pannel/Index';
-import axioslocationsinstance from '../../../../services/poi/hotlocations';
 const Container = styled.div`
 width: 100%;
 
@@ -14,13 +13,9 @@ width: 100%;
 const MobileSearch= (props) => {
    let isPageWide = media('(min-width: 768px)')
     const [pannelOpen, setPannelOpen] = useState(false);
-    const [hotLocationsData, setHotLocationsData] = useState();
     useEffect(() => {
-         axioslocationsinstance.get("").then(response => {
-                  setHotLocationsData(response.data);
-             });
              if(props.open) setPannelOpen(true)
-       },[props.open]);
+       },[pannelOpen]);
        const _handlePannelClose = () => {
          setPannelOpen(false);
          if(props.onclose) props.onclose();
@@ -28,7 +23,7 @@ const MobileSearch= (props) => {
     return(
         <Container>
       
-           {pannelOpen ? <Pannel hotlocations={hotLocationsData} setPannelClose={_handlePannelClose}></Pannel> : <Bar setPannelOpen={() => setPannelOpen(true)}></Bar>} 
+           {pannelOpen ? <Pannel setPannelClose={_handlePannelClose}></Pannel> : <Bar setPannelOpen={() => setPannelOpen(true)}></Bar>} 
         </Container>
     );
 }

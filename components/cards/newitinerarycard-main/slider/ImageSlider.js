@@ -131,7 +131,7 @@ const ImageSlider = (props) => {
     
     return(
         <Container  props={props} ref={Component} >
-            {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
+            {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
             <BackgroundImageLoader filter="none"  height={height+"px"}  url={image}  borderRadius="10px 10px 0 0"></BackgroundImageLoader>
           
             

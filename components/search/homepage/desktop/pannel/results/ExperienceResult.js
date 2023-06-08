@@ -1,9 +1,5 @@
 import React , {useState} from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
 padding: 1rem;
@@ -38,7 +34,6 @@ margin: 0;
 `;
 
 const Result= (props) => {
-  let isPageWide = media('(min-width: 768px)')
   let [hover, setHover] = useState(false);
   const _handleMouseEnter = () => {
       setHover(true);

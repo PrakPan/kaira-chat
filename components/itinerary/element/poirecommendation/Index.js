@@ -28,7 +28,6 @@ const Text = styled.p`
     font-weight: 300;
 `;
 const Food = (props) =>{
-    const [data, setData] = useState([]);
     const [JSX, setJSX] = useState(null);
 
     useEffect(() => { 

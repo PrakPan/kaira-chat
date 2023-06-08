@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import styled from 'styled-components';
-import cross from '../../../public/assets/close.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash} from '@fortawesome/free-solid-svg-icons';
 import {useRouter} from 'next/router';
@@ -55,7 +54,7 @@ const Notification = (props) => {
   return(
      <Container className="border-thi" >
         <NotificationClickContainer onClick={_handleRedirect}>
-             <Heading className="font-opensans">Woohoo! Your package has arrived 🎉</Heading>
+             <Heading className="font-lexend">Woohoo! Your package has arrived 🎉</Heading>
             <Text className="font-nunito">Your travel experience to Manali is prepared by our travel experts. 🥳 You can check it out here.</Text>
         </NotificationClickContainer >
         <div className='center-div'>

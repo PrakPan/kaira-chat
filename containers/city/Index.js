@@ -1,55 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import Transition from 'react-transition-group/Transition';
- import Loading from '../../components/LoadingPage';
-import ExperienceGallery from './landing/Index';
-import Menu from './Menu';
 import FullScreenGallery from '../../components/fullscreengallery/Index';
 import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import media from '../../components/media';
 import { useRouter } from 'next/router';
-import POIModal from '../../components/modals/poi/Index';
-
+import NewMenu from '../newcityplanner/Menu'
+import MobileBanner from './Banner/Mobile'
+import WhatsappFloating from '../../components/WhatsappFloating';
+import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
+import validateTextSize from '../../services/textSizeValidator';
+import openTailoredModal from '../../services/openTailoredModal';
 const Experience = (props) => {
+  
+  const [escapeState, setEscapeState] = useState(false);
+
+  useEffect(() => {
+    //Escape hatch for mobile images, do not remove
+    setEscapeState(true)
+   }, []);
    let isPageWide = media('(min-width: 768px)')
-  const [poiData, setPoiData] = useState();
-  const [showPoiModal, setShowPoiModal] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
    const [galleryimages, setGalleryImages] = useState([]);
-  const [itinerary, setItinerary] = useState(null);
-  const [brief, setBreif] = useState(null);
-  const [booking, setBooking] = useState(null);
-  const [payment, setPayment] = useState(null);
-  const [experienceData, setExperienceData] = useState({
-    data: {
-      name: null,
-      experience_filters: ['']
-    },
-  });
   const router = useRouter();
-  const _handlePersonaliseRedirect = () => {
-     localStorage.setItem('search_city_selected_id', props.cityData.id)
-    localStorage.setItem('search_city_selected_name', props.cityData.name)
-    localStorage.setItem('search_city_selected_parent', props.cityData.state.name)
-
-
-    router.push('/tailored-travel')
-  }
-  const _openPoiModal = (poi) => {
-    setPoiData({...poi});
-    document.getElementById("html").classList.add('overlfow-hidden');
-
-    setShowPoiModal(true);
-  }
-  const _closePoiModal = () => {
-    document.getElementById("html").classList.remove('overlfow-hidden');
-
-    setShowPoiModal(false);
-  }
  
-
-  
-
-
   const closeGalleryHandler = () => {
     let images = [];
     for(var i = 0 ; i<props.cityData.images.length; i++){
@@ -57,75 +29,57 @@ const Experience = (props) => {
     }    setGalleryImages(images);
     setGalleryOpen(false);
   }
-   //If experience data fetched
-    if (isPageWide){
-      //Open Gallery
       if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages} ></FullScreenGallery >);
-      //Open experience page
       else return (
-        <div style={{minHeight: '100vh'}}>
-          <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
+        <div
+          className="font-lexend"
+          style={isPageWide ? { minHeight: "100vh" } : {}}
+        >
+          {isPageWide ? (
+            <DesktopPersonaliseBanner
+              onclick={() =>
+                openTailoredModal(
+                  router,
+                  props.cityData.id,
+                  props.cityData.name
+                )
+              }
+              text={validateTextSize(
+                `Craft a personalized itinerary to ${props.cityData.name} now!`,
+                9,
+                `Craft a trip to ${props.cityData.name} now!`
+              )}
+            ></DesktopPersonaliseBanner>
+          ) : (
+            <MobileBanner
+              cityName={props.cityData.name}
+              onClick={() =>
+                openTailoredModal(
+                  router,
+                  props.cityData.id,
+                  props.cityData.name
+                )
+              }
+            />
+          )}
+          <WhatsappFloating message="Hey, I need help planning my trip." />
           <div>
-          <ExperienceGallery  filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" } setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
-            <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)}   setGalleryOpen={() => setGalleryOpen(true)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)}></Menu>
-          <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
-        </div>
-           <Transition in={!props.cityData} timeout={1000} unmountOnExit>
-              { state => 
-              <div
-              className="center-div"
-              style={{
-                backgroundColor: "#F7e700",
-                 width: '100vw',
-                 transition: 'all 1s ease-out',
-                 zIndex: '1000',
-                  height: '100vh',
-                 position: 'fixed',
-                 left: state=='exiting' ? '-100vw' : 0,
-                 top: '0',
-                 }}>
-                 <Loading/>
-                 </div>
+            <HeroBanner
+              image={props.cityData.images[0].image}
+              page_id={props.cityData.id}
+              destination={props.cityData.name}
+              cities={props.reccomendedCitiesData}
+              title={`${props.cityData.name} Trip Planner`}
+            />
 
-
-              }
-               </Transition>
+            <NewMenu
+              data={props.cityData}
+              destination={props.cityData.name}
+              nearbyCities={props.reccomendedCitiesData}
+            />
+          </div>
         </div>
       );
-      }
-    else{
-      if(galleryOpen) return(<FullScreenGallery closeGalleryHandler={closeGalleryHandler} images={galleryimages}  ></FullScreenGallery>);
-      else
-      return (
-
-        <div style={{}}>
-          <ExperienceGallery   filter={ props.cityData.most_popular_for ? props.cityData.most_popular_for[0] : null}  experienceLoaded={true} title={props.cityData.name} region={ props.cityData.state_name } duration={ props.cityData.ideal_duration_days+" Days" }  setGalleryOpen={setGalleryOpen} images={props.cityData.images}  />
-          <Menu slug={props.id} _openPoiModal={(poi) => _openPoiModal(poi)} setGalleryOpen={() => setGalleryOpen(true)} setGalleryImages={(imagesArr) => setGalleryImages(imagesArr)} title={props.cityData.name} data={props.cityData} experienceLoaded={true} itinerary={itinerary} brief={brief} bookings={booking} payment={payment}  images={props.cityData.images}></Menu>
-          <POIModal poi={poiData} show={showPoiModal} onHide={_closePoiModal}></POIModal>
-          <Transition in={props.cityData ? false : true} timeout={1000} unmountOnExit>
-              { state => 
-              <div
-              className="center-div"
-              style={{
-                width: '100vw',
-                backgroundColor: "#F7e700",
-                 transition: 'all 1s linear',
-                 zIndex: '2500',
-                  height: '100vh',
-                 position: 'fixed',
-                 top: '0',
-                 left: state=='exiting' ? '-100vw' : 0,
-                 }}>
-                 <Loading/>
-                 </div>
-
-
-              }
-               </Transition>
-
-        </div>
-      );
-    }
   }
 
 export default Experience;

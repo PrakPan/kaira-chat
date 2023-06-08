@@ -110,11 +110,6 @@ const extensions = {
       label: '+7',
       img: 'https://res.cloudinary.com/devanshchawla/image/upload/v1583219191/flags/021-russia.svg'
     },
-    // {
-    //   value: 'Newzealand',
-    //   label: '+64',
-    //   img: 'https://res.cloudinary.com/devanshchawla/image/upload/v1583219192/flags/022-malaysia.svg'
-    // },
     malaysia: {
       value: 'Malaysia',
       label: '+60',

@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faFontAwesomeLogoFull} from '@fortawesome/free-solid-svg-icons';
 import media from '../../../media';
-import cross from '../../../../public/assets/icons/navigation/close.svg';
 
 const Container  = styled.div`
 bottom: 0;
@@ -81,14 +78,14 @@ const CurrentlyReplacing = (props) =>{
             <TextContainer>
                 <div>
                 <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-                <Name className="font-opensans">
+                <Name className="font-lexend">
                     {props.replacing}
                     {/* <FontAwesomeIcon icon={faChevronDown} style={{marginLeft: '0.5rem'}} /> */}
                 </Name>
                 {props.selectedBooking ? <DetailsContainer>
-                        {props.selectedBooking.check_in ? <Detail className='font-opensans'>{"Check in: "+ props.selectedBooking.check_in}</Detail> : null}
-                        {props.selectedBooking.check_out ? <Detail className='font-opensans'>{"Check out: " + props.selectedBooking.check_out}</Detail> : null}
-                        {/* <Detail className='font-opensans'>{"Rooms: " + props.selectedBooking.number_of_rooms + " x " + props.selectedBooking.room_type}</Detail> */}
+                        {props.selectedBooking.check_in ? <Detail className='font-lexend'>{"Check in: "+ props.selectedBooking.check_in}</Detail> : null}
+                        {props.selectedBooking.check_out ? <Detail className='font-lexend'>{"Check out: " + props.selectedBooking.check_out}</Detail> : null}
+                        {/* <Detail className='font-lexend'>{"Rooms: " + props.selectedBooking.number_of_rooms + " x " + props.selectedBooking.room_type}</Detail> */}
                 </DetailsContainer> : null}
                 </div>
             </TextContainer>

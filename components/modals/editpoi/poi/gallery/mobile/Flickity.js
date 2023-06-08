@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react';
-import Flickity from 'react-flickity-component';
 import { Carousel } from 'react-bootstrap';
 import ImageLoader from '../../../../../ImageLoader';
 
@@ -38,15 +37,10 @@ const StyledCarouselItem = styled(Carousel.Item)`
 `;
 const FlickityCarousel = (props) => {
     const [index, setIndex] = useState(0);
-
+   const [imagesJSX, setImagesJSX] = useState([]);
     const handleSelect = (selectedIndex, e) => {
       setIndex(selectedIndex);
     };
-    const [imagesJSX, setImagesJSX] = useState([]);
-    const [hover, setHover] = useState(false);
-    const _onMouseEnter = () => {
-         setHover(true);
-    }
     let color="green";
     if(props.review_score < 8 && props.review_score > 6.5) color="orange";
     else if(props.review_score < 6.5) color="red";
@@ -57,17 +51,12 @@ const FlickityCarousel = (props) => {
                 <StyledCarouselItem     >
                 <ImageLoader borderRadius="0px" url={props.images[i].image }   width='15vw' widthmobile="100%" height="auto"   dimensions={{width: 800, height: 800}} dimensionsMobile={{width: 1800, height: 1200}}></ImageLoader>
                 <Carousel.Caption style={{bottom: '0', left: '0',  padding: '0', width: '100%'}}>
-                    <RatingContainer className='font-opensans' style={{backgroundColor: color}}>
+                    <RatingContainer className='font-lexend' style={{backgroundColor: color}}>
                         <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
                             {props.review_score+"/10"} 
                     </RatingContainer> 
-                    <ReviewCount className='font-opensans'>{props.review_count + " Reviews"}</ReviewCount>
+                    <ReviewCount className='font-lexend'>{props.review_count + " Reviews"}</ReviewCount>
                </Carousel.Caption>
-               {/* <RatingContainer className='font-opensans'>
-                        <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
-                            8.5/10 
-                    </RatingContainer> 
-                    <ReviewCount className='font-opensans'>326 Reviews</ReviewCount> */}
             </StyledCarouselItem>
             )
         }

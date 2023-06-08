@@ -20,7 +20,7 @@ const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
   
      return(
-      <Container className='font-opensans hidden-desktop'>  
+      <Container className='font-lexend hidden-desktop'>  
       <GridContainer>
             <Button fontSize="0.85rem" fontWeight="600" onclick={props.setShowDetails} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
             <Button  fontSize="0.85rem" fontWeight="600" onclick={()=> console.log('test')}   width="100%"borderRadius="0 0  10px 0" bgColor="black" color="white" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px"  onclickparam={null} >Selected</Button>

@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components'
-// import GIF from '../../../public/assets/gifs/itinerary/one.gif';
-// import GIF2 from '../../../public/assets/gifs/itinerary/two.gif';
 import Tooltip from "react-bootstrap/Tooltip";
 import Overlay from "react-bootstrap/Overlay";
 import media from '../../media';
@@ -127,7 +125,7 @@ const Timer = (props) =>{
                     }}
                     className="borde center-div"
                     >
-                        <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-opensans">
+                        <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-lexend">
                             Time Remaining
                         </TimeRemaining>
                         <Time>{timer}</Time>
@@ -162,7 +160,7 @@ const Timer = (props) =>{
       }}
       className="borde center-div"
       >
-          <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-opensans">
+          <TimeRemaining style={{fontSize: hideTimer ? '1rem' : '1.5rem'}} className="font-lexend">
               Time Remaining
           </TimeRemaining>
           <Time>{timer}</Time>

@@ -9,7 +9,10 @@ const Terms = () => {
 
 
 
-</Head>  <div></div></Layout>
+</Head>  <div>
+    <TermsContainer />
+</div>
+</Layout>
  
 
 }

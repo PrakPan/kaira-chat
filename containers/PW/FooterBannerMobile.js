@@ -57,7 +57,7 @@ const Banner = (props) => {
       <FixedContainer>
         <WhatsAppContainer className='border-thin' onClick={_openWhatsApp}>
        <ImageLoader display="inline"  url="media/icons/bookings/whatsapp.svg" leftalign widthmobile="2rem" height="2rem"></ImageLoader>
-     {/* <p style={{margin: '0'}} className="font-opensans">Contact Us</p> */}
+     {/* <p style={{margin: '0'}} className="font-lexend">Contact Us</p> */}
       {/* <Cross style={{fontSize: '0.5rem'}}> */}
         <StyledFaTimes style={{fontSize: '0.5rem', lineHeight: '1'}}></StyledFaTimes>
       {/* </Cross> */}

@@ -122,9 +122,9 @@ const Counter = (props) => {
     return(
         <Container className='border-thin'>
             {/* <ImageLoader width="3rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url={props.img}></ImageLoader> */}
-            <div style={{padding: '0.5rem'}}><p style={{margin: '0rem 0', fontSize: '0.85rem'}} className="font-opensans text-center">{props.heading}</p>
-            <Age className='font-opensans text-center'>{props.age}</Age>
-            {/* <p style={{margin: '0rem 0'}} className="font-opensans">{props.}</p> */}
+            <div style={{padding: '0.5rem'}}><p style={{margin: '0rem 0', fontSize: '0.85rem'}} className="font-lexend text-center">{props.heading}</p>
+            <Age className='font-lexend text-center'>{props.age}</Age>
+            {/* <p style={{margin: '0rem 0'}} className="font-lexend">{props.}</p> */}
             </div>
             <div style={{borderStyle: 'solid none none none', borderWidth: '1px', borderColor: '#e4e4e4'}}></div>
             <GridContainer>

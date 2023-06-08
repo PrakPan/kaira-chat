@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import media from '../../../media';
 
 import {IoStarSharp} from 'react-icons/io5';
-import ImageLoader from '../../../ImageLoader';
 const Container = styled.div`
 display: grid;
 grid-template-columns: auto max-content;
@@ -52,7 +51,6 @@ const Section= (props) => {
     let color="rgba(18, 105, 4, 1)";
      try{
     if(props.data.user_rating){
-        // console.log(props.rating)
 
     if(props.data.user_rating < 3.8 && props.data.user_rating > 3) color="orange";
     else if(props.data.user_rating < 3) color="red";
@@ -62,11 +60,11 @@ const Section= (props) => {
 
    if(props.data)
     return(
-      <Container className='font-opensans'>  
-            <Name className='font-opensans  hover-pointer' onClick={!props.is_registration_needed ? props.setShowBookingModal : () => console.log('')}>{props.data.name}</Name>
+      <Container className='font-lexend'>  
+            <Name className='font-lexend  hover-pointer' onClick={!props.is_registration_needed ? props.setShowBookingModal : () => console.log('')}>{props.data.name}</Name>
              
                 <div className='center-div'>
-                {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-opensans " style={{backgroundColor: color, lineHeight: '1'}}>
+                {props.data ? props.data.user_rating &&  color!=='red'? <RatingContainer className="font-lexend " style={{backgroundColor: color, lineHeight: '1'}}>
                         <IoStarSharp style={{fontSize: '1rem', margin: '0 0.25rem 0 0', color: 'white', lineHeight: '1'}}/>
                          { props.data.user_rating  +" / 5"} 
                     </RatingContainer> : null : null }

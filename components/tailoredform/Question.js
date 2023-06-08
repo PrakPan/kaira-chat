@@ -15,7 +15,7 @@ const Question = (props) =>{
  
 //   let isPageWide = media('(min-width: 768px)');
   
-  return <Heading margin={props.margin} className={props.hover_pointer ? "text-centr font-opensans hover-pointer" : "text-centr font-opensans"}>{props.children}</Heading>;
+  return <Heading margin={props.margin} className={props.hover_pointer ? "text-centr font-lexend hover-pointer" : "text-centr font-lexend"}>{props.children}</Heading>;
 }
 
 

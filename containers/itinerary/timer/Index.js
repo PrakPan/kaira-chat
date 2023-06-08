@@ -149,13 +149,13 @@ const Timer = (props) =>{
       className="borde center-div"
       >
         {!props.hideTimer   ? <FontAwesomeIcon icon={faTimes} onClick={props._handleTimerClose} style={{margin: "0.5rem", position: 'absolute', top: '0', right: '0', fontSize: '1.5rem'}}/> : null}
-          {!props.hideTimer ? <TimeRemaining style={{fontSize: props.hideTimer ? '1rem' : '2.5rem'}} className="font-opensans">
+          {!props.hideTimer ? <TimeRemaining style={{fontSize: props.hideTimer ? '1rem' : '2.5rem'}} className="font-lexend">
           {"Hi "+firstname+"!"}
           </TimeRemaining> : null}
           
       
       
-        {props.hideTimer ? null : <p className="font-opensans" style={{fontWeight: 300, margin: '0 1rem 1.5rem 1rem', textAlign: 'center'}}>{props.booking? BOOKING_TIMER_MESSAGE: ITINERARY_TIMER_MESSAGE}</p>}
+        {props.hideTimer ? null : <p className="font-lexend" style={{fontWeight: 300, margin: '0 1rem 1.5rem 1rem', textAlign: 'center'}}>{props.booking? BOOKING_TIMER_MESSAGE: ITINERARY_TIMER_MESSAGE}</p>}
 
          <ButtonsContainer>
               {props.hideTimer  || props.booking? null : <Button hoverColor="white" width="100%" hoverBgColor="black" borderRadius="2rem" borderWidth="0" bgColor="#f7e700"  margin="0.5rem auto 0.5rem auto" onclick={props._handleTimerClose}>Preview Itinerary</Button>}
@@ -186,17 +186,17 @@ Connect on WhatsApp</Button>}
       <div style={{backgroundColor: !props.hideTimer ? "#f7e700" : 'transparent', paddingTop: '0', margin:   '0'}}>
           <TimeContainer style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: '0.5rem'}}>
               <TimeCircle className="center-div"  style={{  width: props.hideTimer ? '100%' : '28.3vw', minHeight : props.hideTimer ? 'max-content' : '22vw', padding: '0.25rem'}}>
-                  <TimeNumber className="font-opensans" style={{fontSize: props.hideTimer ? '1rem' : '1.9rem'}}>{props.hours}</TimeNumber>
+                  <TimeNumber className="font-lexend" style={{fontSize: props.hideTimer ? '1rem' : '1.9rem'}}>{props.hours}</TimeNumber>
                   <TimeUnit className="font-nunito">Hours</TimeUnit>
             </TimeCircle>
-            {/* <div className="center-div font-opensans" style={{fontSize: '1.5rem', fontWeight: '600'}}>:</div> */}
+            {/* <div className="center-div font-lexend" style={{fontSize: '1.5rem', fontWeight: '600'}}>:</div> */}
               <TimeCircle className="center-div"  style={{  width: props.hideTimer ? '100%' : '28.3vw', minHeight : props.hideTimer ? 'max-content' : '22vw', padding: '0.25rem'}}>
-                  <TimeNumber className="font-opensans" style={{fontSize: props.hideTimer ? '1rem' : '1.9rem'}}>{props.minutes}</TimeNumber>
+                  <TimeNumber className="font-lexend" style={{fontSize: props.hideTimer ? '1rem' : '1.9rem'}}>{props.minutes}</TimeNumber>
                   <TimeUnit className="font-nunito">Minutes</TimeUnit>  
                 </TimeCircle>
-               {/* <div className="center-div font-opensans" style={{fontSize: '1.5rem', fontWeight: '600'}}>:</div>  */}
+               {/* <div className="center-div font-lexend" style={{fontSize: '1.5rem', fontWeight: '600'}}>:</div>  */}
               <TimeCircle className="center-div"  style={{ width: props.hideTimer ? '100%' : '28.3vw', minHeight : props.hideTimer ? 'max-content' : '22vw', padding: '0.25rem'}}>
-                <TimeNumber className="font-opensans" style={{fontSize: props.hideTimer ? '1rem' : '1.9rem'}}>{props.seconds}</TimeNumber>
+                <TimeNumber className="font-lexend" style={{fontSize: props.hideTimer ? '1rem' : '1.9rem'}}>{props.seconds}</TimeNumber>
                 <TimeUnit className="font-nunito">Seconds</TimeUnit>    
             </TimeCircle>
 
@@ -233,13 +233,13 @@ Connect on WhatsApp</Button>}
       >
           {!props.hideTimer? <FontAwesomeIcon icon={faTimes} onClick={props._handleTimerClose} style={{margin: "0.5rem",  position: 'absolute', top: '0', right: '0', fontSize: '1.5rem'}}/> : null}
 
-          {!props.hideTimer ? <TimeRemaining style={{fontSize: props.hideTimer ? '1rem' : '2.5rem'}} className="font-opensans">
+          {!props.hideTimer ? <TimeRemaining style={{fontSize: props.hideTimer ? '1rem' : '2.5rem'}} className="font-lexend">
           {"Hi "+firstname+"!"}
           </TimeRemaining> : null}
          
           
     
-     {props.hideTimer ? null : <p className="font-opensans" style={{fontWeight: 300, margin: '0 1rem 1.5rem 1rem', textAlign: 'center'}}>{props.booking ? BOOKING_TIMER_MESSAGE : ITINERARY_TIMER_MESSAGE}</p>}
+     {props.hideTimer ? null : <p className="font-lexend" style={{fontWeight: 300, margin: '0 1rem 1.5rem 1rem', textAlign: 'center'}}>{props.booking ? BOOKING_TIMER_MESSAGE : ITINERARY_TIMER_MESSAGE}</p>}
 
          <ButtonsContainer>
               {props.hideTimer || props.booking ? null : <Button borderStyle="solid" color="black" borderWidth="2px" hoverColor="black" width="100%" hoverBgColor="white" borderRadius="2rem" borderRadius="2rem" bgColor="transparent"  margin="0.5rem auto" onclick={props._handleTimerClose}>Preview Itinerary</Button>}
@@ -269,13 +269,13 @@ Connect on WhatsApp</Button>}
       >
           {!props.hideTimer ? <FontAwesomeIcon icon={faTimes} onClick={props._handleTimerClose} style={{margin: "0.5rem",  position: 'absolute', top: '0', right: '0', fontSize: '1.5rem'}}/> : null}
 
-          {!props.hideTimer ? <TimeRemaining style={{fontSize: props.hideTimer ? '1rem' : '2.5rem'}} className="font-opensans">
+          {!props.hideTimer ? <TimeRemaining style={{fontSize: props.hideTimer ? '1rem' : '2.5rem'}} className="font-lexend">
           {"Hi "+firstname+"!"}
           </TimeRemaining> : null}
          
           
      
-     {props.hideTimer ? null :<p className="font-opensans" style={{fontWeight: 300, margin: '0 1rem 1.5rem 1rem', textAlign: 'center'}}>{props.booking ? BOOKING_TIMER_MESSAGE: ITINERARY_TIMER_MESSAGE}</p>}
+     {props.hideTimer ? null :<p className="font-lexend" style={{fontWeight: 300, margin: '0 1rem 1.5rem 1rem', textAlign: 'center'}}>{props.booking ? BOOKING_TIMER_MESSAGE: ITINERARY_TIMER_MESSAGE}</p>}
 
          <ButtonsContainer>
               {props.hideTimer || props.booking ? null : <Button borderStyle="solid" color="black" borderWidth="2px" hoverColor="black" width="100%" hoverBgColor="white" borderRadius="2rem" borderRadius="2rem" bgColor="transparent"  margin="0.5rem auto" onclick={props._handleTimerClose}>Preview Itinerary</Button>}

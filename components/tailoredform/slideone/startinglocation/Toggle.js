@@ -19,7 +19,7 @@ const YellowSwitch = styled(Switch)(({ theme }) => ({
 export default function SwitchLabels() {
   return (
     <FormGroup>
-      <FormControlLabel control={<YellowSwitch  />} label={<div className='font-opensans' style={{fontSize: '0.75rem'}}>Delhi</div>} />
+      <FormControlLabel control={<YellowSwitch  />} label={<div className='font-lexend' style={{fontSize: '0.75rem'}}>Delhi</div>} />
      </FormGroup>
   );
 }

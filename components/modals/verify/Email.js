@@ -22,7 +22,6 @@ const Person = (props) => {
         axiosgitregisterinstance.post('/', data).then(res => {
             // if(!res.data.verified) 
             props.setVerificationFailed(false);
-            // console.log(res.data)
      }).catch(err => {
         props.setVerificationFailed(true);
      })

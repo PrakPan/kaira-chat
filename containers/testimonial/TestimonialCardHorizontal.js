@@ -1,8 +1,5 @@
 import React from 'react';
 import styled from 'styled-components'
-// import img from '../../assets//Dieter Arnold.png';
-import theme from '../../Themes';
-
 const HorizontalTestimonialCard = (props) =>{
     const Container = styled.div`
         display: grid;
@@ -44,7 +41,7 @@ const HorizontalTestimonialCard = (props) =>{
         <Container className="border">
                 <ImgContainer className="center-div">
                     {/* <Img src={img}></Img> */}
-                    <Name className="font-opensans"><b>Dieter Arnold</b></Name>
+                    <Name className="font-lexend"><b>Dieter Arnold</b></Name>
                     <Location>GERMANY</Location>
                 </ImgContainer>
                 <ContentContainer className="font-nunito center-div">

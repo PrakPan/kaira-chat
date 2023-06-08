@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Label from './Label';
 import Message from './Message';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 const InputContainer = styled.div`
   width: 100%;
   margin: 0px auto;
@@ -67,7 +67,8 @@ const Dropdown = ({
             <Label
               htmlFor={props.id}
               required={props.required}
-              color={props.color}>
+              color={props.color}
+            >
               {props.label}
             </Label>
           </Tooltip>
@@ -75,7 +76,8 @@ const Dropdown = ({
           <Label
             htmlFor={props.id}
             required={props.required}
-            color={props.color}>
+            color={props.color}
+          >
             {props.label}
           </Label>
         )}
@@ -87,7 +89,8 @@ const Dropdown = ({
           onChange={(e) => onValueChange(e)}
           onBlur={(e) => validate(e, 'error')}
           error={error}
-          success={success}>
+          success={success}
+        >
           {children}
         </StyledDropdown>
         <Message error={error} success={success} />

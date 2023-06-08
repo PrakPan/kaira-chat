@@ -50,19 +50,13 @@ const NotFound = (props) => {
   return(
     <Container className="center-div">
         <Heading className="font-opensnans">
-            <div className="font-opensans" style={{margin: '0', display: 'inline', height: 'max-content', lineHeight: '1'}}>4</div>
+            <div className="font-lexend" style={{margin: '0', display: 'inline', height: 'max-content', lineHeight: '1'}}>4</div>
         {/* <Icon src={alien}></Icon> */}
         <ImageLoader display="inline" url="media/website/404.svg" widthMobile='25vw' heightMobile="25vw" height="15vw" width="15vw" dimensions={{width: 800, height: 800}}></ImageLoader>
-        <div className="font-opensans" style={{margin: '0',  display: 'inline', height: 'max-content',  lineHeight: '1'}}>4</div>
+        <div className="font-lexend" style={{margin: '0',  display: 'inline', height: 'max-content',  lineHeight: '1'}}>4</div>
 
         </Heading>
         <Tagline className="font-nunito">We’re not on the same page, really.</Tagline>
-        {/* <Image  src={art}></Image> */}
-        {/* <LinksContainer>
-        <Button borderWidth="1px" width="100%" margin=" 1rem 0" borderRadius="2rem" padding="0.25rem 1rem" boxShadow onclick={redirectToPage} onclickparam={"https://www.thetarzanway.com/"}>Home</Button>
-        <Button borderWidth="1px"  width="100%" borderRadius="2rem"  margin=" 1rem 0"padding="0.25rem 1rem" boxShadow onclick={redirectToPage} onclickparam={"https://www.thetarzanway.com/travel-experiences"}>Experiences</Button>
-        <Button borderWidth="1px"  width="100%"  borderRadius="2rem" margin=" 1rem 0" padding="0.25rem 1rem" boxShadow onclick={redirectToPage} onclickparam={"https://www.thetarzanway.com/contact"}>Contact Us</Button>
-        </LinksContainer> */}
         <LinksContainer>
         <Button borderWidth="1px" width="100%" margin=" 1rem 0" borderRadius="2rem" padding="0.25rem 1rem" boxShadow link={urls.HOMEPAGE} >Home</Button>
         <Button borderWidth="1px"  width="100%" borderRadius="2rem"  margin=" 1rem 0"padding="0.25rem 1rem" boxShadow link={urls.travel_experiences.BASE} >Experiences</Button>

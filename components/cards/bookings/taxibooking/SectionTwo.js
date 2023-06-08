@@ -41,21 +41,21 @@ const Section= (props) => {
     }
     if(props.data)
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
                 <div style={{display: 'grid',  gridGap: '1rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>
                     {props.isDatePresent && !props.is_registration_needed ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto' , gridGap: '0.5rem',}}><ImageLoader url="media/icons/bookings/calendar (1).png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                
                         {props.data.check_in &&  props.isDatePresent ? <div>
-                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>Trip Start</Heading>
-                            <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>{getDate(props.data.check_in)}</Text>
+                            <Heading className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>Trip Start</Heading>
+                            <Text className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>{getDate(props.data.check_in)}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div> : <div></div>}
                 
                      </div> : null}
                     {props.data.check_out && props.data.transfer_type !== 'Intercity one-way' && props.isDatePresent && !props.is_registration_needed ? <div>
-                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>Trip End</Heading>
-                            <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>{getDate(props.data.check_out)}</Text>
+                            <Heading className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>Trip End</Heading>
+                            <Text className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>{getDate(props.data.check_out)}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div> : null}
@@ -63,29 +63,29 @@ const Section= (props) => {
                     {props.data.transfer_type == 'Intercity one-way' ? <div style={{display: 'grid', gridGap: '0.5rem', gridTemplateColumns: 'max-content auto'}}>
                     <ImageLoader url="media/icons/bookings/time.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                             <div>
-                            <Heading   className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>{props.data.costings_breakdown ? props.data.costings_breakdown.duration ? props.data.costings_breakdown.duration.text :null  : null}</Heading>
-                            <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>Included</Text>
+                            <Heading   className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>{props.data.costings_breakdown ? props.data.costings_breakdown.duration ? props.data.costings_breakdown.duration.text :null  : null}</Heading>
+                            <Text className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>Included</Text>
                             </div>
                         </div> : null}
                 </div>
                 <div style={{display: 'grid',  gridGap: '1rem', gridTemplateColumns: '1fr 1fr', marginBottom: '0.75rem'}}>
 
-                <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
+                {!props.rental ? <div style={{display: 'grid', gridTemplateColumns: 'max-content auto',  gridGap: '0.5rem', marginBottom: '0.75rem'}}>
                     <ImageLoader url="media/icons/bookings/distance.png" height="auto" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                     <div style={{display: 'flex', gap: '1rem'}}> 
                         <div className='centerdiv'>
-                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
-                            <Text   className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>Included</Text>
+                            <Heading className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>{props.data.costings_breakdown ? props.data.costings_breakdown.distance ? props.data.costings_breakdown.distance.text :null  : null}</Heading>
+                            <Text   className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>Included</Text>
                         </div>
                      
                     </div>
-                </div>
+                </div> : null}
                 {true ? 
                    <div style={{display: 'grid', gridGap: '0.5rem', gridTemplateColumns: 'max-content auto'}}>
                   <ImageLoader url="media/icons/bookings/car-seat.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
                        <div>
-                            <Heading className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>{props.data.costings_breakdown ? props.data.costings_breakdown.total_taxi ? props.data.costings_breakdown.taxi_occupancy + " People" : null : null}</Heading>
-                            <Text className={props.data.user_selected ? 'font-opensans' : 'font-opensans  '}>{'Occupancy'}</Text>
+                            <Heading className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>{props.data.costings_breakdown ? props.data.costings_breakdown.total_taxi ? props.data.costings_breakdown.taxi_occupancy + " People" : null : null}</Heading>
+                            <Text className={props.data.user_selected ? 'font-lexend' : 'font-lexend  '}>{'Occupancy'}</Text>
                             {/* <Text className='font-nunito'>10:00AM</Text> */}
 
                         </div></div> : null}

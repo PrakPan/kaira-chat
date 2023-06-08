@@ -1,4 +1,4 @@
-import  React, {useState, useEffect} from 'react';
+import  React from 'react';
 import styled from 'styled-components';
 
 
@@ -36,7 +36,7 @@ else return false;
   return (
       <Container>
           { 
-          props.filters.map(filter =>   <Label style={{backgroundColor: _isFilterAlreadySelected(filter) ? 'rgba(247, 231, 0, 0.5)' : 'transparent'}} className='border' onClick={() => _onChangeHandler(filter)}>{filter}</Label>)
+              props.filters.map((filter, i) => <Label key={i} style={{backgroundColor: _isFilterAlreadySelected(filter) ? 'rgba(247, 231, 0, 0.5)' : 'transparent'}} className='border' onClick={() => _onChangeHandler(filter)}>{filter}</Label>)
           }
     </Container>
   );

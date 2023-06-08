@@ -92,9 +92,9 @@ const Counter = (props) => {
     return(
         <Container>
             <ImageLoader width="5rem" widthmobile="15vw" dimensions={{width: 400, height: 400}}   dimensionsMobile={{width: 400, height: 400}}  url={props.img}></ImageLoader>
-            <p style={{margin: '0rem 0'}} className="font-opensans">{props.heading}</p>
-            <Age className='font-opensans'><em>{props.age}</em></Age>
-            {/* <p style={{margin: '0rem 0'}} className="font-opensans">{props.}</p> */}
+            <p style={{margin: '0rem 0'}} className="font-lexend">{props.heading}</p>
+            <Age className='font-lexend'><em>{props.age}</em></Age>
+            {/* <p style={{margin: '0rem 0'}} className="font-lexend">{props.}</p> */}
             <GridContainer>
                 <Icon className="center-div" style={{fontSize: '1.5rem', fontWeight: '600'}} onClick={_decreaseCounter}>-</Icon>
                 <CounContainer className="center-div">

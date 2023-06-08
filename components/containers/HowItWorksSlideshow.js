@@ -1,186 +1,230 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
-import left from '../../public/assets/icons/navigation/leftcolor.svg';
-import right from '../../public/assets/icons/navigation/rightcolor.svg';
-import media from '../../components/media';
-import Button from '../ui/button/Index';
-import * as ga from '../../services/ga/Index';
- import { useRouter } from 'next/router';
-import ImageLoader from '../ImageLoader';
-/* Grid (desktop) / slideshow (mobile)
-    inputs: images, content (JSX array), headings (JSX array)
-    used: homepage, travel support
-*/
-
+import React, { useState } from "react";
+import styled from "styled-components";
+import media from "../../components/media";
+import Button from "../ui/button/Index";
+import * as ga from "../../services/ga/Index";
+import { useRouter } from "next/router";
+import ImageLoader from "../ImageLoader";
+import openTailoredModal from "../../services/openTailoredModal";
+import SwiperCarousel from "../SwiperCarousel";
 const Container = styled.div`
-   
-    @media screen and (min-width: 768px){
-        width: 100%;
-        margin: auto;
-      
-    }
+  margin-top: -50px;
+  @media screen and (min-width: 768px) {
+    width: 100%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4rem;
+  }
 `;
 const Arrow = styled.img`
-    width: 1.5rem;
-    margin: auto 0.5rem;
+  width: 1.5rem;
+  margin: auto 0.5rem;
 `;
 
 const TextContainer = styled.div`
-font-size: 16px;
-
+  font-size: 16px;
+  text-align: center;
 `;
- 
+
 const ImageContainer = styled.div`
-    padding: auto 1rem;
+  padding: auto 1rem;
+  @media screen and (min-width: 768px) {
+    padding: 0;
+    height: max-content;
+  }
 `;
 
 const GridContainer = styled.div`
-display: grid;
-grid-gap: 1rem;
-grid-template-columns: 1fr 3fr;
-    @media screen and (min-width: 768px){
-        grid-gap: 1rem;
-        margin-bottom: 1rem;
-    }
-    `;
-    
-    
-    
-const HowItWorksSlideshow = (props) =>{
-    const router=useRouter();
-    let isPageWide = media('(min-width: 768px)');
-    // const Image = styled.img`
-    // width: ${props.vertical ? '40%' : '60%'};
-    // margin: auto;
-    // display: block;
-    // @media screen and (min-width: 768px){
-    //     width: 50%;
-    // }
-    // `;
-    
-    let touchstart = null;
-    const [slideSelected, setSlideSelected] = useState(0);
-    const _prevSlideHandler = (val) => {
+  margin-block: 15px;
+  @media screen and (min-width: 768px) {
+    display: block;
+  }
+`;
 
-        if(!(slideSelected === 0))
-        setSlideSelected(slideSelected - 1);
-    }
-    const _nextSlideHandler = (val) => {
+const HowItWorksSlideshow = (props) => {
+  const router = useRouter();
+  const [slideSelected, setSlideSelected] = useState(0);
 
-        if( !(slideSelected === 2) )
-         setSlideSelected(slideSelected + 1);
-
-    }
-    const _handleDragStart = (event) => {
-        touchstart = event.clientX;
-    }
-    const _handleDragEnd = (event) => {
-        if(touchstart > event.clientX) _nextSlideHandler()
-        else _prevSlideHandler();
-    }
-    const slidesmobile = [
-        <GridContainer style={{}} >
-             <ImageContainer className="center-div">
-                <ImageLoader url ={props.images[0]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
-            </ImageContainer>
-            <TextContainer className="center-div">
-                {props.headings[0]}
-                {props.content[0]}
-            </TextContainer>
-           
-        </GridContainer>,
-        <GridContainer style={{}}>
-            <ImageContainer className="center-div">
-                <ImageLoader url={props.images[1]} width="50%" margin="auto" dimensions={{width: 400, height: 400}} widthmobile={props.vertical ? '40%' : '60%'} />
-            </ImageContainer>
-            <TextContainer className="center-div">
-            {props.headings[1]}
-
-                {props.content[1]}
-            </TextContainer>
-            
-        </GridContainer>,
-        <GridContainer style={{}}>
-            <ImageContainer className="center-div">
-                <ImageLoader url={props.images[2]} width="50%" margin="auto"  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
-            </ImageContainer>
-            <TextContainer className="center-div">
-            {props.headings[2]}
-                {props.content[2]}
-            </TextContainer>
-            
-        </GridContainer>
-    ]
-    const slidesdesktop = [
-        <GridContainer key={0} style={{}} >
-                <ImageContainer>
-                <ImageLoader url={props.images[0]} width="100%" margin="auto" dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
-        </ImageContainer>
-        <TextContainer>
+  let isPageWide = media("(min-width: 768px)");
+  let isTablet = media("(min-width: 500px)");
+  let touchstart = null;
+  const _prevSlideHandler = (val) => {
+    if (!(slideSelected === 0)) setSlideSelected(slideSelected - 1);
+  };
+  const _nextSlideHandler = (val) => {
+    if (!(slideSelected === 2)) setSlideSelected(slideSelected + 1);
+  };
+  const _handleDragStart = (event) => {
+    touchstart = event.clientX;
+  };
+  const _handleDragEnd = (event) => {
+    if (touchstart > event.clientX) _nextSlideHandler();
+    else _prevSlideHandler();
+  };
+  const slidesmobile = [
+    <GridContainer style={{}}>
+      <ImageContainer className="center-div">
+        <ImageLoader
+          url={props.images[0]}
+          width="40%"
+          margin="auto"
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer className="center-div">
         {props.headings[0]}
-            {props.content[0]}
-        </TextContainer>
-    
+        {props.content[0]}
+      </TextContainer>
     </GridContainer>,
-    <GridContainer  key={1} style={{}}>
-            <ImageContainer>
-            <ImageLoader url={props.images[1]} width="100%" margin="auto"  dimensions={{width: 400, height: 400}}  widthmobile={props.vertical ? '40%' : '60%'} />
-        </ImageContainer>
-        <TextContainer>
+    <GridContainer style={{}}>
+      <ImageContainer className="center-div">
+        <ImageLoader
+          url={props.images[1]}
+          width="50%"
+          margin="auto"
+          dimensions={{ width: 500, height: 500 }}
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer className="center-div">
         {props.headings[1]}
-            {props.content[1]}
-        </TextContainer>
-    
-    </GridContainer>,
-    <GridContainer  key={2} style={{}}>
-         <ImageContainer >
-         <ImageLoader url={props.images[2]} width="100%" margin="auto" dimensions={{width: 400, height: 400}} s widthmobile={props.vertical ? '40%' : '60%'} />
-        </ImageContainer>
-        <TextContainer>
-        {props.headings[2]}
-            {props.content[2]}
-        </TextContainer>
-       
-    </GridContainer>
-    ]
-    // if(!isPageWide )
-    const [loading, setLoading] = useState(false);
 
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-      }
-      const _handleTailoredClick = () => {
-        setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Howitworks',
-          
-          callback: _handleTailoredRedirect,
-        })
-      
-      }
-    return(
+        {props.content[1]}
+      </TextContainer>
+    </GridContainer>,
+    <GridContainer style={{}}>
+      <ImageContainer className="center-div">
+        <ImageLoader
+          url={props.images[2]}
+          width="50%"
+          margin="auto"
+          dimensions={{ width: 500, height: 500 }}
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer className="center-div">
+        {props.headings[2]}
+        {props.content[2]}
+      </TextContainer>
+    </GridContainer>,
+  ];
+  const slidesdesktop = [
+    <GridContainer key={0} style={{}}>
+      <ImageContainer>
+        <ImageLoader
+          url={props.images[0]}
+          width="80%"
+          height="auto"
+          dimensions={{ width: 500, height: 500 }}
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer>
+        {props.headings[0]}
+        {props.content[0]}
+      </TextContainer>
+    </GridContainer>,
+    <GridContainer key={1} style={{}}>
+      <ImageContainer>
+        <ImageLoader
+          url={props.images[1]}
+          resizeMode="contain"
+          width="80%"
+          height="auto"
+          dimensions={{ width: 500, height: 500 }}
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer>
+        {props.headings[1]}
+        {props.content[1]}
+      </TextContainer>
+    </GridContainer>,
+    <GridContainer key={2} style={{}}>
+      <ImageContainer>
+        <ImageLoader
+          url={props.images[2]}
+          width="80%"
+          resizeMode="contain"
+          height="auto"
+          dimensions={{ width: 500, height: 500 }}
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer>
+        {props.headings[2]}
+        {props.content[2]}
+      </TextContainer>
+    </GridContainer>,
+
+    <GridContainer key={3} style={{}}>
+      <ImageContainer>
+        <ImageLoader
+          url={props.images[3]}
+          width="80%"
+          resizeMode="contain"
+          height="auto"
+          dimensions={{ width: 500, height: 500 }}
+          widthmobile={props.vertical ? "40%" : "60%"}
+        />
+      </ImageContainer>
+      <TextContainer>
+        {props.headings[3]}
+        {props.content[3]}
+      </TextContainer>
+    </GridContainer>,
+  ];
+
+  // if (!isPageWide) return (
+  //   <div>
+  //     <div>
+  //       <SwiperCarousel
+  //         slidesPerView={isTablet ? 2 : 1}
+  //         cards={slidesdesktop}
+  //         pageDots
+  //       ></SwiperCarousel>
+  //     </div>
+  //   </div>
+  // );
+
+  return (
     <div>
-    {/* <Container className='hidden-desktop' draggable="true"  onDragStart={_handleDragStart} onDragEnd={_handleDragEnd}>
-        <div className="center-div">
-            <Arrow src={left} onClick={_prevSlideHandler}/>
+      {isPageWide ? (
+        <>
+          <Container>{slidesdesktop}</Container>
+        </>
+      ) : (
+        <div style={{ padding: "0rem 1rem" }}>
+          <SwiperCarousel
+            navButtonBackground={"white"}
+            navButtonColor={"black"}
+            slidesPerView={isTablet ? 2 : 1}
+            cards={slidesdesktop}
+            // pageDots
+            navigationButtons
+          ></SwiperCarousel>
         </div>
-        {slidesmobile[slideSelected]}
-        <div className="center-div">
-            <Arrow src={right} onClick={_nextSlideHandler}/>
-        </div>
-    </Container> */}
-        <Container className='hidden-mobil'>
-            {slidesdesktop}
-        </Container>
-        {!props.nostart ? <Button onclick={props.onclick ? props.onclick : _handleTailoredClick}   boxShadow borderRadius="2rem" margin="1rem auto"  padding="0.5rem 2rem" borderWidth="1px">
-            Start Now
-            {/* {loading ? <Spinner size={16}></Spinner> : null} */}
-        </Button> : null}
-        </div>
-    );
-    
-} 
+      )}
+      {!props.nostart ? (
+        <Button
+          onclick={() =>
+            openTailoredModal(router, props.page_id, props.destination)
+          }
+          fontWeight="500"
+          boxShadow
+          borderRadius="8px"
+          bgColor="#F7E700"
+          margin="1rem auto"
+          width="20rem"
+          padding="0.5rem 2rem"
+          borderWidth="1px"
+        >
+          {"Plan Itinerary For Free"}
+        </Button>
+      ) : null}
+    </div>
+  );
+};
 
 export default React.memo(HowItWorksSlideshow);

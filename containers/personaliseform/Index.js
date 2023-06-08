@@ -19,17 +19,17 @@ import media from '../../components/media';
 import Button from '../../components/ui/button/Index';
 import * as ga from '../../services/ga/Index';
 import {format } from  "date-fns";
-import Spinner from '../../components/Spinner';
 
 // import questions from './questions';
 import questioncontansts from './questioncontansts';
 const Container = styled.div`
 min-height: 100vh;
-padding-top: 22vw;
+// padding-top: 22vw;
+padding: 2rem 0 0 0;
 box-sizing: border-box;
-@media screen and (min-width: 768px){
-  padding: 15vh 0 0 0;
-}
+// @media screen and (min-width: 768px){
+//   padding: 2rem 0 0 0;
+// }
 `;
 
 
@@ -78,6 +78,7 @@ const Personaliseform = (props) => {
   let isPageWide = media('(min-width: 768px)')
   const WORKCATION_MIN_DURATION= 13;
   const [showPax, setShowPax] = useState(false);
+    const [questionIndex, setQuestionIndex] = useState(0);
 
   const [selectedCities, setSelectedCities] = useState([]);
   const [toggle, setToggle] = useState(false);
@@ -184,7 +185,6 @@ const _addCityHandler = (city_id, city) => {
 
     const router = useRouter()
 
-    const [questionIndex , setQuestionIndex] = useState(0);
 
   
    
@@ -200,7 +200,7 @@ const _addCityHandler = (city_id, city) => {
       });
       let duration;
       if(questionIndex === 4){
-        duration = ( (endDate.getTime()- startDate.getTime() ) / (1000*60*60*24) ) + 1
+        duration = endDate.diff(startDate , 'days')
         if(duration > WORKCATION_MIN_DURATION) setQuestionIndex(questionIndex+1);
         else 
         setQuestionIndex(questionIndex+2)
@@ -214,7 +214,7 @@ const _addCityHandler = (city_id, city) => {
     const _prevQuestionHandler = () => {
       let duration;
       if(questionIndex === 6){
-        duration = ( (endDate.getTime()- startDate.getTime() ) / (1000*60*60*24) ) + 1
+        duration = endDate.diff(startDate , 'days')
         if(duration > WORKCATION_MIN_DURATION) setQuestionIndex(questionIndex-1);
         else
          setQuestionIndex(questionIndex-2)
@@ -288,8 +288,8 @@ const _addCityHandler = (city_id, city) => {
       }
 
         else{
-          start_date=format(startDate,  "yyyy-MM-dd")
-          end_date=format(endDate,  "yyyy-MM-dd")
+          start_date=startDate.format("YYYY-MM-DD")
+          end_date=endDate.format("YYYY-MM-DD")
         }
         if(!newAnswers[questioncontansts.BUDGET].length) budget = '';
         else{
@@ -319,7 +319,7 @@ const _addCityHandler = (city_id, city) => {
           "budget": budget_to_send,
           "extra_data": extra_data,
           "city_id": cityids,
-          "state_ids": state_ids,
+          "state_id": state_ids,
           "group_type": grouptype,
           "number_of_adults": number_of_adults,
           "number_of_children": number_of_children,
@@ -339,11 +339,12 @@ const _addCityHandler = (city_id, city) => {
           }}).then(response => {
             setSubmitted(true);
             setLoading(false);
+            localStorage.removeItem('MyPlans')
            
             // _nextQuestionHandler();
             window.scrollTo(0,0);
             if(!response.data.auto_itinerary_created) {
-              window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+             router.push("/thank-you");
             
                }
            else{
@@ -356,7 +357,7 @@ const _addCityHandler = (city_id, city) => {
 
             }
           }).catch( err => {
-            window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+           router.push("/thank-you");
           }
           );
       }
@@ -367,7 +368,7 @@ const _addCityHandler = (city_id, city) => {
        option = <Locations questionIndex={questionIndex} selectedCities={selectedCities} _removeCityHandler={(city) =>_removeCityHandler(city)} _addCityHandler={(city_id,city) =>_addCityHandler(city_id,city)}  setSelectedCities={setSelectedCities} ></Locations>
     }
     else if(Questions.questions[questionIndex]  === questioncontansts.DURATION){
-      option=<Dates startDate={startDate}  endDate={endDate}  _setDatesHandler={_setDatesHandler} questionIndex={questionIndex}></Dates>
+      option=<Dates startDate={startDate}  endDate={endDate} setStartDate={setStartDate} setEndDate={setEndDate} _setDatesHandler={_setDatesHandler} questionIndex={questionIndex}></Dates>
     }
    
     //Show contact form
@@ -381,7 +382,7 @@ const _addCityHandler = (city_id, city) => {
     //Show options for specific question
     else option =  <Options setNewAnswers={setNewAnswers} newAnswers={newAnswers} showPax={showPax} setShowPax={setShowPax} toggle={toggle} setToggle={setToggle} questionIndex={questionIndex} nextQuestionHandler={_nextQuestionHandler} ></Options> ;
 
-
+  
     let NextArrowJSX = <Button padding="0.2rem" width="100%" borderColor="#f7e700" bgColor="#f7e700" color="black" borderRadius='2rem' onclick={_nextQuestionHandler} style={{margin: "0"}} >Next 
     </Button> ;
     // try{
@@ -411,8 +412,8 @@ const _addCityHandler = (city_id, city) => {
         <SelectedCitiesContainer questionIndex={questionIndex} goToStart={() => setQuestionIndex(0)} selectedCities={selectedCities} _removeCityHandler={_removeCityHandler} ></SelectedCitiesContainer>
         </div>: questionIndex ? <SelectedCitiesContainer questionIndex={questionIndex} goToStart={() => setQuestionIndex(0)} selectedCities={selectedCities} _removeCityHandler={_removeCityHandler} ></SelectedCitiesContainer> : null }
           {/* <StatusBar questionIndex={questionIndex} totalQuestions={questions.questions.length}></StatusBar> */}
-        {questionIndex ? <Question className="font-opensans">{Questions.questions[questionIndex]}</Question>
-        : isPageWide ? <Question className="font-opensans">{Questions.questions[questionIndex]}</Question> : null}
+        {questionIndex ? <Question className="font-lexend">{Questions.questions[questionIndex]}</Question>
+        : isPageWide ? <Question className="font-lexend">{Questions.questions[questionIndex]}</Question> : null}
           <div style={{ minHeight: '24vw', paddingBottom: '0rem'}}>
             {option}
             </div>
@@ -428,8 +429,8 @@ const _addCityHandler = (city_id, city) => {
           {NextArrowJSX}
         {/* </div> */}
         </ButtonContainer> : null}
-        {!questionIndex && !selectedCities.length ? <ButtonContainer style={{gridTemplateColumns: '1fr'}}><Button padding="0.2rem" borderColor="#f7e700" borderRadius="2rem" onclick={_nextQuestionHandler} bgColor='#f7e700' fontWeight="600" color="black" width="100%" bold>Don't know where to go</Button></ButtonContainer> : null}
-        {/* {questionIndex === 5 ? <div style={{width: "max-content", margin: "0 auto"}}><Button className="font-opensans" onClick={_submitHandler}><b>Submit</b></Button></div> : null} */}
+        {!questionIndex && !selectedCities.length ? <ButtonContainer style={{gridTemplateColumns: '1fr'}}><Button padding="0.2rem" borderColor="#f7e700" borderRadius="2rem" onclick={_nextQuestionHandler} bgColor='#f7e700' fontWeight="500" color="black" width="100%" bold>Don't know where to go</Button></ButtonContainer> : null}
+        {/* {questionIndex === 5 ? <div style={{width: "max-content", margin: "0 auto"}}><Button className="font-lexend" onClick={_submitHandler}><b>Submit</b></Button></div> : null} */}
         {questionIndex === 6 && props.token && props.phone && props.phone !== 'null'? <LoadingPage></LoadingPage>: null}
         {/* <LoginModal
           show={props.showLogin}

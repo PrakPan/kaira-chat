@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../../components/ImageLoader';
 import media from '../../../components/media';
+import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
  
 
 const ImageContainer = styled.div`
@@ -85,15 +86,17 @@ const ImageFive = styled.div`
 
 
 const Gallery = (props) => {
+  const isPageLoaded = usePageLoaded();
+      let isPageWide = media("(min-width: 768px)");
+
   let ImageContainerTopPadding = 0;
   let imageheight = null;
   let imagewidth = null;
-  if(typeof window !=='undefined'){
+  if(isPageLoaded){
        ImageContainerTopPadding = localStorage.getItem('NavbarHeight');
          imageheight = Math.round(window.innerHeight / 2);
        imagewidth = Math.round(window.innerWidth / 4)
   }
-      let isPageWide = media('(min-width: 768px)')
 
  const imageClickHandler = () => {
     props.setGalleryOpen(true)

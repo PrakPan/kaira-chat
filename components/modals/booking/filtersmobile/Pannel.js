@@ -36,12 +36,12 @@ const Pannel = (props) =>{
     return(
         <Container >
             <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '1rem'}} ></FontAwesomeIcon>
-            <Heading className='font-opensans'>{props.heading}</Heading>
+            <Heading className='font-lexend'>{props.heading}</Heading>
             {props.heading!=='Star Category' ?<div style={{width: 'max-content', margin: '2rem auto'}}>
            
             <FormGroup>
           { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel   control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
+          props.filters[filter].map((currentfilter,i) =>         <FormControlLabel  key={i} control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={currentfilter === props.default ? true : false} />} label={<Label className="font-lexend">{currentfilter}</Label>}/>)
           }
       </FormGroup>   
       

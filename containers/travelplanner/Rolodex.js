@@ -51,8 +51,9 @@ display: block;
 height: 100%;
 font-weight: 800;
 padding-left: 0.5rem;
-font-size: 1.2rem;
+font-size: 1.5rem;
 margin: 0;
+text-align: left;
 @media screen and (min-width: 768px){
    font-size: 2rem;
 }
@@ -60,9 +61,9 @@ animation: ${SpinWords} 8s infinite;
 
 `;
 const Text = styled.p`
-font-size: 1.2rem;
+font-size: 1.5rem;
 margin: 0;
-font-weight: 300;
+font-weight: 800;
 @media screen and (min-width: 768px){
    font-size: 2rem;
 }
@@ -70,7 +71,7 @@ font-weight: 300;
 const Rolodex = (props) => {
     
   return(
-    <Container className="font-opensans">
+    <Container className="font-lexend">
     <Text>
       As per your
     </Text>

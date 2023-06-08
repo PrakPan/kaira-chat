@@ -85,7 +85,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Nisagra's</Heading>
                 <Subheading>Uttarakhand Trip</Subheading>
             </BlackContainer>
@@ -99,7 +99,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Ahilaji's</Heading>
                 <Subheading>Spiti Trip</Subheading>
             </BlackContainer>
@@ -113,7 +113,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Matt's</Heading>
                 <Subheading>India Trip</Subheading>
             </BlackContainer>
@@ -127,7 +127,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Meena's</Heading>
                 <Subheading>Kashmir Trip</Subheading>
             </BlackContainer>
@@ -141,7 +141,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Eric's</Heading>
                 <Subheading>North East Trip</Subheading>
             </BlackContainer>
@@ -155,7 +155,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>SAMA's</Heading>
                 <Subheading>Kashmir Trip</Subheading>
             </BlackContainer>
@@ -169,7 +169,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Prasenjit's</Heading>
                 <Subheading>Kashmir Trip</Subheading>
             </BlackContainer>
@@ -182,7 +182,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Hema's</Heading>
                 <Subheading>North East Trip</Subheading>
             </BlackContainer>
@@ -195,7 +195,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Chintan's</Heading>
                 <Subheading>Ladkakh Trip</Subheading>
             </BlackContainer>
@@ -208,7 +208,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Gurkeerat's</Heading>
                 <Subheading>Spiti Trip</Subheading>
             </BlackContainer>
@@ -222,7 +222,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Payal's</Heading>
                 <Subheading>Goa Trip</Subheading>
             </BlackContainer>
@@ -236,7 +236,7 @@ const Explorers= (props) => {
             dimensionsMobile={{width: 900, height: 900}}
             height="auto"
             ></ImageLoader></ImageFade>
-            <BlackContainer className='font-opensans'>
+            <BlackContainer className='font-lexend'>
                 <Heading>Puneet's</Heading>
                 <Subheading>Kerala Trip</Subheading>
             </BlackContainer>

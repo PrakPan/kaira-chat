@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
 import ImageLoader from '../../ImageLoader';
 
 const  Icon= (props) => {

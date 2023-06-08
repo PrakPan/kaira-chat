@@ -67,8 +67,8 @@ const Overview = (props) => {
 
   return(
       <Container>
-        {!isPageWide ? <Heading align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.name}</Heading> : null}
-        {props.duration && !isPageWide ? <ApproxTime className="font-opensans">
+        {!isPageWide ? <Heading align="center" aligndesktop="center" margin="0" className="font-lexend" bold noline>{props.name}</Heading> : null}
+        {props.duration && !isPageWide ? <ApproxTime className="font-lexend">
             <StyledFontAwesomeIcon icon={faClock}/>
             {"Approximate Time: "+props.duration+"h"}</ApproxTime> : null}
         <GridContainer>
@@ -78,12 +78,12 @@ const Overview = (props) => {
             {/* <Icons></Icons> */}
         </div>
         {isPageWide ? <div className='center-iv'>
-            <Heading align="center" aligndesktop="center" margin="0" className="font-opensans" bold noline>{props.name}</Heading>
-            {/* <About className='font-opensans'>About</About> */}
-             {props.duration ? <ApproxTime className="font-opensans">
+            <Heading align="center" aligndesktop="center" margin="0" className="font-lexend" bold noline>{props.name}</Heading>
+            {/* <About className='font-lexend'>About</About> */}
+             {props.duration ? <ApproxTime className="font-lexend">
             <StyledFontAwesomeIcon icon={faClock}/>
             {"Approximate Time: "+props.duration+"h"}</ApproxTime> : null}
-            <Text className='font-opensans'>{props.short_description}</Text>
+            <Text className='font-lexend'>{props.short_description}</Text>
         </div> : null}
         </GridContainer>
       </Container>

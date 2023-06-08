@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import styled , {keyframes} from 'styled-components';
-import media from '../../../media';
 import Bar from './Bar';
 import Pannel from './pannel/Index';
-import axioslocationsinstance from '../../../../services/poi/hotlocations';
+import axioslocationsinstance from '../../../../services/search/search';
 
 import { fadeIn } from 'react-animations'
 
@@ -13,7 +12,7 @@ const Container = styled.div`
 width: 600px;
 margin: auto;
 animation: 0.3s ${fadeInAnimation};
-
+position : initial;
 `;
 
 const BlackContainer = styled.div`
@@ -28,12 +27,11 @@ const BlackContainer = styled.div`
 
 `;
 const MobileSearch= (props) => {
-  let isPageWide = media('(min-width: 768px)')
     const [pannelOpen, setPannelOpen] = useState(false);
     const [hotLocationsData, setHotLocationsData] = useState();
-    
+
     useEffect(() => {
-         axioslocationsinstance.get("").then(response => {
+         axioslocationsinstance.get("hot_destinations").then(response => {
                   setHotLocationsData(response.data);
              });
        },[]);

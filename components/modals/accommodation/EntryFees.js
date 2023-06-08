@@ -40,7 +40,7 @@ const EntryFees= (props) => {
     }
 return( 
 <div>{props.entry_fees ? <Container className='center-div'>
-    {/* <Heading className="font-opensans">Getting Around</Heading> */}
+    {/* <Heading className="font-lexend">Getting Around</Heading> */}
     {/* <Description className="font-nunito">{props.getting_around}</Description> */}
     <UL>
         {entryArr}

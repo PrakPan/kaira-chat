@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import Result from './Result';
 import CityResult from './CityResult';
-import ExperienceResult from './ExperienceResult';
 const Container = styled.div`
    padding: 1rem 0;
    display: grid;
@@ -15,7 +10,6 @@ const Container = styled.div`
 `;
 
 const Results= (props) => {
-  let isPageWide = media('(min-width: 768px)')
   let LocationResultsArr=[];
   let ExperienceResultsArr=[];
   let BlogResultsArr=[];
@@ -28,24 +22,24 @@ const Results= (props) => {
   useEffect(() => {
       if(props.results){
       for(var i = 0; i<props.results.length; i++){
-                let cta = props.results[i]["_source"].cta;
-                let type = props.results[i]["_source"].type;
+                let cta = props.results[i].cta;
+                let type = props.results[i].type;
                 if(type === 'Blog'){
                     if(props.filters['blogs'] || props.filters['all'])
                 BlogResultsArr.push(
-                <Result key={i} title={props.results[i]["_source"].name} type={type} cta={cta} onclick={null}></Result> 
+                <Result key={i} title={props.results[i].name} type={type} cta={cta} onclick={null}></Result> 
                 )
                 }
                 else if(type === 'Experience'){
                 if(props.filters['experiences'] || props.filters['all'])
                 ExperienceResultsArr.push(
-                <Result key={i}title={props.results[i]["_source"].name} type={type} cta={cta} onclick={null}></Result> 
+                <Result key={i}title={props.results[i].name} type={type} cta={cta} onclick={null}></Result> 
                 )
                 }
                 else if(type==='Location'){
                     if(props.filters['locations'] || props.filters['all'])
                         LocationResultsArr.push(
-                            <CityResult id={props.results[i]["_source"].resource_id} key={i} title={props.results[i]["_source"].name} parent={props.results[i]["_source"].parent} type={type} cta={cta} onclick={null}></CityResult> 
+                            <CityResult id={props.results[i].resource_id} key={i} title={props.results[i].name} parent={props.results[i].parent} type={type} path={props.results[i].path} cta={cta} onclick={null}></CityResult> 
  
                         )
                 }

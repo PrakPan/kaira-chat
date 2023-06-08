@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, createRef} from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -47,19 +47,19 @@ const  Banner = (props) =>{
         <GridContainer>
             <div className='center-div'>
                 <ImageLoader url="media/icons/usp/edit.svg" width="20%" widthmobile="35%"></ImageLoader>
-                <Text className="text-center font-opensans">Customizable Trips</Text> 
+                <Text className="text-center font-lexend">Customizable Trips</Text> 
             </div>
             <div className='center-div'>
                 <ImageLoader url="media/icons/usp/family.svg" width="20%" widthmobile="35%"></ImageLoader>
-                <Text className="text-center font-opensans">10000+ Customers</Text> 
+                <Text className="text-center font-lexend">10000+ Customers</Text> 
             </div>
             <div className='center-div'>
                 <ImageLoader url="media/icons/usp/customer-satisfaction.svg" width="20%" widthmobile="35%"></ImageLoader>
-                <Text className="text-center font-opensans">4.9 / 5.0 Rating </Text> 
+                <Text className="text-center font-lexend">4.9 / 5.0 Rating </Text> 
             </div>
             <div className='center-div'>
                 <ImageLoader url="media/icons/usp/24-hours-support.svg" width="20%" widthmobile="35%"></ImageLoader>
-                <Text className="text-center font-opensans">Live Support</Text> 
+                <Text className="text-center font-lexend">Live Support</Text> 
             </div>
           
 

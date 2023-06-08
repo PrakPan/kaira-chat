@@ -48,8 +48,8 @@ const Overview = (props) => {
   
   return(
       <Container>
-        <Heading  className="font-opensans text-center" bold noline>{props.name}</Heading>
-        {props.duration ? <ApproxTime className="font-opensans">
+        <Heading  className="font-lexend text-center" bold noline>{props.name}</Heading>
+        {props.duration ? <ApproxTime className="font-lexend">
             <StyledFontAwesomeIcon icon={faClock}/>
             {"Approximate Time: "+props.duration+"h"}</ApproxTime> : null}
         {props.image ? <ImageLoader url={props.image} dimensions={{width: 1600, height: 900}} dimensionsMobile={{width: 1600, height: 900}} width="60%" margin="auto"/> : null}

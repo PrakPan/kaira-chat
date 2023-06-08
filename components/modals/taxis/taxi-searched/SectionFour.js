@@ -58,7 +58,7 @@ const Section= (props) => {
     }
  //    if(props.data)
     return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
       <GridContainer>
         <div className='center-div' style={{marginRight: '0.5rem'}}><Cost>
       {"₹ " + (getIndianPrice(Math.round(props.data.price * counterValue/100)) )+" /-"}
@@ -66,7 +66,7 @@ const Section= (props) => {
             {/* <Button width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => console.log('test')}>View Details</Button> */}
             {/* {!showCounter ? 
             <Button width="max-content" margin="0.25rem 0 0 0"  padding="0.25rem 1rem" borderRadius="10px" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" bgColor="#f7e700" color="black" onclickparam={null} onclick={() =>  setShowCounter(true)}>Select</Button>
-         : <CounterContainer className='center-div font-opensans' >
+         : <CounterContainer className='center-div font-lexend' >
          <div style={{width: 'max-content', display: 'grid', gridGap: '0.25rem', gridTemplateColumns: 'max-content max-content max-content'}}>
          <div className='center-div'><AiOutlineMinusSquare onClick={_decreaseCounter} style={{fontSize: '1rem'}}></AiOutlineMinusSquare></div>
          <div style={{lineHeight: 'normal'}}>{counterValue}</div>

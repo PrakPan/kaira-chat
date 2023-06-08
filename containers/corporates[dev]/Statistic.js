@@ -33,17 +33,17 @@ font-weight: 100;
 const Statistic=()=>{
     return(
     <StatisticContainer>
-        <div className="font-opensans text-center">
+        <div className="font-lexend text-center">
             <Heading bold margin="auto" noline align="center" bold>100%</Heading>
-            <BottomText className="font-opensans">Statistic 1</BottomText>
+            <BottomText className="font-lexend">Statistic 1</BottomText>
         </div>
-        <div className="font-opensans text-center">
+        <div className="font-lexend text-center">
             <Heading bold margin="auto" noline align="center" bold>100%</Heading>
-            <BottomText className="font-opensans">Statistic 1</BottomText>
+            <BottomText className="font-lexend">Statistic 1</BottomText>
         </div>
-        <div className="font-opensans text-center">
+        <div className="font-lexend text-center">
             <Heading bold margin="auto" noline align="center" bold>100%</Heading>
-            <BottomText className="font-opensans">Statistic 1</BottomText>
+            <BottomText className="font-lexend">Statistic 1</BottomText>
         </div>
     </StatisticContainer>
     );

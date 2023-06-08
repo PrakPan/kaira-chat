@@ -8,6 +8,7 @@ import media from '../../components/media';
 import { useRouter } from 'next/router';
  import FullImage from '../../components/FullImage';
 import FullImgContent from '../homepage/search/SearchFullImgContent';
+import openTailoredModal from '../../services/openTailoredModal';
 const Experience = (props) => {
    let isPageWide = media('(min-width: 768px)')
 
@@ -16,17 +17,6 @@ const Experience = (props) => {
 
  
   const router = useRouter();
-  const _handlePersonaliseRedirect = () => {
-    router.push('/tailored-travel')
-  }
- 
-  useEffect(() => {
-  
-
-
-     
- 
-  }, []);
 
   //If experience data fetched
     if (isPageWide){
@@ -35,7 +25,7 @@ const Experience = (props) => {
       //Open experience page
        return (
         <div style={{minHeight: '100vh'}}>
-          <DesktopPersonaliseBanner onclick={_handlePersonaliseRedirect} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
+          <DesktopPersonaliseBanner onclick={()=>openTailoredModal(router)} text="Want to personalize your own experience?"></DesktopPersonaliseBanner>
           <div>
             <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   center url={true ? 'media/website/Cropped guide home.png' : ""} >
             <FullImgContent tagline="Travel Guides" text="Wherever you go becomes a part of you somehow"/>

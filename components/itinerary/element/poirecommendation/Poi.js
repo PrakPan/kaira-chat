@@ -38,8 +38,8 @@ const FoodData = (props) =>{
                 <ImageLoader  url={props.data ? props.data.icon : null} dimensions={{width: 400, height: 400}} width="100%" widthMobile="100%" borderRadius="50%"></ImageLoader> 
             </div>
             <TextContainer>
-                <Heading className='font-opensans'>{props.data ? props.data.heading : null}</Heading>
-                <Text className='font-opensans'>{props.data ? props.data.text.substring(0,150)+'...' : null}</Text>
+                <Heading className='font-lexend'>{props.data ? props.data.heading : null}</Heading>
+                <Text className='font-lexend'>{props.data ? props.data.text.substring(0,150)+'...' : null}</Text>
             </TextContainer>
         </Container>
     );

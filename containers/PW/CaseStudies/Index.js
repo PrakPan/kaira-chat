@@ -3,9 +3,9 @@ import styled from 'styled-components';
 // import Button from '../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from '../../../components/FlickityCarousel';
 import media from '../../../components/media';
 import Card from './Card';
+import SwiperCarousel from '../../../components/SwiperCarousel';
 const Container = styled.div`
       
 @media screen and (min-width: 768px){
@@ -36,10 +36,18 @@ const FullImgContent = (props) => {
     ]
     if(!isPageWide)
     return (
-
-        <Container className='font-opensans'>
-            <Flickity cards={[<Card heading={data[0].heading} text={data[0].text}></Card>, <Card heading={data[1].heading} text={data[1].text}></Card>, <Card heading={data[2].heading} text={data[2].text}></Card>]}></Flickity>
-        </Container>
+      <Container className="font-lexend">
+        <SwiperCarousel
+          slidesPerView={1.3}
+          initialSlide={1}
+          centeredSlides
+          cards={[
+            <Card heading={data[0].heading} text={data[0].text}></Card>,
+            <Card heading={data[1].heading} text={data[1].text}></Card>,
+            <Card heading={data[2].heading} text={data[2].text}></Card>,
+          ]}
+        />
+      </Container>
     );
     else return(
         <Container>

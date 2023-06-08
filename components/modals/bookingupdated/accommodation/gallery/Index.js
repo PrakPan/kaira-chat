@@ -1,10 +1,6 @@
-import React, {useRef, useEffect, useState} from 'react';
-import {Modal} from 'react-bootstrap';
+import React from 'react';
 import styled from 'styled-components';
 import media from '../../../../media';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faAngleRight, faStar} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../../../../ImageLoader';
 import MobileGallery from './mobile/Index';
 const Container = styled.div`
@@ -64,7 +60,7 @@ const Gallery = (props) => {
         {/* {isPageWide ? <RightCrossContainer className='center-div' style={{top: isPageWide ? '6.25vw' : '20vw'}}>
               <FontAwesomeIcon icon={faAngleRight}></FontAwesomeIcon>
           </RightCrossContainer> : null} */}
-        {/* {!isPageWide ? <RatingContainer className='font-opensans'>
+        {/* {!isPageWide ? <RatingContainer className='font-lexend'>
             <FontAwesomeIcon icon={faStar} style={{marginRight: '0.25rem'}}></FontAwesomeIcon>
             8.5/10 (376)
         </RatingContainer> : null} */}

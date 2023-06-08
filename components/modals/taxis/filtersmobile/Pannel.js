@@ -34,22 +34,74 @@ const Pannel = (props) =>{
       else filter = 'type';
 
     //   if(props.heading!=='Star Category')
-    return(
-        <Container >
-            <div style={{display: 'flex', justifyContent: 'flex-end'}}><TbArrowBack onClick={() => props.onclose()} className="hover-pointer"  style={{margin: '0.5rem', fontSize: '1.75rem' , textAlign: 'right', margin:  '1rem'}} ></TbArrowBack></div>
+    return (
+      <Container>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <TbArrowBack
+            onClick={() => props.onclose()}
+            className="hover-pointer"
+            style={{
+              margin: "0.5rem",
+              fontSize: "1.75rem",
+              textAlign: "right",
+              margin: "1rem",
+            }}
+          ></TbArrowBack>
+        </div>
 
-            {/* <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon> */}
-            <Heading className='font-opensans'>{props.heading}</Heading>
-            {props.heading!=='Star Category' ?<div style={{margin: '0 auto'}}>
-           
-            <FormGroup style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridGap: '0.5rem', margin: '0 0.5rem 1.5rem 0.5rem' }}>
-          { 
-          props.filters[filter].map(currentfilter =>         <FormControlLabel className='border' style={{margin: '0',  }}  control={<Checkbox onChange={(event) => _onChangeHandler(event.target.checked, currentfilter, filter)} sx={{ '& .MuiSvgIcon-root': { fontSize: 16 }, color: 'black', '&.Mui-checked': {color: 'black' }, }} defaultChecked={props.filtersState ? props.filtersState.budget ? props.filtersState.budget.includes(currentfilter) ? true : false : false : false} />} label={<Label className="font-opensans">{currentfilter}</Label>}/>)
-          }
-      </FormGroup>   
-      
-            </div>   : <StarSlider _updateStarFilterHandler={props._updateStarFilterHandler}></StarSlider>}     
-        </Container>
+        {/* <FontAwesomeIcon  onClick={() => props.onclose()} className="hover-pointer" icon={faChevronLeft}  style={{margin: '0.5rem'}} ></FontAwesomeIcon> */}
+        <Heading className="font-lexend">{props.heading}</Heading>
+        {props.heading !== "Star Category" ? (
+          <div style={{ margin: "0 auto" }}>
+            <FormGroup
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gridGap: "0.5rem",
+                margin: "0 0.5rem 1.5rem 0.5rem",
+              }}
+            >
+              {props.filters[filter].map((currentfilter, i) => (
+                <FormControlLabel
+                  key={i}
+                  className="border"
+                  style={{ margin: "0" }}
+                  control={
+                    <Checkbox
+                      onChange={(event) =>
+                        _onChangeHandler(
+                          event.target.checked,
+                          currentfilter,
+                          filter
+                        )
+                      }
+                      sx={{
+                        "& .MuiSvgIcon-root": { fontSize: 16 },
+                        color: "black",
+                        "&.Mui-checked": { color: "black" },
+                      }}
+                      defaultChecked={
+                        props.filtersState
+                          ? props.filtersState.budget
+                            ? props.filtersState.budget.includes(currentfilter)
+                              ? true
+                              : false
+                            : false
+                          : false
+                      }
+                    />
+                  }
+                  label={<Label className="font-lexend">{currentfilter}</Label>}
+                />
+              ))}
+            </FormGroup>
+          </div>
+        ) : (
+          <StarSlider
+            _updateStarFilterHandler={props._updateStarFilterHandler}
+          ></StarSlider>
+        )}
+      </Container>
     );
     // else return <StarSlider></StarSlider>
 }

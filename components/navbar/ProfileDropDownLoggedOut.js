@@ -1,12 +1,13 @@
 import React,{useEffect, useRef} from 'react';
 import styled from 'styled-components';
- 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../ImageLoader';
 import {getFirstName} from '../../services/getfirstname';
 import urls from '../../services/urls';
+import { FaUserCircle } from 'react-icons/fa';
+import usePageLoaded from '../custom hooks/usePageLoaded';
 
 
 const CenterNav=styled.div`
@@ -14,6 +15,7 @@ width:100%;
 height:3rem;
 display:flex;
 align-items:center;
+gap : 5px;
 `;
 
 
@@ -47,10 +49,9 @@ z-index:1;
 `;
 
 const ProfileList=styled.span`
-font-family: 'Open Sans';
+// font-family: 'Open Sans';
 
 text-align:center;
-padding:1rem 0rem 0.5rem 0rem;
 display:flex;
 justify-content: center;
 align-items: center;
@@ -82,35 +83,35 @@ const RedDot = styled.div`
     font-size: 0.75rem;
 
 `;
-const ProfileDropDown =(props)=>{
-    const ProfileContainer=styled.div`
+const ProfileContainer=styled.div`
+border-top: none;
+position:absolute;
+padding:0rem 1rem 1rem 1rem;
+width:15rem;
+right: -0.5rem;
+left:auto;
+transition: opacity 0.2s linear; 
+height: auto;
+margin-top: ${props => (props.showProfileList ? `0` : '-40rem')};
+opacity: ${props => (props.showProfileList ? `1` : '0')};
+font-weight : 600;
+
+@media screen and (min-width: 768px){
     border-top: none;
-    position:absolute;
-    padding:0rem 1rem 1rem 1rem;
-    margin: 0rem 0.5rem 0rem 0rem;
-    width:15rem;
-    right: -0.5rem;
+    width: max-content;
     left:auto;
-    transition: opacity 0.2s linear; 
+    padding: 1rem 2.5rem;
+    border-radius: 1rem !important; 
     height: auto;
-    margin-top: ${props => (props.showProfileList ? `0` : '-40rem')};
+    margin-top: ${props => (props.showProfileList ? `0.1rem` : '-50rem')};
     opacity: ${props => (props.showProfileList ? `1` : '0')};
-  
-    @media screen and (min-width: 768px){
-        border-top: none;
-        width: max-content;
-        right:0;
-        left:auto;
-        padding: 0rem 3rem 1rem  3rem;
-        margin: 0.5rem 0.5rem 0rem 0rem;
-        border-radius:0.5rem;
-        height: auto;
-        margin-top: ${props => (props.showProfileList ? `1.25rem` : '-50rem')};
-        opacity: ${props => (props.showProfileList ? `1` : '0')};
-        transition: opacity 0.2s linear; 
-       
-    }
-    `;
+    transition: opacity 0.2s linear; 
+   
+}
+`;
+const ProfileDropDown =(props)=>{
+  const isPageLoaded = usePageLoaded();
+
     
     let firstname;
     if(props.name){
@@ -132,16 +133,18 @@ const ProfileDropDown =(props)=>{
     });
 
     
-    let AuthMenu = <ProfileContainer className={props.headerColor==="white" ? "border" : ""} style={{backgroundColor: props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white', color: props.headerColor === 'white' ? 'rgba(0,0,0,0.7)' : 'white'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
+    let AuthMenu = <ProfileContainer className={"border"} style={{backgroundColor:'white', color: 'rgba(0,0,0,0.7)'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
                      <ProfileList onClick={props.authShowLogin}>Login</ProfileList>
                    </ProfileContainer>;
 
+
    
     return(
-        <div ref={profileRef}>
+        <div style={{position : 'relative'}} ref={profileRef}>
             <CenterNav onClick={props.toggleProfileList}>
-              <ImageLoader hoverpointer url={ props.headerColor ==='white' ?  "media/icons/login/user.png" : "media/icons/login/user (1).png"} width="2rem" height="2rem" dimensions={{width: 300, height: 300}} onclick={props.toggleProfileList}/>
-            {typeof window !== 'undefined'  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color: props.headerColor === "black" ? 'white' : 'black'}}></StyledFontAwesomeIcon> : null}
+              <ImageLoader borderRadius="50%" url={'media/icons/navigation/profile-user.png'} width="2rem" height="2rem" dimensions={{width: 300, height: 300}}/>   
+
+            {isPageLoaded  ? <StyledFontAwesomeIcon icon={faChevronDown} onClick={props.toggleProfileList} style={{ color:'black'}}></StyledFontAwesomeIcon> : null}
             </CenterNav>
              {AuthMenu}
         </div>

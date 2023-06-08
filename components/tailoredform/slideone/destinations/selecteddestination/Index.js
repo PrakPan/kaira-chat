@@ -1,3 +1,4 @@
+
 import React, {useState, useEffect } from 'react';
   
 import media from '../../../../media';
@@ -19,7 +20,11 @@ justify-content: space-between;
 align-items: center;    
 padding: 0.55rem  0.35rem;
 background-color: white;
+<<<<<<< HEAD
 
+=======
+position : relative;
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
  @media screen and (min-width: 768px){
     padding: 0.55rem  0.55rem;
 }
@@ -29,8 +34,9 @@ background-color: white;
 const LeftContent = styled.div`
 line-height: 1;
 font-size: 0.85rem;
-display: flex;
-align-items: center;
+display: grid;
+grid-template-columns : 1fr max-content;
+align-items : center;
 `;
 const RightContainer = styled.div`
 line-height: 1;
@@ -61,6 +67,7 @@ const SelectedDestination = (props) => {
     // props.setShowSearchStarting(true);
     // props.setShowCities(false)
   }
+<<<<<<< HEAD
   return ( 
    <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() : props.openCities}  className=' font-opensans hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
     <LeftContent className='hover-pointer'>
@@ -68,14 +75,50 @@ const SelectedDestination = (props) => {
                   <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', marginRight: '10px'}}></MdOutlineLocationOn>
                   :
                   <BiTargetLock style={{lineHeight: '1', fontSize: '1.25rem' , marginRight: '13px'}}></BiTargetLock>
+=======
+
+  const [showDestination , setShowDestination] = useState(true)
+
+  
+
+  return ( 
+   <Container onClick={props.selectlocation ? props.showCities ?  () => props.setShowCities(false) : () => _handleShowSearchStarting() 
+  : ()=>{setShowDestination(false);_handleFocusSearch();}
+   }  className=' font-lexend hover-pointer' style={{borderRadius: '8px', border: !focusLocation  && !focusSearch? '1px solid rgba(208, 213, 221, 1)' : '1px solid black',}}>
+    <LeftContent className='hover-pointer' selectlocation={props.selectlocation}>
+          {!props.selectlocation  ? 
+                  <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.25rem' , marginRight : '13px'}}></MdOutlineLocationOn>
+                  :
+                  <BiTargetLock style={{lineHeight: '1', fontSize: '1.25rem' , marginRight: '13px'}} ></BiTargetLock>
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 
 
           }
         {/* <MdOutlineLocationOn style={{lineHeight: '1', fontSize: '1.5rem', color: props.selectlocation ? '#f7e700' : 'black'}}></MdOutlineLocationOn> */}
+<<<<<<< HEAD
     {props.selectlocation ? !props.showSearchStarting ? !props.startingLocation ?  'Delhi, IN'  : props.startingLocation.name : <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => setFocusLocation(false)} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>: props.destination ? props.destination : <SearchInput  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => setFocusSearch(false)}></SearchInput>}
+=======
+    {props.selectlocation ? 
+          !props.showSearchStarting ? 
+              !props.startingLocation ?  
+              <>Delhi, IN <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Departing from</span></>  : 
+          <>{props.startingLocation.name} <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem'}}>Departing</span></> : 
+     <SearchInputStarting  startingLocation={props.startingLocation}  setStartingLocation={props.setStartingLocation} onfocus={_handleFocusStarting} onblur={() => {setFocusLocation(false)}} _handleShowSearchStarting={_handleShowSearchStarting} setShowSearchStarting={props.setShowSearchStarting} showSearchStarting={props.showSearchStarting} ></SearchInputStarting>
+     :
+     props.destination && showDestination
+      ? <>{props.destination}
+    {!props.setDeletedId && <span style={{opacity : '0.3' , position : 'absolute' , right : '0.5rem' }}>Destination</span>}</> : 
+     <SearchInput autofocus={props.autofocus} _updateDestinationHandler={props._updateDestinationHandler} CITIES={props.CITIES}  setShowDestination={setShowDestination} showDestination={showDestination} destination={props.destination} setDestination={props.setDestination} inbox_id={props.inbox_id}  setSearchFinalized={setSearchFinalized} searchFinalized={searchFinalized} onfocus={_handleFocusSearch} onblur={() => {setFocusSearch(false)}} setFocusSearch={setFocusSearch} setSelectedCities={props.setSelectedCities} selectedCities={props.selectedCities}></SearchInput>
+     
+     }
+    
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
     </LeftContent>
-    {!props.selectlocation ? <RightContainer className='hover-pointer' >
-        {props.selectedCities ? 
+    
+    {!props.selectlocation ? 
+    
+    <RightContainer className='hover-pointer' >
+        {/* {props.selectedCities ? 
         props.selectedCities.length ? 
         <span>{'+ '+ props.selectedCities.length + " Cities Added"}</span>
         : 
@@ -88,17 +131,32 @@ const SelectedDestination = (props) => {
         <span onClick={props.openCities}>{' + Select Cities'}</span>
         : null
        
+<<<<<<< HEAD
     }
       {searchFinalized ? <AiFillDelete className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null}
 
+=======
+    } */}
+    {/* Change Location */}
+    {/* <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill>  */}
+ 
+ 
+      {props.setDeletedId ? <AiFillDelete onClick={()=>{props.setDeletedId(props.inbox_id)}} className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}} ></AiFillDelete> : null}
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 
        
     {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '6px', marginRight: '4px'}}></FiInfo> */}
 
     </RightContainer>
      : 
+<<<<<<< HEAD
      <RightContainer className='hover-pointer' >
          <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill> 
+=======
+     
+     <RightContainer className='hover-pointer' >
+         {/* <BsPencilFill className='hover-pointer' style={{fontSize: '1rem', marginLeft: '2px', color: 'black'}}></BsPencilFill>  */}
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 
  {/* <FiInfo style={{lineHeight: '1', fontSize: '1.25rem', color: 'black', marginLeft: '4px',  marginRight: '4px'}}></FiInfo> */}
 

@@ -1,7 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-// import img from '../../assets/golden.jpg';
- 
 
 const Image = () => {
   // background-image: linear-gradient(rgba(0, 0, 0, 0.5),

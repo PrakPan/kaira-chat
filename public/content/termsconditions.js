@@ -1,104 +1,117 @@
 const content = [
-      
-    {
-         subheading:"New Policy",
-         
-         
-         content:[
-             
-              
-               { text: "The Tarzan Way operates the www.thetarzanway.com website, which provides the SERVICE.This page is used to inform website visitors regarding our policies with the collection, use, and disclosure of Personal Information if anyone decided to use our Service."},
-                //  {text:"If you choose to use our Service, then you agree to the collection and use of information in relation with this policy. The Personal Information that we collect are used for providing and improving the Service. We will not use or share your information with anyone except as described in this Privacy Policy."},
-                //  {text:"The terms used in this Privacy Policy have the same meanings as in our Terms and Conditions, which is accessible at www.thetarzanway.com , unless otherwise defined in this Privacy Policy." }
+  {
+    subheading: "General Terms & Conditions",
 
-         ]
-      
-         
-     },
-     {
-       subheading: "Information Collection and Use",
-       
-       content:[
-           {
-               text: "For a better experience while using our Service, we may require you to provide us with certain personally identifiable information, including but not limited to your name, phone number, and postal address. The information that we collect will be used to contact or identify you.",
-               
-           },
+    content: [
+      {
+        text: "Prices mentioned in the itineraries are inclusive of selected bookings - transportation, accommodations & stays as mentioned in the respective sections in the itinerary.",
+      },
+      {
+        text: " TTW will offer a highly tailor-made travel plan, all bookings as required, a price-match guarantee for all bookings, and 24/7 live support.",
+      },
+      {
+        text: "There might be some changes in case the weather conditions are rough, and we try our best to find similar activities/transfers in such cases.",
+      },
+      {
+        text: "The Tarzan Way is not liable for any mishaps at the accommodation or transportation though will be providing live customer support for the same.",
+      },
+      {
+        text: "Any cost or cancellation charge arising out of unforeseen circumstances is not included.",
+      },
+      {
+        text: "Travellers are requested to take care of their belongings and TTW is not liable for the loss or theft of the belongings.",
+      },
+      {
+        text: "Note that the paid amount is only refundable according to the cancellation policy as mentioned below.",
+      },
+      {
+        text: "To ensure the best experience possible, we offer a 24/7 live concierge and support service.",
+      },
+    ],
+  },
+  {
+    subheading: "Bookings & Cancellations",
 
-       ]
-    
-       
-   },
-   {
-       subheading: "Log Data",
-       
-       content:[
-           {
-               text: "We want to inform you that whenever you visit our Service, we collect information that your browser sends to us that is called Log Data. This Log Data may include information such as your computer's Internet Protocol (“IP”) address, browser version, pages of our Service that you visit, the time and date of your visit, the time spent on those pages, and other statistics.",
-               
-              
-           },
+    content: [
+      {
+        text: "50% of the payments are expected within 2 days of receiving the invoice.",
+      },
+      {
+        text: "Remaining payment is expected 5 days before the start of the experience.",
+      },
+      {
+        //     text: `Cancellation fees -
+        // a. 0% of the total experience fees if canceled 10 days before the experience.
+        // b. 25% of the total experience fees is canceled 7 days before the experience.
+        // c. 50% of the total experience fees 3 days before the experience.
+        // d. 100% of the total experience fees if canceled 1 day before the experience.`,
+        subheading: "Cancellation fees -",
+        content: [
+          {
+            text: "0% of the total experience fees if canceled 10 days before the experience.",
+          },
+          {
+            text: "25% of the total experience fees is canceled 7 days before the experience.",
+          },
+          {
+            text: "50% of the total experience fees 3 days before the experience.",
+          },
+          {
+            text: "100% of the total experience fees if canceled 1 day before the experience.",
+          },
+        ],
+      },
+      {
+        text: "Please note that if there's a lockdown, clients will receive a refund apart from the advances given to the hotels.",
+      },
+    ],
+  },
+  {
+    subheading: "Flight Booking Terms",
 
-       ]
-    
-       
-   },
-   {
-       subheading: "Cookies",
-       
-       content:[
-           
-               {text: "Cookies are files with small amount of data that is commonly used an anonymous unique identifier. These are sent to your browser from the website that you visit and are stored on your computer's hard drive."},
-            //   {text:"Our website uses these “cookies” to collection information and to improve our Service. You have the option to either accept or refuse these cookies, and know when a cookie is being sent to your computer. If you choose to refuse our cookies, you may not be able to use some portions of our Service."},
-            //   { text:"Service Providers"},
-            //    {
-            //       text:"We may employ third-party companies and individuals due to the following reasons:"},
+    content: [
+      {
+        text: "Check-in shall be as per the airline standards, ideally 2 hours prior for domestic flights.",
+      },
+      {
+        text: "All travellers are expected to have COVID-19 RT-PCR test 48 hours prior to the travel dates.",
+      },
+      {
+        text: "Booking & Cancellation Policy completely as per the policies of different airlines booked.",
+      },
+      {
+        text: "Full payment is expected in advance for the airline bookings and any changes to the bookings mentioned above will be dependent on airline policies.",
+      },
+    ],
+  },
+  {
+    subheading: "Payment Terms",
 
-            //      { array:[
-                     
-            //          "To facilitate our Service;",
-            //             "To provide the Service on our behalf;",
-            //               "To perform Service-related services; or",
-            //               "To assist us in analyzing how our Service is used."
-                       
-            //        ]},
-            //     { text:"We want to inform our Service users that these third parties have access to your Personal Information. The reason is to perform the tasks assigned to them on our behalf. However, they are obligated not to disclose or use the information for any other purpose."}
-           
-           
-           
-
-       ]
-    
-       
-   },
-  
-   {
-       subheading: "Security",
-       
-       content:[
-           {
-               text: "We value your trust in providing us your Personal Information, thus we are striving to use commercially acceptable means of protecting it. But remember that no method of transmission over the internet, or method of electronic storage is 100% secure and reliable, and we cannot guarantee its absolute security.",
-              // text: "Links to Other Sites",
-              // text:"Our Service may contain links to other sites. If you click on a third-party link, you will be directed to that site. Note that these external sites are not operated by us. Therefore, we strongly advise you to review the Privacy Policy of these websites. We have no control over, and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services."
-           },
-
-       ]
-    
-       
-   },
-   {
-       subheading: "Children's Privacy",
-            content:[
-           {
-               text: "Our Services do not address anyone under the age of 13. We do not knowingly collect personal identifiable information from children under 13. In the case we discover that a child under 13 has provided us with personal information, we immediately delete this from our servers. If you are a parent or guardian and you are aware that your child has provided us with personal information, please contact us so that we will be able to do necessary actions.",
-               //text: "Changes to This Privacy Policy",
-               //text:"We may update our Privacy Policy from time to time. Thus, we advise you to review this page periodically for any changes. We will notify you of any changes by posting the new Privacy Policy on this page. These changes are effective immediately, after they are posted on this page."
-           },
-
-       ]
-    
-       
-   },
-   
-         
-    ]
+    content: [
+     
+      {
+        subheading: 'All amounts are payable to "TARZAN WAY TRAVELS PVT LTD".',
+        content: [
+          { text: "PAN Number: AAGCT8887K" },
+          { text: "GST: 07AAGCT8887K2ZE" },
+        ],
+      },
+      {
+        subheading: "Account Details",
+        content: [
+          { text: "Account Name: Tarzan Way Travels Pvt Ltd." },
+          { text: "Account Number: 0412953581" },
+          { text: "IFSC: KKBK0004600" },
+          { text: "SWIFT Code: KKBKINBB" },
+        ],
+      },
+      {
+        text: "Paid amount is non-refundable.",
+        },
+        {
+          text : "We wish you have an amazing journey and we're glad that you put your faith in The Tarzan Way."
+      }
+      ],
+  },
+];
 export default content;

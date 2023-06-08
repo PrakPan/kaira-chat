@@ -1,10 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../media';
-import { useRouter } from 'next/router'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 import ImageLoader from '../../../../ImageLoader';
 const Container = styled.div`
     display: grid;
@@ -18,25 +13,7 @@ const Heading = styled.p`
     font-size: 1.5rem;
     text-align: center;
 `;
-    const ImageContainer = styled.div`
-position: relative;
-text-align: center;
-color: white;
-margin: auto;
-border-radius: 50%;
-width: 100%;
-min-height: 16vw;
-background: white;
 
-&:hover{
-    cursor: pointer;
-    background: #f7e700;
-}
-@media screen and (min-width: 768px){
-    min-height: 6.5vw;
-
-}
-`;
 const ImageText = styled.div`
 font-weight: 400;
 margin: 0;
@@ -62,29 +39,23 @@ grid-gap: 0.5rem;
 `;
 
 const Locations= (props) => {
-    const router = useRouter()
-  let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (id, name, parent, slug) => {
-    router.push('/travel-guide/city/'+slug)
-  }
-  const _handlePersonaliseRedirect = (id, name, parent) => {
-    // localStorage.setItem('search_city_selected_id', id)
-    // localStorage.setItem('search_city_selected_name', name)
-    // localStorage.setItem('search_city_selected_parent', parent)
+    const _handleLocationClick = (data) => {
+     if (data.path) window.location.href = "/" + data.path;
+      
+//     if(data.cta) {
+//      if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta    
+//      if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta    
+ 
+//  }
+   }
 
-
-    router.push('/tailored-travel?search_text='+name)
-  }
   let locations=[];
     if(props.hotlocations){
         for(var i=0; i<props.hotlocations.length; i++){
-            let id = props.hotlocations[i].id;
-            let name=props.hotlocations[i].name;
-            let parent = props.hotlocations[i].state.name;
-            let slug = props.hotlocations[i].slug
+            const data = props.hotlocations[i]
+
             locations.push(
-                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
-                {/* <ImageContainer onClick={() => _handlePersonaliseRedirect(id, name, parent)}              > */}
+                <LocationContainer className='border-thin' onClick={() => _handleLocationClick(data)}>
                 <ImageLoader
                         url={props.hotlocations[i].image}
                         borderRadius='50%'
@@ -97,9 +68,8 @@ const Locations= (props) => {
                         // onclick={_handlePersonaliseRedirect}
                         // onclickparams={{id, name, parent}}
                         hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{props.hotlocations[i].name}</ImageText>
-                {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}
-           {/* </ImageContainer> */}
+                        <ImageText className='center-div text-center font-lexend'>{props.hotlocations[i].name}</ImageText>
+             
            </LocationContainer>
             )
         }
@@ -108,7 +78,7 @@ const Locations= (props) => {
         for(var i=0; i<6; i++){
           
             locations.push(
-                <LocationContainer className='border-thin' onClick={() => _handlePersonaliseRedirect(id, name, parent)}>
+                <LocationContainer className='border-thin'>
                <ImageLoader
                         url={'media/website/grey.png'}
                         borderRadius='50%'
@@ -121,14 +91,14 @@ const Locations= (props) => {
                         // onclick={_handlePersonaliseRedirect}
                         // onclickparams={{id, name, parent}}
                         hoverpointer/>
-                        <ImageText className='center-div text-center font-opensans'>{''}</ImageText>
+                        <ImageText className='center-div text-center font-lexend'>{''}</ImageText>
            </LocationContainer>
             )
         }
     }
     return(
         <div>
-        <Heading className="font-opensans">Top Locations</Heading>
+        <Heading className="font-lexend">Top Locations</Heading>
         <Container>
             {locations}
         </Container>

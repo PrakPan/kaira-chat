@@ -2,13 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
-import {BsWhatsapp} from 'react-icons/bs';
-import urls from '../../services/urls';
-import Enquiry from './newenquiry/Index';
-import ImageLoader from '../../components/ImageLoader';
-import Banner from './BannerOne';
-import {BsFillCalendarFill} from 'react-icons/bs';
-import {BsYoutube} from 'react-icons/bs';BsYoutube
+import { Link } from 'react-scroll';
 const Container = styled.div`
   color:white;
  width: 100%;
@@ -17,7 +11,7 @@ const Container = styled.div`
  padding: 0 1rem;
 
  @media screen and (min-width: 768px){
-    padding: 0 7.5vh;
+    padding: 12.5vh 7.5vh;
  
     }
 `;
@@ -42,7 +36,7 @@ color: white;
     font-weight: 100;
     width: 99%;
     letter-spacing: 3px;
-    line-height: 1;
+    line-height: 1.5;
 
     margin: 0 0 0 -1px;
     font-size: 1.2rem;
@@ -53,10 +47,10 @@ color: white;
 `;
 
 const PaddingContianer = styled.div`
-padding: 5vh 0 0 0;
+padding: 0 0 0 0;
 flex-grow: 1;
 @media screen and (min-width: 768px){
-    padding: 10vh 0 0 0;
+    padding: 0 0 0 0;
 
 }
 `
@@ -110,23 +104,21 @@ const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
 
     return (
+      <Container className="font-lexend center-di ">
+        <PaddingContianer>
+          <Heading style={{ fontWeight: "800" }}>HOLI SPECIALS</Heading>
+          <SubText>Avail 50% discount for Holi Dates.</SubText>
+          <SubText>#PWTravelTogether</SubText>
+          {/* <Heading>GETAWAY</Heading> */}
 
-        <Container className='font-opensans center-di '>
-           <PaddingContianer >
-           <SubText style={{fontWeight:  '800'}}>
-                 REPUBLIC DAY SPECIAL
-            </SubText>
-            <Heading>MANALI</Heading>
-            <Heading>GETAWAY</Heading>
-
-            {/* <SubText>
+          {/* <SubText>
                 50% amount of your holiday will be paid by Physics Wallah
             </SubText>
             <SubText style={{fontSize: '1rem'}}>
                  Discounts on family packages coming soon...
             </SubText> */}
-           {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
-           {/* <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', width: 'max-content', margin: 'auto'}}>
+          {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
+          {/* <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', width: 'max-content', margin: 'auto'}}>
                 <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
                  View Trips
                 <BsFillCalendarFill style={{marginLeft: '0.5rem', fontSize: '14px', marginTop:'-3px'}}></BsFillCalendarFill>
@@ -137,12 +129,25 @@ const FullImgContent = (props) => {
                 <BsYoutube style={{marginLeft: '0.5rem', marginTop: '-0px'}}></BsYoutube>
                  </StyledA>
             </div> */}
-                            <Button borderWidth="0" bgColor="#f7e700" hoverBgColor="black" fontWeight="700" borderRadius="5px" padding="0.5rem 1.5rem" hoverColor="white" margin={isPageWide ? "2.5rem 0" : '4rem 0'} link='/itinerary/physicswallah/943fbccf-8136-435a-9dd5-d5a32eeda4f1'>Book Now</Button>
-
-                </PaddingContianer>
-               {/* <Banner></Banner> */}
-               <LogosContainer>
-            {/* <div style={{backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', padding: '0.5rem', borderRadius: '5px'}}>
+          <Link style={{ textDecoration: "none" }} to="holi">
+            <Button
+              borderWidth="0"
+              bgColor="#f7e700"
+              hoverBgColor="black"
+              fontWeight="700"
+              borderRadius="5px"
+              padding="0.5rem 1.5rem"
+              hoverColor="white"
+              margin={isPageWide ? "2.5rem 0 0 0 " : "4rem 0 0 0"}
+              onclick={() => console.log("")}
+            >
+              View Now
+            </Button>
+          </Link>
+        </PaddingContianer>
+        {/* <Banner></Banner> */}
+        <LogosContainer>
+          {/* <div style={{backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', padding: '0.5rem', borderRadius: '5px'}}>
                 <ImageLoader leftalign url="media/website/pwlogo.png" width="3rem" widthmobile="2rem" height="auto"></ImageLoader>
                 <LogoText className="font-opesans hden-mobile" style={{}}>Physics Wallah</LogoText>
                 </div>
@@ -150,8 +155,8 @@ const FullImgContent = (props) => {
                 <ImageLoader leftalign url="media/website/logoblack.svg" width="3rem" widthmobile="2rem"  height="auto"></ImageLoader>
                 <LogoText className="font-opesans hiden-mobile" style={{}}>The Tarzan Way</LogoText>
                 </div> */}
-            </LogosContainer>
-        </Container>
+        </LogosContainer>
+      </Container>
     );
 }
 

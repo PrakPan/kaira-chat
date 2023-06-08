@@ -23,7 +23,7 @@ const CityCard = (props) => {
        <ImageContainer>
                 <ImageLoader  fit="cover" width="100%" height="100%" dimensionsMobile={{width: 900, height: 600}} dimensions={{width: 600, height: 900}} url={props.image}></ImageLoader>
         </ImageContainer>
-       <div className='font-opensans'> 
+       <div className='font-lexend'> 
            <p style={{textAlign: "center", fontSize: "1.5rem", margin: "0.5rem"}} >{props.title}</p>
             <div style={{overflowY: "scroll", padding: "0 0.5rem", overflowX: 'hidden'}}>
                 <p  style={{textAlign: "center", fontWeight: "200", marginBottom: "0.5rem", maxHeight: "30vh"}}>{props.text} </p>

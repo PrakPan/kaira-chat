@@ -120,8 +120,8 @@ const Cart = (props) => {
   
   return(
       <Container className=''>
-            {/* <Heading className='font-opensans'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading> */}
-            {/* <Duration className='font-opensans' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration > */}
+            {/* <Heading className='font-lexend'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading> */}
+            {/* <Duration className='font-lexend' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration > */}
             <OuterGridContainer>
             <GridContainer>
                 <FlexContainer>

@@ -1,3 +1,4 @@
+
 import React, {useState, useEffect } from 'react';
   
 import media from '../../../../media';
@@ -7,6 +8,15 @@ import styled from 'styled-components';
 
 
 const Container = styled.input`
+    width: 92%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    padding-left: 2.6rem;
+    background-color: transparent;
+    cursor : pointer;
+    height :100%;
  &:focus{
     border: none;
     outline: none;
@@ -21,7 +31,11 @@ const Container = styled.input`
 
  
 const SearchInput = (props) => {
+<<<<<<< HEAD
 const [value, setValue] = useState();
+=======
+const [value, setValue] = useState('');
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
 
 const _handleKey = (e) => {
   setValue(e.target.value)
@@ -35,15 +49,53 @@ useEffect(() => {
   let isPageWide = media('(min-width: 768px)');
   // const [showCities, setShowCities] = useState(false);
   // const [selectedCities, setSelectedCities] = useState([]);
+<<<<<<< HEAD
+=======
+
+  const _resetSelectedCities = ()=>{
+      if(props.inbox_id != props.selectedCities[0].input_id){
+      const selected = props.selectedCities.map(e=>{
+        if(e.input_id == props.inbox_id) return {input_id : props.inbox_id}
+      return e
+    })
+    props.setSelectedCities(selected)
+    } 
+  }
+
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
   const _handleReset = () => {
     setValue('');
     props.setSearchFinalized(false);
     props.setResults([]);
     props.setShowResults(false);
+<<<<<<< HEAD
 
   }
   return (
    <Container onFocus={props.onfocus} onBlur={props.onblur} onClick={props.searchFinalized ? _handleReset : () => console.log('') } disabled={false} placeholder='Search destination' className='font-opensans' value={value} onChange={(e) => _handleKey(e)}>
+=======
+    // if(props.inbox_id != props.selectedCities[0].input_id){
+    //   const selected = props.selectedCities.map(e=>{
+    //     if(e.input_id == props.inbox_id) return {input_id : props.inbox_id}
+    //   return e
+    // })
+    // props.setSelectedCities(selected)
+    
+    // } 
+    _resetSelectedCities()
+  }
+
+  function _handleBlur() {
+    // if (!props.showDestination) {
+    props.onblur();
+    setTimeout(() => {
+      if (!value) props.setShowDestination(true);
+    },250)
+    // }
+  }
+  return (
+   <Container autoFocus={props.autofocus} onFocus={props.onfocus} onBlur={_handleBlur} onClick={props.searchFinalized ? _handleReset : _resetSelectedCities } disabled={false} placeholder='Search destination' className='font-lexend' value={value}  onChange={(e) => _handleKey(e)}>
+>>>>>>> 1508de44ad0be19fb604d07dac60074142f6c707
     
     </Container>
   );
@@ -52,3 +104,4 @@ useEffect(() => {
 
 export default SearchInput;
 
+ 

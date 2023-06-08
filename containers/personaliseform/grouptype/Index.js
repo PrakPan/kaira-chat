@@ -70,12 +70,12 @@ const Pax= (props) => {
     }
      return(
         <Container>
-            <GroupTypeContainer className='font-opensans border-thin'  onClick={props.hidePax}>
+            <GroupTypeContainer className='font-lexend border-thin'  onClick={props.hidePax}>
                 <div>
                     <div style={{fontWeight: '600', letterSpacing: '1px'}}>GROUP TYPE</div>
                     <div style={{fontWeight: '300'}}>{questions.options[2][props.newAnswers[questioncontansts.PAX]["index"]].heading } </div>
                 </div>
-                <div className='font-opensans center-div'>
+                <div className='font-lexend center-div'>
                     <StyledFontAwesome  icon={faEdit}></StyledFontAwesome>
                 </div>
             </GroupTypeContainer>

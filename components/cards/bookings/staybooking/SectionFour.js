@@ -20,7 +20,7 @@ const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
   
      return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
       <GridContainer>
             <Button  onclick={props.setShowDetails} onclickparam={null} width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" >View Details</Button>
             <Button  onclick={props.setShowBookingModal}  width="100%"borderRadius="0 0  10px 0px"  borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px"  onclickparam={null} >Change</Button>

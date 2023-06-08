@@ -4,7 +4,6 @@ import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
 import {BsWhatsapp} from 'react-icons/bs';
 import urls from '../../services/urls';
-import Enquiry from './newenquiry/Index';
 import ImageLoader from '../../components/ImageLoader';
 import Banner from './BannerOne';
 import {BsFillCalendarFill} from 'react-icons/bs';
@@ -35,7 +34,7 @@ font-size: 2rem;
 `;
 const SubText = styled.h3`
 color: white;
-    font-weight: 100;
+    font-weight: 200;
     width: 99%;
     font-size: 1.2rem;
      @media screen and (min-width: 768px){
@@ -103,7 +102,7 @@ const FullImgContent = (props) => {
 
     return (
 
-        <Container className='font-opensans center-di text-center'>
+        <Container className='font-lexend center-di text-center'>
            <PaddingContianer >
             <Heading>Physics Wallah Holidays</Heading>
             <SubText style={{fontWeight:  '600'}}>

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components';
     import { getIndianPrice } from '../../../../services/getIndianPrice';
      
@@ -113,9 +113,9 @@ const Cost = (props) => {
             <div style={{display: 'flex'}}><div style={{ width: 'max-content'}}>
             {props.PW? <StrikedCost> {"₹ "+getIndianPrice(Math.round(props.starting_cost/100)*2)}</StrikedCost> : <StrikedCost> {"₹ "+getIndianPrice(Math.round((props.starting_cost/100)*1.2))}</StrikedCost> }
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-               {!props.PW ?  <Text className='font-opensans'>
+               {!props.PW ?  <Text className='font-lexend'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
-            </Text> : <GITText className='font-opensans'>
+            </Text> : <GITText className='font-lexend'>
            { "₹ "+getIndianPrice(Math.round(props.starting_cost/100))+"/-"}
             </GITText>}
             </div></div></div>
@@ -125,9 +125,9 @@ const Cost = (props) => {
             <div style={{display: 'flex', justifyContent: 'flex-end', visibility: 'hidden'}}><div style={{display: 'grid', gridTemplateColumns: 'max-content max-content', width: 'max-content'}}>
             {props.PW ? <StrikedCost> {"₹ 0"}</StrikedCost> : null}
             <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-               {!props.PW ?  <Text className='font-opensans'>
+               {!props.PW ?  <Text className='font-lexend'>
            { "₹ 0 /-"}
-            </Text> : <GITText className='font-opensans'>
+            </Text> : <GITText className='font-lexend'>
            { "₹ 0/-"}
             </GITText>}
             </div></div></div>}

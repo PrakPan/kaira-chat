@@ -1,6 +1,5 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components'
-//  import { getHumanDate } from '../../../../services/getHumanDate';
   import SectionOne from './sectionone/Index';
 import SectionTwo from './SectionTwo';
   import media from '../../../media';
@@ -54,14 +53,14 @@ const Booking = (props) =>{
     //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
-       <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Taxi Booking'}</div>
-        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-opensans'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
+       <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-lexend'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Taxi Booking'}</div>
+        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-lexend'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
 
         <Container className='border' style={{ borderRadius: "10px"}}>
-         <SectionOne data={props.data}></SectionOne>
-         <SectionTwo   is_registration_needed={props.is_registration_needed} isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
+         <SectionOne data={props.data} rental={props.rental}></SectionOne>
+         <SectionTwo rental={props.rental}   is_registration_needed={props.is_registration_needed} isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
          <SectionThree  is_registration_needed={props.is_registration_needed} are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         {!props.is_registration_needed? <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> : null}
+         {!props.is_registration_needed && !props.rental? <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> : null}
         </Container>
         </div>
     );

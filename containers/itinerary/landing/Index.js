@@ -10,7 +10,7 @@ import media from '../../../components/media';
 const Wrapper = styled.div`
   height: max-content;
   color: black;
-  padding-top: 10vh;
+  padding-top: 0.5rem;
   position: sticky;
   background-color: wihte;
   @media screen and (min-width: 768px) {
@@ -111,14 +111,14 @@ const BlackContainer = (props) => {
         } */}
         <IconListContainer>
         <DetailsContainer>
-            <ExperienceName className='font-opensans' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
-            <Duration className="font-opensans">{props.duration}</Duration>
+            <ExperienceName className='font-lexend' style={{fontSize: props.title.length > 25 ? '2rem' : '3rem'}}>{props.title}</ExperienceName>
+            <Duration className="font-lexend">{props.duration}</Duration>
             
             <div></div>
       
           </DetailsContainer> 
       </IconListContainer>
-      {/* <Heading className="font-opensans">{props.title}</Heading> */}
+      {/* <Heading className="font-lexend">{props.title}</Heading> */}
 
       </Wrapper>
       

@@ -1,14 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import service from '../../../public/assets/icons/whyus/color-line/service.svg'
-import flexibility from '../../../public/assets/icons/whyus/color-line/flexibility.svg';
-import personalise from '../../../public/assets/icons/whyus/color-line/personalise.svg';
-import transparency from '../../../public/assets/icons/whyus/color-line/transparency.svg';
-import culture from '../../../public/assets/icons/whyus/color-line/culture.svg';
-import community from '../../../public/assets/icons/whyus/color-line/community.svg';
-// import Heading from '../../../components/heading/Heading';
 import Heading from '../../../components/newheading/heading/Index';
 import media from '../../../components/media';
+import ImageLoader from '../../../components/ImageLoader';
 
 const Container = styled.div`
 
@@ -30,15 +24,6 @@ and (max-device-width : 1024px){
 
 const Card = styled.div`
  `;
-
-const Icon = styled.img`
-width: 25%;
-display: block;
-margin: auto;
-@media screen and (min-width: 768px){   
-    width: 30%;
-}
-`;
 
 const Text = styled.p`    
 font-weight: 300;
@@ -87,41 +72,109 @@ const WhyTarzan = () => {
         }
     ]
     return (
-        <div>
-            <Heading  align="center" aligndesktop="center" bold margin={!isPageWide  ? "3rem 0 3rem 0" : "3rem"} className="text-center font-opensans">Why The Tarzan Way?</Heading>
-            <Container >
-                <Card className="font-nunito">
-                    <Icon src={transparency} />
-                    <SubHeading className="font-opensans" >{content[0].heading}</SubHeading>
-                    {isPageWide  ? <Text className="text-center font-nunito">{content[0].text}</Text> : null}
-                </Card>
-                <Card className="font-nunito" >
-                    <Icon src={personalise} />
-                    <SubHeading className="font-opensans" >{content[1].heading}</SubHeading>
-                      {isPageWide ? <Text className="text-center font-nunito">{content[1].text}</Text> : null}
-                </Card>
-                <Card className="font-nunito">
-                    <Icon src={community} />
-                    <SubHeading className="font-opensans" >{content[2].heading}</SubHeading>
-                      { isPageWide ? <Text className="text-center font-nunito">{content[2].text}</Text> : null}
-                </Card>
-                <Card className="font-nunito">
-                    <Icon src={culture} />
-                    <SubHeading className="font-opensans" >{content[3].heading}</SubHeading>
-                      { isPageWide ? <Text className="text-center font-nunito">{content[3].text}</Text> : null}
-                </Card>
-                <Card className="font-nunito">
-                    <Icon src={flexibility} />
-                    <SubHeading className="font-opensans" >{content[4].heading}</SubHeading>
-                      { isPageWide ? <Text className="text-center font-nunito">{content[4].text}</Text> : null}
-                </Card>
-                <Card className="font-nunito">
-                    <Icon src={service} />
-                    <SubHeading className="font-opensans" >{content[5].heading}</SubHeading>
-                      { isPageWide ? <Text className="text-center font-nunito">{content[5].text}</Text> : null}
-                </Card>
-            </Container>
-        </div>
+      <div>
+        <Heading
+          align="center"
+          aligndesktop="center"
+          bold
+          margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
+          className="text-center font-lexend"
+        >
+          Why The Tarzan Way?
+        </Heading>
+        <Container>
+          <Card className="font-nunito">
+            <ImageLoader
+              height="133px"
+              width="133px"
+              widthmobile="133px"
+              dimensions={{ height: 150, width: 150 }}
+              url={"media/icons/whyus/color-line/transparency.png"}
+            />
+            <SubHeading className="font-lexend">
+              {content[0].heading}
+            </SubHeading>
+            {isPageWide ? (
+              <Text className="text-center font-nunito">{content[0].text}</Text>
+            ) : null}
+          </Card>
+          <Card className="font-nunito">
+            <ImageLoader
+              height="133px"
+              width="133px"
+              widthmobile="133px"
+              dimensions={{ height: 150, width: 150 }}
+              url={"media/icons/whyus/color-line/personalise.png"}
+            />
+            <SubHeading className="font-lexend">
+              {content[1].heading}
+            </SubHeading>
+            {isPageWide ? (
+              <Text className="text-center font-nunito">{content[1].text}</Text>
+            ) : null}
+          </Card>
+          <Card className="font-nunito">
+            <ImageLoader
+              height="133px"
+              width="133px"
+              widthmobile="133px"
+              dimensions={{ height: 150, width: 150 }}
+              url={"media/icons/whyus/color-line/community.png"}
+            />
+            <SubHeading className="font-lexend">
+              {content[2].heading}
+            </SubHeading>
+            {isPageWide ? (
+              <Text className="text-center font-nunito">{content[2].text}</Text>
+            ) : null}
+          </Card>
+          <Card className="font-nunito">
+            <ImageLoader
+              height="133px"
+              width="133px"
+              widthmobile="133px"
+              dimensions={{ height: 150, width: 150 }}
+              url={"media/icons/whyus/color-line/culture.png"}
+            />
+            <SubHeading className="font-lexend">
+              {content[3].heading}
+            </SubHeading>
+            {isPageWide ? (
+              <Text className="text-center font-nunito">{content[3].text}</Text>
+            ) : null}
+          </Card>
+          <Card className="font-nunito">
+            <ImageLoader
+              height="133px"
+              width="133px"
+              widthmobile="133px"
+              dimensions={{ height: 150, width: 150 }}
+              url={"media/icons/whyus/color-line/flexibility.png"}
+            />
+            <SubHeading className="font-lexend">
+              {content[4].heading}
+            </SubHeading>
+            {isPageWide ? (
+              <Text className="text-center font-nunito">{content[4].text}</Text>
+            ) : null}
+          </Card>
+          <Card className="font-nunito">
+            <ImageLoader
+              height="133px"
+              width="133px"
+              widthmobile="133px"
+              dimensions={{ height: 150, width: 150 }}
+              url={"media/icons/whyus/color-line/service.png"}
+            />
+            <SubHeading className="font-lexend">
+              {content[5].heading}
+            </SubHeading>
+            {isPageWide ? (
+              <Text className="text-center font-nunito">{content[5].text}</Text>
+            ) : null}
+          </Card>
+        </Container>
+      </div>
     );
     
 }

@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faFontAwesomeLogoFull} from '@fortawesome/free-solid-svg-icons';
 import media from '../../../media';
-import cross from '../../../../public/assets/icons/navigation/close.svg';
 import { getHumanTime } from '../../../../services/getHumanTime';
 import { getHumanDate } from '../../../../services/getHumanDate';
 const Container  = styled.div`
@@ -93,16 +90,16 @@ const CurrentlyReplacing = (props) =>{
             <TextContainer>
                 <div>
                 <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-                <Name className="font-opensans">
+                <Name className="font-lexend">
                     {/* {props.replacing} */}
                     FLIGHT
                     {/* <FontAwesomeIcon icon={faChevronDown} style={{marginLeft: '0.5rem'}} /> */}
                 </Name>
                 {props.selectedBooking ? <DetailsContainer>
-                         {props.selectedBooking.costings_breakdown? props.selectedBooking.costings_breakdown.Segments ? props.selectedBooking.costings_breakdown.Segments[0].length ?   <Detail className='font-opensans'>{props.selectedBooking.costings_breakdown.Segments[0][0].Origin.Airport.CityName + ' to ' + props.selectedBooking.costings_breakdown.Segments[0][props.selectedBooking.costings_breakdown.Segments[0].length-1].Destination.Airport.CityName}</Detail>: null : null : null}
-                        {props.selectedBooking.check_in ? <Detail className='font-opensans'>{"Departure: "+ getTime(props.selectedBooking.check_in) + ", "+getDate(props.selectedBooking.check_in)}</Detail>: null}
-                        {props.selectedBooking.check_out ? <Detail className='font-opensans'>{"Arrival: " + getTime(props.selectedBooking.check_out) + ", " + getDate(props.selectedBooking.check_out)}</Detail> : null}
-                        {/* <Detail className='font-opensans'>{"Rooms: " + props.selectedBooking.number_of_rooms + " x " + props.selectedBooking.room_type}</Detail> */}
+                         {props.selectedBooking.costings_breakdown? props.selectedBooking.costings_breakdown.Segments ? props.selectedBooking.costings_breakdown.Segments[0].length ?   <Detail className='font-lexend'>{props.selectedBooking.costings_breakdown.Segments[0][0].Origin.Airport.CityName + ' to ' + props.selectedBooking.costings_breakdown.Segments[0][props.selectedBooking.costings_breakdown.Segments[0].length-1].Destination.Airport.CityName}</Detail>: null : null : null}
+                        {props.selectedBooking.check_in ? <Detail className='font-lexend'>{"Departure: "+ getTime(props.selectedBooking.check_in) + ", "+getDate(props.selectedBooking.check_in)}</Detail>: null}
+                        {props.selectedBooking.check_out ? <Detail className='font-lexend'>{"Arrival: " + getTime(props.selectedBooking.check_out) + ", " + getDate(props.selectedBooking.check_out)}</Detail> : null}
+                        {/* <Detail className='font-lexend'>{"Rooms: " + props.selectedBooking.number_of_rooms + " x " + props.selectedBooking.room_type}</Detail> */}
                 </DetailsContainer> : null}
                 </div>
             </TextContainer>

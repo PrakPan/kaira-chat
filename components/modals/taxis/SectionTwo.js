@@ -17,7 +17,7 @@ const Section= (props) => {
     // let isPageWide = media('(min-width: 768px)')
     
      return(
-      <Container className='font-opensans'>  
+      <Container className='font-lexend'>  
             <FiltersMobile filtersState={props.filtersState} _updateStarFilterHandler={props._updateStarFilterHandler}  _removeFilterHandler={props._removeFilterHandler}_addFilterHandler={props._addFilterHandler} filters={props.FILTERS}></FiltersMobile>
       </Container>
   ); 

@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faFontAwesomeLogoFull} from '@fortawesome/free-solid-svg-icons';
 import media from '../../../media';
-import cross from '../../../../public/assets/icons/navigation/close.svg';
 import {BiTimeFive} from 'react-icons/bi'
 const Container  = styled.div`
 bottom: 0;
@@ -80,7 +77,7 @@ const CurrentlyReplacing = (props) =>{
             <TextContainer>
                 <div>
                 <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-                <Name className="font-opensans" >
+                <Name className="font-lexend" >
                     {props.replacing}
                  </Name>
                 
@@ -89,11 +86,11 @@ const CurrentlyReplacing = (props) =>{
             {/* <GridContainer>
                 <IconContainer className={!isPageWide ? 'center-div' : ''}>
                     <StyledTimeIcon></StyledTimeIcon>
-                    <IconText className='font-opensans' style={{margin: '0'}}>2 hours</IconText>
+                    <IconText className='font-lexend' style={{margin: '0'}}>2 hours</IconText>
                 </IconContainer>
                 <IconContainer className={!isPageWide ? 'center-div' : ''}>
                     <StyledTimeIcon></StyledTimeIcon>
-                    <IconText className='font-opensans' style={{margin: '0'}}>2 hours</IconText>
+                    <IconText className='font-lexend' style={{margin: '0'}}>2 hours</IconText>
 
                 </IconContainer>
 

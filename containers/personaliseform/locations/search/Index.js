@@ -96,13 +96,11 @@ const SearchField = (props) => {
     const _fetchResults = (value) => {
         let resultsarr = [];
 
-        axios.get(CONTENT_SERVER_HOST+"/search/?q="+value).then((res) => {
-            // props._setOptionsHandler(res);
+        axios.get(CONTENT_SERVER_HOST+"/search/suggest/?q="+value).then((res) => {
             setResultsData(res.data);
-
-            for(var i = 0 ; i < res.data.length ; i++){
+            for(var i = 0 ; i < Math.min(15,res.data.length) ; i++){
                 resultsarr.push(
-                    <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={res.data[i]["_source"]} key={i} image={res.data[i].image} _addCityHandler={props._addCityHandler} name={res.data[i]["_source"].name} parent={res.data[i]["_source"].parent} id={res.data[i]["_source"].resource_id} type={res.data[i]["_source"].type}></Location>
+                    <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={res.data[i]} key={i} image={res.data[i].image} _addCityHandler={props._addCityHandler} name={res.data[i].name} parent={res.data[i].parent} id={res.data[i].resource_id} type={res.data[i].type}></Location>
                 )
             }
             setResults([...resultsarr]);
@@ -131,7 +129,7 @@ const SearchField = (props) => {
         let resultsarr = [];
         for(var i = 0 ; i < results.length ; i++){
             resultsarr.push(
-                <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={results[i]["_source"]} key={i} image={results[i].image} _addCityHandler={props._addCityHandler} name={results[i]["_source"].name} parent={results[i]["_source"].parent} id={results[i]["_source"].resource_id} type={results[i]["_source"].type}></Location>
+                <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={results[i]} key={i} image={results[i].image} _addCityHandler={props._addCityHandler} name={results[i].name} parent={results[i].parent} id={results[i].resource_id} type={results[i].type}></Location>
             )
         }
         setResults([...resultsarr]);
@@ -158,7 +156,7 @@ const SearchField = (props) => {
         </SearchGrid>
         {!isPageWide ?  <SelectedCitiesContainer questionIndex={props.questionIndex} goToStart={props.goToStart} selectedCities={props.selectedCities} _removeCityHandler={props._removeCityHandler} ></SelectedCitiesContainer>:null}
 
-        <TopLocations className="font-opensans text-center">{!results.length ? 'Top destinations for you' : 'Destinations around '+ "'"+value+"'"}</TopLocations>
+        <TopLocations className="font-lexend text-center">{!results.length ? 'Top destinations for you' : 'Destinations around '+ "'"+value+"'"}</TopLocations>
         {!results.length ? <Locations _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} hotlocations={hotLocationsData} _addCityHandler={props._addCityHandler}></Locations>:null}
         {results.length ? <ResultsContainer className="border-thi">
             

@@ -61,7 +61,7 @@ const Menu = (props) => {
 
         <Container
      
-        className='font-opensans'>
+        className='font-lexend'>
 {menuJSX}
 
 

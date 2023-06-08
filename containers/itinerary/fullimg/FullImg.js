@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components'
+import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
 // import Image from 'next-images'
-const Fullimage = (props) =>{
+const Fullimage = (props) => {
+  const isPageLoaded = usePageLoaded();
+    
     const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
     const [load, setLoad] = useState(false);
     const smallUrl = imgUrlEndPoint + "160x90"+"/"+props.url;
@@ -22,7 +25,7 @@ const Fullimage = (props) =>{
     position: relative;
     `;
     if (
-        typeof window !== 'undefined' &&
+        isPageLoaded &&
         typeof document != 'undefined' && fullUrl && smallUrl
       ) {
     var bgImg = document.createElement('img');

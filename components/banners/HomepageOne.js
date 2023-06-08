@@ -6,6 +6,7 @@ import urls from '../../services/urls';
 import media from '../media';
 import { useRouter } from 'next/router';
 import * as ga from '../../services/ga/Index';
+import openTailoredModal from '../../services/openTailoredModal';
 const Container = styled.div`
 @media screen and (min-width: 768px){
     margin: 5rem 0;
@@ -30,21 +31,6 @@ const Banner= (props) => {
     let isPageWide = media('(min-width: 768px)')
     const router = useRouter();
     
-    const _handleTailoredRedirect = () => {
-        router.push(urls.TAILORED_TRAVEL)
-      }
-      const _handleTailoredClick = () => {
-        // setLoading(true);
-        setTimeout(_handleTailoredRedirect, 1000);
-      
-        ga.callback_event({
-          action: 'TT-Bannerone',
-          
-          callback: _handleTailoredRedirect,
-        })
-      
-      }
-
       const _handleGuideRedirect = () => {
         router.push(urls.TRAVEL_GUIDE)
       }
@@ -68,7 +54,7 @@ return(
         <GridContainer>
             <Button external_link="https://www.blog.thetarzanway.com" borderRadius="2rem" margin="auto" padding="0.5rem 2.5rem">I need travel inspiration</Button>
             <Button onclick={_handleGuideClick} onclickparams={null} margin="auto" borderRadius="2rem" padding="0.5rem 2.5rem"> I want to read guides</Button>
-            <Button onclick={_handleTailoredClick} onclickparams={null} borderRadius="2rem" margin="auto" padding="0.5rem 2.5rem">Let's start planning now</Button>
+            <Button onclick={()=>openTailoredModal(router)} onclickparams={null} borderRadius="2rem" margin="auto" padding="0.5rem 2.5rem">Let's start planning now</Button>
         </GridContainer>
     </Container>
 );

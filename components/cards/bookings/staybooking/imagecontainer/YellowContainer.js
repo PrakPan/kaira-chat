@@ -1,7 +1,7 @@
-import React, {useRef, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faImages, faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
+import {  faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import {GrStar} from 'react-icons/gr';
 const YellowContainer  = styled.div`
@@ -39,20 +39,20 @@ const Booking = (props) =>{
    
                     <YellowContainer>
                         <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', margin: '0.5rem 0'}}>
-                            <div><Heading className="font-opensans">{props.heading} {StarsJSX}</Heading>
+                            <div><Heading className="font-lexend">{props.heading} {StarsJSX}</Heading>
                             {/* <FontAwesomeIcon icon={faInfoCircle}></FontAwesomeIcon> */}
                             </div>
-                            {props.price && !props.are_prices_hidden ? <div style={{  fontSize:'1rem', overflow: 'hidden', fontWeight: '600'}} className="font-opensans center-div">
+                            {props.price && !props.are_prices_hidden ? <div style={{  fontSize:'1rem', overflow: 'hidden', fontWeight: '600'}} className="font-lexend center-div">
                                 {"₹ "+IndianPrice+"/-"}
                             </div> : null}
                         </div>
                         {/* <GridContainer></GridContainer> */}
                         <DetailsContainer>
-                            {props.city ? <Detail className='font-opensans'>
+                            {props.city ? <Detail className='font-lexend'>
                                 <FontAwesomeIcon icon={faMapMarkerAlt} style={{margin: '0 0.25rem 0 0'}}/>
                                 {props.city}
                             </Detail> : <div></div>}
-                            {props.duration ? <Detail className='font-opensans' style={{textAlign: 'right'}}>{props.duration + " Night(s) "}</Detail> : <div></div>}
+                            {props.duration ? <Detail className='font-lexend' style={{textAlign: 'right'}}>{props.duration + " Night(s) "}</Detail> : <div></div>}
                         </DetailsContainer>
                     </YellowContainer>
       

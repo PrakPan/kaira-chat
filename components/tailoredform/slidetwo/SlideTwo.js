@@ -30,42 +30,59 @@ const SlideTwo = (props) =>{
   let isPageWide = media('(min-width: 768px)');
   const _handleShowPax = (grouptype) => {
     props.setGroupType(grouptype);
+    props.setSubmitSecondSlide(true)
     if(grouptype === 'Friends' || grouptype === 'Family'){
       // props.setNumberOfAdults(2);
     setShowPax(true);
-  
+      
     }
   }
   return (
-   <Container>
-    <Section style={{marginBottom: '1.5rem'}}>
+    <Container>
+      <Section style={{ marginBottom: "1.5rem" }}>
         <Question>Your group type?</Question>
-        {showPax ? <Pax
-         numberOfAdults={props.numberOfAdults}
-         setNumberOfAdults={props.setNumberOfAdults}
-         numberOfChildren={props.numberOfChildren} 
-         setNumberOfChildren={props.setNumberOfChildren}
-         numberOfInfants={props.numberOfInfants}
-         setNumberOfInfants={props.setNumberOfInfants}
-        ></Pax> : 
-        <GroupType setShowPax={setShowPax} _handleShowPax={_handleShowPax} groupType={props.groupType}></GroupType>}
-        </Section>
-        <Section>
-         <Question className="font-opensans">Budget per person?</Question>
-         <Budget setShowPax={setShowPax}
-         setBudget ={props.setBudget }
-          ></Budget>
-         </Section>
-         <div style={{display: 'flex'}} onClick={() => setShowPreferences(!showPreferences)}>
-         <Question  hover_pointer>Activity Preferences?</Question>
-          <div style={{flexGrow: '1', textAlign: 'right'}}>
-            <AiFillCaretDown  style={{verticalAlign: 'initial'}} className="hover-pointer"> </AiFillCaretDown>
-          </div>
-
-
-         </div>
-         {showPreferences ? <Preferences selectedPreferences={props.selectedPreferences} setSelectedPreferences={props.setSelectedPreferences}></Preferences> : null}
-
+        {showPax ? (
+          <Pax
+            numberOfAdults={props.numberOfAdults}
+            setNumberOfAdults={props.setNumberOfAdults}
+            numberOfChildren={props.numberOfChildren}
+            setNumberOfChildren={props.setNumberOfChildren}
+            numberOfInfants={props.numberOfInfants}
+            setNumberOfInfants={props.setNumberOfInfants}
+          ></Pax>
+        ) : (
+          <GroupType
+            setShowPax={setShowPax}
+            _handleShowPax={_handleShowPax}
+            groupType={props.groupType}
+          ></GroupType>
+        )}
+      </Section>
+      <Section>
+        <Question className="font-lexend">Budget per person?</Question>
+        <Budget setShowPax={setShowPax} setBudget={props.setBudget}></Budget>
+      </Section>
+      <div
+        style={{ display: "flex" }}
+        onClick={() => setShowPreferences(!showPreferences)}
+      >
+        <Question hover_pointer>Activity Preferences?</Question>
+        <div style={{ flexGrow: "1", textAlign: "right" }}>
+          <AiFillCaretDown
+            style={{ verticalAlign: "initial" }}
+            className="hover-pointer"
+          >
+            {" "}
+          </AiFillCaretDown>
+        </div>
+      </div>
+      {(showPreferences || props.tailoredFormModal) ? (
+        <Preferences
+          tailoredFormModal={props.tailoredFormModal}
+          selectedPreferences={props.selectedPreferences}
+          setSelectedPreferences={props.setSelectedPreferences}
+        ></Preferences>
+      ) : null}
     </Container>
   );
 }

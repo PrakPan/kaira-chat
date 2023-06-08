@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
+import openTailoredModal from '../../services/openTailoredModal';
 const Container = styled.div`
     text-align: center;
  color:white;
@@ -60,15 +61,12 @@ const Button = styled.div`
 const FullImgContent = (props) => {
     const router = useRouter();
 
-    const _handleTailoredRedirect = () => {
-        router.push('/tailored-travel')
-    }
     return (
 
         <Container className='center-di'>
-            <Heading className="font-opensans">{props.heading}</Heading>
-            <SubText className="font-opensans">{props.subheading}</SubText>
-            <Button onClick={_handleTailoredRedirect} className="font-opensans">Start Planning</Button>
+            <Heading className="font-lexend">{props.heading}</Heading>
+            <SubText className="font-lexend">{props.subheading}</SubText>
+            <Button onClick={()=>openTailoredModal(router)} className="font-lexend">Start Planning</Button>
         </Container>
     );
 }

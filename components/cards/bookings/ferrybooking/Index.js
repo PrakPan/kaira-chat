@@ -1,11 +1,9 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React from 'react';
 import styled from 'styled-components'
-//  import { getHumanDate } from '../../../../services/getHumanDate';
   import SectionOne from './sectionone/Index';
 import SectionTwo from './SectionTwo';
   import media from '../../../media';
  import SectionThree from './SectionThree';
-import SectionFour from './SectionFour';
 import { getHumanDate } from '../../../../services/getHumanDate';
  const Container = styled.div`
     width: 100%;        
@@ -26,7 +24,6 @@ import { getHumanDate } from '../../../../services/getHumanDate';
  
  
 const Booking = (props) =>{
-    let isPageWide = media('(min-width: 768px)')
     const getDate = (date) => {
         if(date){
         let year = date.substring(0,4)
@@ -36,32 +33,14 @@ const Booking = (props) =>{
         }
     
     }
-    
-
-  
-    // const detailsarr=[]
-    // for(var i=0; i<props.details.length; i++){
-    //     if(props.details[i].length)
-    //     detailsarr.push(
-    //         <li className={props.blur ? 'blurry-text' : ''} style={{fontSize: "0.75rem",  margin: "0.5rem 0 0.5rem 0rem", fontWeight: "300"}} >{props.details[i]}</li>
-    //     );
-    // }
-  
- 
- 
-
-  
-    //  if(isPageWide)
     return(
         <div style={{height: 'max-content'}}>
-       <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-opensans'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Ferry Booking'}</div>
-        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-opensans'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
-
+       <div style={{margin: '0 0 0.25rem 0', fontSize: '18px'}} className='font-lexend'><b>{props.data ? props.data.city ? props.data.city : '' : ''}</b>{' - Ferry Booking'}</div>
+        <div style={{margin: '0 0 1rem 0', fontSize: '14px', fontWeight: '300'}} className='font-lexend'>{props.data ? props.data.check_in ? getDate(props.data.check_in) : '' : ''}</div>
         <Container className='border' style={{ borderRadius: "10px"}}>
          <SectionOne data={props.data}></SectionOne>
          <SectionTwo isDatePresent={props.isDatePresent} data={props.data}></SectionTwo>
          <SectionThree  is_registration_needed={props.is_registration_needed} are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         {/* <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> */}
         </Container>
         </div>
     );

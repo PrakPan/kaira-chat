@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import EndLocation from './EndLocation'
 import RouteSlab from './RouteSlab';
 import InterConnect from './Interconnect';
-import Map from './Map';
 
 const GridContainer = styled.div`
     @media screen and (min-width: 768px){
@@ -83,7 +82,6 @@ const RouteIndex = (props) => {
         <EndLocation location={props.nostartinglocation ? 'Your Location' : endingcity}></EndLocation>
    </div>
    <div>
-       {/* {props.nomap ? null : <Map breif={props.breif}></Map> } */}
    </div>
    </GridContainer>
   );

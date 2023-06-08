@@ -1,81 +1,15 @@
 import React, {useState, useEffect, useRef} from 'react';
-import styled,  { keyframes } from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCalendarWeek,faCog, faCircle, } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
 import BackgroundImageLoader from '../../../UpdatedBackgroundImageLoader';
-import {GoStar} from 'react-icons/go';
-
-
- 
-    const IconsContainer = styled.div`
-        color: white;
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-         display: grid;
-        grid-template-columns: 1fr max-content 1fr max-content 1fr;
-        font-size: 0.85rem;
-        border-style: none;
-        border-width: 1px;
-         background-color: rgba(255, 255, 255, 0.7);;
-          color: black;
-          padding: 2px 0;
-
-         @media screen and (min-width: 768px){
-          padding: 5px 0;
-
-        }
-
-      `;
       
-      const IconHoverContainer = styled.div`
-    
-      &:hover{
-
-        }
-        margin: 0 0.25rem;
-        padding: 4px;
-
-        @media screen and (min-width: 768px){
-          padding: 0.5rem;
-
-        }
-      `;
+   
 
       const Container = styled.div`
         width: 100%;
         height: ${(props) => props.height ? props.height+"px" : '100%'};
         position: relative;
     `;
-    const RatingContainer = styled.div`
-        position: absolute;
-        top: 0;
-        background-color: #126904;
-        width: max-content;
-        font-size: 0.75rem;
-        color: white;
-        border-radius: 5px;
-        padding: 0.25rem;
-        right: 0;
-        margin: 0.5rem;
-        font-weight: 300;
-
-    `;
-    const DurationContainer = styled.div`
-    position: absolute;
-    top: 0;
-     width: max-content;
-    font-size: 0.75rem;
-    color: white;
-    border-radius: 5px;
-    padding: 0.25rem;
-    right: 0;
-    background: rgba(0, 0, 0, 0.6);
-    letter-spacing: 0.1em;
-
-    margin: 0.5rem;
-    font-weight: 300;
-    `;
+   
     const Heading = styled.p`
     text-align: center;
         font-size: 1.75rem;
@@ -174,7 +108,6 @@ const ImageSlider = (props) => {
     
     return(
         <Container  props={props} ref={Component} >
-            {/* <ExperienceType className="font-opensans">TREK</ExperienceType> */}
             <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
             {!props.PW ? 
         
@@ -183,19 +116,12 @@ const ImageSlider = (props) => {
             <PWContainer style={{display: 'none'}}>
 
             </PWContainer> }
-            {/* <RatingContainer className='font-opensans'>
-            <GoStar  style={{fontSize: "1rem", marginBottom: "0rem", marginRight: '0.25rem', display: 'inline-block'}}></GoStar>
-            {props.rating + '/5'}
-             </RatingContainer> */}
-             {/* <DurationContainer className='font-opensans'>
-             {!props.duration  ? props.duration_unit && props.duration_number ? props.duration_number+ " " + props.duration_unit.toUpperCase() : null : props.duration ? props.duration.toUpperCase() : null}
-             </DurationContainer> */}
-            <CustomizableContainer className='font-opensans'>
+            <CustomizableContainer className='font-lexend'>
             100% CUSTOMISABLE
             </CustomizableContainer> 
 <HeadingContainer>
-  <Heading className='font-opensans' locations={props.locations}>{props.experience}</Heading>
-  <Subheading className='font-opensans'>{LOCATIONS_TO_SHOW}</Subheading>
+  <Heading className='font-lexend' locations={props.locations}>{props.experience}</Heading>
+  <Subheading className='font-lexend'>{LOCATIONS_TO_SHOW}</Subheading>
 </HeadingContainer>
         </Container>
     );

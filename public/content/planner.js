@@ -32,7 +32,7 @@ const PLANNER_PAGES = [
       {
         "tagline": "Mountain Paradise",
         "name": "Ladakh",
-        "slug": '/travel-planner/ladakh',
+        "slug": '/asia/india/ladakh',
         "image": "media/page/167463234122462153434753417969.jpg",
       },
       {

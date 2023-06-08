@@ -33,7 +33,7 @@ const FullImgContent = (props) => {
     ]
     return (
 
-        <Container className='font-opensans'>
+        <Container className='font-lexend'>
             <Flickity data={data}></Flickity>
         </Container>
     );

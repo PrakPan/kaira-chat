@@ -66,8 +66,8 @@ const HowItWorksSlideshow = (props) =>{
                 <ImageLoader url ={props.images[0]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
         <TextContainer className="center-div">
-            <HowItWorksHeading className='font-opensans'>{travelsupportcontent.howitworks[0].heading}</HowItWorksHeading>
-            <HowItWorksText className='font-opensans'>{travelsupportcontent.howitworks[0].text}</HowItWorksText>
+            <HowItWorksHeading className='font-lexend'>{travelsupportcontent.howitworks[0].heading}</HowItWorksHeading>
+            <HowItWorksText className='font-lexend'>{travelsupportcontent.howitworks[0].text}</HowItWorksText>
         </TextContainer>
     
     </div>,
@@ -76,8 +76,8 @@ const HowItWorksSlideshow = (props) =>{
             <ImageLoader url ={props.images[1]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
         <TextContainer className="center-div">
-            <HowItWorksHeading className='font-opensans'>{travelsupportcontent.howitworks[1].heading}</HowItWorksHeading>
-            <HowItWorksText className='font-opensans'>{travelsupportcontent.howitworks[1].text}</HowItWorksText>
+            <HowItWorksHeading className='font-lexend'>{travelsupportcontent.howitworks[1].heading}</HowItWorksHeading>
+            <HowItWorksText className='font-lexend'>{travelsupportcontent.howitworks[1].text}</HowItWorksText>
         </TextContainer>
     
     </div>,
@@ -86,8 +86,8 @@ const HowItWorksSlideshow = (props) =>{
          <ImageLoader url ={props.images[2]} width="50%" margin="auto"  widthmobile={props.vertical ? '40%' : '60%'} />
         </ImageContainer>
         <TextContainer className="center-div">
-            <HowItWorksHeading className='font-opensans'>{travelsupportcontent.howitworks[2].heading}</HowItWorksHeading>
-            <HowItWorksText className='font-opensans'>{travelsupportcontent.howitworks[2].text}</HowItWorksText>
+            <HowItWorksHeading className='font-lexend'>{travelsupportcontent.howitworks[2].heading}</HowItWorksHeading>
+            <HowItWorksText className='font-lexend'>{travelsupportcontent.howitworks[2].text}</HowItWorksText>
         </TextContainer>
        
     </div>

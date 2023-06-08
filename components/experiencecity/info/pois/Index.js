@@ -33,19 +33,31 @@ const Inlcusions = (props) => {
     let moremoreicons = [];
     
     for(var i = 0 ; i < 6; i++){
-        if(props.pois[i]) defaulticons.push(<Icon  _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[i]}></Icon>)
+        if(props.pois[i]) defaulticons.push(<Icon drawer _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[i]}></Icon>)
     }
 
     //if more than 6 pois, show more 
     if(props.pois.length > 6)
     for(var j = 6 ; j < 9; j++){
-        if(props.pois[j]) moreicons.push(<Icon  _openPoiModal={(poi) => props._openPoiModal(poi)}  icon={props.pois[j]}></Icon>)
+        if (props.pois[j]) moreicons.push(
+                             <Icon
+                               drawer
+                               _openPoiModal={(poi) => props._openPoiModal(poi)}
+                               icon={props.pois[j]}
+                             ></Icon>
+                           );
     }
 
     //if more than 9, show more more
     if(props.pois.length > 9)
     for(var k = 9 ; k < 12; k++){
-        if(props.pois[k]) moremoreicons.push(<Icon _openPoiModal={(poi) => props._openPoiModal(poi)}   icon={props.pois[k]}></Icon>)
+        if(props.pois[k]) moremoreicons.push(
+                            <Icon
+                              drawer
+                              _openPoiModal={(poi) => props._openPoiModal(poi)}
+                              icon={props.pois[k]}
+                            ></Icon>
+                          );
     }
     
     return(
@@ -55,7 +67,6 @@ const Inlcusions = (props) => {
          {/* {showMoreStatus === 1 || showMoreStatus === 2  ? moreicons : null} */}
          {/* {showMoreStatus === 2 ? moremoreicons : null} */}
         </Container>
-        <Button boxShadow link={'/travel-guide/city/'+props.slug+"/things-to-do"} hoverBgColor="black" hoverColor="white" margin="1rem auto" borderRadius="2rem" borderWidth="1px" padding="2px 1.25rem" >View All</Button>
 
 
     </div>
@@ -63,4 +74,3 @@ const Inlcusions = (props) => {
 }
 
 export default Inlcusions;
-{/* <Button boxShadow link={'/travel-guide/city/'+props.slug+"/things-to-do"} hoverBgColor="black" hoverColor="white" margin="1rem auto" borderRadius="2rem" borderWidth="1px" padding="2px 1.25rem" onclick={_showMoreHandler}>View All</Button> */}

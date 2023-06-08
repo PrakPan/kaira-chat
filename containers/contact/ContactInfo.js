@@ -1,17 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-// import Heading from '../../components/heading/Heading';
 import Heading from '../../components/newheading/heading/Index';
-
-import theme from '../../public/Themes';
-// import Button from '../../components/Button';
 import Button from '../../components/ui/button/Index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
-// import { faCommentDots} from '@fortawesome/free-solid-svg-icons';
-// import instagram from '../../public/assets/icons/social/color/Instagram.png';
-// import facebook from '../../public/assets/icons/social/color/facebook.svg';
-// import google from '../../public/assets/icons/social/color/google.svg';
 import urls from '../../services/urls';
 const Container = styled.div`
 background-color: white;
@@ -86,25 +78,53 @@ const Contact = () => {
         var win = window.open(urls.WHATSAPP, '_blank');
         win.focus();
     }
-  return(
+  return (
     <Container>
-        <Heading align="center" aligndesktop="center" margin="1.5rem">Want to meet us?</Heading>
-        <GridContainer>
-            <AddressContainer>
-                <HeadingSmall className="font-opensans" align="center">Address</HeadingSmall>
-                <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">D-14 First Floor, Sector 20,  Noida, Uttar Pradesh 201301</p>
-                <br></br>
-                <HeadingSmall className="font-opensans" align="center" style={{marginTop: '1rem'}}>Call Us</HeadingSmall>
-                <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">+91 9354665989, +91 87872 00342</p>
-           
-            </AddressContainer>
-            <NumberContainer>
-            <HeadingSmall className="font-opensans" align="center">Reach Out</HeadingSmall>
-            {/* <ReachOutHelper>Email us on</ReachOutHelper> */}
-            <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center", color: '#0066b2'}} className="font-nunito">info@thetarzanway.com</p>
-            {/* <ReachOutHelper>or</ReachOutHelper> */}
-            {/* <p style={{fontSize: theme.fontsizes.desktop.text.four, textAlign: "center"}} className="font-nunito">+91 9582125476</p> */}
-            {/* <ButtonContainer>
+      <Heading align="center" aligndesktop="center" margin="1.5rem">
+        Want to meet us?
+      </Heading>
+      <GridContainer>
+        <AddressContainer>
+          <HeadingSmall className="font-lexend" align="center">
+            Address
+          </HeadingSmall>
+          <p
+            style={{ fontSize: "1rem", textAlign: "center" }}
+            className="font-nunito"
+          >
+            D-14 First Floor, Sector 20, Noida, Uttar Pradesh 201301
+          </p>
+          <br></br>
+          <HeadingSmall
+            className="font-lexend"
+            align="center"
+            style={{ marginTop: "1rem" }}
+          >
+            Call Us
+          </HeadingSmall>
+          <p
+            style={{ fontSize: "1rem", textAlign: "center" }}
+            className="font-nunito"
+          >
+            +91 95821 25476, +91 87872 00342
+          </p>
+        </AddressContainer>
+        <NumberContainer>
+          <HeadingSmall className="font-lexend" align="center">
+            Reach Out
+          </HeadingSmall>
+          {/* <ReachOutHelper>Email us on</ReachOutHelper> */}
+          <div style={{ display: 'flex' , justifyContent : 'center'}}>
+          <a
+            href="mailto:info@thetarzanway.com"
+            style={{ fontSize: "1rem", color: "#0066b2" , textDecoration : 'none' }}
+          >
+            info@thetarzanway.com
+            </a>
+            </div>
+          {/* <ReachOutHelper>or</ReachOutHelper> */}
+          {/* <p style={{fontSize: '1rem', textAlign: "center"}} className="font-nunito">+91 9582125476</p> */}
+          {/* <ButtonContainer>
             <Button borderStyle="none" margin="1rem auto" bgColor="#075E54" borderRadius="5px" color="white" onclick={_openWhatsapp} onclickparam={null}>
                 <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}} />
                 WhatsApp
@@ -112,25 +132,58 @@ const Contact = () => {
             <Button borderStyle="none" margin="1rem auto" bgColor="#f7e700" borderRadius="5px" color="black">
                 <FontAwesomeIcon icon={faCommentDots} style={{marginRight: "0.5rem"}} />Chat Now </Button>
             </ButtonContainer> */}
-            <ButtonContainer>
-            <Button display="block" boxShadow borderStyle="none" margin="1rem auto" bgColor="#075E54" borderRadius="5px" color="white" onclick={_openWhatsapp} onclickparam={null}>
-                <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}} />
-                WhatsApp
+          <ButtonContainer>
+            <Button
+              display="block"
+              boxShadow
+              borderStyle="none"
+              margin="1rem auto"
+              bgColor="#075E54"
+              borderRadius="5px"
+              color="white"
+              onclick={_openWhatsapp}
+              onclickparam={null}
+            >
+              <FontAwesomeIcon
+                icon={faWhatsapp}
+                style={{ marginRight: "0.5rem" }}
+              />
+              WhatsApp
             </Button>
             {/* <Button display="block" link={urls.ERROR404} boxShadow  borderStyle="none" margin="1rem auto" bgColor="#f7e700" borderRadius="5px" color="black">
                 <FontAwesomeIcon icon={faCommentDots} style={{marginRight: "0.5rem"}} />Chat Now </Button> */}
-            </ButtonContainer>
-            </NumberContainer>
-           
-        </GridContainer>
-         <AddressContainer style={{border: 'none'}}>
-                <HeadingSmall className="font-opensans" align="center">Social Media</HeadingSmall>
-                 <SocialContainer>
-                    <a href="https://www.instagram.com/thetarzanway" target="_blank"><SocialIcon src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/Instagramcolor_1.webp'}  /></a>
-                    <a href="https://www.facebook.com/thetarzanway" target="_blank"><SocialIcon style={{margin: '0 3rem'}} src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/facebookcolor.webp'}  /></a>
-                    <a href="https://goo.gl/maps/vLgjywWXcv7AMBdK6" target="_blank"><SocialIcon src={'https://d31aoa0ehgvjdi.cloudfront.net/media/website/googlecolor.webp'}  /></a>
-                </SocialContainer>
-            </AddressContainer>
+          </ButtonContainer>
+        </NumberContainer>
+      </GridContainer>
+      <AddressContainer style={{ border: "none" }}>
+        <HeadingSmall className="font-lexend" align="center">
+          Social Media
+        </HeadingSmall>
+        <SocialContainer>
+          <a href="https://www.instagram.com/thetarzanway" target="_blank">
+            <SocialIcon
+              src={
+                "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Instagramcolor_1.webp"
+              }
+            />
+          </a>
+          <a href="https://www.facebook.com/thetarzanway" target="_blank">
+            <SocialIcon
+              style={{ margin: "0 3rem" }}
+              src={
+                "https://d31aoa0ehgvjdi.cloudfront.net/media/website/facebookcolor.webp"
+              }
+            />
+          </a>
+          <a href="https://goo.gl/maps/vLgjywWXcv7AMBdK6" target="_blank">
+            <SocialIcon
+              src={
+                "https://d31aoa0ehgvjdi.cloudfront.net/media/website/googlecolor.webp"
+              }
+            />
+          </a>
+        </SocialContainer>
+      </AddressContainer>
     </Container>
   );
 }

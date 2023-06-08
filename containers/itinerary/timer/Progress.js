@@ -1,10 +1,7 @@
 
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-// import GIF from '../../../public/assets/gifs/itinerary/activity.gif';
-// import GIF2 from '../../../public/assets/gifs/itinerary/negotiate.gif';
-// import GIF3 from '../../../public/assets/gifs/itinerary/route.gif';
-// import combinedGIF from '../../../public/assets/gifs/itinerary/timer.gif';
+import ImageLoader from '../../../components/ImageLoader';
 const ProgressContainer = styled.div`
     margin: 1rem 0;
 `;
@@ -33,7 +30,7 @@ const Progress = (props) => {
 
             <p className="font-nunito" style={{textAlign: 'center', fontWeight: '300', letterSpacing: '1px'}}>
               {/* <span className="font-quote" style={{margin: '0rem 0.25rem 0 0', fontSize: '1.25rem'}}>&#8220;</span> */}
-            {load ? <em className="font-opensans">{messages[progress]}</em> : null}
+            {load ? <em className="font-lexend">{messages[progress]}</em> : null}
             {/* <span className="font-quote"  style={{margin: '-1rem 0 0 0.25rem', fontSize: '1.25rem'}}>&#8221;</span> */}
             </p>
       </ProgressContainer>

@@ -39,7 +39,7 @@ const HHeading = (props) => {
                 >
                     <Heading
                     props={props}
-                    className={props.blur ? 'blurry-text font-opensans': 'font-opensans'}
+                    className={props.blur ? 'blurry-text font-lexend': 'font-lexend'}
                      >{props.children}</Heading>
 
                     {/* {props.noline || isPageWide ? null : <div style={{width: '30%', margin: 'auto', borderStyle: 'none none solid none', borderWidth: '3px', borderColor: "#F7e700"}}></div>} */}

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import styled from 'styled-components';
 
  import NewSearchMobile from '../../../components/search/homepage/mobile/Index';
@@ -51,6 +51,7 @@ const SearchFullImg= (props) => {
     const [inputValue, setInputValue] = useState('');
     const [results, setResults] = useState(null);
    
+
    
   
     return(
@@ -58,9 +59,9 @@ const SearchFullImg= (props) => {
                     {/* <SearchContainer><SearchBar results={results} setResults={setResults} _onChangeHandler={_onChangeHandler} inputValue={inputValue} showResult={showResult} setShowResult={setShowResult} _changeResultHandler={_changeResultHandler}></SearchBar></SearchContainer> */}
             <div className='hidden-desktop' style={{width: '100%'}}><NewSearchMobile></NewSearchMobile></div>
             <div className='hidden-mobile' style={{width: '100%'}}><NewSearchDesktop></NewSearchDesktop></div>
-            {props.city ? <SubText  style={{margin: isPageWide ? '3rem 0 0 0': '1rem 0 0.5rem 0'}} className="font-nunito">{props.text}</SubText> : <Tagline className="font-opensans">{props.tagline}</Tagline> }
-            {/* <p className="font-opensans" style={{fontWeight: '300', fontSize: '1.5rem', color: 'white', textAlign: 'center', width: '80%', margin: 'auto'}}>Find an immersive experience or craft one for yourself</p> */}
-            {props.city ? <Tagline  style={{margin: '0'}} className="font-opensans">{props.tagline}</Tagline> : <SubText className="font-nunito">{props.text}</SubText>}
+            {props.city ? <SubText  style={{margin: isPageWide ? '3rem 0 0 0': '1rem 0 0.5rem 0'}} className="font-nunito">{props.text}</SubText> : <Tagline className="font-lexend">{props.tagline}</Tagline> }
+            {/* <p className="font-lexend" style={{fontWeight: '300', fontSize: '1.5rem', color: 'white', textAlign: 'center', width: '80%', margin: 'auto'}}>Find an immersive experience or craft one for yourself</p> */}
+            {props.city ? <Tagline  style={{margin: '0'}} className="font-lexend">{props.tagline}</Tagline> : <SubText className="font-nunito">{props.text}</SubText>}
         </Container>
     );
 

@@ -3,10 +3,11 @@ import styled from 'styled-components';
 // import Button from '../../components/ui/button/Index';
 import ImageLoader from '../../../components/ImageLoader';
 import {ImQuotesLeft} from 'react-icons/im';
-import Flickity from './Flickity/Index';
  
 const Card = styled.div`
       padding: 2rem 2rem;
+      height : 17rem;
+      margin-bottom : 0.2rem;
     @media screen and (min-width: 768px){
         min-height: 40vh;
      }
@@ -31,7 +32,7 @@ const CardContainer = (props) => {
             <Card className='border center-v text-cener'>
                 <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft>
                 <CardListItem >{props.text}</CardListItem>
-                <CardHeading className='font-opensans'>{props.heading}</CardHeading>
+                <CardHeading className='font-lexend'>{props.heading}</CardHeading>
 
             </Card>
         

@@ -29,7 +29,6 @@ width: 100%;
  
  
 const Pax= (props) => {
-
     let defaultcounters = [2,0,0];
     // if(props.answers[2][0] === 2){
     //     defaultcounters=[2,0,0];
@@ -51,11 +50,11 @@ const Pax= (props) => {
     // }
      return(
         <Container>
-            {/* <GroupTypeContainer className='font-opensans border-thin'  onClick={props.hidePax}>
+            {/* <GroupTypeContainer className='font-lexend border-thin'  onClick={props.hidePax}>
                 <div>
                     <div style={{fontWeight: '600', letterSpacing: '1px'}}>GROUP TYPE</div>
                  </div>
-                <div className='font-opensans center-div'>
+                <div className='font-lexend center-div'>
                     <StyledFontAwesome  icon={faEdit}></StyledFontAwesome>
                 </div>
             </GroupTypeContainer> */}

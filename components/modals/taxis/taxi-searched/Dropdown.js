@@ -2,7 +2,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 const DropDown = (props) =>  {
     const _handleChange = (event) => {
-        // console.log(event.target.innerHTML)
         props.onclick( {
           itinerary_id: props.itinerary_id,
           taxi_type: props.taxi_type, 

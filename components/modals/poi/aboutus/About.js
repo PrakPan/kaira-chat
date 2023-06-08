@@ -54,7 +54,7 @@ const Overview = (props) => {
 
   return(
       <div>{props.short_description ? <Container>
-        <Heading align="center" className="font-opensans" bold>About</Heading>
+        <Heading align="center" className="font-lexend" bold>About</Heading>
 
         <div style={{display: "grid", gridTemplateColumns: "1fr"}}>
         <Description className="font-nunito" >{showMore ?  props.short_description.substring(0,250) : props.short_description }</Description>

@@ -83,7 +83,7 @@ const Location = (props) => {
                         {props.is_selected ? <BsCheckCircleFill/> : null}
                         </HoverContainer>
                         </div>
-                        {/* <ImageTextContainer className='font-opensans'>
+                        {/* <ImageTextContainer className='font-lexend'>
                         
                             </ImageTextContainer> */}
                 {/* <ImageText className="font-opesans center-div">{props.hotlocations[i].name}</ImageText> */}

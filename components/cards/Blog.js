@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../ImageLoader';
-// import Button from '../Button';
 import Button from '../ui/button/Index';
 import {useRouter} from 'next/router';
 
@@ -19,11 +18,6 @@ background-color: ${(props)=> props.bgColor? props.bgColor : 'transparent'};
     padding: 0;
 }
 `;
-// const Image = styled.img`
-//     border-radius: 50%;
-//     //width:${imgWidth};
-//     width: ${props => props.imgWidth ? props.imgWidth : imgWidth };
-// `;
 const Name = styled.p`
     padding: 0; 
      font-size:1.25rem;
@@ -45,6 +39,7 @@ display: -webkit-box;
 
 
 const Experiences= (props) => {
+    const router = useRouter();
 
     const Review = styled.div`
     width: 90%;
@@ -89,7 +84,6 @@ display: -webkit-box;
     /*Require props: imgWidth*/
  
   
-    const router = useRouter();
     const _onClickHandler = () => {
         if(props.page){
             router.push('/'+props.page)
@@ -103,7 +97,7 @@ display: -webkit-box;
       <Container className="center-div">  
         {/* <img style={{ width: "40%", margin: "auto", borderRadius: "50%"}} src={img}></img> */}
         <ImageLoader width={props.location ? '30%' : "40%"} margin="auto" borderRadius="50%" widthmobile="50%" dimensions={{width: 600, height: 600}} url={props.img}></ImageLoader>  
-          <Name  onClick={props.page || props.link? _onClickHandler : null}  className="font-opensans text-center hover-pointer"><b>{props.heading}</b></Name>
+          <Name  onClick={props.page || props.link? _onClickHandler : null}  className="font-lexend text-center hover-pointer"><b>{props.heading}</b></Name>
           <Review             onClick={props.page || props.link? _onClickHandler : null}  className="text-center font-nunito hover-pointer" dangerouslySetInnerHTML={props.text ? { __html: props.text } : { __html: +"Looks like there was a problem loading this..." }}></Review>
           
      <Button

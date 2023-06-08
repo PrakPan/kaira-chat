@@ -28,7 +28,7 @@ const FullImg = (props) => {
     
   return(
     <Container>
-        <CityHeading className="font-opensans">{props.heading}</CityHeading>
+        <CityHeading className="font-lexend">{props.heading}</CityHeading>
         {props.plan ? <Duration className="font-nunito">{props.plan.duration_number+" "+props.plan.duration_unit}</Duration> : null}
     </Container>
 

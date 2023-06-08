@@ -25,6 +25,7 @@ text-align: center;
  
     }
 `;
+
 const Heading = styled.h1`
 color: white;
 
@@ -32,6 +33,7 @@ width: 99%;
 font-weight: 700;
 margin-bottom: 1rem;
 font-size: 2rem;
+
 @media screen and (min-width: 768px){
   font-size: 3rem;
   font-weight: 700;
@@ -86,10 +88,9 @@ display : flex;
 const FullImgContent = (props) => {
     let isPageWide = media('(min-width: 768px)');
     const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
-// console.log('', props.children_cities)
     return (
 
-        <Container className='font-opensans center-di text-cente'>
+        <Container className='font-lexend center-di text-cente'>
            <PaddingContianer >
             <Heading>{props.tagline}</Heading>
              

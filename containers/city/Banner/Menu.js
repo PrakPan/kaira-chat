@@ -42,7 +42,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Overview</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Overview</MenuItem>
             </Link> : null}
             {props.data.pois.length ? <Link
             activeClass='citymenu-active'
@@ -50,7 +50,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Things to do</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Things to do</MenuItem>
             </Link> : null}
             {props.data.conveyance_available ?<Link
             activeClass='citymenu-active'
@@ -58,7 +58,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Getting Around</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Getting Around</MenuItem>
             </Link>:null}
             {props.data.foods.length ? <Link
             activeClass='citymenu-active'
@@ -66,7 +66,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>What to Eat</MenuItem>
+                <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>What to Eat</MenuItem>
             </Link> : null}
             {props.data.survival_tips_and_tricks ?<Link
             activeClass='citymenu-active'
@@ -74,7 +74,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-                <MenuItem className="font-opensans " style={{fontWeight: '300'}} onClick={props.hideMenu}>Survival Tips & Tricks</MenuItem>
+                <MenuItem className="font-lexend " style={{fontWeight: '300'}} onClick={props.hideMenu}>Survival Tips & Tricks</MenuItem>
             </Link>   : null} 
             {props.data.folklore_or_story ? <Link
             activeClass='citymenu-active'
@@ -82,7 +82,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-            <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Folklore or Story</MenuItem>
+            <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Folklore or Story</MenuItem>
             </Link> : null}
             {props.data.experiences.length ? <Link
             activeClass='citymenu-active'
@@ -90,7 +90,7 @@ const Menu = (props) => {
             spy="true"
             smooth="true"
             duration={500}>
-            <MenuItem className="font-opensans" style={{fontWeight: '300'}} onClick={props.hideMenu}>Experiences</MenuItem>
+            <MenuItem className="font-lexend" style={{fontWeight: '300'}} onClick={props.hideMenu}>Experiences</MenuItem>
             </Link>   : null}       
        </MenuContainer>
   );

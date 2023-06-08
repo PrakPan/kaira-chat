@@ -38,9 +38,7 @@ margin: 1rem 0;
 font-weight: 100;
 letter-spacing: 1px;
 `;
-// list-style-image: ${require('../../../assets/icons/alert.svg')};
 
-// style={{margin: "1rem 0", listStyleImage: require('../../../assets/icons/alert.svg')}}
 let recommendations = [];
 let tips = [];
 
@@ -58,13 +56,13 @@ for(var j = 0; j<props.tips.length ; j++){
 <div>{props.recommendations ? <Container>
     <GridContainer>
         <div style={{width: "100%", overflow: "scroll"}}>
-            <Heading className="font-opensans">Do's and Dont's</Heading>
+            <Heading className="font-lexend">Do's and Dont's</Heading>
             <UL className="font-nunito" style={{margin: "1rem 0"}}>
                 {tips}
             </UL>
         </div>
         <div>
-            <Heading className="font-opensans">Recommendations</Heading>
+            <Heading className="font-lexend">Recommendations</Heading>
             <ul className="font-nunito">
                 {recommendations}
               

@@ -1,9 +1,12 @@
 import Head from 'next/head'
 import NotFoundContainer from '../containers/notfound/Index';
 import Layout from '../components/Layout';
+import usePageLoaded from '../components/custom hooks/usePageLoaded';
 
 const Error = () => {
-    if(typeof window !== 'undefined')
+  const isPageLoaded = usePageLoaded();
+
+    if(isPageLoaded)
     return (
     <Layout>
     <Head>

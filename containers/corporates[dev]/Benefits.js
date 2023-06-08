@@ -37,7 +37,7 @@ const CardListItem = styled.li`
 const FullImgContent = (props) => {
     return (
 
-        <Container className='font-opensans'>
+        <Container className='font-lexend'>
             <Card className='border center-v text-cener'>
                 <ImageLoader
                 url="media/website/b2b/passenger.png" 
@@ -46,7 +46,7 @@ const FullImgContent = (props) => {
                 width="3rem"
                 leftalign
                 />
-                <CardHeading className='font-opensans'>Leisure Travel: Team building company retreats</CardHeading>
+                <CardHeading className='font-lexend'>Leisure Travel: Team building company retreats</CardHeading>
                 <ul style={{padding: '0 0 0 1rem'}}>
                     <CardListItem >Workcation to travel, work, and collaborate with all your employees</CardListItem>
                     <CardListItem>Weekend getaways for team building and exploring together</CardListItem>
@@ -64,7 +64,7 @@ const FullImgContent = (props) => {
                 width="3rem"
                 leftalign
                 />
-                <CardHeading className='font-opensans'>Booking Needs: Employee business travel needs</CardHeading>
+                <CardHeading className='font-lexend'>Booking Needs: Employee business travel needs</CardHeading>
                 <ul style={{padding: '0 0 0 1rem'}}>
                     <CardListItem>Book flights & hotels at cheap prices for employees</CardListItem>
                     <CardListItem>Track your bookings & get a dedicated travel expert</CardListItem>
@@ -80,7 +80,7 @@ const FullImgContent = (props) => {
                 width="3rem"
                 leftalign
                 />
-                <CardHeading className='font-opensans'>Conferences: Company travel excursions and conferences</CardHeading>
+                <CardHeading className='font-lexend'>Conferences: Company travel excursions and conferences</CardHeading>
                 <ul style={{padding: '0 0 0 1rem'}}>
                     <CardListItem >Townhall meetings with activities during the day</CardListItem>
                     <CardListItem>Travel to an offsite location and meet with the team</CardListItem>

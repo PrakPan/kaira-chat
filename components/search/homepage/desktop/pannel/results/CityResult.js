@@ -1,10 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import media from '../../../../../media';
 import { useRouter } from 'next/router'
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch} from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
 padding: 1rem;
@@ -42,21 +38,15 @@ background-color: #f7e700;
 
 
 const Result= (props) => {
-  let isPageWide = media('(min-width: 768px)');
   const router = useRouter();
 const _handleCTA = () => {
-    // localStorage.setItem('search_city_selected_id', props.id);
-    // localStorage.setItem('search_city_selected_name', props.title);
-    // localStorage.setItem('search_city_selected_parent', props.parent);
-    router.push('/travel-guide/city/'+props.cta)
+    // router.push('/travel-guide/city/'+props.cta)
+    window.location.href = '/' + props.path
 
 }
-const _handlePlanning = () => {
-    // localStorage.setItem('search_city_selected_id', props.id);
-    // localStorage.setItem('search_city_selected_name', props.title);
-    // localStorage.setItem('search_city_selected_parent', props.parent);
-    router.push('/tailored-travel?search_text='+props.title)
-}
+const _handlePlanning = (id, name) => {
+  openTailoredModal(router, id, name);
+};
     return(
         <Container>
         <div >
@@ -64,7 +54,7 @@ const _handlePlanning = () => {
             <p style={{opacity : "0.5", fontSize: "0.75rem", margin: "0"}} className="font-nuniti" onClick={_handleCTA}>{props.type.toUpperCase()}</p>
         </div>
         <div className="center-div">
-            <CTA className="font-nunito" onClick={_handlePlanning}>Start Planning</CTA>
+            <CTA className="font-nunito" onClick={()=>_handlePlanning(props.id , props.title)}>Start Planning</CTA>
         </div>
         </Container> 
     );
