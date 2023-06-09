@@ -267,7 +267,7 @@ const Enquiry = (props) => {
     if (selectedCities[0].destination_id)
       data.destination_id = [selectedCities[0].destination_id];
     if (stateIds.length) data.state_id = stateIds;
-    if(countryIds.length) data.country_ids = countryIds;
+    if(countryIds.length) data.country_id = countryIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
     if (start_date === "1970-01-01") data.start_date = "";
