@@ -25,6 +25,7 @@ import ButtonYellow from '../../../components/ButtonYellow';
 import useMediaQuery from '../../../hooks/useMedia';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import ScrollVisibleHOC from '../../../helper/withScrollVisibility';
+import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -495,6 +496,10 @@ const ItineraryPoiElementM = (props) => {
             </ButtonYellow>
           </div>
         </div>
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={() => setShowDrawer(false)}
+        />
       </Drawer>
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1510]">

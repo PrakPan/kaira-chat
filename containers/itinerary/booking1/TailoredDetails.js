@@ -523,7 +523,9 @@ const Details = (props) => {
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
                 ) : (
                   <div className="font-medium text-base self-end">
-                    Total Cost
+                    {props.payment?.is_estimated_price
+                      ? 'Estimated Price'
+                      : 'Total Cost'}
                   </div>
                 )}
               </div>
@@ -897,7 +899,7 @@ const Details = (props) => {
             onClick={() => console.log(' ')}
             onclickparam={null}
           >
-            Wait For a Callback
+            Request a Callback
           </ButtonYellow>
         ) : null
       ) : null}

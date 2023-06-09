@@ -111,7 +111,8 @@ const HotelBookingContainer = ({
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
       {handleClick && (
         <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-          {cityName} <span>({booking ? booking?.duration : 1}N)</span>
+          {cityName ? cityName : booking?.city}{' '}
+          <span>({booking ? booking?.duration : 1}N)</span>
         </div>
       )}
       {booking ? (

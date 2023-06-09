@@ -24,6 +24,7 @@ import PoiList from './PoiList';
 import PoiListSkeleton from './PoiListSkeleton';
 import LogInModal from '../../../components/modals/Login';
 import { Navigation } from '../../../components/NewNavigation';
+import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 
 const padding = {
   initialLeft: '60px',
@@ -393,6 +394,11 @@ const ItineraryPoiElement = (props) => {
         ) : (
           <PoiListSkeleton />
         )}
+
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={() => setShowDrawer(false)}
+        />
       </Drawer>
       {/* <div style={{display: 'flex', alignItems: 'center'}}>
                 <SectionOneText>{props.time}</SectionOneText>

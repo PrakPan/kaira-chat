@@ -384,6 +384,7 @@ const SimpleTabsV2 = (props) => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
+
   const [activeItem, setActiveItem] = useState(1);
   const items = props?.activityBookings
     ? [
@@ -597,6 +598,7 @@ const SimpleTabsV2 = (props) => {
           <>
             <div id={items[1].link}>
               <NewItenaryDBDMob
+                payment={props.payment}
                 token={props.token}
                 // is_registration_needed={
                 //   props.payment ? props.payment.is_registration_needed : false
@@ -669,6 +671,7 @@ const SimpleTabsV2 = (props) => {
                 setHideBookingModal={props.setHideBookingModal}
                 routes={RoutesData}
                 transfers={TransfersData}
+                payment={props.payment}
                 transferBookings={props?.transferBookings}
               />
             </div>
@@ -678,7 +681,7 @@ const SimpleTabsV2 = (props) => {
               mobileWidth="90%"
               backdrop
               closeIcon={true}
-              onHide={() => setShowFooterBannerMobile(false)}
+              onHide={_handleLoginClose}
               borderRadius={'12px'}
             >
               {props.payment ? (
@@ -763,6 +766,7 @@ const SimpleTabsV2 = (props) => {
                 <div id={items[1].link}>
                   {props?.itinerary && (
                     <NewItenaryMain
+                      payment={props.payment}
                       city_slabs={props?.breif?.city_slabs}
                       itinerary={props?.itinerary}
                       setItinerary={props.setItinerary}
@@ -774,6 +778,7 @@ const SimpleTabsV2 = (props) => {
               ) : (
                 <div id={items[1].link}>
                   <NewItenaryDBDMob
+                    payment={props.payment}
                     token={props.token}
                     // is_registration_needed={
                     //   props.payment ? props.payment.is_registration_needed : false
@@ -911,6 +916,7 @@ const SimpleTabsV2 = (props) => {
                     setHideBookingModal={props.setHideBookingModal}
                     routes={RoutesData}
                     transfers={TransfersData}
+                    payment={props.payment}
                     transferBookings={props?.transferBookings}
                   />
                 </div>
@@ -1106,19 +1112,20 @@ const SimpleTabsV2 = (props) => {
                 </div>
               ) : null}
             </div>
-            {props.token && props.payment.paid_user && (
+            {props?.token && props?.payment?.paid_user && (
               <div className="border-[3px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[8px] py-[2px]">
                 PAID
               </div>
             )}
             <div className="">
-              <ButtonYellow
+              <div
+                classNAme={`${props?.payment?.paid_user ? 'bg-[red]' : ''}`}
                 onClick={() =>
                   setShowFooterBannerMobile(!showFooterBannerMobile)
                 }
               >
                 Book now
-              </ButtonYellow>
+              </div>
             </div>
           </div>
         </div>

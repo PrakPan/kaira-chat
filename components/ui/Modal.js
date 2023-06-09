@@ -89,7 +89,7 @@ export default function Modal(props) {
   const [fade, setFade] = useState('out');
   function onCLose() {
     setFade('out');
-    ClaimItinary(props.itinary_id, props.token);
+
     setTimeout(() => {
       if (props.onHide) props.onHide();
       // document.body.style.overflowY = 'scroll'

@@ -237,11 +237,11 @@ const TransferModeContainer = (props) => {
                 </div>
               )}
 
-              <div className="flex lg:flex-row flex-col justify-between w-full">
+              <div className="flex lg:flex-row flex-col lg:justify-between justify-center w-full">
                 <div className="flex flex-col lg:justify-center justify-start gap-1 lg:w-[40%] w-[100%]">
-                  <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
+                  {/* <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
                     <div className="inline  gap-2 items-center ">
-                      {/* {props.userSelected ? (
+                      {props.userSelected ? (
                     <div
                       onClick={() => HandleFlights(props.index)}
                       className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
@@ -255,9 +255,9 @@ const TransferModeContainer = (props) => {
                     >
                       Add Flight
                     </div>
-                  )} */}
+                  )}
                     </div>
-                    {/* <div>
+                    <div>
                   {props.userSelected ? (
                     <div className=" text-md font-bold  text-[#277004] ">
                       Included
@@ -267,8 +267,8 @@ const TransferModeContainer = (props) => {
                       Excluded
                     </div>
                   )}
-                </div> */}
-                  </div>
+                </div>
+                  </div> */}
                   {isDesktop && (
                     <div className="lg:flex   flex-row  gap-3  ">
                       <div className="flex flex-col">
@@ -322,18 +322,21 @@ const TransferModeContainer = (props) => {
                         <IoCheckmark></IoCheckmark>
                        
                       </div>
-                    </div> */}
+                      </div> */}
                       <div className="flex font-medium pl-2 ">
                         {props?.booking.airline_name}
                       </div>
-                      <div className="flex pl-2  font-[300]">
-                        <div>
-                          Nonstop
-                          {props.booking.duration
-                            ? ` (${props.booking.duration}h)`
-                            : null}
+                      {props.booking.duration && (
+                        <div className="flex pl-2  font-[300]">
+                          <div>
+                            (Nonstop)
+                            {props.booking.duration
+                              ? ` (${props.booking.duration}h)`
+                              : null}
+                          </div>
                         </div>
-                      </div>
+                      )}
+
                       {/* <div>airline_name</div> */}
                     </div>
                     <div
@@ -491,20 +494,20 @@ const TransferModeContainer = (props) => {
               </div>
               <div>
                 Private transfer
-                {props.booking_type == 'Taxi' && (
+                {/* {props.booking_type == 'Taxi' && (
                   <div
                     onClick={() => HandleTransport(props.index)}
                     className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                   >
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                   </div>
-                  // <LivelyButton
+                  <LivelyButton
 
-                  //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                  // >
-                  //   Change
-                  // </LivelyButton>
-                )}
+                    className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                  >
+                    Change
+                  </LivelyButton>
+                )} */}
               </div>
               <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
@@ -512,9 +515,9 @@ const TransferModeContainer = (props) => {
               </div>
 
               {props?.costings_breakdown && (
-                <FacilityContainer className="text-[#01202B] font-normal flex-row mt-1 w-full">
-                  <div className="pr-1 block ">Facilities:</div>
-                  {}
+                <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row flex-col justify-start lg:items-center mt-1 w-full">
+                  <span className="pr-1 block ">Facilities:</span>
+
                   <span className="flex flex-row  ">
                     {Facilities.map((data, index) => (
                       <div className="gap-1 block  min-w-fit">

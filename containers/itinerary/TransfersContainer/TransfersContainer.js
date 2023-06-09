@@ -7,6 +7,7 @@ import TransferModeContainer from './TransferModeContainer';
 import TaxiModal from '../../../components/modals/taxis/Index';
 import FlightModal from '../../../components/modals/flights/Index';
 import PinSection from '../../newitinerary/breif/route/PinSection';
+import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 100%;
@@ -954,6 +955,18 @@ const TransfersContainer = (props) => {
         Transfers{' '}
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
+      {props.showFlightModal && (
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={props.setHideFlightModal}
+        />
+      )}
+      {props.showTaxiModal && (
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={() => props.setShowTaxiModal(false)}
+        />
+      )}
       {props.showFlightModal ? (
         <FlightModal
           getPaymentHandler={props.getPaymentHandler}

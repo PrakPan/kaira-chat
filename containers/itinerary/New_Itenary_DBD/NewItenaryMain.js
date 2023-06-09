@@ -215,6 +215,7 @@ const NewItenaryMain = (props) => {
                 <Day_I_Container
                   Days={element}
                   indexDay={index}
+                  payment={props.payment}
                   getPaymentHandler={props.getPaymentHandler}
                   itinerary_id={props.itinerary.tailor_made_id}
                   setItinerary={props.setItinerary}
