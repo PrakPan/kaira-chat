@@ -923,7 +923,11 @@ const Details = (props) => {
           <div className="text-[#01202B] ">Chat on Whatsapp</div>
         </div>
       </ButtonYellow>
-      <div>Ter</div>
+      <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+        <a href="https://dev.thetarzanway.com/terms-conditions">
+          <div>Terms & Conditions</div>
+        </a>
+      </div>
     </SummaryContainer>
   );
 };
