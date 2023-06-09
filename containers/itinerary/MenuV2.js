@@ -1106,6 +1106,11 @@ const SimpleTabsV2 = (props) => {
                 </div>
               ) : null}
             </div>
+            {props.token && props.payment.paid_user && (
+              <div className="border-[3px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[8px] py-[2px]">
+                PAID
+              </div>
+            )}
             <div className="">
               <ButtonYellow
                 onClick={() =>

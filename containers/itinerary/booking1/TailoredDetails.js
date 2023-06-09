@@ -454,7 +454,11 @@ const Details = (props) => {
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
       style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
     >
-      <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-2">
+      <div
+        className={`${
+          props.payment.paid_user ? 'bg-[#98F0AB33]' : 'bg-[#F7E70033]'
+        }  -mt-[1rem] -mx-[1rem] mb-2`}
+      >
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
             {iscouponApplied && (
@@ -515,7 +519,13 @@ const Details = (props) => {
                 )}
               </div>
             </div> */}
-                <div className="font-medium text-base self-end">Total Cost</div>
+                {props.payment.paid_user ? (
+                  <div className="font-[400] pl-2 text-base self-end">PAID</div>
+                ) : (
+                  <div className="font-medium text-base self-end">
+                    Total Cost
+                  </div>
+                )}
               </div>
             )}
 
@@ -828,12 +838,12 @@ const Details = (props) => {
                   : null}{' '}
                 - Feb 09, 2023
               </div>
-              <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
+              {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
                 <MdEdit
                   className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
                   onClick={() => props.setShowDateModal(true)}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -842,12 +852,12 @@ const Details = (props) => {
           <div className="gap-2 flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div> {props.payment.meta_info.number_of_adults} Adults</div>
-            <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+            {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
               <MdEdit
                 className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
                 onClick={() => props.setShowAdultsModal(true)}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -887,7 +897,7 @@ const Details = (props) => {
             onClick={() => console.log(' ')}
             onclickparam={null}
           >
-            PAID
+            Wait For a Callback
           </ButtonYellow>
         ) : null
       ) : null}
