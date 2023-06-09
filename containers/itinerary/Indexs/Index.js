@@ -2,9 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import styled from 'styled-components';
-import FullImg from '../fullimg/FullImg';
-import FullImgContainer from '../fullimg/FullImgContent';
-
 import Menu from '../Menu';
 import axios from 'axios';
 import Spinner from '../../../containers/loaderbar/Index';
@@ -13,23 +10,15 @@ import defaultbreif from '../defaultbrief';
 import axiosdaybydayinstance from '../../../services/itinerary/daybyday/preview';
 import axiosbreifinstance from '../../../services/itinerary/brief/preview';
 import { MIS_SERVER_HOST } from '../../../services/constants';
-
 import * as authaction from '../../../store/actions/auth';
 import { connect } from 'react-redux';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import { TRAVELER_ITINERARIES } from '../../../services/constants';
-import axiosPoiRoutes from '../../../services/itinerary/brief/route';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Landing from '../landing/Index';
-import Overview from '../../newitinerary/overview/Index';
 
 const Container = styled.div`
-  width: 90%;
-  margin: 5vh auto 0 auto;
-  @media screen and (min-width: 768px) {
-    width: 85%;
-    margin: -5vh auto 0 auto;
-  }
+  width: 100%;
 `;
 
 const btoa = (text) => {
@@ -53,10 +42,10 @@ const Itinerary = (props) => {
     images: ['null'],
   });
   const [breif, setBreif] = useState(defaultbreif);
-
   const [booking, setBooking] = useState(null);
 
   const [itineraryLoading, setItineraryLoading] = useState(true);
+  console.log('itineraryLoading: ', itineraryLoading);
   const [briefLoading, setBreifLoading] = useState(true);
   const [stayLoading, setStayLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
@@ -94,11 +83,9 @@ const Itinerary = (props) => {
   const [isDatePresent, setIsDatePresent] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
-  const [travellerType, settravellerType] = useState(false);
+
   const [showPoiModal, setShowPoiModal] = useState(false);
   const [userEmail, setUserEmail] = useState(null);
-  const [group_type, setgroup_type] = useState(null);
-  const [duration_time, setduration_time] = useState(null);
 
   const [hasUserPaid, setHasUserPaid] = useState(false);
 
@@ -128,17 +115,9 @@ const Itinerary = (props) => {
                     totalduration + parseInt(res.data.city_slabs[i].duration)
                   );
               }
-            // else
-            //   window.location.href =
-            //     'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-          }
-          // else
-          //   window.location.href =
-          //     'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-        }
-        // else
-        //   window.location.href =
-        //     'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+            else router.push('/thank-you');
+          } else router.push('/thank-you');
+        } else router.push('/thank-you');
         if (res.data.city_slabs)
           if (!res.data.city_slabs.length)
             if (!breif.city_slabs)
@@ -147,8 +126,7 @@ const Itinerary = (props) => {
       .catch((error) => {
         setBreifLoading(false);
 
-        // window.location.href =
-        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+        router.push('/thank-you');
       });
   };
 
@@ -179,9 +157,6 @@ const Itinerary = (props) => {
         let email = localStorage.getItem('email');
         if (props.token)
           for (var i = 0; i < res.data.registered_users.length; i++) {
-            // console.log(props.email)
-
-            // console.log(res.data.registered_users[i])
             if (res.data.registered_users[i].email === email) {
               if (res.data.registered_users[i].payment_status)
                 if (res.data.registered_users[i].payment_status === 'captured')
@@ -224,12 +199,9 @@ const Itinerary = (props) => {
                 stay_bookings.push(json.bookings[i]);
               else if (json.bookings[i].booking_type === 'Activity')
                 activity_bookings.push(json.bookings[i]);
-              else {
-                transfer_bookings.push(json.bookings[i]);
-                if (json.bookings[i].booking_type === 'Flight') {
-                  flight_bookings.push(json.bookings[i]);
-                }
-              }
+              else if (json.bookings[i].booking_type === 'Flight')
+                flight_bookings.push(json.bookings[i]);
+              else transfer_bookings.push(json.bookings[i]);
             }
 
             setStayBookings(stay_bookings);
@@ -250,6 +222,14 @@ const Itinerary = (props) => {
         setStayLoading(false);
       });
   };
+  useEffect(() => {
+    getPaymentHandler();
+  }, [props.token]);
+  useEffect(() => {
+    // if(!props.token && !props.otpSent)
+    //  props.checkAuthState();
+  });
+
   useEffect(() => {
     var IntervalTiming;
     if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
@@ -317,62 +297,6 @@ const Itinerary = (props) => {
     setShowFlightModal(false);
     setFlightBookings(json);
   };
-  useEffect(() => {
-    // if(router.query.payment_status) window.location.reload();
-    //  props.checkAuthState();
-    //  console.log('itinerary token',props.token)
-
-    window.scrollTo(0, 0);
-    if (TRAVELER_ITINERARIES.includes(props.id))
-      setIsPastTravelerItinerary(true);
-    axiosdaybydayinstance
-      .get(`/?itinerary_id=` + props.id)
-      .then((res) => {
-        if (res.data.day_slabs.length) {
-          if (res.data.is_stock) setIsStock(true);
-          setItinerary(res.data);
-          setItineraryLoading(false);
-        } else {
-          // window.location.href =
-          //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-        }
-      })
-      .catch((error) => {
-        setItineraryLoading(false);
-        // window.location.href =
-        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-      });
-    getBreifHandler();
-
-    axios
-      .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
-      .then((res) => {
-        setPlan(res.data);
-        if (
-          res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
-        ) {
-          setItineraryNotCreated(false);
-          alert(
-            'Looks like the response took too long, please refresh and try again.'
-          );
-        } else {
-          setUserEmail(res.data.user_email);
-          settravellerType(res.data.experience_filters_selected);
-          if (res.data.start_date) setIsDatePresent(true);
-          setgroup_type(res.data.group_type);
-          setduration_time(res.data.duration_number);
-          setItineraryReleased(res.data.is_visible_to_customer);
-          setItineraryDate(res.data.created_at);
-          setTimeRequired(res.data.time_needed_for_itinerary_completion);
-        }
-      })
-      .catch((error) => {});
-
-    getAccommodationAndActivitiesHandler();
-
-    // if(itineraryLoading && !itineraryNotCreated){
-    // if(stayLoading && !stayBookings){
-  }, []);
 
   const _updateBookingHandler = (json) => {
     setShowBookingModal(false);
@@ -704,11 +628,6 @@ const Itinerary = (props) => {
   const setHidePoiModal = () => {
     setShowPoiModal(false);
   };
-  const FONT_SIZES_MOBILE = {
-    heading: [],
-    text: [],
-  };
-
   if (breif && !itineraryLoading)
     return (
       // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>
@@ -718,27 +637,13 @@ const Itinerary = (props) => {
         {/* <FullImg url={itinerary.images ? itinerary.images.length ? itinerary.images[0] : 'media/website/grey.png': 'media/website/grey.png'} title={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}  >
                  <FullImgContainer heading={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null} plan={plan}></FullImgContainer>
            </FullImg>  */}
-
-        <Overview
-          FONT_SIZES_MOBILE={FONT_SIZES_MOBILE}
-          title={itinerary.name}
-          group_type={group_type}
-          duration_time={duration_time}
-          images={itinerary.images}
-          travellerType={travellerType}
-          start_date={plan ? plan.start_date : null}
-          end_date={plan ? plan.end_date : null}
-          duration={
-            plan ? plan.duration_number + ' ' + plan.duration_unit : null
-          }
-        ></Overview>
-        {/* <Landing
+        <Landing
           title={itinerary.name}
           images={itinerary.images}
           duration={
             plan ? plan.duration_number + ' ' + plan.duration_unit : null
           }
-        ></Landing> */}
+        ></Landing>
         <div id="itinerary-anchor">
           <Menu
             hasUserPaid={hasUserPaid}
@@ -806,7 +711,9 @@ const Itinerary = (props) => {
   else if (isPastTravelerItinerary) return <OldSpinner></OldSpinner>;
   else if (router.query.payment_status) {
     return <OldSpinner></OldSpinner>;
-  } else return <Spinner></Spinner>;
+  }
+  // else return <Spinner></Spinner>
+  else return <Spinner></Spinner>;
 };
 
 const mapStateToPros = (state) => {
