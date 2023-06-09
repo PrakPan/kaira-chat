@@ -328,12 +328,28 @@ const Homepage = (props) => {
                 }
                 bold
               >
-                Trending destinations across Asia
+                Top countries to visit in Asia
               </Heading>
               <SwiperLocations
                 locations={props.asiaLocations}
                 country
               ></SwiperLocations>
+
+              <Button
+                onclick={() => {
+                  window.location.href = "/asia"
+                }}
+                fontWeight="500"
+                boxShadow
+                borderRadius="8px"
+                bgColor="white"
+                margin="2.5rem auto"
+                // width="20rem"
+                padding="0.5rem 2rem"
+                borderWidth="1px"
+              >
+                {"Start your journey to Asia now!"}
+              </Button>
             </>
           ) : null}
 
@@ -349,12 +365,26 @@ const Homepage = (props) => {
                 }
                 bold
               >
-                Trending destinations across Europe
+                Top countries to visit in Europe
               </Heading>
               <SwiperLocations
                 locations={props.europeLocations}
                 country
               ></SwiperLocations>
+
+              <Button
+                onclick={() => (window.location.href = "/europe")}
+                fontWeight="500"
+                boxShadow
+                borderRadius="8px"
+                bgColor="white"
+                margin="2.5rem auto"
+                // width="20rem"
+                padding="0.5rem 2rem"
+                borderWidth="1px"
+              >
+                {"Start your journey to Europe now!"}
+              </Button>
             </>
           ) : null}
 

@@ -6,5 +6,7 @@
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#0000ff99",
     "titleBar.inactiveForeground": "#e7e7e799"
-  }
+  },
+  "spellright.language": ["en"],
+  "spellright.documentTypes": ["markdown", "latex", "plaintext"]
 }

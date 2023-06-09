@@ -6,7 +6,7 @@ import Internallinkbutton from "./Internallinkbutton";
 import PulseLoader from "react-spinners/PulseLoader";
 
 const Index = (props) => {
-  const [JSX, setJSX] = useState("");   
+  const [JSX, setJSX] = useState(""); 
  useEffect(() => {
     if (props.onclick) {
        setJSX(
