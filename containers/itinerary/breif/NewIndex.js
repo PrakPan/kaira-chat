@@ -23,7 +23,6 @@ import Banner from "../../homepage/banner/Mobile";
 import Route from "../../newitinerary/breif/route/Index";
 import ButtonYellow from "../../../components/ButtonYellow";
 import InclusionExclusion from "../../../components/InclusionExclusion/InclusionExclusion";
-// import Map from "../../../components/Map";
 
 import dynamic from "next/dynamic";
 import CityDetails from "./CityDetails";

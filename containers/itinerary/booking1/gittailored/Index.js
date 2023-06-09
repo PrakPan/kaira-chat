@@ -1,46 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Heading from '../../../../components/newheading/heading/Index';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import Heading from "../../../../components/newheading/heading/Index";
 // import Option from '../../../components/forms/Option';
 // import Dropdown from '../../../components/forms/Dropdown';
-import Button from '../../../../components/Button';
-import { RiWhatsappFill } from 'react-icons/ri';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { connect } from 'react-redux';
-import * as orderaction from '../../../../store/actions/order';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from "../../../../components/Button";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { connect } from "react-redux";
+import * as orderaction from "../../../../store/actions/order";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faRupeeSign,
   faTimes,
   faMale,
   faChild,
   faBaby,
-} from '@fortawesome/free-solid-svg-icons';
-import { useRouter } from 'next/router';
-import { getIndianPrice } from '../../../../services/getIndianPrice';
-import { getHumanDate } from '../../../../services/getHumanDate';
-import urls from '../../../../services/urls';
-import Accordion from '../Accordion';
-import SelectDate from './SelectDate';
-import SelectPax from './SelectPax';
-import RegistrationModal from '../../../../components/modals/gitregistrationform/Index';
-import VerificationModal from '../../../../components/modals/verify/Index';
-import dayjs from 'dayjs';
-import { ITINERARY_STATUSES } from '../../../../services/constants';
-import axios from 'axios';
-import axiossalecreateinstance from '../../../../services/sales/itinerary/SaleCreate';
-import Spinner from '../../../../components/Spinner';
-import TermsModal from '../../../../components/modals/terms/PW';
-import RegisteredUsersModal from '../../../../components/modals/registeredusers/Index';
-import ButtonYellow from '../../../../components/ButtonYellow';
+} from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
+import { getIndianPrice } from "../../../../services/getIndianPrice";
+import { getHumanDate } from "../../../../services/getHumanDate";
+import urls from "../../../../services/urls";
+import Accordion from "../Accordion";
+import SelectDate from "./SelectDate";
+import SelectPax from "./SelectPax";
+import RegistrationModal from "../../../../components/modals/gitregistrationform/Index";
+import VerificationModal from "../../../../components/modals/verify/Index";
+import dayjs from "dayjs";
+import { ITINERARY_STATUSES } from "../../../../services/constants";
+import axios from "axios";
+import axiossalecreateinstance from "../../../../services/sales/itinerary/SaleCreate";
+import Spinner from "../../../../components/Spinner";
+import TermsModal from "../../../../components/modals/terms/PW";
+import RegisteredUsersModal from "../../../../components/modals/registeredusers/Index";
 const SummaryContainer = styled.div`
   height: max-content;
-
   border-radius: 10px;
   padding: 1rem;
   margin: 1rem 0;
   @media screen and (min-width: 768px) {
-    margin: 3.6rem -2rem 0 1rem;
+    margin: 0;
+    position: sticky;
+    top: 11vh;
   }
 `;
 // &:after{
@@ -77,7 +76,7 @@ const StrikedCost = styled.p`
   font-size: 1rem;
   &:before {
     position: absolute;
-    content: '';
+    content: "";
     left: 0;
     top: 45%;
     right: 0;
@@ -91,7 +90,7 @@ const StrikedCost = styled.p`
   @media screen and (min-width: 768px) {
     &:before {
       position: absolute;
-      content: '';
+      content: "";
       left: 0;
       top: 45%;
       right: 0;
@@ -116,77 +115,77 @@ const Details = (props) => {
             if (props.payment.costings_breakdown[booking].user_selected) {
               if (
                 props.payment.costings_breakdown[booking].booking_type ===
-                'Accommodation'
+                "Accommodation"
               ) {
                 bookingslist.push(
                   <p
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
+                      fontSize: "0.75rem",
+                      fontWeight: "400",
+                      letterSpacing: "1px",
+                      marginBottom: "0.25rem",
                     }}
                     className={
                       props.blur
-                        ? 'font-opensans text-enter blurry-text'
-                        : 'font-opensans text-enter'
+                        ? "font-lexend text-enter blurry-text"
+                        : "font-lexend text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail[
-                      'duration'
+                      "duration"
                     ] +
-                      'N at ' +
-                      props.payment.costings_breakdown[booking].detail['name']}
+                      "N at " +
+                      props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '3fr 1fr',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
+                      display: "grid",
+                      gridTemplateColumns: "3fr 1fr",
+                      margin: "0.5rem 0",
+                      gridGap: "1rem",
                     }}
                   >
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail[
-                        'duration'
+                        "duration"
                       ] +
-                        'N at ' +
+                        "N at " +
                         props.payment.costings_breakdown[booking].detail[
-                          'name'
+                          "name"
                         ]}
                     </p>
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {'₹ ' +
+                      {"₹ " +
                         getIndianPrice(
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
-                              'booking_cost'
+                              "booking_cost"
                             ] / 100
                           )
                         )}
@@ -197,62 +196,62 @@ const Details = (props) => {
                 bookingslist.push(
                   <p
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
+                      fontSize: "0.75rem",
+                      fontWeight: "400",
+                      letterSpacing: "1px",
+                      marginBottom: "0.25rem",
                     }}
                     className={
                       props.blur
-                        ? 'font-opensans text-enter blurry-text'
-                        : 'font-opensans text-enter'
+                        ? "font-lexend text-enter blurry-text"
+                        : "font-lexend text-enter"
                     }
                   >
-                    {props.payment.costings_breakdown[booking].detail['name']}
+                    {props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '3fr 1fr',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
+                      display: "grid",
+                      gridTemplateColumns: "3fr 1fr",
+                      margin: "0.5rem 0",
+                      gridGap: "1rem",
                     }}
                   >
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {props.payment.costings_breakdown[booking].detail['name']}
+                      {props.payment.costings_breakdown[booking].detail["name"]}
                     </p>
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {'₹ ' +
+                      {"₹ " +
                         getIndianPrice(
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
-                              'booking_cost'
+                              "booking_cost"
                             ] / 100
                           )
                         )}
@@ -282,7 +281,7 @@ const Details = (props) => {
 
   setBookingSummary();
   let message =
-    'Hey TTW! I need some help with my tailored experience - https://dev.thetarzanway.com/' +
+    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/" +
     router.asPath;
   // props.setUserDetails();
   const [showVerification, setShowVerification] = useState(false);
@@ -303,17 +302,17 @@ const Details = (props) => {
     let razorpayOptions = {
       amount: data.amount,
       // "currency": "INR",
-      name: 'The Tarzan Way Payment Portal',
-      description: ' data.data.description',
+      name: "The Tarzan Way Payment Portal",
+      description: " data.data.description",
       image:
-        'https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480',
+        "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data.order_id,
       //Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
         axios
           .post(
-            'https://suppliers.tarzanway.com/sales/verify/',
+            "https://suppliers.tarzanway.com/sales/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -321,17 +320,17 @@ const Details = (props) => {
             setPaymentLoading(false);
             //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
             window.location.href =
-              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
+              "https://thetarzanway.com/itinerary/physicswallah/" +
               data.itinerary +
-              '?payment_status=success';
+              "?payment_status=success";
           })
           .catch((err) => {
             setPaymentLoading(false);
             // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
             window.location.href =
-              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
+              "https://thetarzanway.com/itinerary/physicswallah/" +
               data.itinerary +
-              '?payment_status=fail';
+              "?payment_status=fail";
           });
       },
       //User details will be present as user is logged in
@@ -341,7 +340,7 @@ const Details = (props) => {
         contact: props.phone,
       },
       theme: {
-        color: '#F7e700',
+        color: "#F7e700",
       },
     };
     var rzp1 = new window.Razorpay(razorpayOptions);
@@ -351,7 +350,7 @@ const Details = (props) => {
     setPaymentLoading(true);
     axiossalecreateinstance
       .post(
-        '/',
+        "/",
         {
           itinerary_id: id,
         },
@@ -372,17 +371,16 @@ const Details = (props) => {
         setPaymentLoading(false);
       });
   };
-  // console.log('p', props.payment)
   return (
     <SummaryContainer
-      className="border-thin ml-8"
-      style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
+      className="border-thin"
+      style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
     >
       {window.innerWidth > 768 ? null : (
         <FontAwesomeIcon
           icon={faTimes}
           onClick={props.hide}
-          style={{ textAlign: 'right' }}
+          style={{ textAlign: "right" }}
         />
       )}
       {props.hasUserPaid ? (
@@ -404,36 +402,36 @@ const Details = (props) => {
           noline
           align="center"
         >
-          {'Book Now'}
+          {"Book Now"}
         </Heading>
       ) : null}
       {/* <Heading bold blur={props.blur} margin="0 auto 1.5rem auto" noline align="center">{ props.hasUserPaid ? "You're all set!" : 'Book Now'}</Heading> */}
 
-      {/* {!oldaccommodation ? (
+      {!oldaccommodation ? (
         <div
           style={{
-            marginBottom: '1.5rem',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gridColumnGap: '1rem',
+            marginBottom: "1.5rem",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gridColumnGap: "1rem",
           }}
         >
           {props.payment.itinerary_status ===
             ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? (
             <p
               style={{
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
+                fontSize: "0.75rem",
+                fontWeight: "600",
+                letterSpacing: "1px",
+                marginBottom: "0.25rem",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
-              {'STARTING DATE '}
+              {"STARTING DATE "}
             </p>
           ) : (
             <div></div>
@@ -442,15 +440,15 @@ const Details = (props) => {
             ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? (
             <p
               style={{
-                fontSize: '0.75rem',
-                fontWeight: '600',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
+                fontSize: "0.75rem",
+                fontWeight: "600",
+                letterSpacing: "1px",
+                marginBottom: "0.25rem",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
               PAX
@@ -462,23 +460,23 @@ const Details = (props) => {
             ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? (
             <div
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                fontSize: '0.75rem',
-                fontWeight: '400',
-                letterSpacing: '1px',
-                marginBottom: '0',
+                display: "flex",
+                alignItems: "center",
+                fontSize: "0.75rem",
+                fontWeight: "400",
+                letterSpacing: "1px",
+                marginBottom: "0",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
               {props.payment.meta_info
                 ? props.payment.meta_info.start_date
                   ? getHumanDate(
-                      props.payment.meta_info.start_date.replaceAll('-', '/')
+                      props.payment.meta_info.start_date.replaceAll("-", "/")
                     )
                   : null
                 : null}
@@ -490,7 +488,7 @@ const Details = (props) => {
               token={props.token}
             ></SelectDate>
           )}
-         
+          {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{props.payment.number_of_people}</p> */}
           {props.payment.meta_info &&
           (props.payment.itinerary_status ===
             ITINERARY_STATUSES.itinerary_finalized ||
@@ -498,42 +496,42 @@ const Details = (props) => {
             <div>
               <FontAwesomeIcon
                 icon={faMale}
-                style={{ marginRight: '0.25rem' }}
+                style={{ marginRight: "0.25rem" }}
               ></FontAwesomeIcon>
               <p
-                className="font-opensans"
+                className="font-lexend"
                 style={{
-                  marginRight: '1rem',
-                  display: 'inline',
-                  fontWeight: '100',
+                  marginRight: "1rem",
+                  display: "inline",
+                  fontWeight: "100",
                 }}
               >
                 {props.payment.meta_info.number_of_adults}
               </p>
               <FontAwesomeIcon
                 icon={faChild}
-                style={{ marginRight: '0.25rem' }}
+                style={{ marginRight: "0.25rem" }}
               ></FontAwesomeIcon>
               <p
-                className="font-opensans"
+                className="font-lexend"
                 style={{
-                  marginRight: '1rem',
-                  display: 'inline',
-                  fontWeight: '100',
+                  marginRight: "1rem",
+                  display: "inline",
+                  fontWeight: "100",
                 }}
               >
                 {props.payment.meta_info.number_of_children}
               </p>
               <FontAwesomeIcon
                 icon={faBaby}
-                style={{ marginRight: '0.25rem' }}
+                style={{ marginRight: "0.25rem" }}
               ></FontAwesomeIcon>
               <p
-                className="font-opensans"
+                className="font-lexend"
                 style={{
-                  marginRight: '1rem',
-                  display: 'inline',
-                  fontWeight: '100',
+                  marginRight: "1rem",
+                  display: "inline",
+                  fontWeight: "100",
                 }}
               >
                 {props.payment.meta_info.number_of_infants}
@@ -554,10 +552,10 @@ const Details = (props) => {
             ></SelectPax>
           )}
         </div>
-      ) : null} */}
+      ) : null}
       {/* <SelectDetails></SelectDetails> */}
-      <div style={{ marginBottom: '1.5rem' }}>
-        {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>WHAT'S INCLUDED?</p> */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
         {/* <BookingListCostContainer>  initialStateFromGSPorGSSR: undefined }
 Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
 4. WrappedApp created new store with withRedux(MyApp) { initialState: undefined,
@@ -575,43 +573,43 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
         {!oldaccommodation && !props.payment.are_prices_hidden ? (
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto max-content',
-              margin: '0.5rem 0',
-              gridGap: '1rem',
+              display: "grid",
+              gridTemplateColumns: "auto max-content",
+              margin: "0.5rem 0",
+              gridGap: "1rem",
             }}
           >
             <p
               style={{
-                fontSize: '0.75rem',
-                fontWeight: '300',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
+                fontSize: "0.75rem",
+                fontWeight: "300",
+                letterSpacing: "1px",
+                marginBottom: "0.25rem",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
-              {'Service Fee'}
+              {"Service Fee"}
             </p>
             <p
               style={{
-                fontSize: '0.75rem',
-                fontWeight: '300',
-                textAlign: 'right',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-                marginRight: '24px',
+                fontSize: "0.75rem",
+                fontWeight: "300",
+                textAlign: "right",
+                letterSpacing: "1px",
+                marginBottom: "0.25rem",
+                marginRight: "24px",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
-              {'₹ ' +
+              {"₹ " +
                 getIndianPrice(
                   Math.round(props.payment.total_service_fee / 100)
                 )}
@@ -621,94 +619,93 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
         {!oldaccommodation && !props.payment.are_prices_hidden ? (
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto max-content',
-              margin: '0.5rem 0',
-              gridGap: '1rem',
+              display: "grid",
+              gridTemplateColumns: "auto max-content",
+              margin: "0.5rem 0",
+              gridGap: "1rem",
             }}
           >
             <p
               style={{
-                fontSize: '0.75rem',
-                fontWeight: '300',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
+                fontSize: "0.75rem",
+                fontWeight: "300",
+                letterSpacing: "1px",
+                marginBottom: "0.25rem",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
-              {'GST'}
+              {"GST"}
             </p>
             <p
               style={{
-                fontSize: '0.75rem',
-                textAlign: 'right',
-                fontWeight: '300',
-                letterSpacing: '1px',
-                marginBottom: '0.25rem',
-                marginRight: '24px',
+                fontSize: "0.75rem",
+                textAlign: "right",
+                fontWeight: "300",
+                letterSpacing: "1px",
+                marginBottom: "0.25rem",
+                marginRight: "24px",
               }}
               className={
                 props.blur
-                  ? 'font-opensans text-enter blurry-text'
-                  : 'font-opensans text-enter'
+                  ? "font-lexend text-enter blurry-text"
+                  : "font-lexend text-enter"
               }
             >
-              {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
+              {"₹ " + getIndianPrice(Math.round(props.payment.gst / 100))}
             </p>
           </div>
         ) : null}
-
         {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'GST'}</p>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"Rs 1000 /-"}</p>
+                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{'GST'}</p>
+                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"Rs 1000 /-"}</p>
         </div> */}
         {/* {
           props.payment.show_per_person_cost && !props.payment.are_prices_hidden ? <div style={{ borderWidth: '1px',borderColor: 'hsl(0,0%,95%)', borderStyle: 'solid none none none ', display: 'grid', gridTemplateColumns: 'auto max-content', padding: '0.5rem 0', gridGap: '1rem'}}>
-          <p style={{fontSize: "0.85rem", fontWeight: "800", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{'Total cost'}</p>
+          <p style={{fontSize: "0.85rem", fontWeight: "800", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{'Total cost'}</p>
           <div style={{display: 'flex'}}>
-            <StrikedCost style={{fontSize: "0.85rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem', marginRight: '0.25rem'}}  className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.total_cost/100))}</StrikedCost>
-            <p style={{fontSize: "0.85rem", fontWeight: "800", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-opensans text-enter blurry-text" : "font-opensans text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.discounted_cost/100))}</p>
+            <StrikedCost style={{fontSize: "0.85rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0.25rem', marginRight: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.total_cost/100))}</StrikedCost>
+            <p style={{fontSize: "0.85rem", fontWeight: "800", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"₹ "+ getIndianPrice(Math.round(props.payment.discounted_cost/100))}</p>
 
           </div>
           </div> : null
         } */}
       </div>
       <div>
-        {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-opensans text-enter">29th July 2021</p> */}
+        {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-lexend text-enter">29th July 2021</p> */}
         {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
       </div>
       {props.payment ? (
         props.payment.coupon ? (
           props.payment.coupon.code ? (
             <div
-              className="text-center font-opensans"
-              style={{ marginBottom: '1rem' }}
+              className="text-center font-lexend"
+              style={{ marginBottom: "1rem" }}
             >
-              {'Coupon Applied: ' + props.payment.coupon.code}
+              {"Coupon Applied: " + props.payment.coupon.code}
             </div>
           ) : null
         ) : null
       ) : null}
       <div
         style={{
-          display: 'flex',
-          width: 'max-content',
-          margin: 'auto',
-          alignItems: 'center',
-          gap: '0.75rem',
+          display: "flex",
+          width: "max-content",
+          margin: "auto",
+          alignItems: "center",
+          gap: "0.75rem",
         }}
       >
         <StrikedCost
           show_per_person_cost={props.payment.show_per_person_cost}
           coupon={props.payment.coupon}
-          className={props.blur ? 'font-opensans blurry-text' : 'font-opensans'}
+          className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
         >
           <FontAwesomeIcon
-            style={{ marginRight: '2px' }}
+            style={{ marginRight: "2px" }}
             icon={faRupeeSign}
           ></FontAwesomeIcon>
           {getIndianPrice(
@@ -718,18 +715,18 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
         <INR
           show_per_person_cost={props.payment.show_per_person_cost}
           coupon={props.payment.coupon}
-          className={props.blur ? 'font-opensans blurry-text' : 'font-opensans'}
+          className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
         >
           <FontAwesomeIcon
-            style={{ marginRight: '0.25rem' }}
+            style={{ marginRight: "0.25rem" }}
             icon={faRupeeSign}
           />
           {getIndianPrice(
             Math.round(Math.round(props.payment.per_person_total_cost) / 100)
-          ) + ' /-'}
+          ) + " /-"}
         </INR>
       </div>
-      <p className="font-opensans text-center">Per Member</p>
+      <p className="font-lexend text-center">Per Member</p>
       {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
       {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
           <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
@@ -794,8 +791,8 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
         ITINERARY_STATUSES.itinerary_finalized ? (
           <p
             onClick={() => setShowRegisteredUsers(true)}
-            className="hover-pointer font-opensans text-center"
-            style={{ fontSize: '0.85rem', textDecoration: 'underline' }}
+            className="hover-pointer font-lexend text-center"
+            style={{ fontSize: "0.85rem", textDecoration: "underline" }}
           >
             Registered Members
           </p>
@@ -855,28 +852,17 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
             hoverBgColor="#f7e700"
             hoverColor="black"
             borderWidth="0"
-            onclick={() => console.log('')}
+            onclick={() => console.log("")}
             onclickparam={props.id}
           >
             PAID
           </Button>
         ) : null
       ) : null}
-      <ButtonYellow
-        styleClass="w-full"
-        primary={false}
+
+      <Button
         onclick={() =>
-          (window.location.href = urls.WHATSAPP + '?text=' + message)
-        }
-      >
-        <div className="flex flex-row justify-center items-center">
-          <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-          <div className="text-[#01202B] ">Chat on Whatsapp</div>
-        </div>
-      </ButtonYellow>
-      {/* <Button
-        onclick={() =>
-          (window.location.href = urls.WHATSAPP + '?text=' + message)
+          (window.location.href = urls.WHATSAPP + "?text=" + message)
         }
         hoverColor="black"
         hoverBgColor="#128C7E"
@@ -888,12 +874,12 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
         borderColor="#e4e4e4"
         margin="0"
       >
-        <FontAwesomeIcon icon={faWhatsapp} style={{ marginRight: '0.5rem' }} />
+        <FontAwesomeIcon icon={faWhatsapp} style={{ marginRight: "0.5rem" }} />
         Connect on WhatsApp
-      </Button> */}
+      </Button>
       <div
-        style={{ color: 'blue', margin: '1rem 0 0 0', fontSize: '0.85rem' }}
-        className=" text-center hover-pointer font-opensans"
+        style={{ color: "blue", margin: "1rem 0 0 0", fontSize: "0.85rem" }}
+        className=" text-center hover-pointer font-lexend"
         onClick={() => setShowTerms(true)}
       >
         Terms & Conditions
