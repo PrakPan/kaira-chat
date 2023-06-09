@@ -137,6 +137,8 @@ const Homepage = (props) => {
             setPlansLoading(false);
           });
       }
+      // for chatbot :-
+
     }
   }, [props.token]);
 
@@ -474,7 +476,7 @@ const Homepage = (props) => {
         )}
         {/* <Chatbot history={props.history}/>     */}
       </div>
-      <WhatsappFloating message="Hey, I need help planning my trip." />
+      {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
     </div>
   );
 };

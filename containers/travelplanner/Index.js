@@ -557,12 +557,12 @@ const Homepage = (props) => {
         <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
       </SetWidthContainer>
-      <WhatsappFloating
+      {/* <WhatsappFloating
         message={
           "Hey, I need help planning my trip to " +
           props.experienceData.destination
         }
-      />
+      /> */}
     </div>
   );
 };

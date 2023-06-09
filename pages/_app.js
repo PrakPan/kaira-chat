@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/globals.css';
 import Theme from '../public/Theme';
 import '../styles.css';
@@ -18,7 +18,6 @@ import dynamic from 'next/dynamic';
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
-
   useEffect(() => {
     // mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true, ignore_dnt: true});
 
@@ -58,6 +57,42 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
+
+  useEffect(() => {
+  console.log('NARUTO')
+},[])
+
+  // Freshchat bot :-
+  var name
+    if(localStorage.getItem("name")) name = localStorage.getItem("name").split(" ");
+ var email = localStorage.getItem("email");
+  
+  useEffect(() => {
+     function handleWidgetLoaded() {
+         
+          if (name.length && email) {
+            window.fcWidget.user.setFirstName(name[0]);
+            window.fcWidget.user.setEmail(email);
+          }
+      }
+
+    if (window.fcWidget) {
+      // If the widget is already available, add the event listener
+      window.fcWidget.on('widget:loaded', handleWidgetLoaded);
+    } else {
+      // If the widget is not available, wait for it to be loaded
+      window.fcWidgetOnload = handleWidgetLoaded;
+    }
+
+    return () => {
+      // Clean up the event listener on component unmount
+      if (window.fcWidget) {
+        window.fcWidget.off('widget:loaded', handleWidgetLoaded);
+      }
+    };
+  }, []);
+
+  
   return (
     <Theme>
       <Component {...pageProps} />

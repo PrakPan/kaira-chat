@@ -79,7 +79,7 @@ const Index = (props) => {
           }
         />
       )}
-      <WhatsappFloating message="Hey, I need help planning my trip." />
+      {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
       <div>
         <HeroBanner
           image={props.data.image}
