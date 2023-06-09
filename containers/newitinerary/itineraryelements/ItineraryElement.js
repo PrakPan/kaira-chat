@@ -108,7 +108,7 @@ const ItineraryElement = (props) => {
               <TransparentButton>
                 {props.data.bookings
                   ? props.data?.bookings[0]?.detail?.name
-                  : 'Booking'}
+                  : 'View Selected Hotel'}
               </TransparentButton>
             </Link>
             <div>

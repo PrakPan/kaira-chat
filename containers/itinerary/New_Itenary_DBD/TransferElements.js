@@ -71,8 +71,10 @@ const TransferElements = ({
                     offset={-90}
                   >
                     <TransparentButton>
-                      {modes ? `${modes} For ` : null} ₹
-                      {formatNumber(Math.round(meta.estimated_cost))}
+                      {modes ? `Booking For ${modes} ` : null}
+                      {/* ₹
+                      {formatNumber(Math.round(meta.estimated_cost))
+                      } */}
                     </TransparentButton>
                   </Link>
                 )}

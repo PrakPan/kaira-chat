@@ -1,38 +1,38 @@
-import React, { useState, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
-import Button from "../ui/button/Index";
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
+import Button from '../ui/button/Index';
 
-import * as ga from "../../services/ga/Index";
-import { format } from "date-fns";
-import media from "../media";
-import axiostailoredinstance from "../../services/leads/tailored";
-import Spinner from "../Spinner";
-import LoadingLottie from "../ui/LoadingLottie";
-import { useRouter } from "next/router";
-import { connect } from "react-redux";
-import { BiArrowBack } from "react-icons/bi";
-import Flickity from "./Flickity";
-import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
-import { fadeIn } from "react-animations";
-import Popup from "../ErrorPopup";
-import { RxCross2 } from "react-icons/rx";
+import * as ga from '../../services/ga/Index';
+import { format } from 'date-fns';
+import media from '../media';
+import axiostailoredinstance from '../../services/leads/tailored';
+import Spinner from '../Spinner';
+import LoadingLottie from '../ui/LoadingLottie';
+import { useRouter } from 'next/router';
+import { connect } from 'react-redux';
+import { BiArrowBack } from 'react-icons/bi';
+import Flickity from './Flickity';
+import { EXPERIENCE_FILTERS_BOX } from '../../services/constants';
+import { fadeIn } from 'react-animations';
+import Popup from '../ErrorPopup';
+import { RxCross2 } from 'react-icons/rx';
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
   height: max-content;
   color: black;
-  z-index: ${(props) => (props.showBlack ? "1006" : "2")};
+  z-index: ${(props) => (props.showBlack ? '1006' : '2')};
   position: relative;
   background-color: ${(props) =>
     props.slideIndex || props.tailoredFormModal
-      ? "white"
-      : "rgba(255,255,255,0.9)"};
+      ? 'white'
+      : 'rgba(255,255,255,0.9)'};
   width: 100%;
   border: none !important;
   border-radius: ${(props) =>
-    props.tailoredFormModal ? "12px !important" : "8px !important"};
+    props.tailoredFormModal ? '12px !important' : '8px !important'};
   @media screen and (min-width: 768px) {
-    ${(props) => props.tailoredFormModal && "height : 100%"};
+    ${(props) => props.tailoredFormModal && 'height : 100%'};
     margin: auto 0;
 
     min-height: 400px;
@@ -48,7 +48,7 @@ const CloseIcon = styled.div`
 const Heading = styled.p`
   font-size: 1.35rem;
   margin: 0.5rem 0 0.5rem 0;
-  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+  ${(props) => props.tailoredFormModal && 'margin : 1rem 0'};
   text-align: left;
   font-weight: 600;
   color: black;
@@ -57,7 +57,7 @@ const Heading = styled.p`
   @media screen and (min-width: 815px) {
     font-size: 1.5rem;
     margin: 0.25rem 0 0.25rem 0;
-    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+    ${(props) => props.tailoredFormModal && 'margin : 1rem 0'};
 
     height: 1.8rem;
     overflow: hidden;
@@ -94,10 +94,10 @@ const BlackContainer = styled.div`
   }
 `;
 const LoadingText = styled.div`
-font-size: 1.2rem;
-    position: absolute;
-    bottom: 30%;
-    opacity: 0.8;
+  font-size: 1.2rem;
+  position: absolute;
+  bottom: 30%;
+  opacity: 0.8;
 `;
 const Enquiry = (props) => {
   const router = useRouter();
@@ -112,7 +112,7 @@ const Enquiry = (props) => {
   const [numberOfAdults, setNumberOfAdults] = useState(2);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
-  const [budget, setBudget] = useState("Affordable");
+  const [budget, setBudget] = useState('Affordable');
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
@@ -131,7 +131,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
- 
+
   useEffect(() => {
     if (slideIndex === 2 && props.token) _submitDataHandler();
     setShowPopup(popupObj);
@@ -141,10 +141,10 @@ const Enquiry = (props) => {
     setShowCities(false);
     setShowSearchStarting(false);
   };
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
 
   const [selectedCities, setSelectedCities] = useState(
-    !router.pathname.split("/").includes("[city]")
+    !router.pathname.split('/').includes('[city]')
       ? [
           {
             destination_id: routerquery.page_id || props.page_id,
@@ -160,19 +160,19 @@ const Enquiry = (props) => {
           },
         ]
   );
-   useEffect(() => {
-     setShowPopup(popupObj);
-   }, [
-     valueStart,
-     valueEnd,
-     startingLocation,
-     destination,
-     showSearchStarting,
-     showCities,
-     groupType,
-     selectedCities.length,
-     slideIndex
-   ]);
+  useEffect(() => {
+    setShowPopup(popupObj);
+  }, [
+    valueStart,
+    valueEnd,
+    startingLocation,
+    destination,
+    showSearchStarting,
+    showCities,
+    groupType,
+    selectedCities.length,
+    slideIndex,
+  ]);
 
   // const ContainerRef = useRef()
 
@@ -201,7 +201,7 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "State")
+          if (selectedCities[i].type == 'State')
             stateIds.push(parseInt(selectedCities[i].id));
           else {
             cityids.push(parseInt(selectedCities[i].id));
@@ -211,15 +211,15 @@ const Enquiry = (props) => {
       }
     } catch {}
 
-    const start_date = format(value_start, "yyyy-MM-dd");
-    const end_date = format(value_end, "yyyy-MM-dd");
+    const start_date = format(value_start, 'yyyy-MM-dd');
+    const end_date = format(value_end, 'yyyy-MM-dd');
 
     let number_of_adults = 2,
       number_of_children = 0,
       number_of_infants = 0;
-    if (groupType === "Solo") {
+    if (groupType === 'Solo') {
       number_of_adults = 1;
-    } else if (groupType === "Couple") {
+    } else if (groupType === 'Couple') {
       number_of_adults = 2;
     } else {
       number_of_adults = numberOfAdults;
@@ -243,7 +243,7 @@ const Enquiry = (props) => {
       user_location: {
         place_id: startingLocation
           ? startingLocation.place_id
-          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+          : 'ChIJLbZ-NFv9DDkRzk0gTkm3wlI',
       },
     };
 
@@ -257,10 +257,10 @@ const Enquiry = (props) => {
     if (startingLocation) data;
 
     setLoading(true);
-    localStorage.removeItem("MyPlans");
+    localStorage.removeItem('MyPlans');
 
     axiostailoredinstance
-      .post("", data, {
+      .post('', data, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -271,18 +271,20 @@ const Enquiry = (props) => {
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
           //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
-          router.push("/thank-you");
+          router.push('/thank-you');
         } else {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
           // setTimeout(function () {
-        if(response.data.loader_time) router.push(
-              "/itinerary/" +
+          if (response.data.loader_time)
+            router.push(
+              '/itinerary/' +
                 response.data.itinerary.itinerary_id +
-                "?t=" +
+                '?t=' +
                 response.data.loader_time
             );
-         else router.push("/itinerary/" + response.data.itinerary.itinerary_id);
+          else
+            router.push('/itinerary/' + response.data.itinerary.itinerary_id);
           // }, 10000);
           setLoading(false);
         }
@@ -291,7 +293,7 @@ const Enquiry = (props) => {
         setLoading(false);
         // window.location.href =
         //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
-        router.push("/thank-you");
+        router.push('/thank-you');
 
         if (err.response.data.email) {
         }
@@ -305,9 +307,9 @@ const Enquiry = (props) => {
 
   const getHeading = () => {
     if (props.tailoredFormModal && focusedDate) {
-      if (focusedDate == "startDate") return "Please select start date.";
-      if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get your free travel plan now";
+      if (focusedDate == 'startDate') return 'Please select start date.';
+      if (focusedDate == 'endDate') return 'Please select end date.';
+    } else return 'Get your free travel plan now';
   };
   const _SlideOneSubmitHandler = () => {
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
@@ -322,7 +324,7 @@ const Enquiry = (props) => {
     // window.scrollBy(0, -200 , 'smooth');
     // ContainerRef.current.scrollIntoView(0,-150)
     if (props.HeroBanner && isPageWide)
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
@@ -340,7 +342,7 @@ const Enquiry = (props) => {
           showBlack={showBlack}
           tailoredFormModal={props.tailoredFormModal}
           slideIndex={slideIndex}
-          className={isPageWide ? "center-div border" : "center-div"}
+          className={isPageWide ? 'center-div border' : 'center-div'}
           onClick={() => {
             setShowBlack(true);
           }}
@@ -349,7 +351,7 @@ const Enquiry = (props) => {
           {showPopup.InputOne && (
             <Popup
               setShowPopup={setShowPopup}
-              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
+              top={props.tailoredFormModal ? '17rem' : '12.6rem'}
               mobileTop="14rem"
               left="10px"
               text="Please select your destination!"
@@ -358,7 +360,7 @@ const Enquiry = (props) => {
           {showPopup.dateStart && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
-              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              bottom={props.tailoredFormModal ? '1.3rem' : '5.6rem'}
               left="10px"
               text="Please select starting date!"
             />
@@ -366,16 +368,16 @@ const Enquiry = (props) => {
           {showPopup.dateEnd && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
-              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              bottom={props.tailoredFormModal ? '1.3rem' : '5.6rem'}
               left="170px"
-              mobileleft={"135px"}
+              mobileleft={'135px'}
               text="Please select ending date!"
             />
           )}
           {showPopup.group && (
             <Popup
               setShowPopup={setShowPopup}
-              top={props.tailoredFormModal ? "16rem" : "190px"}
+              top={props.tailoredFormModal ? '16rem' : '190px'}
               left="20%"
               tipLeft="45%"
               text="Please select your group type!"
@@ -389,11 +391,11 @@ const Enquiry = (props) => {
 
           <div
             style={{
-              padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
-              width: "100%",
-              marginBottom: slideIndex === 2 ? "0rem" : "0rem",
-              display: props.tailoredFormModal ? "initial" : "grid",
-              gridTemplateColumns: "max-content auto",
+              padding: props.tailoredFormModal ? '0rem 1rem' : '0.5rem 1rem',
+              width: '100%',
+              marginBottom: slideIndex === 2 ? '0rem' : '0rem',
+              display: props.tailoredFormModal ? 'initial' : 'grid',
+              gridTemplateColumns: 'max-content auto',
             }}
           >
             {slideIndex && !props.tailoredFormModal ? (
@@ -401,32 +403,32 @@ const Enquiry = (props) => {
                 <BiArrowBack
                   onClick={_prevSlideHandler}
                   className="hover-pointer"
-                  style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                  style={{ marginTop: '2px', fontSize: '1.5rem' }}
                 ></BiArrowBack>
               </div>
             ) : (
               <></>
             )}
-            <div style={{ width: "100%" }}>
+            <div style={{ width: '100%' }}>
               {props.tailoredFormModal && (
                 <CloseIcon>
                   {slideIndex ? (
                     <BiArrowBack
                       onClick={_prevSlideHandler}
                       className="hover-pointer"
-                      style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                      style={{ marginTop: '2px', fontSize: '1.5rem' }}
                     ></BiArrowBack>
                   ) : (
                     <div></div>
                   )}
                   <RxCross2
                     style={{
-                      fontSize: "1.75rem",
-                      textAlign: "right",
-                      cursor: "pointer",
+                      fontSize: '1.75rem',
+                      textAlign: 'right',
+                      cursor: 'pointer',
                     }}
                     onClick={() => {
-                      !focusedDate ? props.onHide() : console.log("");
+                      !focusedDate ? props.onHide() : console.log('');
                     }}
                   />
                 </CloseIcon>
@@ -434,22 +436,22 @@ const Enquiry = (props) => {
 
               <Heading
                 tailoredFormModal={props.tailoredFormModal}
-                style={{ textAlign: !slideIndex ? "left" : "center" }}
+                style={{ textAlign: !slideIndex ? 'left' : 'center' }}
               >
                 {getHeading()}
               </Heading>
             </div>
           </div>
           {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
-          <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
+          <div style={{ padding: '0 1rem 1rem 1rem', width: '100%' }}>
             <div
               style={{
-                borderStyle: "solid none none none",
-                borderWidth: "1px",
-                color: "#D3D3D3",
-                height: "1px",
-                width: "100%",
-                marginBottom: "1.5rem",
+                borderStyle: 'solid none none none',
+                borderWidth: '1px',
+                color: '#D3D3D3',
+                height: '1px',
+                width: '100%',
+                marginBottom: '1.5rem',
               }}
             ></div>
 
@@ -501,8 +503,8 @@ const Enquiry = (props) => {
             {slideIndex === 0 ? (
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
+                  display: 'flex',
+                  justifyContent: 'flex-end',
                   //  visibility:
                   //  showCities &&
                   //  props.cities ? "hidden" : "visible",
@@ -510,14 +512,14 @@ const Enquiry = (props) => {
               >
                 <Button
                   fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
+                  width={!isPageWide ? 'auto' : '100%'}
                   style={
                     !isPageWide
                       ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
+                          position: 'fixed',
+                          left: '1rem',
+                          right: '1rem',
+                          bottom: '0',
                         }
                       : {}
                   }
@@ -535,17 +537,17 @@ const Enquiry = (props) => {
             ) : null}
             {slideIndex === 1 ? (
               !props.token ? (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
+                    width={!isPageWide ? 'auto' : '100%'}
                     style={
                       !isPageWide
                         ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
+                            position: 'fixed',
+                            left: '1rem',
+                            right: '1rem',
+                            bottom: '0',
                           }
                         : {}
                     }
@@ -561,17 +563,17 @@ const Enquiry = (props) => {
                   </Button>
                 </div>
               ) : (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
+                    width={!isPageWide ? 'auto' : '100%'}
                     style={
                       !isPageWide
                         ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
+                            position: 'fixed',
+                            left: '1rem',
+                            right: '1rem',
+                            bottom: '0',
                           }
                         : {}
                     }
@@ -594,19 +596,18 @@ const Enquiry = (props) => {
       </div>
     );
   else
-   return (
-     <div>
-       {showBlack ? (
-         <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
-       ) : null}
+    return (
+      <div>
+        {showBlack ? (
+          <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
+        ) : null}
 
-       <Container className="border center-div">
-         <LoadingLottie height="50%" width="50%"></LoadingLottie>
-         <LoadingText>Finalizing your plan...</LoadingText>
-       </Container>
-     </div>
-   );
-
+        <Container className="border center-div">
+          <LoadingLottie height="50%" width="50%"></LoadingLottie>
+          <LoadingText>Finalizing your plan...</LoadingText>
+        </Container>
+      </div>
+    );
 };
 
 const mapStateToPros = (state) => {

@@ -22,6 +22,10 @@ import HotelBookingContainer from './HotelBookingContainer';
 import LogInModal from '../../../components/modals/Login';
 import useMediaQuery from '../../../hooks/useMedia';
 import { TbArrowBack } from 'react-icons/tb';
+import { isDateOlderThanCurrent } from '../../../helper/isDateOlderThanCurrent';
+import Modal from '../../../components/ui/Modal';
+import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+import { useRouter } from 'next/router';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -485,51 +489,52 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     setShowDetails(true);
   }
-  // const HotelArray = [];
-  // if (props.breif) {
-  //   if (props.breif.city_slabs) {
-  //     if (props.stayBookings) {
-  //       for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
-  //         if (
-  //           props.breif.city_slabs[i].city_name ==
-  //           props?.stayBookings[i - 1]?.city
-  //         ) {
-  //           HotelArray.push(
-  //             <HotelBookingContainer
-  //               booking={props.stayBookings[i - 1]}
-  //               index={i - 1}
-  //               cityName={props.breif.city_slabs[i].city_name}
-  //               key={i}
-  //               handleClick={handleClick}
-  //               handleClickAc={handleClickAc}
-  //               _SelectedBookingHandler={_SelectedBookingHandler}
-  //               setHideBookingModal={props.setHideBookingModal}
-  //               loginModal={showLoginModal}
-  //               setLoginModal={setShowLoginModal}
-  //               token={props.token}
-  //             ></HotelBookingContainer>
-  //           );
-  //         } else {
-  //           HotelArray.push(
-  //             <HotelBookingContainer
-  //               booking={null}
-  //               index={i - 1}
-  //               key={i}
-  //               handleClick={handleClick}
-  //               cityName={props.breif.city_slabs[i].city_name}
-  //               handleClickAc={handleClickAc}
-  //               _SelectedBookingHandler={_SelectedBookingHandler}
-  //               setHideBookingModal={props.setHideBookingModal}
-  //               loginModal={showLoginModal}
-  //               setLoginModal={setShowLoginModal}
-  //               token={props.token}
-  //             ></HotelBookingContainer>
-  //           );
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+  const HotelArray = [];
+  if (props.breif) {
+    if (props.breif.city_slabs) {
+      if (props.stayBookings) {
+        for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
+          if (
+            props.breif.city_slabs[i]?.accommodation_booking == null ||
+            props.breif.city_slabs[i]?.accommodation_booking == ''
+          ) {
+            HotelArray.push(
+              <HotelBookingContainer
+                booking={null}
+                index={i - 1}
+                key={i}
+                handleClick={handleClick}
+                cityName={props.breif.city_slabs[i].city_name}
+                handleClickAc={handleClickAc}
+                _SelectedBookingHandler={_SelectedBookingHandler}
+                setHideBookingModal={props.setHideBookingModal}
+                loginModal={showLoginModal}
+                setLoginModal={setShowLoginModal}
+                token={props.token}
+              ></HotelBookingContainer>
+            );
+          } else {
+            HotelArray.push(
+              <HotelBookingContainer
+                booking={props.stayBookings[i - 1]}
+                index={i - 1}
+                cityName={props.breif.city_slabs[i].city_name}
+                key={i}
+                handleClick={handleClick}
+                handleClickAc={handleClickAc}
+                _SelectedBookingHandler={_SelectedBookingHandler}
+                setHideBookingModal={props.setHideBookingModal}
+                loginModal={showLoginModal}
+                setLoginModal={setShowLoginModal}
+                token={props.token}
+              ></HotelBookingContainer>
+            );
+          }
+        }
+      }
+    }
+  }
+
   return (
     <div className="lg:w-[60vw] w-full lg:mx-0 ">
       <div
@@ -539,13 +544,14 @@ const HotelsBooking = (props) => {
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {props.stayBookings
+      {props.breif.city_slabs[1]?.accommodation_booking
+        ? HotelArray
+        : props.stayBookings
         ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
               booking={booking}
               index={index}
               key={index}
-              cityName={props.breif.city_slabs[index].city_name}
               handleClick={handleClick}
               handleClickAc={handleClickAc}
               _SelectedBookingHandler={_SelectedBookingHandler}
@@ -556,7 +562,7 @@ const HotelsBooking = (props) => {
             ></HotelBookingContainer>
           ))
         : null}
-      {/* {HotelArray} */}
+
       <AccommodationModal
         _setImagesHandler={_setImagesHandler}
         onHide={() => setShowDetails(false)}
@@ -625,6 +631,13 @@ const HotelsBooking = (props) => {
           {/* </Slide> */}
         </div>
       )}
+      {props.showBookingModal && (
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={props.setHideBookingModal}
+        />
+      )}
+
       {images ? (
         <FullScreenGallery
           closeGalleryHandler={() => setImages(null)}

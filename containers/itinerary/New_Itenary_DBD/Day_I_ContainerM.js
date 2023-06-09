@@ -73,6 +73,7 @@ const Day_I_ContainerM = (props) => {
               transfers={element.transfers}
               meta={element.meta}
               icon={element.icon}
+              data={element}
               heading={element.heading}
               bookings={element.bookings}
               text={props.Days.slab_elements[0].text}
@@ -93,6 +94,7 @@ const Day_I_ContainerM = (props) => {
         case 'accommodation':
           dayIcontainer.push(
             <ItineraryElementM
+              data={element}
               icon={element.icon}
               time="9:00AM"
               booking={element?.bookings ? element?.bookings[0] : null}
@@ -135,6 +137,7 @@ const Day_I_ContainerM = (props) => {
         case 'activity':
           dayIcontainer.push(
             <ItineraryPoiElementM
+              payment={props.payment}
               activity_data={element?.activity_data}
               getPaymentHandler={props?.getPaymentHandler}
               day_slab_index={props?.indexDay}

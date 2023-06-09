@@ -65,7 +65,7 @@ export const Timecontainer = styled.div`
   font-size: 13px;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   flex-direction: row;
 
   @media screen and (min-width: 768px) {
