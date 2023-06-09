@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Booking from "./booking1/CheckLoginWrapper";
 import Register from "./register/Index";
-import Breif from "./breif/NewIndex";
+import Breif from "./breif/OldIndex";
 import ItineraryContainer from "../../components/itinerary/Index/IndexDesktop";
 import ItineraryContainerMobile from "../../components/itinerary/newmobile/Index";
 import media from "../../components/media";
