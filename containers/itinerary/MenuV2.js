@@ -1097,7 +1097,11 @@ const SimpleTabsV2 = (props) => {
         <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
           <div className="flex flex-row justify-between mx-3">
             <div className="flex flex-col">
-              <div>Total trip cost</div>
+              <div>
+                {props.payment?.is_estimated_price
+                  ? 'Estimated Price'
+                  : 'Total trip cost'}
+              </div>
               {props.payment ? (
                 <div>
                   <span className="font-bold">
@@ -1117,15 +1121,38 @@ const SimpleTabsV2 = (props) => {
                 PAID
               </div>
             )}
-            <div className="">
-              <div
-                classNAme={`${props?.payment?.paid_user ? 'bg-[red]' : ''}`}
-                onClick={() =>
-                  setShowFooterBannerMobile(!showFooterBannerMobile)
-                }
-              >
-                Book now
-              </div>
+            <div className="mt-1">
+              {props?.payment?.paid_user ? (
+                <Button
+                  color="#fff"
+                  fontWeight="600"
+                  fontSize="0.85rem"
+                  borderWidth="3px"
+                  width="100%"
+                  borderRadius="10px"
+                  bgColor="#04AA32"
+                  onclick={() =>
+                    setShowFooterBannerMobile(!showFooterBannerMobile)
+                  }
+                >
+                  View Booking
+                </Button>
+              ) : (
+                <Button
+                  class
+                  fontWeight="600"
+                  fontSize="0.85rem"
+                  borderWidth="3px"
+                  width="100%"
+                  borderRadius="10px"
+                  bgColor="#f7e700"
+                  onclick={() =>
+                    setShowFooterBannerMobile(!showFooterBannerMobile)
+                  }
+                >
+                  Book now
+                </Button>
+              )}
             </div>
           </div>
         </div>
