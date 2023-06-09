@@ -8,7 +8,10 @@ import TailoredFormMobileModal from './modals/TailoredFomrMobile';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { closeTailoredModal } from '../services/openTailoredModal';
+import media from './media'
 const Layout = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
   useEffect(() => {
     props.checkAuthState();
     window.scrollTo(0, 0);
@@ -36,7 +39,11 @@ const Layout = (props) => {
         id={props.id}
         destination={props.destination}
       />
-      <div style={{ marginTop: "72px" }}>{props.children}</div>
+      <div
+        style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
+      >
+        {props.children}
+      </div>
 
       <LogInModal
         show={props.showLogin}

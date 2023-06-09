@@ -103,6 +103,7 @@ const Navbar = (props) => {
         {!hideNav && (
           <NewMobile
             PW={props.PW}
+            staticnav={props.staticnav}
             id={props.id}
             destination={props.destination}
             _openAllNotificationsHandler={_openAllNotificationsHandler}
