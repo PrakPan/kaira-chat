@@ -14,11 +14,13 @@ import { convertNumToTime } from '../../../helper/convertNumToTime';
 import { formatNumber } from '../../../helper/formatNumber';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import { LivelyButton } from '../../../components/LiveleyButton';
+import { Link } from 'react-scroll';
 const TransferElementsM = ({
   time,
   heading,
   meta,
   modes,
+  data,
   transfers,
   icon,
   text,
@@ -45,9 +47,22 @@ const TransferElementsM = ({
                 />
               )}
             </div>
-
-            <div className="text-[1.2rem] font-normal line-clamp-2 ">
-              {heading}
+            <div>
+              <div className="text-[1.2rem] font-normal line-clamp-2 ">
+                {heading}
+              </div>
+              <Link
+                to={
+                  data.bookings
+                    ? `${data.bookings[0].id}`
+                    : 'Transfer_Container'
+                }
+                offset={-90}
+              >
+                <TransparentButton>
+                  {modes ? `Booking For ${modes} ` : null}
+                </TransparentButton>
+              </Link>
             </div>
           </Timecontainer>
         </Timecontainer>

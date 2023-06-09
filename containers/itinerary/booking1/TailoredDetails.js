@@ -923,6 +923,7 @@ const Details = (props) => {
           <div className="text-[#01202B] ">Chat on Whatsapp</div>
         </div>
       </ButtonYellow>
+      <div>Ter</div>
     </SummaryContainer>
   );
 };

@@ -6,6 +6,8 @@ import ImageLoader from '../../../components/ImageLoader';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
 import { FaHome } from 'react-icons/fa';
 import { LivelyButton } from '../../../components/LiveleyButton';
+import { TransparentButton } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import { Link } from 'react-scroll';
 
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
@@ -39,7 +41,7 @@ const ItineraryElementM = (props) => {
   return (
     <div className="font-lexend">
       <div>
-        <div className="flex flex-row">
+        <div className="flex flex-row items-start">
           <div className="flex justify-center items-center">
             <FaHome className="text-black text-[28px] mr-4" />
           </div>
@@ -60,7 +62,23 @@ const ItineraryElementM = (props) => {
               ></ImageLoader>
             </div>
           ) : null} */}
-          <div className="text-[1.2rem] font-normal">{props.heading}</div>
+          <div className="flex flex-col">
+            <div className="text-[1.2rem] font-normal">{props.heading}</div>
+            <Link
+              to={
+                props.data.bookings
+                  ? `${props.data.bookings[0].id}`
+                  : 'Stays-Head'
+              }
+              offset={-90}
+            >
+              <TransparentButton>
+                {props.data.bookings
+                  ? props.data?.bookings[0]?.detail?.name
+                  : 'View Selected Hotel'}
+              </TransparentButton>
+            </Link>
+          </div>
         </div>
 
         <div>

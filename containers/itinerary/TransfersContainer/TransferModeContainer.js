@@ -433,7 +433,7 @@ const TransferModeContainer = (props) => {
 
           <div
             id={props.booking.id}
-            className="mb-4 mt-3 group w-full flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2  "
+            className="mb-4 mt-3 group w-full flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center "
           >
             {props.icon && (
               <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
@@ -493,21 +493,20 @@ const TransferModeContainer = (props) => {
                 </div> */}
               </div>
               <div>
-                Private transfer
-                {/* {props.booking_type == 'Taxi' && (
-                  <div
-                    onClick={() => HandleTransport(props.index)}
-                    className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                  >
+                {props.booking_type == 'Taxi'
+                  ? 'Private transfer '
+                  : props.booking_type}
+                {props.booking_type == 'Taxi' && (
+                  <div className=" cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                   </div>
-                  <LivelyButton
+                  // <LivelyButton
 
-                    className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                  >
-                    Change
-                  </LivelyButton>
-                )} */}
+                  //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
+                  // >
+                  //   Change
+                  // </LivelyButton>
+                )}
               </div>
               <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
@@ -532,6 +531,14 @@ const TransferModeContainer = (props) => {
                 </FacilityContainer>
               )}
             </div>
+            {isDesktop && props.booking_type == 'Taxi' && (
+              <div
+                onClick={() => HandleTransport(props.index)}
+                className="px-4  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[6px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+              >
+                Change Taxi
+              </div>
+            )}
           </div>
         </div>
       )}
