@@ -16,8 +16,6 @@ import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
-import Cookies from "js-cookie";
-import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
@@ -121,7 +119,6 @@ const Enquiry = (props) => {
   const [focusedDate, setFocusedDate] = useState(null);
   const [groupType, setGroupType] = useState(null);
   const [startingLocation, setStartingLocation] = useState(false);
-  const isPageLoaded = usePageLoaded()
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -134,6 +131,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
+ 
   useEffect(() => {
     if (slideIndex === 2 && props.token) _submitDataHandler();
     setShowPopup(popupObj);
@@ -144,20 +142,6 @@ const Enquiry = (props) => {
     setShowSearchStarting(false);
   };
   let isPageWide = media("(min-width: 768px)");
-          const LocationCookie = Cookies.get("userLocation");
-
-  useEffect(() => {
-      if (!startingLocation) {
-        if (LocationCookie) {
-          const userLocation = JSON.parse(LocationCookie);
-          if (userLocation.text && userLocation.place_id)
-            setStartingLocation({
-              name: userLocation.text,
-              place_id: userLocation.place_id,
-            });
-        }
-      }
-  }, [LocationCookie]);
 
   const [selectedCities, setSelectedCities] = useState(
     !router.pathname.split("/").includes("[city]")
@@ -199,7 +183,6 @@ const Enquiry = (props) => {
     let cityids = [];
     let locations = [];
     let stateIds = [];
-    let countryIds = []
     // let starting_location = null;
     let preferences = [];
     for (var i = 0; i < selectedPreferences.length; i++) {
@@ -220,7 +203,6 @@ const Enquiry = (props) => {
         ) {
           if (selectedCities[i].type == "State")
             stateIds.push(parseInt(selectedCities[i].id));
-          else if (selectedCities[i].type == "Country") countryIds.push(parseInt(selectedCities[i].id))
           else {
             cityids.push(parseInt(selectedCities[i].id));
           }
@@ -245,17 +227,18 @@ const Enquiry = (props) => {
       number_of_infants = numberOfInfants;
     }
     let data = null;
+
     data = {
       // "locations": locations,
       experience_filters_selected: preferences,
       budget: budget,
-      start_date: start_date,
-      end_date : end_date,
       // "city_id": cityids,
       group_type: groupType,
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
+      start_date: start_date,
+      end_date: end_date,
       flexible_dates: flexible,
       user_location: {
         place_id: startingLocation
@@ -270,9 +253,8 @@ const Enquiry = (props) => {
     if(countryIds.length) data.country_id = countryIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
-    if (start_date === "1970-01-01") data.start_date = "";
-    if (end_date === "1970-01-01") data.end_date = "";
-      if (startingLocation) data;
+
+    if (startingLocation) data;
 
     setLoading(true);
     localStorage.removeItem("MyPlans");
@@ -284,6 +266,7 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
+        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
@@ -529,7 +512,7 @@ const Enquiry = (props) => {
                   fontSize="1rem"
                   width={!isPageWide ? "auto" : "100%"}
                   style={
-                    !isPageWide && isPageLoaded
+                    !isPageWide
                       ? {
                           position: "fixed",
                           left: "1rem",

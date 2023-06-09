@@ -78,6 +78,7 @@ const LocationsContainer = (props) => {
     let is_city_added = _isCityAdded(city);
     // (is_city_added)
     if(!is_city_added){
+      console.log(city)
     let selected_cities = props.selectedCities.slice();
     selected_cities.push(city)
     props.setSelectedCities(selected_cities.slice())

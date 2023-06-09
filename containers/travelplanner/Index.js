@@ -376,11 +376,11 @@ const Homepage = (props) => {
             overview_text={props.experienceData.overview_text}
           ></Overview>
           <MapContainer>
-            <MapBox
+           {(props.experienceData.locations && props.experienceData.locations.length )?  <MapBox
               InfoWindowContainer={InfoWindowContainer}
               locations={props.experienceData.locations}
               height="300px"
-            />
+            /> : <></>}
           </MapContainer>
         </MapGridContainer>
         <Button

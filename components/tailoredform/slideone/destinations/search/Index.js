@@ -71,13 +71,22 @@ const Search = (props) => {
 }
   }
   useEffect(() => {
-    var params = ''
-    if (query.state) params = `?state=${query.state}`;
-    else if (query.country) params = `?country=${query.country}`;
-    else if (query.continent) params = `?continent=${query.continent}`;
-    
+    if (query.city || query.link) {
+      axios
+        .get(
+          `https://apis.tarzanway.com/poi/city/recommended/?slug=${
+            query.city || query.link
+          }`
+
+        )
+        .then((res) => {
+          if (res.data.length) setHotLocationsData(res.data);
+          else setShowHotLocations(false);
+        })
+        .catch((e) => setShowHotLocations(false));
+    } else
       axioslocationsinstance
-        .get("hot_destinations" + params)
+        .get("hot_destinations")
         .then((response) => {
           if (response.data.length) setHotLocationsData(response.data);
           else setShowHotLocations(false);
@@ -85,8 +94,6 @@ const Search = (props) => {
         .catch((e) => {
           setShowHotLocations(false);
         });
-
-    
      }, []);
   // useEffect(() => {
   //   if (showResults) setShowHotLocations(false)

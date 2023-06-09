@@ -11,6 +11,7 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
+  console.log(props , 'props')
   //Stores initial order of locations
   const initialorder = {
     0: {
@@ -171,8 +172,10 @@ const Route = (props) => {
         setCurrentPopup={props.setCurrentPopup}
         setShowDrawer={props.setShowDrawer}
         setShowDrawerData={props.setShowDrawerData}
-        cityData={props.breif.city_slabs[0]}
-        dayId={props.breif.city_slabs[0].day_slab_location.start_day_slab_index}
+        cityData={props.breif?.city_slabs[0]}
+        dayId={
+          props.breif?.city_slabs[0].day_slab_location.start_day_slab_index
+        }
         setShowDrawer={props.setShowDrawer}
         setShowDrawerData={props.setShowDrawerData}
         cityData={props.breif.city_slabs[0]}

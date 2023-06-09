@@ -1,11 +1,11 @@
-import ItineraryContainer from "../../../containers/itinerary/Indexs/Index";
-import { useRouter } from "next/router";
-import Layout from "../../../components/Layout";
-import Head from "next/head";
-import { connect } from "react-redux";
-import * as authaction from "../../../store/actions/auth";
+import ItineraryContainer from '../../../containers/itinerary/Indexs/Index';
+import { useRouter } from 'next/router';
+import Layout from '../../../components/Layout';
+import Head from 'next/head';
+import { connect } from 'react-redux';
+import * as authaction from '../../../store/actions/auth';
 
-import { useEffect } from "react";
+import { useEffect } from 'react';
 // import Script from "next/script";
 const Itinerary = (props) => {
   const router = useRouter();

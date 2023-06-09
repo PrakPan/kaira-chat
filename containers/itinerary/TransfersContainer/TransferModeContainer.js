@@ -197,7 +197,9 @@ const TransferModeContainer = (props) => {
           </div>
           <div
             id={props.booking.id}
-            className="mb-4 mt-2 cursor-pointer  relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-6  "
+            className={`mb-4 mt-2 lg:block ${
+              !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
+            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-3  `}
           >
             <div className="flex flex-row gap-2    ">
               {props.userSelected && (
@@ -282,7 +284,7 @@ const TransferModeContainer = (props) => {
                         <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
                         <div className="relative w-32 flex justify-center items-center">
                           <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
-                          <div className="flex flex-col  justify-center items-center">
+                          <div className="flex flex-col  justify-center items-center font-[200]">
                             <FaPlane className="" />
                             {props.userSelected ? (
                               <div>
@@ -313,24 +315,37 @@ const TransferModeContainer = (props) => {
                 </div>
 
                 {props.userSelected ? (
-                  <div className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-end items-start">
-                    <div>
+                  <div className="flex flex-row justify-between items-center">
+                    <div className="flex  mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-end items-start">
+                      {/* <div>
                       <div className="flex flex-row w-full justify-end items-center gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#277004] ">
                         <IoCheckmark></IoCheckmark>
+                       
+                      </div>
+                    </div> */}
+                      <div className="flex font-medium pl-2 ">
                         {props?.booking.airline_name}
                       </div>
+                      <div className="flex pl-2  font-[300]">
+                        <div>
+                          Nonstop
+                          {props.booking.duration
+                            ? ` (${props.booking.duration}h)`
+                            : null}
+                        </div>
+                      </div>
+                      {/* <div>airline_name</div> */}
                     </div>
-                    {/* <div>airline_name</div> */}
                     <div
                       onClick={() => HandleFlights(props.index)}
-                      className="px-2 bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                      className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                     >
                       Change Flight
                     </div>
                   </div>
                 ) : (
                   <div
-                    className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-end items-start
+                    className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
               "
                   >
                     {/* <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
@@ -339,7 +354,7 @@ const TransferModeContainer = (props) => {
 
                     <div
                       onClick={() => HandleFlights(props.index)}
-                      className="px-4 bg-[#F7E700] py-[11px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                      className="px-4 bg-[#F7E700] py-[6px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
                     >
                       Add Flight
                     </div>
@@ -347,7 +362,11 @@ const TransferModeContainer = (props) => {
                 )}
               </div>
             </div>
-            <div className="lg:hidden flex flex-row gap-3 ml-2 mt-3 text-sm">
+            <div
+              className={`lg:hidden flex flex-row gap-3 ml-2 ${
+                !props.userSelected ? 'lg:mt-3 mb-3' : 'lg:mt-3 mt-3'
+              }  text-sm`}
+            >
               <div className="flex flex-col">
                 <div className="text-[#01202B] font-normal">
                   ({props.booking.origin_code})
@@ -431,16 +450,16 @@ const TransferModeContainer = (props) => {
                       url={props.icon}
                       leftalign
                       // dimensions={{ width: 900, height: 500 }}
-                      height="3rem"
+                      height="2.8rem"
                       width="5rem"
-                      widthmobile="4rem"
+                      widthmobile="3.8rem"
                     ></ImageLoader>
                   )
                 )}
               </div>
             )}
 
-            <div className=" flex flex-col w-[80%]">
+            <div className=" flex flex-col w-[80%] pl-1">
               <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium">
                 {/* <span className="inline  gap-3 items-center">
                   {props.booking_type == 'Taxi' && (
@@ -470,10 +489,8 @@ const TransferModeContainer = (props) => {
                   )}
                 </div> */}
               </div>
-
-              <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
-                {props.taxi_type && <div>{props.taxi_type}</div>}
-                <div>({props.duration}h 30m)</div>
+              <div>
+                Private transfer
                 {props.booking_type == 'Taxi' && (
                   <div
                     onClick={() => HandleTransport(props.index)}
@@ -489,9 +506,13 @@ const TransferModeContainer = (props) => {
                   // </LivelyButton>
                 )}
               </div>
+              <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
+                {props.taxi_type && <div>{props.taxi_type}</div>}
+                <div>({props.duration}h 30m)</div>
+              </div>
 
               {props?.costings_breakdown && (
-                <FacilityContainer className="text-[#01202B] font-normal flex-row mt-3 w-full">
+                <FacilityContainer className="text-[#01202B] font-normal flex-row mt-1 w-full">
                   <div className="pr-1 block ">Facilities:</div>
                   {}
                   <span className="flex flex-row  ">

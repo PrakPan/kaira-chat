@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import Card from "./Card";
-import media from "../../media";
-import { useRouter } from "next/router";
-import Button from "../../ui/button/Index";
-import DesktopSkeleton, { MobileSkeleton } from "./LocationSkeleton";
-import * as ga from "../../../services/ga/Index";
-import openTailoredModal from "../../../services/openTailoredModal";
-import SwiperCarousel from "../../SwiperCarousel";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Card from './Card';
+import media from '../../media';
+import { useRouter } from 'next/router';
+import Button from '../../ui/button/Index';
+import DesktopSkeleton, { MobileSkeleton } from './LocationSkeleton';
+import * as ga from '../../../services/ga/Index';
+import openTailoredModal from '../../../services/openTailoredModal';
+import SwiperCarousel from '../../SwiperCarousel';
 /* Used to display grid (desktop) / carousel of location images 
   inputs:locations (array of objects), viewall (guide page)
 */
@@ -19,7 +19,7 @@ const MobileCardsContainer = styled.div`
 `;
 
 const LocationsBlog = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
 
   const router = useRouter();
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
@@ -81,35 +81,22 @@ const LocationsBlog = (props) => {
             slidesPerView={6}
             cards={cards}
           ></SwiperCarousel>
-        ) : (
-          <DesktopSkeleton />
-        )}
-        <Button
-          onclick={() =>
-            openTailoredModal(router, props.page_id, props.destination)
-          }
-          borderWidth="1px"
-          fontSizeDesktop="16px"
-          fontWeight="500"
-          borderRadius="6px"
-          margin="2rem auto"
-          padding="0.5rem 2rem"
-        >
-          Unlock your personalized adventure
-        </Button>
+        ) : null}
       </div>
     );
   else
     return (
       <div>
-        <div style={{ padding: "1rem 0" }}>
+        <div style={{ padding: '1rem 0' }}>
           {MobilecardsToShowJSX.length ? (
             <SwiperCarousel
               slidesPerView={1}
               cards={MobilecardsToShowJSX}
               pageDots
             ></SwiperCarousel>
-          ) : null}
+          ) : (
+            <MobileSkeleton />
+          )}
         </div>
       </div>
     );

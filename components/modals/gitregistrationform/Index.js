@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Modal from '../../ui/Modal';
+import { Modal } from 'react-bootstrap';
 import styled from 'styled-components';
+import { TbArrowBack } from 'react-icons/tb';
 import media from '../../../components/media';
 import Form from './form/Index';
 import axiospurchaseinstance from '../../../services/sales/itinerary/Purchase';
@@ -13,12 +14,8 @@ import TermsModal from '../terms/PW';
 import LoadingPage from '../../LoadingPage';
 import dayjs from 'dayjs';
 
-const Heading = styled.p`
-  font-size: 25px;
-  font-weight: 700;
-  @media screen and (min-width: 768px) {
-    margin: 0rem 0rem 2rem 2rem;
-  }
+const Body = styled(Modal.Body)`
+  padding: 0.5rem !important;
 `;
 
 const RegistrationModal = (props) => {
@@ -42,6 +39,8 @@ const RegistrationModal = (props) => {
   }, [props.show]);
 
   const _startRazorpayHandler = (data) => {
+    // console.log('rz', );
+
     //Razorpay payload
     let razorpayOptions = {
       amount: data.amount,
@@ -58,7 +57,7 @@ const RegistrationModal = (props) => {
         setPaymentLoading(true);
         axios
           .post(
-            'https://suppliers.tarzanway.com/sales/verify/',
+            'https://dev.suppliers.tarzanway.com/sales/verify/',
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -166,16 +165,44 @@ const RegistrationModal = (props) => {
     return (
       <div>
         <Modal
-          width="35rem"
-          mobileWidth="90%"
-          backdrop
-          closeIcon
+          className="booking-modal"
           show={props.show}
+          size="xl"
           onHide={props.hide}
-          style={{ padding: '1rem', borderRadius: '1.5rem' }}
         >
-          <div>
-            <Heading className="font-lexend">Confirm and Pay</Heading>
+          <Modal.Header
+            style={{
+              height: isPageWide ? 'max-content' : '20vw',
+              position: 'sticky',
+              top: '0',
+              backgroundColor: 'white',
+              justifyContent: 'flex-start',
+              padding: !isPageWide ? '2rem 1rem' : '1rem',
+              backgroundColor: 'white',
+              zIndex: '2',
+            }}
+          >
+            <TbArrowBack
+              onClick={props.hide}
+              className="hover-pointer"
+              style={{
+                margin: '0.5rem',
+                fontSize: '1.75rem',
+                textAlign: 'right',
+              }}
+            ></TbArrowBack>
+
+            <p
+              style={{ fontWeight: '800', margin: '0', fontSize: '19px' }}
+              className="font-opensans"
+            >
+              Confirm and Pay
+            </p>
+
+            {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
+          </Modal.Header>
+
+          <Body className="">
             <Cart
               setShowTermsModal={setShowTermsModal}
               cost={props.payment ? props.payment.per_person_total_cost : null}
@@ -183,8 +210,9 @@ const RegistrationModal = (props) => {
               pax={props.pax}
               plan={props.plan}
             ></Cart>
+
             <p
-              className="font-lexend text-center"
+              className="font-opensans text-center"
               style={{ fontWeight: '800', margin: '1rem 0', fontSize: '19px' }}
             >
               Member Details
@@ -203,7 +231,7 @@ const RegistrationModal = (props) => {
               onSuccess={_cloneHandler}
               pax={props.pax}
             ></Form>
-          </div>
+          </Body>
         </Modal>
         <TermsModal
           show={showTermsModal}

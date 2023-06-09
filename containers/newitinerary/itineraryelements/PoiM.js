@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AiFillCar } from 'react-icons/ai';
 import ImageLoader from '../../../components/ImageLoader';
 import Button from '../../../components/ui/button/Index';
@@ -24,6 +24,8 @@ import { FaFilter } from 'react-icons/fa';
 import ButtonYellow from '../../../components/ButtonYellow';
 import useMediaQuery from '../../../hooks/useMedia';
 import Slide from '../../../Animation/framerAnimation/Slide';
+import ScrollVisibleHOC from '../../../helper/withScrollVisibility';
+
 const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
@@ -124,9 +126,10 @@ const ItineraryPoiElementM = (props) => {
   const [SelectedExprience, SetSelectedExprience] = useState();
   const [floatingButtonView, setFloatingButtonView] = useState(false);
   const items = [
-    { id: 1, label: 'Point of Interest', link: 'POI' },
-    { id: 2, label: 'Activities', link: 'Activities' },
+    { id: 1, label: 'Point of Interest', link: 'POIS' },
+    { id: 2, label: 'Activities', link: 'Activitiess' },
   ];
+  const drawerRef = useRef(null);
   useEffect(() => {}, []);
   function ErrorNotDef(elem) {
     return elem === undefined || elem === null || !elem;
@@ -237,6 +240,7 @@ const ItineraryPoiElementM = (props) => {
     console.log(child);
   };
   const isDesktop = useMediaQuery('(min-width:1148px)');
+
   return (
     <Container className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -374,10 +378,11 @@ const ItineraryPoiElementM = (props) => {
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
-        Topheading={'Select Our Point Of Interest'}
+        Topheading={'Back To Itinerary'}
       />
 
       <Drawer
+        ref={drawerRef}
         show={showDrawer}
         anchor={'right'}
         backdrop
@@ -417,6 +422,7 @@ const ItineraryPoiElementM = (props) => {
             ClickHandler={ClickHandler}
           />
         </div>
+
         {!fetchingPoi ? (
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX
@@ -491,6 +497,26 @@ const ItineraryPoiElementM = (props) => {
         </div>
       </Drawer>
       {!isDesktop && showDrawer && (
+        <div className="absolute bottom-0 right-10 z-[1510]">
+          {/* <Slide
+              hideTime={4}
+              onUnmount={() => setFloatingButtonView(!floatingButtonView)}
+              isActive={floatingButtonView}
+              direction={5}
+              duration={2}
+              xdistance={-50}
+            > */}
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: '32px', width: '32px' }}
+              cursor={'pointer'}
+              onClick={() => setShowDrawer(false)}
+            />
+          </FloatingView>
+          {/* </Slide> */}
+        </div>
+      )}
+      {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1502]">
           <Floating>
             <FaFilter
@@ -502,26 +528,6 @@ const ItineraryPoiElementM = (props) => {
               }}
             />
           </Floating>
-        </div>
-      )}
-      {!isDesktop && floatingButtonView && (
-        <div className="absolute bottom-0 right-10 z-[1509]">
-          <Slide
-            hideTime={4}
-            onUnmount={() => setFloatingButtonView(!floatingButtonView)}
-            isActive={floatingButtonView}
-            direction={5}
-            duration={2}
-            xdistance={-50}
-          >
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: '32px', width: '32px' }}
-                cursor={'pointer'}
-                onClick={() => setShowDrawer(false)}
-              />
-            </FloatingView>
-          </Slide>
         </div>
       )}
 

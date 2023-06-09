@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 
 // import Timer from '../timer/Index';
-import Bookings from "./UpdatedIndex";
-import { connect } from "react-redux";
+import Bookings from './UpdatedIndex';
+import { connect } from 'react-redux';
 // import Login from '../../../c'
 
-import Spinner from "../../../components/Spinner";
-import { useRouter } from "next/router";
+import Spinner from '../../../components/Spinner';
+import { useRouter } from 'next/router';
 const SpinnerContainer = styled.div`
   height: 60vh;
   width: max-content;

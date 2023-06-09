@@ -181,27 +181,29 @@ const HotelBookingContainer = ({
                 >
                   {booking?.name}
                 </div>
-                <div className="flex flex-col gap-1">
-                  {!currentBooking && (
-                    <div className="text-sm font-normal">{booking?.city}</div>
-                  )}
+                {booking && (
+                  <div className="flex flex-col gap-1">
+                    {!currentBooking && (
+                      <div className="text-sm font-normal">{booking?.city}</div>
+                    )}
 
-                  {booking?.user_rating && (
-                    <div className="gap-1 flex flex-row  items-center">
-                      <div className="flex flex-row text-[#FFD201]">
-                        {starRating(booking?.user_rating)}
-                      </div>
-                      <div>{booking?.user_rating}</div>
-                      {booking.number_of_reviews && (
-                        <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                          {booking.number_of_reviews} Google reviews
+                    {booking?.user_rating && (
+                      <div className="gap-1 flex flex-row  items-center">
+                        <div className="flex flex-row text-[#FFD201]">
+                          {starRating(booking?.user_rating)}
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                        <div>{booking?.user_rating}</div>
+                        {booking.number_of_reviews && (
+                          <div className="text-sm text-[#7A7A7A] font-[400] underline">
+                            {booking.number_of_reviews} Google reviews
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
                 {booking.check_in ? (
-                  <div className="flex flex-row gap-3 mt-2">
+                  <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                     <div className="flex flex-row gap-2 items-center">
                       <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                       <div>
@@ -220,7 +222,7 @@ const HotelBookingContainer = ({
                   </div>
                 ) : (
                   currentBooking && (
-                    <div className="flex flex-row gap-3 mt-2">
+                    <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       <div className="flex flex-row gap-2 items-center">
                         <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                         <div>
@@ -275,16 +277,16 @@ const HotelBookingContainer = ({
               </div>
 
               {currentBooking && (
-                <div className="flex flex-row gap-3 items-center w-full font-bold">
-                  {booking.price_lower_range_ext ? (
-                    <div className="font-lexend">
-                      {'₹ ' +
-                        getIndianPrice(
-                          Math.round(booking.price_lower_range_ext / 100)
-                        ) +
-                        ' /-'}
-                    </div>
-                  ) : null}
+                <div className="flex flex-row gap-1 items-center w-full font-bold">
+                  <div className="text-2xl font-bold">
+                    {'₹ ' +
+                      getIndianPrice(
+                        Math.round(booking.price_lower_range_ext / 100)
+                      )}
+                  </div>
+                  <div className="font-normal text-base self-end">
+                    per Room*
+                  </div>
                 </div>
               )}
               {handleClick && (
@@ -339,7 +341,7 @@ const HotelBookingContainer = ({
                 </div>
               )} */}
 
-              <div className="absolute lg:bottom-10 bottom-6 right-8 -m-3">
+              <div className="absolute lg:bottom-10 bottom-[2.5rem] right-8 -m-3">
                 <div
                   onClick={(e) => {
                     handleCheckboxChange(e);

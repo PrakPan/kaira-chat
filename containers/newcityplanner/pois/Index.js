@@ -171,14 +171,14 @@ const Poi = (props) => {
           </WeatherContainer>
         )}
 
-        <MapBox
+      {(props.pois && props.pois.length ) ? <MapBox
           locations={props.pois}
           defaultZoom={12}
           height={
             isPageWide ? (props.thingsToDoPage ? "320px" : "350px") : "230px"
           }
           InfoWindowContainer={InfoWindowContainer}
-        />
+        /> : <div></div>}
       </div>
     </GridContainer>
   );

@@ -411,7 +411,7 @@ export const uploadProfilePic = (image) => {
   };
 };
 
-export const ClaimItinary = (itinaryId ,token) => {
+export const ClaimItinary = (itinaryId, token) => {
   axiosClaims.patch(
     '/',
     {

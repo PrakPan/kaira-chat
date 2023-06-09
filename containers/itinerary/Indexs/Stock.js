@@ -1,15 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
-import styled from "styled-components";
-import FullImg from "../fullimg/FullImg";
-import FullImgContainer from "../fullimg/FullImgContent";
-import Menu from "../Menu";
-import axios from "axios";
-import Spinner from "../../../components/LoadingPage";
-import defaultbreif from "../defaultbrief";
-import { MIS_SERVER_HOST } from "../../../services/constants";
+import React, { useRef, useState, useEffect } from 'react';
+import styled from 'styled-components';
+import FullImg from '../fullimg/FullImg';
+import FullImgContainer from '../fullimg/FullImgContent';
+import Menu from '../Menu';
+import axios from 'axios';
+import Spinner from '../../../components/LoadingPage';
+import defaultbreif from '../defaultbrief';
+import { MIS_SERVER_HOST } from '../../../services/constants';
 
-import * as authaction from "../../../store/actions/auth";
-import { connect } from "react-redux";
+import * as authaction from '../../../store/actions/auth';
+import { connect } from 'react-redux';
 
 const Container = styled.div`
   width: 100%;
@@ -19,7 +19,7 @@ const Itinerary = (props) => {
   const _reloadBookingsHandler = () => {
     setBooking(null);
 
-    fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
+    fetch(MIS_SERVER_HOST + '/sales/bookings/?itinerary_id=' + props.id, {
       params: { itinerary_id: props.id },
     })
       .then((response) => {
@@ -39,8 +39,8 @@ const Itinerary = (props) => {
   };
   const [loading, setLoading] = useState(true);
   const [itinerary, setItinerary] = useState({
-    name: "Loading Itinerary",
-    images: ["null"],
+    name: 'Loading Itinerary',
+    images: ['null'],
   });
   const [breif, setBreif] = useState(defaultbreif);
   const [booking, setBooking] = useState(null);
@@ -58,7 +58,7 @@ const Itinerary = (props) => {
     axios
       .get(
         MIS_SERVER_HOST +
-          "/sales/itinerary/stock/day_by_day/?itinerary_id=" +
+          '/sales/itinerary/stock/day_by_day/?itinerary_id=' +
           props.id
       )
       .then((res) => {
@@ -71,7 +71,7 @@ const Itinerary = (props) => {
     axios
       .get(
         MIS_SERVER_HOST +
-          "/sales/itinerary/stock/brief/?itinerary_id=" +
+          '/sales/itinerary/stock/brief/?itinerary_id=' +
           props.id
       )
       .then((res) => {
@@ -90,7 +90,7 @@ const Itinerary = (props) => {
   }
   if (!loading) {
     if (!booking) {
-      fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
+      fetch(MIS_SERVER_HOST + '/sales/bookings/?itinerary_id=' + props.id, {
         params: { itinerary_id: props.id },
       }).then((response) => {
         if (response.status === 200) {
@@ -104,7 +104,7 @@ const Itinerary = (props) => {
     if (!payment) {
       fetch(
         MIS_SERVER_HOST +
-          "/payment/info/?itinerary_type=Tailored&itinerary_id=" +
+          '/payment/info/?itinerary_type=Tailored&itinerary_id=' +
           itinerary.tailor_made_id
       ).then((response) => {
         if (response.status === 200) {

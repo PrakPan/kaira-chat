@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import media from "../../media";
-import ImageLoader from "../../ImageLoader";
-import { useRouter } from "next/router";
+import React from 'react';
+import styled from 'styled-components';
+import media from '../../media';
+import ImageLoader from '../../ImageLoader';
+import { useRouter } from 'next/router';
 
 const ImageFade = styled.div`
   width: 100%;
@@ -53,8 +53,7 @@ const Subheading = styled.p`
 `;
 
 const Experiences = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-  const [ImageLoaded, setImageLoaded] = useState(false);
+  let isPageWide = media('(min-width: 768px)');
   const router = useRouter();
   /*Require props: imgWidth*/
 
@@ -69,33 +68,30 @@ const Experiences = (props) => {
 
   const _handleRedirect = (e) => {
     e.preventDefault();
-    if (props.path) window.location.href = "/" + props.path;
-    console.log("props.path: ", props.path);
+    if (props.path) window.location.href = '/' + props.path;
+    console.log('props.path: ', props.path);
   };
   const path = props.city
-    ? "https://thetarzanway.com/travel-guide/city/"
-    : "https://thetarzanway.com/travel-planner/";
+    ? 'https://thetarzanway.com/travel-guide/city/'
+    : 'https://thetarzanway.com/travel-planner/';
   return (
-    <>
-      <ImageContainer
-        className="hover-pointer"
-        onClick={(e) => _handleRedirect(e)}
-      >
-        <ImageFade>
-          <ImageLoader
-            url={props.img}
-            dimensions={{ width: 800, height: 800 }}
-            dimensionsMobile={{ width: 800, height: 800 }}
-            height="35vh"
-            onload={() => setImageLoaded(true)}
-          ></ImageLoader>
-        </ImageFade>
-        <BlackContainer className="font-lexend">
-          {ImageLoaded && <Heading>{props.location}</Heading>}
-          {ImageLoaded && <Subheading>{props.heading}</Subheading>}
-        </BlackContainer>
-      </ImageContainer>
-    </>
+    <ImageContainer
+      className="hover-pointer"
+      onClick={(e) => _handleRedirect(e)}
+    >
+      <ImageFade>
+        <ImageLoader
+          url={props.img}
+          dimensions={{ width: 800, height: 800 }}
+          dimensionsMobile={{ width: 800, height: 800 }}
+          height="35vh"
+        ></ImageLoader>
+      </ImageFade>
+      <BlackContainer className="font-lexend">
+        <Heading>{props.location}</Heading>
+        <Subheading>{props.heading}</Subheading>
+      </BlackContainer>
+    </ImageContainer>
   );
 };
 

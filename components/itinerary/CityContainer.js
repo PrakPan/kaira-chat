@@ -34,7 +34,7 @@ const TabContainersContainer = styled.div`
 const StyledNextIcon = styled(FaChevronRight)`
   font-size: 0.75rem;
   margin-left: 0.25rem;
-  display : inline;
+  display: inline;
 `;
 const StyledPrevIcon = styled(FaChevronLeft)`
   font-size: 0.75rem;
