@@ -561,6 +561,7 @@ const TransfersContainer = (props) => {
                 ? locationsArr.push(
                     <div className="flex flex-col gap-1">
                       <TransferModeContainer
+                      payment={props?.payment}
                         booking_type={
                           props?.transferBookings[i + 1]?.booking_type
                         }
@@ -589,6 +590,7 @@ const TransfersContainer = (props) => {
                         duration={props.breif.city_slabs[i].duration}
                       ></TransferModeContainer>
                       <TransferModeContainer
+                      payment={props?.payment}
                         booking_type={props?.transferBookings[i]?.booking_type}
                         transferbookings={props.transferBookings}
                         _changeTaxiHandler={_changeTaxiHandler}
@@ -617,6 +619,7 @@ const TransfersContainer = (props) => {
                 : locationsArr.push(
                     props?.transferBookings && (
                       <TransferModeContainer
+                      payment={props?.payment}
                         booking_type={props?.transferBookings[i]?.booking_type}
                         pinColour={props.breif.city_slabs[i].color}
                         costings_breakdown={
@@ -715,6 +718,7 @@ const TransfersContainer = (props) => {
               props?.transferBookings &&
                 locationsArr.push(
                   <TransferModeContainer
+                  payment={props?.payment}
                     pinColour={props.breif.city_slabs[i].color}
                     modes={'Taxi'}
                     icon={props?.transferBookings[i]?.images?.image}
@@ -892,6 +896,7 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
+                  payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
                     pinColour={props.breif.city_slabs[i].color}
                     costings_breakdown={
@@ -919,6 +924,7 @@ const TransfersContainer = (props) => {
             : locationsArr.push(
                 props?.transferBookings && (
                   <TransferModeContainer
+                  payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
                     pinColour={props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
@@ -1025,6 +1031,7 @@ const TransfersContainer = (props) => {
           ></PinSection>
 
           <TransferModeContainer
+            payment={props?.payment}
             booking_type={props?.transferBookings[0]?.booking_type}
             setShowBookingModal={props.setShowBookingModal}
             pinColour={props.breif.city_slabs[0].color}

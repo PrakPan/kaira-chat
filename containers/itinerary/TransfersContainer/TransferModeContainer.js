@@ -339,29 +339,34 @@ const TransferModeContainer = (props) => {
 
                       {/* <div>airline_name</div> */}
                     </div>
-                    <div
-                      onClick={() => HandleFlights(props.index)}
-                      className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
-                    >
-                      Change Flight
-                    </div>
+
+                    {!props?.payment?.paid_user && (
+                      <div
+                        onClick={() => HandleFlights(props.index)}
+                        className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                      >
+                        Change Flight
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div
-                    className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
+                  !props?.payment?.paid_user && (
+                    <div
+                      className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
               "
-                  >
-                    {/* <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
+                    >
+                      {/* <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
                       <IoClose></IoClose> No Flight Yet
                     </div> */}
 
-                    <div
-                      onClick={() => HandleFlights(props.index)}
-                      className="px-4 bg-[#F7E700] py-[6px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-                    >
-                      Add Flight
+                      <div
+                        onClick={() => HandleFlights(props.index)}
+                        className="px-4 bg-[#F7E700] py-[6px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                      >
+                        Add Flight
+                      </div>
                     </div>
-                  </div>
+                  )
                 )}
               </div>
             </div>
@@ -532,14 +537,16 @@ const TransferModeContainer = (props) => {
                 </FacilityContainer>
               )}
             </div>
-            {isDesktop && props.booking_type == 'Taxi' && (
-              <div
-                onClick={() => HandleTransport(props.index)}
-                className="px-4  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[6px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-              >
-                Change Taxi
-              </div>
-            )}
+            {isDesktop &&
+              props.booking_type == 'Taxi' &&
+              !props?.payment?.paid_user && (
+                <div
+                  onClick={() => HandleTransport(props.index)}
+                  className="px-4  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[6px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                >
+                  Change Taxi
+                </div>
+              )}
           </div>
         </div>
       )}

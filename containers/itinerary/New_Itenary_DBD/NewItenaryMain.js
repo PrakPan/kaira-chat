@@ -135,11 +135,8 @@ const NewItenaryMain = (props) => {
   }
 
   const yearCalc = (days) => {
-    var year1 = days[0]?.date?.split('/')[2];
-    var year2 = days[days.length - 1].date.split('/')[2];
-    if (year1 != year2) {
-      return `${year1}/${year2}`;
-    } else {
+    if (days) {
+      var year1 = days[0]?.date?.split('/')[2];
       return year1;
     }
   };
@@ -196,17 +193,19 @@ const NewItenaryMain = (props) => {
         BarName="CityName"
         Mstyle={'round'}
       ></ScrollableMenuTabs>
+      {props.itinerary && (
+        <ScrollableMenuTabs
+          icons={false}
+          offset={'80px'}
+          items={itemsDays}
+          BarName="CityName"
+          year={yearCalc(props.itinerary.day_slabs[0].slab)}
+          Mstyle={'round'}
+          Iterable="date"
+          vertical={true}
+        ></ScrollableMenuTabs>
+      )}
 
-      <ScrollableMenuTabs
-        icons={false}
-        offset={'80px'}
-        items={itemsDays}
-        BarName="CityName"
-        year={yearCalc(itemsDays)}
-        Mstyle={'round'}
-        Iterable="date"
-        vertical={true}
-      ></ScrollableMenuTabs>
       {props.itinerary.day_slabs && (
         <div className="itenaryContainer">
           {props.itinerary.day_slabs.map((element, index) => (

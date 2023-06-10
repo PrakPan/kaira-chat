@@ -380,7 +380,9 @@ const SimpleTabsV2 = (props) => {
     };
   }, [items]);
   const _handleLoginClose = () => {
-    ClaimItinary(props.id, props.token);
+    if (props.token && !props.payment.user_allowed_to_pay) {
+      ClaimItinary(props.id, props.token);
+    }
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };

@@ -511,6 +511,7 @@ const HotelsBooking = (props) => {
                 loginModal={showLoginModal}
                 setLoginModal={setShowLoginModal}
                 token={props.token}
+                payment={props.payment}
               ></HotelBookingContainer>
             );
           } else {
@@ -527,6 +528,7 @@ const HotelsBooking = (props) => {
                 loginModal={showLoginModal}
                 setLoginModal={setShowLoginModal}
                 token={props.token}
+                payment={props.payment}
               ></HotelBookingContainer>
             );
           }
@@ -559,6 +561,7 @@ const HotelsBooking = (props) => {
               loginModal={showLoginModal}
               setLoginModal={setShowLoginModal}
               token={props.token}
+              payment={props.payment}
             ></HotelBookingContainer>
           ))
         : null}

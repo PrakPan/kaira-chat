@@ -72,7 +72,7 @@ const SearchPannel = (props) => {
     setInputValue(event.target.value);
     setResults(null);
     axios
-      .get(`https://apis.tarzanway.com/search/?q=` + event.target.value)
+      .get(`https://apis.tarzanway.com/search/suggest?q=` + event.target.value)
       .then((res) => {
         if (res.data.length) {
           setResults(res.data);

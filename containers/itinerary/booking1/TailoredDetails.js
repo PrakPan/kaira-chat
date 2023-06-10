@@ -850,7 +850,7 @@ const Details = (props) => {
                 -{' '}
                 {getHumanDate(
                   format(
-                    new Date(props.plan.end_date),
+                    new Date(props?.plan?.end_date),
                     'dd-MM-yyyy'
                   ).replaceAll('-', '/')
                 )}
@@ -906,12 +906,14 @@ const Details = (props) => {
             ) : null}
           </ButtonYellow>
         ) : (
-          <ButtonYellow
-            styleClass="w-full"
-            onClick={() => _saleCreateHandler(props.id)}
-          >
-            Request a Callback
-          </ButtonYellow>
+          !props.payment.paid_user && (
+            <ButtonYellow
+              styleClass="w-full"
+              // onClick={() => _saleCreateHandler(props.id)}
+            >
+              Request a Callback
+            </ButtonYellow>
+          )
         )
       ) : null}
       {props.payment && props.token ? (

@@ -253,7 +253,7 @@ const ItineraryPoiElement = (props) => {
                 >
                   {props.heading}
                 </div>
-                {props.city_id && (
+                {props.city_id && !props.payment.paid_user && (
                   <div
                     onClick={() => Poi_activities(props?.activity)}
                     className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"

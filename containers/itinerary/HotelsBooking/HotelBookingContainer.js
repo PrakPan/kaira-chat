@@ -39,6 +39,7 @@ const HotelBookingContainer = ({
   tailored_id,
   openDetails,
   loginModal,
+  payment,
   setLoginModal,
   token,
 }) => {
@@ -300,14 +301,17 @@ const HotelBookingContainer = ({
                 >
                   <div className="text-[#01202B] ">View Detail</div>
                 </ButtonYellow> */}
-                  <ButtonYellow
-                    className="w-1/2"
-                    onClick={() => {
-                      handleClickAc(index, booking);
-                    }}
-                  >
-                    <div className="text-[#01202B] ">Change</div>
-                  </ButtonYellow>
+                  {payment?.paid_user ? null : (
+                    <ButtonYellow
+                      className="w-1/2"
+                      onClick={() => {
+                        handleClickAc(index, booking);
+                      }}
+                    >
+                      <div className="text-[#01202B] ">Change</div>
+                    </ButtonYellow>
+                  )}
+
                   {/* <div
                   onClick={(e) => {
                     handleCheckboxChange(e);
