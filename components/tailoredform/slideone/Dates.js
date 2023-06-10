@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import media from '../../media';
+import media from "../../media";
 
-import styled from 'styled-components';
+import styled from "styled-components";
 //  import LocationsContainer from './LocationsContainer'
-import TextField from '@mui/material/TextField';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Grid from '@mui/material/Grid';
+import TextField from "@mui/material/TextField";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Grid from "@mui/material/Grid";
 const Container = styled.div`
   width: 100%;
 
@@ -20,7 +20,7 @@ const Dates = (props) => {
   const [openStart, setOpenStart] = useState(false);
   const [openEnd, setOpenEnd] = useState(false);
 
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   return (
     <Grid
@@ -28,7 +28,7 @@ const Dates = (props) => {
       spacing={2}
       style={{
         visibility:
-          props.showCities && props.destination ? 'hidden' : 'visible',
+          props.showCities && props.destination ? "hidden" : "visible",
       }}
     >
       <Grid item xs={6}>
@@ -40,7 +40,7 @@ const Dates = (props) => {
             onClose={() => setOpenStart(false)}
             disablePast
             label={
-              <div style={{ backgroundColor: 'transparent !important' }}>
+              <div style={{ backgroundColor: "transparent !important" }}>
                 Start Date
               </div>
             }
@@ -50,7 +50,7 @@ const Dates = (props) => {
             }}
             renderInput={(params) => (
               <TextField
-                style={{ backgroundColor: 'white' }}
+                style={{ backgroundColor: "white" }}
                 onClick={(e) => setOpenStart(true)}
                 {...params}
               />
@@ -71,7 +71,7 @@ const Dates = (props) => {
             onOpen={() => setOpenEnd(true)}
             onClose={() => setOpenEnd(false)}
             label={
-              <div style={{ backgroundColor: 'transparent !important' }}>
+              <div style={{ backgroundColor: "transparent !important" }}>
                 End Date
               </div>
             }
@@ -81,7 +81,7 @@ const Dates = (props) => {
             }}
             renderInput={(params) => (
               <TextField
-                style={{ backgroundColor: 'white' }}
+                style={{ backgroundColor: "white" }}
                 onClick={(e) => setOpenEnd(true)}
                 {...params}
               />

@@ -96,10 +96,10 @@ const BlackContainer = styled.div`
   }
 `;
 const LoadingText = styled.div`
-  font-size: 1.2rem;
-  position: absolute;
-  bottom: 30%;
-  opacity: 0.8;
+font-size: 1.2rem;
+    position: absolute;
+    bottom: 30%;
+    opacity: 0.8;
 `;
 const Enquiry = (props) => {
   const router = useRouter();
@@ -121,7 +121,7 @@ const Enquiry = (props) => {
   const [focusedDate, setFocusedDate] = useState(null);
   const [groupType, setGroupType] = useState(null);
   const [startingLocation, setStartingLocation] = useState(false);
-  const isPageLoaded = usePageLoaded();
+  const isPageLoaded = usePageLoaded()
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -144,19 +144,19 @@ const Enquiry = (props) => {
     setShowSearchStarting(false);
   };
   let isPageWide = media("(min-width: 768px)");
-  const LocationCookie = Cookies.get("userLocation");
+          const LocationCookie = Cookies.get("userLocation");
 
   useEffect(() => {
-    if (!startingLocation) {
-      if (LocationCookie) {
-        const userLocation = JSON.parse(LocationCookie);
-        if (userLocation.text && userLocation.place_id)
-          setStartingLocation({
-            name: userLocation.text,
-            place_id: userLocation.place_id,
-          });
+      if (!startingLocation) {
+        if (LocationCookie) {
+          const userLocation = JSON.parse(LocationCookie);
+          if (userLocation.text && userLocation.place_id)
+            setStartingLocation({
+              name: userLocation.text,
+              place_id: userLocation.place_id,
+            });
+        }
       }
-    }
   }, [LocationCookie]);
 
   const [selectedCities, setSelectedCities] = useState(
@@ -176,19 +176,19 @@ const Enquiry = (props) => {
           },
         ]
   );
-  useEffect(() => {
-    setShowPopup(popupObj);
-  }, [
-    valueStart,
-    valueEnd,
-    startingLocation,
-    destination,
-    showSearchStarting,
-    showCities,
-    groupType,
-    selectedCities.length,
-    slideIndex,
-  ]);
+   useEffect(() => {
+     setShowPopup(popupObj);
+   }, [
+     valueStart,
+     valueEnd,
+     startingLocation,
+     destination,
+     showSearchStarting,
+     showCities,
+     groupType,
+     selectedCities.length,
+     slideIndex
+   ]);
 
   // const ContainerRef = useRef()
 
@@ -199,7 +199,7 @@ const Enquiry = (props) => {
     let cityids = [];
     let locations = [];
     let stateIds = [];
-    let countryIds = [];
+    let countryIds = []
     // let starting_location = null;
     let preferences = [];
     for (var i = 0; i < selectedPreferences.length; i++) {
@@ -220,8 +220,7 @@ const Enquiry = (props) => {
         ) {
           if (selectedCities[i].type == "State")
             stateIds.push(parseInt(selectedCities[i].id));
-          else if (selectedCities[i].type == "Country")
-            countryIds.push(parseInt(selectedCities[i].id));
+          else if (selectedCities[i].type == "Country") countryIds.push(parseInt(selectedCities[i].id))
           else {
             cityids.push(parseInt(selectedCities[i].id));
           }
@@ -251,7 +250,7 @@ const Enquiry = (props) => {
       experience_filters_selected: preferences,
       budget: budget,
       start_date: start_date,
-      end_date: end_date,
+      end_date : end_date,
       // "city_id": cityids,
       group_type: groupType,
       number_of_adults: number_of_adults,
@@ -273,7 +272,7 @@ const Enquiry = (props) => {
     if (locations.length) data.locations = locations;
     if (start_date === "1970-01-01") data.start_date = "";
     if (end_date === "1970-01-01") data.end_date = "";
-    if (startingLocation) data;
+      if (startingLocation) data;
 
     setLoading(true);
     localStorage.removeItem("MyPlans");
@@ -294,15 +293,13 @@ const Enquiry = (props) => {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
           // setTimeout(function () {
-          if (response.data.loader_time)
-            router.push(
+        if(response.data.loader_time) router.push(
               "/itinerary/" +
                 response.data.itinerary.itinerary_id +
                 "?t=" +
                 response.data.loader_time
             );
-          else
-            router.push("/itinerary/" + response.data.itinerary.itinerary_id);
+         else router.push("/itinerary/" + response.data.itinerary.itinerary_id);
           // }, 10000);
           setLoading(false);
         }
@@ -614,18 +611,19 @@ const Enquiry = (props) => {
       </div>
     );
   else
-    return (
-      <div>
-        {showBlack ? (
-          <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
-        ) : null}
+   return (
+     <div>
+       {showBlack ? (
+         <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
+       ) : null}
 
-        <Container className="border center-div">
-          <LoadingLottie height="50%" width="50%"></LoadingLottie>
-          <LoadingText>Finalizing your plan...</LoadingText>
-        </Container>
-      </div>
-    );
+       <Container className="border center-div">
+         <LoadingLottie height="50%" width="50%"></LoadingLottie>
+         <LoadingText>Finalizing your plan...</LoadingText>
+       </Container>
+     </div>
+   );
+
 };
 
 const mapStateToPros = (state) => {

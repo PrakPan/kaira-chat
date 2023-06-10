@@ -6,6 +6,7 @@ import SelectedDestination from "./selecteddestination/Index";
 import { AiFillDelete } from "react-icons/ai";
 import { ConstructionOutlined } from "@mui/icons-material";
 import TailoredFormMobileModal from "../../../modals/TailoredFomrMobile";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   width: 100%;
@@ -17,13 +18,23 @@ const Container = styled.div`
 
 const Destinations = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const router = useRouter()
   const [deletedId, setDeletedId] = useState(null);
+  const [isCountryId,setIsCountryId] = useState(false)
   const [updatedData, setUpdatedData] = useState({
     id: null,
     input_id: null,
     data: null,
   });
   const [destinations, setDestinations] = useState([]);
+
+
+  useEffect(() => {
+    var country_id = props.selectedCities.some((e) => e.type === "Country");
+    setIsCountryId(country_id);
+    if (router.query.country && !router.query.state && !router.query.city)
+      setIsCountryId(true);
+  }, [props.selectedCities]);
 
     useEffect(() => {
       const des = [];
@@ -121,7 +132,9 @@ const Destinations = (props) => {
         setDestination={props.setDestination}
         setSelectedCities={props.setSelectedCities}
       ></SelectedDestination>
-      {destinations.map((e,i) => <div key={i}>{e}</div>)}
+      {destinations.map((e, i) => (
+        <div key={i}>{e}</div>
+      ))}
       {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */}
 
       <div
@@ -133,7 +146,7 @@ const Destinations = (props) => {
           marginRight: "10px",
         }}
       >
-        {!props.selectedCities.some((e) => !e.name) && (
+        {(!props.selectedCities.some((e) => !e.name) && !isCountryId) && (
           <p
             onClick={_addDestinationHandler}
             className="text-center font-lexend hover-pointer"
