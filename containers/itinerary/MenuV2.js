@@ -979,6 +979,7 @@ const SimpleTabsV2 = (props) => {
                     experienceId={props.experienceId}
                     token={props.token}
                     setShowLoginModal={setShowLoginModal}
+                    plan={props.plan}
                   ></SummaryContainer>
                 ) : (
                   // width 27vw
