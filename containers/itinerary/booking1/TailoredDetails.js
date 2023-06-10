@@ -387,28 +387,32 @@ const Details = (props) => {
       order_id: data.order_id,
       //Payment successfull handler passed to razorpay
       handler: function (response) {
+        console.log(response);
         setPaymentLoading(true);
+
         axios
           .post(
-            'https://suppliers.tarzanway.com/sales/verify/',
+            'https://dev.suppliers.tarzanway.com/sales/verify/',
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
           .then((res) => {
+            console.log(res);
             setPaymentLoading(false);
             //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-            window.location.href =
-              'https://dev.thetarzanway.com/itinerary/' +
-              data.itinerary +
-              '?payment_status=success';
+            // window.location.href =
+            //   'https://dev.thetarzanway.com/itinerary/' +
+            //   data.itinerary +
+            //   '?payment_status=success';
           })
           .catch((err) => {
             setPaymentLoading(false);
+            console.log(err);
             // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-            window.location.href =
-              'https://dev.thetarzanway.com/itinerary/' +
-              data.itinerary +
-              '?payment_status=fail';
+            // window.location.href =
+            //   'https://dev.thetarzanway.com/itinerary/' +
+            //   data.itinerary +
+            //   '?payment_status=fail';
           });
       },
       //User details will be present as user is logged in
@@ -924,7 +928,7 @@ const Details = (props) => {
         </div>
       </ButtonYellow>
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-        <a href="https://dev.thetarzanway.com/terms-conditions">
+        <a href="https://dev.thetarzanway.com/terms-conditions" target="_blank">
           <div>Terms & Conditions</div>
         </a>
       </div>

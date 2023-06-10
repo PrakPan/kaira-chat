@@ -631,7 +631,7 @@ const HotelsBooking = (props) => {
           {/* </Slide> */}
         </div>
       )}
-      {props.showBookingModal && (
+      {props.token && props.showBookingModal && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
           onHide={props.setHideBookingModal}
