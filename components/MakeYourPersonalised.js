@@ -23,21 +23,23 @@ const MakeYourPersonalised = ({ date, onHide, clickHandler }) => {
     router.push('/tailored-travel');
   };
   return (
-    <Modal
-      centered
-      show={isDateOlderThanCurrent(date)}
-      mobileWidth="90%"
-      width="0%"
-      backdrop
-      closeIcon={true}
-      onHide={onHide}
-      borderRadius={'12px'}
-      height={!isPageWide && '100%'}
-      animation={false}
-      width={isPageWide ? '400px' : '100%'}
-    >
-      <TailoredForm tailoredFormModal onHide={onHide}></TailoredForm>
-    </Modal>
+    isDateOlderThanCurrent(date) && (
+      <Modal
+        centered
+        show={isDateOlderThanCurrent(date)}
+        mobileWidth="90%"
+        width="0%"
+        backdrop
+        closeIcon={true}
+        onHide={onHide}
+        borderRadius={'12px'}
+        height={!isPageWide && '100%'}
+        animation={false}
+        width={isPageWide ? '400px' : '100%'}
+      >
+        <TailoredForm tailoredFormModal onHide={onHide}></TailoredForm>
+      </Modal>
+    )
   );
 };
 

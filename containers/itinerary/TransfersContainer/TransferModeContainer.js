@@ -496,6 +496,11 @@ const TransferModeContainer = (props) => {
                 {props.booking_type == 'Taxi'
                   ? 'Private transfer '
                   : props.booking_type}
+
+                <div className="inline-block ml-1">({props.duration}h 30m)</div>
+              </div>
+              <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
+                {props.taxi_type && <div>{props.taxi_type}</div>}
                 {props.booking_type == 'Taxi' && (
                   <div className=" cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -507,10 +512,6 @@ const TransferModeContainer = (props) => {
                   //   Change
                   // </LivelyButton>
                 )}
-              </div>
-              <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
-                {props.taxi_type && <div>{props.taxi_type}</div>}
-                <div>({props.duration}h 30m)</div>
               </div>
 
               {props?.costings_breakdown && (
