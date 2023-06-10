@@ -84,7 +84,7 @@ export async function getStaticProps(context) {
   );
     const data = res.data;
 
-  const response = await axioscountrydetailsinstance.get("all");
+  const response = await axioscountrydetailsinstance.get("all/?continent=" + res.data.continent);
   const locations = response.data
 
   // var locations = [];

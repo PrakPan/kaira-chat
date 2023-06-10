@@ -187,7 +187,6 @@ const SaifBackgroundImageLoader = (props) => {
     img.decode().then(() => {
       // document.body.appendChild(img);
       fullImageLoadedHandler();
-      console.log('fullImageLoadedHandler: ');
     });
     setJSX(
       <>

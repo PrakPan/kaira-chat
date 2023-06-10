@@ -146,7 +146,7 @@ const Index = (props) => {
 
           {props.locations && props.locations.length ? (
             <>
-              <Heading>Trending destinations across the world</Heading>
+              <Heading>Other destinations to explore in {props.data.continent}</Heading>
               <SwiperLocations
                 locations={props.locations}
                 page_id={props.data.id}
