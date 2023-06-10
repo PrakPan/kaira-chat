@@ -905,7 +905,14 @@ const Details = (props) => {
               ></Spinner>
             ) : null}
           </ButtonYellow>
-        ) : null
+        ) : (
+          <ButtonYellow
+            styleClass="w-full"
+            onClick={() => _saleCreateHandler(props.id)}
+          >
+            Request a Callback
+          </ButtonYellow>
+        )
       ) : null}
       {props.payment && props.token ? (
         props.payment.paid_user ? (
@@ -923,7 +930,7 @@ const Details = (props) => {
           styleClass="w-full"
           onClick={() => props.setShowLoginModal(true)}
         >
-          Login
+          Log In to edit this plan!
         </ButtonYellow>
       ) : null}
       <ButtonYellow
