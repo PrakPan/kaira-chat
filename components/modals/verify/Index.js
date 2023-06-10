@@ -134,35 +134,103 @@ const RegistrationModal = (props) => {
 
     
 
-  return(
-      <div>
-         
-         <Modal className='booking-modal'  show={props.show} size="xl" onHide={props.hide}>
-         <Modal.Header style={{ float: 'right', height: isPageWide? 'max-content' : '20vw', position: 'sticky', top: '0', backgroundColor: 'white', justifyContent: 'flex-end', padding: !isPageWide ?  '2rem 1rem' : '1rem',  backgroundColor: 'white', zIndex: '2'}}>
-            <TbArrowBack onClick={props.hide} className="hover-pointer"   style={{margin: '0.5rem', fontSize: '1.75rem', textAlign: 'right',}} ></TbArrowBack>
+  return (
+    <div>
+      <Modal
+        className="booking-modal"
+        show={props.show}
+        size="xl"
+        onHide={props.hide}
+      >
+        <Modal.Header
+          style={{
+            float: "right",
+            height: isPageWide ? "max-content" : "20vw",
+            position: "sticky",
+            top: "0",
+            backgroundColor: "white",
+            justifyContent: "flex-end",
+            padding: !isPageWide ? "2rem 1rem" : "1rem",
+            backgroundColor: "white",
+            zIndex: "2",
+          }}
+        >
+          <TbArrowBack
+            onClick={props.hide}
+            className="hover-pointer"
+            style={{
+              margin: "0.5rem",
+              fontSize: "1.75rem",
+              textAlign: "right",
+            }}
+          ></TbArrowBack>
 
-              {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
-            </Modal.Header>
-             <Body className="">
-                <p className='font-lexend text-center'>You're not authorized to purchase this, verify email</p>
-                <Email otpSent={otpSent} email={email} setEmail={setEmail} emailError={emailError} setEmailError={setEmailError}></Email>
-                {otpSent ?  <Otp otp={otp} setOtp={setOtp} otpVerificationFailed={otpVerificationFailed} setEmailError={setEmailError}></Otp>:
-    <div style={{visibility: 'hidden'}}> <Otp otp={otp} setOtp={setOtp} otpVerificationFailed={otpVerificationFailed} setEmailError={setEmailError}></Otp></div>
-}
-                {!otpSent ? <Button margin="0.5rem 0" borderWidth="0" bgColor="#f7e700" color="black" hoverBgColor="#f7e700" hoverColor="black"  borderRadius="5px" onclick={ _editUserEmailHandler}  onclickparam={ email}>
-                    Get OTP 
-                    {buttonLoading ? 
-                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
-                </Button> : <Button  margin="0.5rem 0"  borderWidth="0" bgColor="#f7e700" color="black" hoverBgColor="#f7e700" hoverColor="black"  borderRadius="5px"  onclick={_verifyOtpHandler}  onclickparam={otp}>
-                    Verify OTP
-                    {buttonLoading ? 
-                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
-                    </Button>
-                    }
-                {/* { buttonLoading ? <Spinner></Spinner> : null} */}
-             </Body>
+          {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
+        </Modal.Header>
+        <Body className="">
+          <p className="font-lexend text-center">
+            You're not authorized to purchase this, verify email
+          </p>
+          <Email
+            otpSent={otpSent}
+            email={email}
+            setEmail={setEmail}
+            emailError={emailError}
+            setEmailError={setEmailError}
+          ></Email>
+          {otpSent ? (
+            <Otp
+              otp={otp}
+              setOtp={setOtp}
+              otpVerificationFailed={otpVerificationFailed}
+              setEmailError={setEmailError}
+            ></Otp>
+          ) : (
+            <div style={{ visibility: "hidden" }}>
+              {" "}
+              <Otp
+                otp={otp}
+                setOtp={setOtp}
+                otpVerificationFailed={otpVerificationFailed}
+                setEmailError={setEmailError}
+              ></Otp>
+            </div>
+          )}
+          {!otpSent ? (
+            <Button
+              loading={buttonLoading}
+              margin="0.5rem 0"
+              borderWidth="0"
+              bgColor="#f7e700"
+              color="black"
+              hoverBgColor="#f7e700"
+              hoverColor="black"
+              borderRadius="5px"
+              onclick={_editUserEmailHandler}
+              onclickparam={email}
+            >
+              Get OTP
+            </Button>
+          ) : (
+            <Button
+              margin="0.5rem 0"
+              borderWidth="0"
+              bgColor="#f7e700"
+              color="black"
+              hoverBgColor="#f7e700"
+              hoverColor="black"
+              borderRadius="5px"
+              onclick={_verifyOtpHandler}
+              onclickparam={otp}
+              loading={buttonLoading}
+            >
+              Verify OTP
+            </Button>
+          )}
+          {/* { buttonLoading ? <Spinner></Spinner> : null} */}
+        </Body>
       </Modal>
-      </div>
+    </div>
   );
 
 }

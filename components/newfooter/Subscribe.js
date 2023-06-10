@@ -2,7 +2,6 @@ import { useState } from "react";
 import styled from "styled-components"
 import axios from 'axios';
 import axiosSubscribeInstance from '../../services/subscribe/subscribe'
-import Spinner from '../Spinner';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import media from '../media'
@@ -128,16 +127,8 @@ const Subscribe = (props) => {
             value={formData.email}
             onChange={_handleChange}
           />
-          <Button type="submit">
+          <Button type="submit" loading={loading}>
             Subscribe Now{" "}
-            {loading && (
-              <Spinner
-                display="inline"
-                size={16}
-                margin="0 0 0 0.5rem"
-                color='white'
-              ></Spinner>
-            )}
             {subscribe && (
               <FontAwesomeIcon
                 style={{ marginLeft: "0.5rem" }}

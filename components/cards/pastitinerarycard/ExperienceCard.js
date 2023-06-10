@@ -118,39 +118,70 @@ const redirectItinerary = () => {
 }
 
 
-    return(
+    return (
       <Container className="netflix-ite">
         <ImageContainer>
-              <ImageGallery filter={props.filter} location={props.location} cost={props.cost} duration={props.duration} images={props.images} name={props.experience}></ImageGallery>
-       </ImageContainer>  
-       <ContentContainer className="text-center">
-           <HeadingContainer>
-             <Heading className="font-lexend">{props.experience}</Heading>
-           </HeadingContainer>
-           {/* {isPageLoaded ? <Rating className="font-nunito">
+          <ImageGallery
+            filter={props.filter}
+            location={props.location}
+            cost={props.cost}
+            duration={props.duration}
+            images={props.images}
+            name={props.experience}
+          ></ImageGallery>
+        </ImageContainer>
+        <ContentContainer className="text-center">
+          <HeadingContainer>
+            <Heading className="font-lexend">{props.experience}</Heading>
+          </HeadingContainer>
+          {/* {isPageLoaded ? <Rating className="font-nunito">
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={faStar} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
               <FontAwesomeIcon icon={props.rating > 4.5 ? faStar : faStarHalf} style={{color: "#F7e700", fontSize: "2vh"}}></FontAwesomeIcon>
           {props.rating? " "+props.rating : '4.5'}</Rating> : null} */}
-            <TextContainer className="font-nunito">
-                <Text>{textstr}</Text>
-            </TextContainer>
-            <ButtonsContainer>
-                  <Button display="inline-block" width='100%' onclickparams={null} onclick={_handleItineraryClick}  boxShadow hoverBgColor="black" bgColor='white' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
-                  {loadingItinerary  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
-                  : 'View Itinerary'}
-                  </Button>
+          <TextContainer className="font-nunito">
+            <Text>{textstr}</Text>
+          </TextContainer>
+          <ButtonsContainer>
+            <Button
+              loading={loadingItinerary}
+              display="inline-block"
+              width="100%"
+              onclickparams={null}
+              onclick={_handleItineraryClick}
+              boxShadow
+              hoverBgColor="black"
+              bgColor="white"
+              borderRadius="2rem"
+              padding="0.25rem 1rem"
+              borderStyle="none"
+              hoverColor="white"
+            >
+              View Itinerary
+            </Button>
             {/* <Price className="font-lexend">{ "₹ "+getIndianPrice(props.starting_cost/100)+"/-"}</Price> */}
-                  <Button display="inline-block"  width='100%' onclickparams={null} onclick={()=>openTailoredModal(router)}   boxShadow hoverBgColor="black" bgColor='#f7e700' borderRadius="2rem" padding="0.25rem 1rem" borderStyle="none" hoverColor="white" >
-                  {loadingPlanning  ? <Spinner size={16} display="inline" margin="0 0 0 0.25rem"></Spinner>
-                  : 'Start Planning'}
-                  </Button>
-            </ButtonsContainer>
-       </ContentContainer>
-      </Container> 
-  ); 
+            <Button
+              display="inline-block"
+              width="100%"
+              onclickparams={null}
+              onclick={() => openTailoredModal(router)}
+              boxShadow
+              hoverBgColor="black"
+              bgColor="#f7e700"
+              borderRadius="2rem"
+              padding="0.25rem 1rem"
+              borderStyle="none"
+              hoverColor="white"
+              loading={loadingPlanning}
+            >
+            Start Planning
+            </Button>
+          </ButtonsContainer>
+        </ContentContainer>
+      </Container>
+    ); 
 }
  
 export default ExperienceCard;

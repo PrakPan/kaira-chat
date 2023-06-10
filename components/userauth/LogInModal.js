@@ -213,7 +213,7 @@ const LogIn = (props) => {
   };
   //Submit OTP
   const submitOtpHandler = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     setUserNameError(false);
 
     if (props.newUser) {
@@ -377,22 +377,22 @@ const LogIn = (props) => {
       {!props.noheading ? (
         <h1
           style={{
-            fontSize: '24px',
-            textAlign: 'left',
+            fontSize: "24px",
+            textAlign: "left",
             margin: isPageWide
-              ? '1.2rem 0rem 1.2rem 0.5rem'
-              : '0rem 0rem 1rem 0.5rem',
-            fontWeight: '700',
+              ? "1.2rem 0rem 1.2rem 0.5rem"
+              : "0rem 0rem 1rem 0.5rem",
+            fontWeight: "700",
           }}
           className="font-lexend"
         >
-          {props.loginmessage ? props.loginmessage : 'Login to your account'}
+          {props.loginmessage ? props.loginmessage : "Login to your account"}
         </h1>
       ) : null}
       {(props.token && !props.phone) ||
-      (props.token && props.phone === 'null') ? (
+      (props.token && props.phone === "null") ? (
         <p
-          style={{ margin: '0 1rem 4rem 1rem', fontWeight: '100' }}
+          style={{ margin: "0 1rem 4rem 1rem", fontWeight: "100" }}
           className="font-lexend text-center"
         >
           This is where your experience captain can reach you to personalize
@@ -400,7 +400,7 @@ const LogIn = (props) => {
         </p>
       ) : null}
       {(props.token && !props.phone) ||
-      (props.token && props.phone === 'null') ? (
+      (props.token && props.phone === "null") ? (
         <form noValidate>
           <MobileNumberContainer>
             <CountryCodeContainer>
@@ -434,15 +434,9 @@ const LogIn = (props) => {
             color="primary"
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
+            loading={props.loading}
           >
             Complete Signup
-            {props.loading ? (
-              <Spinner
-                display="inline"
-                size={16}
-                margin="0 0 0 0.5rem"
-              ></Spinner>
-            ) : null}
           </Button>
         </form>
       ) : (
@@ -495,16 +489,16 @@ const LogIn = (props) => {
 
           {props.newUser || (props.otpSent && !props.name) ? (
             <FloatingInput
-              style={{ marginBottom: '0.7rem' }}
+              style={{ marginBottom: "0.7rem" }}
               error={userNameError}
-              helperText={'Please enter valid username'}
-              placeholder={'Enter Your Full Name'}
+              helperText={"Please enter valid username"}
+              placeholder={"Enter Your Full Name"}
               key="userName"
               required
               id="userName"
               label="Enter Your Full Name"
               onChange={(event) => {
-                _userDetailsOnChangeHandler(event, 'userName');
+                _userDetailsOnChangeHandler(event, "userName");
               }}
               margin="0.7rem 0rem"
             />
@@ -515,15 +509,15 @@ const LogIn = (props) => {
           {props.otpSent && (
             <div
               style={{
-                height: '1.2rem',
-                marginLeft: '2px',
-                fontSize: '0.7rem',
-                marginTop: '10px',
+                height: "1.2rem",
+                marginLeft: "2px",
+                fontSize: "0.7rem",
+                marginTop: "10px",
               }}
             >
-              <p style={{ letterSpacing: '2px' }}>
-                {props.otpSent && !otpResent ? 'OTP HAS BEEN SENT' : null}
-                {props.otpSent && otpResent ? 'OTP HAS BEEN RESENT' : null}
+              <p style={{ letterSpacing: "2px" }}>
+                {props.otpSent && !otpResent ? "OTP HAS BEEN SENT" : null}
+                {props.otpSent && otpResent ? "OTP HAS BEEN RESENT" : null}
               </p>
               <br></br>
             </div>
@@ -534,10 +528,10 @@ const LogIn = (props) => {
           {props.otpSent ? (
             <UpdatePhone
               style={{
-                textAlign: 'left',
-                width: '100%',
-                fontSize: '14px',
-                marginBlock: '0.5rem',
+                textAlign: "left",
+                width: "100%",
+                fontSize: "14px",
+                marginBlock: "0.5rem",
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
@@ -550,7 +544,7 @@ const LogIn = (props) => {
           {!props.otpSent ? (
             <Button
               onclick={otpHandler}
-              margin={props.nospacing ? '0' : '0.5rem 0'}
+              margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
               bgColor="#F7E700"
               fontWeight="500"
@@ -560,62 +554,50 @@ const LogIn = (props) => {
               hoverBgColor="black"
               boxShadow="0px 2px 0px #ECEAEA"
               borderRadius="8px"
+              loading={props.loading}
             >
               Request OTP
-              {props.loading ? (
-                <Spinner
-                  color="white"
-                  display="inline"
-                  size={16}
-                  margin="0 0 0 0.5rem"
-                ></Spinner>
-              ) : null}
             </Button>
           ) : (
-            <button
-              onClick={submitOtpHandler}
+            <Button
+              onclick={(e)=>submitOtpHandler(e)}
               style={{
-                width: '100%',
-                background: '#F7E700',
-                fontWeight: '500',
-                cursor: 'pointer',
-                fontSize: '16px',
-                padding: '0.5rem',
-                border: '1px solid black',
-                boxShadow: '0px 2px 0px #ECEAEA',
-                borderRadius: '8px',
-                '&:hover': {
-                  background: 'black',
-                  color: 'white',
+                width: "100%",
+                background: "#F7E700",
+                fontWeight: "500",
+                cursor: "pointer",
+                fontSize: "16px",
+                padding: "0.5rem",
+                border: "1px solid black",
+                boxShadow: "0px 2px 0px #ECEAEA",
+                borderRadius: "8px",
+                "&:hover": {
+                  background: "black",
+                  color: "white",
                 },
               }}
+              loading={props.loading}
             >
               Login
-              {props.loading ? (
-                <Spinner
-                  display="inline"
-                  size={16}
-                  margin="0 0 0 0.5rem"
-                ></Spinner>
-              ) : null}
-            </button>
+            
+            </Button>
           )}
           <div
             style={{
-              position: 'relative',
-              marginBlock: isPageWide ? '3rem' : '2rem',
+              position: "relative",
+              marginBlock: isPageWide ? "3rem" : "2rem",
             }}
           >
             <hr></hr>
             <p
               style={{
-                position: 'absolute',
-                background: 'white',
-                top: '-12px',
-                left: '43%',
-                paddingInline: '10px',
-                fontSize: '16px',
-                fontWeight: '500',
+                position: "absolute",
+                background: "white",
+                top: "-12px",
+                left: "43%",
+                paddingInline: "10px",
+                fontSize: "16px",
+                fontWeight: "500",
               }}
             >
               OR
@@ -633,10 +615,10 @@ const LogIn = (props) => {
                 render={(renderProps) => (
                   <Button
                     onclick={() => {
-                      console.log('button clicked');
+                      console.log("button clicked");
                       renderProps.onClick();
                     }}
-                    margin={'0'}
+                    margin={"0"}
                     width="100%"
                     bgColor="#F9F9F9"
                     fontWeight="500"
@@ -649,31 +631,31 @@ const LogIn = (props) => {
                   >
                     <div
                       style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
                       <div
                         style={{
-                          height: '1.5rem',
-                          width: '1.5rem',
-                          margin: '0 0.5rem',
+                          height: "1.5rem",
+                          width: "1.5rem",
+                          margin: "0 0.5rem",
                         }}
                       >
                         <ImageLoader
                           dimensions={{ height: 100, width: 100 }}
-                          url={'media/icons/login/google.svg'}
+                          url={"media/icons/login/google.svg"}
                           height="1.5rem"
                           width="1.5rem"
                         />
                       </div>
                       <p
                         style={{
-                          margin: '0',
-                          fontWeight: '500',
-                          fontSize: '1rem',
-                          display: 'inline',
+                          margin: "0",
+                          fontWeight: "500",
+                          fontSize: "1rem",
+                          display: "inline",
                         }}
                         className="font-lexend"
                       >
@@ -710,12 +692,12 @@ const LogIn = (props) => {
           </>
           <div
             className="text-center font-lexend"
-            style={{ fontSize: '12px', fontWeight: '300', margin: '1.5rem 0' }}
+            style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
           >
-            By signing up you are agreeing with our{' '}
+            By signing up you are agreeing with our{" "}
             <Link
               href="/privacy-policy"
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: "none" }}
               target="_blank"
             >
               {/* <a style={{ color: "black" }} target="_blank"> */}
@@ -727,12 +709,12 @@ const LogIn = (props) => {
       {props.loadingsocial ? (
         <div
           style={{
-            position: 'absolute',
-            height: '100%',
-            width: '100%',
-            top: '0',
-            zIndex: '2',
-            backgroundColor: 'white',
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            top: "0",
+            zIndex: "2",
+            backgroundColor: "white",
           }}
           className="center-div"
         >

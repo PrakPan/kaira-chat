@@ -302,7 +302,6 @@ const Booking = (props) => {
                       res.data.results[i].live_data.dailyRate / 100
                     )}
                     images={res.data.results[i].images}
-                    room_type={res.data.results[i].live_data.roomtypeName}
                     includeBreakfast={
                       res.data.results[i].live_data.includeBreakfast
                     }
@@ -472,7 +471,6 @@ const Booking = (props) => {
                       res.data.results[i].live_data.dailyRate / 100
                     )}
                     images={res.data.results[i].images}
-                    room_type={res.data.results[i].live_data.roomtypeName}
                     includeBreakfast={
                       res.data.results[i].live_data.includeBreakfast
                     }

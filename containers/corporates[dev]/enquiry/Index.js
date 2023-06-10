@@ -115,14 +115,14 @@ const Enquiry = (props) => {
         size="md"
         centered
         onHide={_hideModalHandler}
-        style={{ padding: '0' }}
+        style={{ padding: "0" }}
       >
         <Modal.Body
-          style={{ padding: '1rem', minHeight: '60vh' }}
+          style={{ padding: "1rem", minHeight: "60vh" }}
           className="center-div"
         >
           <Heading>
-            {submitted ? 'Thank you for reaching out' : "Let's Connect"}
+            {submitted ? "Thank you for reaching out" : "Let's Connect"}
           </Heading>
           <div></div>
           {!submitted ? (
@@ -229,7 +229,7 @@ const Enquiry = (props) => {
                 </LocalizationProvider>
               </Grid>
               <Grid item xs={12}>
-                {!loading ? (
+            
                   <Button
                     onclickparam={null}
                     onclick={_submitDataHandler}
@@ -241,29 +241,10 @@ const Enquiry = (props) => {
                     hoverBgColor="black"
                     color="black"
                     hoverColor="white"
+                    loading={loading}
                   >
                     Schedule Callback
                   </Button>
-                ) : (
-                  <Button
-                    onclickparam={null}
-                    onclick={() => null}
-                    margin="1rem 0 0 0"
-                    width="100%"
-                    borderRadius="5px"
-                    borderWidth="0"
-                    bgColor="#f7e700"
-                    hoverBgColor="black"
-                    color="black"
-                    hoverColor="white"
-                  >
-                    <Spinner
-                      display="inline-block"
-                      size={16}
-                      margin="0"
-                    ></Spinner>
-                  </Button>
-                )}
               </Grid>
             </Grid>
           ) : (

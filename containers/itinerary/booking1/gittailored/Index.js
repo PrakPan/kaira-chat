@@ -827,17 +827,10 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
             hoverColor="white"
             borderWidth="0"
             onclick={_saleCreateHandler}
-            onclickparam={props.id}
+                onclickparam={props.id}
+                loading={paymentLoading}
           >
             Pay Now
-            {paymentLoading ? (
-              <Spinner
-                color="white"
-                display="inline"
-                size={16}
-                margin="0 0.5rem"
-              ></Spinner>
-            ) : null}
           </Button>
         ) : null
       ) : null}

@@ -90,34 +90,90 @@ const Person = (props) => {
           employee_id: id,
         })
       }
-  return(
-         <Accordion border initialOpen={props.index == 1?true:false} open={open} setOpen={setOpen}>
-       <AccordionSummary
+  return (
+    <Accordion
+      border
+      initialOpen={props.index == 1 ? true : false}
+      open={open}
+      setOpen={setOpen}
+    >
+      <AccordionSummary
         id="itinerary-booking-summary-accordio"
-    style={{padding: '1rem'}}
+        style={{ padding: "1rem" }}
       >
-         <p content={'span'} className="font-lexend" style={{fontWeight:'600' , margin: '0.5rem 0', color: expanded ? 'black' : verificationfailed  ? 'red' : email && id && verified?  'green' : 'black'}} >{  email && id && verified? email : 'Member '+props.index}</p> 
- 
+        <p
+          content={"span"}
+          className="font-lexend"
+          style={{
+            fontWeight: "600",
+            margin: "0.5rem 0",
+            color: expanded
+              ? "black"
+              : verificationfailed
+              ? "red"
+              : email && id && verified
+              ? "green"
+              : "black",
+          }}
+        >
+          {email && id && verified ? email : "Member " + props.index}
+        </p>
       </AccordionSummary>
-       <AccordionDetails style={{padding : '0.5rem'}}>
-       
+      <AccordionDetails style={{ padding: "0.5rem" }}>
         <GridContainer container spacing={2}>
-                 <Email verified={verified} setVerified={setVerified} token={props.token} email={email} setEmail={setEmail} verificationfailed={verificationfailed} setVerificationFailed={setVerificationFailed} id={props.id}></Email>
-                  <Id  verificationfailedmessage={verificationfailedmessage} verified={verified} id={id} setId={setId} close={_handleClose} verificationfailed={verificationfailed} ></Id>
-        </GridContainer> 
-            <div className='hidden-desktop'><Button onclick={verified ? _handleChange : _handleClose} width="60%" margin="0.25rem auto" borderWidth="0" bgColor="#f7e700" borderRadius="10px">
-              {verified ? 'Change' : 'Add Member'}
-              {verificationLoading ? 
-                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
-              </Button></div>
-              <div className='hidden-mobile' style={{display: 'flex', justifyContent: 'flex-end'}}><Button onclick={!verified ? _handleClose : _handleChange} width="max-content" padding="0.5rem 1rem" margin="0.5rem 0.75rem 0.5rem 0" borderWidth="0" bgColor="#f7e700" hoverBgColor="#f7e700" hoverColor="black" borderRadius="10px">
-              {verified ? 'Change' : 'Add Member'}
-              {verificationLoading ? 
-                <Spinner size={16} display={ "inline" }   margin="0 0 0 0.25rem" ></Spinner> : null }
-              </Button></div>
-       </AccordionDetails>
-     </Accordion>
-      
+          <Email
+            verified={verified}
+            setVerified={setVerified}
+            token={props.token}
+            email={email}
+            setEmail={setEmail}
+            verificationfailed={verificationfailed}
+            setVerificationFailed={setVerificationFailed}
+            id={props.id}
+          ></Email>
+          <Id
+            verificationfailedmessage={verificationfailedmessage}
+            verified={verified}
+            id={id}
+            setId={setId}
+            close={_handleClose}
+            verificationfailed={verificationfailed}
+          ></Id>
+        </GridContainer>
+        <div className="hidden-desktop">
+          <Button
+            loading={verificationLoading}
+            onclick={verified ? _handleChange : _handleClose}
+            width="60%"
+            margin="0.25rem auto"
+            borderWidth="0"
+            bgColor="#f7e700"
+            borderRadius="10px"
+          >
+            {verified ? "Change" : "Add Member"}
+          </Button>
+        </div>
+        <div
+          className="hidden-mobile"
+          style={{ display: "flex", justifyContent: "flex-end" }}
+        >
+          <Button
+            onclick={!verified ? _handleClose : _handleChange}
+            loading={verificationLoading}
+            width="max-content"
+            padding="0.5rem 1rem"
+            margin="0.5rem 0.75rem 0.5rem 0"
+            borderWidth="0"
+            bgColor="#f7e700"
+            hoverBgColor="#f7e700"
+            hoverColor="black"
+            borderRadius="10px"
+          >
+            {verified ? "Change" : "Add Member"}
+          </Button>
+        </div>
+      </AccordionDetails>
+    </Accordion>
   );
 
 }
