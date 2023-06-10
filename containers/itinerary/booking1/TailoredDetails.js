@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import * as orderaction from '../../../store/actions/order';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MdEdit } from 'react-icons/md';
+
 import {
   faRupeeSign,
   faTimes,
@@ -32,6 +33,7 @@ import Spinner from '../../../components/Spinner';
 import ButtonYellow from '../../../components/ButtonYellow';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import Slide from '../../../Animation/framerAnimation/Slide';
+import { format } from 'date-fns';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -397,8 +399,8 @@ const Details = (props) => {
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
           .then((res) => {
-            console.log(res);
             setPaymentLoading(false);
+            props.getPaymentHandler();
             //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
             // window.location.href =
             //   'https://dev.thetarzanway.com/itinerary/' +
@@ -407,7 +409,7 @@ const Details = (props) => {
           })
           .catch((err) => {
             setPaymentLoading(false);
-            console.log(err);
+
             // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
             // window.location.href =
             //   'https://dev.thetarzanway.com/itinerary/' +
@@ -835,14 +837,23 @@ const Details = (props) => {
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               <div>
                 {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
-                {props.payment.meta_info
-                  ? props.payment.meta_info.start_date
+                {props.plan
+                  ? props.plan
                     ? getHumanDate(
-                        props.payment.meta_info.start_date.replaceAll('-', '/')
+                        format(
+                          new Date(props.plan.start_date),
+                          'dd-MM-yyyy'
+                        ).replaceAll('-', '/')
                       )
                     : null
                   : null}{' '}
-                - Feb 09, 2023
+                -{' '}
+                {getHumanDate(
+                  format(
+                    new Date(props.plan.end_date),
+                    'dd-MM-yyyy'
+                  ).replaceAll('-', '/')
+                )}
               </div>
               {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
                 <MdEdit
@@ -903,7 +914,7 @@ const Details = (props) => {
             onClick={() => console.log(' ')}
             onclickparam={null}
           >
-            Request a Callback
+            Get In Touch
           </ButtonYellow>
         ) : null
       ) : null}

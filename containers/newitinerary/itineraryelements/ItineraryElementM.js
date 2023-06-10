@@ -67,7 +67,7 @@ const ItineraryElementM = (props) => {
             <Link
               to={
                 props.data.bookings
-                  ? `${props.data.bookings[0].id}`
+                  ? `${props.data.bookings[0]?.id}`
                   : 'Stays-Head'
               }
               offset={-90}

@@ -97,20 +97,20 @@ const ItineraryElement = (props) => {
         >
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>
-            <Link
+            {/* <Link
               to={
                 props.data.bookings
-                  ? `${props.data.bookings[0].id}`
+                  ? `${props.data.bookings[0]?.id}`
                   : 'Stays-Head'
               }
               offset={-90}
-            >
-              <TransparentButton>
-                {props.data.bookings
-                  ? props.data?.bookings[0]?.detail?.name
-                  : 'View Selected Hotel'}
-              </TransparentButton>
-            </Link>
+            > */}
+            <TransparentButton>
+              {props.data.bookings
+                ? props.data?.bookings[0]?.detail?.name
+                : 'View Selected Hotel'}
+            </TransparentButton>
+            {/* </Link> */}
             <div>
               <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
                 {props.text ? props.text : null}
