@@ -4,20 +4,20 @@ import {
   Marker,
   Popup,
   Polyline,
-} from "react-leaflet";
-import { divIcon } from "leaflet";
-import { format, parseISO } from "date-fns";
-import "leaflet/dist/leaflet.css";
+} from 'react-leaflet';
+import { divIcon } from 'leaflet';
+import { format, parseISO } from 'date-fns';
+import 'leaflet/dist/leaflet.css';
 
-import React, { useEffect } from "react";
-import { useState } from "react";
-import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
-import ImageLoader from "./ImageLoader";
-import { ITbutton } from "../containers/newitinerary/breif/cities/City";
-import WeatherWidget from "./WeatherWidget/WeatherWidget";
-import DistanceBetweenCoords from "../helper/DistanceBetweenCoords";
-import { getHumanDate } from "../services/getHumanDate";
-import useMediaQuery from "./media";
+import React, { useEffect } from 'react';
+import { useState } from 'react';
+import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
+import ImageLoader from './ImageLoader';
+import { ITbutton } from '../containers/newitinerary/breif/cities/City';
+import WeatherWidget from './WeatherWidget/WeatherWidget';
+import DistanceBetweenCoords from '../helper/DistanceBetweenCoords';
+import { getHumanDate } from '../services/getHumanDate';
+import useMediaQuery from './media';
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
@@ -25,7 +25,7 @@ const MyIcon = ({ color }) => {
 
   const iconOptions = {
     html: iconMarkup,
-    className: "my-icon-class",
+    className: 'my-icon-class',
     iconSize: [20, 20],
   };
 
@@ -33,9 +33,9 @@ const MyIcon = ({ color }) => {
   return customIcon;
 };
 const limeOptions = {
-  color: "#004d6994",
-  dashArray: "10, 5", // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
-  dashOffset: "15",
+  color: '#004d6994',
+  dashArray: '10, 5', // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
+  dashOffset: '15',
 };
 const Mapbox = React.memo(
   ({
@@ -47,7 +47,7 @@ const Mapbox = React.memo(
   }) => {
     const [mapZoom, setMapZoom] = useState(() => NearestLocation());
     const [mapCenter, setMapCenter] = useState(() => findCenterPoint());
-    const isDesktop = useMediaQuery("(min-width:768px)");
+    const isDesktop = useMediaQuery('(min-width:768px)');
     function findCenterPoint() {
       const points = locations.map((place) => ({
         lat: place.lat,
@@ -105,7 +105,7 @@ const Mapbox = React.memo(
         //     const first = distanceArray.sort();
         // }
       });
-      console.log("distanceArray");
+      console.log('distanceArray');
 
       const longestroute = sortWholeNumbersDescending(distanceArray)[0];
       console.log(longestroute);
@@ -120,7 +120,7 @@ const Mapbox = React.memo(
     const [polylines, setPolylines] = useState();
     const convertDFormat = (dt) => {
       const date = parseISO(dt);
-      const formattedDate = format(date, "MMMM do");
+      const formattedDate = format(date, 'MMMM do');
       return formattedDate;
     };
     useEffect(() => {
@@ -131,7 +131,7 @@ const Mapbox = React.memo(
       ]);
       setPolylines(updatedPolylines);
 
-      console.log("useEffect location");
+      console.log('useEffect location');
       // console.log(locations);
     }, [locations]);
     function scrollToTargetAdjusted(id) {
@@ -149,16 +149,20 @@ const Mapbox = React.memo(
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
+    console.log('mapZoom');
+    console.log(mapZoom);
+
     console.log(polylines);
+
     return locations ? (
       <MapContainer
         center={[mapCenter?.lat, mapCenter?.long]}
-        zoom={mapZoom}
+        zoom={mapZoom ? mapZoom : 5}
         scrollWheelZoom={false}
-        style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+        style={{ height: '100%', width: '100%', borderRadius: '1rem' }}
       >
         <TileLayer
           url={`
@@ -185,7 +189,7 @@ const Mapbox = React.memo(
             position={[location.lat, location.long]}
             draggable={false}
             icon={divIcon({
-              className: "icon",
+              className: 'icon',
               html: `
             <div class="-mt-1 -ml-2 group w-[40px] h-[40px] rounded-full grid place-items-center">
             <div class="-mt-2 drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
@@ -232,7 +236,7 @@ const Mapbox = React.memo(
                       location={location}
                       city={location.name}
                       description={location.cityData.short_description}
-                      travelDate={"28/05/2023"}
+                      travelDate={'28/05/2023'}
                       setShowDrawer={setShowDrawer}
                       setShowDrawerData={setShowDrawerData}
                     />

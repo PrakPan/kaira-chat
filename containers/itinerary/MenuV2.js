@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Link } from 'react-scroll';
+import { Link, scroller } from 'react-scroll';
 
 import { AppBar } from '@mui/material';
 import { Tabs, Tab } from '@mui/material';
@@ -249,6 +249,15 @@ const SimpleTabsV2 = (props) => {
   const _hidePaymentHandler = () => {
     setShowFooterBannerMobile(true);
     setShowpayment(false);
+  };
+  const scrollToElement = (elementId) => {
+    scroller.scrollTo(elementId, {
+      duration: 500,
+      smooth: 'easeInOutQuart',
+      spy: true,
+      // duration={500}
+      offset: -50,
+    });
   };
   const _setLocationHandler = (event) => {
     window.scrollTo(0, window.innerHeight / 2);
@@ -1142,7 +1151,7 @@ const SimpleTabsV2 = (props) => {
               >
                 View Booking
               </Button>
-            ) : (
+            ) : props?.payment?.total_cost > 0 ? (
               <Button
                 class
                 fontWeight="600"
@@ -1156,6 +1165,19 @@ const SimpleTabsV2 = (props) => {
                 }
               >
                 Book now
+              </Button>
+            ) : (
+              <Button
+                class
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="3px"
+                width="100%"
+                borderRadius="10px"
+                bgColor="#f7e700"
+                onClick={() => scrollToElement('Stays-Head')}
+              >
+                Add Hotels
               </Button>
             )}
           </div>

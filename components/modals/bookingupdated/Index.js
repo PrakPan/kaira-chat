@@ -21,6 +21,7 @@ import SectionTwo from './SectionTwo';
 import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
+import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -183,7 +184,10 @@ const Booking = (props) => {
           if (res.data.results.length) {
             setNoResults(false);
             let is_min_price_present = false;
-
+            if (res.data.results[0].min_price) {
+              is_min_price_present = true;
+            }
+            storeAndRetrieveValue;
             let options = [];
             for (var i = 0; i < res.data.results.length; i++) {
               try {

@@ -35,6 +35,7 @@ import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import { format } from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+import { Link, scroller } from 'react-scroll';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -92,6 +93,15 @@ const Details = (props) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
 
+  const scrollToElement = (elementId) => {
+    scroller.scrollTo(elementId, {
+      duration: 500,
+      smooth: 'easeInOutQuart',
+      spy: true,
+      // duration={500}
+      offset: -150,
+    });
+  };
   const getCouponHandler = (coupon) => {
     setPaymentLoading(true);
     //  props.checkAuthState();
@@ -894,20 +904,29 @@ const Details = (props) => {
           ITINERARY_STATUSES.itinerary_finalized &&
         !props.payment.paid_user &&
         props.payment.user_allowed_to_pay ? (
-          <ButtonYellow
-            styleClass="w-full"
-            onClick={() => _saleCreateHandler(props.id)}
-          >
-            Pay Now
-            {paymentLoading ? (
-              <Spinner
-                color="white"
-                display="inline"
-                size={16}
-                margin="0 0.5rem"
-              ></Spinner>
-            ) : null}
-          </ButtonYellow>
+          props.payment.total_cost > 0 ? (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => _saleCreateHandler(props.id)}
+            >
+              Pay Now
+              {paymentLoading ? (
+                <Spinner
+                  color="white"
+                  display="inline"
+                  size={16}
+                  margin="0 0.5rem"
+                ></Spinner>
+              ) : null}
+            </ButtonYellow>
+          ) : (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => scrollToElement('Stays-Head')}
+            >
+              Add Hotels
+            </ButtonYellow>
+          )
         ) : (
           !props.payment.paid_user && (
             <ButtonYellow
