@@ -289,14 +289,16 @@ const ItineraryPoiElementM = (props) => {
           <div className=" " style={{ lineHeight: '1' }}>
             <span className="inline text-[1.2rem]">
               <span className="inline ">{props.heading}</span>
-              {props.city_id && (
-                <div
-                  onClick={() => Poi_activities(props.activity)}
-                  className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                >
-                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                </div>
-              )}
+              {props.city_id &&
+                props.payment?.user_allowed_to_pay &&
+                !props.payment.paid_user && (
+                  <div
+                    onClick={() => Poi_activities(props.activity)}
+                    className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  >
+                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                  </div>
+                )}
 
               {/* <HiPencil className="text-lg min-w-max"></HiPencil> */}
             </span>

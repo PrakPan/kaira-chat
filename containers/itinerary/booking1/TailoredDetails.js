@@ -34,6 +34,8 @@ import ButtonYellow from '../../../components/ButtonYellow';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import { format } from 'date-fns';
+import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+import { Link, scroller } from 'react-scroll';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -72,6 +74,8 @@ const Details = (props) => {
   );
 
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [Newitinerary, setNewitinerary] = useState(false);
+
   const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ''
@@ -89,6 +93,15 @@ const Details = (props) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
 
+  const scrollToElement = (elementId) => {
+    scroller.scrollTo(elementId, {
+      duration: 500,
+      smooth: 'easeInOutQuart',
+      spy: true,
+      // duration={500}
+      offset: -150,
+    });
+  };
   const getCouponHandler = (coupon) => {
     setPaymentLoading(true);
     //  props.checkAuthState();
@@ -850,7 +863,7 @@ const Details = (props) => {
                 -{' '}
                 {getHumanDate(
                   format(
-                    new Date(props.plan.end_date),
+                    new Date(props?.plan?.end_date),
                     'dd-MM-yyyy'
                   ).replaceAll('-', '/')
                 )}
@@ -891,27 +904,39 @@ const Details = (props) => {
           ITINERARY_STATUSES.itinerary_finalized &&
         !props.payment.paid_user &&
         props.payment.user_allowed_to_pay ? (
-          <ButtonYellow
-            styleClass="w-full"
-            onClick={() => _saleCreateHandler(props.id)}
-          >
-            Pay Now
-            {paymentLoading ? (
-              <Spinner
-                color="white"
-                display="inline"
-                size={16}
-                margin="0 0.5rem"
-              ></Spinner>
-            ) : null}
-          </ButtonYellow>
+          props.payment.total_cost > 0 ? (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => _saleCreateHandler(props.id)}
+            >
+              Pay Now
+              {paymentLoading ? (
+                <Spinner
+                  color="white"
+                  display="inline"
+                  size={16}
+                  margin="0 0.5rem"
+                ></Spinner>
+              ) : null}
+            </ButtonYellow>
+          ) : (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => scrollToElement('Stays-Head')}
+            >
+              Add Hotels
+            </ButtonYellow>
+          )
         ) : (
-          <ButtonYellow
-            styleClass="w-full"
-            onClick={() => _saleCreateHandler(props.id)}
-          >
-            Request a Callback
-          </ButtonYellow>
+          !props.payment.paid_user && (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => setNewitinerary(true)}
+              // onClick={() => _saleCreateHandler(props.id)}
+            >
+              Create a new Iitinerary
+            </ButtonYellow>
+          )
         )
       ) : null}
       {props.payment && props.token ? (
@@ -950,6 +975,13 @@ const Details = (props) => {
           <div>Terms & Conditions</div>
         </a>
       </div>
+      {props.token && Newitinerary && (
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={() => setNewitinerary(false)}
+          show={Newitinerary}
+        />
+      )}
     </SummaryContainer>
   );
 };

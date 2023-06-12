@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from "react";
-import Row from "../../../components/experiencecity/info/Row";
+import React, { useState, useEffect } from 'react';
+import Row from '../../../components/experiencecity/info/Row';
 
-import Overview from "./overview/Index";
-import axiosPoiCityInstance from "../../../services/poi/city";
-import axiosPoiRoutes from "../../../services/itinerary/brief/route";
+import Overview from './overview/Index';
+import axiosPoiCityInstance from '../../../services/poi/city';
+import axiosPoiRoutes from '../../../services/itinerary/brief/route';
 // import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
 // import RouteData from './Locations';
 
 // import InclusionsData from './Inclusions';
 
-import styled from "styled-components";
-import { Element } from "react-scroll";
+import styled from 'styled-components';
+import { Element } from 'react-scroll';
 //  import Faqs from '../../components/experiencecity/info/faqs/Index';
 // import Banner from './Banner/Index';
 // import Howtoreach from '../../components/experiencecity/info/Howtoreach';
-import { useRef } from "react";
-import media from "../../../components/media";
-import { useRouter } from "next/router";
+import { useRef } from 'react';
+import media from '../../../components/media';
+import { useRouter } from 'next/router';
 // import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
-import DesktopBanner from "../../../components/containers/Banner";
-import Banner from "../../homepage/banner/Mobile";
-import Route from "../../newitinerary/breif/route/Index";
-import ButtonYellow from "../../../components/ButtonYellow";
-import InclusionExclusion from "../../../components/InclusionExclusion/InclusionExclusion";
+import DesktopBanner from '../../../components/containers/Banner';
+import Banner from '../../homepage/banner/Mobile';
+import Route from '../../newitinerary/breif/route/Index';
+import ButtonYellow from '../../../components/ButtonYellow';
+import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
 
 import dynamic from "next/dynamic";
 import CityDetails from "./CityDetails";
@@ -77,9 +77,9 @@ const Details = (props) => {
   // }
 
   const router = useRouter();
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
   const _handleTailoredRedirect = (e) => {
-    router.push("/tailored-travel");
+    router.push('/tailored-travel');
   };
   const getdayId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab_id;
@@ -90,7 +90,7 @@ const Details = (props) => {
 
   const Locationlatlong = [];
   if (props.routesData.length >= 1) {
-    console.log("itsrendering");
+    console.log('itsrendering');
     for (var i = 0; i < props.routesData.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
 
@@ -98,7 +98,7 @@ const Details = (props) => {
       // console.log(`lat,long${citydetails.lat}`);
       if (
         props.routesData[i].duration &&
-        props.routesData[i].duration !== "0"
+        props.routesData[i].duration !== '0'
       ) {
         Locationlatlong.push({
           dayId: getdayId(
@@ -128,7 +128,7 @@ const Details = (props) => {
         !postion.is_departure_only &&
         !postion.is_trip_terminated &&
         postion.duration &&
-        postion.duration !== "0"
+        postion.duration !== '0'
       ) {
         Locationlatlong.push({
           dayId: getdayId(postion.day_slab_location.start_day_slab_index),
@@ -215,7 +215,7 @@ const Details = (props) => {
   //     setCurrentPopup={setCurrentPopup}
   //   />
   // );
-  const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
+  const LeafMap = dynamic(() => import('../../../components/mapbox.js'), {
     ssr: false,
   });
   const MapWithNoSSR = ({
@@ -241,7 +241,7 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
-  console.log("Locationlatlong");
+  console.log('Locationlatlong');
   console.log(Locationlatlong);
   return (
     <div>

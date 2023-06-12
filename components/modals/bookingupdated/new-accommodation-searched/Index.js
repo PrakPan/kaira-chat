@@ -48,6 +48,7 @@ const Accommodation = (props) => {
           itinerary_id={props.itinerary_id}
           booking={props.accommodation}
           alternates={props.alternates}
+          selectedBooking={props.selectedBooking}
           handleClick={false}
           _updateSearchedAccommodation={props._updateSearchedAccommodation}
           _SelectedBookingHandler={props._SelectedBookingHandler}

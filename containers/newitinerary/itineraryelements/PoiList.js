@@ -83,6 +83,7 @@ const PoiList = ({
                     width="100%"
                     height="100%"
                     leftalign
+                    noLazy
                     widthmobile="100%"
                     url={data.activity_data.activity.image}
                   ></ImageLoader>

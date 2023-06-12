@@ -26,6 +26,7 @@ const ClippathComp = styled.div`
 `;
 
 const HotelBookingContainer = ({
+  SelectedBookingin,
   currentBooking,
   booking,
   index,
@@ -36,9 +37,12 @@ const HotelBookingContainer = ({
   _SelectedBookingHandler,
   itinerary_id,
   alternates,
+  city_id,
   tailored_id,
   openDetails,
   loginModal,
+  payment,
+  selectedBooking,
   setLoginModal,
   token,
 }) => {
@@ -82,13 +86,13 @@ const HotelBookingContainer = ({
     }
   };
   let room = [];
-  if (booking) {
-    for (var i = 0; i < booking.rooms_available.length; i++) {
-      if (booking.rooms_available[i].prices.min_price) {
-        room.push(booking.rooms_available[i].room_type);
-      }
-    }
-  }
+  // if (booking) {
+  //   for (var i = 0; i < booking.rooms_available.length; i++) {
+  //     if (booking.rooms_available[i].prices.min_price) {
+  //       room.push(booking.rooms_available[i].room_type);
+  //     }
+  //   }
+  // }
   function handleCheckboxChange(e) {
     if (token) {
       _SelectedBookingHandler({
@@ -148,6 +152,7 @@ const HotelBookingContainer = ({
                   height="100%"
                   leftalign
                   widthmobile="100%"
+                  noLazy
                   url={booking.images[0]?.image}
                 ></ImageLoader>
               ) : (
@@ -187,6 +192,11 @@ const HotelBookingContainer = ({
                     {!currentBooking && (
                       <div className="text-sm font-normal">{booking?.city}</div>
                     )}
+                    {booking?.addr1 && (
+                      <div className="text-sm font-normal line-clamp-2">
+                        {booking?.addr1}
+                      </div>
+                    )}
 
                     {booking?.user_rating && (
                       <div className="gap-1 flex flex-row  items-center">
@@ -201,6 +211,19 @@ const HotelBookingContainer = ({
                         )}
                       </div>
                     )}
+                    {booking?.rating_ext ? (
+                      <div className="gap-1 flex flex-row  items-center">
+                        <div className="flex flex-row text-[#FFD201]">
+                          {starRating(booking?.rating_ext)}
+                        </div>
+                        <div>{booking?.rating_ext}</div>
+                        {booking?.num_reviews_ext && (
+                          <div className="text-sm text-[#7A7A7A] font-[400] underline">
+                            {booking?.num_reviews_ext} User reviews
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
                   </div>
                 )}
                 {booking.check_in ? (
@@ -217,7 +240,10 @@ const HotelBookingContainer = ({
                     <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                       <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400] min-w-fit">
-                        {booking.number_of_adults} Adults
+                        {booking.number_of_adults
+                          ? booking.number_of_adults
+                          : currentBooking.number_of_adults}{' '}
+                        Adults
                       </div>
                     </div>
                   </div>
@@ -236,7 +262,10 @@ const HotelBookingContainer = ({
                       <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                         <div className=" text-sm font-[400] min-w-fit">
-                          {booking.number_of_adults} Adults
+                          {booking.number_of_adults
+                            ? booking.number_of_adults
+                            : currentBooking.number_of_adults}{' '}
+                          Adults
                         </div>
                       </div>
                     </div>
@@ -253,13 +282,13 @@ const HotelBookingContainer = ({
                     </div>
                   </div>
                 ) : (
-                  currentBooking.number_of_adults && (
+                  booking?.room_count && (
                     <div className={`flex ${'flex-row'} gap-3 lg:mt-2 mt-0`}>
-                      {room[0] && (
+                      {booking?.room_count && (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BiBed className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            {room[0]}
+                            Room Count {booking?.room_count}
                           </div>
                         </div>
                       )}
@@ -277,13 +306,10 @@ const HotelBookingContainer = ({
                 ) : null}
               </div>
 
-              {currentBooking && (
+              {currentBooking && booking?.price && (
                 <div className="flex flex-row gap-1 items-center w-full font-bold">
                   <div className="text-2xl font-bold">
-                    {'₹ ' +
-                      getIndianPrice(
-                        Math.round(booking.price_lower_range_ext / 100)
-                      )}
+                    {'₹ ' + getIndianPrice(Math.round(booking?.price / 100))}
                   </div>
                   <div className="font-normal text-base self-end">
                     per Room*
@@ -300,14 +326,18 @@ const HotelBookingContainer = ({
                 >
                   <div className="text-[#01202B] ">View Detail</div>
                 </ButtonYellow> */}
-                  <ButtonYellow
-                    className="w-1/2"
-                    onClick={() => {
-                      handleClickAc(index, booking);
-                    }}
-                  >
-                    <div className="text-[#01202B] ">Change</div>
-                  </ButtonYellow>
+                  {payment?.paid_user ||
+                  !payment?.user_allowed_to_pay ? null : (
+                    <ButtonYellow
+                      className="w-1/2"
+                      onClick={() => {
+                        handleClickAc(index, booking, city_id);
+                      }}
+                    >
+                      <div className="text-[#01202B] ">Change</div>
+                    </ButtonYellow>
+                  )}
+
                   {/* <div
                   onClick={(e) => {
                     handleCheckboxChange(e);
@@ -342,7 +372,13 @@ const HotelBookingContainer = ({
                 </div>
               )} */}
 
-              <div className="absolute lg:bottom-10 bottom-[2.5rem] right-8 -m-3">
+              <div
+                className={`absolute  ${
+                  SelectedBookingin
+                    ? 'lg:bottom-4 bottom-[2.5rem] '
+                    : 'lg:bottom-10 bottom-[2.5rem]'
+                } right-8 -m-3`}
+              >
                 <div
                   onClick={(e) => {
                     handleCheckboxChange(e);
