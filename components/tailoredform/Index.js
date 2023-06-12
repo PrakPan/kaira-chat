@@ -159,23 +159,30 @@ const Enquiry = (props) => {
       }
   }, [LocationCookie]);
 
-  const [selectedCities, setSelectedCities] = useState(
-    !router.pathname.split("/").includes("[city]")
-      ? [
-          {
-            destination_id: routerquery.page_id || props.page_id,
-            name: routerquery.destination || props.destination,
-            input_id: initialInputId,
-          },
-        ]
-      : [
-          {
-            id: routerquery.page_id || props.page_id,
-            name: routerquery.destination || props.destination,
-            input_id: initialInputId,
-          },
-        ]
-  );
+
+  var selectedObj
+    
+  if (routerquery.state && !routerquery.city)
+     selectedObj = [{
+       destination_id: routerquery.page_id || props.page_id,
+       name: routerquery.destination || props.destination,
+       input_id: initialInputId,
+     }];
+   else if (routerquery.country)
+     selectedObj = [{
+       id: routerquery.page_id || props.page_id,
+       name: routerquery.destination || props.destination,
+       input_id: initialInputId,
+       type: "Country",
+    }];
+  else selectedObj = [{
+    id: routerquery.page_id || props.page_id,
+    name: routerquery.destination || props.destination,
+    input_id: initialInputId,
+  }];
+
+
+  const [selectedCities, setSelectedCities] = useState(selectedObj);
    useEffect(() => {
      setShowPopup(popupObj);
    }, [
@@ -219,10 +226,10 @@ const Enquiry = (props) => {
           selectedCities[i].id
         ) {
           if (selectedCities[i].type == "State")
-            stateIds.push(parseInt(selectedCities[i].id));
-          else if (selectedCities[i].type == "Country") countryIds.push(parseInt(selectedCities[i].id))
+            stateIds.push(selectedCities[i].id);
+          else if (selectedCities[i].type == "Country") countryIds.push(selectedCities[i].id)
           else {
-            cityids.push(parseInt(selectedCities[i].id));
+            cityids.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
         }
