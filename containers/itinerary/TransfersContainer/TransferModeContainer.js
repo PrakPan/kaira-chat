@@ -340,17 +340,19 @@ const TransferModeContainer = (props) => {
                       {/* <div>airline_name</div> */}
                     </div>
 
-                    {!props?.payment?.paid_user && (
-                      <div
-                        onClick={() => HandleFlights(props.index)}
-                        className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
-                      >
-                        Change Flight
-                      </div>
-                    )}
+                    {!props?.payment?.paid_user &&
+                      props.payment?.user_allowed_to_pay && (
+                        <div
+                          onClick={() => HandleFlights(props.index)}
+                          className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                        >
+                          Change Flight
+                        </div>
+                      )}
                   </div>
                 ) : (
-                  !props?.payment?.paid_user && (
+                  !props?.payment?.paid_user &&
+                  props.payment?.user_allowed_to_pay && (
                     <div
                       className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
               "
@@ -458,8 +460,8 @@ const TransferModeContainer = (props) => {
                       url={props.icon}
                       leftalign
                       // dimensions={{ width: 900, height: 500 }}
-                      height="2.8rem"
-                      width="5rem"
+                      height="4rem"
+                      width="4rem"
                       widthmobile="3.8rem"
                     ></ImageLoader>
                   )
@@ -539,7 +541,8 @@ const TransferModeContainer = (props) => {
             </div>
             {isDesktop &&
               props.booking_type == 'Taxi' &&
-              !props?.payment?.paid_user && (
+              !props?.payment?.paid_user &&
+              props.payment?.user_allowed_to_pay && (
                 <div
                   onClick={() => HandleTransport(props.index)}
                   className="px-4  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[6px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"

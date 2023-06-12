@@ -34,6 +34,7 @@ import ButtonYellow from '../../../components/ButtonYellow';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import { format } from 'date-fns';
+import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -72,6 +73,8 @@ const Details = (props) => {
   );
 
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const [Newitinerary, setNewitinerary] = useState(false);
+
   const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ''
@@ -909,9 +912,10 @@ const Details = (props) => {
           !props.payment.paid_user && (
             <ButtonYellow
               styleClass="w-full"
+              onClick={() => setNewitinerary(true)}
               // onClick={() => _saleCreateHandler(props.id)}
             >
-              Request a Callback
+              Create a new Iitinerary
             </ButtonYellow>
           )
         )
@@ -952,6 +956,13 @@ const Details = (props) => {
           <div>Terms & Conditions</div>
         </a>
       </div>
+      {props.token && Newitinerary && (
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={() => setNewitinerary(false)}
+          show={Newitinerary}
+        />
+      )}
     </SummaryContainer>
   );
 };

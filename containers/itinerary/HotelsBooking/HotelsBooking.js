@@ -26,6 +26,7 @@ import { isDateOlderThanCurrent } from '../../../helper/isDateOlderThanCurrent';
 import Modal from '../../../components/ui/Modal';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { useRouter } from 'next/router';
+import { format } from 'date-fns';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -94,6 +95,7 @@ const HotelsBooking = (props) => {
     check_out,
     pax,
     city,
+    cityId,
     room_type,
     number_of_rooms,
     itinerary_name,
@@ -113,10 +115,11 @@ const HotelsBooking = (props) => {
       accommodation: accommodation,
       id: id,
       tailored_id: tailored_id,
-      check_in: check_in,
-      check_out: check_out,
+      check_in: format(new Date(check_in), 'dd-MM-yyyy').replaceAll('-', '/'),
+      check_out: format(new Date(check_out), 'dd-MM-yyyy').replaceAll('-', '/'),
       pax: pax,
       city: city,
+      cityId: cityId,
       room_type: room_type,
 
       itinerary_name: itinerary_name,
@@ -442,7 +445,7 @@ const HotelsBooking = (props) => {
   //   props.token,
   //   props.payment,
   // ]);
-  function handleClickAc(i, data) {
+  function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]['name'];
     let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
     let cost = props.stayBookings[i]['booking_cost'];
@@ -465,6 +468,7 @@ const HotelsBooking = (props) => {
         props.stayBookings[i].costings_breakdown[0]['number_of_infants'],
     };
     let city = props.stayBookings[i]['city'];
+    let cityId = city_id;
     let room_type = props.stayBookings[i]['room_type'];
     _changeBookingHandler(
       name,
@@ -476,6 +480,7 @@ const HotelsBooking = (props) => {
       check_out,
       pax,
       city,
+      cityId,
       room_type,
       user_rating,
       number_of_reviews,
@@ -509,6 +514,7 @@ const HotelsBooking = (props) => {
                 _SelectedBookingHandler={_SelectedBookingHandler}
                 setHideBookingModal={props.setHideBookingModal}
                 loginModal={showLoginModal}
+                city_id={props.breif.city_slabs[i].city_id}
                 setLoginModal={setShowLoginModal}
                 token={props.token}
                 payment={props.payment}
@@ -525,6 +531,7 @@ const HotelsBooking = (props) => {
                 handleClickAc={handleClickAc}
                 _SelectedBookingHandler={_SelectedBookingHandler}
                 setHideBookingModal={props.setHideBookingModal}
+                city_id={props.breif.city_slabs[i].city_id}
                 loginModal={showLoginModal}
                 setLoginModal={setShowLoginModal}
                 token={props.token}

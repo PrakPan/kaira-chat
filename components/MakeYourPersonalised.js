@@ -8,7 +8,7 @@ import TailoredForm from '../components/tailoredform/Index';
 import useMediaQuery from '../hooks/useMedia';
 import styled from 'styled-components';
 
-const MakeYourPersonalised = ({ date, onHide, clickHandler }) => {
+const MakeYourPersonalised = ({ date, onHide, clickHandler, show = false }) => {
   let isPageWide = useMediaQuery('(min-width: 768px)');
   const router = useRouter();
   const Heading = styled.div`
@@ -23,10 +23,11 @@ const MakeYourPersonalised = ({ date, onHide, clickHandler }) => {
     router.push('/tailored-travel');
   };
   return (
-    isDateOlderThanCurrent(date) && (
+    isDateOlderThanCurrent(date) ||
+    (show && (
       <Modal
         centered
-        show={isDateOlderThanCurrent(date)}
+        show={isDateOlderThanCurrent(date) || show}
         mobileWidth="90%"
         width="0%"
         backdrop
@@ -39,7 +40,7 @@ const MakeYourPersonalised = ({ date, onHide, clickHandler }) => {
       >
         <TailoredForm tailoredFormModal onHide={onHide}></TailoredForm>
       </Modal>
-    )
+    ))
   );
 };
 

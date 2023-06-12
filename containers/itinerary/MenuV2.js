@@ -46,6 +46,7 @@ import TransfersContainer from './TransfersContainer/TransfersContainer';
 import LogInModal from '../../components/modals/Login';
 import Modal from '../../components/ui/Modal';
 import { ClaimItinary } from '../../store/actions/auth';
+import { ITINERARY_STATUSES } from '../../services/constants';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -380,7 +381,11 @@ const SimpleTabsV2 = (props) => {
     };
   }, [items]);
   const _handleLoginClose = () => {
-    if (props.token && !props.payment.user_allowed_to_pay) {
+    if (
+      props.token &&
+      !props.payment.user_allowed_to_pay &&
+      props.payment.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+    ) {
       ClaimItinary(props.id, props.token);
     }
     // props.getPaymentHandler();

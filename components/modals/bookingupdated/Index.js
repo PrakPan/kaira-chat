@@ -165,9 +165,10 @@ const Booking = (props) => {
 
       axiosaccommodationinstance
         .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
-          cities: props.selectedBooking.city,
+          city: props.selectedBooking.city,
           check_in: props.selectedBooking.check_in,
           check_out: props.selectedBooking.check_out,
+          city_id: props.selectedBooking.cityId,
           number_of_adults: props.selectedBooking.pax.number_of_adults,
           number_of_children: props.selectedBooking.pax.number_of_children,
           number_of_infants: props.selectedBooking.pax.number_of_infants,
@@ -186,39 +187,21 @@ const Booking = (props) => {
             let options = [];
             for (var i = 0; i < res.data.results.length; i++) {
               try {
-                for (
-                  var j = 0;
-                  j < res.data.results[i].rooms_available.length;
-                  j++
-                ) {
-                  if (res.data.results[i].rooms_available[j].prices.min_price) {
-                    is_min_price_present = true;
-                    break;
-                  }
-                }
-
-                if (
-                  res.data.results[i].name !== props.selectedBooking.name &&
-                  is_min_price_present
-                )
-                  options.push(
-                    <AccommodationSearched
-                      _setImagesHandler={props._setImagesHandler}
-                      _updateSearchedAccommodation={
-                        _updateSearchedAccommodation
-                      }
-                      _SelectedBookingHandler={_SelectedBookingHandler}
-                      currentBooking={props.currentBooking}
-                      itinerary_id={props.selectedBooking.itinerary_id}
-                      tailored_id={props.tailored_id}
-                      _updateBookingHandler={_newUpdateBookingHandler}
-                      accommodation={res.data.results[i]}
-                      selectedBooking={props.selectedBooking}
-                      key={i}
-                      images={res.data.results.images}
-                      bookings={props.bookings}
-                    ></AccommodationSearched>
-                  );
+                options.push(
+                  <AccommodationSearched
+                    _setImagesHandler={props._setImagesHandler}
+                    _updateSearchedAccommodation={_updateSearchedAccommodation}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
+                    currentBooking={props.currentBooking}
+                    itinerary_id={props.selectedBooking.itinerary_id}
+                    tailored_id={props.tailored_id}
+                    _updateBookingHandler={_newUpdateBookingHandler}
+                    accommodation={res.data.results[i]}
+                    selectedBooking={props.selectedBooking}
+                    key={i}
+                    bookings={props.bookings}
+                  ></AccommodationSearched>
+                );
               } catch {
                 options.push(
                   <AccommodationSearched
@@ -229,10 +212,9 @@ const Booking = (props) => {
                     itinerary_id={props.selectedBooking.itinerary_id}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
-                    accommodation={res.data.results[i]}
+                    accommodation={res.data[i]}
                     selectedBooking={props.selectedBooking}
                     key={i}
-                    images={res.data.results.images}
                     bookings={props.bookings}
                   ></AccommodationSearched>
                 );
@@ -344,11 +326,12 @@ const Booking = (props) => {
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
     axiosaccommodationinstance
-      .post('/?show_rooms=true&limit=' + limit + '&offset=0', {
-        cities: props.selectedBooking.city,
+      .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+        city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
         accommodation_types: filters.type,
+        city_id: props.selectedBooking.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
         number_of_adults: props.selectedBooking.pax.number_of_adults,
@@ -575,7 +558,7 @@ const Booking = (props) => {
       })
       .then((res) => {
         props._updateStayBookingHandler(res.data.bookings);
-        setTimeout(function() {
+        setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
         // props._updatePaymentHandler(res.data.payment_info);
@@ -623,7 +606,7 @@ const Booking = (props) => {
       })
       .then((res) => {
         props._updateStayBookingHandler(res.data.bookings);
-        setTimeout(function() {
+        setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
         // props._updatePaymentHandler(res.data.payment_info);
@@ -644,9 +627,10 @@ const Booking = (props) => {
     let filters = _generateFilterKeys(filtersState);
     axiosaccommodationinstance
       .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
-        cities: props.selectedBooking.city,
+        city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
+        city_id: props.selectedBooking.cityId,
         number_of_adults: props.selectedBooking.pax.number_of_adults,
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
@@ -825,6 +809,7 @@ const Booking = (props) => {
                   <OptionsContainer id="options">
                     <div style={{ clear: 'right' }}>
                       <HotelBookingContainer
+                        SelectedBookingin={true}
                         _setImagesHandler={props._setImagesHandler}
                         selectedBooking={props.selectedBooking}
                         booking={props.currentBooking}
