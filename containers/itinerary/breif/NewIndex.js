@@ -27,7 +27,7 @@ import InclusionExclusion from "../../../components/InclusionExclusion/Inclusion
 import dynamic from "next/dynamic";
 import CityDetails from "./CityDetails";
 import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
-import Drawer from "../../../components/ui/Drawer";
+import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import { TbArrowBack } from "react-icons/tb";
 const DetailsContainer = styled.div`
   width: 100%;
@@ -320,34 +320,11 @@ const Details = (props) => {
           </div>
         ) : null} */}
       </DetailsContainer>
-      <Drawer
+      {/* <Drawer
         show={showDrawer}
-        anchor={"right"}
-        backdrop
-        style={{ zIndex: 1501 }}
-        className="font-lexend"
         onHide={() => setShowDrawer(false)}
-        // zIndex='1501'
-      >
-        <div>
-          <TbArrowBack
-            onClick={() => setShowDrawer(false)}
-            className="hover-pointer"
-            style={{
-              margin: "0.5rem",
-              fontSize: "1.75rem",
-              textAlign: "right",
-            }}
-          ></TbArrowBack>
-          <CityDetails data={showDrawerData}></CityDetails>
-          {/* <Tabs data={data}></Tabs> */}
-          <div>
-            {/* <About short_description={props.poi ? props.poi.short_description : null}></About> */}
-            {/* <GettingAround getting_around={props.poi ? props.poi.getting_around : null}></GettingAround> */}
-            {/* <Recommendations recommendations={props.poi ? props.poi.recommendation : null} tips={props.poi ? props.poi.tips : null}></Recommendations> */}
-          </div>
-        </div>
-      </Drawer>
+        city_id={showDrawerData.city_id}
+      ></Drawer> */}
       {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
       </ContainerBt>

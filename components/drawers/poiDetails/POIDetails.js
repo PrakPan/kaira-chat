@@ -127,8 +127,6 @@ const POIDetails = (props) => {
       {imageLoading && (
         <div
           style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
-          // width={isPageWide ? "468px" : "100%"}
-          // height={"188px"}
         />
       )}
 

@@ -58,10 +58,6 @@ function MyApp({ Component, pageProps, store }) {
     };
   }, [router.events]);
 
-  useEffect(() => {
-  console.log('NARUTO')
-},[])
-
   // Freshchat bot :-
   var name
     if(localStorage.getItem("name")) name = localStorage.getItem("name").split(" ");
@@ -73,19 +69,16 @@ function MyApp({ Component, pageProps, store }) {
           if (name.length && email) {
             window.fcWidget.user.setFirstName(name[0]);
             window.fcWidget.user.setEmail(email);
-          }
+       }
       }
 
     if (window.fcWidget) {
-      // If the widget is already available, add the event listener
       window.fcWidget.on('widget:loaded', handleWidgetLoaded);
     } else {
-      // If the widget is not available, wait for it to be loaded
       window.fcWidgetOnload = handleWidgetLoaded;
     }
 
     return () => {
-      // Clean up the event listener on component unmount
       if (window.fcWidget) {
         window.fcWidget.off('widget:loaded', handleWidgetLoaded);
       }
