@@ -148,10 +148,10 @@ const Index = (props) => {
       <HeroBanner
         image={
           isPageWide
-            ? 'media/website/thank-you-banner.jpg'
-            : 'media/website/homepage-banner-mobile.png'
+            ? "media/website/thank-you-banner.jpg"
+            : "media/website/homepage-banner-mobile.png"
         }
-        destinationType={'city-planner'}
+        destinationType={"city-planner"}
         title={
           <p>
             Thank you for putting
@@ -163,14 +163,14 @@ const Index = (props) => {
           <p>
             It takes one step to begin the journey of a thousand miles.
             <br />
-            We will get in touch with you within 12 hours. {':)'}
+            We will get in touch with you within 12 hours. {":)"}
           </p>
         }
         _startPlanningFunction={() => openTailoredModal(router)}
       />
 
       <div
-        style={{ zIndex: '1', backgroundColor: 'white', position: 'relative' }}
+        style={{ zIndex: "1", backgroundColor: "white", position: "relative" }}
       >
         <DesktopBanner
           loading={desktopBannerLoading}
@@ -183,10 +183,10 @@ const Index = (props) => {
             textAlign="left"
             bold
             noline
-            fontSize={isPageWide ? '32px' : '24px'}
+            fontSize={isPageWide ? "32px" : "24px"}
             align="center"
             aligndesktop="left"
-            margin={!isPageWide ? '2.5rem 0.5rem 0rem 0.5rem' : '3rem 0'}
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
           >
             How it works?
           </Heading>
@@ -201,16 +201,16 @@ const Index = (props) => {
           {props.token && myPlansArr.length && plansCount ? (
             <Heading
               noline
-              fontSize={isPageWide ? '32px' : '24px'}
+              fontSize={isPageWide ? "32px" : "24px"}
               align="center"
               aligndesktop="left"
               margin={
-                !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
               }
               bold
               textAlign="left"
             >
-              {'My Trips (' + plansCount + ')'}
+              {"My Trips (" + plansCount + ")"}
             </Heading>
           ) : null}
           {props.token && myPlansArr.length ? (
@@ -241,15 +241,15 @@ const Index = (props) => {
               <Heading
                 noline
                 textAlign="left"
-                fontSize={isPageWide ? '32px' : '24px'}
+                fontSize={isPageWide ? "32px" : "24px"}
                 align="center"
                 aligndesktop="left"
                 margin={
-                  !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
                 }
                 bold
               >
-                Plan as per the best destinations
+                Plan as per the best destinations in India
               </Heading>
               <Locations locations={props.locations} viewall></Locations>
             </>
@@ -260,11 +260,11 @@ const Index = (props) => {
               <Heading
                 noline
                 textAlign="left"
-                fontSize={isPageWide ? '32px' : '24px'}
+                fontSize={isPageWide ? "32px" : "24px"}
                 align="center"
                 aligndesktop="left"
                 margin={
-                  !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
                 }
                 bold
               >
@@ -277,11 +277,11 @@ const Index = (props) => {
           <Heading
             noline
             textAlign="left"
-            fontSize={isPageWide ? '32px' : '24px'}
+            fontSize={isPageWide ? "32px" : "24px"}
             align="center"
             aligndesktop="left"
             margin={
-              !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
+              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
             }
             bold
           >
@@ -292,11 +292,11 @@ const Index = (props) => {
           <Heading
             noline
             textAlign="left"
-            fontSize={isPageWide ? '32px' : '24px'}
+            fontSize={isPageWide ? "32px" : "24px"}
             align="center"
             aligndesktop="left"
             margin={
-              !isPageWide ? '2.5rem 0.5rem 1.5rem 0.5rem' : '3rem 0 2rem 0'
+              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
             }
             bold
           >

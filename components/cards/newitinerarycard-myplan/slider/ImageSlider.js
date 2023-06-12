@@ -106,24 +106,27 @@ const ImageSlider = (props) => {
       }
        
     
-    return(
-        <Container  props={props} ref={Component} >
-            <BackgroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"  height={height+"px"}  url={image} filters="linear-gradient(180deg, rgba(0, 0, 0,0) 50%, rgba(0, 0, 0, 1) 100%)" borderRadius="10px 10px 0 0"></BackgroundImageLoader>
-            {!props.PW ? 
-        
-            null
-             : 
-            <PWContainer style={{display: 'none'}}>
-
-            </PWContainer> }
-            <CustomizableContainer className='font-lexend'>
-            100% CUSTOMISABLE
-            </CustomizableContainer> 
-<HeadingContainer>
-  <Heading className='font-lexend' locations={props.locations}>{props.experience}</Heading>
-  <Subheading className='font-lexend'>{LOCATIONS_TO_SHOW}</Subheading>
-</HeadingContainer>
-        </Container>
+    return (
+      <Container props={props} ref={Component}>
+        <BackgroundImageLoader
+          filter="brightness(0.65)"
+          height={height + "px"}
+          url={image}
+          borderRadius="10px 10px 0 0"
+        ></BackgroundImageLoader>
+        {!props.PW ? null : (
+          <PWContainer style={{ display: "none" }}></PWContainer>
+        )}
+        <CustomizableContainer className="font-lexend">
+          100% CUSTOMISABLE
+        </CustomizableContainer>
+        <HeadingContainer>
+          <Heading className="font-lexend" locations={props.locations}>
+            {props.experience}
+          </Heading>
+          <Subheading className="font-lexend">{LOCATIONS_TO_SHOW}</Subheading>
+        </HeadingContainer>
+      </Container>
     );
 }
 export default React.memo(ImageSlider);

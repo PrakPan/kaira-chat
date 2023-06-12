@@ -312,7 +312,7 @@ const Homepage = (props) => {
                 }
                 bold
               >
-                Plan as per the best destinations
+                Plan as per the best destinations in India
               </Heading>
               <Locations locations={props.locations} viewall></Locations>
             </>
