@@ -72,13 +72,13 @@ const Experiences = (props) => {
   return (
     <Container onClick={props.onclick ? props.onclick : null}>
       <BackroundImageLoader
-        filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
+        // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
+        filter="brightness(0.65)"
         padding="0"
         zoomonhover
         // center
         dimensions={{ width: 900, height: 1800 }}
         height={isPageWide ? "50vh" : "60vh"}
-        filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"
         url={props.img}
       >
         <TextContainer loading={loading} className="TextContainer">

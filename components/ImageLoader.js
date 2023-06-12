@@ -196,6 +196,7 @@ const ImageLoader = (props) => {
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              ...props.style,
             }}
           ></SmallImage>
           <FullImage
@@ -217,6 +218,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
+              ...props.style,
             }}
           ></FullImage>
         </Container>
@@ -247,6 +249,7 @@ const ImageLoader = (props) => {
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              ...props.style,
             }}
           ></SmallImage>
           <FullImage
@@ -268,6 +271,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
+              ...props.style,
             }}
           ></FullImage>
         </Container>
@@ -284,6 +288,7 @@ const ImageLoader = (props) => {
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
+            ...props.style,
           }}
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
@@ -299,6 +304,7 @@ const ImageLoader = (props) => {
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              ...props.style,
             }}
           ></SmallImage>
           <FullImage
@@ -323,6 +329,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
+              ...props.style,
             }}
           ></FullImage>
         </Container>
@@ -353,6 +360,7 @@ const ImageLoader = (props) => {
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              ...props.style,
             }}
           ></SmallImage>
           <FullImage
@@ -374,6 +382,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
+              ...props.style,
             }}
           ></FullImage>
         </Container>
