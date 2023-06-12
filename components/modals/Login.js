@@ -106,6 +106,7 @@ const Enquiry = (props) => {
             ></div>
             <ImgContainer style={{ display: showImage ? 'block' : 'none' }}>
               <ImageLoader
+                noLazy
                 url={'media/website/login-background.png'}
                 height="100%"
                 width="100%"
