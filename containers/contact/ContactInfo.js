@@ -65,6 +65,8 @@ overflow: hidden;
 const SocialContainer = styled.div`
 margin: 1.5rem 0;
 text-align: center;
+display : flex;
+justify-content : center;
 `;
 const SocialIcon = styled.img`
     width: 3rem;

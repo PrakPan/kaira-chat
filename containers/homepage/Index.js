@@ -234,9 +234,9 @@ const Homepage = (props) => {
         _startPlanningFunction={() => openTailoredModal(router)}
       />
 
-      <div
+      {/* <div
         style={{ zIndex: "1", backgroundColor: "white", position: "relative" }}
-      >
+      > */}
         <DesktopBanner
           loading={desktopBannerLoading}
           onclick={() => openTailoredModal(router)}
@@ -479,7 +479,7 @@ const Homepage = (props) => {
           </div>
         )}
         {/* <Chatbot history={props.history}/>     */}
-      </div>
+      {/* </div> */}
       {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
     </div>
   );

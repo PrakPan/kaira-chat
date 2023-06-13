@@ -8,6 +8,7 @@ import media from '../../components/media';
       /* font-size: ${props => props.theme.fontsizes.mobile.headings.one ? props.theme.fontsizes.mobile.headings.one : props.theme.fontsizes.mobile.headings.one}; */
       font-weight: 700;
       color: white;
+      text-align : center;
       @media screen and (min-width: 768px){
       font-size: 5rem;
         /* font-size: ${props => props.theme.fontsizes.desktop.headings.one ? props.theme.fontsizes.desktop.headings.one : props.theme.fontsizes.desktop.headings.one}; */
@@ -35,9 +36,9 @@ const Image = () => {
 
   return (
     <BackgroundImageLoader
-      // filter="brightness(0.65)"
+      filter="brightness(0.65)"
       url="media/website/contactcover.webp"
-      filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
+      // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
       center
       height={"max-content"}
       padding={isPageWide ? "15vh 0" : "100px 0"}
