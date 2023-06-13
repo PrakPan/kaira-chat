@@ -15,12 +15,12 @@ const POIDetailsDrawer = (props) => {
 
   function fetchData() {
     if (props.ActivityiconId) {
-      axiosPOIdetailsInstance
-        .get(`/?id=${props.iconId}`)
-        .then((res) => setData(res.data));
-    } else {
       axiosPOIActivityInstance
         .get(`/?id=${props.ActivityiconId}`)
+        .then((res) => setData(res.data));
+    } else {
+      axiosPOIdetailsInstance
+        .get(`/?id=${props.iconId}`)
         .then((res) => setData(res.data));
     }
   }
