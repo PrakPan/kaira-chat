@@ -68,7 +68,7 @@ const Booking = (props) => {
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
-
+  const [traceId, setTraceID] = useState('');
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
 
@@ -174,6 +174,7 @@ const Booking = (props) => {
           number_of_children: props.selectedBooking.pax.number_of_children,
           number_of_infants: props.selectedBooking.pax.number_of_infants,
           accommodation_types: filters.type,
+          trace: storeAndRetrieveValue(props.selectedBooking.city),
           price_lower_range: filters.price_lower_range,
           price_upper_range: filters.price_upper_range,
         })
@@ -187,7 +188,11 @@ const Booking = (props) => {
             if (res.data.results[0].min_price) {
               is_min_price_present = true;
             }
-            storeAndRetrieveValue;
+            storeAndRetrieveValue(
+              props.selectedBooking.city,
+              res.data.search.trace
+            );
+            setTraceID(res.data.search.trace);
             let options = [];
             for (var i = 0; i < res.data.results.length; i++) {
               try {
@@ -335,6 +340,7 @@ const Booking = (props) => {
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
         accommodation_types: filters.type,
+        trace: traceId,
         city_id: props.selectedBooking.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
@@ -426,16 +432,14 @@ const Booking = (props) => {
   };
 
   const _updateSearchedAccommodation = ({
-    bookings,
-    new_booking,
+    Selected_id,
     itinerary_id,
-    tailored_id,
-    itinerary_name,
-    number_of_rooms,
+    result_index,
+    category_id,
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
-    let room = [];
+    /* let room = [];
     try {
       for (var i = 0; i < new_booking.rooms_available.length; i++) {
         if (new_booking.rooms_available[i].prices.min_price) {
@@ -443,29 +447,18 @@ const Booking = (props) => {
           break;
         }
       }
-    } catch {}
+    } catch {} */
     let updated_bookings_arr = [
       {
-        id: props.selectedBooking.id,
-        name: new_booking.name,
-        city: new_booking.city,
+        id: Selected_id,
+        result_index: result_index,
+        category_id: category_id,
+
         booking_type: 'Accommodation',
-        itinerary_type: 'Tailored',
-        user_selected: true,
-        accommodation: new_booking.id,
+
         itinerary_id: itinerary_id,
-        tailored_itinerary: tailored_id,
-        costings_breakdown: [
-          {
-            number_of_rooms: number_of_rooms,
-            number_of_extra_beds: 0,
-            id: room[0].id,
-            room_type: room[0].room_type,
-            pricing_type: room[0].prices.min_pricing_type,
-          },
-        ],
-        itinerary_name: itinerary_name,
-        itinerary_db_id: null,
+
+        trace: traceId,
       },
     ];
     axiosbookingupdateinstance
@@ -496,31 +489,27 @@ const Booking = (props) => {
   };
 
   const _newUpdateBookingHandler = ({
-    alternates,
-    new_booking,
+    Selected_id,
     itinerary_id,
-    tailored_id,
-    itinerary_name,
+    result_index,
+    category_id,
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
     let updated_bookings_arr = [
       {
-        id: props.selectedBooking.id,
-        costings_breakdown: props.selectedBooking.costings_breakdown,
-        accommodation: props.selectedBooking.accommodation,
-        is_estimated_price: true,
-        alternate_to: null,
+        id: Selected_id,
+        result_index: result_index,
+        category_id: category_id,
+
         booking_type: 'Accommodation',
-        itinerary_type: 'Tailored',
-        user_selected: false,
+
         itinerary_id: itinerary_id,
-        tailored_itinerary: tailored_id,
-        itinerary_name: itinerary_name,
-        itinerary_db_id: null,
+
+        trace: traceId,
       },
     ];
-    for (var i = 0; i < alternates.length; i++) {
+    /* for (var i = 0; i < alternates.length; i++) {
       if (new_booking.id === alternates[i].id)
         updated_bookings_arr.push({
           id: alternates[i].id,
@@ -551,7 +540,7 @@ const Booking = (props) => {
           costings_breakdown: alternates[i].costings_breakdown,
         });
       }
-    }
+    } */
 
     // const token = localStorage.getItem('access_token');
     axiosbookingupdateinstance
@@ -635,6 +624,7 @@ const Booking = (props) => {
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
         city_id: props.selectedBooking.cityId,
+        trace: traceId,
         number_of_adults: props.selectedBooking.pax.number_of_adults,
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
