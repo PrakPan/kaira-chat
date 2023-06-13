@@ -412,10 +412,10 @@ const EXPERIENCE = {
        <SetWidthContainer id="link">
          <Heading
            align="center"
-           aligndesktop="center"
+           aligndesktop="left"
+           margin={!isPageWide ? "2.5rem 0.5rem" : "2.5rem 0rem"}
            bold
-           margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
-           className="text-center font-lexend"
+           noline
          >
            How it works?
          </Heading>
@@ -457,10 +457,10 @@ const EXPERIENCE = {
          {/* <div className='hidden-desktop'><BannerMobile></BannerMobile></div>  */}
          <Heading
            align="center"
-           aligndesktop="center"
+           aligndesktop="left"
+           margin={!isPageWide ? "2.5rem 0.5rem" : "2.5rem 0rem"}
            bold
-           margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
-           className="text-center font-lexend"
+           noline
          >
            Why plan with us?
          </Heading>
@@ -471,13 +471,22 @@ const EXPERIENCE = {
        </SetWidthContainer>
 
        <SetWidthContainer>
+         <Heading
+           align="center"
+           aligndesktop="left"
+           margin={!isPageWide ? "2.5rem 0.5rem" : "2.5rem 0rem"}
+           bold
+           noline
+         >
+           What They Say?
+         </Heading>
          <AsSeenIn disablelinks></AsSeenIn>
          <Heading
            align="center"
-           aligndesktop="center"
+           aligndesktop="left"
+           margin={!isPageWide ? "2.5rem 0.5rem" : "2.5rem 0rem"}
            bold
-           margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
-           className="text-center font-lexend"
+           noline
          >
            Happy Community of The Tarzan Way
          </Heading>
