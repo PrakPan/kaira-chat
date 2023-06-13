@@ -78,6 +78,8 @@ const HotelsBooking = (props) => {
   const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
     useState([]);
   const [showDetails, setShowDetails] = useState(false);
+  const [AddHotel, setAddHotel] = useState(false);
+
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
@@ -489,6 +491,37 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
+  const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
+    ga.event({
+      action: 'Itinerary-bookings-acc_change',
+      params: { name: name },
+    });
+    setAddHotel(true);
+    setSelectedBooking({
+      check_in: check_in,
+      check_out: check_out,
+      pax: pax,
+      city: city,
+      cityId: cityId,
+    });
+    props.setShowBookingModal();
+  };
+  function handleClickNewAc(i, data, city_id) {
+    let check_in = data.checkin_date;
+    let check_out = data.checkout_date;
+    let pax = {
+      number_of_adults: props.payment.meta_info['number_of_adults'],
+      number_of_children: props.payment.meta_info['number_of_children'],
+      number_of_infants: props.payment.meta_info['number_of_infants'],
+    };
+    let city = data.city_name;
+
+    let cityId = data.city_id;
+
+    _changeBookingNewHandler(check_in, check_out, pax, city, cityId);
+    setCurrentBooking(data);
+    props.setShowBookingModal;
+  }
   function handleClick(i, id, data) {
     setBookingId(id);
     setCurrentBooking(data);
@@ -510,11 +543,12 @@ const HotelsBooking = (props) => {
                 key={i}
                 handleClick={handleClick}
                 cityName={props.breif.city_slabs[i].city_name}
-                handleClickAc={handleClickAc}
+                handleClickAc={handleClickNewAc}
                 _SelectedBookingHandler={_SelectedBookingHandler}
                 setHideBookingModal={props.setHideBookingModal}
                 loginModal={showLoginModal}
                 city_id={props.breif.city_slabs[i].city_id}
+                cityData={props.breif.city_slabs[i]}
                 setLoginModal={setShowLoginModal}
                 token={props.token}
                 payment={props.payment}
@@ -545,7 +579,7 @@ const HotelsBooking = (props) => {
   }
 
   return (
-    <div className="lg:w-[60vw] w-full lg:mx-0 ">
+    <div className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16">
       <div
         id="Stays-Head"
         className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
@@ -553,8 +587,9 @@ const HotelsBooking = (props) => {
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {props.breif.city_slabs[1]?.accommodation_booking
-        ? HotelArray
+      {props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')
+        ? // props.breif.city_slabs[1]?.accommodation_booking == null
+          HotelArray
         : props.stayBookings
         ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
@@ -594,7 +629,7 @@ const HotelsBooking = (props) => {
           _updateStayBookingHandler={props._updateStayBookingHandler}
           alternates={alternates}
           tailored_id={
-            props.stayBookings
+            props.stayBookings[0]
               ? props.stayBookings[0]['tailored_itinerary']
               : null
           }
@@ -605,6 +640,7 @@ const HotelsBooking = (props) => {
           currentBooking={currentBooking}
           showBookingModal={props.showBookingModal}
           setHideBookingModal={props.setHideBookingModal}
+          AddHotel={AddHotel}
         ></BookingModal>
       ) : null}
       {!isDesktop && props.showBookingModal && (
