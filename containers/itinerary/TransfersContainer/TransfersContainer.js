@@ -561,7 +561,7 @@ const TransfersContainer = (props) => {
                 ? locationsArr.push(
                     <div className="flex flex-col gap-1">
                       <TransferModeContainer
-                      payment={props?.payment}
+                        payment={props?.payment}
                         booking_type={
                           props?.transferBookings[i + 1]?.booking_type
                         }
@@ -590,7 +590,7 @@ const TransfersContainer = (props) => {
                         duration={props.breif.city_slabs[i].duration}
                       ></TransferModeContainer>
                       <TransferModeContainer
-                      payment={props?.payment}
+                        payment={props?.payment}
                         booking_type={props?.transferBookings[i]?.booking_type}
                         transferbookings={props.transferBookings}
                         _changeTaxiHandler={_changeTaxiHandler}
@@ -619,7 +619,7 @@ const TransfersContainer = (props) => {
                 : locationsArr.push(
                     props?.transferBookings && (
                       <TransferModeContainer
-                      payment={props?.payment}
+                        payment={props?.payment}
                         booking_type={props?.transferBookings[i]?.booking_type}
                         pinColour={props.breif.city_slabs[i].color}
                         costings_breakdown={
@@ -718,7 +718,7 @@ const TransfersContainer = (props) => {
               props?.transferBookings &&
                 locationsArr.push(
                   <TransferModeContainer
-                  payment={props?.payment}
+                    payment={props?.payment}
                     pinColour={props.breif.city_slabs[i].color}
                     modes={'Taxi'}
                     icon={props?.transferBookings[i]?.images?.image}
@@ -896,7 +896,7 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
-                  payment={props?.payment}
+                    payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
                     pinColour={props.breif.city_slabs[i].color}
                     costings_breakdown={
@@ -924,7 +924,7 @@ const TransfersContainer = (props) => {
             : locationsArr.push(
                 props?.transferBookings && (
                   <TransferModeContainer
-                  payment={props?.payment}
+                    payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
                     pinColour={props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
@@ -957,7 +957,7 @@ const TransfersContainer = (props) => {
   console.log(locationsArr);
   return (
     <Container id="Transfer_Container">
-      <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-4xl group text-[#262626] transition duration-300 max-w-fit">
+      <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
         Transfers{' '}
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>

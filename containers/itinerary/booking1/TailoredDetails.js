@@ -909,7 +909,7 @@ const Details = (props) => {
               styleClass="w-full"
               onClick={() => _saleCreateHandler(props.id)}
             >
-              Pay Now
+              Pay Now & Book
               {paymentLoading ? (
                 <Spinner
                   color="white"

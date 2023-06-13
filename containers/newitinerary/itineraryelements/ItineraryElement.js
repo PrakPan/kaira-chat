@@ -97,7 +97,7 @@ const ItineraryElement = (props) => {
         >
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>
-            {props.data?.bookings.length > 0 ? (
+            {props.data?.bookings && props.data?.bookings.length > 0 ? (
               <Link
                 to={
                   props.data.bookings

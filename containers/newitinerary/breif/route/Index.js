@@ -11,7 +11,7 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
-  console.log(props , 'props')
+  console.log(props, 'props');
   //Stores initial order of locations
   const initialorder = {
     0: {
@@ -145,11 +145,7 @@ const Route = (props) => {
           locationsArr.push(
             <MidSection
               pinColour={props.breif.city_slabs[i].color}
-              modes={
-                props?.transfers[i + 1]?.modes
-                  ? props?.transfers[i + 1]?.modes[0]
-                  : 'Taxi'
-              }
+              modes={'Taxi'}
               icon={null}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
@@ -197,9 +193,7 @@ const Route = (props) => {
       ></PinSection>
       <MidSection
         pinColour={props.breif.city_slabs[0].color}
-        modes={
-          props?.transfers[1]?.modes[0] ? props?.transfers[1]?.modes[0] : 'Taxi'
-        }
+        modes={'Taxi'}
         icon={props?.transfers[0]?.icon}
         transportMode={'Taxi'}
         duration={'2'}
