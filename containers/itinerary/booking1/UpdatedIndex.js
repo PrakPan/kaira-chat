@@ -551,12 +551,16 @@ const Booking = (props) => {
       <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
     );
     setBookingAccommodationsMobileJSX(
-      <SwiperCarousel
-        slidesPerView={1}
-        pageDots
-        centeredSlides
-        cards={bookings_accommodations}
-      ></SwiperCarousel>
+      // <SwiperCarousel
+      //   slidesPerView={1}
+      //   // pageDots
+      //   navigationButtons
+      //   // navButtonBackground={"transparent"}
+      //   // navButtonColor={'black'}
+      //   centeredSlides
+      //   cards={bookings_accommodations}
+      // ></SwiperCarousel>
+      <>{bookings_accommodations.map((e) => <div style={{marginBottom : '2rem'}}>{e}</div>)}</>
     );
   }, [
     props.stayBookings,
