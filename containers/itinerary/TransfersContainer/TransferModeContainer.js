@@ -278,7 +278,7 @@ const TransferModeContainer = (props) => {
                         <div className="min-w-max">
                           {formatDate(props.booking.check_in)}
                         </div>
-                        <div>{props.booking.city}</div>
+                        <div className="min-w-max">{props.booking.city}</div>
                       </div>
                       <div className="flex flex-row justify-center items-center">
                         <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
@@ -307,7 +307,9 @@ const TransferModeContainer = (props) => {
                           <div className="min-w-max">
                             {formatDate(props.booking.check_out)}
                           </div>
-                          <div>{props.booking.destination_city}</div>
+                          <div className="min-w-max">
+                            {props.booking.destination_city}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -315,8 +317,8 @@ const TransferModeContainer = (props) => {
                 </div>
 
                 {props.userSelected ? (
-                  <div className="flex flex-row justify-between items-center">
-                    <div className="flex  mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-start lg:items-end items-start">
+                  <div className="flex lg:flex-col md:flex-row lg:justify-center justify-between items-center">
+                    <div className="flex  mr-3 lg:w-full w-full flex-col lg:justify-center justify-start lg:items-end items-start">
                       {/* <div>
                       <div className="flex flex-row w-full justify-end items-center gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#277004] ">
                         <IoCheckmark></IoCheckmark>
@@ -344,7 +346,7 @@ const TransferModeContainer = (props) => {
                       props.payment?.user_allowed_to_pay && (
                         <div
                           onClick={() => HandleFlights(props.index)}
-                          className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4  lg:py-[11px] inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                          className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                         >
                           Change Flight
                         </div>

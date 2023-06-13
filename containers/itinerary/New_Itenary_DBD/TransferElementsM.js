@@ -104,7 +104,7 @@ const TransferElementsM = ({
             </div>
           </TransportContainer>
         ) : null}
-        {booking ? (
+        {/* {booking ? (
           meta.estimated_cost ? (
             <div className="flex mt-2 flex-row items-end justify-between w-full">
               <LivelyButton className="font-medium  border-2 border-black rounded-md px-4 py-2  bg-white text-black">
@@ -121,7 +121,7 @@ const TransferElementsM = ({
               </div>
             </div>
           ) : null
-        ) : null}
+        ) : null} */}
         <div className="pt-1 line-clamp-3 text-sm font-[350] mb-0 mt-2">
           {text}
         </div>

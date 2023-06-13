@@ -298,7 +298,7 @@ const HotelBookingContainer = ({
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BiBed className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            Room Count {booking?.room_count}
+                            {booking?.room_count} room options
                           </div>
                         </div>
                       )}
@@ -319,15 +319,21 @@ const HotelBookingContainer = ({
               {currentBooking && booking?.price && (
                 <div className="flex flex-row gap-1 items-center w-full font-bold">
                   <div className="text-2xl font-bold">
-                    {'₹ ' + getIndianPrice(Math.round(booking?.price / 100))}
+                    {'₹ ' + getIndianPrice(Math.round(booking?.price))}
                   </div>
                   <div className="font-normal text-base self-end">
-                    per Room*
+                    for {currentBooking?.duration} Nights
                   </div>
                 </div>
               )}
               {handleClick && (
-                <div className="flex flex-row gap-3 items-center justify-between w-full">
+                <div
+                  className={`flex flex-row gap-3 items-center justify-between w-full ${
+                    payment?.paid_user || !payment?.user_allowed_to_pay
+                      ? 'lh:mb-0 mb-2'
+                      : 'lg:mb-0 mb-0'
+                  }`}
+                >
                   {/* <ButtonYellow
                   className=" w-1/2"
                   onClick={() =>
@@ -385,8 +391,12 @@ const HotelBookingContainer = ({
               <div
                 className={`absolute  ${
                   SelectedBookingin
-                    ? 'lg:bottom-4 bottom-[2.5rem] '
-                    : 'lg:bottom-10 bottom-[2.5rem]'
+                    ? 'lg:bottom-4 bottom-[1.5rem] '
+                    : `${
+                        payment?.paid_user || !payment?.user_allowed_to_pay
+                          ? 'lg:bottom-10 bottom-[1.2rem]'
+                          : 'lg:bottom-10 bottom-[2.5rem]'
+                      }`
                 } right-8 -m-3`}
               >
                 <div

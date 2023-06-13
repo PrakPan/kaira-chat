@@ -43,7 +43,7 @@ const MoreText = styled.div`
 const ImagesMobile = (props) => {
   useEffect(() => {}, []);
 
-  return (
+  return props.images.length >= 3 ? (
     <Container ConImg={props.images[1]}>
       <ImageLoader
         borderRadius="12px"
@@ -80,6 +80,29 @@ const ImagesMobile = (props) => {
           </div> */}
             {/* <MoreText className='font-lexend'>View 10+ photos</MoreText> */}
           </MoreContainer>
+        </GridContainer>
+      ) : null}
+    </Container>
+  ) : (
+    <Container ConImg={props.images[1]}>
+      <ImageLoader
+        borderRadius="12px"
+        dimensions={{ width: 922, height: 331 }}
+        url={props.images[0]}
+        height="auto"
+        heightMobile="auto"
+        dimensionsMobile={{ width: 328, height: 141 }}
+      ></ImageLoader>
+      {props.images[1] ? (
+        <GridContainer>
+          <ImageLoader
+            borderRadius="12px"
+            url={props.images[1]}
+            dimensions={{ width: 436, height: 150 }}
+            height="100%"
+            heightMobile="auto"
+            dimensionsMobile={{ width: 160, height: 90 }}
+          ></ImageLoader>
         </GridContainer>
       ) : null}
     </Container>
