@@ -75,7 +75,7 @@ const SearchPannel = (props) => {
       .get(`https://apis.tarzanway.com/search/suggest?q=` + event.target.value)
       .then((res) => {
         if (res.data.length) {
-          setResults(res.data);
+          setResults(res.data.slice(0,10));
           setShowResults(true);
           setShowP(false);
         } else {
