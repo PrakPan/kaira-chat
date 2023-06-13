@@ -38,6 +38,7 @@ import ImageLoader from '../ImageLoader';
 const IconsFetcher = ({ iconId }) => {
   return (
     <ImageLoader
+      noLazy
       url={WeatherIcon(iconId)}
       height="40px"
       width="100%"

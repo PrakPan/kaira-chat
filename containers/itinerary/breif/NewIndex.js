@@ -320,11 +320,11 @@ const Details = (props) => {
           </div>
         ) : null} */}
       </DetailsContainer>
-      {/* <Drawer
+      <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
         city_id={showDrawerData.city_id}
-      ></Drawer> */}
+      ></Drawer>
       {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
       </ContainerBt>

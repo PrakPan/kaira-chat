@@ -43,7 +43,8 @@ const NavbarContainer = styled.div`
 `;
 
 const CenterNav = styled.div`
-  width: 85%;
+  width: ${props => props.staticnav ? '90%' : '85%'};
+  ${props=>props.staticnav && 'padding-right : 2%'};
   margin: auto;
   height: 100%;
   display: grid;
@@ -213,7 +214,7 @@ const Navbar = (props) => {
             opacity: props.hideNav ? "0" : "1",
           }}
         >
-          <CenterNav hidecta={props.hidecta}>
+          <CenterNav staticnav={props.staticnav} hidecta={props.hidecta}>
             <TTWLogoContainer>
               {props.hidehomecta ? (
                 <ImageLoader

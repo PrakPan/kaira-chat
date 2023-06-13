@@ -33,6 +33,16 @@ const Heading = styled.p`
   font-weight: 800;
 `;
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 16px;
+  width: 100vw;
+  @media screen and (min-width: 768px) {
+    width: 500px;
+  }
+`;
 const TimeStamp = styled.p`
   height: 31px;
   padding: 4px 8px;
@@ -47,16 +57,6 @@ const TimeStamp = styled.p`
   @media screen and (min-width: 768px) {
     top: 185px;
     left: 320px;
-  }
-`;
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 16px;
-  width: 100vw;
-  @media screen and (min-width: 768px) {
-    width: 500px;
   }
 `;
 
@@ -123,6 +123,7 @@ const POIDetails = (props) => {
           }}
           noLazy
         ></ImageLoader>
+
       </div>
       {imageLoading && (
         <div
@@ -145,7 +146,6 @@ const POIDetails = (props) => {
         <Title>{props.data.name}</Title>
         {props.data.address && (
           <div>
-            {" "}
             <span className="font-bold pr-1">Address:</span>{" "}
             {props.data.address}
           </div>

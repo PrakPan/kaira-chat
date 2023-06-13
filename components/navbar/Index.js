@@ -139,7 +139,6 @@ const Navbar = (props) => {
             notOpenCount={notOpenCount}
             notifications={notifications}
             token={props.token}
-            style={{}}
           ></IndexDesktop>
         )}
         {/* </div> */}
