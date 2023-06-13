@@ -146,7 +146,9 @@ const Index = (props) => {
           /> */}
           <>
             <Heading>Plan your trip anywhere in the world</Heading>
-            <Continentcarousel></Continentcarousel>
+            <Continentcarousel
+              data={props.continetCarousel}
+            ></Continentcarousel>
             <Button
               onclick={() =>
                 openTailoredModal(router, props.data.id, props.data.destination)
@@ -162,7 +164,7 @@ const Index = (props) => {
           </>
           <>
             <Heading>Plan as per continents across the world</Heading>
-            <PlanAsPerContinent />
+            <PlanAsPerContinent data={props.contientTheme} />
           </>
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?
@@ -175,7 +177,9 @@ const Index = (props) => {
             What our customers say?
           </Heading>
           <Reviews></Reviews>
-          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>What they say?</Heading>
+          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+            What they say?
+          </Heading>
           <AsSeenIn />
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>

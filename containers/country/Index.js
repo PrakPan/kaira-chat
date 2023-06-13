@@ -146,7 +146,9 @@ const Index = (props) => {
 
           {props.locations && props.locations.length ? (
             <>
-              <Heading>Other destinations to explore in {props.data.continent}</Heading>
+              <Heading>
+                Other destinations to explore in {props.data.continent}
+              </Heading>
               <SwiperLocations
                 locations={props.locations}
                 page_id={props.data.id}
@@ -161,12 +163,7 @@ const Index = (props) => {
           <>
             <Heading>Plan your trip to anywhere in the world</Heading>
             <Continentcarousel
-              locations={props.locations}
-              page_id={props.data.id}
-              destination={props.data.name}
-              viewall
-              // country={country}
-              country
+              data={props.continetCarousel}
             ></Continentcarousel>
           </>
 

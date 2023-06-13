@@ -3,6 +3,7 @@ import Layout from "../../components/Layout";
 import { useState, useEffect } from "react";
 import CountryPage from '../../containers/country/Index';
 import axioscountrydetailsinstance from '../../services/pages/country'
+import axiospagelistinstance from "../../services/pages/list";
 import axios from "axios";
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
@@ -36,7 +37,11 @@ const TravelPlanner = (props) => {
         experienceData={props.Data}
         locations={props.locations}
       ></LadakhContainer> */}
-      <CountryPage data={props.Data} locations={props.locations}></CountryPage>
+      <CountryPage
+        continetCarousel={props.continetCarousel}
+        data={props.Data}
+        locations={props.locations}
+      ></CountryPage>
     </Layout>
   );
 };
@@ -87,6 +92,18 @@ export async function getStaticProps(context) {
   const response = await axioscountrydetailsinstance.get("all/?continent=" + res.data.continent);
   const locations = response.data
 
+    const continentData = await axiospagelistinstance("?page_type=Continents");
+    const continetCarousel = [];
+    for (let i = 0; i < continentData.data.length; i++) {
+      const hot_destinations = await axioscountrydetailsinstance(
+        `/all?continent=${continentData.data[i].destination}&hot_destinations=true`
+      );
+      const hot_data = hot_destinations.data.filter((e, i) => {
+        if (i < 6) return e;
+      });
+      continetCarousel.push({ ...continentData.data[i], hot_destinations: hot_data });
+    }
+
   // var locations = [];
   // var country = "India";
   // if (data.ancestors) {
@@ -113,6 +130,7 @@ export async function getStaticProps(context) {
     props: {
       Data: data,
       locations,
+      continetCarousel,
     },
   };
 }

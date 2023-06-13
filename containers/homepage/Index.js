@@ -70,6 +70,8 @@ const HowItWorksContainer = styled.div`
 `;
 
 const Homepage = (props) => {
+  console.log('props: ', props);
+
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
@@ -339,7 +341,7 @@ const Homepage = (props) => {
 
               <Button
                 onclick={() => {
-                  window.location.href = "/asia"
+                  window.location.href = "/asia";
                 }}
                 fontWeight="500"
                 boxShadow
@@ -404,7 +406,9 @@ const Homepage = (props) => {
             >
               Plan your trip anywhere in the world
             </Heading>
-            <Continentcarousel></Continentcarousel>
+            <Continentcarousel
+              data={props.continetCarousel}
+            ></Continentcarousel>
           </>
           {props.ThemeData && props.ThemeData.length ? (
             <>

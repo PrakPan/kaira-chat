@@ -46,38 +46,75 @@ const Skeleton = (
   </SkeletonCardContainer>
 );
 const cardsClasses = ['a','b','c','d','e','f']
-const Continentcarousel = () => {
+const Continentcarousel = (props) => {
   const [continents, setContinents] = useState([]);
   let isPageWide = media("(min-width: 768px)");
 
-  const cardsArr = [];
-  async function fetchData() {
-    const res = await aixiospagelistinsance('?page_type=Continents');
-    const data = [];
-    for (let i = 0; i < res.data.length; i++) {
-      const hot_destinations = await aixioscountryinsance(`/all?continent=${res.data[i].destination}&hot_destinations=true`);
-      const hot_data = hot_destinations.data.filter((e,i)=>{if(i<6) return e} )
-      data.push({ ...res.data[i], hot_destinations: hot_data });
+  // const cardsArr = [];
+  // async function fetchData() {
+  //   const res = await aixiospagelistinsance('?page_type=Continents');
+  //   const data = [];
+  //   for (let i = 0; i < res.data.length; i++) {
+  //     const hot_destinations = await aixioscountryinsance(`/all?continent=${res.data[i].destination}&hot_destinations=true`);
+  //     const hot_data = hot_destinations.data.filter((e,i)=>{if(i<6) return e} )
+  //     data.push({ ...res.data[i], hot_destinations: hot_data });
+  //     cardsArr.push(
+  //       <GridContainer>
+  //         <Card
+  //           location={res.data[i].destination}
+  //           heading={res.data[i].tagline}
+  //           img={res.data[i].image}
+  //           continent
+  //           path={res.data[i].path}
+  //         />
+
+  //         <CardsContainer length={hot_data.length}>
+  //           {hot_data.map((e, i) => (
+  //             <div className={cardsClasses[i]} style={{gridArea : cardsClasses[i]}}>
+  //               <Card
+  //                 key={e.id}
+  //                 location={e.name}
+  //                 heading={e.tagline}
+  //                 img={e.image}
+  //                 path={e.path}
+  //                 hd={hot_data.length<4}
+  //               />
+  //             </div>
+  //           ))}
+  //         </CardsContainer>
+  //       </GridContainer>
+  //     );
+  //   }
+  //   setContinents(cardsArr);
+  // }
+       
+
+  useEffect(() => {
+      const cardsArr = [];
+  for (let i = 0; i < props.data.length; i++) {
       cardsArr.push(
         <GridContainer>
           <Card
-            location={res.data[i].destination}
-            heading={res.data[i].tagline}
-            img={res.data[i].image}
+            location={props.data[i].destination}
+            heading={props.data[i].tagline}
+            img={props.data[i].image}
             continent
-            path={res.data[i].path}
+            path={props.data[i].path}
           />
 
-          <CardsContainer length={hot_data.length}>
-            {hot_data.map((e, i) => (
-              <div className={cardsClasses[i]} style={{gridArea : cardsClasses[i]}}>
+          <CardsContainer length={props.data[i].hot_destinations.length}>
+            {props.data[i].hot_destinations.map((e, i) => (
+              <div
+                className={cardsClasses[i]}
+                style={{ gridArea: cardsClasses[i] }}
+              >
                 <Card
                   key={e.id}
                   location={e.name}
                   heading={e.tagline}
                   img={e.image}
                   path={e.path}
-                  hd={hot_data.length<4}
+                  hd={props.data[i].hot_destinations.length < 4}
                 />
               </div>
             ))}
@@ -86,9 +123,6 @@ const Continentcarousel = () => {
       );
     }
     setContinents(cardsArr);
-  }
-  useEffect(() => {
-    fetchData();
   }, []);
 
   return (

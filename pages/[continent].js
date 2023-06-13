@@ -28,7 +28,12 @@ const TravelPlanner = (props) => {
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>
       </Head>
-      <ContinentPage data={props.Data} locations={props.locations}></ContinentPage>
+      <ContinentPage
+        contientTheme={props.contientTheme}
+        data={props.Data}
+        locations={props.locations}
+        continetCarousel={props.continetCarousel}
+      ></ContinentPage>
     </Layout>
   );
 };
@@ -57,12 +62,29 @@ const res = await axiospagelistinstance("?page_type=Continents");
   };
 }
 export async function getStaticProps(context) {
-
-  const res = await axiospagedetailsinstance('?link=' + context.params.continent);
+  const res = await axiospagedetailsinstance(
+    "?link=" + context.params.continent
+  );
   const data = res.data;
-  
+  const themeData = await axiospagelistinstance("?page_type=Continents");
+  const contientTheme = themeData.data;
 
-const response = await axioscountrydetailsinstance("/all?continent=" + data.destination);
+  // contient carousel :-
+  const continentData = await axiospagelistinstance("?page_type=Continents");
+  const continetCarousel = [];
+  for (let i = 0; i < continentData.data.length; i++) {
+    const hot_destinations = await axioscountrydetailsinstance(
+      `/all?continent=${continentData.data[i].destination}&hot_destinations=true`
+    );
+    const hot_data = hot_destinations.data.filter((e, i) => {
+      if (i < 6) return e;
+    });
+    continetCarousel.push({ ...continentData.data[i], hot_destinations: hot_data });
+  }
+
+  const response = await axioscountrydetailsinstance(
+    "/all?continent=" + data.destination
+  );
   const locations = response.data;
   if (!data) {
     return {
@@ -73,6 +95,8 @@ const response = await axioscountrydetailsinstance("/all?continent=" + data.dest
     props: {
       Data: data,
       locations,
+      contientTheme,
+      continetCarousel,
     },
   };
 }

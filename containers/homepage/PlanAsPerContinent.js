@@ -161,26 +161,13 @@ const BlackContainer = styled.div`
 const PlanAsPerTheme = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
-  const [data, setData] = useState([])
   const order = ["a", "b", "c", "d", 'e', 'f', 'g'];
-  // const [ImagesLoading , setImagesLoading] = useState(order.length)
-  useEffect(() => {
-      async function fetchData() {
-          const res = await axiosPageListInstance("?page_type=Continents");     
-          setData(res.data)
-      }
-          fetchData();
-      
-  }, []);
+
   const _handleTripRedirect = (path) => {
       if(path) window.location.href = '/' + path
   };
-  // const _handleImageLoaded = () => {
-  //   if (ImagesLoading !== 0) {
-  //     setImagesLoading(prev=>prev-1)
-  //   }
-  // }
-  const ThemeContainer = data?.map((e, i) => (
+
+  const ThemeContainer = props.data?.map((e, i) => (
     <GridItem
       className={order[i]}
       key={i}
@@ -217,7 +204,7 @@ const PlanAsPerTheme = (props) => {
 
   return (
     <>
-      <Container>{data.length ? ThemeContainer : SkeletonContainer}</Container>
+      <Container>{props.data.length ? ThemeContainer : SkeletonContainer}</Container>
 
       {!props.nostart ? (
         <Button
