@@ -10,16 +10,16 @@ export function storeAndRetrieveValue(key, value) {
       value: value,
       timestamp: Date.now(),
     };
-    localStorage.setItem(storagePoint, JSON.stringify(data));
+    sessionStorage.setItem(storagePoint, JSON.stringify(data));
 
     // Delete the item after 15 minutes
     setTimeout(() => {
-      localStorage.removeItem(storagePoint);
+      sessionStorage.removeItem(storagePoint);
     }, 15 * 60 * 1000); // 15 minutes in milliseconds
   }
 
   // Retrieve the value based on the key
-  const storedData = JSON.parse(localStorage.getItem(storagePoint));
+  const storedData = JSON.parse(sessionStorage.getItem(storagePoint));
   if (storedData) {
     return storedData.value;
   }

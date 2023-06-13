@@ -110,6 +110,16 @@ const HotelBookingContainer = ({
   function handleSelectChange() {
     setisSelect(!isSelect);
   }
+  function _handleUpdateChange(e) {
+    e.stopPropagation();
+    handleSelectChange();
+    _updateSearchedAccommodation({
+      Selected_id: booking?.id,
+      itinerary_id: itinerary_id,
+      result_index: booking?.result_index,
+      category_id: booking?.category_id,
+    });
+  }
   const isMobile = useMediaQuery('(min-width:768px)');
   return (
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
@@ -415,32 +425,16 @@ const HotelBookingContainer = ({
                   </div>
                 </div>
               ) : (
-                <div className=" z-50">
-                  <DropDown
-                    itinerary_id={itinerary_id}
-                    tailored_id={tailored_id}
-                    fontSize="1rem"
-                    new_booking={booking}
-                    fontSizeDesktop="1.25rem"
-                    onclick={_updateSearchedAccommodation}
-                    onclick1={() => handleSelectChange()}
-                    onclickparam={{
-                      alternates: alternates,
-                      new_booking: booking,
-                      itinerary_id: itinerary_id,
-                      tailored_id: tailored_id,
-                    }}
-                  >
-                    <div className="flex flex-row gap-1 items-center justify-center  cursor-pointer">
-                      <CheckboxFormComponent
-                        checked={isSelect}
-                        className="mb-0"
-                      />
-                      <label className="text-center">
-                        {isSelect ? 'Selected' : 'Select'}
-                      </label>
-                    </div>
-                  </DropDown>
+                <div className=" z-50" onClick={(e) => _handleUpdateChange(e)}>
+                  <div className="flex flex-row gap-1 items-center justify-center  cursor-pointer">
+                    <CheckboxFormComponent
+                      checked={isSelect}
+                      className="mb-0"
+                    />
+                    <label className="text-center">
+                      {isSelect ? 'Selected' : 'Select'}
+                    </label>
+                  </div>
                 </div>
               )}
             </div>
