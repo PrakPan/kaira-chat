@@ -144,7 +144,7 @@ const Index = (props) => {
             destination={props.data.destination}
             slug={props.data.link}
           /> */}
-          <>
+         {props.continetCarousel.length ?  <>
             <Heading>Plan your trip anywhere in the world</Heading>
             <Continentcarousel
               data={props.continetCarousel}
@@ -161,7 +161,7 @@ const Index = (props) => {
             >
               Create your free itinerary
             </Button>
-          </>
+          </>: <></>}
           <>
             <Heading>Plan as per continents across the world</Heading>
             <PlanAsPerContinent data={props.contientTheme} />

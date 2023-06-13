@@ -392,7 +392,7 @@ const Homepage = (props) => {
             </>
           ) : null}
 
-          <>
+          {props.continetCarousel.length ? <>
             <Heading
               noline
               textAlign="left"
@@ -409,7 +409,7 @@ const Homepage = (props) => {
             <Continentcarousel
               data={props.continetCarousel}
             ></Continentcarousel>
-          </>
+          </> : <></>}
           {props.ThemeData && props.ThemeData.length ? (
             <>
               <Heading

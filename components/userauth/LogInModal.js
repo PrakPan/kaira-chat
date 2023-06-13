@@ -560,26 +560,20 @@ const LogIn = (props) => {
             </Button>
           ) : (
             <Button
-              onclick={(e)=>submitOtpHandler(e)}
-              style={{
-                width: "100%",
-                background: "#F7E700",
-                fontWeight: "500",
-                cursor: "pointer",
-                fontSize: "16px",
-                padding: "0.5rem",
-                border: "1px solid black",
-                boxShadow: "0px 2px 0px #ECEAEA",
-                borderRadius: "8px",
-                "&:hover": {
-                  background: "black",
-                  color: "white",
-                },
-              }}
+              onclick={(e) => submitOtpHandler(e)}
+              margin={props.nospacing ? "0" : "0.5rem 0"}
+              width="100%"
+              bgColor="#F7E700"
+              fontWeight="500"
+              fontSize="16px"
+              borderWidth="1px"
+              hoverColor="white"
+              hoverBgColor="black"
+              boxShadow="0px 2px 0px #ECEAEA"
+              borderRadius="8px"
               loading={props.loading}
             >
               Login
-            
             </Button>
           )}
           <div

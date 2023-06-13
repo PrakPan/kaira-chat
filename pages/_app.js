@@ -66,7 +66,7 @@ function MyApp({ Component, pageProps, store }) {
   useEffect(() => {
      function handleWidgetLoaded() {
          
-          if (name.length && email) {
+          if (name?.length && email) {
             window.fcWidget.user.setFirstName(name[0]);
             window.fcWidget.user.setEmail(email);
        }

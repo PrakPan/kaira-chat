@@ -160,12 +160,12 @@ const Index = (props) => {
             </>
           ) : null}
 
-          <>
+          {props.continetCarousel.length? <>
             <Heading>Plan your trip to anywhere in the world</Heading>
             <Continentcarousel
               data={props.continetCarousel}
             ></Continentcarousel>
-          </>
+          </> : <></>}
 
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?

@@ -291,6 +291,7 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
+        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
@@ -312,6 +313,7 @@ const Enquiry = (props) => {
         }
       })
       .catch((err) => {
+        console.log("response: ", err);
         setLoading(false);
         // window.location.href =
         //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
@@ -558,60 +560,59 @@ const Enquiry = (props) => {
               </div>
             ) : null}
             {slideIndex === 1 ? (
-              !props.token ? (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="1rem 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#f7e700"
-                    onclick={_SlideTwoSubmitHandler}
-                  >
-                    Continue
-                  </Button>
-                </div>
-              ) : (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="1rem 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#f7e700"
-                    loading={loading}
-                    onclick={_submitDataHandler}
-                  >
-                    Submit
-                  </Button>
-                </div>
-              )
+              // !props.token ? (
+              //   <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              //     <Button
+              //       fontSize="1rem"
+              //       width={!isPageWide ? "auto" : "100%"}
+              //       style={
+              //         !isPageWide
+              //           ? {
+              //               position: "fixed",
+              //               left: "1rem",
+              //               right: "1rem",
+              //               bottom: "0",
+              //             }
+              //           : {}
+              //       }
+              //       padding="0.5rem 2rem"
+              //       fontWeight="500"
+              //       margin="1rem 0"
+              //       borderRadius="5px"
+              //       borderWidth="1px"
+              //       bgColor="#f7e700"
+              //       onclick={_SlideTwoSubmitHandler}
+              //     >
+              //       Continue
+              //     </Button>
+              //   </div>
+              // ) :
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  loading={loading}
+                  onclick={_submitDataHandler}
+                >
+                  Get Itinerary!
+                </Button>
+              </div>
             ) : null}
           </div>
         </Container>
