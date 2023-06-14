@@ -249,7 +249,7 @@ const Index = (props) => {
                 }
                 bold
               >
-                Plan as per the best destinations
+                India's Trending Destinations
               </Heading>
               <Locations locations={props.locations} viewall></Locations>
             </>

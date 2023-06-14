@@ -68,7 +68,7 @@ export async function getStaticProps() {
   }
 
   try {
-    const loc = await axiospagelistinstance.get(``);
+    const loc = await axiospagelistinstance.get(`?country=India`);
     locations = loc.data;
   } catch (e) {
     console.log(e);

@@ -361,7 +361,7 @@ const Homepage = (props) => {
         title={props.experienceData.banner_heading}
       />
       <SetWidthContainer>
-        <MapGridContainer>
+        {/* <MapGridContainer>
           <Overview
             locations={props.experienceData.locations}
             overview_heading={overviewHeading}
@@ -375,7 +375,25 @@ const Homepage = (props) => {
               defaultZoom={12}
             ></Map>
           </MapContainer>
-        </MapGridContainer>
+        </MapGridContainer> */}
+
+        <Heading
+          align="center"
+          aligndesktop="left"
+          margin={
+            !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"
+          }
+          bold
+        >
+          {props.experienceData.destination
+            ? "Top locations across " + props.experienceData.destination
+            : "Top Locations"}
+        </Heading>
+        <Locations
+          locations={props.experienceData.locations}
+          viewall
+        ></Locations>
+
         <Button
           onclick={() =>
             openTailoredModal(
@@ -456,22 +474,6 @@ const Homepage = (props) => {
     : null
   } */}
 
-        <Heading
-          align="center"
-          aligndesktop="left"
-          margin={
-            !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"
-          }
-          bold
-        >
-          {props.experienceData.destination
-            ? "Top locations across " + props.experienceData.destination
-            : "Top Locations"}
-        </Heading>
-        <Locations
-          locations={props.experienceData.locations}
-          viewall
-        ></Locations>
         {/* <Carousel cards={props.experienceData.locations} /> */}
       </SetWidthContainer>
       {/* <Map locations={props.experienceData.locations}></Map> */}
