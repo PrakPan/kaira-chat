@@ -17,6 +17,7 @@ import DropDown from '../../../components/modals/bookingupdated/new-accommodatio
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import useMediaQuery from '../../../hooks/useMedia';
 import { getHumanDate } from '../../../services/getHumanDate';
+import { ITINERARY_STATUSES } from '../../../services/constants';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -247,9 +248,12 @@ const HotelBookingContainer = ({
                       ) : null}
                     </div>
                   )}
-                  {booking.check_in ? (
+                  {(booking.check_in &&
+                    ITINERARY_STATUSES.itinerary_prepared !==
+                      payment.itinerary_status) ||
+                  payment?.is_stock !== True ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                      {/* <div className="flex flex-row gap-2 items-center">
+                      <div className="flex flex-row gap-2 items-center">
                         <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                         <div>
                           <div className="text-sm font-[400] ">
@@ -257,7 +261,7 @@ const HotelBookingContainer = ({
                             {getDate(booking.check_out)}
                           </div>
                         </div>
-                      </div> */}
+                      </div>
                       <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] min-w-fit">
@@ -269,9 +273,12 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : (
-                    currentBooking && (
+                    (currentBooking &&
+                      ITINERARY_STATUSES.itinerary_prepared !==
+                        payment.itinerary_status) ||
+                    (payment?.is_stock !== True && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                        {/* <div className="flex flex-row gap-2 items-center">
+                        <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                           <div>
                             <div className="text-sm font-[400] ">
@@ -279,7 +286,7 @@ const HotelBookingContainer = ({
                               {getDate(currentBooking.check_out)}
                             </div>
                           </div>
-                        </div> */}
+                        </div>
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className=" text-sm font-[400] min-w-fit">
@@ -290,7 +297,7 @@ const HotelBookingContainer = ({
                           </div>
                         </div>
                       </div>
-                    )
+                    ))
                   )}
 
                   {booking.costings_breakdown ? (
