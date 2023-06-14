@@ -20,7 +20,7 @@ const CardsContainer = styled.div`
 
   grid-template-areas: ${(props) =>
     props.length == 1
-      ? 'a'
+      ? "a"
       : props.length == 2
       ? "'a' 'b'"
       : props.length == 3
@@ -31,6 +31,8 @@ const CardsContainer = styled.div`
       ? "'a a b b c c' 'd d d e e e'"
       : "'a b c' 'd e f'"};
   gap: 1vh;
+  grid-template-columns: ${(props) =>
+    props.length < 3 ? "1fr" : props.length < 5 ? "1fr 1fr" : props.length === 5 ? "" : '1fr 1fr 1fr'};
 `;
 const SkeletonCardContainer = styled.div`
   overflow: hidden;
