@@ -11,6 +11,7 @@ import Spinner from '../../Spinner';
 
 //  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
+// import updateaccommodations from '../../../services/bookings/UpdateBookings';
 import { connect } from 'react-redux';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
@@ -432,6 +433,7 @@ const Booking = (props) => {
   };
 
   const _updateSearchedAccommodation = ({
+    SelectedBookingId,
     Selected_id,
     itinerary_id,
     result_index,
@@ -450,7 +452,8 @@ const Booking = (props) => {
     } catch {} */
     let updated_bookings_arr = [
       {
-        id: Selected_id,
+        id: SelectedBookingId,
+        accommodation: Selected_id,
         result_index: result_index,
         category_id: category_id,
 
@@ -461,34 +464,63 @@ const Booking = (props) => {
         trace: traceId,
       },
     ];
-    axiosbookingupdateinstance
-      .post(
-        '?booking_type=Accommodation&itinerary_id=' +
-          props.selectedBooking.itinerary_id,
-        updated_bookings_arr,
-        {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      )
-      .then((res) => {
-        props._updateStayBookingHandler(res.data.bookings);
-        // props._updatePaymentHandler(res.data.payment_info);
-        props.getPaymentHandler();
+    {
+      props.AddHotel
+        ? axiosbookingupdateinstance
+            .post(
+              'add/?booking_type=Accommodation&itinerary_id=' +
+                props.selectedBooking.itinerary_id,
+              updated_bookings_arr[0],
+              {
+                headers: {
+                  Authorization: `Bearer ${props.token}`,
+                },
+              }
+            )
+            .then((res) => {
+              props._updateStayBookingHandler(res.data.bookings);
+              // props._updatePaymentHandler(res.data.payment_info);
+              props.getPaymentHandler();
 
-        setUpdateBookingState(false);
-      })
-      .catch((err) => {
-        // setUpdateLoadingState(false);
-        setUpdateBookingState(false);
-        setUnauthorized(true);
+              setUpdateBookingState(false);
+            })
+            .catch((err) => {
+              // setUpdateLoadingState(false);
+              setUpdateBookingState(false);
+              setUnauthorized(true);
 
-        // window.alert("There seems to be a problem, please try again!")
-      });
+              // window.alert("There seems to be a problem, please try again!")
+            })
+        : axiosbookingupdateinstance
+            .patch(
+              'update/?booking_type=Accommodation&itinerary_id=' +
+                props.selectedBooking.itinerary_id,
+              updated_bookings_arr[0],
+              {
+                headers: {
+                  Authorization: `Bearer ${props.token}`,
+                },
+              }
+            )
+            .then((res) => {
+              props._updateStayBookingHandler(res.data.bookings);
+              // props._updatePaymentHandler(res.data.payment_info);
+              props.getPaymentHandler();
+
+              setUpdateBookingState(false);
+            })
+            .catch((err) => {
+              // setUpdateLoadingState(false);
+              setUpdateBookingState(false);
+              setUnauthorized(true);
+
+              // window.alert("There seems to be a problem, please try again!")
+            });
+    }
   };
 
   const _newUpdateBookingHandler = ({
+    SelectedBookingId,
     Selected_id,
     itinerary_id,
     result_index,
@@ -496,9 +528,19 @@ const Booking = (props) => {
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
+    /* let room = [];
+    try {
+      for (var i = 0; i < new_booking.rooms_available.length; i++) {
+        if (new_booking.rooms_available[i].prices.min_price) {
+          room.push(new_booking.rooms_available[i]);
+          break;
+        }
+      }
+    } catch {} */
     let updated_bookings_arr = [
       {
-        id: Selected_id,
+        id: SelectedBookingId,
+        accommodation: Selected_id,
         result_index: result_index,
         category_id: category_id,
 
@@ -543,75 +585,134 @@ const Booking = (props) => {
     } */
 
     // const token = localStorage.getItem('access_token');
-    axiosbookingupdateinstance
-      .post('?booking_type=Accommodation', updated_bookings_arr, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {
-        props._updateStayBookingHandler(res.data.bookings);
-        setTimeout(function () {
-          props.getPaymentHandler();
-        }, 1000);
-        // props._updatePaymentHandler(res.data.payment_info);
-        setUpdateBookingState(false);
-      })
-      .catch((err) => {
-        // setUpdateLoadingState(false);
-        setUpdateBookingState(false);
-        setUnauthorized(true);
+    {
+      props.AddHotel
+        ? axiosbookingupdateinstance
+            .post('add/?booking_type=Accommodation', updated_bookings_arr[0], {
+              headers: {
+                Authorization: `Bearer ${props.token}`,
+              },
+            })
+            .then((res) => {
+              props._updateStayBookingHandler(res.data.bookings);
+              setTimeout(function () {
+                props.getPaymentHandler();
+              }, 1000);
+              // props._updatePaymentHandler(res.data.payment_info);
+              setUpdateBookingState(false);
+            })
+            .catch((err) => {
+              // setUpdateLoadingState(false);
+              setUpdateBookingState(false);
+              setUnauthorized(true);
 
-        // window.alert("There seems to be a problem, please try again!")
-      });
+              // window.alert("There seems to be a problem, please try again!")
+            })
+        : axiosbookingupdateinstance
+            .patch(
+              'update/?booking_type=Accommodation',
+              updated_bookings_arr[0],
+              {
+                headers: {
+                  Authorization: `Bearer ${props.token}`,
+                },
+              }
+            )
+            .then((res) => {
+              props._updateStayBookingHandler(res.data.bookings);
+              setTimeout(function () {
+                props.getPaymentHandler();
+              }, 1000);
+              // props._updatePaymentHandler(res.data.payment_info);
+              setUpdateBookingState(false);
+            })
+            .catch((err) => {
+              // setUpdateLoadingState(false);
+              setUpdateBookingState(false);
+              setUnauthorized(true);
+
+              // window.alert("There seems to be a problem, please try again!")
+            });
+    }
   };
   const _SelectedBookingHandler = ({
+    SelectedBookingId,
+    Selected_id,
     itinerary_id,
-    tailored_id,
-    itinerary_name,
-    user_selected,
+    result_index,
+    category_id,
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
+    /* let room = [];
+    try {
+      for (var i = 0; i < new_booking.rooms_available.length; i++) {
+        if (new_booking.rooms_available[i].prices.min_price) {
+          room.push(new_booking.rooms_available[i]);
+          break;
+        }
+      }
+    } catch {} */
     let updated_bookings_arr = [
       {
-        id: props.selectedBooking.id,
-        costings_breakdown: props.selectedBooking.costings_breakdown,
-        accommodation: props.selectedBooking.accommodation,
-        is_estimated_price: true,
-        alternate_to: null,
+        id: SelectedBookingId,
+        accommodation: Selected_id,
+        result_index: result_index,
+        category_id: category_id,
+
         booking_type: 'Accommodation',
-        itinerary_type: 'Tailored',
-        user_selected: user_selected,
+
         itinerary_id: itinerary_id,
-        tailored_itinerary: tailored_id,
-        itinerary_name: itinerary_name,
-        itinerary_db_id: null,
+
+        trace: traceId,
       },
     ];
+    {
+      props.AddHotel
+        ? axiosbookingupdateinstance
+            .post('add/?booking_type=Accommodation', updated_bookings_arr[0], {
+              headers: {
+                Authorization: `Bearer ${props.token}`,
+              },
+            })
+            .then((res) => {
+              props._updateStayBookingHandler(res.data.bookings);
+              setTimeout(function () {
+                props.getPaymentHandler();
+              }, 1000);
+              // props._updatePaymentHandler(res.data.payment_info);
+              setUpdateBookingState(false);
+            })
+            .catch((err) => {
+              // setUpdateLoadingState(false);
+              setUpdateBookingState(false);
+              setUnauthorized(true);
 
+              // window.alert("There seems to be a problem, please try again!")
+            })
+        : axiosbookingupdateinstance
+            .patch('update/?booking_type=Accommodation', updated_bookings_arr, {
+              headers: {
+                Authorization: `Bearer ${props.token}`,
+              },
+            })
+            .then((res) => {
+              props._updateStayBookingHandler(res.data.bookings);
+              setTimeout(function () {
+                props.getPaymentHandler();
+              }, 1000);
+              // props._updatePaymentHandler(res.data.payment_info);
+              setUpdateBookingState(false);
+            })
+            .catch((err) => {
+              // setUpdateLoadingState(false);
+              setUpdateBookingState(false);
+              setUnauthorized(true);
+
+              // window.alert("There seems to be a problem, please try again!")
+            });
+    }
     // const token = localStorage.getItem('access_token');
-    axiosbookingupdateinstance
-      .post('?booking_type=Accommodation', updated_bookings_arr, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {
-        props._updateStayBookingHandler(res.data.bookings);
-        setTimeout(function () {
-          props.getPaymentHandler();
-        }, 1000);
-        // props._updatePaymentHandler(res.data.payment_info);
-        setUpdateBookingState(false);
-      })
-      .catch((err) => {
-        // setUpdateLoadingState(false);
-        setUpdateBookingState(false);
-        setUnauthorized(true);
-
-        // window.alert("There seems to be a problem, please try again!")
-      });
   };
   const _loadAccommodationsHandler = () => {
     setUpdateLoadingState(true);
@@ -802,12 +903,14 @@ const Booking = (props) => {
                 {!noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: 'right' }}>
-                      <HotelBookingContainer
-                        SelectedBookingin={true}
-                        _setImagesHandler={props._setImagesHandler}
-                        selectedBooking={props.selectedBooking}
-                        booking={props.currentBooking}
-                      ></HotelBookingContainer>
+                      {!props.AddHotel && (
+                        <HotelBookingContainer
+                          SelectedBookingin={true}
+                          _setImagesHandler={props._setImagesHandler}
+                          selectedBooking={props.selectedBooking}
+                          booking={props.currentBooking}
+                        ></HotelBookingContainer>
+                      )}
 
                       {optionsJSX.length
                         ? optionsJSX

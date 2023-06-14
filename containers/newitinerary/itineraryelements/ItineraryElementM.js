@@ -64,20 +64,18 @@ const ItineraryElementM = (props) => {
           ) : null} */}
           <div className="flex flex-col">
             <div className="text-[1.2rem] font-normal">{props.heading}</div>
-            <Link
-              to={
-                props.data.bookings
-                  ? `${props.data.bookings[0]?.id}`
-                  : 'Stays-Head'
-              }
-              offset={-90}
-            >
-              <TransparentButton>
-                {props.data.bookings
-                  ? props.data?.bookings[0]?.detail?.name
-                  : 'View Selected Hotel'}
-              </TransparentButton>
-            </Link>
+            {props.data?.bookings && (
+              <Link
+                to={
+                  props.data.bookings
+                    ? `${props.data.bookings[0]?.id}`
+                    : 'Stays-Head'
+                }
+                offset={-90}
+              >
+                <TransparentButton>View Selected Hotel</TransparentButton>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -85,7 +83,7 @@ const ItineraryElementM = (props) => {
           <div className="pb-0 pt-2 text-sm font-[350]">
             {props.text ? props.text : null}
           </div>
-          {props.booking ? (
+          {/* {props.booking ? (
             <div className="flex flex-row items-end justify-between w-full">
               <LivelyButton className="font-medium mt-3  border-2 border-black rounded-md px-4 py-2  bg-white text-black">
                 View Booking
@@ -98,7 +96,7 @@ const ItineraryElementM = (props) => {
                 )}
               </div>
             </div>
-          ) : null}
+          ) : null} */}
         </div>
       </div>
     </div>

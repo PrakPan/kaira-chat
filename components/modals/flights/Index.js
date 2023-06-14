@@ -327,9 +327,10 @@ const Booking = (props) => {
       })
       .then((res) => {
         props._updateFlightBookingHandler(res.data.bookings);
-        setTimeout(function () {
+        /* setTimeout(function () {
           props.getPaymentHandler();
-        }, 1000);
+        }, 1000); */
+        props.getPaymentHandler();
         setUpdateBookingState(false);
       })
       .catch((err) => {

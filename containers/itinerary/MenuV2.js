@@ -389,14 +389,14 @@ const SimpleTabsV2 = (props) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [items]);
+  if (
+    props.token &&
+    !props.payment.user_allowed_to_pay &&
+    props.payment.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+  ) {
+    ClaimItinary(props.id, props.token);
+  }
   const _handleLoginClose = () => {
-    if (
-      props.token &&
-      !props.payment.user_allowed_to_pay &&
-      props.payment.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
-    ) {
-      ClaimItinary(props.id, props.token);
-    }
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
