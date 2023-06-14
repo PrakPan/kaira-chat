@@ -391,7 +391,8 @@ const TransfersContainer = (props) => {
     cost,
     costings_breakdown,
     origin_iata,
-    destination_iata
+    destination_iata,
+    user_Selected
   ) => {
     ga.event({
       action: 'Itinerary-bookings-flight_change',
@@ -412,6 +413,7 @@ const TransfersContainer = (props) => {
       costings_breakdown: costings_breakdown,
       origin_iata: origin_iata,
       destination_iata: destination_iata,
+      user_Selected: user_Selected,
     });
     props.setShowFlightModal(true);
   };
@@ -1037,6 +1039,7 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             heading={props?.transferBookings[0]?.booking_display_name}
             costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
+            userSelected={props?.transferBookings[0]?.user_selected}
             modes={'Taxi'}
             transferbookings={props.transferBookings}
             booking={props.transferBookings[0]}

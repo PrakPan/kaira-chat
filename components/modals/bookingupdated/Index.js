@@ -166,7 +166,7 @@ const Booking = (props) => {
       let filters = _generateFilterKeys(FILTERS_KEY);
 
       axiosaccommodationinstance
-        .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+        .post('/?limit=' + limit + '&offset=' + offset, {
           city: props.selectedBooking.city,
           check_in: props.selectedBooking.check_in,
           check_out: props.selectedBooking.check_out,
@@ -336,7 +336,7 @@ const Booking = (props) => {
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
     axiosaccommodationinstance
-      .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+      .post('/?limit=' + limit + '&offset=' + offset, {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
@@ -461,14 +461,16 @@ const Booking = (props) => {
 
         itinerary_id: itinerary_id,
 
-        trace: traceId,
+        trace: traceId
+          ? traceId
+          : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
     {
       props.AddHotel
         ? axiosbookingupdateinstance
             .post(
-              'add/?booking_type=Accommodation&itinerary_id=' +
+              'add/?booking_type=Accommodation' +
                 props.selectedBooking.itinerary_id,
               updated_bookings_arr[0],
               {
@@ -478,7 +480,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler(res.data);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
@@ -503,7 +505,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler(res.data);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
@@ -548,7 +550,9 @@ const Booking = (props) => {
 
         itinerary_id: itinerary_id,
 
-        trace: traceId,
+        trace: traceId
+          ? traceId
+          : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
     /* for (var i = 0; i < alternates.length; i++) {
@@ -594,7 +598,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler(res.data);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -619,7 +623,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler(res.data);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -664,7 +668,9 @@ const Booking = (props) => {
 
         itinerary_id: itinerary_id,
 
-        trace: traceId,
+        trace: traceId
+          ? traceId
+          : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
     {
@@ -676,7 +682,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler(res.data);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -697,7 +703,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler(res.data);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -720,7 +726,7 @@ const Booking = (props) => {
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
     axiosaccommodationinstance
-      .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+      .post('/?limit=' + limit + '&offset=' + offset, {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,

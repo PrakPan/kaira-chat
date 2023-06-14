@@ -101,7 +101,7 @@ const Day_I_Container = (props) => {
     return transportationType;
   }
   let dayIcontainer = [];
-  function divide(JsonArray, Arslab_elements) {
+  function divide(JsonArray, Arslab_elements, slab) {
     JsonArray.map((element, index) => {
       switch (element.element_type) {
         case 'transfer':
@@ -133,6 +133,7 @@ const Day_I_Container = (props) => {
           dayIcontainer.push(
             <ItineraryElement
               data={element}
+              day={slab}
               icon={element.icon}
               time="9:00AM"
               heading={element.heading}
@@ -205,7 +206,7 @@ const Day_I_Container = (props) => {
       }
     });
   }
-  divide(props.Days.slab_elements, Arslab_elements);
+  divide(props.Days.slab_elements, Arslab_elements, props.Days?.slab);
 
   return (
     <Container className="font-lexend">

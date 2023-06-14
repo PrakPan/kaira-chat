@@ -11,6 +11,8 @@ import {
   TransparentButton,
   newDayContainerTextpadding,
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
+import isSameDay from 'date-fns/isSameDay';
+import { parse } from 'date-fns';
 const padding = {
   initialLeft: '60px',
 };
@@ -65,6 +67,17 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
+function compareDates(dateString1, dateString2) {
+  if (dateString1 && dateString2) {
+    const date1 = parse(dateString1, 'dd/MM/yyyy', new Date());
+    const date2 = parse(dateString2, 'yyyy-MM-dd', new Date());
+
+    console.log(isSameDay(date1, date2));
+    return isSameDay(date1, date2);
+  }
+
+  return false;
+}
 const ItineraryElement = (props) => {
   useEffect(() => {}, []);
 
@@ -97,6 +110,7 @@ const ItineraryElement = (props) => {
         >
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>
+
             {props.data?.bookings && props.data?.bookings.length > 0 ? (
               <Link
                 to={

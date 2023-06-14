@@ -99,7 +99,7 @@ const HotelBookingContainer = ({
   function handleCheckboxChange(e) {
     if (token) {
       _SelectedBookingHandler({
-        SelectedBookingId: selectedBooking.id,
+        SelectedBookingId: selectedBooking?.id,
         itinerary_id: itinerary_id,
         tailored_id: tailored_id,
         user_selected: !booking?.user_selected,
@@ -160,7 +160,7 @@ const HotelBookingContainer = ({
                     : `${handleClick ? 'lg:h-[15rem]' : 'lg:h-[12rem]'}`
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
-                {booking.images[0]?.image ? (
+                {booking?.images[0]?.image ? (
                   <ImageLoader
                     dimensions={{ width: 400, height: 400 }}
                     dimensionsMobile={{ width: 400, height: 400 }}

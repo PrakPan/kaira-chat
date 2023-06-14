@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import ImageLoader from '../../../components/ImageLoader';
-import { format, parseISO } from 'date-fns';
+import { differenceInMinutes, format, parseISO } from 'date-fns';
 import * as ga from '../../../services/ga/Index';
 import { FaPlane } from 'react-icons/fa';
 import { IoCheckmark, IoClose } from 'react-icons/io5';
@@ -16,6 +16,38 @@ function formatDate(dateString) {
   }
   return format(date, 'EEE, dd MMMM');
 }
+function createCacheKey(checkIn, checkOut) {
+  return `${checkIn}-${checkOut}`;
+}
+
+function processBookingTimes(checkIn, checkOut) {
+  const cache = processBookingTimes.cache || (processBookingTimes.cache = {});
+
+  const cacheKey = createCacheKey(checkIn, checkOut);
+  if (cache[cacheKey]) {
+    return cache[cacheKey];
+  }
+
+  const checkInTime = format(new Date(checkIn), 'hh:mm a');
+  const checkOutTime = format(new Date(checkOut), 'hh:mm a');
+
+  const durationInMinutes = differenceInMinutes(
+    new Date(checkOut),
+    new Date(checkIn)
+  );
+  const durationHours = Math.floor(durationInMinutes / 60);
+  const durationMinutes = durationInMinutes % 60;
+
+  const result = {
+    checkInTime: checkInTime,
+    checkOutTime: checkOutTime,
+    duration: `${durationHours}h ${durationMinutes}m`,
+  };
+
+  cache[cacheKey] = result;
+  return result;
+}
+
 const Container = styled.div`
   display: grid;
   width: 100%;
@@ -98,6 +130,7 @@ const TransferModeContainer = (props) => {
     let duration = props.booking['duration'];
     let origin_iata = props.booking['origin_code'];
     let destination_iata = props.booking['destination_code'];
+    let user_Selected = props.booking.user_Selected;
     props._changeFlightHandler(
       name,
       itinerary_id,
@@ -114,7 +147,8 @@ const TransferModeContainer = (props) => {
       destination_iata,
       destination_city,
       taxi_type,
-      transfer_type
+      transfer_type,
+      user_Selected
     );
   }
   function HandleTransport(i) {
@@ -201,38 +235,47 @@ const TransferModeContainer = (props) => {
               !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
             }    cursor-pointer  relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-3  `}
           >
-            <div className="flex flex-row gap-2    ">
+            <div className="flex flex-row gap-6    ">
               {props.userSelected && (
-                <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-full">
-                  {props.booking?.airline_code ? (
-                    // <ImageLoader
-                    //   className="aspect-[3/2] object-contain"
-                    //   url={`/media/airline/${props.booking?.airline_code}.png`}
-                    //   leftalign
-                    //   dimensions={{ width: 800, height: 500 }}
-                    //   height="2rem"
-                    //   width="auto"
-                    //   widthmobile="4rem"
-                    // ></ImageLoader>
-                    <TransportIconFetcher
-                      TransportMode={props.booking_type}
-                      Instyle={{
-                        fontSize: '2.75rem',
-                        height: '3rem',
-                        width: '4rem',
-                        color: 'black',
-                      }}
-                    />
-                  ) : (
-                    <TransportIconFetcher
-                      TransportMode={props.booking_type}
-                      Instyle={{
-                        fontSize: '2.75rem',
-                        height: '3rem',
-                        width: '5rem',
-                        color: 'black',
-                      }}
-                    />
+                <div>
+                  <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[4em] min-w-[4rem] lg:min-h-[4rem] min-h-[4rem]  rounded-full">
+                    {props.booking?.airline_code ? (
+                      <ImageLoader
+                        className=" object-contain"
+                        url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${props.booking?.airline_code}.png`}
+                        leftalign
+                        dimensions={{ width: 800, height: 500 }}
+                        borderRadius="100%"
+                        height="4rem"
+                        width="4rem"
+                        widthmobile="4rem"
+                      ></ImageLoader>
+                    ) : (
+                      // <TransportIconFetcher
+                      //   TransportMode={props.booking_type}
+                      //   Instyle={{
+                      //     fontSize: '2.75rem',
+                      //     height: '3rem',
+                      //     width: '4rem',
+                      //     color: 'black',
+                      //   }}
+                      // />
+                      <TransportIconFetcher
+                        TransportMode={props.booking_type}
+                        Instyle={{
+                          fontSize: '2.75rem',
+                          height: '3rem',
+                          width: '5rem',
+                          color: 'black',
+                        }}
+                      />
+                    )}
+                  </div>
+
+                  {props.booking?.airline_code && (
+                    <div className="flex font-normal text-sm pl-2 mt-1 min-w-max">
+                      {props?.booking.airline_name}
+                    </div>
                   )}
                 </div>
               )}
@@ -272,10 +315,21 @@ const TransferModeContainer = (props) => {
                   {isDesktop && (
                     <div className="lg:flex   flex-row  gap-3  ">
                       <div className="flex flex-col">
-                        <div className="text-[#01202B] font-medium">
-                          ({props.booking.origin_code})
+                        <div className="text-[#01202B] text-lg font-medium min-w-max">
+                          <span>
+                            {
+                              processBookingTimes(
+                                props.booking.check_in,
+                                props.booking.check_out
+                              ).checkInTime
+                            }
+                          </span>
+
+                          <span className="font-[300] ml-1 ">
+                            ({props.booking.origin_code})
+                          </span>
                         </div>
-                        <div className="min-w-max">
+                        <div className="min-w-max text-[0.8rem] -mt-1">
                           {formatDate(props.booking.check_in)}
                         </div>
                         <div className="min-w-max">{props.booking.city}</div>
@@ -287,11 +341,19 @@ const TransferModeContainer = (props) => {
                           <div className="flex flex-col  justify-center items-center font-[200]">
                             <FaPlane className="" />
                             {props.userSelected ? (
-                              <div>
-                                Nonstop
-                                {props.booking.duration
-                                  ? ` (${props.booking.duration}h)`
-                                  : null}
+                              <div className="min-w-max text-[0.8rem]">
+                                {props.booking.via_airports
+                                  ? '(to Lay)'
+                                  : '(Nonstop)'}
+
+                                <span className="ml-1">
+                                  {props.booking.duration
+                                    ? ` (${props.booking.duration}h)`
+                                    : processBookingTimes(
+                                        props.booking.check_in,
+                                        props.booking.check_out
+                                      ).duration}
+                                </span>
                               </div>
                             ) : null}
                           </div>
@@ -301,10 +363,18 @@ const TransferModeContainer = (props) => {
                       </div>
                       <div className="flex flex-row justify-between w-full">
                         <div>
-                          <div className="text-[#01202B] font-medium">
-                            ({props.booking.destination_code})
+                          <div className="text-[#01202B] text-lg font-medium min-w-max">
+                            {
+                              processBookingTimes(
+                                props.booking.check_in,
+                                props.booking.check_out
+                              ).checkOutTime
+                            }
+                            <span className="font-[300] ml-1">
+                              ({props.booking.destination_code})
+                            </span>
                           </div>
-                          <div className="min-w-max">
+                          <div className="min-w-max text-[0.8rem] -mt-1">
                             {formatDate(props.booking.check_out)}
                           </div>
                           <div className="min-w-max">
@@ -325,13 +395,19 @@ const TransferModeContainer = (props) => {
                        
                       </div>
                       </div> */}
-                      <div className="flex font-medium pl-2 ">
-                        {props?.booking.airline_name}
-                      </div>
+
                       {props.booking.duration && (
                         <div className="flex pl-2  font-[300]">
                           <div>
-                            (Nonstop)
+                            {props.booking.via_airports
+                              ? '(to Lay)'
+                              : '(Nonstop)'}
+                            {
+                              processBookingTimes(
+                                props.booking.check_in,
+                                props.booking.check_out
+                              ).duration
+                            }
                             {props.booking.duration
                               ? ` (${props.booking.duration}h)`
                               : null}
@@ -346,7 +422,7 @@ const TransferModeContainer = (props) => {
                       props.payment?.user_allowed_to_pay && (
                         <div
                           onClick={() => HandleFlights(props.index)}
-                          className="px-2 min-w-fit bg-[#F7E700] py-[6px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                          className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                         >
                           Change Flight
                         </div>
@@ -356,7 +432,7 @@ const TransferModeContainer = (props) => {
                   !props?.payment?.paid_user &&
                   props.payment?.user_allowed_to_pay && (
                     <div
-                      className="flex mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
+                      className="flex lg:mr-0 mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
               "
                     >
                       {/* <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
@@ -365,7 +441,7 @@ const TransferModeContainer = (props) => {
 
                       <div
                         onClick={() => HandleFlights(props.index)}
-                        className="px-4 bg-[#F7E700] py-[6px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                        className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
                       >
                         Add Flight
                       </div>
@@ -397,7 +473,9 @@ const TransferModeContainer = (props) => {
                     <div>
                       {props.userSelected ? (
                         <div>
-                          Nonstop
+                          {props.booking.via_airports
+                            ? '(to Lay)'
+                            : '(Nonstop)'}
                           {props.booking.duration
                             ? ` (${props.booking.duration}h)`
                             : null}
@@ -547,7 +625,7 @@ const TransferModeContainer = (props) => {
               props.payment?.user_allowed_to_pay && (
                 <div
                   onClick={() => HandleTransport(props.index)}
-                  className="px-4  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[6px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                  className="px-[1.6rem]  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[8px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
                 >
                   Change Taxi
                 </div>

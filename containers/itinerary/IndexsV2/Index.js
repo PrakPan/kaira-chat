@@ -325,6 +325,28 @@ const Itinerary = (props) => {
     // if(itineraryLoading && !itineraryNotCreated){
     // if(stayLoading && !stayBookings){
   }, []);
+  const _updateTransferBooking = (arr1, arr2) => {
+    const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
+
+    arr2.forEach((element) => {
+      const newId = element.id;
+
+      // Check if the ID already exists in the combined array
+      const existingElementIndex = combinedArray.findIndex(
+        (el) => el.id === newId
+      );
+
+      if (existingElementIndex !== -1) {
+        // Replace the existing element's value with the new value
+        combinedArray[existingElementIndex] = element;
+      } else {
+        // Add the new element to the combined array
+        combinedArray.push(element);
+      }
+    });
+
+    return combinedArray;
+  };
 
   const _updateFlightBookingHandler = (json) => {
     setShowFlightModal(false);
@@ -339,7 +361,7 @@ const Itinerary = (props) => {
   const _updateStayBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
-    setStayBookings(json);
+    setStayBookings(_updateTransferBooking(stayBookings, json));
   };
 
   const _updateActivityBookingHandler = (json) => {
@@ -350,9 +372,11 @@ const Itinerary = (props) => {
     setShowFlightModal(false);
     setTransferBookings(json);
   };
+
   const _updateTaxiBookingHandler = (json) => {
     setShowTaxiModal(false);
-    setTransferBookings(json);
+
+    setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
   const _selectTaxiHandler = (
     bookings,
