@@ -248,10 +248,9 @@ const HotelBookingContainer = ({
                       ) : null}
                     </div>
                   )}
-                  {(booking.check_in &&
-                    ITINERARY_STATUSES.itinerary_prepared !==
-                      payment.itinerary_status) ||
-                  payment?.is_stock !== True ? (
+                  {booking.check_in &&
+                  ITINERARY_STATUSES.itinerary_prepared !==
+                    payment.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       <div className="flex flex-row gap-2 items-center">
                         <BsCalendar2 className="text-sm text-[#7A7A7A]" />
@@ -273,10 +272,9 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : (
-                    (currentBooking &&
-                      ITINERARY_STATUSES.itinerary_prepared !==
-                        payment.itinerary_status) ||
-                    (payment?.is_stock !== True && (
+                    currentBooking &&
+                    ITINERARY_STATUSES.itinerary_prepared !==
+                      payment.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                         <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm text-[#7A7A7A]" />
@@ -297,7 +295,7 @@ const HotelBookingContainer = ({
                           </div>
                         </div>
                       </div>
-                    ))
+                    )
                   )}
 
                   {booking.costings_breakdown ? (

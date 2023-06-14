@@ -10,6 +10,7 @@ import { LivelyButton } from '../../../components/LiveleyButton';
 import { MdEdit } from 'react-icons/md';
 import useMediaQuery from '../../../components/media';
 import { ITINERARY_STATUSES } from '../../../services/constants';
+import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -103,6 +104,21 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
+  const [addbooking, setaddboking] = useState(props.booking?.user_selected);
+  function handleCheckboxChange(e) {
+    if (props.token) {
+      // _SelectedBookingHandler({
+      //   SelectedBookingId: selectedBooking?.id,
+      //   itinerary_id: itinerary_id,
+      //   tailored_id: tailored_id,
+      //   user_selected: !booking?.user_selected,
+      //   index: index,
+      // });
+      setaddboking(!addbooking);
+      e.stopPropagation();
+    } else {
+    }
+  }
   const isDesktop = useMediaQuery('(min-width:1024px)');
   function HandleFlights(i) {
     let name = props.booking['name'];
@@ -637,14 +653,44 @@ const TransferModeContainer = (props) => {
               )}
             </div>
             {isDesktop &&
-              props.booking_type == 'Taxi' &&
               !props?.payment?.paid_user &&
               props.payment?.user_allowed_to_pay && (
                 <div
                   onClick={() => HandleTransport(props.index)}
                   className="px-[1.6rem]  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[8px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
                 >
-                  Change Taxi
+                  {props.booking.user_selected
+                    ? `Change ${props.booking_type}`
+                    : 'Add to Itinerary'}
+                </div>
+              )}
+            {!props?.payment?.paid_user &&
+              props.payment?.user_allowed_to_pay && (
+                <div>
+                  <div
+                    className={`absolute  ${
+                      true
+                        ? 'lg:bottom-4 bottom-[1.5rem] '
+                        : `${
+                            props.payment?.paid_user ||
+                            !props.payment?.user_allowed_to_pay
+                              ? 'lg:bottom-10 bottom-[1.2rem]'
+                              : 'lg:bottom-10 bottom-[2.5rem]'
+                          }`
+                    } right-8 -m-3`}
+                  >
+                    <div
+                      onClick={(e) => {
+                        handleCheckboxChange(e);
+                      }}
+                      className="flex flex-row gap-1 items-center  cursor-pointer"
+                    >
+                      <CheckboxFormComponent checked={addbooking} />
+                      <label className="text-center">
+                        {addbooking ? 'Added Booking' : 'Add Booking'}
+                      </label>
+                    </div>
+                  </div>
                 </div>
               )}
           </div>
