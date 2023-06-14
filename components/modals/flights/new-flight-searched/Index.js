@@ -4,20 +4,18 @@ import styled from 'styled-components'
  import SectionThree from './SectionThree';
 import SectionFour from './SectionFour';
   const Container = styled.div`
-    width: 100%;        
+    width: 100%;
     background-color: white;
-     border-radius: 10px;
-    display: flex;
-    flex-flow: column;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 3.7fr 1fr;
     height: 100%;
     margin-bottom: 0.5rem;
-    @media screen and (min-width: 768px){
-        border-radius: 10px;
-        position: relative;
-
+    @media screen and (min-width: 768px) {
+      border-radius: 10px;
+      position: relative;
     }
-    
-`;
+  `;
 
  
  
@@ -27,7 +25,7 @@ const Booking = (props) =>{
         <Container className='border' style={{ borderRadius: "10px"}}>
           <SectionTwo data={props.data}></SectionTwo>
          <SectionThree selectedBooking={props.selectedBooking} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         <SectionFour selectedBooking={props.selectedBooking} data={props.data} _updateBookingHandler={props._updateBookingHandler}></SectionFour>
+         {/* <SectionFour selectedBooking={props.selectedBooking} data={props.data} _updateBookingHandler={props._updateBookingHandler}></SectionFour> */}
 
         </Container>
     );

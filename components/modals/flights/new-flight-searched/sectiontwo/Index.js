@@ -5,6 +5,7 @@ import styled from 'styled-components'
   import { getHumanTime } from '../../../../../services/getHumanTime';
   import { getHumanDate } from '../../../../../services/getHumanDate';
 import ImageLoader from '../../../../ImageLoader';
+import { FaPlane } from 'react-icons/fa';
  
 const DetailsGridContainer = styled.div`
 display: grid;
@@ -12,26 +13,86 @@ grid-template-columns: max-content auto max-content;
 grid-column-gap: 0.5rem;
 grid-row-gap: 0.2rem;
 line-height: 1;
-
+margin-block : auto;
 height: max-content;
 `;
+const DottedLine = styled.div`
+  position: relative;
+  height: 2px;
+  width: 100%;
 
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, #7A7A7A 5px, transparent 5px);
+    background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
+  }
+`;
 const GridContainer = styled.div`
     display: grid;
-    grid-template-columns: 1fr 6fr;
+    grid-template-columns: auto 6fr;
+    gap : 1.5rem;
     padding: 1rem 0.5rem;
   
 `;
-const LogoContainer   = styled.div`
+const Plan = styled.div`
 
+position: absolute;
+    left: 50%;
+    top: 0%;
+    transform: translateY(-45%)`;
+const LogoContainer = styled.div`
+  width: 80px; /* Adjust this value to your desired size */
+  height: 80px; /* Adjust this value to your desired size */
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
+    rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 `;
- 
+const Image = styled.img`
+  object-fit: contain;
+  transform: scale(1.05);
+`;
+const Text = styled.div`
+  font-weight: 300;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 0.25rem;
+`;
+const Circle = styled.div`
+  border: 1px solid #7a7a7a;
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  background: white;
+  position: absolute;
+  z-index: 1;
+  top : 50%;
+  transform: translateY(-38%);
+`;
 const Booking = (props) =>{
-    const [url, setUrl] = useState('media/website/grey.png')
+  console.log('props: ', props);
+  const [url, setUrl] = useState('media/website/grey.png')
+  const [airLineName , setAirLineName] = useState('')
     useEffect(() => {
         if(props.data)
-        setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.AirlineCode+".png");
-
+        // setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.AirlineCode+".png");
+        setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/"+props.data.AirlineCode+".png");
+      if (
+        props.data.Segments &&
+        props.data.Segments[0] &&
+        props.data.Segments[0][0] && 
+        props.data.Segments[0][0].Airline
+      )
+        setAirLineName(props.data.Segments[0][0].Airline.AirlineName);
+      
       }, [props.data]);
     const getTime = (datetime) => {
         return(getHumanTime(datetime.substring(11,16)));
@@ -45,16 +106,12 @@ const Booking = (props) =>{
     }
       return (
         <GridContainer>
-          <LogoContainer>
-            <img
-              src={url}
-              dimensions={{ width: 200, heght: 200 }}
-              width="80%"
-              leftalign
-              widthmobile="80%"
-            ></img>
-
-          </LogoContainer>
+          <div>
+            <LogoContainer>
+              <Image src={url}></Image>
+            </LogoContainer>
+            <Text>{airLineName}</Text>
+          </div>
           <DetailsGridContainer>
             <div style={{ display: "flex", gap: "0.25rem" }}>
               {props.data.Segments ? (
@@ -62,8 +119,8 @@ const Booking = (props) =>{
                   <div
                     style={{
                       margin: "0",
-                      fontWeight: "700",
-                      fontSize: "0.95rem",
+                      fontWeight: "600",
+                      fontSize: "20px",
                     }}
                     className="font-lexend"
                   >
@@ -80,8 +137,8 @@ const Booking = (props) =>{
                   <div
                     style={{
                       margin: "0",
-                      fontWeight: "400",
-                      fontSize: "0.95rem",
+                      fontWeight: "300",
+                      fontSize: "20px",
                     }}
                     className="font-lexend"
                   >
@@ -92,8 +149,8 @@ const Booking = (props) =>{
                 ) : null
               ) : null}
             </div>
-            <div style={{ margin: "0", position: "relative" }}>
-              <div
+            <div style={{ margin: "0", position: "relative", height: "0px" , top : '50%' }}>
+              {/* <div
                 style={{
                   position: "absolute",
                   height: "0.9rem",
@@ -119,7 +176,13 @@ const Booking = (props) =>{
                 }}
               >
                 <ImageLoader url={"media/icons/right-arrow-flight-12.png"} />
-              </div>
+              </div> */}
+              <Circle style={{ left: 0 }} />
+              <DottedLine></DottedLine>
+              <Circle style={{ right: 0 }} />
+              <Plan>
+                <FaPlane style={{ fontSize: "1.25rem" }} />
+              </Plan>
             </div>
             <div style={{ display: "flex", gap: "0.25rem" }}>
               {props.data.Segments ? (
@@ -127,8 +190,8 @@ const Booking = (props) =>{
                   <div
                     style={{
                       margin: "0",
-                      fontWeight: "700",
-                      fontSize: "0.95rem",
+                      fontWeight: "600",
+                      fontSize: "20px",
                     }}
                     className="font-lexend"
                   >
@@ -148,8 +211,8 @@ const Booking = (props) =>{
                   <div
                     style={{
                       margin: "0",
-                      fontWeight: "400",
-                      fontSize: "0.95rem",
+                      fontWeight: "300",
+                      fontSize: "20px",
                     }}
                     className="font-lexend"
                   >
@@ -167,10 +230,11 @@ const Booking = (props) =>{
                   <div
                     className="font-lexend"
                     style={{
-                      fontSize: "0.75rem",
+                      fontSize: "14px",
                       fontWeight: "300",
-                      color: "rgba(91, 89, 89, 1)",
-                      textAlign: "right",
+                      // color: "rgba(91, 89, 89, 1)",
+                      // textAlign: "right",
+                      marginTop: "0.25rem",
                     }}
                   >
                     {getDate(props.data.Segments[0][0].Origin.DepTime)}
@@ -191,7 +255,7 @@ const Booking = (props) =>{
                       style={{
                         fontSize: "0.65rem",
                         fontWeight: "300",
-                        color: "rgba(91, 89, 89, 1)",
+                        // color: "rgba(91, 89, 89, 1)",
                         marginTop: "-4px",
                       }}
                     >
@@ -205,7 +269,7 @@ const Booking = (props) =>{
                       style={{
                         fontSize: "0.65rem",
                         fontWeight: "300",
-                        color: "rgba(91, 89, 89, 1)",
+                        // color: "rgba(91, 89, 89, 1)",
                         marginTop: "-4px",
                       }}
                     >
@@ -221,10 +285,11 @@ const Booking = (props) =>{
                   <div
                     className="font-lexend"
                     style={{
-                      fontSize: "0.75rem",
+                      fontSize: "14px",
                       fontWeight: "300",
-                      color: "rgba(91, 89, 89, 1)",
-                      textAlign: "right",
+                      // color: "rgba(91, 89, 89, 1)",
+                      // textAlign: "right",
+                      marginTop: "0.25rem",
                     }}
                   >
                     {getDate(
@@ -245,10 +310,10 @@ const Booking = (props) =>{
                   <div
                     className="font-lexend"
                     style={{
-                      fontSize: "0.75rem",
+                      fontSize: "14px",
                       fontWeight: "300",
-                      color: "rgba(91, 89, 89, 1)",
-                      textAlign: "right",
+                      // color: "rgba(91, 89, 89, 1)",
+                      // textAlign: "right",
                       marginTop: "0.25rem",
                     }}
                   >
@@ -265,10 +330,10 @@ const Booking = (props) =>{
                   <div
                     className="font-lexend"
                     style={{
-                      fontSize: "0.75rem",
+                      fontSize: "14px",
                       fontWeight: "300",
-                      color: "rgba(91, 89, 89, 1)",
-                      textAlign: "right",
+                      // color: "rgba(91, 89, 89, 1)",
+                      // textAlign: "right",
                       marginTop: "0.25rem",
                     }}
                   >
@@ -291,10 +356,10 @@ const Booking = (props) =>{
                   <div
                     className="font-lexend"
                     style={{
-                      fontSize: "0.75rem",
+                      fontSize: "14px",
                       fontWeight: "300",
-                      color: "rgba(91, 89, 89, 1)",
-                      textAlign: "right",
+                      // color: "rgba(91, 89, 89, 1)",
+                      // textAlign: "right",
                       marginTop: "0.25rem",
                     }}
                   >
@@ -314,10 +379,10 @@ const Booking = (props) =>{
                   <div
                     className="font-lexend"
                     style={{
-                      fontSize: "0.75rem",
+                      fontSize: "14px",
                       fontWeight: "300",
-                      color: "rgba(91, 89, 89, 1)",
-                      textAlign: "right",
+                      // color: "rgba(91, 89, 89, 1)",
+                      // textAlign: "right",
                       marginTop: "0.25rem",
                     }}
                   >

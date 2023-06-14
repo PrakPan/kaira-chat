@@ -27,21 +27,41 @@ font-weight: 300;
 margin: 0;
 text-align: right;
 `;
-const Section= (props) => {
-   if(props.data)
-    return(
-      <Container className='font-lexend'>  
-            
-                <div></div>
-                <div >
-                <Cost className='font-lexend'>
-                {props.data.Fare ? props.data.Fare.OfferedFare ?  "₹ "+ getIndianPrice(Math.round(props.data.Fare.OfferedFare))+" /-" : null : null}
-                </Cost>
-                <Pax>{"For "+props.selectedBooking.pax.number_of_adults + " Adult(s)" + (props.selectedBooking.pax.number_of_children ? ", " + props.selectedBooking.pax.number_of_children + " Child(s)" : "")}</Pax>
-                </div>
-      </Container>
-  ); 
-  else return null;
+const Section = (props) => {
+  var adult 
+  if (props.selectedBooking.pax.number_of_adults > 1) adult = ' Adults'
+  else adult = ' adult'
+   var child;
+   if (props.selectedBooking.pax.number_of_children > 1) child = " Childs";
+   else child = " Child";
+
+    if (props.data)
+      return (
+        <Container className="font-lexend">
+          <div></div>
+          <div>
+            <Cost className="font-lexend">
+              {props.data.Fare
+                ? props.data.Fare.OfferedFare
+                  ? "₹ " +
+                    getIndianPrice(Math.round(props.data.Fare.OfferedFare)) +
+                    " /-"
+                  : null
+                : null}
+            </Cost>
+            <Pax>
+              {props.selectedBooking.pax.number_of_adults +
+                adult +
+                (props.selectedBooking.pax.number_of_children
+                  ? ", " +
+                    props.selectedBooking.pax.number_of_children +
+                    child
+                  : "")}
+            </Pax>
+          </div>
+        </Container>
+      );
+    else return null;
 }
 
 export default Section;

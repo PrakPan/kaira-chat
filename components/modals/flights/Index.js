@@ -40,7 +40,7 @@ const OptionsContainer = styled.div`
 `;
 const ContentContainer = styled.div`
   @media screen and (min-width: 768px) {
-    width: 70%;
+    width: 95%;
     margin: auto;
   }
 `;
@@ -403,7 +403,8 @@ const Booking = (props) => {
           backdrop
           style={{ zIndex: 1501 }}
           className="font-lexend"
-          show={props.showFlightModal}
+          // show={props.showFlightModal}
+          show={true}
           onHide={props.setHideFlightModal}
           // zIndex='1501'
         >
