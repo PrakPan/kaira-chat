@@ -63,6 +63,7 @@ const Subtext = styled.p`
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [ImageLoaded, setImageLoaded] = useState(false);
+  console.log('ImageLoaded: ', ImageLoaded);
   let filters_to_show = "";
   try {
     for (var i = 0; i < props.filters.length; i++) {
@@ -80,23 +81,26 @@ const Experiences = (props) => {
         }}
       >
         <div>
-          <ImageLoader
-            hoverpointer
-            url={props.img}
-            dimensions={{ width: 800, height: 800 }}
-            borderRadius="10px"
-            dimensionsMobile={{ width: 800, height: 800 }}
-            onload={() => setImageLoaded(true)}
-          ></ImageLoader>
+          <div>
+            <ImageLoader
+              hoverpointer
+              url={props.img}
+              dimensions={{ width: 800, height: 800 }}
+              borderRadius="10px"
+              dimensionsMobile={{ width: 800, height: 800 }}
+              // style={{display : ImageLoaded ? 'none' : 'initial'}}
+              onload={() => setImageLoaded(true)}
+            ></ImageLoader>
+          </div>
         </div>
-        {!ImageLoaded && <SkeletonCard />}
+        {/* {!ImageLoaded && <SkeletonCard />} */}
 
         <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
           {/* {ImageLoaded ? ( */}
-            <>
-              <Name className="font-lexend">{props.location}</Name>
-              <Subtext className="font-lexend">{filters_to_show}</Subtext>
-            </>
+          <>
+            <Name className="font-lexend">{props.location}</Name>
+            <Subtext className="font-lexend">{filters_to_show}</Subtext>
+          </>
           {/* // ) : (
           //   <>
           //     <Name className="font-lexend">

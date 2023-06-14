@@ -348,7 +348,7 @@ const Homepage = (props) => {
     <MapInfo>
       <b>{location.name}</b>
       <div>
-        {location.most_popular_for.map((e, i) =>
+        {location.most_popular_for?.map((e, i) =>
           i != 0 ? <span key={i} >{", " + e}</span> : <span key={i} >{e}</span>
         )}
       </div>
