@@ -89,9 +89,11 @@ const DrawerContainer = styled.div`
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   overscroll-behavior: contain;
   background: ${(props) => (props.bgColor ? props.bgColor : "white")};
+  ${(props) => props.mobileWidth && `width : ${props.mobileWidth}`};
 
   @media screen and (min-width: 768px) {
     top: ${(props) => (props.top ? props.top : "0%")};
+    ${(props) => props.width && `width : ${props.width}`};
   }
   &::-webkit-scrollbar {
     display: none;

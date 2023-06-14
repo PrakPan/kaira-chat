@@ -7,8 +7,6 @@ import SectionFour from './SectionFour';
     width: 100%;
     background-color: white;
     border-radius: 10px;
-    display: grid;
-    grid-template-columns: 3.7fr 1fr;
     height: 100%;
     margin-bottom: 0.5rem;
     @media screen and (min-width: 768px) {
@@ -16,19 +14,38 @@ import SectionFour from './SectionFour';
       position: relative;
     }
   `;
+const GridContainer = styled.div`
+    @media screen and (min-width: 768px) {
 
+  display: grid;
+  grid-template-columns: 3.7fr 1fr;
+    }
+  `;
  
  
  
 const Booking = (props) =>{
-     return(
-        <Container className='border' style={{ borderRadius: "10px"}}>
+  console.log('propsShot: ', props);
+  return (
+    <>
+      <Container className="border" style={{ borderRadius: "10px" }}>
+        <GridContainer>
           <SectionTwo data={props.data}></SectionTwo>
-         <SectionThree selectedBooking={props.selectedBooking} _deselectBookingHandler={props._deselectBookingHandler} is_selecting={props.is_selecting} data={props.data}></SectionThree>
-         {/* <SectionFour selectedBooking={props.selectedBooking} data={props.data} _updateBookingHandler={props._updateBookingHandler}></SectionFour> */}
-
-        </Container>
-    );
+          <SectionThree
+            selectedBooking={props.selectedBooking}
+            _deselectBookingHandler={props._deselectBookingHandler}
+            is_selecting={props.is_selecting}
+            data={props.data}
+          ></SectionThree>
+        </GridContainer>
+        <SectionFour
+          selectedBooking={props.selectedBooking}
+          data={props.data}
+          _updateBookingHandler={props._updateBookingHandler}
+        ></SectionFour>
+      </Container>
+    </>
+  );
  
 }
 

@@ -6,7 +6,7 @@ import styled from 'styled-components'
   import { getHumanDate } from '../../../../../services/getHumanDate';
 import ImageLoader from '../../../../ImageLoader';
 import { FaPlane } from 'react-icons/fa';
- 
+ import media from '../../../../media'
 const DetailsGridContainer = styled.div`
 display: grid;
 grid-template-columns: max-content auto max-content;
@@ -33,11 +33,14 @@ const DottedLine = styled.div`
   }
 `;
 const GridContainer = styled.div`
+  padding: 0.75rem ;
+
+  @media screen and (min-width: 768px) {
     display: grid;
     grid-template-columns: auto 6fr;
-    gap : 1.5rem;
+    gap: 1.5rem;
     padding: 1rem 0.5rem;
-  
+  }
 `;
 const Plan = styled.div`
 
@@ -46,15 +49,18 @@ position: absolute;
     top: 0%;
     transform: translateY(-45%)`;
 const LogoContainer = styled.div`
-  width: 80px; /* Adjust this value to your desired size */
-  height: 80px; /* Adjust this value to your desired size */
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em,
-    rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+  
+  @media screen and (min-width: 768px) {
+    width: 80px;
+    height: 80px;
+  }
 `;
 const Image = styled.img`
   object-fit: contain;
@@ -65,6 +71,12 @@ const Text = styled.div`
   font-size: 13px;
   text-align: center;
   margin-top: 0.25rem;
+  @media screen and (max-width: 768px) {
+    font-weight: 500;
+    text-align: left;
+    margin-inline: 1rem;
+    font-size: 15px;
+  }
 `;
 const Circle = styled.div`
   border: 1px solid #7a7a7a;
@@ -77,14 +89,41 @@ const Circle = styled.div`
   top : 50%;
   transform: translateY(-38%);
 `;
+const FlexBox = styled.div`
+  margin-bottom: 0rem;
+  @media screen and (max-width: 768px) {
+    display: grid;
+    grid-template-columns: auto 6fr;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+`;
 const Booking = (props) =>{
-  console.log('props: ', props);
+    let isPageWide = media("(min-width: 768px)");
+
   const [url, setUrl] = useState('media/website/grey.png')
   const [airLineName , setAirLineName] = useState('')
-    useEffect(() => {
+  useEffect(() => {
+      
         if(props.data)
         // setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.AirlineCode+".png");
-        setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/"+props.data.AirlineCode+".png");
+          if(props.data.AirlineCode) setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/"+props.data.AirlineCode+".png");
+          else {
+            if (
+              props.data.costings_breakdown &&
+              props.data.costings_breakdown.Segments &&
+              props.data.costings_breakdown.Segments[0] &&
+              props.data.costings_breakdown.Segments[0][0] &&
+              props.data.costings_breakdown.Segments[0][0].Airline
+            ) {
+              setUrl(
+                "https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" +
+                  props.data.costings_breakdown.Segments[0][0].Airline
+                    .AirlineCode +
+                  ".png"
+              );
+            }
+          }
       if (
         props.data.Segments &&
         props.data.Segments[0] &&
@@ -106,12 +145,30 @@ const Booking = (props) =>{
     }
       return (
         <GridContainer>
-          <div>
+          <FlexBox>
             <LogoContainer>
               <Image src={url}></Image>
             </LogoContainer>
-            <Text>{airLineName}</Text>
-          </div>
+            <div>
+              <Text>{airLineName}</Text>
+              {!isPageWide &&
+                (props.data.Segments ? (
+                  props.data.Segments[0].length ? (
+                    props.data.Segments[0].length > 1 ? (
+                      <Text style={{ marginTop: "0", fontWeight: "300" }}>
+                        {props.data.Segments[0].length > 1
+                          ? props.data.Segments[0].length - 1 + " stop(s)"
+                          : "No Stops"}
+                      </Text>
+                    ) : (
+                      <Text style={{ marginTop: "0", fontWeight: "300" }}>
+                        No Stops
+                      </Text>
+                    )
+                  ) : null
+                ) : null)}
+            </div>
+          </FlexBox>
           <DetailsGridContainer>
             <div style={{ display: "flex", gap: "0.25rem" }}>
               {props.data.Segments ? (
@@ -149,7 +206,14 @@ const Booking = (props) =>{
                 ) : null
               ) : null}
             </div>
-            <div style={{ margin: "0", position: "relative", height: "0px" , top : '50%' }}>
+            <div
+              style={{
+                margin: "0",
+                position: "relative",
+                height: "0px",
+                top: "50%",
+              }}
+            >
               {/* <div
                 style={{
                   position: "absolute",
@@ -247,37 +311,38 @@ const Booking = (props) =>{
               )}
             </div>
             <div>
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  props.data.Segments[0].length > 1 ? (
-                    <div
-                      className="font-lexend text-center"
-                      style={{
-                        fontSize: "0.65rem",
-                        fontWeight: "300",
-                        // color: "rgba(91, 89, 89, 1)",
-                        marginTop: "-4px",
-                      }}
-                    >
-                      {props.data.Segments[0].length > 1
-                        ? props.data.Segments[0].length - 1 + " stop(s)"
-                        : "No Stops"}
-                    </div>
-                  ) : (
-                    <div
-                      className="font-lexend text-center"
-                      style={{
-                        fontSize: "0.65rem",
-                        fontWeight: "300",
-                        // color: "rgba(91, 89, 89, 1)",
-                        marginTop: "-4px",
-                      }}
-                    >
-                      No Stops
-                    </div>
-                  )
-                ) : null
-              ) : null}
+              {isPageWide &&
+                (props.data.Segments ? (
+                  props.data.Segments[0].length ? (
+                    props.data.Segments[0].length > 1 ? (
+                      <div
+                        className="font-lexend text-center"
+                        style={{
+                          fontSize: "0.65rem",
+                          fontWeight: "300",
+                          // color: "rgba(91, 89, 89, 1)",
+                          marginTop: "-4px",
+                        }}
+                      >
+                        {props.data.Segments[0].length > 1
+                          ? props.data.Segments[0].length - 1 + " stop(s)"
+                          : "No Stops"}
+                      </div>
+                    ) : (
+                      <div
+                        className="font-lexend text-center"
+                        style={{
+                          fontSize: "0.65rem",
+                          fontWeight: "300",
+                          // color: "rgba(91, 89, 89, 1)",
+                          marginTop: "-4px",
+                        }}
+                      >
+                        No Stops
+                      </div>
+                    )
+                  ) : null
+                ) : null)}
             </div>
             <div style={{ width: "max-content" }}>
               {props.data.Segments ? (
@@ -304,7 +369,7 @@ const Booking = (props) =>{
                 <div></div>
               )}
             </div>
-            <div>
+            {isPageWide ? <div>
               {props.data.Segments ? (
                 props.data.Segments[0].length ? (
                   <div
@@ -348,9 +413,9 @@ const Booking = (props) =>{
               ) : (
                 <div></div>
               )}
-            </div>
+            </div> : <></>}
             <div></div>
-            <div>
+           {isPageWide ?  <div>
               {props.data.Segments ? (
                 props.data.Segments[0].length ? (
                   <div
@@ -400,7 +465,7 @@ const Booking = (props) =>{
               ) : (
                 <div></div>
               )}
-            </div>
+            </div> : <></>}
           </DetailsGridContainer>
         </GridContainer>
       );

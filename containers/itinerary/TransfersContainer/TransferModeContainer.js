@@ -70,6 +70,8 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
+  
+
   const isDesktop = useMediaQuery('(min-width:1024px)');
   function HandleFlights(i) {
     let name = props.booking['name'];
@@ -98,6 +100,9 @@ const TransferModeContainer = (props) => {
     let duration = props.booking['duration'];
     let origin_iata = props.booking['origin_code'];
     let destination_iata = props.booking['destination_code'];
+    let user_selected = props.userSelected;
+
+    console.log("propsTransferModeContainer: ", props.userSelected);
     props._changeFlightHandler(
       name,
       itinerary_id,
@@ -114,7 +119,8 @@ const TransferModeContainer = (props) => {
       destination_iata,
       destination_city,
       taxi_type,
-      transfer_type
+      transfer_type,
+      user_selected
     );
   }
   function HandleTransport(i) {

@@ -90,6 +90,15 @@ const Booking = (props) => {
           localStorage.setItem('tbo_trace_id', res.data.TraceId);
           // const flights
           if (res.data.Results.length) {
+            // options.push(
+            //   <Flight
+            //     itinerary_id={props.itinerary_id}
+            //     data={props.selectedBooking}
+            //     selectedBooking={props.selectedBooking}
+            //     _updateBookingHandler={_newUpdateBookingHandler}
+            //     isSelected={true}
+            //   />
+            // );
             for (var i = 0; i < res.data.Results.length; i++) {
               options.push(
                 <Flight
@@ -97,6 +106,7 @@ const Booking = (props) => {
                   data={res.data.Results[i]}
                   selectedBooking={props.selectedBooking}
                   _updateBookingHandler={_newUpdateBookingHandler}
+                  isSelected={false}
                 ></Flight>
               );
             }
@@ -399,13 +409,15 @@ const Booking = (props) => {
     return (
       <div>
         <Drawer
-          anchor={'right'}
+          anchor={"right"}
           backdrop
           style={{ zIndex: 1501 }}
           className="font-lexend"
           // show={props.showFlightModal}
           show={true}
           onHide={props.setHideFlightModal}
+          mobileWidth={'100vw'}
+          width={'50vw'}
           // zIndex='1501'
         >
           <SectionOne
@@ -413,48 +425,48 @@ const Booking = (props) => {
             setHideFlightModal={props.setHideFlightModal}
           ></SectionOne>
 
-          <GridContainer style={{ clear: 'right' }}>
-            <ContentContainer style={{ position: 'relative' }}>
+          <GridContainer style={{ clear: "right" }}>
+            <ContentContainer style={{ position: "relative" }}>
               {updateLoadingState && !updateBookingState ? (
                 <div
                   className="center-div"
-                  style={{ width: 'max-content', margin: 'auto' }}
+                  style={{ width: "max-content", margin: "auto" }}
                 >
-                  <LoadingLottie height={'5rem'} width={'5rem'} margin="none" />
+                  <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
                   Fetching best fares
                 </div>
               ) : null}
               {updateBookingState ? (
                 <div
                   style={{
-                    width: 'max-content',
-                    margin: 'auto',
-                    height: isPageWide ? '80vh' : '40vh',
+                    width: "max-content",
+                    margin: "auto",
+                    height: isPageWide ? "80vh" : "40vh",
                   }}
                   className="center-div font-lexend"
                 >
-                  <LoadingLottie height={'5rem'} width={'5rem'} margin="none" />
+                  <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
                   Please wait while we update your flight
                 </div>
               ) : null}
               {!noResults && !updateLoadingState && !unauthorized ? (
                 <OptionsContainer id="options">
-                  <div style={{ clear: 'right' }}>
+                  <div style={{ clear: "right" }}>
                     {optionsJSX.length && !updateBookingState
                       ? optionsJSX
                       : null}
                     {loading && !optionsJSX.length ? (
                       <div
                         style={{
-                          width: 'max-content',
-                          margin: 'auto',
-                          height: isPageWide ? '80vh' : '40vh',
+                          width: "max-content",
+                          margin: "auto",
+                          height: isPageWide ? "80vh" : "40vh",
                         }}
                         className="center-div"
                       >
                         <LoadingLottie
-                          height={'5rem'}
-                          width={'5rem'}
+                          height={"5rem"}
+                          width={"5rem"}
                           margin="none"
                         />
                         Fetching best fares
@@ -463,9 +475,9 @@ const Booking = (props) => {
                     {!loading && !optionsJSX.length ? (
                       <div
                         style={{
-                          width: 'max-content',
-                          margin: 'auto',
-                          height: isPageWide ? '80vh' : '40vh',
+                          width: "max-content",
+                          margin: "auto",
+                          height: isPageWide ? "80vh" : "40vh",
                         }}
                         className="center-div"
                       >
@@ -475,10 +487,10 @@ const Booking = (props) => {
                     ) : null}
                   </div>
                   {moreLoadingState ? (
-                    <div style={{ width: 'max-content', margin: 'auto' }}>
+                    <div style={{ width: "max-content", margin: "auto" }}>
                       <LoadingLottie
-                        height={'5rem'}
-                        width={'5rem'}
+                        height={"5rem"}
+                        width={"5rem"}
                         margin="none"
                       />
                     </div>
@@ -501,9 +513,9 @@ const Booking = (props) => {
               {unauthorized ? (
                 <div
                   style={{
-                    width: '100%',
-                    margin: 'auto',
-                    height: isPageWide ? '80vh' : '40vh',
+                    width: "100%",
+                    margin: "auto",
+                    height: isPageWide ? "80vh" : "40vh",
                   }}
                   className="center-div text-center"
                 >
