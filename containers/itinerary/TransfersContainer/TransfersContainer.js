@@ -960,7 +960,7 @@ const TransfersContainer = (props) => {
   return (
     <Container id="Transfer_Container">
       <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
-        Transfers{" "}
+        Transfers{' '}
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
       {props.showFlightModal && (
@@ -982,12 +982,12 @@ const TransfersContainer = (props) => {
           _updateBookingHandler={props._updateBookingHandler}
           itinerary_id={
             props?.transferBookings[0]
-              ? props?.transferBookings[0]["itinerary_id"]
+              ? props?.transferBookings[0]['itinerary_id']
               : null
           }
           setHideFlightModal={props.setHideFlightModal}
           alternates={selectedBooking.id}
-          tailored_id={selectedBooking["tailored_itinerary"]}
+          tailored_id={selectedBooking['tailored_itinerary']}
           _updatePaymentHandler={props._updatePaymentHandler}
           _updateFlightHandler={props._updateFlightHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -1039,7 +1039,7 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             heading={props?.transferBookings[0]?.booking_display_name}
             costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
-            modes={"Taxi"}
+            modes={'Taxi'}
             transferbookings={props.transferBookings}
             booking={props.transferBookings[0]}
             _changeTaxiHandler={_changeTaxiHandler}
@@ -1048,8 +1048,8 @@ const TransfersContainer = (props) => {
             index={0}
             icon={props?.transferBookings[0]?.images?.image}
             taxi_type={props?.transferBookings[0]?.taxi_type}
-            transportMode={"Taxi"}
-            duration={"2"}
+            transportMode={'Taxi'}
+            duration={'2'}
             userSelected={props?.transferBookings[0]?.user_selected}
           />
 

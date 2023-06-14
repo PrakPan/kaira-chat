@@ -26,7 +26,7 @@ import { isDateOlderThanCurrent } from '../../../helper/isDateOlderThanCurrent';
 import Modal from '../../../components/ui/Modal';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { useRouter } from 'next/router';
-import { format } from 'date-fns';
+import { format, isEqual, isSameDay, parse } from 'date-fns';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -447,6 +447,17 @@ const HotelsBooking = (props) => {
   //   props.token,
   //   props.payment,
   // ]);
+  function compareDates(dateString1, dateString2) {
+    if (dateString1 && dateString2) {
+      const date1 = parse(dateString1, 'dd/MM/yyyy', new Date());
+      const date2 = parse(dateString2, 'yyyy-MM-dd', new Date());
+
+      console.log(isSameDay(date1, date2));
+      return isSameDay(date1, date2);
+    }
+
+    return false;
+  }
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]['name'];
     let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
@@ -536,24 +547,49 @@ const HotelsBooking = (props) => {
             props.breif.city_slabs[i]?.accommodation_booking == null ||
             props.breif.city_slabs[i]?.accommodation_booking == ''
           ) {
-            HotelArray.push(
-              <HotelBookingContainer
-                booking={null}
-                index={i - 1}
-                key={i}
-                handleClick={handleClick}
-                cityName={props.breif.city_slabs[i].city_name}
-                handleClickAc={handleClickNewAc}
-                _SelectedBookingHandler={_SelectedBookingHandler}
-                setHideBookingModal={props.setHideBookingModal}
-                loginModal={showLoginModal}
-                city_id={props.breif.city_slabs[i].city_id}
-                cityData={props.breif.city_slabs[i]}
-                setLoginModal={setShowLoginModal}
-                token={props.token}
-                payment={props.payment}
-              ></HotelBookingContainer>
-            );
+            if (
+              compareDates(
+                props.breif?.city_slabs[i]?.checkin_date,
+                props?.stayBookings[i - 1]?.check_in
+              )
+            ) {
+              HotelArray.push(
+                <HotelBookingContainer
+                  booking={props.stayBookings[i - 1]}
+                  index={i - 1}
+                  cityName={props.breif.city_slabs[i].city_name}
+                  key={i}
+                  handleClick={handleClick}
+                  handleClickAc={handleClickAc}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
+                  setHideBookingModal={props.setHideBookingModal}
+                  city_id={props.breif.city_slabs[i].city_id}
+                  loginModal={showLoginModal}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
+                  payment={props.payment}
+                ></HotelBookingContainer>
+              );
+            } else {
+              HotelArray.push(
+                <HotelBookingContainer
+                  booking={null}
+                  index={i - 1}
+                  key={i}
+                  handleClick={handleClick}
+                  cityName={props.breif.city_slabs[i].city_name}
+                  handleClickAc={handleClickNewAc}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
+                  setHideBookingModal={props.setHideBookingModal}
+                  loginModal={showLoginModal}
+                  city_id={props.breif.city_slabs[i].city_id}
+                  cityData={props.breif.city_slabs[i]}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
+                  payment={props.payment}
+                ></HotelBookingContainer>
+              );
+            }
           } else {
             HotelArray.push(
               <HotelBookingContainer
@@ -598,6 +634,7 @@ const HotelsBooking = (props) => {
               key={index}
               handleClick={handleClick}
               handleClickAc={handleClickAc}
+              selectedBooking={booking}
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
               loginModal={showLoginModal}
@@ -624,6 +661,7 @@ const HotelsBooking = (props) => {
         <BookingModal
           showFilter={showFilter}
           setshowFilter={setshowFilter}
+          payment={props.payment}
           _setImagesHandler={_setImagesHandler}
           getPaymentHandler={props.getPaymentHandler}
           _updateStayBookingHandler={props._updateStayBookingHandler}
