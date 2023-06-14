@@ -70,8 +70,6 @@ const HowItWorksContainer = styled.div`
 `;
 
 const Homepage = (props) => {
-  console.log('props: ', props);
-
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
