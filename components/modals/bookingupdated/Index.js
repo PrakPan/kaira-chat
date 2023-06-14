@@ -120,7 +120,7 @@ const Booking = (props) => {
             selectedBooking={props.selectedBooking}
             tailored_id={props.tailored_id}
             updateLoadingState={updateLoadingState}
-            itinerary_id={props.selectedBooking.itinerary_id}
+            itinerary_id={props.payment.tailored_itinerary}
             accommodation={props.alternates[i]}
             _updateSearchedAccommodation={_newUpdateBookingHandler}
             _SelectedBookingHandler={_SelectedBookingHandler}
@@ -203,7 +203,7 @@ const Booking = (props) => {
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
                     currentBooking={props.currentBooking}
-                    itinerary_id={props.selectedBooking.itinerary_id}
+                    itinerary_id={props.payment.tailored_itinerary}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
                     accommodation={res.data.results[i]}
@@ -219,7 +219,7 @@ const Booking = (props) => {
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
-                    itinerary_id={props.selectedBooking.itinerary_id}
+                    itinerary_id={props.payment.tailored_itinerary}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
                     accommodation={res.data[i]}
@@ -364,7 +364,7 @@ const Booking = (props) => {
                   s
                   _updateSearchedAccommodation={_newUpdateBookingHandler}
                   _SelectedBookingHandler={_SelectedBookingHandler}
-                  itinerary_id={props.selectedBooking.itinerary_id}
+                  itinerary_id={props.payment.tailored_itinerary}
                   tailored_id={props.tailored_id}
                   _updateBookingHandler={_newUpdateBookingHandler}
                   accommodation={res.data.results[i]}
@@ -755,7 +755,7 @@ const Booking = (props) => {
                     token={props.token}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
-                    itinerary_id={props.selectedBooking.itinerary_id}
+                    itinerary_id={props.payment.tailored_itinerary}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
                     accommodation={res.data.results[i]}
@@ -773,7 +773,7 @@ const Booking = (props) => {
                   token={props.token}
                   _updateSearchedAccommodation={_updateSearchedAccommodation}
                   _SelectedBookingHandler={_SelectedBookingHandler}
-                  itinerary_id={props.selectedBooking.itinerary_id}
+                  itinerary_id={props.payment.tailored_itinerary}
                   tailored_id={props.tailored_id}
                   _updateBookingHandler={_newUpdateBookingHandler}
                   accommodation={res.data.results[i]}
