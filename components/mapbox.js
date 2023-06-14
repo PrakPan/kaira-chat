@@ -4,8 +4,9 @@ import {
   Marker,
   Popup,
   Polyline,
+  useMap,
 } from 'react-leaflet';
-import { divIcon } from 'leaflet';
+import { divIcon, leaflet } from 'leaflet';
 import { format, parseISO } from 'date-fns';
 import 'leaflet/dist/leaflet.css';
 
@@ -68,6 +69,28 @@ const Mapbox = React.memo(
 
       return wholeNumbers;
     }
+    // const FitBoundsOnMount = () => {
+    //   const map = useMap();
+
+    //   useEffect(() => {
+    //     if (locations) {
+    //       const bounds = leaflet
+    //         .featureGroup(
+    //           locations.map((location) =>
+    //             leaflet.marker([location.lat, location.long])
+    //           )
+    //         )
+    //         .getBounds();
+
+    //       if (bounds.isValid()) {
+    //         map.fitBounds(bounds);
+    //       }
+    //     }
+    //   }, [map]);
+
+    //   return null;
+    // };
+
     function getDegree(value) {
       const degrees = [
         { range: [0, 49], degree: 10 },
@@ -317,6 +340,7 @@ const Mapbox = React.memo(
             </div>
           </Popup>
         ) : null} */}
+        {/* <FitBoundsOnMount /> */}
       </MapContainer>
     ) : null;
   }

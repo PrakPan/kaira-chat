@@ -9,6 +9,7 @@ import { IoCheckmark, IoClose } from 'react-icons/io5';
 import { LivelyButton } from '../../../components/LiveleyButton';
 import { MdEdit } from 'react-icons/md';
 import useMediaQuery from '../../../components/media';
+import { ITINERARY_STATUSES } from '../../../services/constants';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -331,9 +332,13 @@ const TransferModeContainer = (props) => {
                             ({props.booking.origin_code})
                           </span>
                         </div>
-                        <div className="min-w-max text-[0.8rem] -mt-1">
-                          {formatDate(props.booking.check_in)}
-                        </div>
+                        {ITINERARY_STATUSES.itinerary_prepared !==
+                          props.payment.itinerary_status && (
+                          <div className="min-w-max text-[0.8rem] -mt-1">
+                            {formatDate(props.booking.check_in)}
+                          </div>
+                        )}
+
                         <div className="min-w-max">{props.booking.city}</div>
                       </div>
                       <div className="flex flex-row justify-center items-center">
@@ -376,9 +381,12 @@ const TransferModeContainer = (props) => {
                               ({props.booking.destination_code})
                             </span>
                           </div>
-                          <div className="min-w-max text-[0.8rem] -mt-1">
-                            {formatDate(props.booking.check_out)}
-                          </div>
+                          {ITINERARY_STATUSES.itinerary_prepared !==
+                            props.payment.itinerary_status && (
+                            <div className="min-w-max text-[0.8rem] -mt-1">
+                              {formatDate(props.booking.check_out)}
+                            </div>
+                          )}
                           <div className="min-w-max">
                             {props.booking.destination_city}
                           </div>
@@ -461,9 +469,13 @@ const TransferModeContainer = (props) => {
                 <div className="text-[#01202B] font-normal">
                   ({props.booking.origin_code})
                 </div>
-                <div className="min-w-max">
-                  {formatDate(props.booking.check_in)}
-                </div>
+                {ITINERARY_STATUSES.itinerary_prepared !==
+                  props.payment.itinerary_status && (
+                  <div className="min-w-max">
+                    {formatDate(props.booking.check_in)}
+                  </div>
+                )}
+
                 <div>{props.booking.city}</div>
               </div>
               <div className="flex flex-row justify-center items-center">
@@ -494,9 +506,12 @@ const TransferModeContainer = (props) => {
                   <div className="text-[#01202B] font-medium">
                     ({props.booking.destination_code})
                   </div>
-                  <div className="min-w-max">
-                    {formatDate(props.booking.check_out)}
-                  </div>
+                  {ITINERARY_STATUSES.itinerary_prepared !==
+                    props?.payment?.itinerary_status && (
+                    <div className="min-w-max">
+                      {formatDate(props.booking.check_out)}
+                    </div>
+                  )}
                   <div>{props.booking.destination_city}</div>
                 </div>
               </div>
