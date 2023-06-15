@@ -1142,6 +1142,7 @@ const Booking = (props) => {
             experienceId={props.experienceId}
             token={props.token}
             setShowLoginModal={setShowLoginModal}
+            plan={props.plan}
           ></SummaryContainer>
         );
       //   // setSummaryContainerJSX(S)

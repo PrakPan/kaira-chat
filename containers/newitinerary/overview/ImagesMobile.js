@@ -66,7 +66,9 @@ const ImagesMobile = (props) => {
           <MoreContainer className="center-div">
             <ImageLoader
               borderRadius="12px"
-              url={props.images[2]}
+              url={
+                props?.images[2] != null ? props?.images[2] : props?.images[3]
+              }
               dimensions={{ width: 436, height: 150 }}
               height="100%"
               heightMobile="auto"

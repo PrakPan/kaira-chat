@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { makeStyles, Theme } from "@mui/styles";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Booking from "./booking1/CheckLoginWrapper";
-import Register from "./register/Index";
-import Breif from "./breif/OldIndex";
-import ItineraryContainer from "../../components/itinerary/Index/IndexDesktop";
-import ItineraryContainerMobile from "../../components/itinerary/newmobile/Index";
-import media from "../../components/media";
-import PoiEditModal from "../../components/modals/editpoi/Index";
-import { getIndianPrice } from "../../services/getIndianPrice";
-import Button from "../../components/ui/button/Index";
-import PriceBannerMobile from "./PriceBannerMobile";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { makeStyles, Theme } from '@mui/styles';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Booking from './booking1/CheckLoginWrapper';
+import Register from './register/Index';
+import Breif from './breif/OldIndex';
+import ItineraryContainer from '../../components/itinerary/Index/IndexDesktop';
+import ItineraryContainerMobile from '../../components/itinerary/newmobile/Index';
+import media from '../../components/media';
+import PoiEditModal from '../../components/modals/editpoi/Index';
+import { getIndianPrice } from '../../services/getIndianPrice';
+import Button from '../../components/ui/button/Index';
+import PriceBannerMobile from './PriceBannerMobile';
 // import Accommodation from '../../components/modals/accommodation/Index';
-import axiosbookingupdateinstance from "../../services/bookings/UpdateBookings";
-import * as ga from "../../services/ga/Index";
-import { useRouter } from "next/router";
+import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
+import * as ga from '../../services/ga/Index';
+import { useRouter } from 'next/router';
 
 const Location = styled.div`
   padding: 1rem;
@@ -60,7 +60,7 @@ const StrikedCost = styled.p`
   text-align: center;
   &:before {
     position: absolute;
-    content: "";
+    content: '';
     left: 0;
     top: 23%;
     right: 0;
@@ -75,7 +75,7 @@ const StrikedCost = styled.p`
     font-size: 1rem;
     &:before {
       position: absolute;
-      content: "";
+      content: '';
       left: 0;
       top: 20%;
       right: 0;
@@ -94,7 +94,7 @@ const Cost = styled.div`
   font-weight: 800;
   font-size: 1.25rem;
   &:after {
-    content: "per person";
+    content: 'per person';
     display: block;
     font-size: 0.9rem;
     font-weight: 300;
@@ -106,7 +106,7 @@ const GITCost = styled.div`
   font-weight: 800;
   font-size: 1.25rem;
   &:after {
-    content: "per member";
+    content: 'per member';
     display: block;
     font-size: 0.9rem;
     font-weight: 300;
@@ -143,16 +143,16 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   appbar: {
-    backgroundColor: "black !important",
-    color: "white !important",
-    height: "66px !important",
-    justifyContent: "center",
-    top: "0 !important",
+    backgroundColor: 'black !important',
+    color: 'white !important',
+    height: '66px !important',
+    justifyContent: 'center',
+    top: '0 !important',
   },
 }));
 
 const SimpleTabs = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
 
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -174,9 +174,9 @@ const SimpleTabs = (props) => {
   const [value, setValue] = React.useState(0);
   const [show, setShow] = useState(true);
   const [location, setLocation] = useState(0);
-  const [hours, setHours] = useState("-");
-  const [minutes, setMinutes] = useState("-");
-  const [seconds, setSeconds] = useState("-");
+  const [hours, setHours] = useState('-');
+  const [minutes, setMinutes] = useState('-');
+  const [seconds, setSeconds] = useState('-');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [blurItinerary, setBlurItinerary] = useState(true);
   const [showItineraryTimer, setShowItineraryTimer] = useState(true);
@@ -187,7 +187,7 @@ const SimpleTabs = (props) => {
 
   const [timerValid, setTimerValid] = useState(false);
 
-  const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
+  const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
 
   const _setLocationHandler = (event) => {
     window.scrollTo(0, window.innerHeight / 2);
@@ -195,9 +195,9 @@ const SimpleTabs = (props) => {
   };
 
   const handleChange = (event, newValue) => {
-    const tabs = ["brief", "itinerary", "booking"];
+    const tabs = ['brief', 'itinerary', 'booking'];
     ga.event({
-      action: "Itinerary-tabs-" + tabs[newValue],
+      action: 'Itinerary-tabs-' + tabs[newValue],
       params: {},
     });
     if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -218,9 +218,9 @@ const SimpleTabs = (props) => {
   };
   const openBookingDesktop = () => {
     ga.event({
-      action: "Itinerary-tabs-Book_Now",
+      action: 'Itinerary-tabs-Book_Now',
       params: {
-        Key: "",
+        Key: '',
       },
     });
     window.scrollTo(0, window.innerHeight);
@@ -229,9 +229,9 @@ const SimpleTabs = (props) => {
   };
   const openBookingMobile = () => {
     ga.event({
-      action: "Itinerary-tabs-Book_Now",
+      action: 'Itinerary-tabs-Book_Now',
       params: {
-        key: "",
+        key: '',
       },
     });
     window.scrollTo(0, window.innerHeight / 2);
@@ -249,7 +249,7 @@ const SimpleTabs = (props) => {
           totalcityslabs += 1;
         }
       }
-  const locationtabwidth = 100 / totalcityslabs + "vw";
+  const locationtabwidth = 100 / totalcityslabs + 'vw';
   if (props.breif)
     if (props.breif.city_slabs)
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
@@ -259,8 +259,8 @@ const SimpleTabs = (props) => {
               id={i}
               style={{ minWidth: locationtabwidth }}
               className={
-                "font-lexend center-div border-top " +
-                (location == i ? "bg-yellow font-bold" : "bg-white")
+                'font-lexend center-div border-top ' +
+                (location == i ? 'bg-yellow font-bold' : 'bg-white')
               }
               onClick={(event) => _setLocationHandler(event)}
             >
@@ -296,7 +296,7 @@ const SimpleTabs = (props) => {
 
   const _handlePoiEditModalOpen = (poi) => {
     ga.event({
-      action: "Itinerary-poiedit-open",
+      action: 'Itinerary-poiedit-open',
       params: {
         poi: poi.name,
         city: poi.city_id,
@@ -326,7 +326,7 @@ const SimpleTabs = (props) => {
           onChange={handleChange}
           aria-label="simple tabs example"
           centered
-          style={{ zIndex: "2" }}
+          style={{ zIndex: '2' }}
           indicatorColor=""
         >
           <Tab label="Brief" className="font-lexend experience-tab" />
@@ -341,11 +341,11 @@ const SimpleTabs = (props) => {
           <CostContainer>
             {true ? (
               <DiscountContainer>
-                <div style={{ display: "flex" }}>
+                <div style={{ display: 'flex' }}>
                   {props.payment ? (
                     props.payment.is_registration_needed ? (
                       <StrikedCost>
-                        {"₹ " +
+                        {'₹ ' +
                           getIndianPrice(
                             Math.round(
                               Math.round(
@@ -360,23 +360,23 @@ const SimpleTabs = (props) => {
                   {props.payment ? (
                     !props.payment.is_registration_needed ? (
                       <Cost className="font-lexend">
-                        {"₹ " +
+                        {'₹ ' +
                           getIndianPrice(
                             Math.round(
                               props.payment.per_person_total_cost / 100
                             )
                           ) +
-                          " /-"}
+                          ' /-'}
                       </Cost>
                     ) : (
                       <GITCost className="font-lexend">
-                        {"₹ " +
+                        {'₹ ' +
                           getIndianPrice(
                             Math.round(
                               props.payment.per_person_total_cost / 100
                             )
                           ) +
-                          " /-"}
+                          ' /-'}
                       </GITCost>
                     )
                   ) : null}
@@ -395,11 +395,11 @@ const SimpleTabs = (props) => {
             >
               {props.payment
                 ? props.payment.paid_user
-                  ? "Details"
+                  ? 'Details'
                   : props.payment.bookings_count
-                  ? "View " + props.payment.bookings_count + " bookings"
-                  : "Book Now"
-                : "Book Now"}
+                  ? 'View ' + props.payment.bookings_count + ' bookings'
+                  : 'Book Now'
+                : 'Book Now'}
             </Button>
           </CostContainer>
         ) : null}
@@ -430,7 +430,7 @@ const SimpleTabs = (props) => {
           blur={blurItinerary}
         ></Breif>
       </TabPanel>
-      <TabPanel value={value} index={1} style={{ padding: "0" }}>
+      <TabPanel value={value} index={1} style={{ padding: '0' }}>
         {
           isPageWide ? (
             <ItineraryContainer
@@ -558,6 +558,7 @@ const SimpleTabs = (props) => {
             setImagesHandler={props.setImagesHandler}
             payment={props.payment}
             booking={props.booking}
+            plan={props.plan}
           ></Booking>
         )}
       </TabPanel>
@@ -567,10 +568,10 @@ const SimpleTabs = (props) => {
           itinerary_id={props.id}
           selectedPoi={selectedPoi}
           tailored_id={
-            props.booking ? props.booking[0]["tailored_itinerary"] : ""
+            props.booking ? props.booking[0]['tailored_itinerary'] : ''
           }
           _updatePaymentHandler={props._updatePaymentHandler}
-          setShowPoiModal={() => _handlePoiEditModalOpen({ name: "kasol" })}
+          setShowPoiModal={() => _handlePoiEditModalOpen({ name: 'kasol' })}
           showPoiModal={props.showPoiModal}
           setHidePoiModal={props.setHidePoiModal}
         ></PoiEditModal>

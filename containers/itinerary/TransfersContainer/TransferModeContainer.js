@@ -11,6 +11,7 @@ import { MdEdit } from 'react-icons/md';
 import useMediaQuery from '../../../components/media';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
+import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -105,8 +106,10 @@ const Line = styled.hr`
 
 const TransferModeContainer = (props) => {
   const [addbooking, setaddboking] = useState(props.booking?.user_selected);
+  const [UpdateBookingState, setUpdateBookingState] = useState(false);
   function handleCheckboxChange(e) {
     if (props.token) {
+      _updateSelectedTransfer();
       // _SelectedBookingHandler({
       //   SelectedBookingId: selectedBooking?.id,
       //   itinerary_id: itinerary_id,
@@ -120,6 +123,7 @@ const TransferModeContainer = (props) => {
     }
   }
   const isDesktop = useMediaQuery('(min-width:1024px)');
+
   function HandleFlights(i) {
     let name = props.booking['name'];
     let costings_breakdown = props.booking['costings_breakdown'];
@@ -225,6 +229,43 @@ const TransferModeContainer = (props) => {
         : ''
     }  `,
   ];
+  const _updateSelectedTransfer = () => {
+    setUpdateBookingState(true);
+
+    let updated_bookings_arr = [
+      {
+        id: props.booking['id'],
+        booking_type: props.booking_type,
+        itinerary_type: 'Tailored',
+        user_selected: !props?.userSelected,
+        itinerary_id: props.booking['itinerary_id'],
+        taxi_type: props.booking['taxi_type'],
+        transfer_type: props.booking['transfer_type'],
+      },
+    ];
+    console.dir(updated_bookings_arr);
+    axiosbookingupdateinstance
+      .post('?booking_type=Taxi,Bus,Ferry,Train', updated_bookings_arr, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {
+        props._updateTaxiBookingHandler(res.data.bookings);
+
+        //  props.getPaymentHandler();
+        setTimeout(function () {
+          props.getPaymentHandler();
+        }, 1000);
+        setUpdateBookingState(false);
+      })
+      .catch((err) => {
+        // setUpdateLoadingState(false);
+        setUpdateBookingState(false);
+
+        window.alert('There seems to be a problem, please try again!');
+      });
+  };
 
   return (
     <Container>
@@ -653,6 +694,7 @@ const TransferModeContainer = (props) => {
               )}
             </div>
             {isDesktop &&
+              props.booking_type == 'Taxi' &&
               !props?.payment?.paid_user &&
               props.payment?.user_allowed_to_pay && (
                 <div
