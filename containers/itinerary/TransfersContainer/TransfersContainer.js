@@ -392,10 +392,13 @@ const TransfersContainer = (props) => {
     costings_breakdown,
     origin_iata,
     destination_iata,
+    destination_city,
+    taxi_type,
+    transfer_type,
     user_selected
   ) => {
     ga.event({
-      action: 'Itinerary-bookings-flight_change',
+      action: "Itinerary-bookings-flight_change",
       params: { name: name },
     });
     setSelectedBooking({
@@ -414,6 +417,9 @@ const TransfersContainer = (props) => {
       origin_iata: origin_iata,
       destination_iata: destination_iata,
       user_selected: user_selected,
+      destination_city: destination_city,
+      taxi_type: taxi_type,
+      transfer_type: transfer_type,
     });
     props.setShowFlightModal(true);
   };

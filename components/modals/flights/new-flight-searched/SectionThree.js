@@ -5,9 +5,9 @@ const Container = styled.div`
   padding: 0.75rem;
   @media screen and (min-width: 768px) {
     margin: 0.5rem 0.5rem 0 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    text-align: center;
+    // display: flex;
+    // justify-content: space-between;
+    // text-align: center;
   }
 
   // @media screen and (min-width: 768px) {
@@ -18,13 +18,13 @@ const Container = styled.div`
   // }
 `;
 const Cost = styled.p`
-    font-size: 23px;
+    font-size: 20px;
     font-weight: 700;
     margin: 0;
     text-align: center; 
 `;
 const Text = styled.p`
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 300;
   margin: 0;
   text-align: left;
@@ -36,7 +36,7 @@ const FlexBox = styled.div`
   @media screen and (max-width: 768px) {
     display: flex;
     align-items: center;
-    gap : 1rem;
+    gap : 0.4rem;
   }
 `;
 const Section = (props) => {
@@ -53,15 +53,15 @@ const Section = (props) => {
     if (props.data)
       return (
         <Container className="font-lexend">
-          <Text>Stating from</Text>
+          <Text>Starting from</Text>
           <div>
             <FlexBox>
               <Cost className="font-lexend">
                 {props.data.Fare
                   ? props.data.Fare.OfferedFare
-                    ? "₹ " +
-                      getIndianPrice(Math.round(props.data.Fare.OfferedFare)) +
-                      " /-"
+                    ? "₹" +
+                      getIndianPrice(Math.round(props.data.Fare.OfferedFare))
+                      
                     : null
                   : null}
               </Cost>

@@ -391,8 +391,8 @@ const SimpleTabsV2 = (props) => {
   }, [items]);
   if (
     props.token &&
-    !props.payment.user_allowed_to_pay &&
-    props.payment.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+    !props.payment?.user_allowed_to_pay &&
+    props.payment?.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
   ) {
     ClaimItinary(props.id, props.token);
   }
