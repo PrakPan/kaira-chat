@@ -57,7 +57,6 @@ const ContentContainer = styled.div`
 const Booking = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
-  let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [isError, setIsError] = useState({
@@ -186,7 +185,6 @@ const Booking = (props) => {
           price_upper_range: filters.price_upper_range,
         })
         .then((res) => {
-          setLoading(false);
           setUpdateLoadingState(false);
 
           if (res.data.results.length) {
@@ -507,7 +505,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data);
+              props._updateStayBookingHandler([res.data]);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
@@ -532,7 +530,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data);
+              props._updateStayBookingHandler([res.data]);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
@@ -625,7 +623,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -650,7 +648,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -709,7 +707,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -730,7 +728,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -907,19 +905,22 @@ const Booking = (props) => {
               booking_city={props?.currentBooking?.city}
               setHideBookingModal={props.setHideBookingModal}
             ></SectionOne>
-            <SectionTwo
-              showFilter={props.showFilter}
-              setshowFilter={props.setshowFilter}
-              filtersState={filtersState}
-              FILTERS={FILTERS}
-              _updateStarFilterHandler={_updateStarFilterHandler}
-              _removeFilterHandler={_removeFilterHandler}
-              _addFilterHandler={_addFilterHandler}
-              booking_city={props?.currentBooking?.city}
-              No_of_stays={optionsJSX.length}
-              payment={props.payment}
-              plan={props.plan}
-            ></SectionTwo>
+            {!loading && (
+              <SectionTwo
+                loading={loading}
+                showFilter={props.showFilter}
+                setshowFilter={props.setshowFilter}
+                filtersState={filtersState}
+                FILTERS={FILTERS}
+                _updateStarFilterHandler={_updateStarFilterHandler}
+                _removeFilterHandler={_removeFilterHandler}
+                _addFilterHandler={_addFilterHandler}
+                booking_city={props?.currentBooking?.city}
+                No_of_stays={optionsJSX.length + moreOptionsJSX.length}
+                payment={props.payment}
+                plan={props.plan}
+              ></SectionTwo>
+            )}
           </div>
 
           <div className="lg:w-[100%] w-[95%] mx-auto">

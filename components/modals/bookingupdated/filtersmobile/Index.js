@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import Pannel from './Pannel';
@@ -182,7 +182,7 @@ export default function TemporaryDrawer(props) {
             </div>
           </div>
         )}
-        {props.No_of_stays ? (
+        {!props.loading ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
             Showing {props.No_of_stays} stays in {props.booking_city}
           </div>

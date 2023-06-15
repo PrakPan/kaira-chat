@@ -45,6 +45,7 @@ const Section = (props) => {
   return (
     <Container className="font-lexend">
       <FiltersMobile
+        loading={props.loading}
         showFilter={props.showFilter}
         setshowFilter={props.setshowFilter}
         filtersState={props.filtersState}

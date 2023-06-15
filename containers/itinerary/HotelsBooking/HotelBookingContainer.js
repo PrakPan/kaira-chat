@@ -127,6 +127,7 @@ const HotelBookingContainer = ({
       category_id: booking?.category_id,
     });
   }
+  console.log('booking-Varanasi', booking);
   const isMobile = useMediaQuery('(min-width:768px)');
   return (
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
@@ -253,15 +254,18 @@ const HotelBookingContainer = ({
                   ITINERARY_STATUSES.itinerary_prepared !==
                     plan.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                      <div className="flex flex-row gap-2 items-center">
-                        <BsCalendar2 className="text-sm text-[#7A7A7A]" />
-                        <div>
-                          <div className="text-sm font-[400] ">
-                            {getDate(booking.check_in)}-
-                            {getDate(booking.check_out)}
+                      {booking.check_in && (
+                        <div className="flex flex-row gap-2 items-center">
+                          <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                          <div>
+                            <div className="text-sm font-[400] ">
+                              {getDate(booking.check_in)}-
+                              {getDate(booking.check_out)}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
+
                       <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] min-w-fit">
@@ -277,15 +281,18 @@ const HotelBookingContainer = ({
                     ITINERARY_STATUSES.itinerary_prepared !==
                       plan.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                        <div className="flex flex-row gap-2 items-center">
-                          <BsCalendar2 className="text-sm text-[#7A7A7A]" />
-                          <div>
-                            <div className="text-sm font-[400] ">
-                              {getDate(currentBooking.check_in)}-
-                              {getDate(currentBooking.check_out)}
+                        {currentBooking.check_in && (
+                          <div className="flex flex-row gap-2 items-center">
+                            <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                            <div>
+                              <div className="text-sm font-[400] ">
+                                {getDate(currentBooking.check_in)}-
+                                {getDate(currentBooking.check_out)}
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        )}
+
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className=" text-sm font-[400] min-w-fit">
