@@ -53,6 +53,7 @@ const Section = (props) => {
         _addFilterHandler={props._addFilterHandler}
         filters={props.FILTERS}
         booking_city={props.booking_city}
+        No_of_stays={props.No_of_stays}
       ></FiltersMobile>
       <Drawer
         show={props.showFilter}

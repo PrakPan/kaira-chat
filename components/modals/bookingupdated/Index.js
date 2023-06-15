@@ -23,6 +23,7 @@ import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
 import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
+import Slide from '../../../Animation/framerAnimation/Slide';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -59,7 +60,10 @@ const Booking = (props) => {
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
-
+  const [isError, setIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     budget: [],
@@ -247,7 +251,22 @@ const Booking = (props) => {
           }
           setLoading(false);
         })
-        .catch((err) => {});
+        .catch((err) => {
+          if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+
+            console.log(err.response.data); // The response body
+            console.log(err.response.status); // The status code
+            console.log(err.response.headers); // The response headers
+            if (err.response.status == 400) {
+              setIsError({
+                error: true,
+                errorMsg: err.response.data.message,
+              });
+            }
+          }
+        });
     }
   }, [props.alternates, props.budget]);
   const _generateFilterKeys = (filtersState) => {
@@ -850,6 +869,27 @@ const Booking = (props) => {
           onHide={props.setHideBookingModal}
           // zIndex='1501'
         >
+          <div className="absolute right-[10px] top-[20px] z-[9999]">
+            {isError.error && (
+              <Slide
+                hideTime={8}
+                onUnmount={() =>
+                  setIsError({
+                    error: false,
+                    errorMsg: '',
+                  })
+                }
+                isActive={isError.error}
+                direction={-2}
+                duration={1.3}
+                ydistance={25}
+              >
+                <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+                  {isError.errorMsg}
+                </div>
+              </Slide>
+            )}
+          </div>
           <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
             <SectionOne
               booking_city={props?.currentBooking?.city}
@@ -864,6 +904,7 @@ const Booking = (props) => {
               _removeFilterHandler={_removeFilterHandler}
               _addFilterHandler={_addFilterHandler}
               booking_city={props?.currentBooking?.city}
+              No_of_stays={optionsJSX.length}
             ></SectionTwo>
           </div>
 
