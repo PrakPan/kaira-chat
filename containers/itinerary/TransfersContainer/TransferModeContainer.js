@@ -12,6 +12,7 @@ import useMediaQuery from '../../../components/media';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
+import Slide from '../../../Animation/framerAnimation/Slide';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -106,6 +107,10 @@ const Line = styled.hr`
 
 const TransferModeContainer = (props) => {
   const [addbooking, setaddboking] = useState(props.booking?.user_selected);
+  const [isError, setIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   function handleCheckboxChange(e) {
     if (props.token) {
@@ -117,7 +122,7 @@ const TransferModeContainer = (props) => {
       //   user_selected: !booking?.user_selected,
       //   index: index,
       // });
-      setaddboking(!addbooking);
+
       e.stopPropagation();
     } else {
     }
@@ -241,6 +246,13 @@ const TransferModeContainer = (props) => {
         itinerary_id: props.booking['itinerary_id'],
         taxi_type: props.booking['taxi_type'],
         transfer_type: props.booking['transfer_type'],
+
+        costings_breakdown: {
+          duration: {
+            value: Math.trunc(props.booking?.costings_breakdown?.duration),
+          },
+          total_taxi: props.booking?.costings_breakdown?.total_taxi,
+        },
       },
     ];
     console.dir(updated_bookings_arr);
@@ -257,10 +269,23 @@ const TransferModeContainer = (props) => {
         setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
+        setaddboking(!addbooking);
         setUpdateBookingState(false);
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
+        if (err.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+
+          // The response headers
+          if (err.response.status === 400) {
+            setIsError({
+              error: true,
+              errorMsg: err.response.data.message,
+            });
+          }
+        }
         setUpdateBookingState(false);
 
         window.alert('There seems to be a problem, please try again!');
@@ -269,6 +294,27 @@ const TransferModeContainer = (props) => {
 
   return (
     <Container>
+      <div className=" fixed right-[10px] top-[50px] z-[200] ">
+        {isError.error && (
+          <Slide
+            hideTime={8}
+            onUnmount={() =>
+              setIsError({
+                error: false,
+                errorMsg: '',
+              })
+            }
+            isActive={isError.error}
+            direction={-2}
+            duration={1.3}
+            ydistance={25}
+          >
+            <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+              {isError.errorMsg}
+            </div>
+          </Slide>
+        )}
+      </div>
       {/* <div></div> */}
       <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} Transfers={true} />
@@ -390,7 +436,7 @@ const TransferModeContainer = (props) => {
                           </span>
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
-                          props.payment.itinerary_status && (
+                          props.plan.itinerary_status && (
                           <div className="min-w-max text-[0.8rem] -mt-1">
                             {formatDate(props.booking.check_in)}
                           </div>
@@ -439,7 +485,7 @@ const TransferModeContainer = (props) => {
                             </span>
                           </div>
                           {ITINERARY_STATUSES.itinerary_prepared !==
-                            props.payment.itinerary_status && (
+                            props.plan.itinerary_status && (
                             <div className="min-w-max text-[0.8rem] -mt-1">
                               {formatDate(props.booking.check_out)}
                             </div>
@@ -527,7 +573,7 @@ const TransferModeContainer = (props) => {
                   ({props.booking.origin_code})
                 </div>
                 {ITINERARY_STATUSES.itinerary_prepared !==
-                  props.payment.itinerary_status && (
+                  props?.plan?.itinerary_status && (
                   <div className="min-w-max">
                     {formatDate(props.booking.check_in)}
                   </div>
@@ -712,7 +758,11 @@ const TransferModeContainer = (props) => {
                   <div
                     className={`absolute  ${
                       true
-                        ? 'lg:bottom-4 bottom-[1.5rem] '
+                        ? `${
+                            props.booking_type == 'Taxi'
+                              ? 'lg:bottom-4'
+                              : 'lg:bottom-[3.6rem]'
+                          }  bottom-[1.5rem] `
                         : `${
                             props.payment?.paid_user ||
                             !props.payment?.user_allowed_to_pay

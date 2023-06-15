@@ -171,10 +171,24 @@ const Itinerary = (props) => {
         }
       )
       .then((res) => {
-        setPaymentLoading(false);
-
-        setPayment(res.data);
-
+        if (
+          props.token &&
+          !res.data.user_allowed_to_pay &&
+          res.data.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+        ) {
+          authaction
+            .ClaimItinary(props.id, props.token)
+            .then((res) => {
+              setPayment(res.data); //
+              setPaymentLoading(false);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          setPayment(res.data);
+          setPaymentLoading(false);
+        }
         //check if user has already paid
         // try{
         let email = localStorage.getItem('email');
@@ -195,6 +209,8 @@ const Itinerary = (props) => {
         // }
       })
       .catch((error) => {
+        console.log('err claim');
+
         setPaymentLoading(false);
       });
   };

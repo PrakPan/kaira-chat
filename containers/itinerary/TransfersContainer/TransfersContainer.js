@@ -563,6 +563,7 @@ const TransfersContainer = (props) => {
                 ? locationsArr.push(
                     <div className="flex flex-col gap-1">
                       <TransferModeContainer
+                        plan={props.plan}
                         getPaymentHandler={props.getPaymentHandler}
                         _updateTaxiBookingHandler={
                           props._updateTaxiBookingHandler
@@ -598,6 +599,7 @@ const TransfersContainer = (props) => {
                         duration={props.breif.city_slabs[i].duration}
                       ></TransferModeContainer>
                       <TransferModeContainer
+                        plan={props.plan}
                         getPaymentHandler={props.getPaymentHandler}
                         _updateTaxiBookingHandler={
                           props._updateTaxiBookingHandler
@@ -633,6 +635,7 @@ const TransfersContainer = (props) => {
                 : locationsArr.push(
                     props?.transferBookings && (
                       <TransferModeContainer
+                        plan={props.plan}
                         getPaymentHandler={props.getPaymentHandler}
                         _updateTaxiBookingHandler={
                           props._updateTaxiBookingHandler
@@ -739,6 +742,7 @@ const TransfersContainer = (props) => {
               props?.transferBookings &&
                 locationsArr.push(
                   <TransferModeContainer
+                    plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
@@ -925,13 +929,14 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
+                    plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
                     token={props.token}
                     payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
-                    pinColour={props.breif.city_slabs[i].color}
+                    pinColour={props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
                       props?.transferBookings[i]?.costings_breakdown
                     }
@@ -950,13 +955,14 @@ const TransfersContainer = (props) => {
                     transportMode={getTransportationType(
                       props?.transfers[i]?.icon
                     )}
-                    duration={props.breif.city_slabs[i].duration}
+                    duration={props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 </div>
               )
             : locationsArr.push(
                 props?.transferBookings && (
                   <TransferModeContainer
+                    plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
@@ -998,7 +1004,7 @@ const TransfersContainer = (props) => {
         id="Transfer_Container"
         className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
       >
-        Transfers{' '}
+        Transfers
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
       {props.showFlightModal && (
@@ -1071,6 +1077,7 @@ const TransfersContainer = (props) => {
           ></PinSection>
 
           <TransferModeContainer
+            plan={props.plan}
             getPaymentHandler={props.getPaymentHandler}
             _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
             _updatePaymentHandler={props._updatePaymentHandler}
