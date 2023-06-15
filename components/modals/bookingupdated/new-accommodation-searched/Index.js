@@ -44,6 +44,8 @@ const Accommodation = (props) => {
       <div>
         <HotelBookingContainer
           currentBooking={props.currentBooking}
+          payment={props.payment}
+          plan={props.plan}
           tailored_id={props.tailored_id}
           itinerary_id={props.itinerary_id}
           booking={props.accommodation}

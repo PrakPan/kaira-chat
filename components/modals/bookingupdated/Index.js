@@ -117,6 +117,8 @@ const Booking = (props) => {
       for (var i = 0; i < props.alternates.length; i++) {
         options.push(
           <AccommodationSearched
+            payment={props.payment}
+            plan={props.plan}
             currentBooking={props.currentBooking}
             _setImagesHandler={props._setImagesHandler}
             alternates={props.alternates}
@@ -203,6 +205,8 @@ const Booking = (props) => {
               try {
                 options.push(
                   <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
@@ -219,6 +223,8 @@ const Booking = (props) => {
               } catch {
                 options.push(
                   <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
                     currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
@@ -378,6 +384,8 @@ const Booking = (props) => {
             if (res.data.results[i].name !== props.selectedBooking.name)
               options.push(
                 <AccommodationSearched
+                  payment={props.payment}
+                  plan={props.plan}
                   currentBooking={props.currentBooking}
                   _setImagesHandler={props._setImagesHandler}
                   s
@@ -775,6 +783,8 @@ const Booking = (props) => {
               )
                 options.push(
                   <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
                     currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     token={props.token}
@@ -793,6 +803,8 @@ const Booking = (props) => {
             } catch {
               options.push(
                 <AccommodationSearched
+                  payment={props.payment}
+                  plan={props.plan}
                   currentBooking={props.currentBooking}
                   _setImagesHandler={props._setImagesHandler}
                   token={props.token}
@@ -905,6 +917,8 @@ const Booking = (props) => {
               _addFilterHandler={_addFilterHandler}
               booking_city={props?.currentBooking?.city}
               No_of_stays={optionsJSX.length}
+              payment={props.payment}
+              plan={props.plan}
             ></SectionTwo>
           </div>
 
@@ -956,6 +970,8 @@ const Booking = (props) => {
                           _setImagesHandler={props._setImagesHandler}
                           selectedBooking={props.selectedBooking}
                           booking={props.currentBooking}
+                          payment={props.payment}
+                          plan={props.plan}
                         ></HotelBookingContainer>
                       )}
 

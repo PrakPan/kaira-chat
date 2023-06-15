@@ -49,6 +49,7 @@ const HotelBookingContainer = ({
   selectedBooking,
   setLoginModal,
   token,
+  plan,
 }) => {
   const [addbooking, setaddboking] = useState(
     !currentBooking ? booking?.user_selected : true
@@ -250,7 +251,7 @@ const HotelBookingContainer = ({
                   )}
                   {booking.check_in &&
                   ITINERARY_STATUSES.itinerary_prepared !==
-                    payment.itinerary_status ? (
+                    plan.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       <div className="flex flex-row gap-2 items-center">
                         <BsCalendar2 className="text-sm text-[#7A7A7A]" />
@@ -274,7 +275,7 @@ const HotelBookingContainer = ({
                   ) : (
                     currentBooking &&
                     ITINERARY_STATUSES.itinerary_prepared !==
-                      payment.itinerary_status && (
+                      plan.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                         <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm text-[#7A7A7A]" />

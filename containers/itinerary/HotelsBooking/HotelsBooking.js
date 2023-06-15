@@ -568,6 +568,7 @@ const HotelsBooking = (props) => {
                   setLoginModal={setShowLoginModal}
                   token={props.token}
                   payment={props.payment}
+                  plan={props.plan}
                 ></HotelBookingContainer>
               );
             } else {
@@ -587,6 +588,7 @@ const HotelsBooking = (props) => {
                   setLoginModal={setShowLoginModal}
                   token={props.token}
                   payment={props.payment}
+                  plan={props.plan}
                 ></HotelBookingContainer>
               );
             }
@@ -606,6 +608,7 @@ const HotelsBooking = (props) => {
                 setLoginModal={setShowLoginModal}
                 token={props.token}
                 payment={props.payment}
+                plan={props.plan}
               ></HotelBookingContainer>
             );
           }
@@ -638,6 +641,7 @@ const HotelsBooking = (props) => {
               setLoginModal={setShowLoginModal}
               token={props.token}
               payment={props.payment}
+              plan={props.plan}
             ></HotelBookingContainer>
           ))
         : null}
@@ -648,6 +652,8 @@ const HotelsBooking = (props) => {
         id={bookingId}
         currentBooking={currentBooking}
         show={showDetails}
+        payment={props.payment}
+        plan={props.plan}
       ></AccommodationModal>
       {showLoginModal && (
         <div>
@@ -659,6 +665,7 @@ const HotelsBooking = (props) => {
           showFilter={showFilter}
           setshowFilter={setshowFilter}
           payment={props.payment}
+          plan={props.plan}
           _setImagesHandler={_setImagesHandler}
           getPaymentHandler={props.getPaymentHandler}
           _updateStayBookingHandler={props._updateStayBookingHandler}
