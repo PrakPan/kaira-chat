@@ -106,8 +106,18 @@ const HotelBookingContainer = ({
         tailored_id: tailored_id,
         user_selected: !booking?.user_selected,
         index: index,
-      });
-      setaddboking(!addbooking);
+      })
+        .then((data) => {
+          setaddboking(true);
+          // Handle success
+          // Access the response data using 'data'
+        })
+        .catch((error) => {
+          setaddboking(false);
+          // Handle failure
+          // Access the error object using 'error'
+        });
+
       e.stopPropagation();
     } else {
       setLoginModal(!loginModal);

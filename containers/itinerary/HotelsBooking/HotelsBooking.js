@@ -187,52 +187,65 @@ const HotelsBooking = (props) => {
     user_selected,
     index,
   }) => {
-    setUpdateBookingState(true);
-    // const token = localStorage.getItem('access_token');
-    let updated_bookings_arr = [
-      {
-        id: props.stayBookings[index]['id'],
-        costings_breakdown: props.stayBookings[index]['costings_breakdown'],
-        accommodation: props.stayBookings[index]['accommodation'],
-        is_estimated_price: true,
-        alternate_to: null,
-        booking_type: 'Accommodation',
-        itinerary_type: 'Tailored',
-        user_selected: user_selected,
-        itinerary_id: props.stayBookings[index]['itinerary_id'],
-        tailored_itinerary: tailored_id,
-        itinerary_name: itinerary_name,
-        itinerary_db_id: null,
-      },
-    ];
-
-    // const token = localStorage.getItem('access_token');
-    axiosbookingupdateinstance
-      .post(
-        '?booking_type=Accommodation&itinerary_id=' +
-          props.stayBookings[index]['itinerary_id'],
-        updated_bookings_arr,
+    return new Promise((resolve, reject) => {
+      setUpdateBookingState(true);
+      // const token = localStorage.getItem('access_token');
+      let updated_bookings_arr = [
         {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      )
-      .then((res) => {
-        props._updateStayBookingHandler(res.data.bookings);
-        setTimeout(function () {
-          props.getPaymentHandler();
-        }, 1000);
-        // props._updatePaymentHandler(res.data.payment_info);
-        setUpdateBookingState(false);
-      })
-      .catch((err) => {
-        // setUpdateLoadingState(false);
-        setUpdateBookingState(false);
-        setUnauthorized(true);
+          id: props.stayBookings[index]['id'],
+          costings_breakdown: props.stayBookings[index]['costings_breakdown'],
+          accommodation: props.stayBookings[index]['accommodation'],
+          is_estimated_price: true,
+          alternate_to: null,
+          booking_type: 'Accommodation',
+          itinerary_type: 'Tailored',
+          user_selected: user_selected,
+          itinerary_id: props.stayBookings[index]['itinerary_id'],
+          tailored_itinerary: tailored_id,
+          itinerary_name: itinerary_name,
+          itinerary_db_id: null,
+        },
+      ];
 
-        // window.alert("There seems to be a problem, please try again!")
-      });
+      // const token = localStorage.getItem('access_token');
+      axiosbookingupdateinstance
+        .post(
+          `?booking_type=Accommodation&itinerary_id=${props.stayBookings[index]['itinerary_id']}`,
+          updated_bookings_arr,
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          }
+        )
+        .then((res) => {
+          props._updateStayBookingHandler(res.data.bookings);
+          setTimeout(function () {
+            props.getPaymentHandler();
+          }, 1000);
+          // props._updatePaymentHandler(res.data.payment_info);
+          setUpdateBookingState(false);
+          resolve(res.data); // Resolve the promise with the response data
+        })
+        .catch((err) => {
+          // setUpdateLoadingState(false);
+          if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+
+            // The response headers
+            if (err.response.status === 400) {
+              setIsError({
+                error: true,
+                errorMsg: err.response.data.message,
+              });
+            }
+          }
+          setUpdateBookingState(false);
+          setUnauthorized(true);
+          reject(err); // Reject the promise with the error object
+        });
+    });
   };
   //   <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
   // );
@@ -660,7 +673,8 @@ const HotelsBooking = (props) => {
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      <div className="absolute right-[10px] top-[20px] z-[9999]">
+
+      <div className=" fixed right-[10px] top-[50px] z-[200] ">
         {isError.error && (
           <Slide
             hideTime={8}
@@ -681,6 +695,7 @@ const HotelsBooking = (props) => {
           </Slide>
         )}
       </div>
+
       {props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')
         ? // props.breif.city_slabs[1]?.accommodation_booking == null
           HotelArray
