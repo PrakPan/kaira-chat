@@ -17,7 +17,9 @@ body {
 .font-lexend {
   font-family: Lexend;
 }
-
+.last-navigation-link {
+  margin-left: auto;
+}
 .next-link {
   /* color: inherit;
   text-decoration: none; */

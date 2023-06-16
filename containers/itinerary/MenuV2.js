@@ -414,6 +414,7 @@ const SimpleTabsV2 = (props) => {
           label: 'Activities',
           link: 'Activities',
         },
+        
       ]
     : [
         { id: 1, label: 'Brief', link: 'Brief' },
@@ -421,6 +422,11 @@ const SimpleTabsV2 = (props) => {
         // { id: 3, label: 'Flights',link: 'Flights' },
         { id: 3, label: 'Stays', link: 'Stays' },
         { id: 4, label: 'Transfers', link: 'Transfers' },
+        {
+          id: 6,
+          label: 'Book Now',
+          link: 'staysBooking',
+        },
       ];
 
   const { ref, isSticky } = useSticky(90);
@@ -575,6 +581,25 @@ const SimpleTabsV2 = (props) => {
           />
         )}
       </div>
+      {/* <div className='w-full z-120 sticky flex flex-row top-[2px] justify-end '>
+      <div className='z-120   md:top-[0px] top-[2px]'> 
+      <Button
+                
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="3px"
+                width="100%"
+                borderRadius="10px"
+                bgColor="#f7e700"
+                onclick={() =>
+                  setShowFooterBannerMobile(!showFooterBannerMobile)
+                }
+              >
+                Pay Now & Book
+              </Button>
+      </div>
+      </div> */}
+      
 
       {/* {!isPageWide && value !== 2 ? (
           <PriceBannerMobile
