@@ -79,7 +79,7 @@ console.log(props.bookings)
       {
         props.version == 'v2' ?
           <Text>
-            {props.bookings.map((element, index) => (
+            {props?.bookings?.map((element, index) => (
   <div className='flex flex-row' key={index}>
     <TransportIconFetcher
       TransportMode={element.booking_type}

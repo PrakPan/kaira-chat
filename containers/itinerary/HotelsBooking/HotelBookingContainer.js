@@ -51,9 +51,26 @@ const HotelBookingContainer = ({
   token,
   plan,
 }) => {
+  const AddbookingStatus = booking => {
+    if(booking?.version == 'v2'){
+      if(booking.status == 'BOOKING_EXPIRED'){
+        return false
+      }else{
+        return true
+      }
+    }else{
+     return !currentBooking ? booking?.user_selected : true
+    }
+    
+  }
   const [addbooking, setaddboking] = useState(
-    !currentBooking ? booking?.user_selected : true
+     AddbookingStatus(booking)
   );
+  const [expiredBooking, setexpiredBooking] = useState(
+    booking?.status == 'BOOKING_EXPIRED' ? true  : false 
+ );
+  
+  
   const [isSelect, setisSelect] = useState(booking?.user_selected);
 
   function Addons(Shorthand) {
@@ -163,7 +180,7 @@ const HotelBookingContainer = ({
                   : handleClick(index, booking.accommodation, booking);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-                addbooking ? 'grayscale-0' : 'grayscale'
+                addbooking   ? 'grayscale-0' : 'grayscale'
               } `}
             >
               <div
@@ -384,7 +401,7 @@ const HotelBookingContainer = ({
                           handleClickAc(index, booking, city_id);
                         }}
                       >
-                        <div className="text-[#01202B] ">Change</div>
+                        <div className="text-[#01202B] ">{expiredBooking ? 'Add Hotel' : 'Change' }</div>
                       </ButtonYellow>
                     )}
 
@@ -421,30 +438,32 @@ const HotelBookingContainer = ({
                   )}
                 </div>
               )} */}
-
-                <div
-                  className={`absolute  ${
-                    SelectedBookingin
-                      ? 'lg:bottom-4 bottom-[1.5rem] '
-                      : `${
-                          payment?.paid_user || !payment?.user_allowed_to_pay
-                            ? 'lg:bottom-10 bottom-[1.2rem]'
-                            : 'lg:bottom-10 bottom-[2.5rem]'
-                        }`
-                  } right-8 -m-3`}
-                >
-                  <div
-                    onClick={(e) => {
-                      handleCheckboxChange(e);
-                    }}
-                    className="flex flex-row gap-1 items-center  cursor-pointer"
-                  >
-                    <CheckboxFormComponent checked={addbooking} />
-                    <label className="text-center">
-                      {addbooking ? 'Added Booking' : 'Add Booking'}
-                    </label>
-                  </div>
-                </div>
+{
+  !expiredBooking && <div
+  className={`absolute  ${
+    SelectedBookingin
+      ? 'lg:bottom-4 bottom-[1.5rem] '
+      : `${
+          payment?.paid_user || !payment?.user_allowed_to_pay
+            ? 'lg:bottom-10 bottom-[1.2rem]'
+            : 'lg:bottom-10 bottom-[2.5rem]'
+        }`
+  } right-8 -m-3`}
+>
+  <div
+    onClick={(e) => {
+      handleCheckboxChange(e);
+    }}
+    className="flex flex-row gap-1 items-center  cursor-pointer"
+  >
+    <CheckboxFormComponent checked={addbooking} />
+    <label className="text-center">
+      {addbooking ? 'Added Booking' : 'Add Booking'}
+    </label>
+  </div>
+</div> 
+}
+                
               </div>
             )}
             {currentBooking && (
