@@ -26,7 +26,8 @@ import { isDateOlderThanCurrent } from '../../../helper/isDateOlderThanCurrent';
 import Modal from '../../../components/ui/Modal';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { useRouter } from 'next/router';
-import { format } from 'date-fns';
+import { format, isEqual, isSameDay, parse } from 'date-fns';
+import Slide from '../../../Animation/framerAnimation/Slide';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -79,7 +80,10 @@ const HotelsBooking = (props) => {
     useState([]);
   const [showDetails, setShowDetails] = useState(false);
   const [AddHotel, setAddHotel] = useState(false);
-
+  const [isError, setIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
@@ -183,52 +187,65 @@ const HotelsBooking = (props) => {
     user_selected,
     index,
   }) => {
-    setUpdateBookingState(true);
-    // const token = localStorage.getItem('access_token');
-    let updated_bookings_arr = [
-      {
-        id: props.stayBookings[index]['id'],
-        costings_breakdown: props.stayBookings[index]['costings_breakdown'],
-        accommodation: props.stayBookings[index]['accommodation'],
-        is_estimated_price: true,
-        alternate_to: null,
-        booking_type: 'Accommodation',
-        itinerary_type: 'Tailored',
-        user_selected: user_selected,
-        itinerary_id: props.stayBookings[index]['itinerary_id'],
-        tailored_itinerary: tailored_id,
-        itinerary_name: itinerary_name,
-        itinerary_db_id: null,
-      },
-    ];
-
-    // const token = localStorage.getItem('access_token');
-    axiosbookingupdateinstance
-      .post(
-        '?booking_type=Accommodation&itinerary_id=' +
-          props.stayBookings[index]['itinerary_id'],
-        updated_bookings_arr,
+    return new Promise((resolve, reject) => {
+      setUpdateBookingState(true);
+      // const token = localStorage.getItem('access_token');
+      let updated_bookings_arr = [
         {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      )
-      .then((res) => {
-        props._updateStayBookingHandler(res.data.bookings);
-        setTimeout(function () {
-          props.getPaymentHandler();
-        }, 1000);
-        // props._updatePaymentHandler(res.data.payment_info);
-        setUpdateBookingState(false);
-      })
-      .catch((err) => {
-        // setUpdateLoadingState(false);
-        setUpdateBookingState(false);
-        setUnauthorized(true);
+          id: props.stayBookings[index]['id'],
+          costings_breakdown: props.stayBookings[index]['costings_breakdown'],
+          accommodation: props.stayBookings[index]['accommodation'],
+          is_estimated_price: true,
+          alternate_to: null,
+          booking_type: 'Accommodation',
+          itinerary_type: 'Tailored',
+          user_selected: user_selected,
+          itinerary_id: props.stayBookings[index]['itinerary_id'],
+          tailored_itinerary: tailored_id,
+          itinerary_name: itinerary_name,
+          itinerary_db_id: null,
+        },
+      ];
 
-        // window.alert("There seems to be a problem, please try again!")
-      });
+      // const token = localStorage.getItem('access_token');
+      axiosbookingupdateinstance
+        .post(
+          `?booking_type=Accommodation&itinerary_id=${props.stayBookings[index]['itinerary_id']}`,
+          updated_bookings_arr,
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          }
+        )
+        .then((res) => {
+          props._updateStayBookingHandler(res.data.bookings);
+          setTimeout(function () {
+            props.getPaymentHandler();
+          }, 1000);
+          // props._updatePaymentHandler(res.data.payment_info);
+          setUpdateBookingState(false);
+          resolve(res.data); // Resolve the promise with the response data
+        })
+        .catch((err) => {
+          // setUpdateLoadingState(false);
+          if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+
+            // The response headers
+            if (err.response.status === 400) {
+              setIsError({
+                error: true,
+                errorMsg: err.response.data.message,
+              });
+            }
+          }
+          setUpdateBookingState(false);
+          setUnauthorized(true);
+          reject(err); // Reject the promise with the error object
+        });
+    });
   };
   //   <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
   // );
@@ -447,6 +464,31 @@ const HotelsBooking = (props) => {
   //   props.token,
   //   props.payment,
   // ]);
+  function compareDates(dateString1, dateString2) {
+    if (dateString1 && dateString2) {
+      const date1 = parse(dateString1, 'dd/MM/yyyy', new Date());
+      const date2 = parse(dateString2, 'yyyy-MM-dd', new Date());
+
+      console.log(isSameDay(date1, date2));
+      return isSameDay(date1, date2);
+    }
+
+    return false;
+  }
+  const findObjectById = (array, id) => array.find((obj) => obj.id === id);
+  const findIndexById = (array, id) => array.findIndex((obj) => obj.id === id);
+
+  function Return(dateString1, dateString2) {
+    if (dateString1 && dateString2) {
+      const date1 = parse(dateString1, 'dd/MM/yyyy', new Date());
+      const date2 = parse(dateString2, 'yyyy-MM-dd', new Date());
+
+      console.log(isSameDay(date1, date2));
+      return isSameDay(date1, date2);
+    }
+
+    return false;
+  }
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]['name'];
     let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
@@ -528,7 +570,7 @@ const HotelsBooking = (props) => {
     setShowDetails(true);
   }
   const HotelArray = [];
-  if (props.breif) {
+  if (props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')) {
     if (props.breif.city_slabs) {
       if (props.stayBookings) {
         for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
@@ -536,29 +578,75 @@ const HotelsBooking = (props) => {
             props.breif.city_slabs[i]?.accommodation_booking == null ||
             props.breif.city_slabs[i]?.accommodation_booking == ''
           ) {
-            HotelArray.push(
-              <HotelBookingContainer
-                booking={null}
-                index={i - 1}
-                key={i}
-                handleClick={handleClick}
-                cityName={props.breif.city_slabs[i].city_name}
-                handleClickAc={handleClickNewAc}
-                _SelectedBookingHandler={_SelectedBookingHandler}
-                setHideBookingModal={props.setHideBookingModal}
-                loginModal={showLoginModal}
-                city_id={props.breif.city_slabs[i].city_id}
-                cityData={props.breif.city_slabs[i]}
-                setLoginModal={setShowLoginModal}
-                token={props.token}
-                payment={props.payment}
-              ></HotelBookingContainer>
-            );
+            if (
+              compareDates(
+                props.breif?.city_slabs[i]?.checkin_date,
+                props?.stayBookings[i - 1]?.check_in
+              )
+            ) {
+              const foundObject = findObjectById(
+                props.stayBookings,
+                props.breif.city_slabs[i]?.accommodation_booking
+              );
+              HotelArray.push(
+                <HotelBookingContainer
+                  booking={foundObject}
+                  index={findIndexById(
+                    props.stayBookings,
+                    props.breif.city_slabs[i]?.accommodation_booking
+                  )}
+                  cityName={props.breif.city_slabs[i].city_name}
+                  key={i}
+                  handleClick={handleClick}
+                  handleClickAc={handleClickAc}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
+                  setHideBookingModal={props.setHideBookingModal}
+                  city_id={props.breif.city_slabs[i].city_id}
+                  loginModal={showLoginModal}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
+                  payment={props.payment}
+                  plan={props.plan}
+                ></HotelBookingContainer>
+              );
+            } else {
+              HotelArray.push(
+                <HotelBookingContainer
+                  booking={null}
+                  index={i - 1}
+                  key={i}
+                  handleClick={handleClick}
+                  cityName={props.breif.city_slabs[i].city_name}
+                  handleClickAc={handleClickNewAc}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
+                  setHideBookingModal={props.setHideBookingModal}
+                  loginModal={showLoginModal}
+                  city_id={props.breif.city_slabs[i].city_id}
+                  cityData={props.breif.city_slabs[i]}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
+                  payment={props.payment}
+                  plan={props.plan}
+                ></HotelBookingContainer>
+              );
+            }
           } else {
+            const foundObject = findObjectById(
+              props.stayBookings,
+              props.breif.city_slabs[i]?.accommodation_booking
+            );
+            console.log(
+              'booking-Varanasi-beforepushh',
+
+              foundObject
+            );
             HotelArray.push(
               <HotelBookingContainer
-                booking={props.stayBookings[i - 1]}
-                index={i - 1}
+                booking={foundObject}
+                index={findIndexById(
+                  props.stayBookings,
+                  props.breif.city_slabs[i]?.accommodation_booking
+                )}
                 cityName={props.breif.city_slabs[i].city_name}
                 key={i}
                 handleClick={handleClick}
@@ -570,6 +658,7 @@ const HotelsBooking = (props) => {
                 setLoginModal={setShowLoginModal}
                 token={props.token}
                 payment={props.payment}
+                plan={props.plan}
               ></HotelBookingContainer>
             );
           }
@@ -579,14 +668,34 @@ const HotelsBooking = (props) => {
   }
 
   return (
-    <div className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16">
-      <div
-        id="Stays-Head"
-        className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
-      >
+    <div id="Stays-Head" className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16 ">
+      <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
+
+      <div className=" fixed right-[10px] top-[50px] z-[200] ">
+        {isError.error && (
+          <Slide
+            hideTime={8}
+            onUnmount={() =>
+              setIsError({
+                error: false,
+                errorMsg: '',
+              })
+            }
+            isActive={isError.error}
+            direction={-2}
+            duration={1.3}
+            ydistance={25}
+          >
+            <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+              {isError.errorMsg}
+            </div>
+          </Slide>
+        )}
+      </div>
+
       {props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')
         ? // props.breif.city_slabs[1]?.accommodation_booking == null
           HotelArray
@@ -598,12 +707,15 @@ const HotelsBooking = (props) => {
               key={index}
               handleClick={handleClick}
               handleClickAc={handleClickAc}
+              selectedBooking={booking}
+              city_id={props.breif.city_slabs[index + 1].city_id}
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
               loginModal={showLoginModal}
               setLoginModal={setShowLoginModal}
               token={props.token}
               payment={props.payment}
+              plan={props.plan}
             ></HotelBookingContainer>
           ))
         : null}
@@ -614,6 +726,8 @@ const HotelsBooking = (props) => {
         id={bookingId}
         currentBooking={currentBooking}
         show={showDetails}
+        payment={props.payment}
+        plan={props.plan}
       ></AccommodationModal>
       {showLoginModal && (
         <div>
@@ -624,6 +738,8 @@ const HotelsBooking = (props) => {
         <BookingModal
           showFilter={showFilter}
           setshowFilter={setshowFilter}
+          payment={props.payment}
+          plan={props.plan}
           _setImagesHandler={_setImagesHandler}
           getPaymentHandler={props.getPaymentHandler}
           _updateStayBookingHandler={props._updateStayBookingHandler}

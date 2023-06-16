@@ -112,6 +112,7 @@ const IndexWrapper = (props) => {
           setImagesHandler={props.setImagesHandler}
           payment={props.payment}
           booking={props.booking}
+          plan={props.plan}
         ></Bookings>
       );
     else

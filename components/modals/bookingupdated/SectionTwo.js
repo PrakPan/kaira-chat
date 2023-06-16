@@ -45,6 +45,7 @@ const Section = (props) => {
   return (
     <Container className="font-lexend">
       <FiltersMobile
+        loading={props.loading}
         showFilter={props.showFilter}
         setshowFilter={props.setshowFilter}
         filtersState={props.filtersState}
@@ -53,6 +54,7 @@ const Section = (props) => {
         _addFilterHandler={props._addFilterHandler}
         filters={props.FILTERS}
         booking_city={props.booking_city}
+        No_of_stays={props.No_of_stays}
       ></FiltersMobile>
       <Drawer
         show={props.showFilter}

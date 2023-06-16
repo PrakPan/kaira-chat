@@ -389,13 +389,13 @@ const SimpleTabsV2 = (props) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [items]);
-  if (
-    props.token &&
-    !props.payment?.user_allowed_to_pay &&
-    props.payment?.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
-  ) {
-    ClaimItinary(props.id, props.token);
-  }
+  // if (
+  //   props.token &&
+  //   !props.payment.user_allowed_to_pay &&
+  //   props.payment.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+  // ) {
+  //   ClaimItinary(props.id, props.token);
+  // }
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
@@ -589,6 +589,7 @@ const SimpleTabsV2 = (props) => {
       <div id={items[0].link}>
         {/* {mapArray ? ( */}
         <Breif
+          plan={props.plan}
           routesData={RoutesData}
           transfersData={TransfersData}
           payment={props.payment}
@@ -614,6 +615,7 @@ const SimpleTabsV2 = (props) => {
         <>
           <div id={items[1].link}>
             <NewItenaryDBDMob
+              plan={props.plan}
               payment={props.payment}
               token={props.token}
               // is_registration_needed={
@@ -647,6 +649,7 @@ const SimpleTabsV2 = (props) => {
 
           <div id={items[2].link}>
             <HotelsBooking
+              plan={props.plan}
               hasUserPaid={
                 props.payment ? (props.payment.paid_user ? true : false) : false
               }
@@ -667,6 +670,7 @@ const SimpleTabsV2 = (props) => {
 
           <div id={items[3].link}>
             <TransfersContainer
+              plan={props.plan}
               dayslab={props?.itinerary?.day_slabs}
               breif={props?.breif}
               showTaxiModal={props.showTaxiModal}
@@ -779,6 +783,7 @@ const SimpleTabsV2 = (props) => {
               <div id={items[1].link}>
                 {props?.itinerary && (
                   <NewItenaryMain
+                    plan={props.plan}
                     payment={props.payment}
                     city_slabs={props?.breif?.city_slabs}
                     itinerary={props?.itinerary}
@@ -791,6 +796,7 @@ const SimpleTabsV2 = (props) => {
             ) : (
               <div id={items[1].link}>
                 <NewItenaryDBDMob
+                  plan={props.plan}
                   payment={props.payment}
                   token={props.token}
                   // is_registration_needed={
@@ -885,6 +891,7 @@ const SimpleTabsV2 = (props) => {
             ) : (
               <div id={items[2].link}>
                 <HotelsBooking
+                  plan={props.plan}
                   hasUserPaid={
                     props.payment
                       ? props.payment.paid_user
@@ -911,6 +918,7 @@ const SimpleTabsV2 = (props) => {
             {props.transferBookings && (
               <div id={items[3].link}>
                 <TransfersContainer
+                  plan={props.plan}
                   dayslab={props?.itinerary?.day_slabs}
                   breif={props?.breif}
                   showTaxiModal={props.showTaxiModal}
@@ -937,6 +945,7 @@ const SimpleTabsV2 = (props) => {
             {props.activityBookings && (
               <div id={items[4].link}>
                 <ActivityBookings
+                  plan={props.plan}
                   hasUserPaid={
                     props.payment
                       ? props.payment.paid_user

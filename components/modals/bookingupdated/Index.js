@@ -23,6 +23,7 @@ import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
 import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
+import Slide from '../../../Animation/framerAnimation/Slide';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -56,10 +57,12 @@ const ContentContainer = styled.div`
 const Booking = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
-  let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
-
+  const [isError, setIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     budget: [],
@@ -113,6 +116,8 @@ const Booking = (props) => {
       for (var i = 0; i < props.alternates.length; i++) {
         options.push(
           <AccommodationSearched
+            payment={props.payment}
+            plan={props.plan}
             currentBooking={props.currentBooking}
             _setImagesHandler={props._setImagesHandler}
             alternates={props.alternates}
@@ -120,7 +125,7 @@ const Booking = (props) => {
             selectedBooking={props.selectedBooking}
             tailored_id={props.tailored_id}
             updateLoadingState={updateLoadingState}
-            itinerary_id={props.selectedBooking.itinerary_id}
+            itinerary_id={props.payment.tailored_itinerary}
             accommodation={props.alternates[i]}
             _updateSearchedAccommodation={_newUpdateBookingHandler}
             _SelectedBookingHandler={_SelectedBookingHandler}
@@ -166,7 +171,7 @@ const Booking = (props) => {
       let filters = _generateFilterKeys(FILTERS_KEY);
 
       axiosaccommodationinstance
-        .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+        .post('/?limit=' + limit + '&offset=' + offset, {
           city: props.selectedBooking.city,
           check_in: props.selectedBooking.check_in,
           check_out: props.selectedBooking.check_out,
@@ -180,7 +185,6 @@ const Booking = (props) => {
           price_upper_range: filters.price_upper_range,
         })
         .then((res) => {
-          setLoading(false);
           setUpdateLoadingState(false);
 
           if (res.data.results.length) {
@@ -199,11 +203,13 @@ const Booking = (props) => {
               try {
                 options.push(
                   <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
                     currentBooking={props.currentBooking}
-                    itinerary_id={props.selectedBooking.itinerary_id}
+                    itinerary_id={props.payment.tailored_itinerary}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
                     accommodation={res.data.results[i]}
@@ -215,11 +221,13 @@ const Booking = (props) => {
               } catch {
                 options.push(
                   <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
                     currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
-                    itinerary_id={props.selectedBooking.itinerary_id}
+                    itinerary_id={props.payment.tailored_itinerary}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
                     accommodation={res.data[i]}
@@ -247,7 +255,22 @@ const Booking = (props) => {
           }
           setLoading(false);
         })
-        .catch((err) => {});
+        .catch((err) => {
+          if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+
+            console.log(err.response.data); // The response body
+            console.log(err.response.status); // The status code
+            console.log(err.response.headers); // The response headers
+            if (err.response.status == 400) {
+              setIsError({
+                error: true,
+                errorMsg: err.response.data.message,
+              });
+            }
+          }
+        });
     }
   }, [props.alternates, props.budget]);
   const _generateFilterKeys = (filtersState) => {
@@ -336,7 +359,7 @@ const Booking = (props) => {
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
     axiosaccommodationinstance
-      .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+      .post('/?limit=' + limit + '&offset=' + offset, {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
@@ -359,12 +382,14 @@ const Booking = (props) => {
             if (res.data.results[i].name !== props.selectedBooking.name)
               options.push(
                 <AccommodationSearched
+                  payment={props.payment}
+                  plan={props.plan}
                   currentBooking={props.currentBooking}
                   _setImagesHandler={props._setImagesHandler}
                   s
                   _updateSearchedAccommodation={_newUpdateBookingHandler}
                   _SelectedBookingHandler={_SelectedBookingHandler}
-                  itinerary_id={props.selectedBooking.itinerary_id}
+                  itinerary_id={props.payment.tailored_itinerary}
                   tailored_id={props.tailored_id}
                   _updateBookingHandler={_newUpdateBookingHandler}
                   accommodation={res.data.results[i]}
@@ -461,14 +486,16 @@ const Booking = (props) => {
 
         itinerary_id: itinerary_id,
 
-        trace: traceId,
+        trace: traceId
+          ? traceId
+          : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
     {
       props.AddHotel
         ? axiosbookingupdateinstance
             .post(
-              'add/?booking_type=Accommodation&itinerary_id=' +
+              'add/?booking_type=Accommodation' +
                 props.selectedBooking.itinerary_id,
               updated_bookings_arr[0],
               {
@@ -478,7 +505,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler([res.data]);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
@@ -503,7 +530,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler([res.data]);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
@@ -548,7 +575,9 @@ const Booking = (props) => {
 
         itinerary_id: itinerary_id,
 
-        trace: traceId,
+        trace: traceId
+          ? traceId
+          : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
     /* for (var i = 0; i < alternates.length; i++) {
@@ -594,7 +623,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -619,7 +648,7 @@ const Booking = (props) => {
               }
             )
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -664,7 +693,9 @@ const Booking = (props) => {
 
         itinerary_id: itinerary_id,
 
-        trace: traceId,
+        trace: traceId
+          ? traceId
+          : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
     {
@@ -676,7 +707,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -697,7 +728,7 @@ const Booking = (props) => {
               },
             })
             .then((res) => {
-              props._updateStayBookingHandler(res.data.bookings);
+              props._updateStayBookingHandler([res.data]);
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
@@ -720,7 +751,7 @@ const Booking = (props) => {
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
     axiosaccommodationinstance
-      .post('/?show_rooms=true&limit=' + limit + '&offset=' + offset, {
+      .post('/?limit=' + limit + '&offset=' + offset, {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
@@ -750,12 +781,14 @@ const Booking = (props) => {
               )
                 options.push(
                   <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
                     currentBooking={props.currentBooking}
                     _setImagesHandler={props._setImagesHandler}
                     token={props.token}
                     _updateSearchedAccommodation={_updateSearchedAccommodation}
                     _SelectedBookingHandler={_SelectedBookingHandler}
-                    itinerary_id={props.selectedBooking.itinerary_id}
+                    itinerary_id={props.payment.tailored_itinerary}
                     tailored_id={props.tailored_id}
                     _updateBookingHandler={_newUpdateBookingHandler}
                     accommodation={res.data.results[i]}
@@ -768,12 +801,14 @@ const Booking = (props) => {
             } catch {
               options.push(
                 <AccommodationSearched
+                  payment={props.payment}
+                  plan={props.plan}
                   currentBooking={props.currentBooking}
                   _setImagesHandler={props._setImagesHandler}
                   token={props.token}
                   _updateSearchedAccommodation={_updateSearchedAccommodation}
                   _SelectedBookingHandler={_SelectedBookingHandler}
-                  itinerary_id={props.selectedBooking.itinerary_id}
+                  itinerary_id={props.payment.tailored_itinerary}
                   tailored_id={props.tailored_id}
                   _updateBookingHandler={_newUpdateBookingHandler}
                   accommodation={res.data.results[i]}
@@ -844,21 +879,48 @@ const Booking = (props) => {
           onHide={props.setHideBookingModal}
           // zIndex='1501'
         >
+          <div className="absolute right-[10px] top-[20px] z-[9999]">
+            {isError.error && (
+              <Slide
+                hideTime={8}
+                onUnmount={() =>
+                  setIsError({
+                    error: false,
+                    errorMsg: '',
+                  })
+                }
+                isActive={isError.error}
+                direction={-2}
+                duration={1.3}
+                ydistance={25}
+              >
+                <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+                  {isError.errorMsg}
+                </div>
+              </Slide>
+            )}
+          </div>
           <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
             <SectionOne
               booking_city={props?.currentBooking?.city}
               setHideBookingModal={props.setHideBookingModal}
             ></SectionOne>
-            <SectionTwo
-              showFilter={props.showFilter}
-              setshowFilter={props.setshowFilter}
-              filtersState={filtersState}
-              FILTERS={FILTERS}
-              _updateStarFilterHandler={_updateStarFilterHandler}
-              _removeFilterHandler={_removeFilterHandler}
-              _addFilterHandler={_addFilterHandler}
-              booking_city={props?.currentBooking?.city}
-            ></SectionTwo>
+            {!loading && (
+              <SectionTwo
+                loading={loading}
+                showFilter={props.showFilter}
+                setshowFilter={props.setshowFilter}
+                filtersState={filtersState}
+                FILTERS={FILTERS}
+                _updateStarFilterHandler={_updateStarFilterHandler}
+                _removeFilterHandler={_removeFilterHandler}
+                _addFilterHandler={_addFilterHandler}
+                booking_city={props?.currentBooking?.city}
+                No_of_stays={optionsJSX.length + moreOptionsJSX.length}
+                payment={props.payment}
+                plan={props.plan}
+              ></SectionTwo>
+            )}
           </div>
 
           <div className="lg:w-[100%] w-[95%] mx-auto">
@@ -909,6 +971,8 @@ const Booking = (props) => {
                           _setImagesHandler={props._setImagesHandler}
                           selectedBooking={props.selectedBooking}
                           booking={props.currentBooking}
+                          payment={props.payment}
+                          plan={props.plan}
                         ></HotelBookingContainer>
                       )}
 

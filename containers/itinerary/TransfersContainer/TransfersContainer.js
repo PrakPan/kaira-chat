@@ -569,6 +569,13 @@ const TransfersContainer = (props) => {
                 ? locationsArr.push(
                     <div className="flex flex-col gap-1">
                       <TransferModeContainer
+                        plan={props.plan}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        token={props.token}
                         payment={props?.payment}
                         booking_type={
                           props?.transferBookings[i + 1]?.booking_type
@@ -598,6 +605,13 @@ const TransfersContainer = (props) => {
                         duration={props.breif.city_slabs[i].duration}
                       ></TransferModeContainer>
                       <TransferModeContainer
+                        plan={props.plan}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        token={props.token}
                         payment={props?.payment}
                         booking_type={props?.transferBookings[i]?.booking_type}
                         transferbookings={props.transferBookings}
@@ -627,6 +641,13 @@ const TransfersContainer = (props) => {
                 : locationsArr.push(
                     props?.transferBookings && (
                       <TransferModeContainer
+                        plan={props.plan}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        token={props.token}
                         payment={props?.payment}
                         booking_type={props?.transferBookings[i]?.booking_type}
                         pinColour={props.breif.city_slabs[i].color}
@@ -657,6 +678,7 @@ const TransfersContainer = (props) => {
 
             // locationsArr.push(
             //   <TransferModeContainer
+
             //     pinColour={props.breif.city_slabs[i].color}
             //     icon={props?.transfers[i]?.icon}
             //     modes={
@@ -726,6 +748,11 @@ const TransfersContainer = (props) => {
               props?.transferBookings &&
                 locationsArr.push(
                   <TransferModeContainer
+                    plan={props.plan}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    token={props.token}
                     payment={props?.payment}
                     pinColour={props.breif.city_slabs[i].color}
                     modes={'Taxi'}
@@ -784,6 +811,7 @@ const TransfersContainer = (props) => {
       //       ? locationsArr.push(
       //           <div className="flex flex-col gap-1">
       //             <TransferModeContainer
+
       //               booking_type={props?.transferBookings[i + 1]?.booking_type}
       //               pinColour={props.breif.city_slabs[i].color}
       //               costings_breakdown={
@@ -807,6 +835,7 @@ const TransfersContainer = (props) => {
       //               duration={props.breif.city_slabs[i].duration}
       //             ></TransferModeContainer>
       //             <TransferModeContainer
+
       //               booking_type={props?.transferBookings[i]?.booking_type}
       //               transferbookings={props.transferBookings}
       //               _changeTaxiHandler={_changeTaxiHandler}
@@ -832,6 +861,7 @@ const TransfersContainer = (props) => {
       //       : locationsArr.push(
       //           props?.transferBookings && (
       //             <TransferModeContainer
+
       //               booking_type={props?.transferBookings[i]?.booking_type}
       //               pinColour={props.breif.city_slabs[i].color}
       //               costings_breakdown={
@@ -858,6 +888,7 @@ const TransfersContainer = (props) => {
 
       //   // locationsArr.push(
       //   //   <TransferModeContainer
+
       //   //     pinColour={props.breif.city_slabs[i].color}
       //   //     icon={props?.transfers[i]?.icon}
       //   //     modes={
@@ -904,9 +935,14 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
+                    plan={props.plan}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    token={props.token}
                     payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
-                    pinColour={props.breif.city_slabs[i].color}
+                    pinColour={props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
                       props?.transferBookings[i]?.costings_breakdown
                     }
@@ -925,13 +961,18 @@ const TransfersContainer = (props) => {
                     transportMode={getTransportationType(
                       props?.transfers[i]?.icon
                     )}
-                    duration={props.breif.city_slabs[i].duration}
+                    duration={props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 </div>
               )
             : locationsArr.push(
                 props?.transferBookings && (
                   <TransferModeContainer
+                    plan={props.plan}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    token={props.token}
                     payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
                     pinColour={props?.breif?.city_slabs[i]?.color}
@@ -964,9 +1005,12 @@ const TransfersContainer = (props) => {
   console.log('locationsArr');
   console.log(locationsArr);
   return (
-    <Container id="Transfer_Container">
-      <div className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
-        Transfers{" "}
+    <Container id="Stays-Head">
+      <div
+        id="Transfer_Container"
+        className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
+      >
+        Transfers
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
       {props.showFlightModal && (
@@ -988,12 +1032,12 @@ const TransfersContainer = (props) => {
           _updateBookingHandler={props._updateBookingHandler}
           itinerary_id={
             props?.transferBookings[0]
-              ? props?.transferBookings[0]["itinerary_id"]
+              ? props?.transferBookings[0]['itinerary_id']
               : null
           }
           setHideFlightModal={props.setHideFlightModal}
           alternates={selectedBooking.id}
-          tailored_id={selectedBooking["tailored_itinerary"]}
+          tailored_id={selectedBooking['tailored_itinerary']}
           _updatePaymentHandler={props._updatePaymentHandler}
           _updateFlightHandler={props._updateFlightHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -1039,13 +1083,18 @@ const TransfersContainer = (props) => {
           ></PinSection>
 
           <TransferModeContainer
+            plan={props.plan}
+            getPaymentHandler={props.getPaymentHandler}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            _updatePaymentHandler={props._updatePaymentHandler}
+            token={props.token}
             payment={props?.payment}
             booking_type={props?.transferBookings[0]?.booking_type}
             setShowBookingModal={props.setShowBookingModal}
             pinColour={props.breif.city_slabs[0].color}
             heading={props?.transferBookings[0]?.booking_display_name}
             costings_breakdown={props?.transferBookings[0]?.costings_breakdown}
-            modes={"Taxi"}
+            modes={'Taxi'}
             transferbookings={props.transferBookings}
             booking={props.transferBookings[0]}
             _changeTaxiHandler={_changeTaxiHandler}
@@ -1054,17 +1103,20 @@ const TransfersContainer = (props) => {
             index={0}
             icon={props?.transferBookings[0]?.images?.image}
             taxi_type={props?.transferBookings[0]?.taxi_type}
-            transportMode={"Taxi"}
-            duration={"2"}
+            transportMode={'Taxi'}
+            duration={'2'}
             userSelected={props?.transferBookings[0]?.user_selected}
           />
 
           {locationsArr}
-          {/* <TransferModeContainer></TransferModeContainer>
+          {/* <TransferModeContainer
+token={props.token}></TransferModeContainer>
              <PinSection location="Jaisalmer" duration="4 Nights"></PinSection>
-             <TransferModeContainer></TransferModeContainer>
+             <TransferModeContainer
+token={props.token}></TransferModeContainer>
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
-             <TransferModeContainer></TransferModeContainer> */}
+             <TransferModeContainer
+token={props.token}></TransferModeContainer> */}
           <PinSection
             setCurrentPopup={false}
             dayId={

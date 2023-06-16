@@ -246,6 +246,7 @@ const Booking = (props) => {
       })
       .then((res) => {
         props._updateTaxiBookingHandler(res.data.bookings);
+
         //  props.getPaymentHandler();
         setTimeout(function () {
           props.getPaymentHandler();

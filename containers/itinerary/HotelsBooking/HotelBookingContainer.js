@@ -17,6 +17,7 @@ import DropDown from '../../../components/modals/bookingupdated/new-accommodatio
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import useMediaQuery from '../../../hooks/useMedia';
 import { getHumanDate } from '../../../services/getHumanDate';
+import { ITINERARY_STATUSES } from '../../../services/constants';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -48,6 +49,7 @@ const HotelBookingContainer = ({
   selectedBooking,
   setLoginModal,
   token,
+  plan,
 }) => {
   const [addbooking, setaddboking] = useState(
     !currentBooking ? booking?.user_selected : true
@@ -99,13 +101,23 @@ const HotelBookingContainer = ({
   function handleCheckboxChange(e) {
     if (token) {
       _SelectedBookingHandler({
-        SelectedBookingId: selectedBooking.id,
+        SelectedBookingId: selectedBooking?.id,
         itinerary_id: itinerary_id,
         tailored_id: tailored_id,
         user_selected: !booking?.user_selected,
         index: index,
-      });
-      setaddboking(!addbooking);
+      })
+        .then((data) => {
+          setaddboking(true);
+          // Handle success
+          // Access the response data using 'data'
+        })
+        .catch((error) => {
+          setaddboking(false);
+          // Handle failure
+          // Access the error object using 'error'
+        });
+
       e.stopPropagation();
     } else {
       setLoginModal(!loginModal);
@@ -125,6 +137,7 @@ const HotelBookingContainer = ({
       category_id: booking?.category_id,
     });
   }
+  console.log('booking-Varanasi', booking);
   const isMobile = useMediaQuery('(min-width:768px)');
   return (
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
@@ -160,7 +173,7 @@ const HotelBookingContainer = ({
                     : `${handleClick ? 'lg:h-[15rem]' : 'lg:h-[12rem]'}`
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
-                {booking.images[0]?.image ? (
+                {booking?.images[0]?.image ? (
                   <ImageLoader
                     dimensions={{ width: 400, height: 400 }}
                     dimensionsMobile={{ width: 400, height: 400 }}
@@ -247,17 +260,22 @@ const HotelBookingContainer = ({
                       ) : null}
                     </div>
                   )}
-                  {booking.check_in ? (
+                  {booking.check_in &&
+                  ITINERARY_STATUSES.itinerary_prepared !==
+                    plan.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                      {/* <div className="flex flex-row gap-2 items-center">
-                        <BsCalendar2 className="text-sm text-[#7A7A7A]" />
-                        <div>
-                          <div className="text-sm font-[400] ">
-                            {getDate(booking.check_in)}-
-                            {getDate(booking.check_out)}
+                      {booking.check_in && (
+                        <div className="flex flex-row gap-2 items-center">
+                          <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                          <div>
+                            <div className="text-sm font-[400] ">
+                              {getDate(booking.check_in)}-
+                              {getDate(booking.check_out)}
+                            </div>
                           </div>
                         </div>
-                      </div> */}
+                      )}
+
                       <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                         <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] min-w-fit">
@@ -269,17 +287,22 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : (
-                    currentBooking && (
+                    currentBooking &&
+                    ITINERARY_STATUSES.itinerary_prepared !==
+                      plan.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                        {/* <div className="flex flex-row gap-2 items-center">
-                          <BsCalendar2 className="text-sm text-[#7A7A7A]" />
-                          <div>
-                            <div className="text-sm font-[400] ">
-                              {getDate(currentBooking.check_in)}-
-                              {getDate(currentBooking.check_out)}
+                        {currentBooking.check_in && (
+                          <div className="flex flex-row gap-2 items-center">
+                            <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                            <div>
+                              <div className="text-sm font-[400] ">
+                                {getDate(currentBooking.check_in)}-
+                                {getDate(currentBooking.check_out)}
+                              </div>
                             </div>
                           </div>
-                        </div> */}
+                        )}
+
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className=" text-sm font-[400] min-w-fit">
