@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import PinSection from './PinSection';
 import MidSection from './MidSection';
 import { TaxiAlert } from '@mui/icons-material';
+import { ITINERARY_VERSION } from '../../../../services/constants';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 30vw;
@@ -98,7 +99,52 @@ const Route = (props) => {
   }
   let startingcity = null;
   let endingcity = null;
-  if (props.breif)
+  if(props?.plan?.version == ITINERARY_VERSION.version_2){
+      if(props?.routes){
+        for (var i = 2; i < props.routes.length - 1; i+=2) {
+          
+            locationsArr.push(
+              <PinSection
+                setCurrentPopup={props.setCurrentPopup}
+                handlemap={handlemap}
+                // dayId={
+                //   props.breif.city_slabs[i].day_slab_location.start_day_slab_index
+                // }
+                setShowDrawer={props.setShowDrawer}
+                setShowDrawerData={props.setShowDrawerData}
+                cityData={props.routes[i]}
+                dayslab={props.dayslab}
+                lat={props.routes[i].lat}
+                long={props.routes[i].long}
+                Mapid={props.routes[i].gmaps_place_id}
+                city={props.routes[i].city_name}
+                cityId={props.routes[i].city_id}
+                duration={
+                  props.routes[i].duration
+                }
+                pinColour={props.routes[i].color}
+                data={order[i]}
+                _moveDownHandler={_moveDownHandler}
+                _moveUpHandler={_moveUpHandler}
+                index={i}
+              ></PinSection>
+            );
+            locationsArr.push(
+              <MidSection
+                pinColour={props.routes[i].color}
+                modes={props.routes[i + 1]?.modes}
+                icon={null}
+                version={'v2'}
+                bookings={props.routes[i + 1]?.bookings}
+                
+                duration={props.routes[i + 1]?.meta?.Time}
+              ></MidSection>
+            );
+              } 
+        
+      }
+  }else{
+    if (props.breif)
     if (props.breif.city_slabs) {
       for (var i = 1; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].is_departure_only)
@@ -151,6 +197,8 @@ const Route = (props) => {
                   : 'Taxi'
               }
               icon={null}
+
+              version={'v1'}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
             ></MidSection>
@@ -162,6 +210,11 @@ const Route = (props) => {
         endingcity =
           props.breif.city_slabs[props.breif.city_slabs.length - 1].city_name;
     }
+  }
+
+
+
+  
   return (
     <Container>
       <div className="font-lexend mb-4 lg:mb-10  mt-4 font-bold text-4xl">
@@ -176,8 +229,8 @@ const Route = (props) => {
         dayId={
           props.breif?.city_slabs[0].day_slab_location.start_day_slab_index
         }
-        setShowDrawer={props.setShowDrawer}
-        setShowDrawerData={props.setShowDrawerData}
+
+
         cityData={props.breif.city_slabs[0]}
         dayslab={props.dayslab}
         lat={props.breif.city_slabs[0].lat}
@@ -193,13 +246,15 @@ const Route = (props) => {
         }
         pinColour={props.breif.city_slabs[0].color}
         dayslab={props.dayslab}
-        city={props.nostartinglocation ? 'Your Location' : startingcity}
+        
       ></PinSection>
       <MidSection
         pinColour={props.breif.city_slabs[0].color}
         modes={
           props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : 'Taxi'
         }
+        bookings={props.routes[ 1]?.bookings}
+        version={props?.plan?.version}
         icon={props?.transfers[0]?.icon}
         transportMode={'Taxi'}
         duration={'2'}
@@ -230,7 +285,7 @@ const Route = (props) => {
             : null
         }
         pinColour={props.breif.city_slabs[0].color}
-        city={props.nostartinglocation ? 'Your Location' : endingcity}
+        
       ></PinSection>
     </Container>
   );

@@ -104,7 +104,7 @@ const HotelBookingContainer = ({
         SelectedBookingId: selectedBooking?.id,
         itinerary_id: itinerary_id,
         tailored_id: tailored_id,
-        user_selected: !booking?.user_selected,
+        user_selected: isSelect,
         index: index,
       })
         .then((data) => {

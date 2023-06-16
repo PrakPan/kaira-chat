@@ -247,12 +247,7 @@ const TransferModeContainer = (props) => {
         taxi_type: props.booking['taxi_type'],
         transfer_type: props.booking['transfer_type'],
 
-        costings_breakdown: {
-          duration: {
-            value: Math.trunc(props.booking?.costings_breakdown?.duration),
-          },
-          total_taxi: props.booking?.costings_breakdown?.total_taxi,
-        },
+        costings_breakdown: props.booking?.costings_breakdown,
       },
     ];
     console.dir(updated_bookings_arr);
@@ -722,7 +717,7 @@ const TransferModeContainer = (props) => {
               </div>
 
               {props?.costings_breakdown && (
-                <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row flex-col justify-start lg:items-center mt-1 w-full">
+                <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1 w-full">
                   <span className="pr-1 block ">Facilities:</span>
 
                   <span className="flex flex-row  ">

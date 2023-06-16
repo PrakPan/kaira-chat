@@ -268,13 +268,15 @@ const Details = (props) => {
         ) : null}
 
         <RouteComponent>
-          {props.routesData.length >= 1 || props.itinerary?.day_slabs ? (
+          {props.routes.length >= 1 || props.itinerary?.day_slabs ? (
             <div id="route">
               <Route
+              plan={props.plan}
                 dayslab={props.itinerary?.day_slabs}
                 breif={props.breif}
-                routes={props.routesData}
+                routesData={props.routesData}
                 transfers={props.transfersData}
+                routes={props.routes}
                 setPlaceID={setActive}
                 active={active}
                 setCurrentPopup={setCurrentPopup}
