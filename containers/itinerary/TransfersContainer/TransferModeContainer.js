@@ -64,15 +64,24 @@ const Container = styled.div`
 `;
 //
 const ImageContainer = styled.div`
-
-height: 4rem;
-width: 4rem;
-border-radius: 100%;
-overflow: hidden;
-img {
-  transform: scale(1.05);
-}
-`
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f4f4;
+  margin : auto;
+  @media screen and (min-width: 768px) {
+    width: 80px;
+    height: 80px;
+  }
+  img {
+    object-fit: contain;
+    transform: scale(1.05);
+  }
+`;
 const FacilityContainer = styled.div``;
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
@@ -353,18 +362,18 @@ const TransferModeContainer = (props) => {
             <div className="flex flex-row gap-6    ">
               {props.userSelected && (
                 <div>
-                  <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[4em] min-w-[4rem] lg:min-h-[4rem] min-h-[4rem]  rounded-full">
+                  <div className="">
                     {props.booking?.airline_code ? (
                       <ImageContainer>
 <ImageLoader
-                        className=" object-contain"
+                        className=""
                         url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${props.booking?.airline_code}.png`}
                         leftalign
                         dimensions={{ width: 800, height: 500 }}
                         borderRadius="100%"
                         height="4rem"
                         width="4rem"
-                        widthmobile="4rem"
+                        widthmobile="3rem"
                       ></ImageLoader>
                       </ImageContainer>
                       
