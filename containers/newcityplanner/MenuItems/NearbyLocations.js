@@ -28,13 +28,14 @@ const NearbyLocations = (props) => {
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
   const [cards, setCards] = useState([])
   const [hide , setHide] = useState(false)
-
+console.log('props: ', props);
   useEffect(() => {
     
 let cardsArr = []
 let MobileCardsArr = []
 let count = 0
-for(let i = 0;i<props.nearbyCities.length;i++){
+    for (let i = 0; i < props.nearbyCities.length; i++){
+  const mostPopular = props.nearbyCities[i].most_popular_for;
   if(i%4==0 && i!=0){
       let n = cardsArr.length;
       const el = cardsArr.slice(n-4,n)
@@ -51,7 +52,7 @@ for(let i = 0;i<props.nearbyCities.length;i++){
     <Card
     key={props.nearbyCities[i].id}
     location={props.nearbyCities[i].name}
-    heading={props.nearbyCities[i].most_popular_for[props.nearbyCities[i].most_popular_for.length-1]}
+    heading={(mostPopular && mostPopular.length) ? mostPopular[mostPopular.length-1] : ''}
     img={props.nearbyCities[i].image}
     path={props.nearbyCities[i].path}
     link={props.nearbyCities[i].slug}

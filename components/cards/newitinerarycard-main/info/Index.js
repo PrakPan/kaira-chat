@@ -48,18 +48,28 @@ const Info = (props) => {
        
 
     
-    return(
-        <Container className='font-lexend'>
-         <Heading className='font-lexend'>{props.name}</Heading>
-          <Locations>{LOCATIONS_TO_SHOW}</Locations>
-          {props.PW  ? <TourType>Tour Type: <b style={{fontWeight: '500'}}>Customisable</b></TourType>
-  : 
-  props.owner === "TTW" ? 
-  <TourType><b style={{fontWeight: '500'}}>Handcrafted by us</b></TourType>
-  : 
-  <TourType><b style={{fontWeight: '500'}}>{props.user_name ? "Curated by "  + props.user_name : ""}</b></TourType>
-    }
-        </Container>
+    return (
+      <Container className="font-lexend">
+        <Heading className="font-lexend">{props.name}</Heading>
+        <Locations>{LOCATIONS_TO_SHOW}</Locations>
+        {props.PW ? (
+          <TourType>
+            Tour Type: <b style={{ fontWeight: "500" }}>Customisable</b>
+          </TourType>
+        ) : props.user_name !== "TTW Exclusive" &&
+          props.user_name !== "" &&
+          props.user_name !== "TTW" ? (
+          <TourType>
+            <b style={{ fontWeight: "500" }}>
+              {props.user_name ? "Curated by " + props.user_name : ""}
+            </b>
+          </TourType>
+        ) : (
+          <TourType>
+            <b style={{ fontWeight: "500" }}>Handcrafted by us</b>
+          </TourType>
+        )}
+      </Container>
     );
 }
 export default Info;
