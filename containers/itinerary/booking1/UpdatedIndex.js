@@ -1120,7 +1120,7 @@ const Booking = (props) => {
   ]);
 
   useEffect(() => {
-    if (props.payment) {
+     if (props.payment) {
       if (!props.payment.is_registration_needed)
         setSummaryContainerJSX(
           <SummaryContainer

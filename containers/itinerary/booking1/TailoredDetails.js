@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import Heading from '../../../components/newheading/heading/Index';
-import Option from '../../../components/forms/Option';
-import Dropdown from '../../../components/forms/Dropdown';
+
 import Button from '../../../components/Button';
 import { faWhatsapp} from "@fortawesome/free-brands-svg-icons"
 import {connect} from 'react-redux';
@@ -55,7 +54,6 @@ const Details = (props) => {
   const router = useRouter()
 
     
- 
  
   const setBookingSummary = ( ) => {
     try{
@@ -221,7 +219,7 @@ const Details = (props) => {
         </div>
         {props.payment ? props.payment.coupon ? props.payment.coupon.code ? <div className='text-center font-lexend' style={{marginBottom: '1rem'}}>{'Coupon Applied: '+props.payment.coupon.code}</div> : null : null : null}
 
-     <INR show_per_person_cost={props.payment.show_per_person_cost} className={props.blur ? "font-lexend blurry-text" : "font-lexend"}><FontAwesomeIcon icon={faRupeeSign}/>{!props.payment.show_per_person_cost ? " "+getIndianPrice(Math.round(props.payment.total_cost/100))+ " /-" : " "+getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost)/100))+ " /-" }</INR>
+     <INR show_per_person_cost={props.payment.show_per_person_cost} className={props.blur ? "font-lexend blurry-text" : "font-lexend"}><FontAwesomeIcon icon={faRupeeSign}/>{!props.payment.show_per_person_cost ? " "+getIndianPrice(Math.round(props.payment.discounted_cost/100))+ " /-" : " "+getIndianPrice(Math.round(Math.round(props.payment.per_person_total_cost)/100))+ " /-" }</INR>
         {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
         {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
           <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
