@@ -175,7 +175,7 @@ const PlanAsPerTheme = (props) => {
 
     const order = ['e','b','c','a']
     const ThemeContainer = 
-    props.ThemeData?.map((e,i)=>(
+    props.ThemeData?.slice(0,4).map((e,i)=>(
         <GridItem className={order[i]} key={i} onClick={()=>_handleTripRedirect(e.path)}>
             {ImgLoading && <SkeletonCard />}
             <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>

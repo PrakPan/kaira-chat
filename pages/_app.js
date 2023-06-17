@@ -59,31 +59,31 @@ function MyApp({ Component, pageProps, store }) {
   }, [router.events]);
 
   // Freshchat bot :-
-  var name
-    if(localStorage.getItem("name")) name = localStorage.getItem("name").split(" ");
- var email = localStorage.getItem("email");
+//   var name
+//     if(localStorage.getItem("name")) name = localStorage.getItem("name").split(" ");
+//  var email = localStorage.getItem("email");
   
-  useEffect(() => {
-     function handleWidgetLoaded() {
+//   useEffect(() => {
+//      function handleWidgetLoaded() {
          
-          if (name?.length && email) {
-            window.fcWidget.user.setFirstName(name[0]);
-            window.fcWidget.user.setEmail(email);
-       }
-      }
+//           if (name?.length && email) {
+//             window.fcWidget.user.setFirstName(name[0]);
+//             window.fcWidget.user.setEmail(email);
+//        }
+//       }
 
-    if (window.fcWidget) {
-      window.fcWidget.on('widget:loaded', handleWidgetLoaded);
-    } else {
-      window.fcWidgetOnload = handleWidgetLoaded;
-    }
+//     if (window.fcWidget) {
+//       window.fcWidget.on('widget:loaded', handleWidgetLoaded);
+//     } else {
+//       window.fcWidgetOnload = handleWidgetLoaded;
+//     }
 
-    return () => {
-      if (window.fcWidget) {
-        window.fcWidget.off('widget:loaded', handleWidgetLoaded);
-      }
-    };
-  }, []);
+//     return () => {
+//       if (window.fcWidget) {
+//         window.fcWidget.off('widget:loaded', handleWidgetLoaded);
+//       }
+//     };
+//   }, []);
 
   
   return (
