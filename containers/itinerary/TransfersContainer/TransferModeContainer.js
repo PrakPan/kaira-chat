@@ -63,6 +63,16 @@ const Container = styled.div`
   }
 `;
 //
+const ImageContainer = styled.div`
+
+height: 4rem;
+width: 4rem;
+border-radius: 100%;
+overflow: hidden;
+img {
+  transform: scale(1.05);
+}
+`
 const FacilityContainer = styled.div``;
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
@@ -345,7 +355,8 @@ const TransferModeContainer = (props) => {
                 <div>
                   <div className="grid bg-[#F4F4F4] place-items-center  lg:min-w-[4em] min-w-[4rem] lg:min-h-[4rem] min-h-[4rem]  rounded-full">
                     {props.booking?.airline_code ? (
-                      <ImageLoader
+                      <ImageContainer>
+<ImageLoader
                         className=" object-contain"
                         url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${props.booking?.airline_code}.png`}
                         leftalign
@@ -355,6 +366,8 @@ const TransferModeContainer = (props) => {
                         width="4rem"
                         widthmobile="4rem"
                       ></ImageLoader>
+                      </ImageContainer>
+                      
                     ) : (
                       // <TransportIconFetcher
                       //   TransportMode={props.booking_type}

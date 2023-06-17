@@ -366,7 +366,8 @@ const Itinerary = (props) => {
 
   const _updateFlightBookingHandler = (json) => {
     setShowFlightModal(false);
-    setFlightBookings(json);
+    setTransferBookings(_updateTransferBooking(transferBookings, json));
+
   };
 
   const _updateBookingHandler = (json) => {

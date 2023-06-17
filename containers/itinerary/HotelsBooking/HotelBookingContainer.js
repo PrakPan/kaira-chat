@@ -55,9 +55,9 @@ const HotelBookingContainer = ({
   const AddbookingStatus = booking => {
     if(booking?.version == 'v2'){
       if(booking.status == 'BOOKING_EXPIRED'){
-        return false
-      }else{
         return true
+      }else{
+        return false
       }
     }else{
      return !currentBooking ? booking?.user_selected : true
@@ -455,7 +455,7 @@ const HotelBookingContainer = ({
   } right-8 -m-3`}
 >
   
-{loading && <PulseLoader style={{position : "absolute" , top : '55%' , left : '50%' , transform : 'translate(-50% , -50%)'}} size={12} speedMultiplier={0.6} color="#ffffff" />}
+{loading && <PulseLoader style={{position : "absolute" , top : '-15%' , left : '50%' , transform : 'translate(-50% , -50%)'}} size={12} speedMultiplier={0.6} color="#111" />}
   <div
     onClick={(e) => {
       handleCheckboxChange(e);
