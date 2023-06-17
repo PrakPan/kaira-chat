@@ -27,8 +27,6 @@ const GridContainer = styled.div`
  
  
 const Booking = (props) =>{
-  console.log('propsShot: ', props);
-
 
   return (
     <>

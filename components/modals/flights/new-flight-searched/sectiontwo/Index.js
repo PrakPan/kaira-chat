@@ -39,8 +39,6 @@ function processBookingTimes(checkIn, checkOut) {
   };
 
   cache[cacheKey] = result;
-  console.log("result: ", result);
-
   return result;
 }
 
@@ -136,7 +134,6 @@ const FlexBox = styled.div`
   }
 `;
 const Booking = (props) =>{
-  console.log('props: ', props);
     let isPageWide = media("(min-width: 768px)");
 
   const [url, setUrl] = useState('media/website/grey.png')
