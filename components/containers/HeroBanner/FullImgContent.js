@@ -108,7 +108,25 @@ const FullImgContent = (props) => {
             Get Your AI-Personalised Itineraries
           </SubHeading>
         )}
-
+        {isPageWide && (
+          <div>
+            <Button
+              padding="0.75rem 1rem"
+              fontSize="18px"
+              fontWeight="500"
+              bgColor="#f7e700"
+              borderRadius="7px"
+              color="black"
+              borderWidth="1px"
+              onclick={() =>
+                openTailoredModal(router, props.page_id, props.destination)
+              }
+              margin="3vh 0 1vh 0"
+            >
+              Plan Itinerary For Free!
+            </Button>
+          </div>
+        )}
         {!isPageWide && (
           <div>
             <Button
