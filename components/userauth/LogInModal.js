@@ -16,10 +16,10 @@ import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
 import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
-import LoginLoadingIcon from '../ui/LoadingLottie'
-import Image from 'next/image'
+import LoginLoadingIcon from "../ui/LoadingLottie";
+import Image from "next/image";
 import ImageLoader from "../ImageLoader";
-import media from '../media'
+import media from "../media";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -126,14 +126,12 @@ const CountryCodeOption = styled.div`
 `;
 
 const LogIn = (props) => {
-
-if (props.loadingsocial) return (
-    <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
-      <LoginLoadingIcon width={"7rem"} />
-    </div>
-  );
-
-
+  if (props.loadingsocial)
+    return (
+      <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
+        <LoginLoadingIcon width={"7rem"} />
+      </div>
+    );
 
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("+91");
@@ -162,8 +160,12 @@ if (props.loadingsocial) return (
       props.token &&
       props.phone &&
       props.name &&
-      props.token && props.name && props.phone !== "null" &&
-      props.token && props.name && props.phone !== null
+      props.token &&
+      props.name &&
+      props.phone !== "null" &&
+      props.token &&
+      props.name &&
+      props.phone !== null
     )
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
@@ -180,7 +182,10 @@ if (props.loadingsocial) return (
           handleExtensionChangeOption(country), setOpenCountryCodeOption(false);
         }}
       >
-        <CountryImg height='29' width='29' objectFit="cover"
+        <CountryImg
+          height="29"
+          width="29"
+          objectFit="cover"
           src={extensions[country].img}
           onClick={() => handleExtensionChangeOption(country)}
         ></CountryImg>
@@ -201,21 +206,20 @@ if (props.loadingsocial) return (
     setExtension(event.target.value);
   };
   const handleMobileBlur = (event) => {
-    setMobile(event.target.value);
+    setMobile(mobileRef.current.value);
   };
   const checkNewUserData = () => {
     return 1;
   };
   //Submit OTP
   const submitOtpHandler = (event) => {
-    event.preventDefault();
-    setUserNameError(false)
-
+    // event.preventDefault();
+    setUserNameError(false);
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
 
-  if(!userDetails.userName) return setUserNameError(true);      
+      if (!userDetails.userName) return setUserNameError(true);
 
       if (newUserValidity)
         props.onAuth(
@@ -223,7 +227,8 @@ if (props.loadingsocial) return (
           otp,
           userDetails.userName,
           userDetails.email,
-          whatsapp
+          whatsapp,
+          props.itinary_id
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
@@ -231,7 +236,8 @@ if (props.loadingsocial) return (
         otp,
         userDetails.userName,
         null,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
@@ -239,7 +245,8 @@ if (props.loadingsocial) return (
         otp,
         userDetails.userName,
         userDetails.email,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -247,7 +254,8 @@ if (props.loadingsocial) return (
         otp,
         null,
         userDetails.email,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     } else {
       props.onAuth(
@@ -255,7 +263,8 @@ if (props.loadingsocial) return (
         otp,
         null,
         null,
-        whatsapp
+        whatsapp,
+        props.itinary_id
       );
     }
   };
@@ -272,8 +281,10 @@ if (props.loadingsocial) return (
   const otpHandler = () => {
     // if (!userDetails.userName) setUserNameError(true);
     // else {
-      // setUserNameError(false);
-      props.onOtp(extensions[extension].label + mobile);
+    // setUserNameError(false);
+    console.log("mobile: ", mobileRef.current.value);
+
+    props.onOtp(extensions[extension].label + mobileRef.current.value);
     // }
   };
   //TEST
@@ -361,8 +372,7 @@ if (props.loadingsocial) return (
 
   const googleResponse = (response) => {};
   // if(!props.loadingsocial)
-      let isPageWide = media("(min-width: 768px)");
-
+  let isPageWide = media("(min-width: 768px)");
 
   return (
     <div className="font-lexend">
@@ -426,15 +436,9 @@ if (props.loadingsocial) return (
             color="primary"
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
+            loading={props.loading}
           >
             Complete Signup
-            {props.loading ? (
-              <Spinner
-                display="inline"
-                size={16}
-                margin="0 0 0 0.5rem"
-              ></Spinner>
-            ) : null}
           </Button>
         </form>
       ) : (
@@ -552,45 +556,27 @@ if (props.loadingsocial) return (
               hoverBgColor="black"
               boxShadow="0px 2px 0px #ECEAEA"
               borderRadius="8px"
+              loading={props.loading}
             >
               Request OTP
-              {props.loading ? (
-                <Spinner
-                  color="white"
-                  display="inline"
-                  size={16}
-                  margin="0 0 0 0.5rem"
-                ></Spinner>
-              ) : null}
             </Button>
           ) : (
-            <button
-              onClick={submitOtpHandler}
-              style={{
-                width: "100%",
-                background: "#F7E700",
-                fontWeight: "500",
-                cursor: "pointer",
-                fontSize: "16px",
-                padding: "0.5rem",
-                border: "1px solid black",
-                boxShadow: "0px 2px 0px #ECEAEA",
-                borderRadius: "8px",
-                "&:hover": {
-                  background: "black",
-                  color: "white",
-                },
-              }}
+            <Button
+              onclick={(e) => submitOtpHandler(e)}
+              margin={props.nospacing ? "0" : "0.5rem 0"}
+              width="100%"
+              bgColor="#F7E700"
+              fontWeight="500"
+              fontSize="16px"
+              borderWidth="1px"
+              hoverColor="white"
+              hoverBgColor="black"
+              boxShadow="0px 2px 0px #ECEAEA"
+              borderRadius="8px"
+              loading={props.loading}
             >
               Login
-              {props.loading ? (
-                <Spinner
-                  display="inline"
-                  size={16}
-                  margin="0 0 0 0.5rem"
-                ></Spinner>
-              ) : null}
-            </button>
+            </Button>
           )}
           <div
             style={{
@@ -624,7 +610,10 @@ if (props.loadingsocial) return (
                 onFailure={googleResponse}
                 render={(renderProps) => (
                   <Button
-                    onclick={() => { console.log('button clicked'); renderProps.onClick()}}
+                    onclick={() => {
+                      console.log("button clicked");
+                      renderProps.onClick();
+                    }}
                     margin={"0"}
                     width="100%"
                     bgColor="#F9F9F9"
@@ -756,8 +745,10 @@ const mapStateToPros = (state) => {
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (mobile, password, name, email, whatsapp) =>
-      dispatch(authaction.auth(mobile, password, name, email, whatsapp)),
+    onAuth: (mobile, password, name, email, whatsapp, itinary_id) =>
+      dispatch(
+        authaction.auth(mobile, password, name, email, whatsapp, itinary_id)
+      ),
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
     onResetLogin: () => dispatch(authaction.authResetLogin()),
