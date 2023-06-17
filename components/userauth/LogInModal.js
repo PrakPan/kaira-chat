@@ -206,7 +206,7 @@ const LogIn = (props) => {
     setExtension(event.target.value);
   };
   const handleMobileBlur = (event) => {
-    setMobile(event.target.value);
+    setMobile(mobileRef.current.value);
   };
   const checkNewUserData = () => {
     return 1;
@@ -282,7 +282,9 @@ const LogIn = (props) => {
     // if (!userDetails.userName) setUserNameError(true);
     // else {
     // setUserNameError(false);
-    props.onOtp(extensions[extension].label + mobile);
+    console.log("mobile: ", mobileRef.current.value);
+
+    props.onOtp(extensions[extension].label + mobileRef.current.value);
     // }
   };
   //TEST

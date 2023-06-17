@@ -5,8 +5,43 @@ import styled from 'styled-components'
   import { getHumanTime } from '../../../../../services/getHumanTime';
   import { getHumanDate } from '../../../../../services/getHumanDate';
 import ImageLoader from '../../../../ImageLoader';
+import { differenceInMinutes, format } from "date-fns";
+
 import { FaPlane } from 'react-icons/fa';
- import media from '../../../../media'
+import media from '../../../../media'
+ 
+function createCacheKey(checkIn, checkOut) {
+  return `${checkIn}-${checkOut}`;
+}
+
+function processBookingTimes(checkIn, checkOut) {
+  const cache = processBookingTimes.cache || (processBookingTimes.cache = {});
+
+  const cacheKey = createCacheKey(checkIn, checkOut);
+  if (cache[cacheKey]) {
+    return cache[cacheKey];
+  }
+
+  const checkInTime = format(new Date(checkIn), "hh:mm a");
+  const checkOutTime = format(new Date(checkOut), "hh:mm a");
+
+  const durationInMinutes = differenceInMinutes(
+    new Date(checkOut),
+    new Date(checkIn)
+  );
+  const durationHours = Math.floor(durationInMinutes / 60);
+  const durationMinutes = durationInMinutes % 60;
+
+  const result = {
+    checkInTime: checkInTime,
+    checkOutTime: checkOutTime,
+    duration: `${durationHours}h ${durationMinutes}m`,
+  };
+
+  cache[cacheKey] = result;
+  return result;
+}
+
 const DetailsGridContainer = styled.div`
 display: grid;
 grid-template-columns: max-content auto max-content;
@@ -67,7 +102,7 @@ const Image = styled.img`
   transform: scale(1.05);
 `;
 const Text = styled.div`
-  font-weight: 300;
+  font-weight: 400;
   text-align: center;
   font-size: 13px;
   margin-top: 0.25rem;
@@ -99,7 +134,6 @@ const FlexBox = styled.div`
   }
 `;
 const Booking = (props) =>{
-  console.log('props: ', props);
     let isPageWide = media("(min-width: 768px)");
 
   const [url, setUrl] = useState('media/website/grey.png')
@@ -159,23 +193,50 @@ const Booking = (props) =>{
                       <Text
                         style={{
                           marginTop: "-4px",
-                          fontWeight: "300",
+                          fontWeight: "400",
                           fontSize: "13px",
                         }}
                       >
                         {props.data.Segments[0].length > 1
-                          ? props.data.Segments[0].length - 1 + " stop(s)"
+                          ? props.data.Segments[0].length - 1 > 1
+                            ? props.data.Segments[0].length - 1 + " stops"
+                            : props.data.Segments[0].length - 1 + " stop"
                           : "Nonstop"}
+
+                        <>
+                          {" ("}
+                          {props.data.duration
+                            ? ` (${props.data.duration}h)`
+                            : processBookingTimes(
+                                props.data.Segments[0][0].Origin.DepTime,
+                                props.data.Segments[0][
+                                  props.data.Segments[0].length - 1
+                                ].Destination.ArrTime
+                              ).duration}
+                          {")"}
+                        </>
                       </Text>
                     ) : (
                       <Text
                         style={{
                           marginTop: "-4px",
-                          fontWeight: "300",
+                          fontWeight: "400",
                           fontSize: "13px",
                         }}
                       >
                         Nonstop
+                        <>
+                          {" ("}
+                          {props.data.duration
+                            ? ` (${props.data.duration}h)`
+                            : processBookingTimes(
+                                props.data.Segments[0][0].Origin.DepTime,
+                                props.data.Segments[0][
+                                  props.data.Segments[0].length - 1
+                                ].Destination.ArrTime
+                              ).duration}
+                          {")"}
+                        </>
                       </Text>
                     )
                   ) : null
@@ -207,7 +268,7 @@ const Booking = (props) =>{
                   <div
                     style={{
                       margin: "0",
-                      fontWeight: "300",
+                      fontWeight: "400",
                       fontSize: isPageWide ? "20px" : "16px",
                     }}
                     className="font-lexend"
@@ -288,7 +349,7 @@ const Booking = (props) =>{
                   <div
                     style={{
                       margin: "0",
-                      fontWeight: "300",
+                      fontWeight: "400",
                       fontSize: isPageWide ? "20px" : "16px",
                     }}
                     className="font-lexend"
@@ -308,7 +369,7 @@ const Booking = (props) =>{
                     className="font-lexend"
                     style={{
                       fontSize: "14px",
-                      fontWeight: "300",
+                      fontWeight: "400",
                       marginTop: "0.25rem",
                     }}
                   >
@@ -336,27 +397,54 @@ const Booking = (props) =>{
                       <div
                         className="font-lexend text-center"
                         style={{
-                          fontSize: "0.65rem",
-                          fontWeight: "300",
+                          fontSize: "0.70rem",
+                          fontWeight: "400",
                           // color: "rgba(91, 89, 89, 1)",
-                          marginTop: "-4px",
+                          marginTop: "0px",
                         }}
                       >
                         {props.data.Segments[0].length > 1
-                          ? props.data.Segments[0].length - 1 + " stop(s)"
-                          : "No Stops"}
+                          ? props.data.Segments[0].length - 1 > 1
+                            ? props.data.Segments[0].length - 1 + " stops"
+                            : props.data.Segments[0].length - 1 + " stop"
+                          : "Nonstop"}
+                        <>
+                          {" ("}
+                          {props.data.duration
+                            ? ` (${props.data.duration}h)`
+                            : processBookingTimes(
+                                props.data.Segments[0][0].Origin.DepTime,
+                                props.data.Segments[0][
+                                  props.data.Segments[0].length - 1
+                                ].Destination.ArrTime
+                              ).duration}
+                          {")"}
+                        </>
                       </div>
                     ) : (
                       <div
                         className="font-lexend text-center"
                         style={{
-                          fontSize: "0.65rem",
-                          fontWeight: "300",
+                          fontSize: "0.70rem",
+                          fontWeight: "400",
                           // color: "rgba(91, 89, 89, 1)",
-                          marginTop: "-4px",
+                          // marginTop: "-4px",
+                          marginTop: !isPageWide ? "-4px" : "0px",
                         }}
                       >
-                        No Stops
+                        Nonstop
+                        <>
+                          {" ("}
+                          {props.data.duration
+                            ? ` (${props.data.duration}h)`
+                            : processBookingTimes(
+                                props.data.Segments[0][0].Origin.DepTime,
+                                props.data.Segments[0][
+                                  props.data.Segments[0].length - 1
+                                ].Destination.ArrTime
+                              ).duration}
+                          {")"}
+                        </>
                       </div>
                     )
                   ) : null
@@ -369,7 +457,7 @@ const Booking = (props) =>{
                     className="font-lexend"
                     style={{
                       fontSize: "14px",
-                      fontWeight: "300",
+                      fontWeight: "400",
                       // color: "rgba(91, 89, 89, 1)",
                       // textAlign: "right",
                       marginTop: "0.25rem",

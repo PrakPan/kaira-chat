@@ -43,8 +43,8 @@ const NavbarContainer = styled.div`
 `;
 
 const CenterNav = styled.div`
-  width: ${props => props.staticnav ? '90%' : '85%'};
-  ${props=>props.staticnav && 'padding-right : 2%'};
+  width: 85%;
+  // ${props=>props.staticnav && 'padding-right : 2%'};
   margin: auto;
   height: 100%;
   display: grid;
