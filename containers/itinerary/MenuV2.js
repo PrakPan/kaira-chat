@@ -701,7 +701,7 @@ const SimpleTabsV2 = (props) => {
               breif={props?.breif}
               
               routesData={RoutesData}
-              transfersData={TransfersData}
+              transfers={TransfersData}
               routes={props.routes}
               showTaxiModal={props.showTaxiModal}
               getPaymentHandler={props.getPaymentHandler}
@@ -953,7 +953,7 @@ const SimpleTabsV2 = (props) => {
                   showTaxiModal={props.showTaxiModal}
                   
                   routesData={RoutesData}
-                  transfersData={TransfersData}
+                  transfers={TransfersData}
                   routes={props.routes}
                   _updateFlightBookingHandler={
                     props._updateFlightBookingHandler
@@ -970,6 +970,7 @@ const SimpleTabsV2 = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
 
                   payment={props.payment}
+                  
                   transferBookings={props?.transferBookings}
                 />
               </div>
@@ -1225,7 +1226,7 @@ const SimpleTabsV2 = (props) => {
               >
                 View Booking
               </Button>
-            ) : props.payment.total_cost > 0  ? (
+            ) : props?.payment?.total_cost > 0  ? (
               <Button
                 class
                 fontWeight="600"

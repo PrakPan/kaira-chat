@@ -135,7 +135,7 @@ const NewItenaryMain = (props) => {
   }
 
   const yearCalc = (days) => {
-    if (days) {
+    if (days[0]) {
       var year1 = days[0]?.date?.split('/')[2];
       return year1;
     }
@@ -199,7 +199,7 @@ const NewItenaryMain = (props) => {
           offset={'80px'}
           items={itemsDays}
           BarName="CityName"
-          year={yearCalc(props.itinerary.day_slabs[0].slab)}
+          year={yearCalc(props?.itinerary?.day_slabs[0]?.slab)}
           Mstyle={'round'}
           Iterable="date"
           vertical={true}

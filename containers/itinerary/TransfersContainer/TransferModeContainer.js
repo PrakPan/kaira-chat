@@ -13,6 +13,7 @@ import { ITINERARY_STATUSES } from '../../../services/constants';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Slide from '../../../Animation/framerAnimation/Slide';
+import { PulseLoader } from 'react-spinners';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -107,6 +108,7 @@ const Line = styled.hr`
 
 const TransferModeContainer = (props) => {
   const [addbooking, setaddboking] = useState(props.booking?.user_selected);
+  const [loading, setLoading] = useState(false)
   const [isError, setIsError] = useState({
     error: false,
     errorMsg: '',
@@ -114,6 +116,7 @@ const TransferModeContainer = (props) => {
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   function handleCheckboxChange(e) {
     if (props.token) {
+      
       _updateSelectedTransfer();
       // _SelectedBookingHandler({
       //   SelectedBookingId: selectedBooking?.id,
@@ -235,6 +238,7 @@ const TransferModeContainer = (props) => {
   ];
   const _updateSelectedTransfer = () => {
     setUpdateBookingState(true);
+    setLoading(true);
 
     let updated_bookings_arr = [
       {
@@ -258,13 +262,14 @@ const TransferModeContainer = (props) => {
       })
       .then((res) => {
         props._updateTaxiBookingHandler(res.data.bookings);
-
+        
         //  props.getPaymentHandler();
         setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
         setaddboking(!addbooking);
         setUpdateBookingState(false);
+        setLoading(false)
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
@@ -281,7 +286,7 @@ const TransferModeContainer = (props) => {
           }
         }
         setUpdateBookingState(false);
-
+        setLoading(false)
         window.alert('There seems to be a problem, please try again!');
       });
   };
@@ -653,6 +658,7 @@ const TransferModeContainer = (props) => {
                       className=" object-contain"
                       url={props.icon}
                       leftalign
+                      
                       // dimensions={{ width: 900, height: 500 }}
                       height="4rem"
                       width="4rem"
@@ -765,6 +771,7 @@ const TransferModeContainer = (props) => {
                           }`
                     } right-8 -m-3`}
                   >
+                   {loading && <PulseLoader style={{position : "absolute" , top : '-25%' , left : '50%' , transform : 'translate(-50% , -50%)'}} size={12} speedMultiplier={0.6} color="#111" />}
                     <div
                       onClick={(e) => {
                         handleCheckboxChange(e);

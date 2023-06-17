@@ -18,6 +18,7 @@ import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFo
 import useMediaQuery from '../../../hooks/useMedia';
 import { getHumanDate } from '../../../services/getHumanDate';
 import { ITINERARY_STATUSES } from '../../../services/constants';
+import { PulseLoader } from 'react-spinners';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -72,7 +73,7 @@ const HotelBookingContainer = ({
   
   
   const [isSelect, setisSelect] = useState(booking?.user_selected);
-
+    const[loading,setLoading] = useState(false)
   function Addons(Shorthand) {
     switch (Shorthand) {
       case 'EP':
@@ -117,6 +118,7 @@ const HotelBookingContainer = ({
   // }
   function handleCheckboxChange(e) {
     if (token) {
+      setLoading(true)
       _SelectedBookingHandler({
         SelectedBookingId: selectedBooking?.id,
         itinerary_id: itinerary_id,
@@ -125,11 +127,13 @@ const HotelBookingContainer = ({
         index: index,
       })
         .then((data) => {
+          setLoading(false)
           setaddboking(true);
           // Handle success
           // Access the response data using 'data'
         })
         .catch((error) => {
+          setLoading(false)
           setaddboking(false);
           // Handle failure
           // Access the error object using 'error'
@@ -450,6 +454,8 @@ const HotelBookingContainer = ({
         }`
   } right-8 -m-3`}
 >
+  
+{loading && <PulseLoader style={{position : "absolute" , top : '55%' , left : '50%' , transform : 'translate(-50% , -50%)'}} size={12} speedMultiplier={0.6} color="#ffffff" />}
   <div
     onClick={(e) => {
       handleCheckboxChange(e);
