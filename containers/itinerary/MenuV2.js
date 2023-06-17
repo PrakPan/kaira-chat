@@ -717,7 +717,7 @@ const SimpleTabsV2 = (props) => {
               setHideBookingModal={props.setHideBookingModal}
               
               payment={props.payment}
-              transferBookings={props?.transferBookings}
+              transferBookings={props.transferBookings}
             />
           </div>
           <Modal

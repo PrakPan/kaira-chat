@@ -134,6 +134,7 @@ const FlexBox = styled.div`
   }
 `;
 const Booking = (props) =>{
+  console.log('props.data: ', props.data);
     let isPageWide = media("(min-width: 768px)");
 
   const [url, setUrl] = useState('media/website/grey.png')
@@ -142,30 +143,33 @@ const Booking = (props) =>{
       
         if(props.data)
         // setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/"+props.data.AirlineCode+".png");
-          if(props.data.AirlineCode) setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/"+props.data.AirlineCode+".png");
-          else {
-            if (
-              props.data.costings_breakdown &&
-              props.data.costings_breakdown.Segments &&
-              props.data.costings_breakdown.Segments[0] &&
-              props.data.costings_breakdown.Segments[0][0] &&
-              props.data.costings_breakdown.Segments[0][0].Airline
-            ) {
-              setUrl(
-                "https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" +
-                  props.data.costings_breakdown.Segments[0][0].Airline
-                    .AirlineCode +
-                  ".png"
-              );
-            }
-          }
+          // if(props.data.AirlineCode) setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/"+props.data.AirlineCode+".png");
+          // else {
+          //   if (
+          //     props.data.costings_breakdown &&
+          //     props.data.costings_breakdown.Segments &&
+          //     props.data.costings_breakdown.Segments[0] &&
+          //     props.data.costings_breakdown.Segments[0][0] &&
+          //     props.data.costings_breakdown.Segments[0][0].Airline
+          //   ) {
+          //     setUrl(
+          //       "https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" +
+          //         props.data.costings_breakdown.Segments[0][0].Airline
+          //           .AirlineCode +
+          //         ".png"
+          //     );
+          //   }
+  // }
+    
       if (
         props.data.Segments &&
         props.data.Segments[0] &&
         props.data.Segments[0][0] && 
         props.data.Segments[0][0].Airline
       )
-        setAirLineName(props.data.Segments[0][0].Airline.AirlineName);
+       {   setAirLineName(props.data.Segments[0][0].Airline.AirlineName);
+     setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" + props.data.Segments[0][0].Airline.AirlineCode +".png");}
+else setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png");
       
       }, [props.data]);
     const getTime = (datetime) => {
