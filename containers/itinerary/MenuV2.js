@@ -701,7 +701,7 @@ const SimpleTabsV2 = (props) => {
               breif={props?.breif}
               
               routesData={RoutesData}
-              transfersData={TransfersData}
+              transfers={TransfersData}
               routes={props.routes}
               showTaxiModal={props.showTaxiModal}
               getPaymentHandler={props.getPaymentHandler}
@@ -953,7 +953,7 @@ const SimpleTabsV2 = (props) => {
                   showTaxiModal={props.showTaxiModal}
                   
                   routesData={RoutesData}
-                  transfersData={TransfersData}
+                  transfers={TransfersData}
                   routes={props.routes}
                   _updateFlightBookingHandler={
                     props._updateFlightBookingHandler

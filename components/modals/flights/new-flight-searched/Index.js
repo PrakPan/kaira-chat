@@ -28,6 +28,8 @@ const GridContainer = styled.div`
  
 const Booking = (props) =>{
   console.log('propsShot: ', props);
+
+
   return (
     <>
       <Container className="border" style={{ borderRadius: "10px" }}>
