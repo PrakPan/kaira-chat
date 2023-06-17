@@ -28,6 +28,7 @@ import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { useRouter } from 'next/router';
 import { format, isEqual, isSameDay, parse } from 'date-fns';
 import Slide from '../../../Animation/framerAnimation/Slide';
+import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -199,19 +200,31 @@ const HotelsBooking = (props) => {
           alternate_to: null,
           booking_type: 'Accommodation',
           itinerary_type: 'Tailored',
-          user_selected: user_selected,
+          user_selected:  !user_selected,
           itinerary_id: props.stayBookings[index]['itinerary_id'],
           tailored_itinerary: tailored_id,
           itinerary_name: itinerary_name,
           itinerary_db_id: null,
+          trace:  storeAndRetrieveValue(props.stayBookings[index].city),
         },
       ];
 
       // const token = localStorage.getItem('access_token');
       axiosbookingupdateinstance
-        .post(
-          `?booking_type=Accommodation&itinerary_id=${props.stayBookings[index]['itinerary_id']}`,
-          updated_bookings_arr,
+        // .patch(
+        //   `update/?booking_type=Accommodation&itinerary_id=${props.stayBookings[index]['itinerary_id']}`,
+        //   props.stayBookings[index]['itinerary_id'],
+        //   updated_bookings_arr[0],
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${props.token}`,
+        //     },
+        //   }
+        // )
+        .patch(
+          'update/?booking_type=Accommodation&itinerary_id=' +
+          props.stayBookings[index]['itinerary_id'],
+          updated_bookings_arr[0],
           {
             headers: {
               Authorization: `Bearer ${props.token}`,
@@ -219,7 +232,7 @@ const HotelsBooking = (props) => {
           }
         )
         .then((res) => {
-          props._updateStayBookingHandler(res.data.bookings);
+          props._updateStayBookingHandler([res.data.bookings]);
           setTimeout(function () {
             props.getPaymentHandler();
           }, 1000);
@@ -669,7 +682,7 @@ const HotelsBooking = (props) => {
 
   return (
     <div id="Stays-Head" className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16 ">
-      <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
+      <div id="staysBooking" className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>

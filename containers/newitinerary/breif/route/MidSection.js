@@ -69,14 +69,48 @@ const Text = styled.div`
 `;
 const MidSection = (props) => {
   useEffect(() => {}, []);
-
+console.log('bookings-1')
+console.log(props.bookings)
   return (
     <Container className="font-lexend">
       <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} />
       </div>
+      {
+        props.version == 'v2' ?
+          <Text>
+            {props?.bookings?.map((element, index) => (
+  <div className='flex flex-row' key={index}>
+    <TransportIconFetcher
+      TransportMode={element.booking_type}
+      Instyle={{
+        fontSize: '1.4rem',
+        marginRight: '0.8rem',
+        color: '#4d4d4d',
+      }}
+    />
+    <div className='flex flex-row pr-2'>{element.booking_type}</div>
+        
+  </div>
+))}
 
-      <Text>
+            : {props.duration}
+          {/* {props.icon && (
+            <ImageLoader
+              url={props.icon}
+              leftalign
+              dimensions={{ width: 200, height: 200 }}
+              width="1.25rem"
+              widthmobile="1.25rem"
+            ></ImageLoader>
+          )} */}
+          
+          {/* <MdOutlineFlightTakeoff
+            style={{  }}
+          /> */}
+          
+        </Text>
+        : <Text>
         {/* {props.icon && (
           <ImageLoader
             url={props.icon}
@@ -101,6 +135,8 @@ const MidSection = (props) => {
         /> */}
         {props.modes ? props.modes : 'Taxi'}: {props.duration}h 30m
       </Text>
+      }
+     
       {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
     </Container>
   );

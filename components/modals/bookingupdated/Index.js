@@ -902,7 +902,7 @@ const Booking = (props) => {
           </div>
           <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
             <SectionOne
-              booking_city={props?.currentBooking?.city}
+              booking_city={props?.selectedBooking?.city}
               setHideBookingModal={props.setHideBookingModal}
             ></SectionOne>
             {!loading && (
@@ -915,7 +915,7 @@ const Booking = (props) => {
                 _updateStarFilterHandler={_updateStarFilterHandler}
                 _removeFilterHandler={_removeFilterHandler}
                 _addFilterHandler={_addFilterHandler}
-                booking_city={props?.currentBooking?.city}
+                booking_city={props?.selectedBooking?.city}
                 No_of_stays={optionsJSX.length + moreOptionsJSX.length}
                 payment={props.payment}
                 plan={props.plan}

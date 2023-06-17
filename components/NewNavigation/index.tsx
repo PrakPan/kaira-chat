@@ -23,6 +23,10 @@ const InnerContainer = styled.div`
   position: relative;
   height: 100%;
 `;
+const LastNavigationLink = styled(NavigationLink)`
+  margin-left: auto;
+`;
+
 
 export const Navigation = ({ items, BarName, ClickHandler }) => {
   const [selectedTab, setSelectedTab] = useState(`${items[0].id}`);
@@ -45,6 +49,8 @@ export const Navigation = ({ items, BarName, ClickHandler }) => {
             item={item}
             BarName={BarName}
             setSelectedTab={setSelectedTab}
+            key={index}
+      className={index === items.length - 1 ? 'last-navigation-link' : ''}
           >
             {item.label}
           </NavigationLink>

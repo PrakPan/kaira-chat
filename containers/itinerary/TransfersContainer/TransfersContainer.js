@@ -8,6 +8,7 @@ import TaxiModal from '../../../components/modals/taxis/Index';
 import FlightModal from '../../../components/modals/flights/Index';
 import PinSection from '../../newitinerary/breif/route/PinSection';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+import { ITINERARY_VERSION } from '../../../services/constants';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 100%;
@@ -508,7 +509,7 @@ const TransfersContainer = (props) => {
     scrollToTargetAdjusted();
     console.log(`id mapp${props.active}`);
   }
-
+  const return_booking_from_id  = (arr, id) => arr.find(obj => obj.id === id);
   const _moveUpHandler = (index) => {
     if (index === 1) {
       //First item, disable button
@@ -523,230 +524,25 @@ const TransfersContainer = (props) => {
   const midsectionHandler = (data, prevdata) => {};
   let startingcity = null;
   let endingcity = null;
-  if (!props.transfers) {
-    if (props.breif.city_slabs[i].is_departure_only)
-      startingcity = props.breif.city_slabs[0].city_name;
-    if (props.breif.city_slabs[i].is_trip_terminated)
-      endingcity = props.breif.city_slabs[i].city_name;
-    if (props.breif.city_slabs) {
-      for (var i = 1; i < props.transfers.length; i++) {
-        //If duration present and not 0, not trip terminated or departure only city show in route
-        if (props.transfers['id']) {
-          if (props?.routes[i - 1]) {
-            locationsArr.push(
-              <PinSection
-                setCurrentPopup={false}
-                handlemap={handlemap}
-                dayId={
-                  props.routes[i - 1]?.day_slab_location?.start_day_slab_index
-                }
-                cityData={props.routes[i - 1]}
-                dayslab={props.dayslab}
-                lat={props.routes[i - 1]?.lat}
-                long={props.routes[i - 1]?.long}
-                Mapid={props.routes[i - 1].gmaps_place_id}
-                city={props.routes[i - 1].city_name}
-                cityId={props.routes[i - 1].city_id}
-                duration={
-                  props.breif.city_slabs[i - 1].duration
-                    ? props.breif.city_slabs[i - 1].duration + ' Nights'
-                    : null
-                }
-                pinColour={props.routes[i - 1].color}
-                data={order[i - 1]}
-                _moveDownHandler={_moveDownHandler}
-                _moveUpHandler={_moveUpHandler}
-                index={i - 1}
-              ></PinSection>
-            );
-            // midsectionHandler(
-            //   props?.transferBookings[i],
-            //   props?.transferBookings[i - 1]
-            // );
-            {
-              props?.transferBookings &&
-              props?.transferBookings[i]?.booking_type == 'Flight'
-                ? locationsArr.push(
-                    <div className="flex flex-col gap-1">
-                      <TransferModeContainer
-                        plan={props.plan}
-                        getPaymentHandler={props.getPaymentHandler}
-                        _updateTaxiBookingHandler={
-                          props._updateTaxiBookingHandler
-                        }
-                        _updatePaymentHandler={props._updatePaymentHandler}
-                        token={props.token}
-                        payment={props?.payment}
-                        booking_type={
-                          props?.transferBookings[i + 1]?.booking_type
-                        }
-                        pinColour={props.breif.city_slabs[i].color}
-                        costings_breakdown={
-                          props?.transferBookings[i + 1]?.costings_breakdown
-                        }
-                        booking={props?.transferBookings[i + 1]}
-                        heading={
-                          props?.transferBookings[i + 1]?.booking_display_name
-                        }
-                        index={i + 1}
-                        icon={props?.transfers[i + 1]?.icon}
-                        modes={getTransportationType(
-                          props?.transfers[i + 1]?.icon
-                        )}
-                        transferbookings={props.transferBookings}
-                        _changeTaxiHandler={_changeTaxiHandler}
-                        setShowTaxiModal={props.setShowTaxiModal}
-                        userSelected={props?.transferBookings[i]?.user_selected}
-                        icon={props?.transferBookings[i + 1]?.images?.image}
-                        taxi_type={props?.transferBookings[i + 1]?.taxi_type}
-                        transportMode={getTransportationType(
-                          props?.transfers[i + 1]?.icon
-                        )}
-                        duration={props.breif.city_slabs[i].duration}
-                      ></TransferModeContainer>
-                      <TransferModeContainer
-                        plan={props.plan}
-                        getPaymentHandler={props.getPaymentHandler}
-                        _updateTaxiBookingHandler={
-                          props._updateTaxiBookingHandler
-                        }
-                        _updatePaymentHandler={props._updatePaymentHandler}
-                        token={props.token}
-                        payment={props?.payment}
-                        booking_type={props?.transferBookings[i]?.booking_type}
-                        transferbookings={props.transferBookings}
-                        _changeTaxiHandler={_changeTaxiHandler}
-                        setShowTaxiModal={props.setShowTaxiModal}
-                        pinColour={props.breif.city_slabs[i].color}
-                        costings_breakdown={
-                          props?.transferBookings[i]?.costings_breakdown
-                        }
-                        booking={props?.transferBookings[i]}
-                        index={i}
-                        heading={
-                          props?.transferBookings[i]?.booking_display_name
-                        }
-                        userSelected={props?.transferBookings[i]?.user_selected}
-                        icon={props?.transfers[i]?.icon}
-                        modes={getTransportationType(props?.transfers[i]?.icon)}
-                        icon={props?.transferBookings[i]?.images?.image}
-                        taxi_type={props?.transferBookings[i]?.taxi_type}
-                        transportMode={getTransportationType(
-                          props?.transfers[i]?.icon
-                        )}
-                        duration={props.breif.city_slabs[i].duration}
-                      ></TransferModeContainer>
-                    </div>
-                  )
-                : locationsArr.push(
-                    props?.transferBookings && (
-                      <TransferModeContainer
-                        plan={props.plan}
-                        getPaymentHandler={props.getPaymentHandler}
-                        _updateTaxiBookingHandler={
-                          props._updateTaxiBookingHandler
-                        }
-                        _updatePaymentHandler={props._updatePaymentHandler}
-                        token={props.token}
-                        payment={props?.payment}
-                        booking_type={props?.transferBookings[i]?.booking_type}
-                        pinColour={props.breif.city_slabs[i].color}
-                        costings_breakdown={
-                          props?.transferBookings[i]?.costings_breakdown
-                        }
-                        heading={
-                          props?.transferBookings[i]?.booking_display_name
-                        }
-                        userSelected={props?.transferBookings[i]?.user_selected}
-                        transferbookings={props.transferBookings}
-                        _changeTaxiHandler={_changeTaxiHandler}
-                        setShowTaxiModal={props.setShowTaxiModal}
-                        icon={props?.transfers[i]?.icon}
-                        index={i}
-                        booking={props?.transferBookings[i]}
-                        modes={getTransportationType(props?.transfers[i]?.icon)}
-                        icon={props?.transferBookings[i]?.images?.image}
-                        taxi_type={props?.transferBookings[i]?.taxi_type}
-                        transportMode={getTransportationType(
-                          props?.transfers[i]?.icon
-                        )}
-                        duration={props.breif.city_slabs[i].duration}
-                      ></TransferModeContainer>
-                    )
-                  );
-            }
-
-            // locationsArr.push(
-            //   <TransferModeContainer
-
-            //     pinColour={props.breif.city_slabs[i].color}
-            //     icon={props?.transfers[i]?.icon}
-            //     modes={
-            //       props?.transfers[i]?.modes[1]
-            //         ? props?.transfers[i]?.modes[1]
-            //         : props?.transfers[i]?.modes[0]
-            //     }
-            //     icon={props?.transferBookings[i]?.images?.image}
-            //     taxi_type={props?.transferBookings[i]?.taxi_type}
-            //     transportMode={
-            //       props?.transfers[i]?.modes[1]
-            //         ? props?.transfers[i]?.modes[1]
-            //         : props?.transfers[i]?.modes[0]
-            //     }
-            //     duration={props.breif.city_slabs[i].duration}
-            //   ></TransferModeContainer>
-            // );
-          } else {
-            locationsArr.push(
-              <PinSection
-                setShowTaxiModal={(props) =>
-                  _changeTaxiHandler(
-                    name,
-                    itinerary_id,
-                    tailored_id,
-                    id,
-                    check_in,
-                    check_out,
-                    pax,
-                    city,
-                    itinerary_name,
-                    cost,
-                    costings_breakdown,
-                    origin_iata,
-                    destination_iata,
-                    destination_city,
-                    taxi_type,
-                    transfer_type
-                  )
-                }
-                setCurrentPopup={false}
-                handlemap={handlemap}
-                dayId={
-                  props.breif.city_slabs[i].day_slab_location
-                    .start_day_slab_index
-                }
-                cityData={props.breif.city_slabs[i]}
-                dayslab={props.dayslab}
-                lat={props.breif.city_slabs[i].lat}
-                long={props.breif.city_slabs[i].long}
-                Mapid={props.breif.city_slabs[i].gmaps_place_id}
-                city={props.breif.city_slabs[i].city_name}
-                cityId={props.breif.city_slabs[i].city_id}
-                duration={
-                  props.breif.city_slabs[i].duration
-                    ? props.breif.city_slabs[i].duration + ' Night'
-                    : null
-                }
-                pinColour={props.breif.city_slabs[i].color}
-                data={order[i]}
-                _moveDownHandler={_moveDownHandler}
-                _moveUpHandler={_moveUpHandler}
-                index={i}
-              ></PinSection>
-            );
-            {
-              props?.transferBookings &&
-                locationsArr.push(
+  if(props?.plan?.version == ITINERARY_VERSION.version_2){
+    if(props?.routes){
+      for (var i = 2; i < props.routes.length - 1; i+=2) {
+        locationsArr.push(
+          <PinSection
+            setCurrentPopup={false}
+            city={props.routes[i].city_name}
+            duration={props?.routes[i]?.duration}
+            pinColour={props.routes[i].color}
+            index={i}
+          ></PinSection>
+        );
+        
+        {
+          props.routes[i + 1].modes.map((mode,index) => {
+            var CurrentBooking = return_booking_from_id(props?.transferBookings, props?.routes[i+1].bookings[index]?.id);
+            mode === 'Flight'
+            ? locationsArr.push(
+                <div className="flex flex-col gap-1">
                   <TransferModeContainer
                     plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
@@ -754,161 +550,65 @@ const TransfersContainer = (props) => {
                     _updatePaymentHandler={props._updatePaymentHandler}
                     token={props.token}
                     payment={props?.payment}
-                    pinColour={props.breif.city_slabs[i].color}
-                    modes={'Taxi'}
-                    icon={props?.transferBookings[i]?.images?.image}
-                    setShowBookingModal={props?.setShowBookingModal}
-                    taxi_type={props?.transferBookings[i]?.taxi_type}
-                    userSelected={props?.transferBookings[i]?.user_selected}
+                    booking_type={props?.routes[i+1].bookings[index]?.booking_type}
+                    pinColour={props.routes[i].color}
+                    costings_breakdown={
+                      CurrentBooking.costings_breakdown
+                    }
+                    booking={CurrentBooking}
+                    heading={CurrentBooking?.booking_display_name}
                     index={i}
+                    icon={CurrentBooking?.icon}
+                    modes={props?.routes[i+1].bookings[index]?.booking_type}
                     transferbookings={props.transferBookings}
+                    _changeFlightHandler={_changeFlightHandler}
                     _changeTaxiHandler={_changeTaxiHandler}
                     setShowTaxiModal={props.setShowTaxiModal}
-                    transportMode={
-                      props.breif.city_slabs[i].intracity_transport
-                    }
-                    index={i}
-                    duration={props.breif.city_slabs[i].duration}
+                    userSelected={CurrentBooking?.user_selected}
+                    
+                    taxi_type={CurrentBooking?.taxi_type}
+                    transportMode={props?.routes[i+1].bookings[index]?.booking_type}
+                    duration={props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
-                );
-            }
-          }
+                </div>
+              )
+            : locationsArr.push(
+                props?.transferBookings && (
+                  <TransferModeContainer
+                    plan={props.plan}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    token={props.token}
+                    payment={props?.payment}
+                    booking_type={CurrentBooking?.booking_type}
+                    pinColour={props?.breif?.city_slabs[i]?.color}
+                    costings_breakdown={
+                      CurrentBooking?.costings_breakdown
+                    }
+                    heading={CurrentBooking?.booking_display_name}
+                    transferbookings={props.transferBookings}
+                    _changeTaxiHandler={_changeTaxiHandler}
+                    _changeFlightHandler={_changeFlightHandler}
+                    setShowTaxiModal={props.setShowTaxiModal}
+                    
+                    index={i}
+                    booking={CurrentBooking}
+                    userSelected={CurrentBooking?.user_selected}
+                    modes={props?.routes[i+1].bookings[index]?.booking_type}
+                    icon={CurrentBooking?.images?.image}
+                    taxi_type={CurrentBooking?.taxi_type}
+                    transportMode={props?.routes[i+1].bookings[index]?.booking_type}
+                    duration={props?.breif?.city_slabs[i]?.duration}
+                  ></TransferModeContainer>
+                )
+              );
+          })
+          
         }
       }
-      // for (var i = 1; i < props.transferBookings.length; i++) {
-      //   //If duration present and not 0, not trip terminated or departure only city show in route
-
-      //   locationsArr.push(
-      //     <PinSection
-      //       setCurrentPopup={false}
-      //       handlemap={handlemap}
-      //       cityData={props.routes[i - 1]}
-      //       dayslab={props.dayslab}
-      //       lat={props.routes[i - 1]?.lat}
-      //       long={props.routes[i - 1]?.long}
-      //       Mapid={props.routes[i - 1].gmaps_place_id}
-      //       city={props.transferBookings[i].destination_city	}
-      //       cityId={props.routes[i - 1].city_id}
-      //       duration={
-      //         props.breif.city_slabs[i - 1].duration
-      //           ? props.breif.city_slabs[i - 1].duration + ' Nights'
-      //           : null
-      //       }
-      //       pinColour={props.routes[i - 1].color}
-      //       data={order[i - 1]}
-      //       _moveDownHandler={_moveDownHandler}
-      //       _moveUpHandler={_moveUpHandler}
-      //       index={i - 1}
-      //     ></PinSection>
-      //   );
-      //   // midsectionHandler(
-      //   //   props?.transferBookings[i],
-      //   //   props?.transferBookings[i - 1]
-      //   // );
-      //   {
-      //     props?.transferBookings &&
-      //     props?.transferBookings[i]?.booking_type == 'Flight'
-      //       ? locationsArr.push(
-      //           <div className="flex flex-col gap-1">
-      //             <TransferModeContainer
-
-      //               booking_type={props?.transferBookings[i + 1]?.booking_type}
-      //               pinColour={props.breif.city_slabs[i].color}
-      //               costings_breakdown={
-      //                 props?.transferBookings[i + 1]?.costings_breakdown
-      //               }
-      //               booking={props?.transferBookings[i + 1]}
-      //               heading={
-      //                 props?.transferBookings[i + 1]?.booking_display_name
-      //               }
-      //               index={i + 1}
-      //               icon={props?.transfers[i + 1]?.icon}
-      //               modes={getTransportationType(props?.transfers[i + 1]?.icon)}
-      //               transferbookings={props.transferBookings}
-      //               _changeTaxiHandler={_changeTaxiHandler}
-      //               setShowTaxiModal={props.setShowTaxiModal}
-      //               icon={props?.transferBookings[i + 1]?.images?.image}
-      //               taxi_type={props?.transferBookings[i + 1]?.taxi_type}
-      //               transportMode={getTransportationType(
-      //                 props?.transfers[i + 1]?.icon
-      //               )}
-      //               duration={props.breif.city_slabs[i].duration}
-      //             ></TransferModeContainer>
-      //             <TransferModeContainer
-
-      //               booking_type={props?.transferBookings[i]?.booking_type}
-      //               transferbookings={props.transferBookings}
-      //               _changeTaxiHandler={_changeTaxiHandler}
-      //               setShowTaxiModal={props.setShowTaxiModal}
-      //               pinColour={props.breif.city_slabs[i].color}
-      //               costings_breakdown={
-      //                 props?.transferBookings[i]?.costings_breakdown
-      //               }
-      //               booking={props?.transferBookings[i]}
-      //               index={i}
-      //               heading={props?.transferBookings[i]?.booking_display_name}
-      //               icon={props?.transfers[i]?.icon}
-      //               modes={getTransportationType(props?.transfers[i]?.icon)}
-      //               icon={props?.transferBookings[i]?.images?.image}
-      //               taxi_type={props?.transferBookings[i]?.taxi_type}
-      //               transportMode={getTransportationType(
-      //                 props?.transfers[i]?.icon
-      //               )}
-      //               duration={props.breif.city_slabs[i].duration}
-      //             ></TransferModeContainer>
-      //           </div>
-      //         )
-      //       : locationsArr.push(
-      //           props?.transferBookings && (
-      //             <TransferModeContainer
-
-      //               booking_type={props?.transferBookings[i]?.booking_type}
-      //               pinColour={props.breif.city_slabs[i].color}
-      //               costings_breakdown={
-      //                 props?.transferBookings[i]?.costings_breakdown
-      //               }
-      //               heading={props?.transferBookings[i]?.booking_display_name}
-      //               transferbookings={props.transferBookings}
-      //               _changeTaxiHandler={_changeTaxiHandler}
-      //               setShowTaxiModal={props.setShowTaxiModal}
-      //               icon={props?.transfers[i]?.icon}
-      //               index={i}
-      //               booking={props?.transferBookings[i]}
-      //               modes={getTransportationType(props?.transfers[i]?.icon)}
-      //               icon={props?.transferBookings[i]?.images?.image}
-      //               taxi_type={props?.transferBookings[i]?.taxi_type}
-      //               transportMode={getTransportationType(
-      //                 props?.transfers[i]?.icon
-      //               )}
-      //               duration={props.breif.city_slabs[i].duration}
-      //             ></TransferModeContainer>
-      //           )
-      //         );
-      //   }
-
-      //   // locationsArr.push(
-      //   //   <TransferModeContainer
-
-      //   //     pinColour={props.breif.city_slabs[i].color}
-      //   //     icon={props?.transfers[i]?.icon}
-      //   //     modes={
-      //   //       props?.transfers[i]?.modes[1]
-      //   //         ? props?.transfers[i]?.modes[1]
-      //   //         : props?.transfers[i]?.modes[0]
-      //   //     }
-      //   //     icon={props?.transferBookings[i]?.images?.image}
-      //   //     taxi_type={props?.transferBookings[i]?.taxi_type}
-      //   //     transportMode={
-      //   //       props?.transfers[i]?.modes[1]
-      //   //         ? props?.transfers[i]?.modes[1]
-      //   //         : props?.transfers[i]?.modes[0]
-      //   //     }
-      //   //     duration={props.breif.city_slabs[i].duration}
-      //   //   ></TransferModeContainer>
-      //   // );
-      // }
     }
-  } else {
+  }else{
     if (props?.transferBookings) {
       for (var i = 1; i < props.transferBookings.length; i++) {
         locationsArr.push(
@@ -925,10 +625,7 @@ const TransfersContainer = (props) => {
             index={i}
           ></PinSection>
         );
-        // midsectionHandler(
-        //   props?.transferBookings[i],
-        //   props?.transferBookings[i - 1]
-        // );
+        
         {
           props?.transferBookings &&
           props?.transferBookings[i].booking_type === 'Flight'
@@ -956,7 +653,7 @@ const TransfersContainer = (props) => {
                     _changeTaxiHandler={_changeTaxiHandler}
                     setShowTaxiModal={props.setShowTaxiModal}
                     userSelected={props?.transferBookings[i]?.user_selected}
-                    icon={props?.transferBookings[i]?.images?.image}
+                    
                     taxi_type={props?.transferBookings[i]?.taxi_type}
                     transportMode={getTransportationType(
                       props?.transfers[i]?.icon
@@ -1002,6 +699,373 @@ const TransfersContainer = (props) => {
       }
     }
   }
+  // if (!props.transfers) {
+  //   if (props.breif.city_slabs[i].is_departure_only)
+  //     startingcity = props.breif.city_slabs[0].city_name;
+  //   if (props.breif.city_slabs[i].is_trip_terminated)
+  //     endingcity = props.breif.city_slabs[i].city_name;
+  //   if (props.breif.city_slabs) {
+  //     for (var i = 1; i < props.transfers.length; i++) {
+  //       //If duration present and not 0, not trip terminated or departure only city show in route
+  //       if (props.transfers['id']) {
+  //         if (props?.routes[i - 1]) {
+  //           locationsArr.push(
+  //             <PinSection
+  //               setCurrentPopup={false}
+  //               handlemap={handlemap}
+  //               dayId={
+  //                 props.routes[i - 1]?.day_slab_location?.start_day_slab_index
+  //               }
+  //               cityData={props.routes[i - 1]}
+  //               dayslab={props.dayslab}
+  //               lat={props.routes[i - 1]?.lat}
+  //               long={props.routes[i - 1]?.long}
+  //               Mapid={props.routes[i - 1].gmaps_place_id}
+  //               city={props.routes[i - 1].city_name}
+  //               cityId={props.routes[i - 1].city_id}
+  //               duration={
+  //                 props.breif.city_slabs[i - 1].duration
+  //                   ? props.breif.city_slabs[i - 1].duration + ' Nights'
+  //                   : null
+  //               }
+  //               pinColour={props.routes[i - 1].color}
+  //               data={order[i - 1]}
+  //               _moveDownHandler={_moveDownHandler}
+  //               _moveUpHandler={_moveUpHandler}
+  //               index={i - 1}
+  //             ></PinSection>
+  //           );
+  //           // midsectionHandler(
+  //           //   props?.transferBookings[i],
+  //           //   props?.transferBookings[i - 1]
+  //           // );
+  //           {
+  //             props?.transferBookings &&
+  //             props?.transferBookings[i]?.booking_type == 'Flight'
+  //               ? locationsArr.push(
+  //                   <div className="flex flex-col gap-1">
+  //                     <TransferModeContainer
+  //                       plan={props.plan}
+  //                       getPaymentHandler={props.getPaymentHandler}
+  //                       _updateTaxiBookingHandler={
+  //                         props._updateTaxiBookingHandler
+  //                       }
+  //                       _updatePaymentHandler={props._updatePaymentHandler}
+  //                       token={props.token}
+  //                       payment={props?.payment}
+  //                       booking_type={
+  //                         props?.transferBookings[i + 1]?.booking_type
+  //                       }
+  //                       pinColour={props.breif.city_slabs[i].color}
+  //                       costings_breakdown={
+  //                         props?.transferBookings[i + 1]?.costings_breakdown
+  //                       }
+  //                       booking={props?.transferBookings[i + 1]}
+  //                       heading={
+  //                         props?.transferBookings[i + 1]?.booking_display_name
+  //                       }
+  //                       index={i + 1}
+  //                       icon={props?.transfers[i + 1]?.icon}
+  //                       modes={getTransportationType(
+  //                         props?.transfers[i + 1]?.icon
+  //                       )}
+  //                       transferbookings={props.transferBookings}
+  //                       _changeTaxiHandler={_changeTaxiHandler}
+  //                       setShowTaxiModal={props.setShowTaxiModal}
+  //                       userSelected={props?.transferBookings[i]?.user_selected}
+  //                       icon={props?.transferBookings[i + 1]?.images?.image}
+  //                       taxi_type={props?.transferBookings[i + 1]?.taxi_type}
+  //                       transportMode={getTransportationType(
+  //                         props?.transfers[i + 1]?.icon
+  //                       )}
+  //                       duration={props.breif.city_slabs[i].duration}
+  //                     ></TransferModeContainer>
+  //                     <TransferModeContainer
+  //                       plan={props.plan}
+  //                       getPaymentHandler={props.getPaymentHandler}
+  //                       _updateTaxiBookingHandler={
+  //                         props._updateTaxiBookingHandler
+  //                       }
+  //                       _updatePaymentHandler={props._updatePaymentHandler}
+  //                       token={props.token}
+  //                       payment={props?.payment}
+  //                       booking_type={props?.transferBookings[i]?.booking_type}
+  //                       transferbookings={props.transferBookings}
+  //                       _changeTaxiHandler={_changeTaxiHandler}
+  //                       setShowTaxiModal={props.setShowTaxiModal}
+  //                       pinColour={props.breif.city_slabs[i].color}
+  //                       costings_breakdown={
+  //                         props?.transferBookings[i]?.costings_breakdown
+  //                       }
+  //                       booking={props?.transferBookings[i]}
+  //                       index={i}
+  //                       heading={
+  //                         props?.transferBookings[i]?.booking_display_name
+  //                       }
+  //                       userSelected={props?.transferBookings[i]?.user_selected}
+  //                       icon={props?.transfers[i]?.icon}
+  //                       modes={getTransportationType(props?.transfers[i]?.icon)}
+  //                       icon={props?.transferBookings[i]?.images?.image}
+  //                       taxi_type={props?.transferBookings[i]?.taxi_type}
+  //                       transportMode={getTransportationType(
+  //                         props?.transfers[i]?.icon
+  //                       )}
+  //                       duration={props.breif.city_slabs[i].duration}
+  //                     ></TransferModeContainer>
+  //                   </div>
+  //                 )
+  //               : locationsArr.push(
+  //                   props?.transferBookings && (
+  //                     <TransferModeContainer
+  //                       plan={props.plan}
+  //                       getPaymentHandler={props.getPaymentHandler}
+  //                       _updateTaxiBookingHandler={
+  //                         props._updateTaxiBookingHandler
+  //                       }
+  //                       _updatePaymentHandler={props._updatePaymentHandler}
+  //                       token={props.token}
+  //                       payment={props?.payment}
+  //                       booking_type={props?.transferBookings[i]?.booking_type}
+  //                       pinColour={props.breif.city_slabs[i].color}
+  //                       costings_breakdown={
+  //                         props?.transferBookings[i]?.costings_breakdown
+  //                       }
+  //                       heading={
+  //                         props?.transferBookings[i]?.booking_display_name
+  //                       }
+  //                       userSelected={props?.transferBookings[i]?.user_selected}
+  //                       transferbookings={props.transferBookings}
+  //                       _changeTaxiHandler={_changeTaxiHandler}
+  //                       setShowTaxiModal={props.setShowTaxiModal}
+  //                       icon={props?.transfers[i]?.icon}
+  //                       index={i}
+  //                       booking={props?.transferBookings[i]}
+  //                       modes={getTransportationType(props?.transfers[i]?.icon)}
+  //                       icon={props?.transferBookings[i]?.images?.image}
+  //                       taxi_type={props?.transferBookings[i]?.taxi_type}
+  //                       transportMode={getTransportationType(
+  //                         props?.transfers[i]?.icon
+  //                       )}
+  //                       duration={props.breif.city_slabs[i].duration}
+  //                     ></TransferModeContainer>
+  //                   )
+  //                 );
+  //           }
+  //         } else {
+  //           locationsArr.push(
+  //             <PinSection
+  //               setShowTaxiModal={(props) =>
+  //                 _changeTaxiHandler(
+  //                   name,
+  //                   itinerary_id,
+  //                   tailored_id,
+  //                   id,
+  //                   check_in,
+  //                   check_out,
+  //                   pax,
+  //                   city,
+  //                   itinerary_name,
+  //                   cost,
+  //                   costings_breakdown,
+  //                   origin_iata,
+  //                   destination_iata,
+  //                   destination_city,
+  //                   taxi_type,
+  //                   transfer_type
+  //                 )
+  //               }
+  //               setCurrentPopup={false}
+  //               handlemap={handlemap}
+  //               dayId={
+  //                 props.breif.city_slabs[i].day_slab_location
+  //                   .start_day_slab_index
+  //               }
+  //               cityData={props.breif.city_slabs[i]}
+  //               dayslab={props.dayslab}
+  //               lat={props.breif.city_slabs[i].lat}
+  //               long={props.breif.city_slabs[i].long}
+  //               Mapid={props.breif.city_slabs[i].gmaps_place_id}
+  //               city={props.breif.city_slabs[i].city_name}
+  //               cityId={props.breif.city_slabs[i].city_id}
+  //               duration={
+  //                 props.breif.city_slabs[i].duration
+  //                   ? props.breif.city_slabs[i].duration + ' Night'
+  //                   : null
+  //               }
+  //               pinColour={props.breif.city_slabs[i].color}
+  //               data={order[i]}
+  //               _moveDownHandler={_moveDownHandler}
+  //               _moveUpHandler={_moveUpHandler}
+  //               index={i}
+  //             ></PinSection>
+  //           );
+  //           {
+  //             props?.transferBookings &&
+  //               locationsArr.push(
+  //                 <TransferModeContainer
+  //                   plan={props.plan}
+  //                   getPaymentHandler={props.getPaymentHandler}
+  //                   _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+  //                   _updatePaymentHandler={props._updatePaymentHandler}
+  //                   token={props.token}
+  //                   payment={props?.payment}
+  //                   pinColour={props.breif.city_slabs[i].color}
+  //                   modes={'Taxi'}
+  //                   icon={props?.transferBookings[i]?.images?.image}
+  //                   setShowBookingModal={props?.setShowBookingModal}
+  //                   taxi_type={props?.transferBookings[i]?.taxi_type}
+  //                   userSelected={props?.transferBookings[i]?.user_selected}
+  //                   index={i}
+  //                   transferbookings={props.transferBookings}
+  //                   _changeTaxiHandler={_changeTaxiHandler}
+  //                   setShowTaxiModal={props.setShowTaxiModal}
+  //                   transportMode={
+  //                     props.breif.city_slabs[i].intracity_transport
+  //                   }
+  //                   index={i}
+  //                   duration={props.breif.city_slabs[i].duration}
+  //                 ></TransferModeContainer>
+  //               );
+  //           }
+  //         }
+  //       }
+  //     }
+  //     // for (var i = 1; i < props.transferBookings.length; i++) {
+  //     //   //If duration present and not 0, not trip terminated or departure only city show in route
+
+  //     //   locationsArr.push(
+  //     //     <PinSection
+  //     //       setCurrentPopup={false}
+  //     //       handlemap={handlemap}
+  //     //       cityData={props.routes[i - 1]}
+  //     //       dayslab={props.dayslab}
+  //     //       lat={props.routes[i - 1]?.lat}
+  //     //       long={props.routes[i - 1]?.long}
+  //     //       Mapid={props.routes[i - 1].gmaps_place_id}
+  //     //       city={props.transferBookings[i].destination_city	}
+  //     //       cityId={props.routes[i - 1].city_id}
+  //     //       duration={
+  //     //         props.breif.city_slabs[i - 1].duration
+  //     //           ? props.breif.city_slabs[i - 1].duration + ' Nights'
+  //     //           : null
+  //     //       }
+  //     //       pinColour={props.routes[i - 1].color}
+  //     //       data={order[i - 1]}
+  //     //       _moveDownHandler={_moveDownHandler}
+  //     //       _moveUpHandler={_moveUpHandler}
+  //     //       index={i - 1}
+  //     //     ></PinSection>
+  //     //   );
+  //     //   // midsectionHandler(
+  //     //   //   props?.transferBookings[i],
+  //     //   //   props?.transferBookings[i - 1]
+  //     //   // );
+  //     //   {
+  //     //     props?.transferBookings &&
+  //     //     props?.transferBookings[i]?.booking_type == 'Flight'
+  //     //       ? locationsArr.push(
+  //     //           <div className="flex flex-col gap-1">
+  //     //             <TransferModeContainer
+
+  //     //               booking_type={props?.transferBookings[i + 1]?.booking_type}
+  //     //               pinColour={props.breif.city_slabs[i].color}
+  //     //               costings_breakdown={
+  //     //                 props?.transferBookings[i + 1]?.costings_breakdown
+  //     //               }
+  //     //               booking={props?.transferBookings[i + 1]}
+  //     //               heading={
+  //     //                 props?.transferBookings[i + 1]?.booking_display_name
+  //     //               }
+  //     //               index={i + 1}
+  //     //               icon={props?.transfers[i + 1]?.icon}
+  //     //               modes={getTransportationType(props?.transfers[i + 1]?.icon)}
+  //     //               transferbookings={props.transferBookings}
+  //     //               _changeTaxiHandler={_changeTaxiHandler}
+  //     //               setShowTaxiModal={props.setShowTaxiModal}
+  //     //               icon={props?.transferBookings[i + 1]?.images?.image}
+  //     //               taxi_type={props?.transferBookings[i + 1]?.taxi_type}
+  //     //               transportMode={getTransportationType(
+  //     //                 props?.transfers[i + 1]?.icon
+  //     //               )}
+  //     //               duration={props.breif.city_slabs[i].duration}
+  //     //             ></TransferModeContainer>
+  //     //             <TransferModeContainer
+
+  //     //               booking_type={props?.transferBookings[i]?.booking_type}
+  //     //               transferbookings={props.transferBookings}
+  //     //               _changeTaxiHandler={_changeTaxiHandler}
+  //     //               setShowTaxiModal={props.setShowTaxiModal}
+  //     //               pinColour={props.breif.city_slabs[i].color}
+  //     //               costings_breakdown={
+  //     //                 props?.transferBookings[i]?.costings_breakdown
+  //     //               }
+  //     //               booking={props?.transferBookings[i]}
+  //     //               index={i}
+  //     //               heading={props?.transferBookings[i]?.booking_display_name}
+  //     //               icon={props?.transfers[i]?.icon}
+  //     //               modes={getTransportationType(props?.transfers[i]?.icon)}
+  //     //               icon={props?.transferBookings[i]?.images?.image}
+  //     //               taxi_type={props?.transferBookings[i]?.taxi_type}
+  //     //               transportMode={getTransportationType(
+  //     //                 props?.transfers[i]?.icon
+  //     //               )}
+  //     //               duration={props.breif.city_slabs[i].duration}
+  //     //             ></TransferModeContainer>
+  //     //           </div>
+  //     //         )
+  //     //       : locationsArr.push(
+  //     //           props?.transferBookings && (
+  //     //             <TransferModeContainer
+
+  //     //               booking_type={props?.transferBookings[i]?.booking_type}
+  //     //               pinColour={props.breif.city_slabs[i].color}
+  //     //               costings_breakdown={
+  //     //                 props?.transferBookings[i]?.costings_breakdown
+  //     //               }
+  //     //               heading={props?.transferBookings[i]?.booking_display_name}
+  //     //               transferbookings={props.transferBookings}
+  //     //               _changeTaxiHandler={_changeTaxiHandler}
+  //     //               setShowTaxiModal={props.setShowTaxiModal}
+  //     //               icon={props?.transfers[i]?.icon}
+  //     //               index={i}
+  //     //               booking={props?.transferBookings[i]}
+  //     //               modes={getTransportationType(props?.transfers[i]?.icon)}
+  //     //               icon={props?.transferBookings[i]?.images?.image}
+  //     //               taxi_type={props?.transferBookings[i]?.taxi_type}
+  //     //               transportMode={getTransportationType(
+  //     //                 props?.transfers[i]?.icon
+  //     //               )}
+  //     //               duration={props.breif.city_slabs[i].duration}
+  //     //             ></TransferModeContainer>
+  //     //           )
+  //     //         );
+  //     //   }
+
+  //     //   // locationsArr.push(
+  //     //   //   <TransferModeContainer
+
+  //     //   //     pinColour={props.breif.city_slabs[i].color}
+  //     //   //     icon={props?.transfers[i]?.icon}
+  //     //   //     modes={
+  //     //   //       props?.transfers[i]?.modes[1]
+  //     //   //         ? props?.transfers[i]?.modes[1]
+  //     //   //         : props?.transfers[i]?.modes[0]
+  //     //   //     }
+  //     //   //     icon={props?.transferBookings[i]?.images?.image}
+  //     //   //     taxi_type={props?.transferBookings[i]?.taxi_type}
+  //     //   //     transportMode={
+  //     //   //       props?.transfers[i]?.modes[1]
+  //     //   //         ? props?.transfers[i]?.modes[1]
+  //     //   //         : props?.transfers[i]?.modes[0]
+  //     //   //     }
+  //     //   //     duration={props.breif.city_slabs[i].duration}
+  //     //   //   ></TransferModeContainer>
+  //     //   // );
+  //     // }
+  //   }
+  // } else {
+    
+  // }
   console.log('locationsArr');
   console.log(locationsArr);
   return (
