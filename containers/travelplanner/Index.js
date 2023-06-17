@@ -332,6 +332,7 @@ const Homepage = (props) => {
   //JSX for How it works
 
   const router = useRouter();
+  
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
 
@@ -340,6 +341,7 @@ const Homepage = (props) => {
     setOverviewHeading(props.experienceData.overview_heading);
     return () => setOverviewHeading(null)
   }, [router.query.link, props.experienceData]);
+          console.log("props: ", props);
 
   var country;
   if (props.experienceData.ancestors) {
@@ -376,7 +378,7 @@ const Homepage = (props) => {
         title={props.experienceData.banner_heading}
       />
       <SetWidthContainer>
-        {/* <MapGridContainer>
+        {props.experienceData.page_type == 'Theme' && <MapGridContainer>
           <Overview
             locations={props.experienceData.locations}
             overview_heading={overviewHeading}
@@ -390,7 +392,7 @@ const Homepage = (props) => {
               defaultZoom={12}
             ></Map>
           </MapContainer>
-        </MapGridContainer> */}
+        </MapGridContainer>}
 
         <Heading
           align="center"
