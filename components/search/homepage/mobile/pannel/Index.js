@@ -13,7 +13,7 @@ import { RxCross2 } from 'react-icons/rx';
 const Container = styled.div`
   background-color: white;
   border-radius: 2rem;
-  height: 100vh;
+  height: 100%;
   text-align: left;
   position: fixed;
   overflow: overlay;
@@ -95,7 +95,7 @@ const SearchPannel = (props) => {
   };
 
   useEffect(() => {
-    axioslocationsinstance.get('').then((response) => {
+    axioslocationsinstance.get('hot_destinations').then((response) => {
       setHotLocationsData(response.data);
     });
   }, []);

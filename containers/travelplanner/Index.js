@@ -108,9 +108,9 @@ const Homepage = (props) => {
 
   // const [loading, setLoading] = useState(true);
   const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
-  const [itinerariesCustomerJSX, setItinerariesCustomerJSX] = useState([]);
-  const [itinerariesToShowCustomerJSX, setItinerariesToShowCustomerJSX] =
-    useState([]);
+  const [userItineraries, setUserItineraries] = useState([])
+  const [TTWItineraries , setTTWItineraries] = useState([])
+
   const [filters, setFilters] = useState({
     Trek: true,
     "Road Trip": true,
@@ -322,9 +322,25 @@ const Homepage = (props) => {
     // }
   };
 
+  useEffect(() => {
+    const user = []
+    const ttw = []
+    if (props.experienceData.itinerary_data) {
+      props.experienceData.itinerary_data.map((e) => {
+        if (e.user_name !== 'TTW Exclusive' &&  e.user_name !== '' && e.user_name !== 'TTW') user.push(e)
+        else ttw.push(e)
+      }
+      )
+    }
+    setUserItineraries(user)
+    setTTWItineraries(ttw)
+  }, [props.experienceData.itinerary_data]);
+
+
   //JSX for How it works
 
   const router = useRouter();
+  
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
 
@@ -333,6 +349,7 @@ const Homepage = (props) => {
     setOverviewHeading(props.experienceData.overview_heading);
     return () => setOverviewHeading(null)
   }, [router.query.link, props.experienceData]);
+          console.log("props: ", props);
 
   var country;
   if (props.experienceData.ancestors) {
@@ -369,7 +386,7 @@ const Homepage = (props) => {
         title={props.experienceData.banner_heading}
       />
       <SetWidthContainer>
-        <MapGridContainer>
+        {props.experienceData.page_type == 'Theme' && <MapGridContainer>
           <Overview
             locations={props.experienceData.locations}
             overview_heading={overviewHeading}
@@ -382,7 +399,25 @@ const Homepage = (props) => {
               height="300px"
             /> : <></>}
           </MapContainer>
-        </MapGridContainer>
+        </MapGridContainer>}
+
+        <Heading
+          align="center"
+          aligndesktop="left"
+          margin={
+            !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"
+          }
+          bold
+        >
+          {props.experienceData.destination
+            ? "Top locations across " + props.experienceData.destination
+            : "Top Locations"}
+        </Heading>
+        <Locations
+          locations={props.experienceData.locations}
+          viewall
+        ></Locations>
+
         <Button
           onclick={() =>
             openTailoredModal(
@@ -415,7 +450,7 @@ const Homepage = (props) => {
           ></BannerTwo>
         </div>
 
-        {itinerariesToIndexCustomer.length ? (
+        {TTWItineraries.length ? (
           <Heading
             align="center"
             aligndesktop="left"
@@ -423,24 +458,30 @@ const Homepage = (props) => {
               !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"
             }
             bold
-          >{`${
-            props.experienceData.page_type == "Theme"
-              ? "TTW's Top Recommendations"
-              : "Trips by our users"
-          }`}</Heading>
+          >
+            Tarzan Way Community Top Picks
+          </Heading>
         ) : null}
-        {/* {itinerariesToIndexCustomer.length ? 
-  <GridContainer>
-    { itinerariesToIndexCustomer}
- 
-  </GridContainer> : null
-  }
-   */}
-        {itinerariesToIndexCustomer.length ? (
-          <Experiences
-            experiences={props.experienceData.itinerary_data}
-          ></Experiences>
+        {TTWItineraries.length ? (
+          <Experiences experiences={TTWItineraries}></Experiences>
         ) : null}
+
+        {userItineraries.length ? (
+          <Heading
+            align="center"
+            aligndesktop="left"
+            margin={
+              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"
+            }
+            bold
+          >
+            Trips by our users
+          </Heading>
+        ) : null}
+        {userItineraries.length ? (
+          <Experiences experiences={userItineraries}></Experiences>
+        ) : null}
+
         <Button
           onclick={() =>
             openTailoredModal(
@@ -458,35 +499,6 @@ const Homepage = (props) => {
           Unlock your adventure
         </Button>
 
-        {/* {
-    !loading  && itinerariesCustomerJSX.length && (itinerariesCustomerJSX.length >=  offsetCustomer)? <Button margin="0 auto 1rem auto" borderWidth="1px" borderRadius="6px" fontSizeDesktop="12px" fontWeight="600"padding="0.5rem 2rem" onclick={_showMoreCustomerItineraries} >View More</Button> 
-    : null
-  } */}
-
-        {props.experienceData.locations.length ? (
-          <>
-            <Heading
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide
-                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "2.5rem 0 4.5rem 0"
-              }
-              bold
-            >
-              {props.experienceData.destination
-                ? "Top locations across " + props.experienceData.destination
-                : "Top Locations"}
-            </Heading>
-            <Locations
-              locations={props.experienceData.locations}
-              viewall
-            ></Locations>{" "}
-          </>
-        ) : (
-          <></>
-        )}
         {/* <Carousel cards={props.experienceData.locations} /> */}
       </SetWidthContainer>
       {/* <Map locations={props.experienceData.locations}></Map> */}

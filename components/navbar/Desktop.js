@@ -303,7 +303,7 @@ const Navbar = (props) => {
             </TTWLogoContainer>
 
             {/* <input /> */}
-            {!props.hidecta && (
+            {(!props.hidecta && !props.staticnav) && (
               <div
                 style={{
                   position: "absolute",
