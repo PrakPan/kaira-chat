@@ -543,7 +543,7 @@ const Details = (props) => {
                 ) : (
                   <div className="font-medium text-base self-end">
                     {props.payment?.is_estimated_price
-                      ? 'Estimated Price'
+                      ? `${props.payment.total_cost == 0 ? '' : "Estimated Price"}`
                       : 'Total Cost'}
                   </div>
                 )}
@@ -551,7 +551,8 @@ const Details = (props) => {
             )}
 
             <div className="text-[#7A7A7A] text-sm">
-              Exclusive applicable taxes
+              {props?.payment?.total_cost == 0 ? '' : 'Exclusive applicable taxes'}
+              
             </div>
           </div>
         </div>
