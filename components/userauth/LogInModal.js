@@ -1,25 +1,25 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react';
-import Button from '../ui/button/Index';
-import { connect } from 'react-redux';
-import * as authaction from '../../store/actions/auth';
-import * as otpaction from '../../store/actions/getOtp';
-import axios from 'axios';
-import Spinner from '../Spinner';
-import styled from 'styled-components';
-import extensions from '../../public/content/extensionsdata';
-import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import GoogleLogin from 'react-google-login';
-import CountryCodeDropdown from './CountryDropdown';
-import { FiChevronDown } from 'react-icons/fi';
-import { ImCheckboxUnchecked, ImCheckboxChecked } from 'react-icons/im';
-import OTPInput from 'react-otp-input';
-import FloatingInput from '../ui/input/FloatingInput';
-import { BiError } from 'react-icons/bi';
-import LoginLoadingIcon from '../ui/LoadingLottie';
-import Image from 'next/image';
-import ImageLoader from '../ImageLoader';
-import media from '../media';
+import React, { useState, useEffect, Fragment, useRef } from "react";
+import Button from "../ui/button/Index";
+import { connect } from "react-redux";
+import * as authaction from "../../store/actions/auth";
+import * as otpaction from "../../store/actions/getOtp";
+import axios from "axios";
+import Spinner from "../Spinner";
+import styled from "styled-components";
+import extensions from "../../public/content/extensionsdata";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import GoogleLogin from "react-google-login";
+import CountryCodeDropdown from "./CountryDropdown";
+import { FiChevronDown } from "react-icons/fi";
+import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
+import OTPInput from "react-otp-input";
+import FloatingInput from "../ui/input/FloatingInput";
+import { BiError } from "react-icons/bi";
+import LoginLoadingIcon from "../ui/LoadingLottie";
+import Image from "next/image";
+import ImageLoader from "../ImageLoader";
+import media from "../media";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -87,10 +87,10 @@ const OtpContainer = styled.div`
 `;
 
 var userDetails = {
-  firstName: '',
-  lastName: '',
-  userName: '',
-  email: '',
+  firstName: "",
+  lastName: "",
+  userName: "",
+  email: "",
 };
 const CountryImg = styled(Image)`
   height: 1.5rem;
@@ -128,18 +128,18 @@ const CountryCodeOption = styled.div`
 const LogIn = (props) => {
   if (props.loadingsocial)
     return (
-      <div style={{ height: '27.25rem', width: '100%', display: 'flex' }}>
-        <LoginLoadingIcon width={'7rem'} />
+      <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
+        <LoginLoadingIcon width={"7rem"} />
       </div>
     );
 
   const mobileRef = useRef();
-  const [mobile, setMobile] = useState('+91');
+  const [mobile, setMobile] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
-  const [extension, setExtension] = useState('India'); //store extension
+  const [extension, setExtension] = useState("India"); //store extension
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [userNameError, setUserNameError] = useState(false);
   let firstname = null; //JSX for first name
   let lastname = null; //JSX for last name
@@ -147,11 +147,11 @@ const LogIn = (props) => {
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
   let ExtensionOptions = [];
-  let mobilevariable = '';
+  let mobilevariable = "";
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -162,7 +162,7 @@ const LogIn = (props) => {
       props.name &&
       props.token &&
       props.name &&
-      props.phone !== 'null' &&
+      props.phone !== "null" &&
       props.token &&
       props.name &&
       props.phone !== null
@@ -293,7 +293,7 @@ const LogIn = (props) => {
       username: extensions[extension].label + mobile,
     };
     axios
-      .post('https://apis.tarzanway.com/user/resend/otp/', authData)
+      .post("https://apis.tarzanway.com/user/resend/otp/", authData)
       .then((response) => {});
     setOtpResent(true);
   };
@@ -336,7 +336,7 @@ const LogIn = (props) => {
         type="email"
         id="email"
         onChange={(event) => {
-          _userDetailsOnChangeHandler(event, 'email');
+          _userDetailsOnChangeHandler(event, "email");
         }}
       />
     </>
@@ -356,8 +356,8 @@ const LogIn = (props) => {
       </OtpContainer>
       {props.otpFail && (
         <ErrorText>
-          <BiError style={{ fontSize: '1rem' }} />
-          <span style={{ marginLeft: '2px', marginTop: '2px' }}>
+          <BiError style={{ fontSize: "1rem" }} />
+          <span style={{ marginLeft: "2px", marginTop: "2px" }}>
             OTP is not valid
           </span>
         </ErrorText>
@@ -372,7 +372,7 @@ const LogIn = (props) => {
 
   const googleResponse = (response) => {};
   // if(!props.loadingsocial)
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   return (
     <div className="font-lexend">
