@@ -19,7 +19,7 @@ const Itinerary = (props) => {
     props.checkAuthState();
   }, []);
   return (
-    <Layout staticnav itinerary hidecta>
+    <Layout staticnav itinerary>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
