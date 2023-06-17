@@ -54,10 +54,10 @@ const HotelBookingContainer = ({
 }) => {
   const AddbookingStatus = booking => {
     if(booking?.version == 'v2'){
-      if(booking.status == 'BOOKING_EXPIRED'){
-        return true
-      }else{
+      if(booking?.status == 'BOOKING_EXPIRED'){
         return false
+      }else{
+        return true
       }
     }else{
      return !currentBooking ? booking?.user_selected : true
@@ -129,6 +129,8 @@ const HotelBookingContainer = ({
         .then((data) => {
           setLoading(false)
           setaddboking(true);
+          setexpiredBooking(false);
+          setisSelect(true)
           // Handle success
           // Access the response data using 'data'
         })
@@ -184,7 +186,7 @@ const HotelBookingContainer = ({
                   : handleClick(index, booking.accommodation, booking);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-                addbooking   ? 'grayscale-0' : 'grayscale'
+                addbooking || isSelect   ? 'grayscale-0' : 'grayscale'
               } `}
             >
               <div
@@ -464,7 +466,7 @@ const HotelBookingContainer = ({
   >
     <CheckboxFormComponent checked={addbooking} />
     <label className="text-center">
-      {addbooking ? 'Added Booking' : 'Add Booking'}
+      {addbooking  ? 'Added Booking' : 'Add Booking'}
     </label>
   </div>
 </div> 
