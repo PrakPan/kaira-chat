@@ -17,9 +17,7 @@ const Container = styled.div`
 `;
 
 const TransfersContainer = (props) => {
-  console.log('routes');
 
-  console.log(props?.routes);
   // useEffect(() => {
   //   console.log(props.transferBookings);
   //   if (props.transferBookings)
@@ -539,7 +537,7 @@ const TransfersContainer = (props) => {
         
         {
           props.routes[i + 1].modes.map((mode,index) => {
-            var CurrentBooking = return_booking_from_id(props?.transferBookings, props?.routes[i+1].bookings[index]?.id);
+            var CurrentBooking = return_booking_from_id(props.transferBookings, props?.routes[i+1].bookings[index]?.id);
             mode === 'Flight'
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
@@ -1066,8 +1064,6 @@ const TransfersContainer = (props) => {
   // } else {
     
   // }
-  console.log('locationsArr');
-  console.log(locationsArr);
   return (
     <Container id="Stays-Head">
       <div
