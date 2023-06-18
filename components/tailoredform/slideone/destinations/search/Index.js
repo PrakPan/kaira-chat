@@ -11,6 +11,8 @@ import HotLocations from './results/HotLocations';
 import axios from 'axios';
 import Spinner from '../../../../Spinner';
 import axioslocationsinstance from '../../../../../services/search/search'
+import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
+
 import { useRouter } from 'next/router';
 const Container = styled.div`
  
@@ -42,8 +44,7 @@ const Search = (props) => {
     setShowHotLocations(false);
     setShowResults(true);
       setLoading(true)
-      axios
-        .get(`https://apis.tarzanway.com/search/suggest/?q=` + e.target.value)
+     axiossearchsuggestinstance.get(`?q=` + event.target.value)
         .then((res) => {
           setLoading(false);
           if (res.data.length) {

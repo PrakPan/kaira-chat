@@ -5,6 +5,8 @@ import axios from 'axios';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import axioslocationsinstance from '../../../../../services/search/search';
+import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
+
 import NewResults from './NewResults';
 import { ImSearch } from 'react-icons/im';
 import { MdCancel } from 'react-icons/md';
@@ -80,18 +82,16 @@ const SearchPannel = (props) => {
     setShowP(false);
     setShowResults(true);
     setResults(null);
-    axios
-      .get(`https://apis.tarzanway.com/search/suggest/?q=` + event.target.value)
-      .then((res) => {
-        if (res.data.length) {
-          setResults(res.data.slice(0, 10));
-          setShowResults(true);
-          setShowP(false);
-        } else {
-          setShowP(true);
-          setShowResults(false);
-        }
-      });
+   axiossearchsuggestinstance.get(`?q=` + event.target.value).then((res) => {
+     if (res.data.length) {
+       setResults(res.data.slice(0, 10));
+       setShowResults(true);
+       setShowP(false);
+     } else {
+       setShowP(true);
+       setShowResults(false);
+     }
+   });
   };
 
   useEffect(() => {

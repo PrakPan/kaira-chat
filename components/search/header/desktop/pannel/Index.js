@@ -7,6 +7,7 @@ import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import { ImSearch } from 'react-icons/im';
 import { MdCancel } from 'react-icons/md';
+import axiossearchsuggestinstance from '../../../../../services/search/searchsuggest';
 const Container = styled.div`
   background-color: white;
   border-radius: 5px 5px 1rem 1rem !important;
@@ -71,8 +72,8 @@ const SearchPannel = (props) => {
 
     setInputValue(event.target.value);
     setResults(null);
-    axios
-      .get(`https://apis.tarzanway.com/search/suggest?q=` + event.target.value)
+    axiossearchsuggestinstance
+      .get(`?q=` + event.target.value)
       .then((res) => {
         if (res.data.length) {
           setResults(res.data.slice(0,10));

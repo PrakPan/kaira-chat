@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
+import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
 
 import axios from 'axios';
 const Container = styled.input`
@@ -22,13 +23,9 @@ const Container = styled.input`
 
 const SearchInput = (props) => {
   const _handleKey = (e) => {
-    axios
-      .get(
-        `https://apis.tarzanway.com/search/suggest?q=` +
-          e.target.value +
-          '&parent=Himachal Pradesh'
-      )
-      .then((res) => {
+    axiossearchsuggestinstance.get(
+      `?q=` + event.target.value + "&parent=Himachal Pradesh"
+    ).then((res) => {
         if (res.data.length) {
           props._showSearchedLocations(res.data);
         }

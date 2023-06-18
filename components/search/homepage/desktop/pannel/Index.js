@@ -7,6 +7,7 @@ import Results from './results/Index';
 import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import axioslocationsinstance from '../../../../../services/search/search'
+import axiossearchsuggestinstance from '../../../../../services/search/searchsuggest'
 const Container = styled.div`
     background-color: white;
     border-radius: 2rem !important;
@@ -54,10 +55,8 @@ const [hotLocationsData, setHotLocationsData] = useState();
             }
           });
         setInputValue(event.target.value);
-        axios
-          .get(
-            `https://apis.tarzanway.com/search/suggest/?q=` + event.target.value
-          )
+        axiossearchsuggestinstance
+          .get(`?q=` + event.target.value)
           .then((res) => {
             if (res.data.length) {
               setResults(res.data.slice(0, 10));

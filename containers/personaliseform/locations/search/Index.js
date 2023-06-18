@@ -9,6 +9,8 @@ import SearchResult  from './SearchResult';
 import SelectedCity  from './SelectedCity';
 import SelectedCitiesContainer from './SelectedCitiesContainer';
 import axioslocationsinstance from '../../../../services/poi/hotlocations';
+import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
+
 import {CONTENT_SERVER_HOST} from '../../../../services/constants';
 import media from '../../../../components/media';
 import Location from './Location';
@@ -96,17 +98,29 @@ const SearchField = (props) => {
     const _fetchResults = (value) => {
         let resultsarr = [];
 
-        axios.get(CONTENT_SERVER_HOST+"/search/suggest/?q="+value).then((res) => {
+        axiossearchsuggestinstance
+          .get("?q=" + value)
+          .then((res) => {
             setResultsData(res.data);
-            for(var i = 0 ; i < Math.min(15,res.data.length) ; i++){
-                resultsarr.push(
-                    <Location _removeCityHandler={props._removeCityHandler} selectedCities={props.selectedCities} location={res.data[i]} key={i} image={res.data[i].image} _addCityHandler={props._addCityHandler} name={res.data[i].name} parent={res.data[i].parent} id={res.data[i].resource_id} type={res.data[i].type}></Location>
-                )
+            for (var i = 0; i < Math.min(15, res.data.length); i++) {
+              resultsarr.push(
+                <Location
+                  _removeCityHandler={props._removeCityHandler}
+                  selectedCities={props.selectedCities}
+                  location={res.data[i]}
+                  key={i}
+                  image={res.data[i].image}
+                  _addCityHandler={props._addCityHandler}
+                  name={res.data[i].name}
+                  parent={res.data[i].parent}
+                  id={res.data[i].resource_id}
+                  type={res.data[i].type}
+                ></Location>
+              );
             }
             setResults([...resultsarr]);
-      }).catch((error) => {
-  
-      })
+          })
+          .catch((error) => {});
     }
     const _handleChangeNew = (event) => {
         if(event.target.value.length %3 === 0)
