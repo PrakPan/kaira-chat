@@ -68,11 +68,20 @@ const PinSection = ({
     setShowDrawer(true);
     setShowDrawerData(cityData);
   };
+  console.log('duration;: ', duration);
   return (
     <Container className="cursor-pointer " onClick={() => handleClick()}>
       <Pin duration={duration} pinColour={pinColour}></Pin>
-      <Heading className={`${setCurrentPopup ? 'ml-4' : 'lg:ml-8 ml-2'} `}>
-        {duration ? city + ` - ${duration > 1 ? `${duration} Nights` : `${duration} Night `} ` : city}
+      <Heading className={`${setCurrentPopup ? "ml-4" : "lg:ml-8 ml-2"} `}>
+        {duration
+          ? duration.split(" ").length >1
+            ? city + ' - ' + duration : 
+            city +
+              ` - ${
+                duration > 1 ? `${duration} Nights` : `${duration} Night `
+              } `
+            : city
+          }
         {/* <div className="px-4 py-1 text-[12px] cursor-pointer border-2 border-black ml-6 font-bold font-lexend text-black rounded-md">
           Edit
         </div> */}

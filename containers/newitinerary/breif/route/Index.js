@@ -12,7 +12,7 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
-  console.log(props, 'props');
+  console.log('propsRoute: ', props);
   //Stores initial order of locations
   const initialorder = {
     0: {
@@ -29,9 +29,6 @@ const Route = (props) => {
     },
   };
   let locationsArr = [];
-  console.log('props.transfers');
-
-  console.log(props.transfers);
   const [order, setOrder] = useState(initialorder);
   const _moveDownHandler = (index) => {
     if (index === 3) {
@@ -102,7 +99,6 @@ const Route = (props) => {
   if(props?.plan?.version == ITINERARY_VERSION.version_2){
       if(props?.routes){
         for (var i = 2; i < props.routes.length - 1; i+=2) {
-          
             locationsArr.push(
               <PinSection
                 setCurrentPopup={props.setCurrentPopup}
@@ -134,18 +130,21 @@ const Route = (props) => {
                 pinColour={props.routes[i].color}
                 modes={props.routes[i + 1]?.modes}
                 icon={null}
-                version={'v2'}
+                version={"v2"}
                 bookings={props.routes[i + 1]?.bookings}
-                
+                routesData={props.routesData}
                 duration={props.routes[i + 1]?.meta?.Time}
               ></MidSection>
             );
               } 
         
       }
-  }else{
+  } else {
+    
+    
     if (props.breif)
-    if (props.breif.city_slabs) {
+      if (props.breif.city_slabs) {
+      
       for (var i = 1; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].is_departure_only)
           startingcity = props.breif.city_slabs[0].city_name;
@@ -197,7 +196,7 @@ const Route = (props) => {
                   : 'Taxi'
               }
               icon={null}
-
+              routesData={props.routesData}
               version={'v1'}
               transportMode={props.breif.city_slabs[i].intracity_transport}
               duration={props.breif.city_slabs[i].duration}
@@ -225,12 +224,9 @@ const Route = (props) => {
         setCurrentPopup={props.setCurrentPopup}
         setShowDrawer={props.setShowDrawer}
         setShowDrawerData={props.setShowDrawerData}
-        cityData={props.breif?.city_slabs[0]}
         dayId={
           props.breif?.city_slabs[0].day_slab_location.start_day_slab_index
         }
-
-
         cityData={props.breif.city_slabs[0]}
         dayslab={props.dayslab}
         lat={props.breif.city_slabs[0].lat}
@@ -245,18 +241,17 @@ const Route = (props) => {
             : null
         }
         pinColour={props.breif.city_slabs[0].color}
-        dayslab={props.dayslab}
-        
       ></PinSection>
       <MidSection
         pinColour={props.breif.city_slabs[0].color}
         modes={
-          props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : 'Taxi'
+          props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : "Taxi"
         }
-        bookings={props.routes[ 1]?.bookings}
+        bookings={props.routes[1]?.bookings}
         version={props?.plan?.version}
         icon={props?.transfers[0]?.icon}
-        transportMode={'Taxi'}
+        routesData={props.routesData}
+        transportMode={"Taxi"}
         duration={'2'}
       ></MidSection>
 
@@ -285,7 +280,6 @@ const Route = (props) => {
             : null
         }
         pinColour={props.breif.city_slabs[0].color}
-        
       ></PinSection>
     </Container>
   );

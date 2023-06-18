@@ -422,11 +422,11 @@ const SimpleTabsV2 = (props) => {
         // { id: 3, label: 'Flights',link: 'Flights' },
         { id: 3, label: 'Stays', link: 'Stays' },
         { id: 4, label: 'Transfers', link: 'Transfers' },
-        {
-          id: 6,
-          label: 'Book Now',
-          link: 'staysBooking',
-        },
+        // {
+        //   id: 6,
+        //   label: 'Book Now',
+        //   link: 'staysBooking',
+        // },
       ];
 
   const { ref, isSticky } = useSticky(90);
