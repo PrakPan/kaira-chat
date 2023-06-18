@@ -1145,7 +1145,7 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             dayslab={props.dayslab}
           ></PinSection>
-  {props?.routes ? 
+  {props?.routes.length > 1  ? 
   props.routes[1].modes.map((mode,index) => {
     if(props?.transferBookings){
       var CurrentBooking = return_booking_from_id(props?.transferBookings, props?.routes[1].bookings[index]?.id);

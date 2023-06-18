@@ -51,7 +51,8 @@ const TransferElementsM = ({
               <div className="text-[1.2rem] font-normal line-clamp-2 ">
                 {heading}
               </div>
-              <Link
+              {
+                modes && <Link
                 to={
                   data.bookings
                     ? `${data.bookings[0].id}`
@@ -63,6 +64,8 @@ const TransferElementsM = ({
                   {modes ? `Booking For ${modes} ` : null}
                 </TransparentButton>
               </Link>
+              }
+              
             </div>
           </Timecontainer>
         </Timecontainer>

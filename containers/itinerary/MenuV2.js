@@ -1239,7 +1239,7 @@ const SimpleTabsV2 = (props) => {
                   setShowFooterBannerMobile(!showFooterBannerMobile)
                 }
               >
-                Pay Now & Book
+                View Breakup
               </Button>
             ) : (
               <Button

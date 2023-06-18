@@ -9,7 +9,7 @@ const Container = styled.div`
   grid-template-columns: 30px auto;
   min-height: 5rem;
   @media screen and (min-width: 768px) {
-    min-height: 8rem;
+    min-height: ${(props) => (props.hidemidsection ? '4.5rem' : '8rem')};
   }
 `;
 // const Heading = styled.div`
@@ -41,10 +41,11 @@ const Line = styled.hr`
   opacity: initial;
 
   @media screen and (min-width: 768px) {
-    width: 8rem;
+     
+     width: ${(props) => (props.hidemidsection ? '6rem' : '8rem')};
     height: 1.7px;
-    top: 46px;
-    right: -46px;
+    top: ${(props) => (props.hidemidsection ? '22px' : '46px')}; 
+    right: ${(props) => (props.hidemidsection ? '-31px' : '-46px')};;
   }
   /* border-style: dashed;
   border-width: 1.4px;
@@ -72,11 +73,14 @@ const MidSection = (props) => {
 console.log('bookings-1')
 console.log(props.bookings)
   return (
-    <Container className="font-lexend">
+    
+        <Container className="font-lexend" hidemidsection={props.hidemidsection}>
       <div style={{ position: 'relative' }}>
-        <Line pinColour={props.pinColour} />
+        <Line pinColour={props.pinColour} hidemidsection={props.hidemidsection}/>
       </div>
-      {
+      {!props.hidemidsection && <>
+      
+        {
         props.version == 'v2' ?
           <Text>
             {props?.bookings?.map((element, index) => (
@@ -136,9 +140,13 @@ console.log(props.bookings)
         {props.modes ? props.modes : 'Taxi'}: {props.duration}h 30m
       </Text>
       }
+      </>}
+      
      
       {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
     </Container>
+    
+
   );
 };
 

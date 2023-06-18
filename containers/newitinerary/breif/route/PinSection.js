@@ -74,9 +74,7 @@ const PinSection = ({
       <Pin duration={duration} pinColour={pinColour}></Pin>
       <Heading className={`${setCurrentPopup ? "ml-4" : "lg:ml-8 ml-2"} `}>
         {duration
-          ? duration.split(" ").length >1
-            ? city + ' - ' + duration : 
-            city +
+          ? city +
               ` - ${
                 duration > 1 ? `${duration} Nights` : `${duration} Night `
               } `
