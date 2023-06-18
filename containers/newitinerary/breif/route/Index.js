@@ -176,8 +176,7 @@ const Route = (props) => {
               cityId={props.breif.city_slabs[i].city_id}
               duration={
                 props.breif.city_slabs[i].duration
-                  ? props.breif.city_slabs[i].duration +
-                    NoOfNights(props.breif.city_slabs[i].duration)
+                  ? props.breif.city_slabs[i].duration
                   : null
               }
               pinColour={props.breif.city_slabs[i].color}
@@ -195,6 +194,7 @@ const Route = (props) => {
                   ? props?.transfers[i + 1]?.modes[0]
                   : 'Taxi'
               }
+              hidemidsection={true}
               icon={null}
               routesData={props.routesData}
               version={'v1'}
@@ -242,7 +242,8 @@ const Route = (props) => {
         }
         pinColour={props.breif.city_slabs[0].color}
       ></PinSection>
-      <MidSection
+      {
+        props.routes.length > 1 ? <MidSection
         pinColour={props.breif.city_slabs[0].color}
         modes={
           props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : "Taxi"
@@ -250,10 +251,25 @@ const Route = (props) => {
         bookings={props.routes[1]?.bookings}
         version={props?.plan?.version}
         icon={props?.transfers[0]?.icon}
+        hidemidsection={false}
         routesData={props.routesData}
         transportMode={"Taxi"}
         duration={'2'}
-      ></MidSection>
+      ></MidSection> : <MidSection
+      pinColour={props.breif.city_slabs[0].color}
+      modes={
+        props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : "Taxi"
+      }
+      bookings={props.routes[1]?.bookings}
+      version={props?.plan?.version}
+      icon={props?.transfers[0]?.icon}
+      hidemidsection={true}
+      routesData={props.routesData}
+      transportMode={"Taxi"}
+      duration={'2'}
+    ></MidSection>
+      }
+      
 
       {locationsArr}
       {/* <MidSection></MidSection>
@@ -275,8 +291,7 @@ const Route = (props) => {
         cityId={props.breif.city_slabs[0].city_id}
         duration={
           props.breif.city_slabs[0].duration
-            ? props.breif.city_slabs[0].duration +
-              NoOfNights(props.breif.city_slabs[0].duration)
+            ? props.breif.city_slabs[0].duration 
             : null
         }
         pinColour={props.breif.city_slabs[0].color}
