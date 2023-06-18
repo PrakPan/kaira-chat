@@ -309,14 +309,14 @@ const Enquiry = (props) => {
           // setTimeout(function () {
           if (response.data.loader_time)
             router.push(
-              "/newitinerary/" +
+              "/itinerary/" +
                 response.data.itinerary.itinerary_id +
                 "?t=" +
                 response.data.loader_time
             );
           else
             router.push(
-              "/newitinerary/" + response.data.itinerary.itinerary_id
+              "/itinerary/" + response.data.itinerary.itinerary_id
             );
           // }, 10000);
           setLoading(false);
