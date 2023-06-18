@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 //  import LocationsContainer from './LocationsContainer'
-import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
+import axiossearchsuggestinstance from "../../../../../../services/search/searchsuggest";
 
 import axios from 'axios';
 const Container = styled.input`

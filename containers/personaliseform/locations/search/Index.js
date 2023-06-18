@@ -9,7 +9,7 @@ import SearchResult  from './SearchResult';
 import SelectedCity  from './SelectedCity';
 import SelectedCitiesContainer from './SelectedCitiesContainer';
 import axioslocationsinstance from '../../../../services/poi/hotlocations';
-import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
+import axiossearchsuggestinstance from "../../../../services/search/searchsuggest";
 
 import {CONTENT_SERVER_HOST} from '../../../../services/constants';
 import media from '../../../../components/media';
