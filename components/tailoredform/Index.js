@@ -309,13 +309,15 @@ const Enquiry = (props) => {
           // setTimeout(function () {
           if (response.data.loader_time)
             router.push(
-              '/itinerary/' +
+              "/newitinerary/" +
                 response.data.itinerary.itinerary_id +
-                '?t=' +
+                "?t=" +
                 response.data.loader_time
             );
           else
-            router.push('/itinerary/' + response.data.itinerary.itinerary_id);
+            router.push(
+              "/newitinerary/" + response.data.itinerary.itinerary_id
+            );
           // }, 10000);
           setLoading(false);
         }

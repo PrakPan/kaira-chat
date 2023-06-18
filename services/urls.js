@@ -30,7 +30,7 @@ export default {
   DASHBOARD: "/dashboard/",
 
   itinerary: {
-    BASE: "/itinerary/",
+    BASE: "/newitinerary/",
     PREVIEW: "/itinerary/preview/",
     STOCK: "/itinerary/stock/",
   },

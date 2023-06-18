@@ -70,7 +70,7 @@ const Explorers= (props) => {
      const router = useRouter();
 
      const _handleRedirect = (id) => {
-        router.push('/itinerary/'+id);
+        router.push("/newitinerary/" + id);
      }
     
    

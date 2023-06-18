@@ -112,7 +112,7 @@ const CardContainer = (props) => {
           <Button
             fontWeight="500"
             borderRadius="6px"
-            onclick={() => router.push('/itinerary/' + props.id)}
+            onclick={() => router.push('/newitinerary/' + props.id)}
             fontSizeDesktop="12px"
             borderWidth="1px"
             width="100%"

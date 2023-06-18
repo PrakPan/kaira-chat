@@ -108,7 +108,7 @@ const PartnerWith = (props) => {
     let isPageWide = media('(min-width: 768px)');
     let mobile_cards_generared = [ ];
     const _handleItineraryRedirect = (itinerary_id) => {
-      router.push('/itinerary/'+itinerary_id)
+      router.push("/newitinerary/" + itinerary_id);
     }
    for(var i =0 ; i < props.content.length; i++){
       mobile_cards_generared.push(
