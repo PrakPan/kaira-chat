@@ -28,5 +28,5 @@ export function closeTailoredModal(router, id) {
   delete router.query['tailored-travel'];
   delete router.query['page_id'];
   delete router.query['destination'];
-  router.push(`/newitinerary/${id}`, undefined, { scroll: false });
+  router.push(`/itinerary/${id}`, undefined, { scroll: false });
 }

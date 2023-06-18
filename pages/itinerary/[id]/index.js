@@ -1,6 +1,6 @@
-import ItineraryContainer from '../../../containers/itinerary/Indexs/Index';
+import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
 import { useRouter } from 'next/router';
-import Layout from '../../../components/Layout';
+import LayoutV2 from '../../../components/LayoutV2';
 import Head from 'next/head';
 import { connect } from 'react-redux';
 import * as authaction from '../../../store/actions/auth';
@@ -19,7 +19,7 @@ const Itinerary = (props) => {
     props.checkAuthState();
   }, []);
   return (
-    <Layout staticnav itinerary>
+    <LayoutV2 staticnav itinerary>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
@@ -50,7 +50,7 @@ const Itinerary = (props) => {
           id={router.query.id}
         ></ItineraryContainer>
       )}
-    </Layout>
+    </LayoutV2>
   );
 };
 

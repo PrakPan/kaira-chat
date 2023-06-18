@@ -338,9 +338,7 @@ const Personaliseform = (props) => {
           ga.event({ action: 'TTForm-success', params: { key: '' } });
 
           setTimeout(function () {
-            router.push(
-              "/newitinerary/" + response.data.itinerary.itinerary_id
-            );
+            router.push("/itinerary/" + response.data.itinerary.itinerary_id);
           }, 6000);
         }
       })

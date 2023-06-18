@@ -13,7 +13,7 @@ const Container = styled.div`
 const Info = (props) => {
   const router=useRouter();
  const _handleRedirect = () => {
-  router.push("/newitinerary/" + props.id);
+  router.push("/itinerary/" + props.id);
  }
     
     return(
