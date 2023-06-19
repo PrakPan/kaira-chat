@@ -721,7 +721,7 @@ const HotelsBooking = (props) => {
               handleClick={handleClick}
               handleClickAc={handleClickAc}
               selectedBooking={booking}
-              city_id={props.breif.city_slabs[index + 1].city_id}
+              city_id={props.breif.city_slabs[index].city_id}
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
               loginModal={showLoginModal}

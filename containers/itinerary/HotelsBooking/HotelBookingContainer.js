@@ -445,7 +445,8 @@ const HotelBookingContainer = ({
                 </div>
               )} */}
 {
-  !expiredBooking && <div
+  !expiredBooking && payment?.user_allowed_to_pay
+  && <div
   className={`absolute  ${
     SelectedBookingin
       ? 'lg:bottom-4 bottom-[1.5rem] '

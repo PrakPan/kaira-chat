@@ -730,7 +730,7 @@ const TransferModeContainer = (props) => {
                   ? 'Private transfer '
                   : props.booking_type}
 
-                <div className="inline-block ml-1">({props.duration}h 30m)</div>
+                <div className="inline-block ml-1">({props.duration})</div>
               </div>
               <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
