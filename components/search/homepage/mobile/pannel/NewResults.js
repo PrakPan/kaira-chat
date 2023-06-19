@@ -21,11 +21,11 @@ border-radius : 50px;
 }
 `;
 
-const MarkerContainer= styled.div`
-background : #dfdfdf;
-border-radius : 100%;
-padding: 10px 13px 10px 13px;
-`
+const MarkerContainer = styled.div`
+  background: #dfdfdf;
+  border-radius: 100%;
+  padding: 14px;
+`;
 const Text = styled.div`
 font-weight : 500;
 // margin-block : 5px;
