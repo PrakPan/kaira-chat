@@ -499,6 +499,7 @@ const TransferModeContainer = (props) => {
                         <div>
                           <div className="text-[#01202B] text-lg font-medium min-w-max">
                             {
+                              props.booking?.airline_code && 
                               processBookingTimes(
                                 props.booking.check_in,
                                 props.booking.check_out
