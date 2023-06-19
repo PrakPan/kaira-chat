@@ -341,7 +341,19 @@ const TransferModeContainer = (props) => {
         <div className="mt-3 lg:ml-7 ml-2">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
-            <div>
+            <div  className='flex flex-row gap-2 justify-center items-center'>
+
+
+                        <div className={`${
+                            props.booking_type == 'Train'
+                              ? 'lg:bottom-4 hidden'
+                              : 'lg:bottom-[3.6rem]'
+                          } `}  onClick={(e) => {
+                        handleCheckboxChange(e);
+                      }}>
+
+<CheckboxFormComponent checked={addbooking} />            </div>
+            
               {props.userSelected ? (
                 <div className=" text-md font-semibold  text-[#277004] ">
                   Included
@@ -650,7 +662,18 @@ const TransferModeContainer = (props) => {
         <div className="mt-3 lg:ml-7 ml-2">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
-            <div>
+            <div  className='flex flex-row gap-2 justify-center items-center'>
+
+
+                        <div className={`${
+                            props.booking_type == 'Train'
+                              ? 'lg:bottom-4 hidden'
+                              : 'lg:bottom-[3.6rem]'
+                          } `}  onClick={(e) => {
+                        handleCheckboxChange(e);
+                      }}>
+
+<CheckboxFormComponent checked={addbooking} />            </div>
               {props.userSelected ? (
                 <div className=" text-md font-semibold  text-[#277004] ">
                   Included
@@ -786,7 +809,7 @@ const TransferModeContainer = (props) => {
                       true
                         ? `${
                             props.booking_type == 'Taxi'
-                              ? 'lg:bottom-4'
+                              ? 'lg:bottom-4 hidden'
                               : 'lg:bottom-[3.6rem]'
                           }  bottom-[1.5rem] `
                         : `${

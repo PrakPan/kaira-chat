@@ -47,6 +47,7 @@ import LogInModal from '../../components/modals/Login';
 import Modal from '../../components/ui/Modal';
 import { ClaimItinary } from '../../store/actions/auth';
 import { ITINERARY_STATUSES } from '../../services/constants';
+import MakeYourPersonalised from '../../components/MakeYourPersonalised';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -238,6 +239,7 @@ const SimpleTabsV2 = (props) => {
   const [showItineraryTimer, setShowItineraryTimer] = useState(true);
   const [minimiseTimer, setMinimiseTimer] = useState(false);
   const [minimseBookingTimer, setMinimiseBookingTimer] = useState(false);
+  const [Newitinerary, setNewitinerary] = useState(false);
   const [blurBooking, setBlurBooking] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBookingTimer, setShowBookingTimer] = useState(true);
@@ -1178,7 +1180,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           )}
           <div className="mt-1">
-              {/* {props.payment && props.token ? (
+              {props.payment && props.token ? (
         props.payment.itinerary_status ===
           ITINERARY_STATUSES.itinerary_finalized &&
         !props.payment.paid_user &&
@@ -1186,9 +1188,11 @@ const SimpleTabsV2 = (props) => {
           props.payment.total_cost > 0 ? (
             <ButtonYellow
               styleClass="w-full"
-              onClick={() => _saleCreateHandler(props.id)}
+              onClick={() =>
+                setShowFooterBannerMobile(!showFooterBannerMobile)
+              }
             >
-              Pay Now & Book
+              Proceed to Book
               
             </ButtonYellow>
           ) : (
@@ -1200,7 +1204,7 @@ const SimpleTabsV2 = (props) => {
             </ButtonYellow>
           )
         ) : (
-          !props.payment.paid_user && (
+          !props.payment.paid_user ? (
             <ButtonYellow
               styleClass="w-full"
               onClick={() => setNewitinerary(true)}
@@ -1209,52 +1213,24 @@ const SimpleTabsV2 = (props) => {
               Create a new Iitinerary
             </ButtonYellow>
           )
+          : <Button
+          color="#fff"
+          fontWeight="600"
+          fontSize="0.85rem"
+          borderWidth="3px"
+          width="100%"
+          borderRadius="10px"
+          bgColor="#04AA32"
+          onclick={() =>
+            setShowFooterBannerMobile(!showFooterBannerMobile)
+          }
+        >
+          View Booking
+        </Button>
         )
-      ) : null} */}
-            {props?.payment?.paid_user ? (
-              <Button
-                color="#fff"
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="3px"
-                width="100%"
-                borderRadius="10px"
-                bgColor="#04AA32"
-                onclick={() =>
-                  setShowFooterBannerMobile(!showFooterBannerMobile)
-                }
-              >
-                View Booking
-              </Button>
-            ) : props?.payment?.total_cost > 0  ? (
-              <Button
-                class
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="3px"
-                width="100%"
-                borderRadius="10px"
-                bgColor="#f7e700"
-                onclick={() =>
-                  setShowFooterBannerMobile(!showFooterBannerMobile)
-                }
-              >
-                View Breakup
-              </Button>
-            ) : (
-              <Button
-                class
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="3px"
-                width="100%"
-                borderRadius="10px"
-                bgColor="#f7e700"
-                onClick={() => scrollToElement('Stays-Head')}
-              >
-                Add Hotels
-              </Button>
-            )}
+      ) : null}
+
+   
           </div>
         </div>
       </div>
@@ -1273,6 +1249,13 @@ const SimpleTabsV2 = (props) => {
           setHidePoiModal={props.setHidePoiModal}
         ></PoiEditModal>
       ) : null}
+      {props.token && Newitinerary && (
+        <MakeYourPersonalised
+          date={props?.payment?.meta_info?.start_date}
+          onHide={() => setNewitinerary(false)}
+          show={Newitinerary}
+        />
+      )}
       {/* <Accommodation show={true} ></Accommodation> */}
       <LogInModal
         show={showLoginModal}

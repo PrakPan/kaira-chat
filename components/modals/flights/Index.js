@@ -62,7 +62,10 @@ const Booking = (props) => {
 
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
-
+  const [isFetchingError, setFetchingIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
   const [moreLoadingState, setMoreLoadingState] = useState(false);
 
   const [noResults, setNoResults] = useState(false);
@@ -123,6 +126,10 @@ const Booking = (props) => {
         })
         .catch((err) => {
           setLoading(false);
+          setFetchingIsError({
+              error: true,
+                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+            })
         });
   }, [props.selectedBooking, props.token]);
 
@@ -449,7 +456,9 @@ const Booking = (props) => {
                   Please wait while we update your flight
                 </div>
               ) : null}
-              {!noResults && !updateLoadingState && !unauthorized ? (
+              {
+                isFetchingError.error ? <div className='flex flex-row items-center justify-center h-[80vh] text-center font-lexend'>{isFetchingError.errorMsg}</div> :
+                !noResults && !updateLoadingState && !unauthorized ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
                     {optionsJSX.length && !updateBookingState

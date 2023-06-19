@@ -63,6 +63,10 @@ const Booking = (props) => {
     error: false,
     errorMsg: '',
   });
+  const [isFetchingError, setFetchingIsError] = useState({
+    error: false,
+    errorMsg: '',
+  });
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     budget: [],
@@ -268,7 +272,12 @@ const Booking = (props) => {
                 error: true,
                 errorMsg: err.response.data.message,
               });
+
             }
+            setFetchingIsError({
+              error: true,
+                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+            })
           }
         });
     }
@@ -419,6 +428,10 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setLoading(false);
+        setFetchingIsError({
+              error: true,
+                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+            })
       });
   };
   const _addFilterHandler = (filter, heading) => {
@@ -839,6 +852,10 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateLoadingState(false);
+        setFetchingIsError({
+              error: true,
+                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+            })
       });
   };
   const FILTERS = {
@@ -962,7 +979,8 @@ const Booking = (props) => {
                     Please wait while we update your bookings
                   </div>
                 ) : null}
-                {!noResults && !updateBookingState ? (
+                {
+                  isFetchingError.error ? <div className='flex flex-row items-center justify-center h-[80vh] text-center font-lexend'>{isFetchingError.errorMsg}</div> : !noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: 'right' }}>
                       {!props.AddHotel && (
@@ -1025,6 +1043,8 @@ const Booking = (props) => {
                     {/* {noResults ? 'NO RESULTS' : null} */}
                   </OptionsContainer>
                 ) : null}
+                
+                
                 {noResults ? (
                   <OptionsContainer className="font-lexend center-div text-center">
                     Oops, we couldn't find what you were searching but we are

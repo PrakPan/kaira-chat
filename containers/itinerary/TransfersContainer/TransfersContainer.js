@@ -1145,7 +1145,8 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             dayslab={props.dayslab}
           ></PinSection>
-  {props?.routes.length > 1  ? 
+  {props?.routes.length > 1 && props?.plan?.version == 'v2'
+ ? 
   
     
       props.routes[1].modes.map((mode,index) => {
