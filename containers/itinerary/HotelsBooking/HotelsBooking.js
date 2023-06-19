@@ -482,10 +482,11 @@ const HotelsBooking = (props) => {
       const date1 = parse(dateString1, 'yyyy-MM-dd', new Date());
       const date2 = parse(dateString2, 'dd/MM/yyyy', new Date());
       
+      console.log('compareDates',isSameDay(date1, date2))
       
       return isSameDay(date1, date2);
     }
-  
+    
     return false;
   }
   const findObjectById = (array, id) => array.find((obj) => obj.id === id);
