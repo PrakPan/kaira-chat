@@ -254,7 +254,9 @@ const Route = (props) => {
         hidemidsection={false}
         routesData={props.routesData}
         transportMode={"Taxi"}
-        duration={'2'}
+        duration={
+          props.routes[1]?.meta?.Time
+        }
       ></MidSection> : <MidSection
       pinColour={props.breif.city_slabs[0].color}
       modes={
@@ -266,7 +268,7 @@ const Route = (props) => {
       hidemidsection={true}
       routesData={props.routesData}
       transportMode={"Taxi"}
-      duration={'2'}
+      duration={props.breif.city_slabs[0].duration}
     ></MidSection>
       }
       
