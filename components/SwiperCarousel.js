@@ -54,7 +54,7 @@ const SwiperContainer = styled.div`
     display: none;
   }
   .swiper-pagination {
-    bottom: -25px !important;
+    top: 101% !important;
   }
   .swiper-pagination-bullet-active {
     background: #f7e700;

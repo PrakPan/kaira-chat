@@ -48,6 +48,7 @@ const SaifBackgroundImageLoader = (props) => {
           position: "relative",
           // overflow: "hidden",
           backgroundColor: "#7e7e7e",
+          ...props.style,
         }}
       >
         <div
@@ -58,6 +59,7 @@ const SaifBackgroundImageLoader = (props) => {
             left: "0",
             height: "100%",
             width: "100%",
+            borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
         >
           <ImageLoader
@@ -68,6 +70,8 @@ const SaifBackgroundImageLoader = (props) => {
             width="100%"
             dimensions={props.dimensions}
             dimensionsMobile={props.dimensionsMobile}
+            borderRadius={ props.borderRadius ? props.borderRadius : "0"}
+
           />
         </div>
         <div

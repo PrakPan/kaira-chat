@@ -167,6 +167,7 @@ const HowItWorksSlideshow = (props) => {
           height="auto"
           dimensions={{ width: 500, height: 500 }}
           widthmobile={props.vertical ? "40%" : "60%"}
+          noLazy
         />
       </ImageContainer>
       <TextContainer>
