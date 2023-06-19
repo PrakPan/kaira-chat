@@ -69,7 +69,7 @@ const redirect = () => {
   })
 }
 const _handleRedirect = () => {
-  router.push("/newitinerary/" + props.id);
+  router.push("/itinerary/" + props.id);
  }
     
     return(

@@ -280,11 +280,23 @@ const Itinerary = (props) => {
     return data;
   }
   useEffect(() => {
+    var IntervalTiming;
+    if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
+     console.log("IntervalTiming: ", IntervalTiming);
+    
+    if (!IntervalTiming) {
+     console.log("IntervalTiming: ", 'notime');
+      fetchData();
+    }
+     else setTimeout(() => {
+       
+         fetchData();
+       }, [IntervalTiming]);
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
     //  console.log('itinerary token',props.token)
 
-    window.scrollTo(0, 0);
+    function fetchData(){window.scrollTo(0, 0);
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
     axiosdaybydayinstance
@@ -336,7 +348,7 @@ const Itinerary = (props) => {
       })
       .catch((error) => {});
 
-    getAccommodationAndActivitiesHandler();
+    getAccommodationAndActivitiesHandler();}
 
     // if(itineraryLoading && !itineraryNotCreated){
     // if(stayLoading && !stayBookings){

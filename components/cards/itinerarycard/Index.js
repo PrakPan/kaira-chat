@@ -154,7 +154,7 @@ const ExperienceCard= (props) => {
       
 const router = useRouter();
 const _handleRedirect = () => {
-  router.push('/newitinerary/'+props.id)
+  router.push('/itinerary/'+props.id)
 }
 let textstr = "";  
 let cta="Check Out";

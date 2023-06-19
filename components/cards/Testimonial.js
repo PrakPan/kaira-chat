@@ -88,7 +88,7 @@ const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
                 fontWeight="500"
                 fontSize="0.85rem"
                 width="100%"
-                onclick={() => router.push("/newitinerary/" + props.id)}
+                onclick={() => router.push("/itinerary/" + props.id)}
                 borderWidth="0"
                 borderRadius="2rem"
               >

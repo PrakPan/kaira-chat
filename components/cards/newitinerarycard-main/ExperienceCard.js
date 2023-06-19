@@ -76,7 +76,7 @@ const redirect = () => {
 }
 const _handleRedirect = () => {
   if(props.PW) router.push('/itinerary/physicswallah/'+props.id);
-  else router.push("/newitinerary/" + props.id);
+  else router.push("/itinerary/" + props.id);
  }
  const FONT_SIZES_DESKTOP = ['20px'];
      return(
