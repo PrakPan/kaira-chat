@@ -443,7 +443,8 @@ const TransferModeContainer = (props) => {
                     <div className="lg:flex   flex-row  gap-3  ">
                       <div className="flex flex-col">
                         <div className="text-[#01202B] text-lg font-medium min-w-max">
-                          <span>
+                          {
+                            props.booking?.airline_code && <span>
                             {
                               processBookingTimes(
                                 props.booking.check_in,
@@ -451,6 +452,8 @@ const TransferModeContainer = (props) => {
                               ).checkInTime
                             }
                           </span>
+                          }
+                          
 
                           <span className="font-[300] ml-1 ">
                             ({props.booking.origin_code})
@@ -476,15 +479,15 @@ const TransferModeContainer = (props) => {
                                 {props.booking.via_airports
                                   ? '(to Lay)'
                                   : '(Nonstop)'}
-
-                                <span className="ml-1">
+                          {props.booking?.airline_code && <span className="ml-1">
                                   {props.booking.duration
                                     ? ` (${props.booking.duration}h)`
                                     : processBookingTimes(
                                         props.booking.check_in,
                                         props.booking.check_out
                                       ).duration}
-                                </span>
+                                </span>}
+                                
                               </div>
                             ) : null}
                           </div>

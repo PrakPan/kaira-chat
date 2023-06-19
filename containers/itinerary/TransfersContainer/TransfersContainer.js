@@ -1145,7 +1145,55 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             dayslab={props.dayslab}
           ></PinSection>
-           <TransferModeContainer
+  {props?.routes.length > 1  ? 
+  
+    
+      props.routes[1].modes.map((mode,index) => {
+    
+        var CurrentBooking = return_booking_from_id(props?.transferBookings, props?.routes[1].bookings[index]?.id);
+        
+            
+        return (     <TransferModeContainer
+          plan={props.plan}
+          getPaymentHandler={props.getPaymentHandler}
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          _updatePaymentHandler={props._updatePaymentHandler}
+          token={props.token}
+          payment={props?.payment}
+          booking_type={CurrentBooking?.booking_type}
+          pinColour={props?.breif?.city_slabs[0]?.color}
+          costings_breakdown={
+            CurrentBooking?.costings_breakdown
+          }
+          heading={CurrentBooking?.booking_display_name}
+          transferbookings={props.transferBookings}
+          _changeTaxiHandler={_changeTaxiHandler}
+          _changeFlightHandler={_changeFlightHandler}
+          setShowTaxiModal={props.setShowTaxiModal}
+          
+          index={i}
+          booking={CurrentBooking}
+          userSelected={CurrentBooking?.user_selected}
+          modes={props?.routes[1].bookings[index]?.booking_type}
+          icon={CurrentBooking?.images?.image}
+          taxi_type={CurrentBooking?.taxi_type}
+          transportMode={props?.routes[1].bookings[index]?.booking_type}
+          duration={props?.breif?.city_slabs[0]?.duration}
+        ></TransferModeContainer>
+        )
+          
+        
+      
+      
+      
+    })
+    
+  
+  
+  
+  :
+  
+  <TransferModeContainer
   plan={props.plan}
   getPaymentHandler={props.getPaymentHandler}
   _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -1170,50 +1218,6 @@ const TransfersContainer = (props) => {
   duration={'2'}
   userSelected={props?.transferBookings[0]?.user_selected}
 />
-  {props?.routes.length > 1  && 
-  props.routes[1].modes.map((mode,index) => {
-    
-      var CurrentBooking = return_booking_from_id(props?.transferBookings, props?.routes[1].bookings[index]?.id);
-      locationsArr.push(
-          <div className="flex flex-col gap-1">
-            <TransferModeContainer
-              plan={props.plan}
-              getPaymentHandler={props.getPaymentHandler}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              token={props.token}
-              payment={props?.payment}
-              booking_type={props?.routes[1].bookings[index]?.booking_type}
-              pinColour={props.routes[0].color}
-              costings_breakdown={
-                CurrentBooking.costings_breakdown
-              }
-              booking={CurrentBooking}
-              heading={CurrentBooking?.booking_display_name}
-              index={0}
-              icon={CurrentBooking?.icon}
-              modes={props?.routes[1].bookings[index]?.booking_type}
-              transferbookings={props.transferBookings}
-              _changeFlightHandler={_changeFlightHandler}
-              _changeTaxiHandler={_changeTaxiHandler}
-              setShowTaxiModal={props.setShowTaxiModal}
-              userSelected={CurrentBooking?.user_selected}
-              
-              taxi_type={CurrentBooking?.taxi_type}
-              transportMode={props?.routes[1].bookings[index]?.booking_type}
-              duration={props?.breif?.city_slabs[0]?.duration}
-            ></TransferModeContainer>
-          </div>
-        )
-      
-    
-    
-    
-  })
-  
-  
-  
- 
   }
           
 
