@@ -1,6 +1,6 @@
 import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
 import { useRouter } from 'next/router';
-import LayoutV2 from '../../../components/LayoutV2';
+import LayoutV2 from '../../../components/Layout';
 import Head from 'next/head';
 import { connect } from 'react-redux';
 import * as authaction from '../../../store/actions/auth';

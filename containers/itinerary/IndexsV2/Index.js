@@ -281,10 +281,15 @@ const Itinerary = (props) => {
   }
   useEffect(() => {
     var IntervalTiming;
-     if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
-     if (!IntervalTiming) fetchData();
-     else
-       setTimeout(() => {
+    if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
+     console.log("IntervalTiming: ", IntervalTiming);
+    
+    if (!IntervalTiming) {
+     console.log("IntervalTiming: ", 'notime');
+      fetchData();
+    }
+     else setTimeout(() => {
+       
          fetchData();
        }, [IntervalTiming]);
     // if(router.query.payment_status) window.location.reload();
