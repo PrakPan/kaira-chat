@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
+import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
 const Container = styled.div`
   padding: 0.75rem;
   @media screen and (min-width: 768px) {
@@ -39,6 +40,15 @@ const FlexBox = styled.div`
     gap : 0.4rem;
   }
 `;
+const SelectBox = styled.div`
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  @media screen and (min-width: 768px) {
+    margin-top: 0.5rem;
+  }
+`;
 const Section = (props) => {
 
   const [selected  ,setSelected] = useState([])
@@ -54,17 +64,29 @@ const Section = (props) => {
       return (
         <Container className="font-lexend">
           <Text>Starting from</Text>
-          <div>
+          <div style={{    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'}}>
             <FlexBox>
-              <Cost className="font-lexend">
-                {props.data.Fare
-                  ? props.data.Fare.OfferedFare
-                    ? "₹" +
-                      getIndianPrice(Math.round(props.data.Fare.OfferedFare))
-                      
-                    : null
-                  : null}
-              </Cost>
+              {props.isSelected ? (
+                <Cost className="font-lexend">
+                  {props.data.cost
+                    ? props.data.cost
+                      ? "₹" +
+                        getIndianPrice(Math.round(props.data.cost))
+                      : null
+                    : null}
+                </Cost>
+              ) : (
+                <Cost className="font-lexend">
+                  {props.data.Fare
+                    ? props.data.Fare.OfferedFare
+                      ? "₹" +
+                        getIndianPrice(Math.round(props.data.Fare.OfferedFare))
+                      : null
+                    : null}
+                </Cost>
+              )}
 
               <Text>
                 {"( " +
@@ -78,6 +100,25 @@ const Section = (props) => {
                   " )"}
               </Text>
             </FlexBox>
+            <SelectBox>
+              {props.isSelected ? (
+                <div>
+                  <ImCheckboxChecked style={{ display: "inline" }} /> Selected
+                </div>
+              ) : (
+                <div
+                  onClick={() => {
+                    props._updateBookingHandler({
+                      booking_id: props.selectedBooking.id,
+                      itinerary_id: props.selectedBooking.itinerary_id,
+                      result_index: props.data.ResultIndex,
+                    });
+                  }}
+                >
+                  <ImCheckboxUnchecked style={{ display: "inline" }} /> Select
+                </div>
+              )}
+            </SelectBox>
           </div>
         </Container>
       );
