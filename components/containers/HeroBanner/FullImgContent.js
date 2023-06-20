@@ -6,6 +6,8 @@ import TailoredForm from "../../tailoredform/Index";
 import ImageLoader from "../../ImageLoader";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import { useState } from "react";
 const Container = styled.div`
   color: white;
   width: 100%;
@@ -88,6 +90,7 @@ const IconsContainer = styled.div`
 `;
 const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [showTailoredModal, setShowTailoredModal] = useState(false)
   const router = useRouter();
   return (
     <Container className="font-lexend center-di text-cente">
@@ -119,7 +122,8 @@ const FullImgContent = (props) => {
               color="black"
               borderWidth="1px"
               onclick={() =>
-                openTailoredModal(router, props.page_id, props.destination)
+                // openTailoredModal(router, props.page_id, props.destination)
+                setShowTailoredModal(true)
               }
               margin="3vh 0 1vh 0"
             >
@@ -198,6 +202,18 @@ const FullImgContent = (props) => {
           </IconText>
         </div>
       </IconsContainer>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false)
+        }}
+        show={showTailoredModal}
+      />
     </Container>
   );
 };

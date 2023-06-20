@@ -16,11 +16,12 @@ import FareRules from '../../farerules/Index';
 grid-template-columns: 1fr 1fr;
 
  `;
-const Section= (props) => {
+const Section = (props) => {
+  
      const [showFareRules, setShowFareRules] = useState(false);
     return(
       <Container className='font-lexend'>  
-      <GridContainer>
+      {/* <GridContainer>
             <Button fontSize="0.85rem" width="100%" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => setShowFareRules(true)} borderRadius="0 0 0 10px">Fare Rules</Button>
             <Button fontSize="0.85rem" fontWeight="600" 
             onclick={props._updateBookingHandler}
@@ -32,7 +33,7 @@ const Section= (props) => {
             }  
              width="100%"borderRadius="0 0  10px 0" bgColor="#f7e700" borderStyle="solid none none none"  borderColor="rgba(222, 222, 222, 1)" borderWidth="1px"  >Select</Button>
             </GridContainer>
-            <FareRules showFareRules={showFareRules} hide={() => setShowFareRules(false)}  result_index={props.data.ResultIndex}></FareRules>
+            <FareRules showFareRules={showFareRules} hide={() => setShowFareRules(false)}  result_index={props.data.ResultIndex}></FareRules> */}
 
       </Container>
   ); 
