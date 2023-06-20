@@ -274,7 +274,7 @@ const TransferModeContainer = (props) => {
     ];
     console.dir(updated_bookings_arr);
     axiosbookingupdateinstance
-      .post('?booking_type=Taxi,Bus,Ferry,Train', updated_bookings_arr, {
+      .post('?booking_type=Taxi,Bus,Ferry,Train,Flight', updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
