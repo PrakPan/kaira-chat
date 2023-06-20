@@ -15,7 +15,56 @@ const Container = styled.div`
   }
   margin-bottom: 1.5rem;
 `;
+const TransContainer = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: 30px auto;
+  min-height: 5rem;
+  @media screen and (min-width: 768px) {
+    min-height: 7rem;
+  }
+`;
+const Line = styled.hr`
+  /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
+  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+    ${(props) =>
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
+  background-size: 8px 3px, 100% 3px;
+
+  color: #c80000;
+  -webkit-transform: rotate(90deg);
+  position: absolute;
+
+  height: 1px;
+
+  border: 2px;
+
+  width: ${(props) => (props.Transfers ? `16rem` : `5rem`)};
+
+  top: ${(props) => (props.Transfers ? `101px` : `23px`)};
+  right: ${(props) => (props.Transfers ? `-110px` : `-25px`)};
+  opacity: initial;
+  z-index: -1;
+  @media screen and (min-width: 768px) {
+    width: 12.4rem;
+    height: 1px;
+    top: 81px;
+    right: -81px;
+  }
+  /* border-style: dashed;
+  border-width: 1.4px;
+  position: absolute;
+  left: 50%;
+  
+
+  border-color: ${(props) => (props.pinColour ? props.pinColour : 'black')};
+  min-height: 10vw;
+  height: 100%;
+  margin: 0rem 0 0rem 0rem; */
+`;
 const TransfersContainer = (props) => {
 
   // useEffect(() => {
@@ -535,7 +584,7 @@ const TransfersContainer = (props) => {
           ></PinSection>
         );
         
-        {
+        { props.routes[i + 1]?.modes ?
           props.routes[i + 1].modes.map((mode,index) => {
             if(props?.transferBookings){
               var CurrentBooking = return_booking_from_id(props?.transferBookings, props?.routes[i+1].bookings[index]?.id);
@@ -606,6 +655,24 @@ const TransfersContainer = (props) => {
             
             
           })
+
+          :  locationsArr.push(<TransContainer>
+            <div style={{ position: 'relative' }}>
+        <Line pinColour={props?.breif?.city_slabs[i]?.color} Transfers={true} />
+      </div>
+      <div className="mt-3 lg:ml-7 ml-2 flex flex-col justify-center items-left">
+        <div>
+        Transfer options not found for {props?.routes[i]?.city_name} to {props?.routes[i + 2]?.city_name}
+        </div>
+        <div
+                          
+                          className="px-[1.6rem] my-2 w-[8rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm  lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                        >
+                          get in Touch
+                        </div>
+      </div>
+          </TransContainer>)
+            
           
         }
       }

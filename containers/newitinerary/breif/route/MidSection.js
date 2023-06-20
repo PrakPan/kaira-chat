@@ -83,22 +83,29 @@ console.log(props.bookings)
         {
         props.version == 'v2' ?
           <Text>
+            {
+              props.route?.modes && <TransportIconFetcher
+              TransportMode={props.route?.modes[0]}
+              Instyle={{
+                fontSize: '1.4rem',
+                marginRight: '0.8rem',
+                color: '#4d4d4d',
+              }}
+            />
+            }
+            
             {props?.bookings?.map((element, index) => (
   <div className='flex flex-row' key={index}>
-    <TransportIconFetcher
-      TransportMode={element.booking_type}
-      Instyle={{
-        fontSize: '1.4rem',
-        marginRight: '0.8rem',
-        color: '#4d4d4d',
-      }}
-    />
-    <div className='flex flex-row pr-2'>{element.booking_type}</div>
-        
+    
+    <div className='flex flex-row pr-2 '> {element.booking_type}</div>     
   </div>
 ))}
 
-            : {props.duration}
+{props.modes &&
+<div>
+: {props.duration}
+</div>}
+
           {/* {props.icon && (
             <ImageLoader
               url={props.icon}

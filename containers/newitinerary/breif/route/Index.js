@@ -129,6 +129,7 @@ const Route = (props) => {
               <MidSection
                 pinColour={props.routes[i].color}
                 modes={props.routes[i + 1]?.modes}
+                route={props.routes[i + 1]}
                 icon={null}
                 version={"v2"}
                 bookings={props.routes[i + 1]?.bookings}
@@ -249,6 +250,7 @@ const Route = (props) => {
           props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : "Taxi"
         }
         bookings={props.routes[1]?.bookings}
+        route={props.routes[1]}
         version={props?.plan?.version}
         icon={props?.transfers[0]?.icon}
         hidemidsection={false}
@@ -263,6 +265,8 @@ const Route = (props) => {
         props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : "Taxi"
       }
       bookings={props.routes[1]?.bookings}
+
+      route={props.routes[1]}
       version={props?.plan?.version}
       icon={props?.transfers[0]?.icon}
       hidemidsection={true}

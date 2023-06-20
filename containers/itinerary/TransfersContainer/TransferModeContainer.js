@@ -337,6 +337,7 @@ const TransferModeContainer = (props) => {
       <div style={{ position: 'relative' }}>
         <Line pinColour={props.pinColour} Transfers={true} />
       </div>
+
       {props.booking_type == 'Flight' ? (
         <div className="mt-3 lg:ml-7 ml-2">
           <div className="flex flex-row w-full justify-between items-center">
@@ -489,7 +490,7 @@ const TransferModeContainer = (props) => {
                             {props.userSelected ? (
                               <div className="min-w-max text-[0.8rem]">
                                 {props.booking.via_airports
-                                  ? '(to Lay)'
+                                  ? `(${props.booking.costings_breakdown.Segments[0].length -1} Lay)`
                                   : '(Nonstop)'}
                           {props.booking?.airline_code && <span className="ml-1">
                                   {props.booking.duration
@@ -666,7 +667,7 @@ const TransferModeContainer = (props) => {
 
 
                         <div className={`${
-                            props.booking_type == 'Train'
+                            props.booking_type !== 'Taxi' 
                               ? 'lg:bottom-4 hidden'
                               : 'lg:bottom-[3.6rem]'
                           } `}  onClick={(e) => {
