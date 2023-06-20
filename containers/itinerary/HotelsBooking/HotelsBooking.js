@@ -488,20 +488,25 @@ const HotelsBooking = (props) => {
   
     return false;
   }
+  const findObjectByDate = (array, date) => array.find((obj) => obj.check_in
+  === date);
+  const isObjectByDate =(array, date) => {
+    const booking = findObjectByDate(array ,date)
+    console.log('booking', booking)
+    if(booking){
+      console.log('booking', true)
+      return true
+
+    }else{
+      return false
+    }
+    
+  }
+  
   const findObjectById = (array, id) => array.find((obj) => obj.id === id);
   const findIndexById = (array, id) => array.findIndex((obj) => obj.id === id);
 
-  function Return(dateString1, dateString2) {
-    if (dateString1 && dateString2) {
-      const date1 = parse(dateString1, 'dd/MM/yyyy', new Date());
-      const date2 = parse(dateString2, 'yyyy-MM-dd', new Date());
-
-      console.log(isSameDay(date1, date2));
-      return isSameDay(date1, date2);
-    }
-
-    return false;
-  }
+  
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]['name'];
     let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
@@ -583,6 +588,12 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     setShowDetails(true);
   }
+  function convertDateFormat(dateString) {
+  const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
+  const formattedDate = format(parsedDate, 'yyyy-MM-dd');
+  console.log('formattedDate', formattedDate)
+  return formattedDate;
+}
   const HotelArray = [];
   console.log('rerender HotelBookings')
   if (props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')) {
@@ -596,35 +607,36 @@ const HotelsBooking = (props) => {
           ) {
 
             if (
-              compareDates(
-                
-                props?.stayBookings[i - 1]?.check_in,
-                props.breif?.city_slabs[i]?.checkin_date
+              isObjectByDate(
+                props.stayBookings,
+                convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
               )
             ) {
-              const foundObject = findObjectById(
+              console.log('bookings',true)
+              const foundObject = findObjectByDate(
                 props.stayBookings,
-                props.breif.city_slabs[i]?.accommodation_booking
+                convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
               );
+              console.log('bookings foundObject',foundObject)
               HotelArray.push(
                 <HotelBookingContainer
-                  booking={foundObject}
-                  index={findIndexById(
-                    props.stayBookings,
-                    props.breif.city_slabs[i]?.accommodation_booking
-                  )}
-                  cityName={props.breif.city_slabs[i].city_name}
-                  key={i}
-                  handleClick={handleClick}
-                  handleClickAc={handleClickAc}
-                  _SelectedBookingHandler={_SelectedBookingHandler}
-                  setHideBookingModal={props.setHideBookingModal}
-                  city_id={props.breif.city_slabs[i].city_id}
-                  loginModal={showLoginModal}
-                  setLoginModal={setShowLoginModal}
-                  token={props.token}
-                  payment={props.payment}
-                  plan={props.plan}
+                booking={foundObject}
+                index={findIndexById(
+                  props.stayBookings,
+                  props.breif.city_slabs[i]?.accommodation_booking
+                )}
+                cityName={props.breif.city_slabs[i].city_name}
+                key={i}
+                handleClick={handleClick}
+                handleClickAc={handleClickAc}
+                _SelectedBookingHandler={_SelectedBookingHandler}
+                setHideBookingModal={props.setHideBookingModal}
+                city_id={props.breif.city_slabs[i].city_id}
+                loginModal={showLoginModal}
+                setLoginModal={setShowLoginModal}
+                token={props.token}
+                payment={props.payment}
+                plan={props.plan}
                 ></HotelBookingContainer>
               );
             } else {
