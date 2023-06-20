@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../../services/getIndianPrice';
 import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
+import media from "../../../media";
 const Container = styled.div`
   padding: 0.75rem;
   @media screen and (min-width: 768px) {
@@ -49,10 +50,9 @@ const SelectBox = styled.div`
     margin-top: 0.5rem;
   }
 `;
+
 const Section = (props) => {
-
-  const [selected  ,setSelected] = useState([])
-
+  let isPageWide = media("(min-width: 768px)");
   var adult 
   if (props.selectedBooking.pax.number_of_adults > 1) adult = ' Adults'
   else adult = ' adult'
@@ -64,7 +64,7 @@ const Section = (props) => {
       return (
         <Container className="font-lexend">
           <Text>Starting from</Text>
-          <div style={{    display: 'flex',
+          <div style={isPageWide ? {} : {display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'}}>
             <FlexBox>

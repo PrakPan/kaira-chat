@@ -47,7 +47,6 @@ const ContentContainer = styled.div`
 
 const Booking = (props) => {
   let isPageWide = media('(min-width: 768px)');
-console.log('props.data.selectedBooking.user_selected: ', props);
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -134,7 +134,6 @@ const FlexBox = styled.div`
   }
 `;
 const Booking = (props) =>{
-  console.log('props.data: ', props);
     let isPageWide = media("(min-width: 768px)");
 
   const [url, setUrl] = useState('media/website/grey.png')
