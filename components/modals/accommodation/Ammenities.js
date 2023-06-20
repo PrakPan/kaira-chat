@@ -12,10 +12,8 @@ const Container = styled.div`
 `;
 
 const Ammenity = styled.div`
-  font-size: 0.8rem;
-  /* background-color: hsl(0,0%,95%); */
-  padding: 0.25rem;
-  border-radius: 5px;
+  font-weight: 300;
+  font-size: 16px;
 `;
 const Ammenities = (props) => {
   const [ammenities, setAmmenities] = useState(null);
@@ -25,7 +23,7 @@ const Ammenities = (props) => {
       for (var i = 0; i < props.data.hotel_facilities.length; i++) {
         ammenities_arr.push(
           <Ammenity className="font-lexend">
-            . {props.data.hotel_facilities[i]}
+            {props.data.hotel_facilities[i]}
           </Ammenity>
         );
       }

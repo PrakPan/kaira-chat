@@ -19,9 +19,6 @@ const Location = (props) => {
     <Container>
       <Address>
         <p className="font-lexend" style={{ fontWeight: '300' }}>
-          {props.data.addr1}
-        </p>
-        <p className="font-lexend" style={{ fontWeight: '300' }}>
           {props.data.addr2}
         </p>
       </Address>
