@@ -10,7 +10,7 @@ export default function openTailoredModal(router, page_id, destination) {
         },
       },
       undefined,
-      { scroll: false }
+      { scroll: false , shallow : true }
     );
   else
     router.replace(
@@ -18,7 +18,7 @@ export default function openTailoredModal(router, page_id, destination) {
         query: { ...router.query, "tailored-travel": true },
       },
       undefined,
-      { scroll: false }
+      { scroll: false , shallow : true }
     );
 
   // else console.log(router , 'routerrouter')
@@ -28,5 +28,5 @@ export function closeTailoredModal(router) {
   delete router.query["tailored-travel"];
   delete router.query["page_id"];
   delete router.query["destination"];
-  router.push(router, undefined, { scroll: false });
+  router.push(router, undefined, { scroll: false , shallow : true });
 }
