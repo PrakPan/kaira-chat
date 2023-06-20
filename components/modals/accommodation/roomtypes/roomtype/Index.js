@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import ImageLoader from '../../../../ImageLoader';
+import ImageLoader from '../../../../UpdatedBackgroundImageLoader';
 import Tags from './Tags';
 import { GoPrimitiveDot } from 'react-icons/go';
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
@@ -13,6 +13,8 @@ import Details from '../../../details/Index';
 
 const Container = styled.div`
   width: 100%;
+  display : flex;
+  gap : 0.75rem;
 `;
 const NoImageContainer = styled.div`
   width: 100%;
@@ -26,7 +28,7 @@ const ContentContainer = styled.div`
   padding: 0.5rem;
 `;
 const Name = styled.p`
-  font-size: 0.9rem;
+  font-size: 16px;
   font-weight: 600;
   margin: 0 0 0 0;
   text-align: center;
@@ -63,6 +65,10 @@ const CounterContainer = styled.div`
     cursor: pointer;
   }
 `;
+const ImageContainer = styled.div`
+height : 85px;
+width : 85px
+`
 const RoomType = (props) => {
   const [ammenities, setAmmenities] = useState(null);
   const [showCounter, setShowCounter] = useState(false);
@@ -103,48 +109,39 @@ const RoomType = (props) => {
       }
     }
   }
+
   if (true)
     return (
-      <Container className="">
-        <div className="flex flex-row gap-1 w-[16rem]">
-          <div className="grid bg-[#F4F4F4] place-items-center lg:min-w-[5rem] min-w-[5rem] lg:min-h-[5rem] min-h-[5rem]  rounded-2xl">
-            <FaBed
-              TransportMode={props.booking_type}
-              style={{
-                fontSize: '1.75rem',
-
-                color: 'black',
-              }}
-            />
+      <Container>
+        <ImageContainer>
+          <ImageLoader
+            noLazy
+            height={isPageWide ? "85px" : "75px"}
+            width={isPageWide ? "85px" : "75px"}
+            borderRadius="10px"
+            dimensions={{ height: 200, width: 200 }}
+            url={image}
+          />
+        </ImageContainer>
+        <div>
+          <div
+            style={
+              isPageWide
+                ? { fontSize: "17px", fontWeight: "500" }
+                : { fontSize: "14px", fontWeight: "400" }
+            }
+          >
+            {props.data.room_type}
           </div>
-          <div className="flex flex-col">
-            <div
-              className="font-lexend font-semibold text-[14px]
-          "
-            >
-              {/* <Hoverable height={20} width={20}> */} {props.data.room_type}
-              {/* </Hoverable> */}
-            </div>
 
-            <div className="">
-              {'₹' +
-                getIndianPrice(Math.round(props.data.prices.min_price / 100)) +
-                'per night'}
-            </div>
+          <div style={{ fontWeight: "500" }}>
+            {"₹" +
+              getIndianPrice(Math.round(props.data.prices.min_price / 100))}
+            <span style={{ fontWeight: "300" }}> per night</span>
           </div>
         </div>
       </Container>
     );
-  else
-    return (
-      <NoImageContainer className="border-thin">
-        <Name style={{ textAlign: 'left' }} className="font-lexend">
-          {props.data.room_type}
-        </Name>
-        <AmenitiesContainer>{ammenities}</AmenitiesContainer>
-      </NoImageContainer>
-    );
-  // else return null;
 };
 
 export default RoomType;

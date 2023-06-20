@@ -65,7 +65,7 @@ const DrawerContainer = styled.div`
   top: ${(props) => (props.mobileTop ? props.mobileTop : "0%")};
   ${(props) =>
     props.anchor === "left" || props.anchor === "right"
-      ? "height: 100vh; top : 0;"
+      ? "height: 100%; top : 0;"
       : "width: 100vw; left : 0;"}
   ${(props) => props.anchor && `${props.anchor}: 0`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
