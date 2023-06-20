@@ -282,7 +282,7 @@ const Mapbox = React.memo(
                     className={`relative rounded w-fit cursor-pointer bg-slate-600 px-2 py-2 text-xs font-semibold text-white shadow-sm  hover:bg-[#BF3535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
                     onClick={() => scrollToTargetAdjusted(location.dayId)}
                   >
-                    View {location.cityData.city_name} in your Itinerary
+                    View {location.name} in your Itinerary
                     {/* <span class="absolute -right-1 -top-2 flex h-3 w-3">
                     <span
                       className={`animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75`}

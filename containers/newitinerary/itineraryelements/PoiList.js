@@ -174,7 +174,7 @@ const PoiList = ({
                     {data.text}
                   </div>
 
-                  {data.activity_data.poi?.tips
+                  {data.activity_data.poi?.tips ? data.activity_data.poi?.tips
                     .slice(0, 1)
                     .map((tip, index) => (
                       <div>
@@ -185,7 +185,7 @@ const PoiList = ({
                           {tip}
                         </div>
                       </div>
-                    ))}
+                    )):null}
                 </div>
               </div>
               <div

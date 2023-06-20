@@ -341,7 +341,19 @@ const TransferModeContainer = (props) => {
         <div className="mt-3 lg:ml-7 ml-2">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
-            <div>
+            <div  className='flex flex-row gap-2 justify-center items-center'>
+
+
+                        <div className={`${
+                            props.booking_type == 'Train'
+                              ? 'lg:bottom-4 hidden'
+                              : 'lg:bottom-[3.6rem]'
+                          } `}  onClick={(e) => {
+                        handleCheckboxChange(e);
+                      }}>
+
+<CheckboxFormComponent checked={addbooking} />            </div>
+            
               {props.userSelected ? (
                 <div className=" text-md font-semibold  text-[#277004] ">
                   Included
@@ -443,7 +455,8 @@ const TransferModeContainer = (props) => {
                     <div className="lg:flex   flex-row  gap-3  ">
                       <div className="flex flex-col">
                         <div className="text-[#01202B] text-lg font-medium min-w-max">
-                          <span>
+                          {
+                            props.booking?.airline_code && <span>
                             {
                               processBookingTimes(
                                 props.booking.check_in,
@@ -451,6 +464,8 @@ const TransferModeContainer = (props) => {
                               ).checkInTime
                             }
                           </span>
+                          }
+                          
 
                           <span className="font-[300] ml-1 ">
                             ({props.booking.origin_code})
@@ -476,15 +491,15 @@ const TransferModeContainer = (props) => {
                                 {props.booking.via_airports
                                   ? '(to Lay)'
                                   : '(Nonstop)'}
-
-                                <span className="ml-1">
+                          {props.booking?.airline_code && <span className="ml-1">
                                   {props.booking.duration
                                     ? ` (${props.booking.duration}h)`
                                     : processBookingTimes(
                                         props.booking.check_in,
                                         props.booking.check_out
                                       ).duration}
-                                </span>
+                                </span>}
+                                
                               </div>
                             ) : null}
                           </div>
@@ -496,6 +511,7 @@ const TransferModeContainer = (props) => {
                         <div>
                           <div className="text-[#01202B] text-lg font-medium min-w-max">
                             {
+                              props.booking?.airline_code && 
                               processBookingTimes(
                                 props.booking.check_in,
                                 props.booking.check_out
@@ -646,7 +662,18 @@ const TransferModeContainer = (props) => {
         <div className="mt-3 lg:ml-7 ml-2">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
-            <div>
+            <div  className='flex flex-row gap-2 justify-center items-center'>
+
+
+                        <div className={`${
+                            props.booking_type == 'Train'
+                              ? 'lg:bottom-4 hidden'
+                              : 'lg:bottom-[3.6rem]'
+                          } `}  onClick={(e) => {
+                        handleCheckboxChange(e);
+                      }}>
+
+<CheckboxFormComponent checked={addbooking} />            </div>
               {props.userSelected ? (
                 <div className=" text-md font-semibold  text-[#277004] ">
                   Included
@@ -726,7 +753,7 @@ const TransferModeContainer = (props) => {
                   ? 'Private transfer '
                   : props.booking_type}
 
-                <div className="inline-block ml-1">({props.duration}h 30m)</div>
+                <div className="inline-block ml-1">({props.duration})</div>
               </div>
               <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
@@ -782,7 +809,7 @@ const TransferModeContainer = (props) => {
                       true
                         ? `${
                             props.booking_type == 'Taxi'
-                              ? 'lg:bottom-4'
+                              ? 'lg:bottom-4 hidden'
                               : 'lg:bottom-[3.6rem]'
                           }  bottom-[1.5rem] `
                         : `${

@@ -137,7 +137,7 @@ console.log(props.bookings)
         {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}
-        {props.modes ? props.modes : 'Taxi'}: {props.duration}h 30m
+        {props.modes ? props.modes : 'Taxi'}: {props.duration}
       </Text>
       }
       </>}
