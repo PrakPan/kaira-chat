@@ -47,6 +47,7 @@ const ContentContainer = styled.div`
 
 const Booking = (props) => {
   let isPageWide = media('(min-width: 768px)');
+
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,16 +93,15 @@ const Booking = (props) => {
           localStorage.setItem('tbo_trace_id', res.data.TraceId);
           // const flights
           if (res.data.Results.length) {
-             if (props.selectedBooking.user_selected)
-               options.push(
-                 <Flight
-                   itinerary_id={props.itinerary_id}
-                   data={props.selectedBooking}
-                   selectedBooking={props.selectedBooking}
-                   _updateBookingHandler={_newUpdateBookingHandler}
-                   isSelected={true}
-                 />
-               );
+            // options.push(
+            //   <Flight
+            //     itinerary_id={props.itinerary_id}
+            //     data={props.selectedBooking}
+            //     selectedBooking={props.selectedBooking}
+            //     _updateBookingHandler={_newUpdateBookingHandler}
+            //     isSelected={true}
+            //   />
+            // );
             for (var i = 0; i < res.data.Results.length; i++) {
               options.push(
                 <Flight
@@ -113,7 +113,6 @@ const Booking = (props) => {
                 ></Flight>
               );
             }
-           
             setOptionsJSX(options);
           }
           if (res.data.next_page) {

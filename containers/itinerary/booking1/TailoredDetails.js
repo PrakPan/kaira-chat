@@ -944,7 +944,7 @@ const Details = (props) => {
               onClick={() => setNewitinerary(true)}
               // onClick={() => _saleCreateHandler(props.id)}
             >
-              Create a new itinerary
+              Craft a new trip! 
             </ButtonYellow>
           )
         )

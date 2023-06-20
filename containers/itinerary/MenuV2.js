@@ -1210,7 +1210,7 @@ const SimpleTabsV2 = (props) => {
               onClick={() => setNewitinerary(true)}
               // onClick={() => _saleCreateHandler(props.id)}
             >
-              Create a new Iitinerary
+              Craft a new trip! 
             </ButtonYellow>
           )
           : <Button
