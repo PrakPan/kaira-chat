@@ -350,7 +350,7 @@ const TransferModeContainer = (props) => {
                 className={`${
                   props.booking_type == 'Train'
                     ? 'lg:bottom-4 hidden'
-                    : 'lg:bottom-[3.6rem]'
+                    : 'lg:bottom-[3.6rem] hidden'
                 } `}
                 onClick={(e) => {
                   handleCheckboxChange(e);
@@ -671,7 +671,7 @@ const TransferModeContainer = (props) => {
                 className={`${
                   props.booking_type !== 'Taxi'
                     ? 'lg:bottom-4 hidden'
-                    : 'lg:bottom-[3.6rem]'
+                    : 'lg:bottom-[3.6rem] hidden'
                 } `}
                 onClick={(e) => {
                   handleCheckboxChange(e);

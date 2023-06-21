@@ -68,6 +68,7 @@ const Booking = (props) => {
     errorMsg: '',
   });
   const [loading, setLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState();
   const [filtersState, setFiltersState] = useState({
     budget: [],
     type: [],
@@ -203,6 +204,7 @@ const Booking = (props) => {
             );
             setTraceID(res.data.search.trace);
             let options = [];
+            setTotalCount(res?.data?.count);
             for (var i = 0; i < res.data.results.length; i++) {
               try {
                 options.push(
@@ -272,12 +274,11 @@ const Booking = (props) => {
                 error: true,
                 errorMsg: err.response.data.message,
               });
-
             }
             setFetchingIsError({
               error: true,
-                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-            })
+              errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+            });
           }
         });
     }
@@ -386,6 +387,7 @@ const Booking = (props) => {
         if (res.data.results.length) {
           setNoResults(false);
           let options = [];
+          setTotalCount(res?.data?.count);
           for (var i = 0; i < res.data.results.length; i++) {
             //  if(res.data.results[i].images.length > 1)
             if (res.data.results[i].name !== props.selectedBooking.name)
@@ -429,9 +431,9 @@ const Booking = (props) => {
       .catch((err) => {
         setLoading(false);
         setFetchingIsError({
-              error: true,
-                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-            })
+          error: true,
+          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+        });
       });
   };
   const _addFilterHandler = (filter, heading) => {
@@ -782,6 +784,7 @@ const Booking = (props) => {
         // setOffset(offset+40);
 
         // let oldoptions = optionsJSX;
+        setTotalCount(res?.data?.count);
         if (res.data.results.length) {
           setNoResults(false);
 
@@ -853,9 +856,9 @@ const Booking = (props) => {
       .catch((err) => {
         setUpdateLoadingState(false);
         setFetchingIsError({
-              error: true,
-                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-            })
+          error: true,
+          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+        });
       });
   };
   const FILTERS = {
@@ -936,6 +939,7 @@ const Booking = (props) => {
                 No_of_stays={optionsJSX.length + moreOptionsJSX.length}
                 payment={props.payment}
                 plan={props.plan}
+                TotalCount={totalCount}
               ></SectionTwo>
             )}
           </div>
@@ -979,8 +983,11 @@ const Booking = (props) => {
                     Please wait while we update your bookings
                   </div>
                 ) : null}
-                {
-                  isFetchingError.error ? <div className='flex flex-row items-center justify-center h-[80vh] text-center font-lexend'>{isFetchingError.errorMsg}</div> : !noResults && !updateBookingState ? (
+                {isFetchingError.error ? (
+                  <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+                    {isFetchingError.errorMsg}
+                  </div>
+                ) : !noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: 'right' }}>
                       {!props.AddHotel && (
@@ -1043,8 +1050,7 @@ const Booking = (props) => {
                     {/* {noResults ? 'NO RESULTS' : null} */}
                   </OptionsContainer>
                 ) : null}
-                
-                
+
                 {noResults ? (
                   <OptionsContainer className="font-lexend center-div text-center">
                     Oops, we couldn't find what you were searching but we are
