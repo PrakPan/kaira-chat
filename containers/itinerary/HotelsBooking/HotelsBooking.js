@@ -91,6 +91,7 @@ const HotelsBooking = (props) => {
   const [currentBooking, setCurrentBooking] = useState(null);
   const [unauthorized, setUnauthorized] = useState(false);
   const [alternates, setAlternates] = useState(null);
+  const [bookingFunData , setBookingFunData] = useState(null)
   console.log(props.stayBookings);
   const _changeBookingHandler = (
     name,
@@ -583,9 +584,10 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
-  function handleClick(i, id, data) {
+  function handleClick(i, id, data , city_id) {
     setBookingId(id);
     setCurrentBooking(data);
+    setBookingFunData({ index: i, booking: data, city_id: city_id });
     setShowDetails(true);
   }
   function convertDateFormat(dateString) {
@@ -699,7 +701,10 @@ const HotelsBooking = (props) => {
 
   return (
     <div id="Stays-Head" className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16 ">
-      <div id="staysBooking" className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
+      <div
+        id="staysBooking"
+        className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
+      >
         Stays
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
@@ -711,7 +716,7 @@ const HotelsBooking = (props) => {
             onUnmount={() =>
               setIsError({
                 error: false,
-                errorMsg: '',
+                errorMsg: "",
               })
             }
             isActive={isError.error}
@@ -726,7 +731,7 @@ const HotelsBooking = (props) => {
         )}
       </div>
 
-      {props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')
+      {props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")
         ? // props.breif.city_slabs[1]?.accommodation_booking == null
           HotelArray
         : props.stayBookings
@@ -758,6 +763,15 @@ const HotelsBooking = (props) => {
         show={showDetails}
         payment={props.payment}
         plan={props.plan}
+        BookingButton={true}
+        bookingFunData={bookingFunData}
+        BookingButtonFun={() =>
+          handleClickAc(
+            bookingFunData.index,
+            bookingFunData.booking,
+            bookingFunData.city_id
+          )
+        }
       ></AccommodationModal>
       {showLoginModal && (
         <div>
@@ -776,7 +790,7 @@ const HotelsBooking = (props) => {
           alternates={alternates}
           tailored_id={
             props.stayBookings[0]
-              ? props.stayBookings[0]['tailored_itinerary']
+              ? props.stayBookings[0]["tailored_itinerary"]
               : null
           }
           _updatePaymentHandler={props._updatePaymentHandler}
@@ -794,8 +808,8 @@ const HotelsBooking = (props) => {
           <Floating>
             <FaFilter
               className="text-white"
-              style={{ height: '32px', width: '32px' }}
-              cursor={'pointer'}
+              style={{ height: "32px", width: "32px" }}
+              cursor={"pointer"}
               onClick={(e) => {
                 setshowFilter(true);
               }}
@@ -815,8 +829,8 @@ const HotelsBooking = (props) => {
             > */}
           <FloatingView>
             <TbArrowBack
-              style={{ height: '32px', width: '32px' }}
-              cursor={'pointer'}
+              style={{ height: "32px", width: "32px" }}
+              cursor={"pointer"}
               onClick={props.setHideBookingModal}
             />
           </FloatingView>
