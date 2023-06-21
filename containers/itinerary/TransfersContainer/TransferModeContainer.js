@@ -14,6 +14,7 @@ import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFo
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import { PulseLoader } from 'react-spinners';
+import EllipsisTruncation from '../../EllipsisTruncate';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -375,7 +376,7 @@ const TransferModeContainer = (props) => {
               !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
             }    cursor-pointer  relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-3  `}
           >
-            <div className="flex flex-row gap-6    ">
+            <div className="flex flex-row gap-2    ">
               {props.userSelected && (
                 <div>
                   <div className="">
@@ -415,8 +416,13 @@ const TransferModeContainer = (props) => {
                   </div>
 
                   {props.booking?.airline_code && (
-                    <div className="flex font-normal text-sm pl-2 mt-1 min-w-max">
-                      {props?.booking.airline_name}
+                    <div className="flex font-normal w-[4rem] text-sm  mt-1 line-clamp-2">
+                      <EllipsisTruncation
+                        text={props?.booking.airline_name}
+                        maxCharacters={8}
+                        tooltipText={props?.booking.airline_name}
+                        tooltipPosition="top"
+                      />
                     </div>
                   )}
                 </div>
@@ -486,8 +492,9 @@ const TransferModeContainer = (props) => {
                         <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
                         <div className="relative w-32 flex justify-center items-center">
                           <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
-                          <div className="flex flex-col  justify-center items-center font-[200]">
-                            <FaPlane className="" />
+                          <div className="flex mb-2 flex-col  justify-center items-center font-[200]">
+                            <FaPlane className=" " />
+
                             {props.userSelected ? (
                               <div className="min-w-max text-[0.8rem]">
                                 {props.booking.via_airports
