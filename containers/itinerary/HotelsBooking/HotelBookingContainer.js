@@ -160,7 +160,6 @@ const HotelBookingContainer = ({
       category_id: booking?.category_id,
     });
   }
-  console.log('booking-Varanasi', booking);
   const isMobile = useMediaQuery('(min-width:768px)');
   return (
     <div className={`flex gap-1 pt-4  flex-col justify-start `}>
@@ -183,7 +182,7 @@ const HotelBookingContainer = ({
               onClick={() => {
                 currentBooking
                   ? openDetails()
-                  : handleClick(index, booking.accommodation, booking);
+                  : handleClick(index, booking.accommodation, booking , city_id);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
                 addbooking || isSelect   ? 'grayscale-0' : 'grayscale'

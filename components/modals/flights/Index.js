@@ -14,6 +14,7 @@ import Button from '../../ui/button/Index';
 import Flight from './new-flight-searched/Index';
 import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
+import Skeleton from './Skeleton';
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -424,13 +425,14 @@ const Booking = (props) => {
           // show={props.showFlightModal}
           show={true}
           onHide={props.setHideFlightModal}
-          mobileWidth={'100vw'}
-          width={'50vw'}
+          mobileWidth={'100%'}
+          width={'50%'}
           // zIndex='1501'
         >
           <SectionOne
             setHideBookingModal={props.setHideBookingModal}
             setHideFlightModal={props.setHideFlightModal}
+            text={props.selectedBooking?.name}
           ></SectionOne>
 
           <GridContainer style={{ clear: "right" }}>
@@ -466,21 +468,22 @@ const Booking = (props) => {
                       ? optionsJSX
                       : null}
                     {loading && !optionsJSX.length ? (
-                      <div
-                        style={{
-                          width: "max-content",
-                          margin: "auto",
-                          height: isPageWide ? "80vh" : "40vh",
-                        }}
-                        className="center-div"
-                      >
-                        <LoadingLottie
-                          height={"5rem"}
-                          width={"5rem"}
-                          margin="none"
-                        />
-                        Fetching best fares
-                      </div>
+                      // <div
+                      //   style={{
+                      //     width: "max-content",
+                      //     margin: "auto",
+                      //     height: isPageWide ? "80vh" : "40vh",
+                      //   }}
+                      //   className="center-div"
+                      // >
+                      //   <LoadingLottie
+                      //     height={"5rem"}
+                      //     width={"5rem"}
+                      //     margin="none"
+                      //   />
+                      //   Fetching best fares
+                      // </div>
+                    <Skeleton />
                     ) : null}
                     {!loading && !optionsJSX.length ? (
                       <div
@@ -497,13 +500,14 @@ const Booking = (props) => {
                     ) : null}
                   </div>
                   {moreLoadingState ? (
-                    <div style={{ width: "max-content", margin: "auto" }}>
-                      <LoadingLottie
-                        height={"5rem"}
-                        width={"5rem"}
-                        margin="none"
-                      />
-                    </div>
+                    // <div style={{ width: "max-content", margin: "auto" }}>
+                    //   <LoadingLottie
+                    //     height={"5rem"}
+                    //     width={"5rem"}
+                    //     margin="none"
+                    //   />
+                    // </div>
+                  <Skeleton />
                   ) : null}
                   {viewMoreStatus && !updateBookingState ? (
                     <Button

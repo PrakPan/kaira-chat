@@ -12,6 +12,8 @@ import Ammenities from "../Ammenities";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../../media";
 import MoreText from "../../../ui/MoreText";
+import { FiChevronRight } from "react-icons/fi";
+import Button from "../../../ui/button/Index";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -24,7 +26,6 @@ const Container = styled.div`
   font-size: 14px;
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr;
-    // width: 50vw;
   }
   @media screen and (min-width: 768px) and (min-height: 1024px) {
     grid-template-columns: 1fr;
@@ -32,10 +33,6 @@ const Container = styled.div`
 `;
 
 const Name = styled.h2`
-  // font-size: 2rem;
-  // font-weight: 800;
-  // text-align: center;
-  // margin: 1rem 0;
   font-size: 20px;
   font-weight: 600;
 `;
@@ -47,19 +44,6 @@ const DetailsContainer = styled.div`
   }
 `;
 
-const Cost = styled.div`
-  font-weight: 600;
-  text-align: right;
-  &:before {
-    content: "Starting From";
-    display: block;
-    text-align: right;
-    line-height: 1;
-    font-weight: 300;
-    font-size: 0.75rem;
-    text-decoration: none !important;
-  }
-`;
 
 const ImageContainer = styled.div`
   width: 100%;
@@ -89,18 +73,18 @@ const PhotosButton = styled.div`
   font-weight: 300;
 `;
 
-const EditButton = styled.div`
-  &:hover {
-    cursor: pointer;
-  }
-  background-color: rgba(255, 255, 255, 0.8);
-  color: black;
-  border-radius: 2rem;
-  padding: 0.35rem 1.5rem;
-  font-size: 0.85rem;
-  letterspacing: 1px;
-  font-weight: 400;
-`;
+// const EditButton = styled.div`
+//   &:hover {
+//     cursor: pointer;
+//   }
+//   background-color: rgba(255, 255, 255, 0.8);
+//   color: black;
+//   border-radius: 2rem;
+//   padding: 0.35rem 1.5rem;
+//   font-size: 0.85rem;
+//   letterspacing: 1px;
+//   font-weight: 400;
+// `;
 
 const GridImage = styled.div`
   display: grid;
@@ -134,7 +118,6 @@ const Heading = styled.div`
   margin-block: 1.5rem 1rem;
 `;
 
-const Text = styled.div``;
 
 const Address = styled.div`
   font-weight: 400;
@@ -148,7 +131,12 @@ const CheckInText = styled.div`
   gap: 5rem;
   margin-block: 1rem;
 `;
-
+const FlexBox = styled.div`
+display : flex;
+justify-content : space-between;
+align-items : center;
+gap : 0.5rem;
+`
 const Overview = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   let images = [];
@@ -159,12 +147,25 @@ const Overview = (props) => {
   } catch {}
   return (
     <Container>
-      <Name>{props.data.name}</Name>
-      <Address>
-        {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
-        {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
-        {props.data.city ? props.data.city : ""}
-      </Address>
+      <FlexBox>
+        <div>
+          <Name>{props.data.name}</Name>
+          <Address>
+            {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data.city ? props.data.city : ""}
+          </Address>
+        </div>
+        {props.BookingButton && (
+          <Button
+            padding="7px 25px"
+            borderRadius="7px"
+            onclick={() => props.BookingButtonFun()}
+          >
+            Change
+          </Button>
+        )}
+      </FlexBox>
       {props?.currentBooking.user_rating && (
         <div className="flex flex-col gap-1">
           {props?.currentBooking.user_rating && (
@@ -386,13 +387,15 @@ const Overview = (props) => {
         </>
       )}
       {props.data.rooms_available &&
-        props.data.rooms_available[0].prices.min_price && (
-          <>
-            <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Rooms</Heading>
+      props.data.rooms_available[0].prices.min_price ? (
+        <>
+          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Rooms</Heading>
 
-            <Rooms data={props.data}></Rooms>
-          </>
-        )}
+          <Rooms data={props.data}></Rooms>
+        </>
+      ) : (
+        <></>
+      )}
 
       {props.data.hotel_facilities && (
         <div>
@@ -418,7 +421,6 @@ const Overview = (props) => {
             {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data.city ? props.data.city : ""}
           </Address>
-          {/* <Location data={props.data}></Location> */}
           <div
             style={{
               display: "flex",
@@ -453,7 +455,6 @@ const Overview = (props) => {
             {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data.city ? props.data.city : ""}
           </Address>
-          {/* <Location data={props.data}></Location> */}
           <div
             style={{
               display: "flex",
@@ -480,6 +481,13 @@ const Overview = (props) => {
             >
               View on Google Map
             </a>
+            <FiChevronRight
+              style={{
+                fontSize: "1.15rem",
+                margin: "4px 0px 0px -12px",
+                display: "inline",
+              }}
+            />
           </div>
         </div>
       ) : (

@@ -50,54 +50,58 @@ const POI = (props) => {
         });
   }, [props.id, props.show]);
   let isPageWide = media('(min-width: 768px)');
-
   return (
-      <Drawer
-        show={props.show}
-        anchor={"right"}
-        backdrop
-        style={{ zIndex: 1501 }}
-        className="font-lexend"
-        onHide={props.onHide}
-        mobileWidth={"100%"}
-        width="50%"
-        zIndex='1501'
-      >
-        {!loading ? (
-            <Container>
-              <div
-                style={{ display: "flex", gap: "1rem", alignItems: "center" }}
-              >
-                <CgClose
-                  onClick={props.onHide}
-                  className="hover-pointer"
-                  style={{
-                    fontSize: "1.75rem",
-                    marginLeft: "-5px",
-                  }}
-                ></CgClose>
-                <div style={{ fontSize: "16px" }}>Back to Itinerary</div>
-              </div>
-              <div style={{ marginTop: "1rem" }}>
-                <Overview
-                  _setImagesHandler={props._setImagesHandler}
-                  user_rating={props.user_rating}
-                  currentBooking={props.currentBooking}
-                  number_of_reviews={props.number_of_reviews}
-                  data={data}
-                  images={data.images ? data.images : []}
-                  experience_filters={
-                    props.poi ? props.poi.experience_filters : null
-                  }
-                  name={props.poi ? props.poi.name : null}
-                  duration={props.poi ? props.poi.ideal_duration_hours : null}
-                ></Overview>
-              </div>
-            </Container>
-        ) : (
-          <Skeleton onHide={props.onHide} />
-        )}
-      </Drawer>
+    <Drawer
+      show={props.show}
+      anchor={"right"}
+      backdrop
+      style={{ zIndex: 1501 }}
+      className="font-lexend"
+      onHide={props.onHide}
+      mobileWidth={"100%"}
+      width="50%"
+      zIndex="1501"
+    >
+      {!loading ? (
+        <Container>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            <CgClose
+              onClick={props.onHide}
+              className="hover-pointer"
+              style={{
+                fontSize: "1.75rem",
+                marginLeft: "-5px",
+              }}
+            ></CgClose>
+            <div style={{ fontSize: "16px" }}>Back to Itinerary</div>
+          </div>
+          {/* {props.showBookingModal && (
+            <button onClick={() => props.setShowBookingModal(true)}>
+              Show{" "}
+            </button>
+          )} */}
+          <div style={{ marginTop: "1rem" }}>
+            <Overview
+              _setImagesHandler={props._setImagesHandler}
+              user_rating={props.user_rating}
+              currentBooking={props.currentBooking}
+              number_of_reviews={props.number_of_reviews}
+              data={data}
+              images={data.images ? data.images : []}
+              experience_filters={
+                props.poi ? props.poi.experience_filters : null
+              }
+              name={props.poi ? props.poi.name : null}
+              duration={props.poi ? props.poi.ideal_duration_hours : null}
+              BookingButton={props.BookingButton}
+              BookingButtonFun={props.BookingButtonFun}
+            ></Overview>
+          </div>
+        </Container>
+      ) : (
+        <Skeleton onHide={props.onHide} />
+      )}
+    </Drawer>
   );
 };
 
