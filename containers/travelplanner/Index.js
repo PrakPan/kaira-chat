@@ -461,7 +461,9 @@ const Homepage = (props) => {
           margin="2rem auto"
           padding="0.5rem 2rem"
         >
-          Create your travel plan now!
+          {props.experienceData.page_type !== "Theme"
+            ? `Craft a trip to ${props.experienceData.destination} now!`
+            : "Create your travel plan now!"}
         </Button>
       </SetWidthContainer>
       <SetWidthContainer>
