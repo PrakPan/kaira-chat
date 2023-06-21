@@ -52,28 +52,35 @@ const HotelBookingContainer = ({
   token,
   plan,
 }) => {
-  const AddbookingStatus = booking => {
-    if(booking?.version == 'v2'){
-      if(booking?.status == 'BOOKING_EXPIRED'){
-        return false
-      }else{
-        return true
+  console.log('version', booking?.version);
+  console.log(booking?.status);
+
+  const AddbookingStatus = (booking) => {
+    if (booking?.version == 'v2') {
+      if (booking?.status == 'BOOKING_EXPIRED') {
+        return false;
+      } else {
+        return true;
       }
-    }else{
-     return !currentBooking ? booking?.user_selected : true
+    } else {
+      return !currentBooking ? booking?.user_selected : true;
     }
-    
-  }
-  const [addbooking, setaddboking] = useState(
-     AddbookingStatus(booking)
-  );
+  };
+
+  const [addbooking, setaddboking] = useState(AddbookingStatus(booking));
+  console.log('addbooking', addbooking);
   const [expiredBooking, setexpiredBooking] = useState(
-    booking?.status == 'BOOKING_EXPIRED' ? true  : false 
- );
-  
-  
+    booking?.status == 'BOOKING_EXPIRED' ? true : false
+  );
+
   const [isSelect, setisSelect] = useState(booking?.user_selected);
-    const[loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setaddboking(AddbookingStatus(booking));
+    setisSelect(booking?.user_selected);
+    setexpiredBooking(booking?.status == 'BOOKING_EXPIRED' ? true : false);
+  }, [booking]);
   function Addons(Shorthand) {
     switch (Shorthand) {
       case 'EP':
@@ -118,7 +125,7 @@ const HotelBookingContainer = ({
   // }
   function handleCheckboxChange(e) {
     if (token) {
-      setLoading(true)
+      setLoading(true);
       _SelectedBookingHandler({
         SelectedBookingId: selectedBooking?.id,
         itinerary_id: itinerary_id,
@@ -127,15 +134,15 @@ const HotelBookingContainer = ({
         index: index,
       })
         .then((data) => {
-          setLoading(false)
+          setLoading(false);
           setaddboking(true);
           setexpiredBooking(false);
-          setisSelect(true)
+          setisSelect(true);
           // Handle success
           // Access the response data using 'data'
         })
         .catch((error) => {
-          setLoading(false)
+          setLoading(false);
           setaddboking(false);
           // Handle failure
           // Access the error object using 'error'
@@ -182,10 +189,10 @@ const HotelBookingContainer = ({
               onClick={() => {
                 currentBooking
                   ? openDetails()
-                  : handleClick(index, booking.accommodation, booking , city_id);
+                  : handleClick(index, booking.accommodation, booking, city_id);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-                addbooking || isSelect   ? 'grayscale-0' : 'grayscale'
+                addbooking || isSelect ? 'grayscale-0' : 'grayscale'
               } `}
             >
               <div
@@ -406,7 +413,9 @@ const HotelBookingContainer = ({
                           handleClickAc(index, booking, city_id);
                         }}
                       >
-                        <div className="text-[#01202B] ">{expiredBooking ? 'Add Hotel' : 'Change' }</div>
+                        <div className="text-[#01202B] ">
+                          {expiredBooking ? 'Add Hotel' : 'Change'}
+                        </div>
                       </ButtonYellow>
                     )}
 
@@ -443,35 +452,44 @@ const HotelBookingContainer = ({
                   )}
                 </div>
               )} */}
-{
-  !expiredBooking && payment?.user_allowed_to_pay
-  && <div
-  className={`absolute  ${
-    SelectedBookingin
-      ? 'lg:bottom-4 bottom-[1.5rem] '
-      : `${
-          payment?.paid_user || !payment?.user_allowed_to_pay
-            ? 'lg:bottom-10 bottom-[1.2rem]'
-            : 'lg:bottom-10 bottom-[2.5rem]'
-        }`
-  } right-8 -m-3`}
->
-  
-{loading && <PulseLoader style={{position : "absolute" , top : '-15%' , left : '50%' , transform : 'translate(-50% , -50%)'}} size={12} speedMultiplier={0.6} color="#111" />}
-  <div
-    onClick={(e) => {
-      handleCheckboxChange(e);
-    }}
-    className="flex flex-row gap-1 items-center  cursor-pointer"
-  >
-    <CheckboxFormComponent checked={addbooking} />
-    <label className="text-center">
-      {addbooking  ? 'Added Booking' : 'Add Booking'}
-    </label>
-  </div>
-</div> 
-}
-                
+                {!expiredBooking && payment?.user_allowed_to_pay && (
+                  <div
+                    className={`absolute  ${
+                      SelectedBookingin
+                        ? 'lg:bottom-4 bottom-[1.5rem] '
+                        : `${
+                            payment?.paid_user || !payment?.user_allowed_to_pay
+                              ? 'lg:bottom-10 bottom-[1.2rem]'
+                              : 'lg:bottom-10 bottom-[2.5rem]'
+                          }`
+                    } right-8 -m-3`}
+                  >
+                    {loading && (
+                      <PulseLoader
+                        style={{
+                          position: 'absolute',
+                          top: '-15%',
+                          left: '50%',
+                          transform: 'translate(-50% , -50%)',
+                        }}
+                        size={12}
+                        speedMultiplier={0.6}
+                        color="#111"
+                      />
+                    )}
+                    <div
+                      onClick={(e) => {
+                        handleCheckboxChange(e);
+                      }}
+                      className="flex flex-row gap-1 items-center  cursor-pointer"
+                    >
+                      <CheckboxFormComponent checked={addbooking} />
+                      <label className="text-center">
+                        {addbooking ? 'Added Booking' : 'Add Booking'}
+                      </label>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {currentBooking && (
