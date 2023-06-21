@@ -18,6 +18,7 @@ import Drawer from '../../ui/Drawer';
 import POIDetailsSkeleton from '../../drawers/poiDetails/POIDetailsSkeleton';
 import { CgClose } from "react-icons/cg";
 import Skeleton from './Skeleton'
+import { IoMdClose } from 'react-icons/io';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
@@ -28,6 +29,18 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
     padding: 1.25rem;
   }
+`;
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  // margin: 1rem 0rem;
+  @media screen and (min-width: 768px) {
+  }
+`;
+const BackText = styled.div`
+  font-size: 1.5rem;
+  line-height: 2rem;
 `;
 const POI = (props) => {
   const [loading, setLoading] = useState(true);
@@ -64,22 +77,14 @@ const POI = (props) => {
     >
       {!loading ? (
         <Container>
-          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-            <CgClose
-              onClick={props.onHide}
+          <BackContainer className=" font-lexend">
+            <IoMdClose
               className="hover-pointer"
-              style={{
-                fontSize: "1.75rem",
-                marginLeft: "-5px",
-              }}
-            ></CgClose>
-            <div style={{ fontSize: "16px" }}>Back to Itinerary</div>
-          </div>
-          {/* {props.showBookingModal && (
-            <button onClick={() => props.setShowBookingModal(true)}>
-              Show{" "}
-            </button>
-          )} */}
+              onClick={props.onHide}
+              style={{ fontSize: "2rem" }}
+            ></IoMdClose>
+            <BackText>Back to Itinerary</BackText>
+          </BackContainer>
           <div style={{ marginTop: "1rem" }}>
             <Overview
               _setImagesHandler={props._setImagesHandler}
