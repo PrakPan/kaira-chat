@@ -105,11 +105,12 @@ const Heading = styled.p`
 const SubscribeBox = styled.div`
   position: relative;
   z-index: 1001;
-  height: 23rem;
+  height: 24.5rem;
   padding-bottom: 2rem;
   background: white;
   @media screen and (min-width: 768px) {
     height: 14rem;
+    margin-top: 2rem;
   }
 `;
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Button from '../../../components/ui/button/Index';
+import media from '../../../components/media'
 import { useRouter } from 'next/router';
 import { AiFillStar } from 'react-icons/ai';
 import ImageLoader from "../../../components/UpdatedBackgroundImageLoader";
@@ -34,7 +35,7 @@ const CardListItem = styled.p`
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1.5fr;
-  grid-gap: 1rem;
+  grid-gap: 1.5rem;
 `;
 const RatingContainer = styled.div`
   margin-bottom: 0.75rem;
@@ -47,8 +48,105 @@ const RatingContainer = styled.div`
     flex-direction: row;
   }
 `;
+const FlexBox = styled.div`
+display : flex;
+justify-content : space-between;
+flex-direction : column;
+`
 const CardContainer = (props) => {
   const router = useRouter();
+    let isPageWide = media("(min-width: 768px)");
+
+  if (isPageWide)
+    return (
+      <Card className="">
+        <GridContainer>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <ImageLoader
+              borderRadius="8px"
+              width="100%"
+              height="100%"
+              widthMobile="100%"
+              url={props.image}
+              dimensionsMobile={{ width: 600, height: 600 }}
+              dimensions={{ width: 900, height: 900 }}
+              style={{ paddingTop: "100%", borderRadius: "10px" }}
+            ></ImageLoader>
+          </div>
+          <FlexBox>
+            {/* <CardHeading className='font-lexend'>{props.heading}</CardHeading> */}
+
+            {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
+            <CardListItem className="font-lexend">{props.text}</CardListItem>
+            <FlexBox>
+              <CardHeading className="font-lexend">{props.heading}</CardHeading>
+
+              <RatingContainer>
+                <div>
+                  <AiFillStar
+                    style={{
+                      color: "#FFD201",
+                      fontSize: "1.25rem",
+                      marginRight: "0.25rem",
+                    }}
+                  ></AiFillStar>
+                  <AiFillStar
+                    style={{
+                      color: "#FFD201",
+                      fontSize: "1.25rem",
+                      marginRight: "0.25rem",
+                    }}
+                  ></AiFillStar>
+                  <AiFillStar
+                    style={{
+                      color: "#FFD201",
+                      fontSize: "1.25rem",
+                      marginRight: "0.25rem",
+                    }}
+                  ></AiFillStar>
+                  <AiFillStar
+                    style={{
+                      color: "#FFD201",
+                      fontSize: "1.25rem",
+                      marginRight: "0.25rem",
+                    }}
+                  ></AiFillStar>
+                  <AiFillStar
+                    style={{ color: "#FFD201", fontSize: "1.25rem" }}
+                  ></AiFillStar>
+                </div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <CardSubHeading className="font-lexend">
+                    {props.duration + " • " + props.destination}
+                  </CardSubHeading>
+                </div>
+              </RatingContainer>
+
+              <Button
+                fontWeight="500"
+                borderRadius="6px"
+                onclick={() => router.push("/itinerary/" + props.id)}
+                fontSizeDesktop="12px"
+                borderWidth="1px"
+                width="50%"
+                bgColor="#f7e700"
+              >
+                See Itinerary
+              </Button>
+            </FlexBox>
+          </FlexBox>
+        </GridContainer>
+      </Card>
+    );
+
+
+
   return (
     <Card className="">
       <GridContainer>

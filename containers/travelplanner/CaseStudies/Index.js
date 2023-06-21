@@ -10,7 +10,8 @@ const Container = styled.div`
 @media screen and (min-width: 768px){
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-gap: 1rem;
+      grid-gap: 3rem;
+      grid-row-gap : 1rem;
       padding: 0;
     }
 `;

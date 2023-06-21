@@ -6,15 +6,18 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import media from '../media'
 const Container = styled.div`
-  height: 350px;
+    height: 375px;
   width: 93%;
   margin: auto;
   background: #f7e700;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: ${props=>props.shadow &&'0px 0px 15px 3px rgba(0, 0, 0, 0.6)'};
-  -webkit-box-shadow: ${props => props.shadow && '0px 0px 15px 3px rgba(0, 0, 0, 0.6)'};
-  -moz-box-shadow: ${props => props.shadow && '0px 0px 15px 3px rgba(0, 0, 0, 0.6)'};
+  box-shadow: ${(props) =>
+    props.shadow && "0px 0px 15px 3px rgba(0, 0, 0, 0.6)"};
+  -webkit-box-shadow: ${(props) =>
+    props.shadow && "0px 0px 15px 3px rgba(0, 0, 0, 0.6)"};
+  -moz-box-shadow: ${(props) =>
+    props.shadow && "0px 0px 15px 3px rgba(0, 0, 0, 0.6)"};
 
   @media screen and (min-width: 768px) {
     bottom: -8rem;
@@ -27,14 +30,24 @@ const Container = styled.div`
 
 const Heading = styled.h1`
   font-weight: 600;
-  font-size: 34px;
-  line-height: 43px;
+  font-size: 24px;
   text-align: center;
-  margin-block: 2rem 2rem;
+  margin-block: 2rem 0.5rem;
   position: relative;
   @media screen and (min-width: 768px) {
     font-size: 36px;
-    margin-block: 6rem 3.5rem;
+    margin-block: 5rem 0rem;
+  }
+`;
+const SubHeading = styled.div`
+  font-weight: 200;
+  font-size: 16px;
+  text-align: center;
+  margin-block: 0rem 2rem;
+  position: relative;
+  @media screen and (min-width: 768px) {
+    font-size: 22px;
+    margin-block: 0.5rem 3.5rem;
   }
 `;
 const Form = styled.form`
@@ -109,7 +122,10 @@ const Subscribe = (props) => {
 
     return (
       <Container shadow={props.shadow}>
-        <Heading>Subscribe to our newsletter</Heading>
+        <Heading>Join The Tarzan Way Community</Heading>
+        <SubHeading>
+          Get Early Bird Deals, Extra Discounts & Priority Customer Support.
+        </SubHeading>
         <Form onSubmit={_handleSubmit}>
           <Input
             required
@@ -137,8 +153,10 @@ const Subscribe = (props) => {
             )}
           </Button>
         </Form>
-        {isPageWide && <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>}
-        {isPageWide&&<Circle top={"65%"} left={"90%"}></Circle>}
+        {isPageWide && (
+          <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
+        )}
+        {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
       </Container>
     );
 }
