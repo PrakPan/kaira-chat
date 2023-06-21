@@ -184,7 +184,7 @@ export default function TemporaryDrawer(props) {
         )}
         {!props.loading ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
-            Showing {props.No_of_stays} stays in {props.booking_city}
+            Showing {props?.totalCount} stays in {props.booking_city}
           </div>
         ) : null}
 
