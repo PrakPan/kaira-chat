@@ -269,12 +269,12 @@ const Booking = (props) => {
             console.log(err.response.data); // The response body
             console.log(err.response.status); // The status code
             console.log(err.response.headers); // The response headers
-            if (err.response.status == 400) {
+            /* if (err.response.status == 400) {
               setIsError({
                 error: true,
                 errorMsg: err.response.data.message,
               });
-            }
+            } */
             setFetchingIsError({
               error: true,
               errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,

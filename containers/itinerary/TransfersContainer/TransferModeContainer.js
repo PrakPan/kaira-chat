@@ -247,8 +247,12 @@ const TransferModeContainer = (props) => {
     );
   }
   const Facilities = [
-    `${props?.costings_breakdown?.taxi_occupancy ?? '2'} Seater`,
-    `${props?.costings_breakdown?.distance?.text ?? 'Leisure'}`,
+    `${
+      props?.costings_breakdown?.taxi_occupancy
+      props?.costings_breakdown?.taxi_occupancy
+    } Seater`,
+    `${props?.costings_breakdown?.distance?.text}`,
+    `${props?.bookings?.transfer_type == 'Intracity' && '250 kms per day'}`,
     `${
       props.booking_type == 'Taxi' || props.booking_type == 'Bus'
         ? '2 Luggage bags'
@@ -763,8 +767,11 @@ const TransferModeContainer = (props) => {
                 {props.booking_type == 'Taxi'
                   ? 'Private transfer '
                   : props.booking_type}
-
-                <div className="inline-block ml-1">({props.duration})</div>
+                {props?.booking?.costings_breakdown?.duration && (
+                  <div className="inline-block ml-1">
+                    ({props.booking?.costings_breakdown?.duration?.text})
+                  </div>
+                )}
               </div>
               <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}

@@ -49,10 +49,10 @@ const Line = styled.hr`
   opacity: initial;
   z-index: -1;
   @media screen and (min-width: 768px) {
-    width: 12.4rem;
+    width: 8.4rem;
     height: 1px;
-    top: 81px;
-    right: -81px;
+    top: 40px;
+    right: -50px;
   }
   /* border-style: dashed;
   border-width: 1.4px;
@@ -678,7 +678,7 @@ const TransfersContainer = (props) => {
                       Transfers={true}
                     />
                   </div>
-                  <div className="mt-3 lg:ml-7 ml-2 flex flex-col justify-center items-left">
+                  <div className="my-3 lg:ml-7 ml-2 flex flex-col justify-center items-left">
                     <div>
                       Transfer options not found for{' '}
                       {props?.routes[i]?.city_name} to{' '}

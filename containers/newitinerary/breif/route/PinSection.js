@@ -75,7 +75,11 @@ const PinSection = ({
       <Heading className={`${setCurrentPopup ? 'ml-4' : 'lg:ml-8 ml-2'} `}>
         {duration
           ? city +
-            ` - ${duration > 1 ? `${duration} Nights` : `${duration} Night `} `
+            `${
+              duration > 1
+                ? ` - ${duration} Nights`
+                : `${duration == 0 ? ` ` : ` - ${duration} Night`}  `
+            } `
           : city}
         {/* <div className="px-4 py-1 text-[12px] cursor-pointer border-2 border-black ml-6 font-bold font-lexend text-black rounded-md">
           Edit
