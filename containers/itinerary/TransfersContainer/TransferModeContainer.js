@@ -249,9 +249,9 @@ const TransferModeContainer = (props) => {
   const Facilities = [
     `${
       props?.costings_breakdown?.taxi_occupancy
-      props?.costings_breakdown?.taxi_occupancy
+      // props?.costings_breakdown?.taxi_occupancy
     } Seater`,
-    `${props?.costings_breakdown?.distance?.text}`,
+    // `${props?.costings_breakdown?.distance?.text}`,
     `${props?.bookings?.transfer_type == 'Intracity' && '250 kms per day'}`,
     `${
       props.booking_type == 'Taxi' || props.booking_type == 'Bus'
