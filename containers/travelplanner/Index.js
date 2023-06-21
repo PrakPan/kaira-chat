@@ -386,20 +386,27 @@ const Homepage = (props) => {
         title={props.experienceData.banner_heading}
       />
       <SetWidthContainer>
-        {props.experienceData.page_type == 'Theme' && <MapGridContainer>
-          <Overview
-            locations={props.experienceData.locations}
-            overview_heading={overviewHeading}
-            overview_text={props.experienceData.overview_text}
-          ></Overview>
-          <MapContainer>
-           {(props.experienceData.locations && props.experienceData.locations.length )?  <MapBox
-              InfoWindowContainer={InfoWindowContainer}
+        {props.experienceData.page_type == "Theme" && (
+          <MapGridContainer>
+            <Overview
               locations={props.experienceData.locations}
-              height="300px"
-            /> : <></>}
-          </MapContainer>
-        </MapGridContainer>}
+              overview_heading={overviewHeading}
+              overview_text={props.experienceData.overview_text}
+            ></Overview>
+            <MapContainer>
+              {props.experienceData.locations &&
+              props.experienceData.locations.length ? (
+                <MapBox
+                  InfoWindowContainer={InfoWindowContainer}
+                  locations={props.experienceData.locations}
+                  height="300px"
+                />
+              ) : (
+                <></>
+              )}
+            </MapContainer>
+          </MapGridContainer>
+        )}
 
         <Heading
           align="center"
@@ -417,6 +424,28 @@ const Homepage = (props) => {
           locations={props.experienceData.locations}
           viewall
         ></Locations>
+
+        {props.experienceData.page_type !== "Theme" && (
+          <MapGridContainer>
+            <Overview
+              locations={props.experienceData.locations}
+              overview_heading={overviewHeading}
+              overview_text={props.experienceData.overview_text}
+            ></Overview>
+            <MapContainer>
+              {props.experienceData.locations &&
+              props.experienceData.locations.length ? (
+                <MapBox
+                  InfoWindowContainer={InfoWindowContainer}
+                  locations={props.experienceData.locations}
+                  height="300px"
+                />
+              ) : (
+                <></>
+              )}
+            </MapContainer>
+          </MapGridContainer>
+        )}
 
         <Button
           onclick={() =>
@@ -563,9 +592,7 @@ const Homepage = (props) => {
       </SetWidthContainer>
 
       <SetWidthContainer>
-        <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
-          What they say?
-        </Heading>
+        <Heading style={{ margin: "4rem 0 2.5rem 0" }}>What they say?</Heading>
         <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
       </SetWidthContainer>
