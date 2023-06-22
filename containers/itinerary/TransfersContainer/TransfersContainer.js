@@ -1229,40 +1229,60 @@ const TransfersContainer = (props) => {
             dayslab={props.dayslab}
           ></PinSection>
           {props?.routes.length > 1 && props?.plan?.version == 'v2' ? (
-            props.routes[1].modes.map((mode, index) => {
-              var CurrentBooking = return_booking_from_id(
-                props?.transferBookings,
-                props?.routes[1].bookings[index]?.id
-              );
+            props.routes[1]?.modes ? (
+              props.routes[1].modes.map((mode, index) => {
+                var CurrentBooking = return_booking_from_id(
+                  props?.transferBookings,
+                  props?.routes[1].bookings[index]?.id
+                );
 
-              return (
-                <TransferModeContainer
-                  routes={props?.routes}
-                  plan={props.plan}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  token={props.token}
-                  payment={props?.payment}
-                  booking_type={CurrentBooking?.booking_type}
-                  pinColour={props?.breif?.city_slabs[0]?.color}
-                  costings_breakdown={CurrentBooking?.costings_breakdown}
-                  heading={CurrentBooking?.booking_display_name}
-                  transferbookings={props.transferBookings}
-                  _changeTaxiHandler={_changeTaxiHandler}
-                  _changeFlightHandler={_changeFlightHandler}
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  index={i}
-                  booking={CurrentBooking}
-                  userSelected={CurrentBooking?.user_selected}
-                  modes={props?.routes[1].bookings[index]?.booking_type}
-                  icon={CurrentBooking?.images?.image}
-                  taxi_type={CurrentBooking?.taxi_type}
-                  transportMode={props?.routes[1].bookings[index]?.booking_type}
-                  duration={props?.breif?.city_slabs[0]?.duration}
-                ></TransferModeContainer>
-              );
-            })
+                return (
+                  <TransferModeContainer
+                    routes={props?.routes}
+                    plan={props.plan}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    token={props.token}
+                    payment={props?.payment}
+                    booking_type={CurrentBooking?.booking_type}
+                    pinColour={props?.breif?.city_slabs[0]?.color}
+                    costings_breakdown={CurrentBooking?.costings_breakdown}
+                    heading={CurrentBooking?.booking_display_name}
+                    transferbookings={props.transferBookings}
+                    _changeTaxiHandler={_changeTaxiHandler}
+                    _changeFlightHandler={_changeFlightHandler}
+                    setShowTaxiModal={props.setShowTaxiModal}
+                    index={i}
+                    booking={CurrentBooking}
+                    userSelected={CurrentBooking?.user_selected}
+                    modes={props?.routes[1].bookings[index]?.booking_type}
+                    icon={CurrentBooking?.images?.image}
+                    taxi_type={CurrentBooking?.taxi_type}
+                    transportMode={
+                      props?.routes[1].bookings[index]?.booking_type
+                    }
+                    duration={props?.breif?.city_slabs[0]?.duration}
+                  ></TransferModeContainer>
+                );
+              })
+            ) : (
+              <TransContainer>
+                <div style={{ position: 'relative' }}>
+                  <Line
+                    pinColour={props?.breif?.city_slabs[0]?.color}
+                    Transfers={true}
+                  />
+                </div>
+                <TransferContainerForMissing
+                  cityname1={props?.routes[0]?.city_name}
+                  cityname2={props?.routes[2]?.city_name}
+                  email={props?.email}
+                  name={props?.name}
+                  phone={props?.phone}
+                />
+              </TransContainer>
+            )
           ) : (
             <TransferModeContainer
               routes={props?.routes}
