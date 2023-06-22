@@ -148,8 +148,7 @@ const Itinerary = (props) => {
       .catch((error) => {
         setBreifLoading(false);
 
-        // window.location.href =
-        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+        window.location.href = '/thank-you';
       });
   };
 
@@ -179,7 +178,7 @@ const Itinerary = (props) => {
           authaction
             .ClaimItinary(props.id, props.token)
             .then((res) => {
-              setPayment(res.data); //
+              setPayment(res); //
               setPaymentLoading(false);
             })
             .catch((err) => {
@@ -267,9 +266,7 @@ const Itinerary = (props) => {
         setStayLoading(false);
       });
   };
-  useEffect(() => {
-    getPaymentHandler();
-  }, [props.token]);
+
   useEffect(() => {
     // if(!props.token && !props.otpSent)
     //  props.checkAuthState();
@@ -355,6 +352,9 @@ const Itinerary = (props) => {
     // if(itineraryLoading && !itineraryNotCreated){
     // if(stayLoading && !stayBookings){
   }, []);
+  useEffect(() => {
+    getPaymentHandler();
+  }, [props.token]);
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
 
