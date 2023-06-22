@@ -769,7 +769,7 @@ const TransferModeContainer = (props) => {
                 {props.booking_type == 'Taxi'
                   ? 'Private transfer '
                   : props.booking_type}
-                {props?.booking?.costings_breakdown?.duration && (
+                {props?.booking?.costings_breakdown?.duration?.text && (
                   <div className="inline-block ml-1">
                     ({props.booking?.costings_breakdown?.duration?.text})
                   </div>

@@ -83,8 +83,8 @@ const PoiList = ({
                     width="100%"
                     height="100%"
                     leftalign
-                    noLazy
                     widthmobile="100%"
+                    noLazy
                     url={data.activity_data.activity.image}
                   ></ImageLoader>
                 </div>
@@ -156,6 +156,7 @@ const PoiList = ({
                     width="100%"
                     height="100%"
                     leftalign
+                    noLazy
                     widthmobile="100%"
                     url={data.activity_data.poi.image}
                   ></ImageLoader>
@@ -174,18 +175,20 @@ const PoiList = ({
                     {data.text}
                   </div>
 
-                  {data.activity_data.poi?.tips ? data.activity_data.poi?.tips
-                    .slice(0, 1)
-                    .map((tip, index) => (
-                      <div>
-                        <div className='text-[13px]  font-normal text-[#01202B] line-clamp-2"'>
-                          <div className="font-bold inline pr-1">
-                            Tips & Tricks:
+                  {data.activity_data.poi?.tips
+                    ? data.activity_data.poi?.tips
+                        .slice(0, 1)
+                        .map((tip, index) => (
+                          <div>
+                            <div className='text-[13px]  font-normal text-[#01202B] line-clamp-2"'>
+                              <div className="font-bold inline pr-1">
+                                Tips & Tricks:
+                              </div>
+                              {tip}
+                            </div>
                           </div>
-                          {tip}
-                        </div>
-                      </div>
-                    )):null}
+                        ))
+                    : null}
                 </div>
               </div>
               <div

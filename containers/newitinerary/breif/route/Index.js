@@ -238,7 +238,7 @@ const Route = (props) => {
         <MidSection
           pinColour={props.breif.city_slabs[0].color}
           modes={
-            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : 'Taxi'
+            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
           }
           bookings={props.routes[1]?.bookings}
           route={props.routes[1]}
@@ -253,7 +253,7 @@ const Route = (props) => {
         <MidSection
           pinColour={props.breif.city_slabs[0].color}
           modes={
-            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : 'Taxi'
+            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
           }
           bookings={props.routes[1]?.bookings}
           route={props.routes[1]}

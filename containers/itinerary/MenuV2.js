@@ -4,7 +4,7 @@ import { Link, scroller } from 'react-scroll';
 
 import { AppBar } from '@mui/material';
 import { Tabs, Tab } from '@mui/material';
-
+import { RxCross2 } from 'react-icons/rx';
 import { Typography } from '@mui/material';
 import { Box } from '@mui/material';
 import GITSummaryContainer from './booking1/gittailored/Index';
@@ -567,7 +567,7 @@ const SimpleTabsV2 = (props) => {
   // }, []);
 
   // console.log(Locationlatlong);
-
+  console.log('payment', props.payment);
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
@@ -724,6 +724,7 @@ const SimpleTabsV2 = (props) => {
             mobileWidth="90%"
             backdrop
             closeIcon={true}
+            onCLose={() => setShowFooterBannerMobile(false)}
             onHide={_handleLoginClose}
             borderRadius={'12px'}
           >
@@ -737,6 +738,17 @@ const SimpleTabsV2 = (props) => {
         activityBookings={props.activityBookings}
         transferBookings={props.transferBookings}
       ></BookingContainer> */}
+                <RxCross2
+                  style={{
+                    position: 'absolute',
+                    top: '15px',
+                    right: '15px',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setShowFooterBannerMobile(false)}
+                />
+
                 {!props.payment.is_registration_needed ? (
                   <SummaryContainer
                     setUserDetails={props.setUserDetails}
@@ -1158,9 +1170,7 @@ const SimpleTabsV2 = (props) => {
                 <span className="font-bold">
                   ₹{' '}
                   {getIndianPrice(
-                    Math.round(
-                      Math.round(props.payment.per_person_total_cost) / 100
-                    )
+                    Math.round(Math.round(props.payment.total_cost) / 100)
                   )}
                 </span>{' '}
               </div>
@@ -1213,7 +1223,7 @@ const SimpleTabsV2 = (props) => {
               ) : !props.payment.paid_user ? (
                 <ButtonYellow
                   styleClass="w-full"
-                  onClick={() => setNewitinerary(true)}
+                  onClick={() => setNewitinerary(!Newitinerary)}
                   // onClick={() => _saleCreateHandler(props.id)}
                 >
                   Craft a new trip!

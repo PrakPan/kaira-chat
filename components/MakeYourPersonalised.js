@@ -34,7 +34,7 @@ const MakeYourPersonalised = ({ date, onHide, clickHandler, show = false }) => {
         closeIcon={true}
         onHide={onHide}
         borderRadius={'12px'}
-        height={!isPageWide && '100%'}
+        height={!isPageWide && '90%'}
         animation={false}
         width={isPageWide ? '400px' : '100%'}
       >
