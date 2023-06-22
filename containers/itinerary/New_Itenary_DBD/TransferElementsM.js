@@ -36,7 +36,7 @@ const TransferElementsM = ({
 
           <Timecontainer>
             <div className="w-[28px] mr-2">
-              {modes && (
+              {modes ? (
                 <TransportIconFetcher
                   TransportMode={modes[0]}
                   Instyle={{
@@ -45,27 +45,26 @@ const TransferElementsM = ({
                     color: 'black',
                   }}
                 />
-              )}
+              ) : null}
             </div>
             <div>
               <div className="text-[1.2rem] font-normal line-clamp-2 ">
                 {heading}
               </div>
-              {
-                modes && <Link
-                to={
-                  data.bookings
-                    ? `${data.bookings[0].id}`
-                    : 'Transfer_Container'
-                }
-                offset={-90}
-              >
-                <TransparentButton>
-                  {modes ? `Booking For ${modes} ` : null}
-                </TransparentButton>
-              </Link>
-              }
-              
+              {modes && (
+                <Link
+                  to={
+                    data.bookings
+                      ? `${data.bookings[0].id}`
+                      : 'Transfer_Container'
+                  }
+                  offset={-90}
+                >
+                  <TransparentButton>
+                    {modes ? `Booking For ${modes} ` : null}
+                  </TransparentButton>
+                </Link>
+              )}
             </div>
           </Timecontainer>
         </Timecontainer>
