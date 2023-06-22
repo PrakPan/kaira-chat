@@ -9,6 +9,10 @@ import FlightModal from '../../../components/modals/flights/Index';
 import PinSection from '../../newitinerary/breif/route/PinSection';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { ITINERARY_VERSION } from '../../../services/constants';
+
+import Button from '../../../components/Button';
+import Slide from '../../../Animation/framerAnimation/Slide';
+import TransferContainerForMissing from './TransferContainerForMissing';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 100%;
@@ -352,6 +356,7 @@ const TransfersContainer = (props) => {
   console.log('transfersBooking');
   console.log(props.transferBookings);
   //Stores initial order of locations
+
   const initialorder = {
     0: {
       location: 'Jodhpur',
@@ -678,16 +683,13 @@ const TransfersContainer = (props) => {
                       Transfers={true}
                     />
                   </div>
-                  <div className="my-3 lg:ml-7 ml-2 flex flex-col justify-center items-left">
-                    <div>
-                      Transfer options not found for{' '}
-                      {props?.routes[i]?.city_name} to{' '}
-                      {props?.routes[i + 2]?.city_name}
-                    </div>
-                    <div className="px-[1.6rem] my-2 w-[8rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm  lg:border-2  border-[1px] border-black  text-black font-medium text-sm">
-                      Get in touch
-                    </div>
-                  </div>
+                  <TransferContainerForMissing
+                    cityname1={props?.routes[i]?.city_name}
+                    cityname2={props?.routes[i + 2]?.city_name}
+                    email={props?.email}
+                    name={props?.name}
+                    phone={props?.phone}
+                  />
                 </TransContainer>
               );
         }
@@ -785,6 +787,7 @@ const TransfersContainer = (props) => {
       }
     }
   }
+
   // if (!props.transfers) {
   //   if (props.breif.city_slabs[i].is_departure_only)
   //     startingcity = props.breif.city_slabs[0].city_name;
@@ -1161,6 +1164,7 @@ const TransfersContainer = (props) => {
         Transfers
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
+
       {props.showFlightModal && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}

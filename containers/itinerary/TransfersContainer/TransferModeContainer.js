@@ -135,7 +135,7 @@ const TransferModeContainer = (props) => {
   });
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   function handleCheckboxChange(e) {
-    if (props.token) {
+    if (props.token && props.payment?.user_allowed_to_pay) {
       _updateSelectedTransfer();
       // _SelectedBookingHandler({
       //   SelectedBookingId: selectedBooking?.id,
@@ -248,16 +248,18 @@ const TransferModeContainer = (props) => {
   }
   const Facilities = [
     `${
-      props?.costings_breakdown?.taxi_occupancy
-      // props?.costings_breakdown?.taxi_occupancy
-    } Seater`,
-    // `${props?.costings_breakdown?.distance?.text}`,
-    `${props?.bookings?.transfer_type == 'Intracity' && '250 kms per day'}`,
-    `${
       props.booking_type == 'Taxi' || props.booking_type == 'Bus'
         ? '2 Luggage bags'
         : ''
     }  `,
+    props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
+
+    props?.costings_breakdown?.taxi_occupancy
+      ? `${props?.costings_breakdown?.taxi_occupancy} Seater`
+      : null,
+    props?.costings_breakdown?.distance?.text
+      ? `${props?.costings_breakdown?.distance?.text}`
+      : null,
   ];
   const _updateSelectedTransfer = () => {
     setUpdateBookingState(true);
@@ -793,20 +795,25 @@ const TransferModeContainer = (props) => {
                   <span className="pr-1 block ">Facilities:</span>
 
                   <span className="flex flex-row  ">
-                    {Facilities.map((data, index) => (
-                      <div className="gap-1 block  min-w-fit">
-                        <div className="flex flex-row text-sm font-normal">
-                          {index > 0 ? <span className="pl-1">|</span> : null}
+                    {Facilities.map(
+                      (data, index) =>
+                        data && (
+                          <div className="gap-1 block  min-w-fit">
+                            <div className="flex flex-row text-sm font-normal">
+                              {index > 0 ? (
+                                <span className="pl-1">|</span>
+                              ) : null}
 
-                          <div className="min-w-fit">{data}</div>
-                        </div>
-                      </div>
-                    ))}
+                              <div className="min-w-fit">{data}</div>
+                            </div>
+                          </div>
+                        )
+                    )}
                   </span>
                 </FacilityContainer>
               )}
             </div>
-            {isDesktop &&
+            {/* {isDesktop &&
               props.booking_type == 'Taxi' &&
               !props?.payment?.paid_user &&
               props.payment?.user_allowed_to_pay && (
@@ -818,53 +825,52 @@ const TransferModeContainer = (props) => {
                     ? `Change ${props.booking_type}`
                     : 'Add to Itinerary'}
                 </div>
-              )}
-            {!props?.payment?.paid_user &&
-              props.payment?.user_allowed_to_pay && (
-                <div>
-                  <div
-                    className={`absolute  ${
-                      true
-                        ? `${
-                            props.booking_type == 'Taxi'
-                              ? 'lg:bottom-4 hidden'
-                              : 'lg:bottom-[3.6rem]'
-                          }  bottom-[1.5rem] `
-                        : `${
-                            props.payment?.paid_user ||
-                            !props.payment?.user_allowed_to_pay
-                              ? 'lg:bottom-10 bottom-[1.2rem]'
-                              : 'lg:bottom-10 bottom-[2.5rem]'
-                          }`
-                    } right-8 -m-3`}
-                  >
-                    {loading && (
-                      <PulseLoader
-                        style={{
-                          position: 'absolute',
-                          top: '-25%',
-                          left: '50%',
-                          transform: 'translate(-50% , -50%)',
-                        }}
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#111"
-                      />
-                    )}
-                    <div
-                      onClick={(e) => {
-                        handleCheckboxChange(e);
+              )} */}
+            {!props?.payment?.paid_user && (
+              <div>
+                <div
+                  className={`absolute  ${
+                    true
+                      ? `${
+                          props.booking_type == 'Taxi'
+                            ? 'lg:bottom-[3.6rem]'
+                            : 'lg:bottom-[3.6rem]'
+                        }  bottom-[1.5rem] `
+                      : `${
+                          props.payment?.paid_user ||
+                          !props.payment?.user_allowed_to_pay
+                            ? 'lg:bottom-10 bottom-[1.2rem]'
+                            : 'lg:bottom-10 bottom-[2.5rem]'
+                        }`
+                  } right-8 -m-3`}
+                >
+                  {loading && (
+                    <PulseLoader
+                      style={{
+                        position: 'absolute',
+                        top: '-25%',
+                        left: '50%',
+                        transform: 'translate(-50% , -50%)',
                       }}
-                      className="flex flex-row gap-1 items-center  cursor-pointer"
-                    >
-                      <CheckboxFormComponent checked={addbooking} />
-                      <label className="text-center">
-                        {addbooking ? 'Added Booking' : 'Add Booking'}
-                      </label>
-                    </div>
+                      size={12}
+                      speedMultiplier={0.6}
+                      color="#111"
+                    />
+                  )}
+                  <div
+                    onClick={(e) => {
+                      handleCheckboxChange(e);
+                    }}
+                    className="flex flex-row gap-1 items-center  cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={addbooking} />
+                    <label className="text-center">
+                      {addbooking ? 'Added Booking' : 'Add Booking'}
+                    </label>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
           </div>
         </div>
       )}
