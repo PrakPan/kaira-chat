@@ -763,7 +763,7 @@ const HotelsBooking = (props) => {
         show={showDetails}
         payment={props.payment}
         plan={props.plan}
-        BookingButton={true}
+        BookingButton={(props.payment.user_allowed_to_pay && !isDateOlderThanCurrent(props.plan.start_date) )? true : false}
         bookingFunData={bookingFunData}
         BookingButtonFun={() =>
           handleClickAc(

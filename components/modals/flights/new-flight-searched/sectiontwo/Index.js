@@ -68,13 +68,13 @@ const DottedLine = styled.div`
   }
 `;
 const GridContainer = styled.div`
-  padding: 0.75rem ;
+  padding: 0.75rem;
 
   @media screen and (min-width: 768px) {
     display: grid;
     grid-template-columns: auto 6fr;
-    gap: 1.5rem;
-    padding: 1rem 0.5rem;
+    gap: 1.2rem;
+    padding: 1rem 0rem 1rem 0.5rem;
   }
 `;
 const Plan = styled.div`
@@ -126,9 +126,12 @@ const Circle = styled.div`
 `;
 const FlexBox = styled.div`
   margin-bottom: 0rem;
+  width: 80px;
+
   @media screen and (max-width: 768px) {
     display: grid;
-    grid-template-columns: auto 6fr;
+    grid-template-columns: 50px auto;
+    width : 100%;
     align-items: center;
     margin-bottom: 1rem;
   }

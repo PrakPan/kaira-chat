@@ -24,7 +24,7 @@ import media from "../../../media";
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
-    grid-template-columns: 1fr 9rem;
+    grid-template-columns: 1fr 8.5rem;
     justify-content: space-between;
   }
 `;

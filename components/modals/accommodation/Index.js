@@ -34,7 +34,6 @@ const BackContainer = styled.div`
   margin: 0;
   display: flex;
   gap: 0.5rem;
-  // margin: 1rem 0rem;
   @media screen and (min-width: 768px) {
   }
 `;
@@ -43,6 +42,7 @@ const BackText = styled.div`
   line-height: 2rem;
 `;
 const POI = (props) => {
+  console.log('propsmodal: ', props);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   useEffect(() => {
