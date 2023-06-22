@@ -55,31 +55,33 @@ const HotelBookingContainer = ({
   console.log('version', booking?.version);
   console.log(booking?.status);
 
-  const AddbookingStatus = (booking) => {
-    if (booking?.version == 'v2') {
-      if (booking?.status == 'BOOKING_EXPIRED') {
-        return false;
-      } else {
-        return true;
-      }
-    } else {
-      return !currentBooking ? booking?.user_selected : true;
-    }
-  };
+  // const AddbookingStatus = (booking) => {
+  //   if (booking?.version == 'v2') {
+  //     if (booking?.status == 'BOOKING_EXPIRED') {
+  //       return false;
+  //     } else {
+  //       return true;
+  //     }
+  //   } else {
+  //     return !currentBooking ? booking?.user_selected : true;
+  //   }
+  // };
 
-  const [addbooking, setaddboking] = useState(AddbookingStatus(booking));
-  console.log('addbooking', addbooking);
-  const [expiredBooking, setexpiredBooking] = useState(
-    booking?.status == 'BOOKING_EXPIRED' ? true : false
-  );
+  // const [addbooking, setaddboking] = useState(AddbookingStatus(booking));
+  // console.log('addbooking', addbooking);
+  // const [expiredBooking, setexpiredBooking] = useState(
+  //   booking?.status == 'BOOKING_EXPIRED' ? true : false
+  // );
 
   const [isSelect, setisSelect] = useState(booking?.user_selected);
+  const [isSearchedBooking, setisSearchedBooking] = useState(
+    booking?.user_selected ? false : true
+  );
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setaddboking(AddbookingStatus(booking));
     setisSelect(booking?.user_selected);
-    setexpiredBooking(booking?.status == 'BOOKING_EXPIRED' ? true : false);
+    setisSearchedBooking(booking?.user_selected ? false : true);
   }, [booking]);
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -136,15 +138,14 @@ const HotelBookingContainer = ({
       })
         .then((data) => {
           setLoading(false);
-          setaddboking(true);
-          setexpiredBooking(false);
-          setisSelect(true);
+
+          setisSelect(false);
           // Handle success
           // Access the response data using 'data'
         })
         .catch((error) => {
           setLoading(false);
-          setaddboking(false);
+
           // Handle failure
           // Access the error object using 'error'
         });
@@ -193,7 +194,7 @@ const HotelBookingContainer = ({
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-                addbooking || isSelect ? 'grayscale-0' : 'grayscale'
+                isSelect || isSearchedBooking ? 'grayscale-0' : 'grayscale'
               } `}
             >
               <div
@@ -415,7 +416,7 @@ const HotelBookingContainer = ({
                         }}
                       >
                         <div className="text-[#01202B] ">
-                          {expiredBooking ? 'Add Hotel' : 'Change'}
+                          {!isSelect ? 'Add Hotel' : 'Change'}
                         </div>
                       </ButtonYellow>
                     )}
@@ -453,7 +454,7 @@ const HotelBookingContainer = ({
                   )}
                 </div>
               )} */}
-                {!expiredBooking && payment?.user_allowed_to_pay && (
+                {isSelect && payment?.user_allowed_to_pay && (
                   <div
                     className={`absolute  ${
                       SelectedBookingin
@@ -484,9 +485,9 @@ const HotelBookingContainer = ({
                       }}
                       className="flex flex-row gap-1 items-center  cursor-pointer"
                     >
-                      <CheckboxFormComponent checked={addbooking} />
+                      <CheckboxFormComponent checked={isSelect} />
                       <label className="text-center">
-                        {addbooking ? 'Added Booking' : 'Add Booking'}
+                        {isSelect ? 'Added Booking' : 'Add Booking'}
                       </label>
                     </div>
                   </div>

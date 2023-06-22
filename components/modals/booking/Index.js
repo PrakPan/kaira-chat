@@ -400,8 +400,8 @@ const Booking = (props) => {
         }
       )
       .then((res) => {
-        props._updateBookingHandler(res.data.bookings);
-        props._updatePaymentHandler(res.data.payment_info);
+        /* props._updateBookingHandler(res.data.bookings);
+        props._updatePaymentHandler(res.data.payment_info); */
         // setUpdateLoadingState(false);
         setUpdateBookingState(false);
       })

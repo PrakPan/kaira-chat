@@ -643,12 +643,6 @@ const HotelsBooking = (props) => {
                   handleClick={handleClick}
                   cityName={props.breif.city_slabs[i].city_name}
                   handleClickAc={handleClickNewAc}
-                  BookingButton={
-                    props.payment.user_allowed_to_pay &&
-                    !isDateOlderThanCurrent(props.plan.start_date)
-                      ? true
-                      : false
-                  }
                   _SelectedBookingHandler={_SelectedBookingHandler}
                   setHideBookingModal={props.setHideBookingModal}
                   loginModal={showLoginModal}
@@ -681,12 +675,6 @@ const HotelsBooking = (props) => {
                 cityName={props.breif.city_slabs[i].city_name}
                 key={i}
                 handleClick={handleClick}
-                BookingButton={
-                  props.payment.user_allowed_to_pay &&
-                  !isDateOlderThanCurrent(props.plan.start_date)
-                    ? true
-                    : false
-                }
                 handleClickAc={handleClickAc}
                 _SelectedBookingHandler={_SelectedBookingHandler}
                 setHideBookingModal={props.setHideBookingModal}
@@ -742,12 +730,6 @@ const HotelsBooking = (props) => {
         : props.stayBookings
         ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
-              BookingButton={
-                props.payment.user_allowed_to_pay &&
-                !isDateOlderThanCurrent(props.plan.start_date)
-                  ? true
-                  : false
-              }
               booking={booking}
               index={index}
               key={index}
@@ -775,10 +757,7 @@ const HotelsBooking = (props) => {
         payment={props.payment}
         plan={props.plan}
         BookingButton={
-          props.payment.user_allowed_to_pay &&
-          !isDateOlderThanCurrent(props.plan.start_date)
-            ? true
-            : false
+          !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
         }
         bookingFunData={bookingFunData}
         BookingButtonFun={() =>

@@ -905,10 +905,14 @@ const Details = (props) => {
           <div className="gap-2 flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div> {props.payment.meta_info.number_of_adults} Adults</div>
-           { props.payment.meta_info.number_of_children ?   <div> {props.payment.meta_info.number_of_children} Adults</div> : null}
-           
-          {  props.payment.meta_info.number_of_infants ?  <div> {props.payment.meta_info.number_of_infants} Adults</div> : null}
-           
+            {props.payment.meta_info.number_of_children ? (
+              <div>, {props.payment.meta_info.number_of_children} Children</div>
+            ) : null}
+
+            {props.payment.meta_info.number_of_infants ? (
+              <div>, {props.payment.meta_info.number_of_infants} Infants</div>
+            ) : null}
+
             {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
               <MdEdit
                 className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
