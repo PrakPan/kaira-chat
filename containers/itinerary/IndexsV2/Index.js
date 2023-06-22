@@ -266,9 +266,7 @@ const Itinerary = (props) => {
         setStayLoading(false);
       });
   };
-  useEffect(() => {
-    getPaymentHandler();
-  }, [props.token]);
+
   useEffect(() => {
     // if(!props.token && !props.otpSent)
     //  props.checkAuthState();
@@ -354,6 +352,9 @@ const Itinerary = (props) => {
     // if(itineraryLoading && !itineraryNotCreated){
     // if(stayLoading && !stayBookings){
   }, []);
+  useEffect(() => {
+    getPaymentHandler();
+  }, [props.token]);
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
 

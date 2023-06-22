@@ -124,6 +124,7 @@ const HotelBookingContainer = ({
   //   }
   // }
   function handleCheckboxChange(e) {
+    console.log('handleCheckboxChange');
     if (token) {
       setLoading(true);
       _SelectedBookingHandler({

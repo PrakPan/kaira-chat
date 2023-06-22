@@ -573,7 +573,7 @@ const Details = (props) => {
 
             <div className="text-[#7A7A7A] text-sm">
               {props?.payment?.total_cost == 0
-                ? ''
+                ? 'No bookings added yet'
                 : 'Exclusive applicable taxes'}
             </div>
           </div>
@@ -905,6 +905,10 @@ const Details = (props) => {
           <div className="gap-2 flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div> {props.payment.meta_info.number_of_adults} Adults</div>
+           { props.payment.meta_info.number_of_children ?   <div> {props.payment.meta_info.number_of_children} Adults</div> : null}
+           
+          {  props.payment.meta_info.number_of_infants ?  <div> {props.payment.meta_info.number_of_infants} Adults</div> : null}
+           
             {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
               <MdEdit
                 className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
@@ -962,17 +966,20 @@ const Details = (props) => {
           )
         )
       ) : null}
-      {props.payment && props.token ? (
-        props.payment.paid_user ? (
-          <ButtonYellow
-            styleClass="w-full"
-            onClick={() => console.log(' ')}
-            onclickparam={null}
-          >
-            Get In Touch
-          </ButtonYellow>
-        ) : null
-      ) : null}
+      {props.payment && props.token
+        ? props.payment.paid_user
+          ? null
+          : // (
+            //   <ButtonYellow
+            //     styleClass="w-full"
+            //     onClick={() => console.log(' ')}
+            //     onclickparam={null}
+            //   >
+            //     Get In Touch
+            //   </ButtonYellow>
+            // )
+            null
+        : null}
       {!props.token ? (
         <ButtonYellow
           styleClass="w-full"

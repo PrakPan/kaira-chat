@@ -195,18 +195,14 @@ const HotelsBooking = (props) => {
       let updated_bookings_arr = [
         {
           id: props.stayBookings[index]['id'],
-          costings_breakdown: props.stayBookings[index]['costings_breakdown'],
+
           accommodation: props.stayBookings[index]['accommodation'],
-          is_estimated_price: true,
-          alternate_to: null,
+
           booking_type: 'Accommodation',
-          itinerary_type: 'Tailored',
-          user_selected: !user_selected,
+
+          remove_user_selected: true,
+
           itinerary_id: props.stayBookings[index]['itinerary_id'],
-          tailored_itinerary: tailored_id,
-          itinerary_name: itinerary_name,
-          itinerary_db_id: null,
-          trace: storeAndRetrieveValue(props.stayBookings[index].city),
         },
       ];
 
@@ -503,7 +499,8 @@ const HotelsBooking = (props) => {
   };
 
   const findObjectById = (array, id) => array.find((obj) => obj.id === id);
-  const findIndexById = (array, id) => array.findIndex((obj) => obj.id === id);
+  const findIndexById = (array, id) =>
+    array.findIndex((obj) => obj.check_in === id);
 
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]['name'];
@@ -621,7 +618,7 @@ const HotelsBooking = (props) => {
                   booking={foundObject}
                   index={findIndexById(
                     props.stayBookings,
-                    props.breif.city_slabs[i]?.accommodation_booking
+                    convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
                   )}
                   cityName={props.breif.city_slabs[i].city_name}
                   key={i}
@@ -679,7 +676,7 @@ const HotelsBooking = (props) => {
                 booking={foundObject}
                 index={findIndexById(
                   props.stayBookings,
-                  props.breif.city_slabs[i]?.accommodation_booking
+                  convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
                 )}
                 cityName={props.breif.city_slabs[i].city_name}
                 key={i}
