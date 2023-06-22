@@ -41,11 +41,10 @@ const Line = styled.hr`
   opacity: initial;
 
   @media screen and (min-width: 768px) {
-     
-     width: ${(props) => (props.hidemidsection ? '6rem' : '8rem')};
+    width: ${(props) => (props.hidemidsection ? '6rem' : '8rem')};
     height: 1.7px;
-    top: ${(props) => (props.hidemidsection ? '22px' : '46px')}; 
-    right: ${(props) => (props.hidemidsection ? '-31px' : '-46px')};;
+    top: ${(props) => (props.hidemidsection ? '22px' : '46px')};
+    right: ${(props) => (props.hidemidsection ? '-31px' : '-46px')};
   }
   /* border-style: dashed;
   border-width: 1.4px;
@@ -70,43 +69,43 @@ const Text = styled.div`
 `;
 const MidSection = (props) => {
   useEffect(() => {}, []);
-console.log('bookings-1')
-console.log(props.bookings)
+  console.log('bookings-1');
+  console.log(props.bookings);
   return (
-    
-        <Container className="font-lexend" hidemidsection={props.hidemidsection}>
+    <Container className="font-lexend" hidemidsection={props.hidemidsection}>
       <div style={{ position: 'relative' }}>
-        <Line pinColour={props.pinColour} hidemidsection={props.hidemidsection}/>
+        <Line
+          pinColour={props.pinColour}
+          hidemidsection={props.hidemidsection}
+        />
       </div>
-      {!props.hidemidsection && <>
-      
-        {
-        props.version == 'v2' ?
-          <Text>
-            {
-              props.route?.modes && <TransportIconFetcher
-              TransportMode={props.route?.modes[0]}
-              Instyle={{
-                fontSize: '1.4rem',
-                marginRight: '0.8rem',
-                color: '#4d4d4d',
-              }}
-            />
-            }
-            
-            {props?.bookings?.map((element, index) => (
-  <div className='flex flex-row' key={index}>
-    
-    <div className='flex flex-row pr-2 '> {element.booking_type}</div>     
-  </div>
-))}
+      {!props.hidemidsection && (
+        <>
+          {props.version == 'v2' ? (
+            <Text>
+              {props.route?.modes && (
+                <TransportIconFetcher
+                  TransportMode={props.route?.modes[0]}
+                  Instyle={{
+                    fontSize: '1.4rem',
+                    marginRight: '0.8rem',
+                    color: '#4d4d4d',
+                  }}
+                />
+              )}
 
-{props.modes &&
-<div>
-: {props.duration}
-</div>}
+              {props?.bookings?.map((element, index) => (
+                <div className="flex flex-row" key={index}>
+                  <div className="flex flex-row pr-2 ">
+                    {' '}
+                    {element.booking_type}
+                  </div>
+                </div>
+              ))}
 
-          {/* {props.icon && (
+              {props.modes && <div>: {props.duration}</div>}
+
+              {/* {props.icon && (
             <ImageLoader
               url={props.icon}
               leftalign
@@ -115,14 +114,14 @@ console.log(props.bookings)
               widthmobile="1.25rem"
             ></ImageLoader>
           )} */}
-          
-          {/* <MdOutlineFlightTakeoff
+
+              {/* <MdOutlineFlightTakeoff
             style={{  }}
           /> */}
-          
-        </Text>
-        : <Text>
-        {/* {props.icon && (
+            </Text>
+          ) : (
+            <Text>
+              {/* {props.icon && (
           <ImageLoader
             url={props.icon}
             leftalign
@@ -131,29 +130,27 @@ console.log(props.bookings)
             widthmobile="1.25rem"
           ></ImageLoader>
         )} */}
-        {props.modes && (
-          <TransportIconFetcher
-            TransportMode={props.modes}
-            Instyle={{
-              fontSize: '1.4rem',
-              marginRight: '0.8rem',
-              color: '#4d4d4d',
-            }}
-          />
-        )}
-        {/* <MdOutlineFlightTakeoff
+              {props.modes && (
+                <TransportIconFetcher
+                  TransportMode={props.modes}
+                  Instyle={{
+                    fontSize: '1.4rem',
+                    marginRight: '0.8rem',
+                    color: '#4d4d4d',
+                  }}
+                />
+              )}
+              {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}
-        {props.modes ? props.modes : 'Taxi'}: {props.duration}
-      </Text>
-      }
-      </>}
-      
-     
+              {props.modes ? `${props.modes} :` : null} {props.duration}
+            </Text>
+          )}
+        </>
+      )}
+
       {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
     </Container>
-    
-
   );
 };
 

@@ -92,6 +92,7 @@ const Details = (props) => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     if (props.plan?.start_date) {
       if (isPast(parseISO(props.plan?.start_date))) {
@@ -103,7 +104,12 @@ const Details = (props) => {
       setIsDatePast(true);
     }
   }, [props.plan?.start_date]);
-
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -399,6 +405,7 @@ const Details = (props) => {
 
   const _startRazorpayHandler = (data) => {
     //Razorpay payload
+
     let razorpayOptions = {
       amount: data.amount,
       // "currency": "INR",
@@ -446,8 +453,14 @@ const Details = (props) => {
         color: '#F7e700',
       },
     };
-    var rzp1 = new window.Razorpay(razorpayOptions);
-    rzp1.open();
+
+    try {
+      var rzp1 = new window.Razorpay(razorpayOptions);
+      console.log('Razorpaydata', rzp1);
+      rzp1.open();
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
   };
   const _saleCreateHandler = (id) => {
     setPaymentLoading(true);
