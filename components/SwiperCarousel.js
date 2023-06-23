@@ -19,13 +19,19 @@ const SwiperContainer = styled.div`
   .swiper,
   .swiper-wrapper {
     position: initial;
-    height : auto;
+    height: auto;
   }
   .swiper-button-prev {
-    left: -20px;
+    left: -10px;
+    @media screen and (min-width: 768px) {
+      left: -20px;
+    }
   }
   .swiper-button-next {
-    right: -20px;
+    right: -10px;
+    @media screen and (min-width: 768px) {
+      right: -20px;
+    }
   }
   .swiper-button-next,
   .swiper-button-prev {
@@ -36,19 +42,30 @@ const SwiperContainer = styled.div`
     ${(props) => props.navButtonColor && `color : ${props.navButtonColor}`};
     border: none;
     border-radius: 100%;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     ${(props) => props.navButtonsTop && `top : ${props.navButtonsTop}`};
+
+    @media screen and (min-width: 768px) {
+      width: 40px;
+      height: 40px;
+    }
   }
   .swiper-button-next::after {
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 900;
     translate: 1px 0px;
+    @media screen and (min-width: 768px) {
+      font-size: 1rem;
+    }
   }
   .swiper-button-prev::after {
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 900;
     translate: -1px 0px;
+    @media screen and (min-width: 768px) {
+      font-size: 1rem;
+    }
   }
   .swiper-button-disabled {
     display: none;

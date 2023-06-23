@@ -200,7 +200,9 @@ const Experiences = [
             <SwiperCarousel
               slidesPerView={1}
               initialIndex={0}
-              pageDots
+              pageDots={!props.navigationButtons}
+              navigationButtons={props.navigationButtons}
+              
               cards={experiencecards}
             ></SwiperCarousel>
           ) : null}
