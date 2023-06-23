@@ -8,25 +8,45 @@ import { IoMdClose } from "react-icons/io";
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    padding: 1.25rem;
+    padding: 0 0.75rem 0.75rem 0.75rem;
     width: 100%;
-    @media screen and (min-width: 768px) {
-      width: 100%;
-    }
     padding: 0.75rem;
     @media screen and (min-width: 768px) {
-      padding: 1.25rem;
+      // padding: 1.25rem;
+      padding: 0 1.25rem 1.25rem 1.25rem;
+      width: 100%;
     }
   `;
   const Title = styled.p`
     font-weight: 800;
     font-size: 20px;
   `;
+  const FloatingView = styled.div`
+    position: sticky;
+    bottom: 10px;
+    background: #f7e700;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 90%;
+    z-index: 2;
+    cursor: pointer;
+  `;
   const BackContainer = styled.div`
     margin: 0;
     display: flex;
     gap: 0.5rem;
+    position: sticky;
+    z-index: 1;
+    background: white;
+    top: 0;
+    padding-block: 0.75rem;
+
     @media screen and (min-width: 768px) {
+      padding-block: 1rem;
     }
   `;
   const BackText = styled.div`
@@ -67,6 +87,13 @@ const POIDetailsSkeleton = (props) => {
       </div>
 
       <SkeletonCard width={isPageWide ? "100%" : "100%"} height={"150px"} />
+      <FloatingView>
+        <TbArrowBack
+          style={{ height: "28px", width: "28px" }}
+          cursor={"pointer"}
+          onClick={props.onHide}
+        />
+      </FloatingView>
     </Container>
   );
 };

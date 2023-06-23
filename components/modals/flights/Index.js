@@ -15,6 +15,7 @@ import Flight from './new-flight-searched/Index';
 import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import Skeleton from './Skeleton';
+import { TbArrowBack } from 'react-icons/tb';
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -29,7 +30,20 @@ max-height: 40vh;
     }
     
 `;
-
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 85%;
+  z-index: 2;
+  cursor: pointer;
+`;
 const OptionsContainer = styled.div`
   min-height: 40vh;
   width: 100%;
@@ -424,8 +438,8 @@ const Booking = (props) => {
           // show={props.showFlightModal}
           show={true}
           onHide={props.setHideFlightModal}
-          mobileWidth={'100%'}
-          width={'50%'}
+          mobileWidth={"100%"}
+          width={"50%"}
           // zIndex='1501'
         >
           <SectionOne
@@ -458,9 +472,11 @@ const Booking = (props) => {
                   Please wait while we update your flight
                 </div>
               ) : null}
-              {
-                isFetchingError.error ? <div className='flex flex-row items-center justify-center h-[80vh] text-center font-lexend'>{isFetchingError.errorMsg}</div> :
-                !noResults && !updateLoadingState && !unauthorized ? (
+              {isFetchingError.error ? (
+                <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+                  {isFetchingError.errorMsg}
+                </div>
+              ) : !noResults && !updateLoadingState && !unauthorized ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
                     {optionsJSX.length && !updateBookingState
@@ -482,7 +498,7 @@ const Booking = (props) => {
                       //   />
                       //   Fetching best fares
                       // </div>
-                    <Skeleton />
+                      <Skeleton />
                     ) : null}
                     {!loading && !optionsJSX.length ? (
                       <div
@@ -506,7 +522,7 @@ const Booking = (props) => {
                     //     margin="none"
                     //   />
                     // </div>
-                  <Skeleton />
+                    <Skeleton />
                   ) : null}
                   {viewMoreStatus && !updateBookingState ? (
                     <Button
@@ -542,6 +558,15 @@ const Booking = (props) => {
                 </p>
               ) : null}
             </ContentContainer>
+            {!isPageWide && (
+              <FloatingView>
+                <TbArrowBack
+                  style={{ height: "28px", width: "28px" }}
+                  cursor={"pointer"}
+                  onClick={props.setHideFlightModal}
+                />
+              </FloatingView>
+            )}
           </GridContainer>
         </Drawer>
       </div>

@@ -25,21 +25,42 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   }
 `;
 const Container = styled.div`
-  padding: 0.75rem;
+  padding: 0 0.75rem 0.75rem 0.75rem;
   @media screen and (min-width: 768px) {
-    padding: 1.25rem;
+    padding: 0 1.25rem 1.25rem 1.25rem;
   }
 `;
 const BackContainer = styled.div`
   margin: 0;
   display: flex;
   gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
+
   @media screen and (min-width: 768px) {
+    padding-block: 1rem;
   }
 `;
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
+`;
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left : 90%;
+  z-index: 2;
+  cursor: pointer;
 `;
 const POI = (props) => {
   console.log('propsmodal: ', props);
@@ -85,7 +106,7 @@ const POI = (props) => {
             ></IoMdClose>
             <BackText>Back to Itinerary</BackText>
           </BackContainer>
-          <div style={{ marginTop: "1rem" }}>
+          <div>
             <Overview
               _setImagesHandler={props._setImagesHandler}
               user_rating={props.user_rating}
@@ -102,6 +123,15 @@ const POI = (props) => {
               BookingButtonFun={props.BookingButtonFun}
             ></Overview>
           </div>
+          {!isPageWide && (
+            <FloatingView>
+              <TbArrowBack
+                style={{ height: "28px", width: "28px" }}
+                cursor={"pointer"}
+                onClick={props.onHide}
+              />
+            </FloatingView>
+          )}
         </Container>
       ) : (
         <Skeleton onHide={props.onHide} />

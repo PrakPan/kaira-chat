@@ -63,7 +63,7 @@ const Section = (props) => {
     if (props.data)
       return (
         <Container className="font-lexend">
-          <Text>Starting from</Text>
+          {/* <Text>Starting from</Text> */}
           <div style={isPageWide ? {} : {display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'}}>
