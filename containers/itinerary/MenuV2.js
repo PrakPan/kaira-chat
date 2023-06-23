@@ -582,24 +582,23 @@ const SimpleTabsV2 = (props) => {
           />
         )}
       </div>
-      {/* <div className='w-full z-120 sticky flex flex-row top-[2px] justify-end '>
-      <div className='z-120   md:top-[0px] top-[2px]'> 
-      <Button
-                
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="3px"
-                width="100%"
-                borderRadius="10px"
-                bgColor="#f7e700"
-                onclick={() =>
-                  setShowFooterBannerMobile(!showFooterBannerMobile)
-                }
-              >
-                Pay Now & Book
-              </Button>
-      </div>
-      </div> */}
+      {isPageWide && (
+        <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[45px] ">
+          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[10rem]">
+            <Button
+              fontWeight="400"
+              fontSize="0.45rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="10px"
+              bgColor="#f7e700"
+              onclick={() => scrollToElement('Stays-Head')}
+            >
+              Pay Now & Book
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* {!isPageWide && value !== 2 ? (
           <PriceBannerMobile
@@ -644,6 +643,7 @@ const SimpleTabsV2 = (props) => {
               plan={props.plan}
               payment={props.payment}
               token={props.token}
+              setShowLoginModal={setShowLoginModal}
               // is_registration_needed={
               //   props.payment ? props.payment.is_registration_needed : false
               // }
@@ -675,6 +675,7 @@ const SimpleTabsV2 = (props) => {
 
           <div id={items[2].link}>
             <HotelsBooking
+              setShowLoginModal={setShowLoginModal}
               plan={props.plan}
               hasUserPaid={
                 props.payment ? (props.payment.paid_user ? true : false) : false
@@ -696,6 +697,7 @@ const SimpleTabsV2 = (props) => {
 
           <div id={items[3].link}>
             <TransfersContainer
+              setShowLoginModal={setShowLoginModal}
               plan={props.plan}
               dayslab={props?.itinerary?.day_slabs}
               breif={props?.breif}
@@ -822,6 +824,7 @@ const SimpleTabsV2 = (props) => {
               <div id={items[1].link}>
                 {props?.itinerary && (
                   <NewItenaryMain
+                    setShowLoginModal={setShowLoginModal}
                     plan={props.plan}
                     payment={props.payment}
                     city_slabs={props?.breif?.city_slabs}
@@ -838,6 +841,7 @@ const SimpleTabsV2 = (props) => {
                   plan={props.plan}
                   payment={props.payment}
                   token={props.token}
+                  setShowLoginModal={setShowLoginModal}
                   // is_registration_needed={
                   //   props.payment ? props.payment.is_registration_needed : false
                   // }
@@ -930,6 +934,7 @@ const SimpleTabsV2 = (props) => {
             ) : (
               <div id={items[2].link}>
                 <HotelsBooking
+                  setShowLoginModal={setShowLoginModal}
                   plan={props.plan}
                   hasUserPaid={
                     props.payment
@@ -957,6 +962,7 @@ const SimpleTabsV2 = (props) => {
             {props.transferBookings && (
               <div id={items[3].link}>
                 <TransfersContainer
+                  setShowLoginModal={setShowLoginModal}
                   plan={props.plan}
                   dayslab={props?.itinerary?.day_slabs}
                   breif={props?.breif}
@@ -1197,55 +1203,54 @@ const SimpleTabsV2 = (props) => {
               </Button>
             </div>
           ) : null}
-          <div className="mt-1">
-            {props.payment && props.token ? (
-              props.payment.itinerary_status ===
-                ITINERARY_STATUSES.itinerary_finalized &&
-              !props.payment.paid_user &&
-              props.payment.user_allowed_to_pay ? (
-                props.payment.total_cost > 0 ? (
-                  <ButtonYellow
-                    styleClass="w-full"
-                    onClick={() =>
-                      setShowFooterBannerMobile(!showFooterBannerMobile)
-                    }
-                  >
-                    Proceed to Book
-                  </ButtonYellow>
-                ) : (
-                  <ButtonYellow
-                    styleClass="w-full"
-                    onClick={() => scrollToElement('Stays-Head')}
-                  >
-                    Add Hotels
-                  </ButtonYellow>
-                )
-              ) : !props.payment.paid_user ? (
+
+          {props.payment && props.token ? (
+            props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized &&
+            !props.payment.paid_user &&
+            props.payment.user_allowed_to_pay ? (
+              props.payment.total_cost > 0 ? (
                 <ButtonYellow
-                  styleClass="w-full"
-                  onClick={() => setNewitinerary(!Newitinerary)}
-                  // onClick={() => _saleCreateHandler(props.id)}
-                >
-                  Craft a new trip!
-                </ButtonYellow>
-              ) : (
-                <Button
-                  color="#fff"
-                  fontWeight="600"
-                  fontSize="0.85rem"
-                  borderWidth="3px"
-                  width="100%"
-                  borderRadius="10px"
-                  bgColor="#04AA32"
-                  onclick={() =>
+                  styleClass="w-[45%]"
+                  onClick={() =>
                     setShowFooterBannerMobile(!showFooterBannerMobile)
                   }
                 >
-                  View Booking
-                </Button>
+                  Proceed to Book
+                </ButtonYellow>
+              ) : (
+                <ButtonYellow
+                  styleClass="w-[45%]"
+                  onClick={() => scrollToElement('Stays-Head')}
+                >
+                  Add Hotels
+                </ButtonYellow>
               )
-            ) : null}
-          </div>
+            ) : !props.payment.paid_user ? (
+              <ButtonYellow
+                styleClass="w-[55%]"
+                onClick={() => setNewitinerary(!Newitinerary)}
+                // onClick={() => _saleCreateHandler(props.id)}
+              >
+                Craft a new trip!
+              </ButtonYellow>
+            ) : (
+              <Button
+                color="#fff"
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="3px"
+                width="100%"
+                borderRadius="10px"
+                bgColor="#04AA32"
+                onclick={() =>
+                  setShowFooterBannerMobile(!showFooterBannerMobile)
+                }
+              >
+                View Booking
+              </Button>
+            )
+          ) : null}
         </div>
       </div>
 
@@ -1271,11 +1276,13 @@ const SimpleTabsV2 = (props) => {
         />
       )}
       {/* <Accommodation show={true} ></Accommodation> */}
-      <LogInModal
-        show={showLoginModal}
-        onhide={_handleLoginClose}
-        itinary_id={props.id}
-      ></LogInModal>
+      <div className="width-[100%]">
+        <LogInModal
+          show={showLoginModal}
+          onhide={_handleLoginClose}
+          itinary_id={props.id}
+        ></LogInModal>
+      </div>
     </div>
   );
 };

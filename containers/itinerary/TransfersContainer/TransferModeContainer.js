@@ -65,8 +65,8 @@ const Container = styled.div`
 `;
 //
 const ImageContainer = styled.div`
-  width: 70px;
-  height: 70px;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -75,8 +75,8 @@ const ImageContainer = styled.div`
   background: #f4f4f4;
   margin: auto;
   @media screen and (min-width: 768px) {
-    width: 80px;
-    height: 80px;
+    width: 4rem;
+    height: 4rem;
   }
   img {
     object-fit: contain;
@@ -102,10 +102,10 @@ const Line = styled.hr`
 
   border: 2px;
 
-  width: ${(props) => (props.Transfers ? `16rem` : `5rem`)};
+  width: ${(props) => (props.Transfers ? `19rem` : `5rem`)};
 
-  top: ${(props) => (props.Transfers ? `101px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-110px` : `-25px`)};
+  top: ${(props) => (props.Transfers ? `128px` : `23px`)};
+  right: ${(props) => (props.Transfers ? `-134px` : `-25px`)};
   opacity: initial;
   z-index: -1;
   @media screen and (min-width: 768px) {
@@ -380,7 +380,7 @@ const TransferModeContainer = (props) => {
             id={props.booking.id}
             className={`mb-4 mt-2 lg:block ${
               !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
-            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-3  `}
+            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-3  `}
           >
             <div className="flex flex-row gap-2    ">
               {props.userSelected && (
@@ -392,11 +392,11 @@ const TransferModeContainer = (props) => {
                           className=""
                           url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${props.booking?.airline_code}.png`}
                           leftalign
-                          dimensions={{ width: 800, height: 500 }}
+                          dimensions={{ width: 800, height: 800 }}
                           borderRadius="100%"
                           height="4rem"
                           width="4rem"
-                          widthmobile="3rem"
+                          widthmobile="4rem"
                         ></ImageLoader>
                       </ImageContainer>
                     ) : (
@@ -567,7 +567,10 @@ const TransferModeContainer = (props) => {
                         <div className="flex pl-2  font-[300]">
                           <div>
                             {props.booking.via_airports
-                              ? '(to Lay)'
+                              ? `(${
+                                  props.booking.costings_breakdown.Segments[0]
+                                    .length - 1
+                                } Lay)`
                               : '(Nonstop)'}
                             {
                               processBookingTimes(
@@ -645,7 +648,10 @@ const TransferModeContainer = (props) => {
                       {props.userSelected ? (
                         <div>
                           {props.booking.via_airports
-                            ? '(to Lay)'
+                            ? `(${
+                                props.booking.costings_breakdown.Segments[0]
+                                  .length - 1
+                              } Lay)`
                             : '(Nonstop)'}
                           {props.booking.duration
                             ? ` (${props.booking.duration}h)`
@@ -801,7 +807,7 @@ const TransferModeContainer = (props) => {
                           <div className="gap-1 block  min-w-fit">
                             <div className="flex flex-row text-sm font-normal">
                               {index > 0 ? (
-                                <span className="pl-1">|</span>
+                                <span className="px-1">|</span>
                               ) : null}
 
                               <div className="min-w-fit">{data}</div>
