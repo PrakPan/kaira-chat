@@ -96,14 +96,16 @@ const MidSection = (props) => {
 
               {props?.bookings?.map((element, index) => (
                 <div className="flex flex-row" key={index}>
-                  <div className="flex flex-row pr-2 ">
-                    {' '}
+                  <div className="flex flex-row pr-0">
                     {element.booking_type}
+                    {index !== props?.bookings.length - 1 && (
+                      <span className="pr-2">,</span>
+                    )}
                   </div>
                 </div>
               ))}
 
-              {props.modes && <div>: {props.duration}</div>}
+              {props.duration && <div>: {props.duration}</div>}
 
               {/* {props.icon && (
             <ImageLoader

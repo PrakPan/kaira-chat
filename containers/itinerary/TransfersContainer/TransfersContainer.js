@@ -600,6 +600,7 @@ const TransfersContainer = (props) => {
                     ? locationsArr.push(
                         <div className="flex flex-col gap-1">
                           <TransferModeContainer
+                            setShowLoginModal={props?.setShowLoginModal}
                             routes={props?.routes}
                             plan={props.plan}
                             getPaymentHandler={props.getPaymentHandler}
@@ -639,6 +640,7 @@ const TransfersContainer = (props) => {
                     : locationsArr.push(
                         props?.transferBookings && (
                           <TransferModeContainer
+                            setShowLoginModal={props?.setShowLoginModal}
                             routes={props?.routes}
                             plan={props.plan}
                             getPaymentHandler={props.getPaymentHandler}
@@ -719,6 +721,7 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
+                    setShowLoginModal={props?.setShowLoginModal}
                     routes={props?.routes}
                     plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
@@ -752,6 +755,7 @@ const TransfersContainer = (props) => {
             : locationsArr.push(
                 props?.transferBookings && (
                   <TransferModeContainer
+                    setShowLoginModal={props?.setShowLoginModal}
                     routes={props?.routes}
                     plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
@@ -1238,6 +1242,7 @@ const TransfersContainer = (props) => {
 
                 return (
                   <TransferModeContainer
+                    setShowLoginModal={props?.setShowLoginModal}
                     routes={props?.routes}
                     plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
@@ -1285,6 +1290,7 @@ const TransfersContainer = (props) => {
             )
           ) : (
             <TransferModeContainer
+              setShowLoginModal={props?.setShowLoginModal}
               routes={props?.routes}
               plan={props.plan}
               getPaymentHandler={props.getPaymentHandler}

@@ -292,7 +292,7 @@ const Personaliseform = (props) => {
     let state_ids = [];
     for (var i = 0; i < selectedCities.length; i++) {
       if (selectedCities[i].type === 'State')
-        state_ids.push(selectedCities[i].city_id);
+        state_ids.push(parseInt(selectedCities[i].city_id));
       else {
         cityids.push(parseInt(selectedCities[i].city_id));
         citynames.push(selectedCities[i].name);
@@ -338,7 +338,7 @@ const Personaliseform = (props) => {
           ga.event({ action: 'TTForm-success', params: { key: '' } });
 
           setTimeout(function () {
-            router.push("/itinerary/" + response.data.itinerary.itinerary_id);
+            router.push('/itinerary/' + response.data.itinerary.itinerary_id);
           }, 6000);
         }
       })

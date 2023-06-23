@@ -43,6 +43,7 @@ const HotelBookingContainer = ({
   alternates,
   cityData,
   city_id,
+  setShowLoginModal,
   tailored_id,
   openDetails,
   loginModal,
@@ -407,12 +408,25 @@ const HotelBookingContainer = ({
                 >
                   <div className="text-[#01202B] ">View Detail</div>
                 </ButtonYellow> */}
-                    {payment?.paid_user ||
-                    !payment?.user_allowed_to_pay ? null : (
+                    {token ? (
+                      payment?.paid_user ||
+                      !payment?.user_allowed_to_pay ? null : (
+                        <ButtonYellow
+                          className="w-1/2"
+                          onClick={() => {
+                            handleClickAc(index, booking, city_id);
+                          }}
+                        >
+                          <div className="text-[#01202B] ">
+                            {!isSelect ? 'Add Hotel' : 'Change'}
+                          </div>
+                        </ButtonYellow>
+                      )
+                    ) : (
                       <ButtonYellow
                         className="w-1/2"
                         onClick={() => {
-                          handleClickAc(index, booking, city_id);
+                          setShowLoginModal(true);
                         }}
                       >
                         <div className="text-[#01202B] ">

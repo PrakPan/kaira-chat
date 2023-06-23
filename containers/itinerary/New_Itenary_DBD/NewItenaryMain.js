@@ -214,6 +214,7 @@ const NewItenaryMain = (props) => {
                 <Day_I_Container
                   Days={element}
                   indexDay={index}
+                  setShowLoginModal={props.setShowLoginModal}
                   payment={props.payment}
                   getPaymentHandler={props.getPaymentHandler}
                   itinerary_id={props.itinerary.tailor_made_id}

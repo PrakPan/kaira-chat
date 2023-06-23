@@ -36,6 +36,7 @@ import Slide from '../../../Animation/framerAnimation/Slide';
 import { format, isPast, parseISO } from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { Link, scroller } from 'react-scroll';
+import { pluralDetector } from '../../../helper/shortHelpers';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -902,15 +903,32 @@ const Details = (props) => {
         </div>
         <div className="group text-md font-medium gap-3 flex flex-row items-center">
           <BsPeopleFill className="text-md text-[#7A7A7A]" />
-          <div className="gap-2 flex flex-row items-center text-md font-medium text-black">
+          <div className=" flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
-            <div> {props.payment.meta_info.number_of_adults} Adults</div>
+            <div>
+              {props.payment.meta_info.number_of_adults}{' '}
+              {pluralDetector(
+                'Adult',
+                props.payment.meta_info.number_of_adults
+              )}{' '}
+            </div>
             {props.payment.meta_info.number_of_children ? (
-              <div>, {props.payment.meta_info.number_of_children} Children</div>
+              <div>
+                , {props.payment.meta_info.number_of_children}{' '}
+                {pluralDetector(
+                  'Children',
+                  props.payment.meta_info.number_of_children
+                )}
+              </div>
             ) : null}
-
             {props.payment.meta_info.number_of_infants ? (
-              <div>, {props.payment.meta_info.number_of_infants} Infants</div>
+              <div>
+                , {props.payment.meta_info.number_of_infants}{' '}
+                {pluralDetector(
+                  'Infant',
+                  props.payment.meta_info.number_of_infants
+                )}
+              </div>
             ) : null}
 
             {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">

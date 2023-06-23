@@ -614,6 +614,7 @@ const HotelsBooking = (props) => {
               HotelArray.push(
                 <HotelBookingContainer
                   booking={foundObject}
+                  setShowLoginModal={props.setShowLoginModal}
                   index={findIndexById(
                     props.stayBookings,
                     convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
@@ -638,6 +639,7 @@ const HotelsBooking = (props) => {
                   booking={null}
                   index={i - 1}
                   key={i}
+                  setShowLoginModal={props.setShowLoginModal}
                   handleClick={handleClick}
                   cityName={props.breif.city_slabs[i].city_name}
                   handleClickAc={handleClickNewAc}
@@ -666,6 +668,7 @@ const HotelsBooking = (props) => {
             HotelArray.push(
               <HotelBookingContainer
                 booking={foundObject}
+                setShowLoginModal={props.setShowLoginModal}
                 index={findIndexById(
                   props.stayBookings,
                   convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
@@ -728,6 +731,7 @@ const HotelsBooking = (props) => {
         : props.stayBookings
         ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
+              setShowLoginModal={props.setShowLoginModal}
               booking={booking}
               index={index}
               key={index}

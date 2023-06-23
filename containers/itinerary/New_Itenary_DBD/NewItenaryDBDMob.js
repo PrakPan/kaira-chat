@@ -162,6 +162,7 @@ const NewItenaryDBDMob = (props) => {
         {props?.itinerary?.day_slabs?.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
             <Day_I_ContainerM
+              setShowLoginModal={props.setShowLoginModal}
               Days={element}
               indexDay={index}
               payment={props.payment}
