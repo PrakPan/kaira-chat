@@ -376,7 +376,7 @@ const Enquiry = (props) => {
           showBlack={showBlack}
           tailoredFormModal={props.tailoredFormModal}
           slideIndex={slideIndex}
-          className={isPageWide ? 'center-div border' : 'center-div'}
+          className={isPageWide ? "center-div border" : "center-div"}
           onClick={() => {
             setShowBlack(true);
           }}
@@ -385,7 +385,7 @@ const Enquiry = (props) => {
           {showPopup.InputOne && (
             <Popup
               setShowPopup={setShowPopup}
-              top={props.tailoredFormModal ? '17rem' : '12.6rem'}
+              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
               mobileTop="14rem"
               left="10px"
               text="Please select your destination!"
@@ -394,7 +394,7 @@ const Enquiry = (props) => {
           {showPopup.dateStart && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
-              bottom={props.tailoredFormModal ? '1.3rem' : '5.6rem'}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
               left="10px"
               text="Please select starting date!"
             />
@@ -402,16 +402,16 @@ const Enquiry = (props) => {
           {showPopup.dateEnd && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
-              bottom={props.tailoredFormModal ? '1.3rem' : '5.6rem'}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
               left="170px"
-              mobileleft={'135px'}
+              mobileleft={"135px"}
               text="Please select ending date!"
             />
           )}
           {showPopup.group && (
             <Popup
               setShowPopup={setShowPopup}
-              top={props.tailoredFormModal ? '16rem' : '190px'}
+              top={props.tailoredFormModal ? "16rem" : "190px"}
               left="20%"
               tipLeft="45%"
               text="Please select your group type!"
@@ -425,11 +425,11 @@ const Enquiry = (props) => {
 
           <div
             style={{
-              padding: props.tailoredFormModal ? '0rem 1rem' : '0.5rem 1rem',
-              width: '100%',
-              marginBottom: slideIndex === 2 ? '0rem' : '0rem',
-              display: props.tailoredFormModal ? 'initial' : 'grid',
-              gridTemplateColumns: 'max-content auto',
+              padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
+              width: "100%",
+              marginBottom: slideIndex === 2 ? "0rem" : "0rem",
+              display: props.tailoredFormModal ? "initial" : "grid",
+              gridTemplateColumns: "max-content auto",
             }}
           >
             {slideIndex && !props.tailoredFormModal ? (
@@ -437,32 +437,32 @@ const Enquiry = (props) => {
                 <BiArrowBack
                   onClick={_prevSlideHandler}
                   className="hover-pointer"
-                  style={{ marginTop: '2px', fontSize: '1.5rem' }}
+                  style={{ marginTop: "2px", fontSize: "1.5rem" }}
                 ></BiArrowBack>
               </div>
             ) : (
               <></>
             )}
-            <div style={{ width: '100%' }}>
+            <div style={{ width: "100%" }}>
               {props.tailoredFormModal && (
                 <CloseIcon>
                   {slideIndex ? (
                     <BiArrowBack
                       onClick={_prevSlideHandler}
                       className="hover-pointer"
-                      style={{ marginTop: '2px', fontSize: '1.5rem' }}
+                      style={{ marginTop: "2px", fontSize: "1.5rem" }}
                     ></BiArrowBack>
                   ) : (
                     <div></div>
                   )}
                   <RxCross2
                     style={{
-                      fontSize: '1.75rem',
-                      textAlign: 'right',
-                      cursor: 'pointer',
+                      fontSize: "1.75rem",
+                      textAlign: "right",
+                      cursor: "pointer",
                     }}
                     onClick={() => {
-                      !focusedDate ? props.onHide() : console.log('');
+                      !focusedDate ? props.onHide() : console.log("");
                     }}
                   />
                 </CloseIcon>
@@ -470,22 +470,22 @@ const Enquiry = (props) => {
 
               <Heading
                 tailoredFormModal={props.tailoredFormModal}
-                style={{ textAlign: !slideIndex ? 'left' : 'center' }}
+                style={{ textAlign: !slideIndex ? "left" : "center" }}
               >
                 {getHeading()}
               </Heading>
             </div>
           </div>
           {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
-          <div style={{ padding: '0 1rem 1rem 1rem', width: '100%' }}>
+          <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
             <div
               style={{
-                borderStyle: 'solid none none none',
-                borderWidth: '1px',
-                color: '#D3D3D3',
-                height: '1px',
-                width: '100%',
-                marginBottom: '1.5rem',
+                borderStyle: "solid none none none",
+                borderWidth: "1px",
+                color: "#D3D3D3",
+                height: "1px",
+                width: "100%",
+                marginBottom: "1.5rem",
               }}
             ></div>
 
@@ -537,8 +537,8 @@ const Enquiry = (props) => {
             {slideIndex === 0 ? (
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'flex-end',
+                  display: "flex",
+                  justifyContent: "flex-end",
                   //  visibility:
                   //  showCities &&
                   //  props.cities ? "hidden" : "visible",
@@ -546,14 +546,14 @@ const Enquiry = (props) => {
               >
                 <Button
                   fontSize="1rem"
-                  width={!isPageWide ? 'auto' : '100%'}
+                  width={!isPageWide ? "auto" : "100%"}
                   style={
                     !isPageWide && isPageLoaded
                       ? {
-                          position: 'fixed',
-                          left: '1rem',
-                          right: '1rem',
-                          bottom: '0',
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
                         }
                       : {}
                   }
@@ -570,59 +570,60 @@ const Enquiry = (props) => {
               </div>
             ) : null}
             {slideIndex === 1 ? (
-              // !props.token ? (
-              //   <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              //     <Button
-              //       fontSize="1rem"
-              //       width={!isPageWide ? "auto" : "100%"}
-              //       style={
-              //         !isPageWide
-              //           ? {
-              //               position: "fixed",
-              //               left: "1rem",
-              //               right: "1rem",
-              //               bottom: "0",
-              //             }
-              //           : {}
-              //       }
-              //       padding="0.5rem 2rem"
-              //       fontWeight="500"
-              //       margin="1rem 0"
-              //       borderRadius="5px"
-              //       borderWidth="1px"
-              //       bgColor="#f7e700"
-              //       onclick={_SlideTwoSubmitHandler}
-              //     >
-              //       Continue
-              //     </Button>
-              //   </div>
-              // ) :
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? 'auto' : '100%'}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: 'fixed',
-                          left: '1rem',
-                          right: '1rem',
-                          bottom: '0',
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={loading}
-                  onclick={_submitDataHandler}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
+              !props.token ? (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    onclick={_SlideTwoSubmitHandler}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    loading={loading}
+                    onclick={_submitDataHandler}
+                  >
+                    Get Itinerary!
+                  </Button>
+                </div>
+              )
             ) : null}
           </div>
         </Container>
@@ -631,7 +632,7 @@ const Enquiry = (props) => {
   else
     return (
       <div>
-        {showBlack ? (
+        {showBlack && !props.tailoredFormModal ? (
           <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
         ) : null}
 
