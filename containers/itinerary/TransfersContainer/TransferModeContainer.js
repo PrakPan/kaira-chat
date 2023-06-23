@@ -247,20 +247,24 @@ const TransferModeContainer = (props) => {
     );
   }
   const Facilities = [
-    `${
-      props.booking_type == 'Taxi' || props.booking_type == 'Bus'
-        ? '2 Luggage bags'
-        : ''
-    }  `,
+    props.booking_type == 'Taxi' || props.booking_type == 'Bus'
+      ? '2 Luggage bags'
+      : null,
     props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
 
-    props?.costings_breakdown?.taxi_occupancy
-      ? `${props?.costings_breakdown?.taxi_occupancy} Seater`
+    props?.costings_breakdown?.taxi_occupancy ||
+    props?.costings_breakdown?.no_of_seats
+      ? `${
+          props?.costings_breakdown?.taxi_occupancy
+            ? props?.costings_breakdown?.taxi_occupancy
+            : props?.costings_breakdown?.no_of_seats
+        } Seater`
       : null,
     props?.costings_breakdown?.distance?.text
       ? `${props?.costings_breakdown?.distance?.text}`
       : null,
   ];
+
   const _updateSelectedTransfer = () => {
     setUpdateBookingState(true);
     setLoading(true);
@@ -801,12 +805,12 @@ const TransferModeContainer = (props) => {
                   <span className="pr-1 block ">Facilities:</span>
 
                   <span className="flex flex-row  ">
-                    {Facilities.map(
+                    {Facilities.filter(Boolean).map(
                       (data, index) =>
-                        data && (
+                        data !== null && (
                           <div className="gap-1 block  min-w-fit">
                             <div className="flex flex-row text-sm font-normal">
-                              {index > 0 ? (
+                              {index != 0 && data != null ? (
                                 <span className="px-1">|</span>
                               ) : null}
 

@@ -140,11 +140,12 @@ const Details = (props) => {
       .then((res) => {
         setIsSucess({
           value: true,
-          Msg: 'Coupon Applied Successfully',
+          Msg: res.data.coupon_usage.message,
         });
         setPaymentLoading(false);
         setIsDisabled(true);
         setiscouponApplied(true);
+
         setIsError({
           error: false,
           errorMsg: '',
@@ -163,10 +164,23 @@ const Details = (props) => {
         setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
-        setIsError({
-          error: true,
-          errorMsg: 'Coupon Invalid or Expired',
-        });
+
+        if (error.response && error.response.status === 400) {
+          const errorMessage = error.response.data.message;
+          setIsError({
+            error: true,
+            errorMsg: errorMessage,
+          });
+          // Use the errorMessage as needed
+        } else {
+          // Handle other errors
+
+          setIsError({
+            error: true,
+            errorMsg: 'Invalid Coupon Or Coupon Expired',
+          });
+        }
+
         setInputValue('');
       });
   };
@@ -512,12 +526,7 @@ const Details = (props) => {
 
             {iscouponApplied && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
-                <div>{props?.payment?.coupon?.discount_value}</div>
-                <div>
-                  {props?.payment?.coupon?.discount_type == 'Flat'
-                    ? 'Flat'
-                    : '%  OFF'}
-                </div>{' '}
+                <div>{props?.payment?.coupon_usage?.usage_description}</div>
               </div>
             )}
           </div>
@@ -575,7 +584,7 @@ const Details = (props) => {
             <div className="text-[#7A7A7A] text-sm">
               {props?.payment?.total_cost == 0
                 ? 'No bookings added yet'
-                : 'Exclusive applicable taxes'}
+                : 'Inclusive of applicable taxes'}
             </div>
           </div>
         </div>
@@ -782,12 +791,12 @@ const Details = (props) => {
         {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
       </div>
 
-      <div className="px-3 pb-2">
+      <div className="px-0 pb-2">
         {props?.payment?.allow_coupon_discount && !isDatePast ? (
           <div>
-            <div className="relative  rounded-md shadow-sm cursor-pointer mt-3">
+            <div className="relative  rounded-md cursor-pointer mt-3">
               <input
-                class=" px-3 w-full py-2  border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-indigo-500"
+                class=" px-3 w-full py-2  border-2 border-[#ECEAEA] rounded-md focus:outline-none focus:border-yellow-400"
                 type="text"
                 readOnly={iscouponApplied}
                 value={inputValue}
@@ -818,7 +827,7 @@ const Details = (props) => {
                 )}
                 {isSucess.value && (
                   <Slide
-                    hideTime={4}
+                    hideTime={9}
                     onUnmount={() =>
                       setIsSucess({
                         value: false,
@@ -828,7 +837,7 @@ const Details = (props) => {
                     isActive={isSucess.value}
                     direction={-1}
                     duration={0.1}
-                    ydistance={10}
+                    ydistance={12}
                   >
                     <div className="text-green-500 text-center font-normal text-sm ">
                       {isSucess.Msg}
@@ -839,7 +848,7 @@ const Details = (props) => {
 
               {iscouponApplied ? (
                 <button
-                  className=" absolute  inset-y-0 -right-1 top-1 flex items-center pr-3  "
+                  className=" absolute  inset-y-0 right-1 top-0 flex items-center pr-3  "
                   type="submit"
                   onClick={(e) => handleSubmitRemove(e)}
                 >
@@ -852,7 +861,7 @@ const Details = (props) => {
                 </button>
               ) : (
                 <button
-                  className=" absolute inset-y-0 right-1 top-1 flex items-center pr-3  "
+                  className=" absolute inset-y-0 right-1 top-0 flex items-center pr-3  "
                   type="submit"
                   onClick={(e) => handleSubmit(e)}
                 >
@@ -901,7 +910,7 @@ const Details = (props) => {
             </div>
           </div>
         </div>
-        <div className="group text-md font-medium gap-3 flex flex-row items-center">
+        <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2">
           <BsPeopleFill className="text-md text-[#7A7A7A]" />
           <div className=" flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
@@ -913,13 +922,7 @@ const Details = (props) => {
               )}{' '}
             </div>
             {props.payment.meta_info.number_of_children ? (
-              <div>
-                , {props.payment.meta_info.number_of_children}{' '}
-                {pluralDetector(
-                  'Children',
-                  props.payment.meta_info.number_of_children
-                )}
-              </div>
+              <div>, {props.payment.meta_info.number_of_children} Children</div>
             ) : null}
             {props.payment.meta_info.number_of_infants ? (
               <div>

@@ -24,11 +24,11 @@ import Route from '../../newitinerary/breif/route/Index';
 import ButtonYellow from '../../../components/ButtonYellow';
 import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
 
-import dynamic from "next/dynamic";
-import CityDetails from "./CityDetails";
-import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
-import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
-import { TbArrowBack } from "react-icons/tb";
+import dynamic from 'next/dynamic';
+import CityDetails from './CityDetails';
+import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
+import Drawer from '../../../components/drawers/cityDetails/CityDetailsDrawer';
+import { TbArrowBack } from 'react-icons/tb';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -271,7 +271,7 @@ const Details = (props) => {
           {props.routes.length >= 1 || props.itinerary?.day_slabs ? (
             <div id="route">
               <Route
-              plan={props.plan}
+                plan={props.plan}
                 dayslab={props.itinerary?.day_slabs}
                 breif={props.breif}
                 routesData={props.routesData}
