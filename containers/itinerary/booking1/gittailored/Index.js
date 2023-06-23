@@ -265,7 +265,12 @@ const Details = (props) => {
       }
     } catch {}
   };
-
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
   useEffect(() => {
     try {
       setPax(props.payment.meta_info.number_of_adults);
@@ -827,8 +832,8 @@ Warning: viewport meta tags should not be used in _document.js's <Head>. https:/
             hoverColor="white"
             borderWidth="0"
             onclick={_saleCreateHandler}
-                onclickparam={props.id}
-                loading={paymentLoading}
+            onclickparam={props.id}
+            loading={paymentLoading}
           >
             Pay Now
           </Button>

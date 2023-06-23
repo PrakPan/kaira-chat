@@ -60,6 +60,16 @@ const Day_I_ContainerM = (props) => {
       filter(JsonArray, Arslab_element.name, Arslab_element.data)
     );
   }
+  function getTransportationType(url) {
+    const fileName = url.substring(
+      url.lastIndexOf('/') + 1,
+      url.lastIndexOf('.')
+    );
+    const firstLetter = fileName.charAt(0).toUpperCase();
+    const restOfWord = fileName.slice(1);
+    const transportationType = firstLetter + restOfWord;
+    return transportationType;
+  }
   divides(props.Days.slab_elements, Arslab_elements);
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements) {
@@ -69,7 +79,7 @@ const Day_I_ContainerM = (props) => {
           dayIcontainer.push(
             <TransferElementsM
               time="9:00AM"
-              modes={element.modes}
+              modes={getTransportationType(element.icon)}
               transfers={element.transfers}
               meta={element.meta}
               icon={element.icon}

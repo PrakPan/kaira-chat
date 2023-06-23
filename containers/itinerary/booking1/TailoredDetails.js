@@ -92,6 +92,7 @@ const Details = (props) => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     if (props.plan?.start_date) {
       if (isPast(parseISO(props.plan?.start_date))) {
@@ -103,7 +104,12 @@ const Details = (props) => {
       setIsDatePast(true);
     }
   }, [props.plan?.start_date]);
-
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -399,6 +405,7 @@ const Details = (props) => {
 
   const _startRazorpayHandler = (data) => {
     //Razorpay payload
+
     let razorpayOptions = {
       amount: data.amount,
       // "currency": "INR",
@@ -446,8 +453,14 @@ const Details = (props) => {
         color: '#F7e700',
       },
     };
-    var rzp1 = new window.Razorpay(razorpayOptions);
-    rzp1.open();
+
+    try {
+      var rzp1 = new window.Razorpay(razorpayOptions);
+      console.log('Razorpaydata', rzp1);
+      rzp1.open();
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
   };
   const _saleCreateHandler = (id) => {
     setPaymentLoading(true);
@@ -560,7 +573,7 @@ const Details = (props) => {
 
             <div className="text-[#7A7A7A] text-sm">
               {props?.payment?.total_cost == 0
-                ? ''
+                ? 'No bookings added yet'
                 : 'Exclusive applicable taxes'}
             </div>
           </div>
@@ -892,6 +905,14 @@ const Details = (props) => {
           <div className="gap-2 flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div> {props.payment.meta_info.number_of_adults} Adults</div>
+            {props.payment.meta_info.number_of_children ? (
+              <div>, {props.payment.meta_info.number_of_children} Children</div>
+            ) : null}
+
+            {props.payment.meta_info.number_of_infants ? (
+              <div>, {props.payment.meta_info.number_of_infants} Infants</div>
+            ) : null}
+
             {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
               <MdEdit
                 className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
@@ -949,17 +970,20 @@ const Details = (props) => {
           )
         )
       ) : null}
-      {props.payment && props.token ? (
-        props.payment.paid_user ? (
-          <ButtonYellow
-            styleClass="w-full"
-            onClick={() => console.log(' ')}
-            onclickparam={null}
-          >
-            Get In Touch
-          </ButtonYellow>
-        ) : null
-      ) : null}
+      {props.payment && props.token
+        ? props.payment.paid_user
+          ? null
+          : // (
+            //   <ButtonYellow
+            //     styleClass="w-full"
+            //     onClick={() => console.log(' ')}
+            //     onclickparam={null}
+            //   >
+            //     Get In Touch
+            //   </ButtonYellow>
+            // )
+            null
+        : null}
       {!props.token ? (
         <ButtonYellow
           styleClass="w-full"

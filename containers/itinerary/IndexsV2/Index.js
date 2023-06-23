@@ -148,8 +148,7 @@ const Itinerary = (props) => {
       .catch((error) => {
         setBreifLoading(false);
 
-        // window.location.href =
-        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+        window.location.href = '/thank-you';
       });
   };
 
@@ -179,7 +178,7 @@ const Itinerary = (props) => {
           authaction
             .ClaimItinary(props.id, props.token)
             .then((res) => {
-              setPayment(res.data); //
+              setPayment(res); //
               setPaymentLoading(false);
             })
             .catch((err) => {
@@ -267,9 +266,7 @@ const Itinerary = (props) => {
         setStayLoading(false);
       });
   };
-  useEffect(() => {
-    getPaymentHandler();
-  }, [props.token]);
+
   useEffect(() => {
     // if(!props.token && !props.otpSent)
     //  props.checkAuthState();
@@ -282,77 +279,82 @@ const Itinerary = (props) => {
   useEffect(() => {
     var IntervalTiming;
     if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
-     console.log("IntervalTiming: ", IntervalTiming);
-    
+    console.log('IntervalTiming: ', IntervalTiming);
+
     if (!IntervalTiming) {
-     console.log("IntervalTiming: ", 'notime');
+      console.log('IntervalTiming: ', 'notime');
       fetchData();
-    }
-     else setTimeout(() => {
-       
-         fetchData();
-       }, [IntervalTiming]);
+    } else
+      setTimeout(() => {
+        fetchData();
+      }, [IntervalTiming]);
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
     //  console.log('itinerary token',props.token)
 
-    function fetchData(){window.scrollTo(0, 0);
-    if (TRAVELER_ITINERARIES.includes(props.id))
-      setIsPastTravelerItinerary(true);
-    axiosdaybydayinstance
-      .get(`/?itinerary_id=` + props.id)
-      .then((res) => {
-        if (res.data.day_slabs.length) {
-          if (res.data.is_stock) setIsStock(true);
-          setItinerary(res.data);
+    function fetchData() {
+      window.scrollTo(0, 0);
+      if (TRAVELER_ITINERARIES.includes(props.id))
+        setIsPastTravelerItinerary(true);
+      axiosdaybydayinstance
+        .get(`/?itinerary_id=` + props.id)
+        .then((res) => {
+          if (res.data.day_slabs.length) {
+            if (res.data.is_stock) setIsStock(true);
+            setItinerary(res.data);
+            setItineraryLoading(false);
+          } else {
+            // window.location.href =
+            //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+          }
+        })
+        .catch((error) => {
           setItineraryLoading(false);
-        } else {
           // window.location.href =
           //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-        }
-      })
-      .catch((error) => {
-        setItineraryLoading(false);
-        // window.location.href =
-        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-      });
-    getBreifHandler();
-    getRoutes(props.id)
-      .then((res) => {
-        setRoutes(res);
-      })
-      .catch((err) => {
-        console.log(`error in routes${err}`);
-      });
-    axios
-      .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
-      .then((res) => {
-        setPlan(res.data);
-        if (
-          res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
-        ) {
-          setItineraryNotCreated(false);
-          alert(
-            'Looks like the response took too long, please refresh and try again.'
-          );
-        } else {
-          setUserEmail(res.data.user_email);
-          settravellerType(res.data.experience_filters_selected);
-          if (res.data.start_date) setIsDatePresent(true);
-          setgroup_type(res.data.group_type);
-          setduration_time(res.data.duration_number);
-          setItineraryReleased(res.data.is_visible_to_customer);
-          setItineraryDate(res.data.created_at);
-          setTimeRequired(res.data.time_needed_for_itinerary_completion);
-        }
-      })
-      .catch((error) => {});
+        });
+      getBreifHandler();
+      getRoutes(props.id)
+        .then((res) => {
+          setRoutes(res);
+        })
+        .catch((err) => {
+          console.log(`error in routes${err}`);
+        });
+      axios
+        .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
+        .then((res) => {
+          setPlan(res.data);
+          if (
+            res.data.itinerary_status ===
+            ITINERARY_STATUSES.itinerary_not_created
+          ) {
+            setItineraryNotCreated(false);
+            alert(
+              'Looks like the response took too long, please refresh and try again.'
+            );
+          } else {
+            setUserEmail(res.data.user_email);
+            settravellerType(res.data.experience_filters_selected);
+            if (res.data.start_date) setIsDatePresent(true);
+            setgroup_type(res.data.group_type);
+            setduration_time(res.data.duration_number);
+            setItineraryReleased(res.data.is_visible_to_customer);
+            setItineraryDate(res.data.created_at);
+            setTimeRequired(res.data.time_needed_for_itinerary_completion);
+          }
+        })
+        .catch((error) => {});
 
-    getAccommodationAndActivitiesHandler();}
+      getAccommodationAndActivitiesHandler();
+    }
 
     // if(itineraryLoading && !itineraryNotCreated){
     // if(stayLoading && !stayBookings){
   }, []);
+  useEffect(() => {
+    getPaymentHandler();
+  }, [props.token]);
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
 
@@ -379,7 +381,6 @@ const Itinerary = (props) => {
   const _updateFlightBookingHandler = (json) => {
     setShowFlightModal(false);
     setTransferBookings(_updateTransferBooking(transferBookings, json));
-
   };
 
   const _updateBookingHandler = (json) => {

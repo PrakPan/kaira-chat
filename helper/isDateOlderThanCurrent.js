@@ -6,7 +6,7 @@ export function isDateOlderThanCurrent(dateString) {
 
   //   return isBefore(parsedDate, currentDate);
   console.log('datestring');
-  if (dateString !== null) {
+  if (dateString != null) {
     const parts = dateString.split('-');
     const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1; // Months in JavaScript are zero-based (0-11)
