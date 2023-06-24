@@ -63,6 +63,11 @@ const Container = styled.div`
     min-height: 8rem;
   }
 `;
+
+const GridContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 //
 const ImageContainer = styled.div`
   width: 4rem;
@@ -247,20 +252,24 @@ const TransferModeContainer = (props) => {
     );
   }
   const Facilities = [
-    `${
-      props.booking_type == 'Taxi' || props.booking_type == 'Bus'
-        ? '2 Luggage bags'
-        : ''
-    }  `,
+    props.booking_type == 'Taxi' || props.booking_type == 'Bus'
+      ? '2 Luggage bags'
+      : null,
     props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
 
-    props?.costings_breakdown?.taxi_occupancy
-      ? `${props?.costings_breakdown?.taxi_occupancy} Seater`
+    props?.costings_breakdown?.taxi_occupancy ||
+    props?.costings_breakdown?.no_of_seats
+      ? `${
+          props?.costings_breakdown?.taxi_occupancy
+            ? props?.costings_breakdown?.taxi_occupancy
+            : props?.costings_breakdown?.no_of_seats
+        } Seater`
       : null,
     props?.costings_breakdown?.distance?.text
       ? `${props?.costings_breakdown?.distance?.text}`
       : null,
   ];
+
   const _updateSelectedTransfer = () => {
     setUpdateBookingState(true);
     setLoading(true);
@@ -800,22 +809,22 @@ const TransferModeContainer = (props) => {
                 <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1 w-full">
                   <span className="pr-1 block ">Facilities:</span>
 
-                  <span className="flex flex-row  ">
-                    {Facilities.map(
+                  <GridContainer className=" ">
+                    {Facilities.filter(Boolean).map(
                       (data, index) =>
-                        data && (
+                        data !== null && (
                           <div className="gap-1 block  min-w-fit">
                             <div className="flex flex-row text-sm font-normal">
-                              {index > 0 ? (
+                              {index != 0 && data != null ? (
                                 <span className="px-1">|</span>
                               ) : null}
 
-                              <div className="min-w-fit">{data}</div>
+                              <div className="">{data}</div>
                             </div>
                           </div>
                         )
                     )}
-                  </span>
+                  </GridContainer>
                 </FacilityContainer>
               )}
             </div>

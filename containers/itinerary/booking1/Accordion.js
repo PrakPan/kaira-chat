@@ -69,7 +69,7 @@ const FAQs = (props) => {
       for (var i = 0; i < props.payment.summary[key].bookings.length; i++) {
         try {
           bookingslist.push(
-            <div className={'text-sm font-normal text-[#000]'}>
+            <div className={'text-sm font-normal text-[#000] '}>
               {bookings[props.payment.summary[key].bookings[i].id].name}
             </div>
           );
@@ -98,7 +98,7 @@ const FAQs = (props) => {
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1a-content"
             id="itinerary-booking-summary-accordion"
-            style={{ zIndex: '1', height: '1rem' }}
+            style={{ zIndex: '1', height: '1.3rem' }}
           >
             <Typography
               content={'span'}

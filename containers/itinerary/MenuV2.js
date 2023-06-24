@@ -9,7 +9,7 @@ import { Typography } from '@mui/material';
 import { Box } from '@mui/material';
 import GITSummaryContainer from './booking1/gittailored/Index';
 import SummaryContainer from './booking1/TailoredDetails';
-
+import axiosPoiCityInstance from '../../services/poi/city';
 import Booking from './booking1/CheckLoginWrapper';
 import Register from './register/Index';
 import Breif from './breif/NewIndex';
@@ -48,6 +48,9 @@ import Modal from '../../components/ui/Modal';
 import { ClaimItinary } from '../../store/actions/auth';
 import { ITINERARY_STATUSES } from '../../services/constants';
 import MakeYourPersonalised from '../../components/MakeYourPersonalised';
+import useFieldOfView from '../../hooks/useFieldOfView';
+import useInView from '../../hooks/useInView';
+import { getCityDetails } from './getCityDetails';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -255,7 +258,7 @@ const SimpleTabsV2 = (props) => {
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
-      smooth: 'easeInOutQuart',
+      smooth: false,
       spy: true,
       // duration={500}
       offset: -50,
@@ -311,12 +314,17 @@ const SimpleTabsV2 = (props) => {
 
     setValue(2);
   };
-
+  const replaceLatLong = (source, destination) => ({
+    ...source,
+    lat: destination.lat,
+    long: destination.long,
+  });
   //Location tabs for mobile
   let locationsArr = [];
   let RoutesData = [];
   let TransfersData = [];
   let totalcityslabs = 0;
+
   if (props.breif)
     if (props.breif.city_slabs)
       for (var j = 0; j < props.breif.city_slabs.length; j++) {
@@ -328,19 +336,40 @@ const SimpleTabsV2 = (props) => {
   if (props.breif)
     if (props.breif.city_slabs)
       if (props.routes) {
-        console.log('inside routes');
-        console.log(props.routes);
+        // console.log('inside routes');
+        // console.log(props.routes);
 
-        for (var i = 0; i < props.routes.length; i++) {
-          if (props.routes[i].long) {
-            RoutesData.push(props.routes[i]);
-          } else {
-            TransfersData.push(props.routes[i]);
+        async function processRoutes(props) {
+          for (var i = 0; i < props.routes.length; i++) {
+            // console.log('routes one', props.routes[i]);
+            if (props.routes[i].element_type !== 'transfer') {
+              if (props.routes[i].long) {
+                // console.log(props.routes[i].long);
+                RoutesData.push(props.routes[i]);
+              } else {
+                if (props.routes[i].city_id) {
+                  try {
+                    const data = await getCityDetails(props.routes[i].city_id);
+                    // console.log('fetchdata data');
+                    // console.log(props.routes[i], data);
+                    const updatedRoutes = replaceLatLong(props.routes[i], data);
+                    RoutesData.push(updatedRoutes);
+                    // console.log('fetchdata data in', updatedRoutes);
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }
+              }
+            } else {
+              TransfersData.push(props.routes[i]);
+            }
           }
+          console.log('routes finished');
+          console.log(RoutesData);
+          console.log(TransfersData);
         }
-        console.log(' routes finished');
-        console.log(RoutesData);
-        console.log(TransfersData);
+
+        processRoutes(props);
       }
   for (var i = 0; i < props.breif.city_slabs.length; i++) {
     if (!props.breif.city_slabs[i].is_trip_terminated) {
@@ -402,7 +431,7 @@ const SimpleTabsV2 = (props) => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
-
+  const isInView = useInView('Booking_container');
   const [activeItem, setActiveItem] = useState(1);
   const items = props?.activityBookings
     ? [
@@ -568,6 +597,7 @@ const SimpleTabsV2 = (props) => {
 
   // console.log(Locationlatlong);
   console.log('payment', props.payment);
+  console.log('isInView', isInView);
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
@@ -582,20 +612,115 @@ const SimpleTabsV2 = (props) => {
           />
         )}
       </div>
-      {isPageWide && (
-        <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[45px] ">
-          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[10rem]">
-            <Button
-              fontWeight="400"
-              fontSize="0.45rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="10px"
-              bgColor="#f7e700"
-              onclick={() => scrollToElement('Stays-Head')}
-            >
-              Pay Now & Book
-            </Button>
+      {isPageWide && !isInView && (
+        <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
+          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[19rem]">
+            <div className="flex flex-row justify-between ">
+              <div className="flex flex-col text-sm">
+                <div>
+                  {props.payment?.is_estimated_price
+                    ? 'Estimated Price'
+                    : 'Total trip cost'}
+                </div>
+                {props.payment ? (
+                  <div>
+                    <span className="font-bold">
+                      ₹{' '}
+                      {getIndianPrice(
+                        Math.round(Math.round(props.payment.total_cost) / 100)
+                      )}
+                    </span>{' '}
+                  </div>
+                ) : null}
+              </div>
+              {props?.token && props?.payment?.paid_user && (
+                <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
+                  PAID
+                </div>
+              )}
+              {!props.token ? (
+                <div>
+                  <Button
+                    color="#111"
+                    fontWeight="400"
+                    fontSize="0.45rem"
+                    borderWidth="2px"
+                    width="12rem"
+                    borderRadius="10px"
+                    bgColor="#F7E700"
+                    onclick={() => setShowLoginModal(true)}
+                  >
+                    Log in to proceed
+                  </Button>
+                </div>
+              ) : null}
+
+              {props.payment && props.token ? (
+                props.payment.itinerary_status ===
+                  ITINERARY_STATUSES.itinerary_finalized &&
+                !props.payment.paid_user &&
+                props.payment.user_allowed_to_pay ? (
+                  props.payment.total_cost > 0 ? (
+                    <div>
+                      <Button
+                        color="#111"
+                        fontWeight="400"
+                        fontSize="0.45rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="10px"
+                        bgColor="#F7E700"
+                        onclick={() => scrollToElement('Stays-Head')}
+                      >
+                        Proceed to Book
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Button
+                        color="#111"
+                        fontWeight="400"
+                        fontSize="0.45rem"
+                        borderWidth="2px"
+                        width="9rem"
+                        borderRadius="10px"
+                        bgColor="#F7E700"
+                        onclick={() => scrollToElement('Stays-Head')}
+                      >
+                        Add Hotels
+                      </Button>
+                    </div>
+                  )
+                ) : !props.payment.paid_user ? (
+                  <div>
+                    <Button
+                      color="#111"
+                      fontWeight="400"
+                      fontSize="0.45rem"
+                      borderWidth="2px"
+                      width="12rem"
+                      borderRadius="10px"
+                      bgColor="#F7E700"
+                      onclick={() => setNewitinerary(!Newitinerary)}
+                    >
+                      Craft a new trip!
+                    </Button>
+                  </div>
+                ) : // <Button
+                //   color="#fff"
+                //   fontWeight="400"
+                //   fontSize="0.45rem"
+                //   borderWidth="2px"
+                //   width="10rem"
+                //   borderRadius="10px"
+                //   bgColor="#04AA32"
+                //   onclick={() => scrollToElement('Stays-Head')}
+                // >
+                //   View Booking
+                // </Button>
+                null
+              ) : null}
+            </div>
           </div>
         </div>
       )}
@@ -1019,7 +1144,10 @@ const SimpleTabsV2 = (props) => {
           </div>
 
           {props.payment ? (
-            <div className="sticky top-[6rem] mt-40 ml-4">
+            <div
+              id="Booking_container"
+              className="sticky top-[6rem] mt-40 ml-4"
+            >
               {/* <BookingContainer
                   payment={props.payment}
                   plan={props.plan}
@@ -1164,9 +1292,9 @@ const SimpleTabsV2 = (props) => {
         )} */}
 
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
-        <div className="flex flex-row justify-between mx-3">
+        <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
-            <div>
+            <div className="text-sm">
               {props.payment?.is_estimated_price
                 ? 'Estimated Price'
                 : 'Total trip cost'}
@@ -1178,12 +1306,13 @@ const SimpleTabsV2 = (props) => {
                   {getIndianPrice(
                     Math.round(Math.round(props.payment.total_cost) / 100)
                   )}
-                </span>{' '}
+                  {'/-'}
+                </span>
               </div>
             ) : null}
           </div>
           {props?.token && props?.payment?.paid_user && (
-            <div className="border-[3px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[8px] py-[2px]">
+            <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
               PAID
             </div>
           )}
@@ -1210,44 +1339,67 @@ const SimpleTabsV2 = (props) => {
             !props.payment.paid_user &&
             props.payment.user_allowed_to_pay ? (
               props.payment.total_cost > 0 ? (
-                <ButtonYellow
-                  styleClass="w-[45%]"
-                  onClick={() =>
-                    setShowFooterBannerMobile(!showFooterBannerMobile)
-                  }
-                >
-                  Proceed to Book
-                </ButtonYellow>
+                <div className="mt-2">
+                  <Button
+                    color="#111"
+                    fontWeight="600"
+                    fontSize="0.85rem"
+                    borderWidth="3px"
+                    width="10rem"
+                    borderRadius="10px"
+                    bgColor="#f8e000"
+                    onclick={() =>
+                      setShowFooterBannerMobile(!showFooterBannerMobile)
+                    }
+                  >
+                    Proceed to Book
+                  </Button>
+                </div>
               ) : (
-                <ButtonYellow
-                  styleClass="w-[45%]"
-                  onClick={() => scrollToElement('Stays-Head')}
-                >
-                  Add Hotels
-                </ButtonYellow>
+                <div className="mt-2">
+                  <Button
+                    color="#111"
+                    fontWeight="600"
+                    fontSize="0.85rem"
+                    borderWidth="3px"
+                    width="10rem"
+                    borderRadius="10px"
+                    bgColor="#f8e000"
+                    onclick={() => scrollToElement('Stays-Head')}
+                  >
+                    Add Hotels
+                  </Button>
+                </div>
               )
             ) : !props.payment.paid_user ? (
-              <ButtonYellow
-                styleClass="w-[55%]"
-                onClick={() => setNewitinerary(!Newitinerary)}
-                // onClick={() => _saleCreateHandler(props.id)}
-              >
-                Craft a new trip!
-              </ButtonYellow>
+              <div className="mt-2">
+                <Button
+                  color="#111"
+                  fontWeight="600"
+                  fontSize="0.85rem"
+                  borderWidth="3px"
+                  width="10rem"
+                  borderRadius="10px"
+                  bgColor="#f8e000"
+                  onclick={() => setNewitinerary(!Newitinerary)}
+                >
+                  Craft a new trip!
+                </Button>
+              </div>
             ) : (
               <Button
                 color="#fff"
                 fontWeight="600"
                 fontSize="0.85rem"
-                borderWidth="3px"
-                width="100%"
+                borderWidth="0px"
+                width="8rem"
                 borderRadius="10px"
                 bgColor="#04AA32"
                 onclick={() =>
                   setShowFooterBannerMobile(!showFooterBannerMobile)
                 }
               >
-                View Booking
+                View Bookings
               </Button>
             )
           ) : null}
