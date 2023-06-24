@@ -9,24 +9,24 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { closeTailoredModal } from '../services/openTailoredModal';
 import media from './media'
-const Layout = (props) => {
+const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
+  // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 
   useEffect(() => {
-    props.checkAuthState();
-    window.scrollTo(0, 0);
+    // props.checkAuthState();
+    // window.scrollTo(0, 0);
   }, []);
-  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (router.isReady) {
-      const queries = router.query;
-      if (queries['tailored-travel']) {
-        setShowMobilePlanner(true);
-      } else setShowMobilePlanner(false);
-    }
-  }, [router.isReady, router.asPath]);
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     const queries = router.query;
+  //     if (queries['tailored-travel']) {
+  //       setShowMobilePlanner(true);
+  //     } else setShowMobilePlanner(false);
+  //   }
+  // }, [router.isReady, router.asPath]);
 
   return (
     <div className="layout">
@@ -45,23 +45,23 @@ const Layout = (props) => {
         {props.children}
       </div>
 
-      <LogInModal
+      {/* <LogInModal
         show={props.showLogin}
         onhide={props.token && !props.phone ? null : props.authCloseLogin}
-      ></LogInModal>
-      <TailoredFormMobileModal
+      ></LogInModal> */}
+      {/* <TailoredFormMobileModal
         destinationType={"city-planner"}
         onHide={() => {
           setShowMobilePlanner(false);
           closeTailoredModal(router);
         }}
         show={showMoiblePlanner}
-      />
+      /> */}
 
       {!props.itinerary ? <Footer></Footer> : null}
     </div>
   );
-};
+});
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,

@@ -8,17 +8,31 @@ import IndexDesktop from "./Desktop";
 import media from "../media";
 import NewMobile from "./mobile/Index";
 import axiosnotificationsinstance from "../../services/user/notifications/notifications";
+import LogInModal from "../modals/Login";
+import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
+import { closeTailoredModal } from "../../services/openTailoredModal";
+import { useRouter } from "next/router";
 
-const Navbar = (props) => {
+const Navbar = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
   const [hideNav, setHideNav] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [headerColor, setHeaderColor] = useState("black");
   const [notOpenCount, setNotOpenCount] = useState();
-
+  const [showLoginModal , setShowLoginModal] = useState(false)
   let notopencount = 0;
-
   let [notifications, setNotifications] = useState([]);
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+  const router = useRouter();
+    useEffect(() => {
+      if (router.isReady) {
+        const queries = router.query;
+        if (queries["tailored-travel"]) {
+          setShowMobilePlanner(true);
+        } else setShowMobilePlanner(false);
+      }
+    }, [router.isReady, router.asPath]);
+
   useEffect(() => {
     if (props.token)
       axiosnotificationsinstance
@@ -116,6 +130,7 @@ const Navbar = (props) => {
             setShowMobileSearch={setShowMobileSearch}
             setHideNav={setHideNav}
             notOpenCount={notOpenCount}
+            setShowLoginModal={setShowLoginModal}
           ></NewMobile>
         )}
       </div>
@@ -139,18 +154,33 @@ const Navbar = (props) => {
             notOpenCount={notOpenCount}
             notifications={notifications}
             token={props.token}
+            setShowLoginModal={setShowLoginModal}
           ></IndexDesktop>
         )}
         {/* </div> */}
       </div>
+      <LogInModal
+        show={showLoginModal}
+        // onhide={props.token && !props.phone ? null : props.authCloseLogin}
+        onhide={() => setShowLoginModal(false)}
+      ></LogInModal>
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
     </div>
   );
-};
+});
 const mapStateToProps = (state) => {
   return {
     token: state.auth.token,
     name: state.auth.name,
     image: state.auth.image,
+    // showLogin: state.auth.showLogin,
   };
 };
 const mapDispatchToProps = (dispatch) => {

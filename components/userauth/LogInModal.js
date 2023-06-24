@@ -125,7 +125,7 @@ const CountryCodeOption = styled.div`
   }
 `;
 
-const LogIn = (props) => {
+const LogIn = React.memo((props) => {
   if (props.loadingsocial)
     return (
       <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
@@ -721,7 +721,7 @@ const LogIn = (props) => {
     </div>
   );
   // else return <Spinner></Spinner>
-};
+});
 const mapStateToPros = (state) => {
   return {
     otpFail: state.auth.otpFail,

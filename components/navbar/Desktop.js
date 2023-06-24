@@ -303,7 +303,7 @@ const Navbar = (props) => {
             </TTWLogoContainer>
 
             {/* <input /> */}
-            {(!props.hidecta && !props.staticnav) && (
+            {!props.hidecta && !props.staticnav && (
               <div
                 style={{
                   position: "absolute",
@@ -383,7 +383,8 @@ const Navbar = (props) => {
                   showDropDownProfileListMobile={showDropDownProfileListMobile}
                   toggleProfileList={toggleProfileList}
                   onLogout={props.onLogout}
-                  authShowLogin={props.authShowLogin}
+                  // authShowLogin={props.authShowLogin}
+                  // setShowLoginModal={props.setShowLoginModal}
                   token={props.token}
                   headerColor={props.headerColor}
                   name={props.name}
@@ -399,7 +400,8 @@ const Navbar = (props) => {
                   showDropDownProfileListMobile={showDropDownProfileListMobile}
                   toggleProfileList={toggleProfileList}
                   onLogout={props.onLogout}
-                  authShowLogin={props.authShowLogin}
+                  // authShowLogin={props.authShowLogin}
+                  setShowLoginModal={props.setShowLoginModal}
                   token={props.token}
                   headerColor={props.headerColor}
                 />

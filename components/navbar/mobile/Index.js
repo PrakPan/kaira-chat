@@ -144,7 +144,8 @@ const Mobile = (props) => {
   const router = useRouter();
   const _handleLogin = () => {
     setToggleMenu(false);
-    props.authShowLogin();
+    // props.authShowLogin();
+    props.setShowLoginModal(true)
   };
   useEffect(() => {}, [props.notOpenCount]);
 
