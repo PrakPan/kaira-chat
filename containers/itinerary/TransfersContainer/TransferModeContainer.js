@@ -63,6 +63,11 @@ const Container = styled.div`
     min-height: 8rem;
   }
 `;
+
+const GridContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 //
 const ImageContainer = styled.div`
   width: 4rem;
@@ -804,7 +809,7 @@ const TransferModeContainer = (props) => {
                 <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1 w-full">
                   <span className="pr-1 block ">Facilities:</span>
 
-                  <span className="flex flex-row  ">
+                  <GridContainer className=" ">
                     {Facilities.filter(Boolean).map(
                       (data, index) =>
                         data !== null && (
@@ -814,12 +819,12 @@ const TransferModeContainer = (props) => {
                                 <span className="px-1">|</span>
                               ) : null}
 
-                              <div className="min-w-fit">{data}</div>
+                              <div className="">{data}</div>
                             </div>
                           </div>
                         )
                     )}
-                  </span>
+                  </GridContainer>
                 </FacilityContainer>
               )}
             </div>

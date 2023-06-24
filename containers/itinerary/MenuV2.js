@@ -50,6 +50,7 @@ import { ITINERARY_STATUSES } from '../../services/constants';
 import MakeYourPersonalised from '../../components/MakeYourPersonalised';
 import useFieldOfView from '../../hooks/useFieldOfView';
 import useInView from '../../hooks/useInView';
+import { getCityDetails } from './getCityDetails';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -313,19 +314,16 @@ const SimpleTabsV2 = (props) => {
 
     setValue(2);
   };
-
+  const replaceLatLong = (source, destination) => ({
+    ...source,
+    lat: destination.lat,
+    long: destination.long,
+  });
   //Location tabs for mobile
   let locationsArr = [];
   let RoutesData = [];
   let TransfersData = [];
   let totalcityslabs = 0;
-  async function getCityDetails(cityname) {
-    const res = await axiosPoiCityInstance.get(
-      `/?city_id=${cityname}&fields=lat,long`
-    );
-    const data = res.data;
-    return data;
-  }
 
   if (props.breif)
     if (props.breif.city_slabs)
@@ -338,24 +336,40 @@ const SimpleTabsV2 = (props) => {
   if (props.breif)
     if (props.breif.city_slabs)
       if (props.routes) {
-        console.log('inside routes');
-        console.log(props.routes);
+        // console.log('inside routes');
+        // console.log(props.routes);
 
-        for (var i = 0; i < props.routes.length; i++) {
-          if (props.routes[i].element_type !== 'transfer') {
-            if (props.routes[i].long) {
-              RoutesData.push(props.routes[i]);
+        async function processRoutes(props) {
+          for (var i = 0; i < props.routes.length; i++) {
+            // console.log('routes one', props.routes[i]);
+            if (props.routes[i].element_type !== 'transfer') {
+              if (props.routes[i].long) {
+                // console.log(props.routes[i].long);
+                RoutesData.push(props.routes[i]);
+              } else {
+                if (props.routes[i].city_id) {
+                  try {
+                    const data = await getCityDetails(props.routes[i].city_id);
+                    // console.log('fetchdata data');
+                    // console.log(props.routes[i], data);
+                    const updatedRoutes = replaceLatLong(props.routes[i], data);
+                    RoutesData.push(updatedRoutes);
+                    // console.log('fetchdata data in', updatedRoutes);
+                  } catch (error) {
+                    console.error(error);
+                  }
+                }
+              }
             } else {
-              const fetchdata = getCityDetails(props.routes[i].city_id);
-              console.log('fetchdata data in', fetchdata);
+              TransfersData.push(props.routes[i]);
             }
-          } else {
-            TransfersData.push(props.routes[i]);
           }
+          console.log('routes finished');
+          console.log(RoutesData);
+          console.log(TransfersData);
         }
-        console.log(' routes finished');
-        console.log(RoutesData);
-        console.log(TransfersData);
+
+        processRoutes(props);
       }
   for (var i = 0; i < props.breif.city_slabs.length; i++) {
     if (!props.breif.city_slabs[i].is_trip_terminated) {
