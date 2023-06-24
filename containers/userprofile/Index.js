@@ -128,7 +128,7 @@ return (
 
         {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
         {myPlansArr.length ? (
-          <Experiences experiences={myPlansArr}></Experiences>
+          <Experiences navigationButtons experiences={myPlansArr}></Experiences>
         ) : !loading ? (
           <ImageLoader
             width="40%"
