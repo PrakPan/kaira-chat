@@ -133,9 +133,16 @@ const ProfileDropDown =(props)=>{
     });
 
     
-    let AuthMenu = <ProfileContainer className={"border"} style={{backgroundColor:'white', color: 'rgba(0,0,0,0.7)'}} showProfileList={props.showDropDownProfileList} showProfileListMobile={props.showDropDownProfileListMobile}>  
-                     <ProfileList onClick={props.authShowLogin}>Login</ProfileList>
-                   </ProfileContainer>;
+    let AuthMenu = (
+      <ProfileContainer
+        className={"border"}
+        style={{ backgroundColor: "white", color: "rgba(0,0,0,0.7)" }}
+        showProfileList={props.showDropDownProfileList}
+        showProfileListMobile={props.showDropDownProfileListMobile}
+      >
+        <ProfileList onClick={()=>props.setShowLoginModal(true)}>Login</ProfileList>
+      </ProfileContainer>
+    );
 
 
    
