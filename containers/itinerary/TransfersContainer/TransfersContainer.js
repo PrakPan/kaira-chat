@@ -17,6 +17,10 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 100%;
   }
+  @media screen and (min-width: 360px) {
+    width: 100%;
+    margin: 0 -1rem 0 -1rem;
+  }
   margin-bottom: 1.5rem;
 `;
 const TransContainer = styled.div`

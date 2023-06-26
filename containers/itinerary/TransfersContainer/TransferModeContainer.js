@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import ImageLoader from '../../../components/ImageLoader';
@@ -15,6 +15,7 @@ import axiosbookingupdateinstance from '../../../services/bookings/UpdateBooking
 import Slide from '../../../Animation/framerAnimation/Slide';
 import { PulseLoader } from 'react-spinners';
 import EllipsisTruncation from '../../EllipsisTruncate';
+import { checkNestedProperties } from '../../../helper/shortHelpers';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -132,13 +133,16 @@ const Line = styled.hr`
 `;
 
 const TransferModeContainer = (props) => {
-  const [addbooking, setaddboking] = useState(props.booking?.user_selected);
+  const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState({
     error: false,
     errorMsg: '',
   });
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
+  useEffect(() => {
+    setaddboking(props.userSelected);
+  }, [props.userSelected]);
   function handleCheckboxChange(e) {
     if (props.token && props.payment?.user_allowed_to_pay) {
       _updateSelectedTransfer();
@@ -656,9 +660,12 @@ const TransferModeContainer = (props) => {
                     <div>
                       {props.userSelected ? (
                         <div>
-                          {props.booking.via_airports
+                          {props?.booking?.via_airports &&
+                          checkNestedProperties(
+                            props.booking?.costings_breakdown?.Segments
+                          )
                             ? `(${
-                                props.booking.costings_breakdown.Segments[0]
+                                props.booking?.costings_breakdown?.Segments[0]
                                   .length - 1
                               } Lay)`
                             : '(Nonstop)'}
@@ -691,7 +698,7 @@ const TransferModeContainer = (props) => {
           </div>
         </div>
       ) : (
-        <div className="mt-3 lg:ml-7 ml-2">
+        <div className="mt-3 lg:ml-7 sm:ml-2 ml-0">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
             <div className="flex flex-row gap-2 justify-center items-center">
@@ -721,7 +728,7 @@ const TransferModeContainer = (props) => {
 
           <div
             id={props.booking.id}
-            className="mb-4 mt-3 group w-full flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center "
+            className="mb-4 mt-3 group min-w-full w-max  flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center "
           >
             {props.icon && (
               <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
@@ -780,7 +787,7 @@ const TransferModeContainer = (props) => {
                   )}
                 </div> */}
               </div>
-              <div>
+              <div className="sm:text-sm text-[0.9rem]">
                 {props.booking_type == 'Taxi'
                   ? 'Private transfer '
                   : props.booking_type}
@@ -790,10 +797,13 @@ const TransferModeContainer = (props) => {
                   </div>
                 )}
               </div>
-              <div className="flex flex-row gap-2 text-[#7A7A7A] font-light items-center">
+              <div className="flex sm:text-sm text-[0.9rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
                 {props.booking_type == 'Taxi' && (
-                  <div className=" cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+                  <div
+                    onClick={() => HandleTransport(props.index)}
+                    className=" cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  >
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                   </div>
                   // <LivelyButton
@@ -807,14 +817,16 @@ const TransferModeContainer = (props) => {
 
               {props?.costings_breakdown && (
                 <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1 w-full">
-                  <span className="pr-1 block ">Facilities:</span>
+                  <span className="pr-1 block sm:text-sm text-[0.8rem]">
+                    Facilities:
+                  </span>
 
                   <GridContainer className=" ">
                     {Facilities.filter(Boolean).map(
                       (data, index) =>
                         data !== null && (
                           <div className="gap-1 block  min-w-fit">
-                            <div className="flex flex-row text-sm font-normal">
+                            <div className="flex flex-row sm:text-sm text-[0.7rem] font-normal">
                               {index != 0 && data != null ? (
                                 <span className="px-1">|</span>
                               ) : null}
@@ -879,7 +891,7 @@ const TransferModeContainer = (props) => {
                     className="flex flex-row gap-1 items-center  cursor-pointer"
                   >
                     <CheckboxFormComponent checked={addbooking} />
-                    <label className="text-center">
+                    <label className="text-center sm:text-sm text-[0.7rem]">
                       {addbooking ? 'Added Booking' : 'Add Booking'}
                     </label>
                   </div>
