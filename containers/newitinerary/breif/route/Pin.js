@@ -6,7 +6,7 @@ const Container = styled.div`
   background-color: ${(props) => (props.pinColour ? props.pinColour : 'black')};
   width: 25px;
   height: 25px;
-  z-index: 2;
+  z-index: 0;
 `;
 const InnerContainer = styled.div`
   border-radius: 50%;

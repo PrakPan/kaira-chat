@@ -41,20 +41,29 @@ const NewItenaryDBDMob = (props) => {
   const [activeItem, setActiveItem] = useState(0);
 
   const isDesktop = useMediaQuery('(min-width:1148px)');
+  function extractCityName(arr) {
+    const cityObject = arr.find((obj) => obj.element_type === 'newcity');
 
+    if (cityObject && cityObject.city_name) {
+      return cityObject.city_name;
+    }
+
+    return null;
+  }
   const items = [];
   const itemsDays = [];
 
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
-
+      //Don't do anything if ending city
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
         break;
-      if (props.city_slabs[i] ? props.city_slabs[i].is_departure_only : true)
-        break;
       else {
-        const itenaryId = props.itinerary.day_slabs[i - 1];
+        const itenaryId =
+          i % props.city_slabs[i].duration
+            ? props.itinerary.day_slabs[i - 1]
+            : props.itinerary.day_slabs[i];
         // console.log(itenaryId !== undefined);
         // console.log('idssss' + props.city_slabs[i].city_name);
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
@@ -161,17 +170,19 @@ const NewItenaryDBDMob = (props) => {
       <div className="itenaryContainer">
         {props?.itinerary?.day_slabs?.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-            <Day_I_ContainerM
-              setShowLoginModal={props.setShowLoginModal}
-              Days={element}
-              indexDay={index}
-              payment={props.payment}
-              getPaymentHandler={props.getPaymentHandler}
-              itinerary_id={props.itinerary.tailor_made_id}
-              setItinerary={props.setItinerary}
-              token={props.token}
-              LastElement={props.itinerary.day_slabs.length == index}
-            ></Day_I_ContainerM>
+            <div id={extractCityName(element.slab_elements)}>
+              <Day_I_ContainerM
+                setShowLoginModal={props.setShowLoginModal}
+                Days={element}
+                indexDay={index}
+                payment={props.payment}
+                getPaymentHandler={props.getPaymentHandler}
+                itinerary_id={props.itinerary.tailor_made_id}
+                setItinerary={props.setItinerary}
+                token={props.token}
+                LastElement={props.itinerary.day_slabs.length == index}
+              ></Day_I_ContainerM>
+            </div>
           </div>
         ))}
       </div>
