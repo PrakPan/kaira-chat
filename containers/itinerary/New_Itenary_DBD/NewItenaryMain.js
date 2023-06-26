@@ -60,6 +60,9 @@ const NewItenaryMain = (props) => {
   //   props.city_slabs[1].duration,
   //   props.itinerary.day_slabs[i].slab.split('/')[0]
   // );
+  function extractId(location, arr) {
+    return arr[location].slab_id;
+  }
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -86,7 +89,10 @@ const NewItenaryMain = (props) => {
           } `,
           link:
             itenaryId !== undefined
-              ? itenaryId.slab_id
+              ? extractId(
+                  props.city_slabs[i]?.day_slab_location?.start_day_slab_index,
+                  props.itinerary.day_slabs
+                )
               : props.itinerary.day_slabs[1].slab_id,
 
           date:
@@ -213,19 +219,17 @@ const NewItenaryMain = (props) => {
         <div className="itenaryContainer">
           {props.itinerary.day_slabs.map((element, index) => (
             <div key={element.slab_id} id={element.slab_id}>
-              <div id={extractCityName(element.slab_elements)}>
-                <Day_I_Container
-                  Days={element}
-                  indexDay={index}
-                  setShowLoginModal={props.setShowLoginModal}
-                  payment={props.payment}
-                  getPaymentHandler={props.getPaymentHandler}
-                  itinerary_id={props.itinerary.tailor_made_id}
-                  setItinerary={props.setItinerary}
-                  token={props.token}
-                  LastElement={props.itinerary.day_slabs.length == index + 1}
-                ></Day_I_Container>
-              </div>
+              <Day_I_Container
+                Days={element}
+                indexDay={index}
+                setShowLoginModal={props.setShowLoginModal}
+                payment={props.payment}
+                getPaymentHandler={props.getPaymentHandler}
+                itinerary_id={props.itinerary.tailor_made_id}
+                setItinerary={props.setItinerary}
+                token={props.token}
+                LastElement={props.itinerary.day_slabs.length == index + 1}
+              ></Day_I_Container>
             </div>
           ))}
         </div>

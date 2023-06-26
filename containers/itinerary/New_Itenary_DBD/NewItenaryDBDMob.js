@@ -52,7 +52,9 @@ const NewItenaryDBDMob = (props) => {
   }
   const items = [];
   const itemsDays = [];
-
+  function extractId(location, arr) {
+    return arr[location].slab_id;
+  }
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -79,7 +81,10 @@ const NewItenaryDBDMob = (props) => {
           } `,
           link:
             itenaryId !== undefined
-              ? itenaryId.slab_id
+              ? extractId(
+                  props.city_slabs[i]?.day_slab_location?.start_day_slab_index,
+                  props.itinerary.day_slabs
+                )
               : props.itinerary.day_slabs[1].slab_id,
 
           date:
@@ -170,19 +175,17 @@ const NewItenaryDBDMob = (props) => {
       <div className="itenaryContainer">
         {props?.itinerary?.day_slabs?.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>
-            <div id={extractCityName(element.slab_elements)}>
-              <Day_I_ContainerM
-                setShowLoginModal={props.setShowLoginModal}
-                Days={element}
-                indexDay={index}
-                payment={props.payment}
-                getPaymentHandler={props.getPaymentHandler}
-                itinerary_id={props.itinerary.tailor_made_id}
-                setItinerary={props.setItinerary}
-                token={props.token}
-                LastElement={props.itinerary.day_slabs.length == index}
-              ></Day_I_ContainerM>
-            </div>
+            <Day_I_ContainerM
+              setShowLoginModal={props.setShowLoginModal}
+              Days={element}
+              indexDay={index}
+              payment={props.payment}
+              getPaymentHandler={props.getPaymentHandler}
+              itinerary_id={props.itinerary.tailor_made_id}
+              setItinerary={props.setItinerary}
+              token={props.token}
+              LastElement={props.itinerary.day_slabs.length == index}
+            ></Day_I_ContainerM>
           </div>
         ))}
       </div>
