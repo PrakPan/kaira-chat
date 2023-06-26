@@ -478,7 +478,7 @@ const HotelBookingContainer = ({
                               ? 'lg:bottom-10 bottom-[1.2rem]'
                               : 'lg:bottom-10 bottom-[2.5rem]'
                           }`
-                    } right-8 -m-3`}
+                    } right-6 -m-3`}
                   >
                     {loading && (
                       <PulseLoader
@@ -509,7 +509,7 @@ const HotelBookingContainer = ({
               </div>
             )}
             {currentBooking && (
-              <div className="absolute  bottom-4 right-8 -m-3">
+              <div className="absolute  bottom-[28px] right-8 -m-3">
                 {alternates ? (
                   <div className="">
                     <div

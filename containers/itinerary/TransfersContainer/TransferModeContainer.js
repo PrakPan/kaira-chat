@@ -748,9 +748,9 @@ const TransferModeContainer = (props) => {
                       url={props.icon}
                       leftalign
                       // dimensions={{ width: 900, height: 500 }}
-                      height="4rem"
+                      height="3rem"
                       width="4rem"
-                      widthmobile="3.8rem"
+                      widthmobile="3rem"
                     ></ImageLoader>
                   )
                 )}
@@ -787,7 +787,7 @@ const TransferModeContainer = (props) => {
                   )}
                 </div> */}
               </div>
-              <div className="sm:text-sm text-[0.9rem]">
+              <div className="sm:text-sm text-[0.93rem]">
                 {props.booking_type == 'Taxi'
                   ? 'Private transfer '
                   : props.booking_type}
@@ -797,7 +797,7 @@ const TransferModeContainer = (props) => {
                   </div>
                 )}
               </div>
-              <div className="flex sm:text-sm text-[0.9rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
+              <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
                 {props.booking_type == 'Taxi' && (
                   <div
@@ -817,7 +817,7 @@ const TransferModeContainer = (props) => {
 
               {props?.costings_breakdown && (
                 <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1 w-full">
-                  <span className="pr-1 block sm:text-sm text-[0.8rem]">
+                  <span className="pr-1 block sm:text-sm text-[0.82rem]">
                     Facilities:
                   </span>
 
@@ -826,7 +826,7 @@ const TransferModeContainer = (props) => {
                       (data, index) =>
                         data !== null && (
                           <div className="gap-1 block  min-w-fit">
-                            <div className="flex flex-row sm:text-sm text-[0.7rem] font-normal">
+                            <div className="flex flex-row sm:text-sm text-[0.74rem] font-normal">
                               {index != 0 && data != null ? (
                                 <span className="px-1">|</span>
                               ) : null}
@@ -879,7 +879,7 @@ const TransferModeContainer = (props) => {
                         left: '50%',
                         transform: 'translate(-50% , -50%)',
                       }}
-                      size={12}
+                      size={6}
                       speedMultiplier={0.6}
                       color="#111"
                     />
