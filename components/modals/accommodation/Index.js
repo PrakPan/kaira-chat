@@ -16,8 +16,8 @@ import media from '../../media';
 import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import POIDetailsSkeleton from '../../drawers/poiDetails/POIDetailsSkeleton';
-import { CgClose } from "react-icons/cg";
-import Skeleton from './Skeleton'
+import { CgClose } from 'react-icons/cg';
+import Skeleton from './Skeleton';
 import { IoMdClose } from 'react-icons/io';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
@@ -58,7 +58,7 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left : 90%;
+  left: 90%;
   z-index: 2;
   cursor: pointer;
 `;
@@ -67,9 +67,9 @@ const POI = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   useEffect(() => {
-    if (props.show)
-          setLoading(true);
-      
+    if (props.show) {
+      setLoading(true);
+
       // change after is_group field activated in itinerary APIs
       // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
       axiosaccommodationinstance
@@ -82,17 +82,18 @@ const POI = (props) => {
           setLoading(false);
           // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         });
+    }
   }, [props.id, props.show]);
   let isPageWide = media('(min-width: 768px)');
   return (
     <Drawer
       show={props.show}
-      anchor={"right"}
+      anchor={'right'}
       backdrop
       style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={props.onHide}
-      mobileWidth={"100%"}
+      mobileWidth={'100%'}
       width="50%"
       zIndex="1501"
     >
@@ -102,7 +103,7 @@ const POI = (props) => {
             <IoMdClose
               className="hover-pointer"
               onClick={props.onHide}
-              style={{ fontSize: "2rem" }}
+              style={{ fontSize: '2rem' }}
             ></IoMdClose>
             <BackText>Back to Itinerary</BackText>
           </BackContainer>
@@ -126,8 +127,8 @@ const POI = (props) => {
           {!isPageWide && (
             <FloatingView>
               <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
+                style={{ height: '28px', width: '28px' }}
+                cursor={'pointer'}
                 onClick={props.onHide}
               />
             </FloatingView>

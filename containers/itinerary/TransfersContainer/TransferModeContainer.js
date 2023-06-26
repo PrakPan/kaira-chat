@@ -748,7 +748,7 @@ const TransferModeContainer = (props) => {
                       url={props.icon}
                       leftalign
                       // dimensions={{ width: 900, height: 500 }}
-                      height="3rem"
+                      height="4rem"
                       width="4rem"
                       widthmobile="3rem"
                     ></ImageLoader>
