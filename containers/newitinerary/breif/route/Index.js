@@ -244,7 +244,9 @@ const Route = (props) => {
           route={props.routes[1]}
           version={props?.plan?.version}
           icon={props?.transfers[0]?.icon}
-          hidemidsection={false}
+          hidemidsection={
+            props?.plan?.version == ITINERARY_VERSION.version_2 ? false : true
+          }
           routesData={props.routesData}
           transportMode={'Taxi'}
           duration={props.routes[1]?.meta?.Time}
@@ -259,7 +261,9 @@ const Route = (props) => {
           route={props.routes[1]}
           version={props?.plan?.version}
           icon={props?.transfers[0]?.icon}
-          hidemidsection={true}
+          hidemidsection={
+            props?.plan?.version == ITINERARY_VERSION.version_2 ? false : true
+          }
           routesData={props.routesData}
           transportMode={'Taxi'}
           duration={props.breif.city_slabs[0].duration}

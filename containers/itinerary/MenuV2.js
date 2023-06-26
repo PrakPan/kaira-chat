@@ -1317,14 +1317,14 @@ const SimpleTabsV2 = (props) => {
             </div>
           )}
           {!props.token ? (
-            <div className="mt-2">
+            <div className="">
               <Button
                 color="#111"
                 fontWeight="600"
                 fontSize="0.85rem"
                 borderWidth="3px"
                 width="10rem"
-                borderRadius="10px"
+                borderRadius="8px"
                 bgColor="#f8e000"
                 onclick={() => setShowLoginModal(true)}
               >
@@ -1339,14 +1339,14 @@ const SimpleTabsV2 = (props) => {
             !props.payment.paid_user &&
             props.payment.user_allowed_to_pay ? (
               props.payment.total_cost > 0 ? (
-                <div className="mt-2">
+                <div className="">
                   <Button
                     color="#111"
                     fontWeight="600"
                     fontSize="0.85rem"
-                    borderWidth="3px"
+                    borderWidth="2px"
                     width="10rem"
-                    borderRadius="10px"
+                    borderRadius="8px"
                     bgColor="#f8e000"
                     onclick={() =>
                       setShowFooterBannerMobile(!showFooterBannerMobile)
@@ -1356,14 +1356,14 @@ const SimpleTabsV2 = (props) => {
                   </Button>
                 </div>
               ) : (
-                <div className="mt-2">
+                <div className="">
                   <Button
                     color="#111"
                     fontWeight="600"
                     fontSize="0.85rem"
-                    borderWidth="3px"
+                    borderWidth="2px"
                     width="10rem"
-                    borderRadius="10px"
+                    borderRadius="8px"
                     bgColor="#f8e000"
                     onclick={() => scrollToElement('Stays-Head')}
                   >
@@ -1372,14 +1372,14 @@ const SimpleTabsV2 = (props) => {
                 </div>
               )
             ) : !props.payment.paid_user ? (
-              <div className="mt-2">
+              <div className="">
                 <Button
                   color="#111"
                   fontWeight="600"
                   fontSize="0.85rem"
-                  borderWidth="3px"
+                  borderWidth="2px"
                   width="10rem"
-                  borderRadius="10px"
+                  borderRadius="8px"
                   bgColor="#f8e000"
                   onclick={() => setNewitinerary(!Newitinerary)}
                 >
@@ -1393,7 +1393,7 @@ const SimpleTabsV2 = (props) => {
                 fontSize="0.85rem"
                 borderWidth="0px"
                 width="8rem"
-                borderRadius="10px"
+                borderRadius="8px"
                 bgColor="#04AA32"
                 onclick={() =>
                   setShowFooterBannerMobile(!showFooterBannerMobile)

@@ -102,6 +102,7 @@ const Day_I_Container = (props) => {
   }
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements, slab) {
+    console.log('JsonArray', JsonArray.length);
     JsonArray.map((element, index) => {
       switch (element.element_type) {
         case 'transfer':
@@ -117,6 +118,7 @@ const Day_I_Container = (props) => {
               icon={element.icon}
               heading={element.heading}
               text={element.text}
+              LastTransfer={props.LastElement}
               // newcity={
               //   Arslab_elements[1].data[0].length != 0
               //     ? Arslab_elements[1].data[0][0]

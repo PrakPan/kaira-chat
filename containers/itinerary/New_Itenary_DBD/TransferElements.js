@@ -27,6 +27,7 @@ const TransferElements = ({
   icon,
   text,
   newcity,
+  LastTransfer,
 }) => {
   function isValueUndefined(value) {
     return value === undefined;
@@ -119,7 +120,7 @@ const TransferElements = ({
               </div>
             </div>
           </TInfoContainer>
-          {meta?.duration ? (
+          {meta?.duration && !LastTransfer ? (
             <div className="absolute -bottom-[20px] left-1/2 bg-white px-2 ">
               <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
                 <TransportIconFetcher
