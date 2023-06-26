@@ -220,6 +220,7 @@ const NewItenaryMain = (props) => {
                   itinerary_id={props.itinerary.tailor_made_id}
                   setItinerary={props.setItinerary}
                   token={props.token}
+                  LastElement={props.itinerary.day_slabs.length == index + 1}
                 ></Day_I_Container>
               </div>
             </div>

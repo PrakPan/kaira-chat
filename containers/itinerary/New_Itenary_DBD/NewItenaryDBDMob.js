@@ -170,6 +170,7 @@ const NewItenaryDBDMob = (props) => {
               itinerary_id={props.itinerary.tailor_made_id}
               setItinerary={props.setItinerary}
               token={props.token}
+              LastElement={props.itinerary.day_slabs.length == index}
             ></Day_I_ContainerM>
           </div>
         ))}
