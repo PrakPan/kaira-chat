@@ -51,7 +51,7 @@ const TransferElementsM = ({
               <div className="text-[1.2rem] font-normal line-clamp-2 ">
                 {heading}
               </div>
-              {modes && (
+              {meta == null || meta.estimated_cost == undefined ? null : (
                 <Link
                   to={
                     data.bookings
@@ -61,7 +61,10 @@ const TransferElementsM = ({
                   offset={-90}
                 >
                   <TransparentButton>
-                    {modes ? `Booking For ${modes} ` : null}
+                    {modes ? `Add ${modes} ` : null}
+                    {/* ₹
+                      {formatNumber(Math.round(meta.estimated_cost))
+                      } */}
                   </TransparentButton>
                 </Link>
               )}

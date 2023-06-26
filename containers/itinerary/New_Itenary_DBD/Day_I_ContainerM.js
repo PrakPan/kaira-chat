@@ -80,14 +80,14 @@ const Day_I_ContainerM = (props) => {
             <TransferElementsM
               time="9:00AM"
               modes={getTransportationType(element.icon)}
+              // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
+              data={element}
+              //To-do Read From Booking
               transfers={element.transfers}
               meta={element.meta}
               icon={element.icon}
-              data={element}
               heading={element.heading}
-              bookings={element.bookings}
-              text={props.Days.slab_elements[0].text}
-              booking={element?.bookings ? element?.bookings[0] : null}
+              text={element.text}
               LastTransfer={props.LastElement}
               // newcity={
               //   Arslab_elements[1].data[0].length != 0
