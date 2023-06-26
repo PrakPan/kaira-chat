@@ -738,7 +738,7 @@ const HotelsBooking = (props) => {
               handleClick={handleClick}
               handleClickAc={handleClickAc}
               selectedBooking={booking}
-              city_id={props.breif.city_slabs[index].city_id}
+              city_id={props?.breif?.city_slabs[index]?.city_id}
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
               loginModal={showLoginModal}
@@ -805,8 +805,8 @@ const HotelsBooking = (props) => {
           <Floating>
             <FaFilter
               className="text-white"
-              style={{ height: "18px", width: "18px" }}
-              cursor={"pointer"}
+              style={{ height: '18px', width: '18px' }}
+              cursor={'pointer'}
               onClick={(e) => {
                 setshowFilter(true);
               }}
@@ -826,8 +826,8 @@ const HotelsBooking = (props) => {
             > */}
           <FloatingView>
             <TbArrowBack
-              style={{ height: "28px", width: "28px" }}
-              cursor={"pointer"}
+              style={{ height: '28px', width: '28px' }}
+              cursor={'pointer'}
               onClick={props.setHideBookingModal}
             />
           </FloatingView>

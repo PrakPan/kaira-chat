@@ -84,7 +84,10 @@ const NewItenaryMain = (props) => {
               ? `(${props.city_slabs[i].duration}N)`
               : ` `
           } `,
-          link: props.city_slabs[i].city_name,
+          link:
+            itenaryId !== undefined
+              ? itenaryId.slab_id
+              : props.itinerary.day_slabs[1].slab_id,
 
           date:
             itenaryId !== undefined
