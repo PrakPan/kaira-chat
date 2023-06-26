@@ -77,8 +77,8 @@ const PinSection = ({
           ? city +
             `${
               duration > 1
-                ? ` - ${duration}`
-                : `${duration == 0 ? ` ` : ` - ${duration}`}  `
+                ? ` - ${duration} Nights`
+                : `${duration == 0 ? `` : ` - ${duration}`}  Night`
             } `
           : city}
         {/* <div className="px-4 py-1 text-[12px] cursor-pointer border-2 border-black ml-6 font-bold font-lexend text-black rounded-md">
