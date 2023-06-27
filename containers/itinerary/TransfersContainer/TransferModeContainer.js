@@ -516,7 +516,8 @@ const TransferModeContainer = (props) => {
 
                             {props.userSelected ? (
                               <div className="min-w-max text-[0.8rem]">
-                                {props.booking.via_airports
+                                {props.booking.via_airports &&
+                                props.booking.costings_breakdown
                                   ? `(${
                                       props.booking.costings_breakdown
                                         .Segments[0].length - 1
