@@ -91,14 +91,13 @@ export const getServerSideProps = async ({ res }) => {
   //   ...experiencepaths,
   // ];
   const allPaths = [...StaticPaths,...continentsPaths , ...countriesPaths , ...statesPaths , ...citypaths];
-
+{/* <title>${el.title}</title>; */}
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       ${allPaths
         .map((el) => {
           return `
             <url>
-            <title>${el.title}</title>
               <loc>${el.link}</loc>
               <lastmod>${new Date().toISOString()}</lastmod>
               <changefreq>monthly</changefreq>
