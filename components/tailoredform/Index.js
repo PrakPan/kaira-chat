@@ -628,33 +628,33 @@ const Enquiry = (props) => {
               // )
 
 //new code without login:-
-              // !props.token ? (
-              //   <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              //     <Button
-              //       fontSize="1rem"
-              //       width={!isPageWide ? "auto" : "100%"}
-              //       style={
-              //         !isPageWide
-              //           ? {
-              //               position: "fixed",
-              //               left: "1rem",
-              //               right: "1rem",
-              //               bottom: "0",
-              //             }
-              //           : {}
-              //       }
-              //       padding="0.5rem 2rem"
-              //       fontWeight="500"
-              //       margin="1rem 0"
-              //       borderRadius="5px"
-              //       borderWidth="1px"
-              //       bgColor="#f7e700"
-              //       onclick={_SlideTwoSubmitHandler}
-              //     >
-              //       Continue
-              //     </Button>
-              //   </div>
-              // ) :
+              !props.token ? (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    onclick={_SlideTwoSubmitHandler}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) :
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   fontSize="1rem"
