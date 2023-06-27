@@ -524,7 +524,7 @@ const Details = (props) => {
               </div>
             )}
 
-            {iscouponApplied && (
+            {iscouponApplied && props?.payment?.coupon_usage && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
                 <div>{props?.payment?.coupon_usage?.usage_description}</div>
               </div>

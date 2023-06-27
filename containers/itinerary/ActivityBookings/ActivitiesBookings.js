@@ -423,6 +423,17 @@ const ActivitiesBookings = (props) => {
                     <div className="text-lg font-bold ">{booking?.name}</div>
                     <div className="flex flex-col gap-1">
                       <div className="text-sm font-medium">{booking?.city}</div>
+                      {booking.points &&
+                        booking.points.map((data, i) => (
+                          <div className="flex flex-col gap-1 ">
+                            {data !== '' && (
+                              <div className="flex flex-row gap-1 ">
+                                <div>{i + 1}. </div>
+                                <div>{data}</div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       {booking?.user_rating && (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#ffa500]">
@@ -437,16 +448,19 @@ const ActivitiesBookings = (props) => {
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-row gap-2 items-center">
-                      <BsCalendar2 className="text-md text-[#7A7A7A]" />
-                      <div>
-                        <div className="text-md font-medium ">
-                          {booking.check_in && getDate(booking.check_in)}
-                          {booking.check_out &&
-                            ' - ' + ' ' + getDate(booking.check_out)}
+                    {booking.check_in && (
+                      <div className="flex flex-row gap-2 items-center">
+                        <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                        <div>
+                          <div className="text-md font-medium ">
+                            {booking.check_in && getDate(booking.check_in)}
+                            {booking.check_out &&
+                              ' - ' + ' ' + getDate(booking.check_out)}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
+
                     {booking.costings_breakdown[0] && (
                       <div>
                         <div
@@ -484,6 +498,7 @@ const ActivitiesBookings = (props) => {
                         ) : null}
                       </div>
                     )}
+
                     <div className="flex flex-row gap-3 items-center w-full">
                       {booking.accommodation && (
                         <ButtonYellow
@@ -495,17 +510,17 @@ const ActivitiesBookings = (props) => {
                           <div className="text-[#01202B] ">View Detail</div>
                         </ButtonYellow>
                       )}
-                      {props?.stayBookings[index] && (
+                      {/* {props?.stayBookings[index] && (
                         <ButtonYellow
                           primary={false}
                           className="lg:w-fit w-1/2"
-                          onClick={() => {
-                            handleClickAc(index);
-                          }}
+                          // onClick={() => {
+                          //   handleClickAc(index);
+                          // }}
                         >
                           <div className="text-[#01202B] ">Change</div>
                         </ButtonYellow>
-                      )}
+                      )} */}
                     </div>
                   </div>
                   {/* {booking.costings_breakdown && (
