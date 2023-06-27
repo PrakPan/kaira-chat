@@ -54,10 +54,10 @@ export async function getStaticPaths() {
 
   // const data = await res.json();
 
-  // const res = await axiosallCityInstance.get("");
-    const res = await axios.get(
-      "https://apis.tarzanway.com/search/all/?type=Location"
-    );
+  const res = await axiosallCityInstance.get("");
+    // const res = await axios.get(
+    //   "https://dev.apis.tarzanway.com/search/all/?type=Location"
+    // );
 
   const data = res.data;
 
@@ -92,6 +92,8 @@ export async function getStaticProps(context) {
     const resp = await axiosReccommendedCityInstance.get(
       `/?slug=${context.params.city}&limit=6`
     );
+    // const resp = await fetch(`https://apis.tarzanway.com/poi/city/recommended?slug=`+context.params.city)
+
     const reccoData = resp.data;
     var reccomendedCitiesData = reccoData.map((e) => ({
       id: e.id,
@@ -100,7 +102,7 @@ export async function getStaticProps(context) {
       long: e.long,
       most_popular_for: e.most_popular_for,
       name: e.name,
-      path : e.path
+      path: e.path,
     }));
   } catch {
     var reccomendedCitiesData = null;
