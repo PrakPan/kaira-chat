@@ -70,9 +70,9 @@ const Booking = (props) => {
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState();
   const [filtersState, setFiltersState] = useState({
-    budget: [],
-    type: [],
-    star_category: [],
+    budget: '',
+    type: '',
+    star_category: '',
   });
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
@@ -361,7 +361,9 @@ const Booking = (props) => {
     setOffset(0);
     setUpdateLoadingState(true);
     setNoResults(false);
-
+    let budgetarr = filtersState.budget;
+    let typearr = filtersState.type;
+    let sta_catgeoryarr = filtersState.star_category;
     let filters = _generateFilterKeys(filtersState);
     //BUDGET FILTERS
 
@@ -373,8 +375,10 @@ const Booking = (props) => {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
-        accommodation_types: filters.type,
+
         trace: traceId,
+        star_category: sta_catgeoryarr,
+        accommodation_type: typearr,
         city_id: props.selectedBooking.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
@@ -439,23 +443,31 @@ const Booking = (props) => {
   const _addFilterHandler = (filter, heading) => {
     let oldfilters = filtersState;
     let oldfiltersheadingarr = filtersState[heading];
-
-    oldfiltersheadingarr.push(filter);
+    /* 
     let newfilters = {
       ...oldfilters,
-      [heading]: oldfiltersheadingarr,
+      [heading]: filter,
     };
-    setFiltersState(newfilters);
+    setFiltersState(newfilters); */
+    setFiltersState((prevState) => ({
+      ...prevState,
+      [heading]: filter,
+    }));
     _updateOptionsHandlerWithFilter();
   };
-  const _updateStarFilterHandler = (lower, upper) => {
-    let oldfilters = filtersState;
+  const _updateStarFilterHandler = (star) => {
+    console.log('filter star', star);
+    /* let oldfilters = { ...filtersState };
     let newfilters = {
       ...oldfilters,
-      star_category: [lower, upper],
+      star_category: star,
     };
-
-    setFiltersState(newfilters);
+    setFiltersState(newfilters); */
+    setFiltersState((prevState) => ({
+      ...prevState,
+      star_category: star,
+    }));
+    console.log('filter filterr', newfilters);
     _updateOptionsHandlerWithFilter();
   };
   const _removeFilterHandler = (filter, heading) => {
@@ -468,6 +480,7 @@ const Booking = (props) => {
       ...oldfilters,
       [heading]: oldfiltersheadingarr,
     };
+
     setFiltersState(newfilters);
     _updateOptionsHandlerWithFilter();
   };
