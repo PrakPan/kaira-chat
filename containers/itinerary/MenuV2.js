@@ -1157,7 +1157,7 @@ const SimpleTabsV2 = (props) => {
                   activityBookings={props.activityBookings}
                   transferBookings={props.transferBookings}
                 ></BookingContainer> */}
-              {!props.payment.is_registration_needed ? (
+              {!props.payment.is_registration_needed || true ? (
                 <SummaryContainer
                   setUserDetails={props.setUserDetails}
                   id={props.id}

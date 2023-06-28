@@ -37,6 +37,13 @@ import { format, isPast, parseISO } from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { Link, scroller } from 'react-scroll';
 import { pluralDetector } from '../../../helper/shortHelpers';
+import SelectDate from './gittailored/SelectDate';
+import SelectPax from './gittailored/SelectPax';
+import dayjs from 'dayjs';
+import RegistrationModal from '../../../components/modals/terms/PW';
+import VerificationModal from '../../../components/modals/verify/Index';
+import RegisteredUsersModal from '../../../components/modals/registeredusers/Index';
+import TermsModal from '../../../components/modals/terms/PW';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -81,6 +88,17 @@ const Details = (props) => {
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ''
   );
+  const [showVerification, setShowVerification] = useState(false);
+  const [showRegistration, setShowRegistartion] = useState(false);
+
+  const [pax, setPax] = useState(5);
+  const [date, setDate] = useState(null);
+
+  const _handleVerificationSuccess = () => {
+    props.getPaymentHandler();
+    setShowVerification(false);
+  };
+
   const [isError, setIsError] = useState({
     error: false,
     errorMsg: '',
@@ -93,7 +111,8 @@ const Details = (props) => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const router = useRouter();
-
+  const [showTerms, setShowTerms] = useState(false);
+  const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
   useEffect(() => {
     if (props.plan?.start_date) {
       if (isPast(parseISO(props.plan?.start_date))) {
@@ -543,11 +562,19 @@ const Details = (props) => {
                 >
                   <span>₹</span>
                   <div>
-                    {getIndianPrice(
-                      Math.round(
-                        Math.round(props.payment.discounted_cost) / 100
-                      )
-                    )}
+                    {props?.payment?.pay_only_for_one
+                      ? getIndianPrice(
+                          Math.round(
+                            Math.round(props.payment.per_person_total_cost) /
+                              100
+                          )
+                        )
+                      : getIndianPrice(
+                          Math.round(
+                            Math.round(props.payment.discounted_cost) / 100
+                          )
+                        )}
+
                     {/* {!props.payment.show_per_person_cost
                       ? ' ' +
                         getIndianPrice(
@@ -567,11 +594,14 @@ const Details = (props) => {
                 )}
               </div>
             </div> */}
+
                 {props.payment.paid_user ? (
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
                 ) : (
                   <div className="font-medium text-base self-end">
-                    {props.payment?.is_estimated_price
+                    {props?.payment?.pay_only_for_one
+                      ? 'Per Person Cost'
+                      : props.payment?.is_estimated_price
                       ? `${
                           props.payment.total_cost == 0 ? '' : 'Estimated Price'
                         }`
@@ -588,7 +618,55 @@ const Details = (props) => {
             </div>
           </div>
         </div>
-
+        {!oldaccommodation ? (
+          <div
+            className="px-2 pt-2"
+            style={{
+              marginBottom: '0.1rem',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridColumnGap: '1rem',
+            }}
+          >
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <div></div>
+            )}
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <div></div>
+            )}
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <SelectDate
+                date={date}
+                setDate={setDate}
+                token={props.token}
+              ></SelectDate>
+            )}
+            {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{props.payment.number_of_people}</p> */}
+            {props.payment.meta_info &&
+            (props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+              props.plan.featured) ? null : (
+              <SelectPax
+                number_of_adults={
+                  props.payment
+                    ? props.payment.meta_info
+                      ? props.payment.meta_info.number_of_adults
+                      : 5
+                    : 5
+                }
+                setPax={setPax}
+                token={props.token}
+                setShowLoginModal={props.setShowLoginModal}
+              ></SelectPax>
+            )}
+          </div>
+        ) : null}
         <div
           className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
@@ -979,6 +1057,22 @@ const Details = (props) => {
               Add Hotels
             </ButtonYellow>
           )
+        ) : props.payment.is_registration_needed ? (
+          props.payment.email_reverification_needed ? (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => setShowVerification(true)}
+            >
+              Pay Now
+            </ButtonYellow>
+          ) : (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => setShowRegistartion(true)}
+            >
+              Pay Now
+            </ButtonYellow>
+          )
         ) : (
           !props.payment.paid_user && (
             <ButtonYellow
@@ -1030,6 +1124,38 @@ const Details = (props) => {
           <div>Terms & Conditions</div>
         </a>
       </div>
+      <RegistrationModal
+        number_of_adults={
+          props.payment
+            ? props.payment.meta_info
+              ? props.payment.meta_info.number_of_adults
+              : 5
+            : 5
+        }
+        payment={props.payment}
+        plan={props.plan}
+        date={date}
+        id={props.id}
+        show={showRegistration}
+        hide={() => setShowRegistartion(false)}
+        pax={pax}
+      ></RegistrationModal>
+      <VerificationModal
+        date={date}
+        pax={pax}
+        onSuccess={_handleVerificationSuccess}
+        show={showVerification}
+        hide={() => setShowVerification(false)}
+      ></VerificationModal>
+      <RegisteredUsersModal
+        registered_users={props.payment ? props.payment.registered_users : null}
+        show={showRegisteredUsers}
+        hide={() => setShowRegisteredUsers(false)}
+      ></RegisteredUsersModal>
+      <TermsModal
+        show={showTerms}
+        hide={() => setShowTerms(false)}
+      ></TermsModal>
       {props.token && Newitinerary && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
