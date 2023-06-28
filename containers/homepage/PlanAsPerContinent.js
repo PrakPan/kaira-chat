@@ -174,10 +174,12 @@ const PlanAsPerTheme = (props) => {
       onClick={() => _handleTripRedirect(e.path)}
     >
       <ImageContainer>
-       { <TextContainer className="AnimateTop">
-          <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
-          {isPageWide && <div className="StartNow">Explore!</div>}
-        </TextContainer>}
+        {
+          <TextContainer className="AnimateTop">
+            <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
+            {isPageWide && <div className="StartNow">Explore!</div>}
+          </TextContainer>
+        }
         <ImageLoader
           noLazy
           fit="cover"
@@ -186,9 +188,11 @@ const PlanAsPerTheme = (props) => {
           dimensions={{ width: 1500, height: 800 }}
           dimensionsMobile={{ width: 500, height: 500 }}
           url={e.image}
+          style={{ filter: "brightness(0.75)" }}
+
           // onload={_handleImageLoaded}
         ></ImageLoader>
-       {<BlackContainer />}
+        {/* {<BlackContainer />} */}
       </ImageContainer>
     </GridItem>
   ));

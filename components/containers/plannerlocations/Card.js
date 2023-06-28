@@ -25,16 +25,18 @@ const ImageContainer = styled.div`
 `;
 
 const BlackContainer = styled.div`
-  background-color: rgba(0, 0, 0, 0.4);
+  // background-color: rgba(0, 0, 0, 0.4);
   width: 100%;
-  height: 100%;
+  // height: 0%;
+  // border : 1px solid red;
   position: absolute;
   color: white;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 0.5rem;
-  top: 0;
+  // top: 0;
+  bottom : 0;
   flex-direction: column;
 `;
 const Heading = styled.p`
@@ -85,6 +87,7 @@ const Experiences = (props) => {
           dimensions={{ width: 800, height: 800 }}
           dimensionsMobile={{ width: 800, height: 800 }}
           height="35vh"
+          style={{ filter: 'brightness(0.55)'}}
         ></ImageLoader>
       </ImageFade>
       <BlackContainer className="font-lexend">

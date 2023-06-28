@@ -174,22 +174,34 @@ const PlanAsPerTheme = (props) => {
   };
 
     const order = ['e','b','c','a']
-    const ThemeContainer = 
-    props.ThemeData?.slice(0,4).map((e,i)=>(
-        <GridItem className={order[i]} key={i} onClick={()=>_handleTripRedirect(e.path)}>
-            {ImgLoading && <SkeletonCard />}
-            <ImageContainer style={ImgLoading ? {display : 'none'} : {display : 'initial'}} bg='road-trip.png'>
-            <TextContainer className='AnimateTop'>
-                <Heading>{e.banner_heading}</Heading>
-            {isPageWide && <div className='StartNow'>Explore!</div> }
-            </TextContainer>
-            <ImageLoader noLazy onload={()=>setImgLoading(false)} fit='cover' width="100%" height='100%'  url={e.image}></ImageLoader> 
-            <BlackContainer/>
-
-            </ImageContainer>
-          
-        </GridItem >
-      ))
+    const ThemeContainer = props.ThemeData?.slice(0, 4).map((e, i) => (
+      <GridItem
+        className={order[i]}
+        key={i}
+        onClick={() => _handleTripRedirect(e.path)}
+      >
+        {ImgLoading && <SkeletonCard />}
+        <ImageContainer
+          style={ImgLoading ? { display: "none" } : { display: "initial" }}
+          bg="road-trip.png"
+        >
+          <TextContainer className="AnimateTop">
+            <Heading>{e.banner_heading}</Heading>
+            {isPageWide && <div className="StartNow">Explore!</div>}
+          </TextContainer>
+          <ImageLoader
+            noLazy
+            onload={() => setImgLoading(false)}
+            fit="cover"
+            width="100%"
+            height="100%"
+            style={{ filter: "brightness(0.70)" }}
+            url={e.image}
+          ></ImageLoader>
+          {/* <BlackContainer/> */}
+        </ImageContainer>
+      </GridItem>
+    ));
     
 
   return (

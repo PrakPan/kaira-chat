@@ -183,6 +183,8 @@ const ImageLoader = (props) => {
             borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
         >
+        
+
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
             src={
@@ -236,6 +238,7 @@ const ImageLoader = (props) => {
             borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
         >
+          {/* <img src={imgUrlEndPoint + props.url} /> */}
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
             src={

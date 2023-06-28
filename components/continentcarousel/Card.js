@@ -29,20 +29,15 @@ const ImageContainer = styled.div`
 `;
 
 const BlackContainer = styled.div`
-  background-color: rgba(0, 0, 0, 0.4);
   width: 100%;
-  height: 100%;
   position: absolute;
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  top: 0;
-  flex-direction: column;
+  left: 50%;
+  top : 50%;
   @media screen and (min-width: 768px) {
-    justify-content: ${(props) => (props.continent ? "center" : "flex-end")};
+    ${(props) => (props.continent ? "top : 50%" : "top : unset ; bottom: 0%")};
   }
+  transform: translate(-50%, -50%);
 `;
 const Heading = styled.p`
   font-size: ${(props) => (props.continent ? "3rem" : "1.25rem")};
@@ -60,7 +55,7 @@ const Subheading = styled.p`
 
   line-height: 1;
   text-align: center;
-
+margin : 0;
   font-weight: 200;
 `;
 
@@ -97,6 +92,7 @@ const Experiences = (props) => {
           }
           height={props.continent ? "71vh" : "35vh"}
           onload={() => setImageLoaded(true)}
+          style={{filter : 'brightness(0.75)'}}
         ></ImageLoader>
       </ImageFade>
       <BlackContainer continent={props.continent} className="font-lexend">
