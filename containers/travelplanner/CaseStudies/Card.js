@@ -4,8 +4,8 @@ import Button from '../../../components/ui/button/Index';
 import media from '../../../components/media'
 import { useRouter } from 'next/router';
 import { AiFillStar } from 'react-icons/ai';
-import ImageLoader from "../../../components/UpdatedBackgroundImageLoader";
-
+// import ImageLoader from "../../../components/UpdatedBackgroundImageLoader";
+import ImageLoader from "../../../components/ImageLoader";
 const Card = styled.div`
   padding: 0rem;
   @media screen and (min-width: 768px) {
@@ -68,7 +68,7 @@ const CardContainer = (props) => {
               justifyContent: "space-between",
             }}
           >
-            <ImageLoader
+            {/* <ImageLoader
               borderRadius="8px"
               width="100%"
               height="100%"
@@ -77,6 +77,14 @@ const CardContainer = (props) => {
               dimensionsMobile={{ width: 600, height: 600 }}
               dimensions={{ width: 900, height: 900 }}
               style={{ paddingTop: "100%", borderRadius: "10px" }}
+            ></ImageLoader> */}
+            <ImageLoader
+              borderRadius="8px"
+              width="100%"
+              widthMobile="100%"
+              url={props.image}
+              dimensionsMobile={{ width: 600, height: 600 }}
+              dimensions={{ width: 900, height: 900 }}
             ></ImageLoader>
           </div>
           <FlexBox>

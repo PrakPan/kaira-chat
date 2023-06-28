@@ -109,8 +109,8 @@ const ImageSlider = (props) => {
     return (
       <Container props={props} ref={Component}>
         <BackgroundImageLoader
-          filter="brightness(0.65)"
-          // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
+          // filter="brightness(0.65)"
+          filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
           height={height + "px"}
           url={image}
           borderRadius="10px 10px 0 0"

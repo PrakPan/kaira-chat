@@ -36,9 +36,9 @@ const Image = () => {
 
   return (
     <BackgroundImageLoader
-      filter="brightness(0.65)"
+      // filter="brightness(0.65)"
+      filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
       url="media/website/contactcover.webp"
-      // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
       center
       height={"max-content"}
       padding={isPageWide ? "15vh 0" : "100px 0"}

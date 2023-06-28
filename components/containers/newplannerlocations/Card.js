@@ -2,7 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { useState } from "react";
-import ImageLoader from "../../UpdatedBackgroundImageLoader";
+// import ImageLoader from "../../UpdatedBackgroundImageLoader";
+import ImageLoader from "../../ImageLoader";
+
 
 const Container = styled.div`
   width: 100%;
@@ -67,7 +69,7 @@ const Experiences = (props) => {
               borderRadius="10px"
               dimensionsMobile={{ width: 800, height: 800 }}
               onload={() => setImageLoaded(true)}
-              style={{paddingTop : '100%' , borderRadius : '10px'}}
+              // style={{paddingTop : '100%' , borderRadius : '10px'}}
             >
               <div></div>
             </ImageLoader>

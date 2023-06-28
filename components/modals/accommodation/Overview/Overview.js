@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import ImageLoader from "../../../UpdatedBackgroundImageLoader";
+import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
 import Filters from "./Filters";
 import Location from "../Location";
