@@ -668,7 +668,7 @@ const SimpleTabsV2 = (props) => {
                         fontWeight="400"
                         fontSize="0.45rem"
                         borderWidth="2px"
-                        width="10rem"
+                        width="13rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
                         onclick={() => scrollToElement('Stays-Head')}
@@ -692,6 +692,23 @@ const SimpleTabsV2 = (props) => {
                       </Button>
                     </div>
                   )
+                ) : props.payment.is_registration_needed ? (
+                  <div className="">
+                    <Button
+                      color="#111"
+                      fontWeight="600"
+                      fontSize="0.85rem"
+                      borderWidth="2px"
+                      width="11rem"
+                      borderRadius="8px"
+                      bgColor="#f8e000"
+                      onclick={() =>
+                        setShowFooterBannerMobile(!showFooterBannerMobile)
+                      }
+                    >
+                      Proceed to Book
+                    </Button>
+                  </div>
                 ) : !props.payment.paid_user ? (
                   <div>
                     <Button
@@ -1372,6 +1389,23 @@ const SimpleTabsV2 = (props) => {
                   </Button>
                 </div>
               )
+            ) : props.payment.is_registration_needed ? (
+              <div className="">
+                <Button
+                  color="#111"
+                  fontWeight="600"
+                  fontSize="0.85rem"
+                  borderWidth="2px"
+                  width="10rem"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  onclick={() =>
+                    setShowFooterBannerMobile(!showFooterBannerMobile)
+                  }
+                >
+                  Proceed to Book
+                </Button>
+              </div>
             ) : !props.payment.paid_user ? (
               <div className="">
                 <Button
