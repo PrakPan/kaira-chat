@@ -81,12 +81,13 @@ export default function TemporaryDrawer(props) {
     if (checked) props._addFilterHandler(filter, heading);
     else props._removeFilterHandler(filter, heading);
   };
-  const _OnstarSelect = ({ i, currentfilter }) => {
+  const _OnstarSelect = (i, currentfilter) => {
     setSelectedStar(i);
-    props._updateStarFilterHandler(currentfilter, currentfilter + 1);
+    console.log('filter', currentfilter, i);
+    props._updateStarFilterHandler(currentfilter);
   };
   const handleSelectOption = (option) => {
-    console.log('Selected option:', option);
+    console.log('filter option:', option);
     // Perform additional actions with the selected option
     _onChangeHandler(true, option, 'type');
   };

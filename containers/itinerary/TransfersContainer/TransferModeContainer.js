@@ -156,11 +156,17 @@ const TransferModeContainer = (props) => {
 
       e.stopPropagation();
     } else {
+      props.setShowLoginModal();
+      e.stopPropagation();
     }
   }
   const isDesktop = useMediaQuery('(min-width:1024px)');
 
   function HandleFlights(i) {
+    if (!props.token) {
+      props.setShowLoginModal();
+    }
+
     let name = props.booking['name'];
     let costings_breakdown = props.booking['costings_breakdown'];
     let cost = props.booking['booking_cost'];
@@ -210,6 +216,9 @@ const TransferModeContainer = (props) => {
     );
   }
   function HandleTransport(i) {
+    if (!props.token) {
+      props.setShowLoginModal();
+    }
     let name = props.booking['name'];
     let costings_breakdown = props.booking['costings_breakdown'];
     let cost = props.booking['booking_cost'];
@@ -257,7 +266,7 @@ const TransferModeContainer = (props) => {
   }
   const Facilities = [
     props.booking_type == 'Taxi' || props.booking_type == 'Bus'
-      ? '2 Luggage bags'
+      ? props?.costings_breakdown.hasOwnProperty('luggage_bags') ? `${props?.costings_breakdown?.luggage_bags} Luggage bags` : '2 Luggage bags'
       : null,
     props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
 
@@ -393,7 +402,7 @@ const TransferModeContainer = (props) => {
             id={props.booking.id}
             className={`mb-4 mt-2 lg:block ${
               !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
-            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-5 p-3  `}
+            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 p-3  `}
           >
             <div className="flex flex-row gap-2    ">
               {props.userSelected && (
@@ -602,19 +611,17 @@ const TransferModeContainer = (props) => {
                       {/* <div>airline_name</div> */}
                     </div>
 
-                    {!props?.payment?.paid_user &&
-                      props.payment?.user_allowed_to_pay && (
-                        <div
-                          onClick={() => HandleFlights(props.index)}
-                          className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
-                        >
-                          Change Flight
-                        </div>
-                      )}
+                    {!props?.payment?.paid_user && (
+                      <div
+                        onClick={() => HandleFlights(props.index)}
+                        className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                      >
+                        Change Flight
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  !props?.payment?.paid_user &&
-                  props.payment?.user_allowed_to_pay && (
+                  !props?.payment?.paid_user && (
                     <div
                       className="flex lg:mr-0 mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
               "

@@ -37,6 +37,13 @@ import { format, isPast, parseISO } from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { Link, scroller } from 'react-scroll';
 import { pluralDetector } from '../../../helper/shortHelpers';
+import SelectDate from './gittailored/SelectDate';
+import SelectPax from './gittailored/SelectPax';
+import dayjs from 'dayjs';
+import RegistrationModal from '../../../components/modals/terms/PW';
+import VerificationModal from '../../../components/modals/verify/Index';
+import RegisteredUsersModal from '../../../components/modals/registeredusers/Index';
+import TermsModal from '../../../components/modals/terms/PW';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -81,6 +88,17 @@ const Details = (props) => {
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ''
   );
+  const [showVerification, setShowVerification] = useState(false);
+  const [showRegistration, setShowRegistartion] = useState(false);
+
+  const [pax, setPax] = useState(5);
+  const [date, setDate] = useState(null);
+
+  const _handleVerificationSuccess = () => {
+    props.getPaymentHandler();
+    setShowVerification(false);
+  };
+
   const [isError, setIsError] = useState({
     error: false,
     errorMsg: '',
@@ -92,8 +110,10 @@ const Details = (props) => {
   const [showAdultsModal, setShowAdultsModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [focus, setFocus] = useState(false);
   const router = useRouter();
-
+  const [showTerms, setShowTerms] = useState(false);
+  const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
   useEffect(() => {
     if (props.plan?.start_date) {
       if (isPast(parseISO(props.plan?.start_date))) {
@@ -518,8 +538,14 @@ const Details = (props) => {
               <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                 <span>₹</span>
                 <div>
-                  {' '}
-                  {getIndianPrice(Math.round(props.payment.total_cost / 100))}
+                  {props.payment.show_per_person_cost ||
+                  props.payment.pay_only_for_one
+                    ? getIndianPrice(
+                        Math.round(props.payment.per_person_total_cost / 100)
+                      )
+                    : getIndianPrice(
+                        Math.round(props.payment.total_cost / 100)
+                      )}
                 </div>
               </div>
             )}
@@ -543,11 +569,21 @@ const Details = (props) => {
                 >
                   <span>₹</span>
                   <div>
-                    {getIndianPrice(
-                      Math.round(
-                        Math.round(props.payment.discounted_cost) / 100
-                      )
-                    )}
+                    {props?.payment?.pay_only_for_one ||
+                    props?.payment?.show_per_person_cost
+                      ? getIndianPrice(
+                          Math.round(
+                            Math.round(
+                              props.payment.per_person_discounted_cost
+                            ) / 100
+                          )
+                        )
+                      : getIndianPrice(
+                          Math.round(
+                            Math.round(props.payment.discounted_cost) / 100
+                          )
+                        )}
+
                     {/* {!props.payment.show_per_person_cost
                       ? ' ' +
                         getIndianPrice(
@@ -567,11 +603,15 @@ const Details = (props) => {
                 )}
               </div>
             </div> */}
+
                 {props.payment.paid_user ? (
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
                 ) : (
                   <div className="font-medium text-base self-end">
-                    {props.payment?.is_estimated_price
+                    {props?.payment?.pay_only_for_one ||
+                    props?.payment?.show_per_person_cost
+                      ? 'Per Person Cost'
+                      : props.payment?.is_estimated_price
                       ? `${
                           props.payment.total_cost == 0 ? '' : 'Estimated Price'
                         }`
@@ -588,7 +628,57 @@ const Details = (props) => {
             </div>
           </div>
         </div>
-
+        {!oldaccommodation ? (
+          <div
+            className="px-2 pt-2"
+            style={{
+              marginBottom: '0.1rem',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gridColumnGap: '1rem',
+            }}
+          >
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <div></div>
+            )}
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <div></div>
+            )}
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <SelectDate
+                date={date}
+                setDate={setDate}
+                setFocus={setFocus}
+                focus={focus}
+                token={props.token}
+              ></SelectDate>
+            )}
+            {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{props.payment.number_of_people}</p> */}
+            {props.payment.meta_info &&
+            (props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+              props.plan.featured) ? null : (
+              <SelectPax
+                number_of_adults={
+                  props.payment
+                    ? props.payment.meta_info
+                      ? props.payment.meta_info.number_of_adults
+                      : 5
+                    : 5
+                }
+                setPax={setPax}
+                token={props.token}
+                setShowLoginModal={props.setShowLoginModal}
+              ></SelectPax>
+            )}
+          </div>
+        ) : null}
         <div
           className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
@@ -877,71 +967,86 @@ const Details = (props) => {
           </div>
         ) : null}
 
-        <div className="border-y-2 border-[#F0F0F0] my-3 ml-1">
-          <div className=" group flex flex-row gap-3 items-center py-[1rem]">
-            <BsCalendar2 className="text-md text-[#7A7A7A]" />
-            <div className="text-md font-medium text-black flex flex-row items-center gap-2">
-              <div>
-                {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
-                {props.plan
-                  ? props.plan
-                    ? getHumanDate(
-                        format(
-                          new Date(props.plan.start_date),
-                          'dd-MM-yyyy'
-                        ).replaceAll('-', '/')
-                      )
-                    : null
-                  : null}{' '}
-                -{' '}
-                {getHumanDate(
-                  format(
-                    new Date(props?.plan?.end_date),
-                    'dd-MM-yyyy'
-                  ).replaceAll('-', '/')
-                )}
-              </div>
-              {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
-                <MdEdit
-                  className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                  onClick={() => props.setShowDateModal(true)}
-                />
-              </div> */}
-            </div>
-          </div>
-        </div>
-        <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
-          <BsPeopleFill className="text-md text-[#7A7A7A]" />
-          <div className=" flex flex-row items-center text-md font-medium text-black">
-            {/* {booking.number_of_adults} */}
-            <div>
-              {props.payment.meta_info.number_of_adults}{' '}
-              {pluralDetector(
-                'Adult',
-                props.payment.meta_info.number_of_adults
-              )}{' '}
-            </div>
-            {props.payment.meta_info.number_of_children ? (
-              <div>, {props.payment.meta_info.number_of_children} Children</div>
-            ) : null}
-            {props.payment.meta_info.number_of_infants ? (
-              <div>
-                , {props.payment.meta_info.number_of_infants}{' '}
-                {pluralDetector(
-                  'Infant',
-                  props.payment.meta_info.number_of_infants
-                )}
-              </div>
-            ) : null}
+        {props.payment.itinerary_status ===
+          ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? (
+          <>
+            <div className="border-y-2 border-[#F0F0F0] my-3 ml-1">
+              <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+                <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                <div className="text-md font-medium text-black flex flex-row items-center gap-2">
+                  <div>
+                    {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
+                    {props.plan
+                      ? props.plan
+                        ? getHumanDate(
+                            format(
+                              new Date(props.plan.start_date),
+                              'dd-MM-yyyy'
+                            ).replaceAll('-', '/')
+                          )
+                        : null
+                      : null}{' '}
+                    -{' '}
+                    {getHumanDate(
+                      format(
+                        new Date(props?.plan?.end_date),
+                        'dd-MM-yyyy'
+                      ).replaceAll('-', '/')
+                    )}
+                  </div>
 
-            {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
-              <MdEdit
-                className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                onClick={() => props.setShowAdultsModal(true)}
-              />
-            </div> */}
-          </div>
-        </div>
+                  {props.payment.itinerary_status ===
+                    ITINERARY_STATUSES.itinerary_finalized ||
+                  props.plan.featured ? null : (
+                    <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
+                      <MdEdit
+                        className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                        onClick={() => setFocus(true)}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
+              <BsPeopleFill className="text-md text-[#7A7A7A]" />
+              <div className=" flex flex-row items-center text-md font-medium text-black">
+                {/* {booking.number_of_adults} */}
+                <div>
+                  {props.payment.meta_info.number_of_adults}{' '}
+                  {pluralDetector(
+                    'Adult',
+                    props.payment.meta_info.number_of_adults
+                  )}{' '}
+                </div>
+                {props.payment.meta_info.number_of_children ? (
+                  <div>
+                    , {props.payment.meta_info.number_of_children} Children
+                  </div>
+                ) : null}
+                {props.payment.meta_info.number_of_infants ? (
+                  <div>
+                    , {props.payment.meta_info.number_of_infants}{' '}
+                    {pluralDetector(
+                      'Infant',
+                      props.payment.meta_info.number_of_infants
+                    )}
+                  </div>
+                ) : null}
+                {props.payment.itinerary_status ===
+                  ITINERARY_STATUSES.itinerary_finalized ||
+                props.plan.featured ? null : (
+                  <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+                    <MdEdit
+                      className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                      onClick={() => props.setShowAdultsModal(true)}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
       {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
       {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
@@ -977,6 +1082,22 @@ const Details = (props) => {
               onClick={() => scrollToElement('Stays-Head')}
             >
               Add Hotels
+            </ButtonYellow>
+          )
+        ) : props.payment.is_registration_needed ? (
+          props.payment.email_reverification_needed ? (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => setShowVerification(true)}
+            >
+              Pay Now
+            </ButtonYellow>
+          ) : (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => setShowRegisteredUsers(true)}
+            >
+              Add Travellers Details
             </ButtonYellow>
           )
         ) : (
@@ -1030,6 +1151,38 @@ const Details = (props) => {
           <div>Terms & Conditions</div>
         </a>
       </div>
+      <RegistrationModal
+        number_of_adults={
+          props.payment
+            ? props.payment.meta_info
+              ? props.payment.meta_info.number_of_adults
+              : 5
+            : 5
+        }
+        payment={props.payment}
+        plan={props.plan}
+        date={date}
+        id={props.id}
+        show={showRegistration}
+        hide={() => setShowRegistartion(false)}
+        pax={pax}
+      ></RegistrationModal>
+      <VerificationModal
+        date={date}
+        pax={pax}
+        onSuccess={_handleVerificationSuccess}
+        show={showVerification}
+        hide={() => setShowVerification(false)}
+      ></VerificationModal>
+      <RegisteredUsersModal
+        registered_users={props.payment ? props.payment.registered_users : null}
+        show={showRegisteredUsers}
+        hide={() => setShowRegisteredUsers(false)}
+      ></RegisteredUsersModal>
+      <TermsModal
+        show={showTerms}
+        hide={() => setShowTerms(false)}
+      ></TermsModal>
       {props.token && Newitinerary && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}

@@ -231,7 +231,7 @@ const Mapbox = React.memo(
                 <div>
                   <ImageLoader
                     borderRadius="8px"
-                    url={location.cityData.image}
+                    url={location?.cityData?.image}
                     height={150}
                     width={150}
                     heightMobile="auto"
@@ -257,8 +257,8 @@ const Mapbox = React.memo(
                   {
                     <WeatherWidget
                       location={location}
-                      city={location.name}
-                      description={location.cityData.short_description}
+                      city={location?.name}
+                      description={location?.cityData?.short_description}
                       travelDate={'28/05/2023'}
                       setShowDrawer={setShowDrawer}
                       setShowDrawerData={setShowDrawerData}

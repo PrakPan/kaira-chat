@@ -70,9 +70,9 @@ const Booking = (props) => {
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState();
   const [filtersState, setFiltersState] = useState({
-    budget: [],
-    type: [],
-    star_category: [],
+    budget: '',
+    type: '',
+    star_category: '',
   });
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
@@ -86,6 +86,10 @@ const Booking = (props) => {
 
   const [noResults, setNoResults] = useState(false);
 
+  useEffect(() => {
+    console.log('filter filterr', filtersState);
+    _updateOptionsHandlerWithFilter();
+  }, [filtersState]);
   const filters = {
     budget: [
       'Below ₹3,000',
@@ -115,6 +119,7 @@ const Booking = (props) => {
     ],
     star_category: ['1 star', '2 star', '3 star', '4 star', '5 star', 'All'],
   };
+
   useEffect(() => {
     let options = [];
     if (props.alternates)
@@ -283,6 +288,47 @@ const Booking = (props) => {
         });
     }
   }, [props.alternates, props.budget]);
+
+  const _addFilterHandler = (filter, heading) => {
+    let oldfilters = filtersState;
+    let oldfiltersheadingarr = filtersState[heading];
+    /* 
+    let newfilters = {
+      ...oldfilters,
+      [heading]: filter,
+    };
+    setFiltersState(newfilters); */
+    setFiltersState((prevState) => ({
+      ...prevState,
+      [heading]: filter,
+    }));
+  };
+  const _updateStarFilterHandler = (star) => {
+    console.log('filter star', star);
+    /* let oldfilters = { ...filtersState };
+    let newfilters = {
+      ...oldfilters,
+      star_category: star,
+    };
+    setFiltersState(newfilters); */
+    setFiltersState((prevState) => ({
+      ...prevState,
+      star_category: star,
+    }));
+  };
+  const _removeFilterHandler = (filter, heading) => {
+    let oldfilters = filtersState;
+    let oldfiltersheadingarr = filtersState[heading];
+    const index = oldfiltersheadingarr.indexOf(filter);
+
+    oldfiltersheadingarr.splice(index, 1);
+    let newfilters = {
+      ...oldfilters,
+      [heading]: oldfiltersheadingarr,
+    };
+
+    setFiltersState(newfilters);
+  };
   const _generateFilterKeys = (filtersState) => {
     let budgetarr = filtersState.budget;
     let typearr = filtersState.type;
@@ -361,6 +407,7 @@ const Booking = (props) => {
     setOffset(0);
     setUpdateLoadingState(true);
     setNoResults(false);
+    let budgetarr = filtersState.budget;
 
     let filters = _generateFilterKeys(filtersState);
     //BUDGET FILTERS
@@ -373,8 +420,10 @@ const Booking = (props) => {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
-        accommodation_types: filters.type,
+
         trace: traceId,
+        star_category: filtersState.star_category,
+        accommodation_type: filtersState.type,
         city_id: props.selectedBooking.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
@@ -435,41 +484,6 @@ const Booking = (props) => {
           errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
-  };
-  const _addFilterHandler = (filter, heading) => {
-    let oldfilters = filtersState;
-    let oldfiltersheadingarr = filtersState[heading];
-
-    oldfiltersheadingarr.push(filter);
-    let newfilters = {
-      ...oldfilters,
-      [heading]: oldfiltersheadingarr,
-    };
-    setFiltersState(newfilters);
-    _updateOptionsHandlerWithFilter();
-  };
-  const _updateStarFilterHandler = (lower, upper) => {
-    let oldfilters = filtersState;
-    let newfilters = {
-      ...oldfilters,
-      star_category: [lower, upper],
-    };
-
-    setFiltersState(newfilters);
-    _updateOptionsHandlerWithFilter();
-  };
-  const _removeFilterHandler = (filter, heading) => {
-    let oldfilters = filtersState;
-    let oldfiltersheadingarr = filtersState[heading];
-    const index = oldfiltersheadingarr.indexOf(filter);
-
-    oldfiltersheadingarr.splice(index, 1);
-    let newfilters = {
-      ...oldfilters,
-      [heading]: oldfiltersheadingarr,
-    };
-    setFiltersState(newfilters);
-    _updateOptionsHandlerWithFilter();
   };
 
   const _updateSearchedAccommodation = ({

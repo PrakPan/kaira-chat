@@ -45,14 +45,26 @@ const ImagesMobile = (props) => {
 
   return props.images.length >= 3 ? (
     <Container ConImg={props.images[1]}>
-      <ImageLoader
-        borderRadius="12px"
-        dimensions={{ width: 922, height: 331 }}
-        url={props.images[0]}
-        height="auto"
-        heightMobile="auto"
-        dimensionsMobile={{ width: 328, height: 141 }}
-      ></ImageLoader>
+      {props.images[0] ? (
+        <ImageLoader
+          borderRadius="12px"
+          dimensions={{ width: 922, height: 331 }}
+          url={props.images[0]}
+          height="auto"
+          heightMobile="auto"
+          dimensionsMobile={{ width: 328, height: 141 }}
+        ></ImageLoader>
+      ) : (
+        <ImageLoader
+          borderRadius="12px"
+          dimensions={{ width: 922, height: 331 }}
+          url={props.images[3]}
+          height="auto"
+          heightMobile="auto"
+          dimensionsMobile={{ width: 328, height: 141 }}
+        ></ImageLoader>
+      )}
+
       {props.images[1] ? (
         <GridContainer>
           <ImageLoader

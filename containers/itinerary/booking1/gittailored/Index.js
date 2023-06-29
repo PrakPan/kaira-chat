@@ -22,7 +22,7 @@ import urls from '../../../../services/urls';
 import Accordion from '../Accordion';
 import SelectDate from './SelectDate';
 import SelectPax from './SelectPax';
-import RegistrationModal from '../../../../components/modals/gitregistrationform/Index';
+import RegistrationModal from '../../../../components/modals/terms/PW';
 import VerificationModal from '../../../../components/modals/verify/Index';
 import dayjs from 'dayjs';
 import { ITINERARY_STATUSES } from '../../../../services/constants';
