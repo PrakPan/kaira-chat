@@ -132,7 +132,6 @@ const Icon = styled.div`
 
 const SelectDate = (props) => {
   const [open, setOpen] = useState(false);
-  const [focus, setFocus] = useState(false);
 
   const [showLoginModal, setShowLoginModal] = useState(false);
 
@@ -155,10 +154,10 @@ const SelectDate = (props) => {
         <SingleDatePicker
           date={props.date} // momentPropTypes.momentObj or null
           onDateChange={(date) => props.setDate(date)} // PropTypes.func.isRequired
-          focused={focus} // PropTypes.bool
+          focused={props.focus} // PropTypes.bool
           numberOfMonths={1}
           dateFormat="MM/dd/yyyy"
-          onFocusChange={({ focused }) => setFocus(focused)} // PropTypes.func.isRequired
+          onFocusChange={({ focused }) => props.setFocus(focused)} // PropTypes.func.isRequired
           id="your_unique_id" // PropTypes.string.isRequired,
         />
         <CalenderIcons className="CalentderIcons">

@@ -289,11 +289,7 @@ const Route = (props) => {
         Mapid={props.breif.city_slabs[0].gmaps_place_id}
         city={props.breif.city_slabs[0].city_name}
         cityId={props.breif.city_slabs[0].city_id}
-        duration={
-          props.breif.city_slabs[0].duration
-            ? props.breif.city_slabs[0].duration
-            : null
-        }
+        duration={null}
         pinColour={props.breif.city_slabs[0].color}
       ></PinSection>
     </Container>

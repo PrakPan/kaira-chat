@@ -110,6 +110,7 @@ const Details = (props) => {
   const [showAdultsModal, setShowAdultsModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [focus, setFocus] = useState(false);
   const router = useRouter();
   const [showTerms, setShowTerms] = useState(false);
   const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
@@ -537,8 +538,14 @@ const Details = (props) => {
               <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                 <span>₹</span>
                 <div>
-                  {' '}
-                  {getIndianPrice(Math.round(props.payment.total_cost / 100))}
+                  {props.payment.show_per_person_cost ||
+                  props.payment.pay_only_for_one
+                    ? getIndianPrice(
+                        Math.round(props.payment.per_person_total_cost / 100)
+                      )
+                    : getIndianPrice(
+                        Math.round(props.payment.total_cost / 100)
+                      )}
                 </div>
               </div>
             )}
@@ -562,11 +569,13 @@ const Details = (props) => {
                 >
                   <span>₹</span>
                   <div>
-                    {props?.payment?.pay_only_for_one
+                    {props?.payment?.pay_only_for_one ||
+                    props?.payment?.show_per_person_cost
                       ? getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.per_person_total_cost) /
-                              100
+                            Math.round(
+                              props.payment.per_person_discounted_cost
+                            ) / 100
                           )
                         )
                       : getIndianPrice(
@@ -599,7 +608,8 @@ const Details = (props) => {
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
                 ) : (
                   <div className="font-medium text-base self-end">
-                    {props?.payment?.pay_only_for_one
+                    {props?.payment?.pay_only_for_one ||
+                    props?.payment?.show_per_person_cost
                       ? 'Per Person Cost'
                       : props.payment?.is_estimated_price
                       ? `${
@@ -644,6 +654,8 @@ const Details = (props) => {
               <SelectDate
                 date={date}
                 setDate={setDate}
+                setFocus={setFocus}
+                focus={focus}
                 token={props.token}
               ></SelectDate>
             )}
@@ -979,12 +991,17 @@ const Details = (props) => {
                   ).replaceAll('-', '/')
                 )}
               </div>
-              {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
-                <MdEdit
-                  className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                  onClick={() => props.setShowDateModal(true)}
-                />
-              </div> */}
+
+              {props.payment.itinerary_status ===
+                ITINERARY_STATUSES.itinerary_finalized ||
+              props.plan.featured ? null : (
+                <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
+                  <MdEdit
+                    className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                    onClick={() => setFocus(true)}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1011,13 +1028,16 @@ const Details = (props) => {
                 )}
               </div>
             ) : null}
-
-            {/* <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
-              <MdEdit
-                className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                onClick={() => props.setShowAdultsModal(true)}
-              />
-            </div> */}
+            {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized ||
+            props.plan.featured ? null : (
+              <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+                <MdEdit
+                  className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                  onClick={() => props.setShowAdultsModal(true)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1068,9 +1088,9 @@ const Details = (props) => {
           ) : (
             <ButtonYellow
               styleClass="w-full"
-              onClick={() => setShowRegistartion(true)}
+              onClick={() => setShowRegisteredUsers(true)}
             >
-              Pay Now
+              Add Travellers Details
             </ButtonYellow>
           )
         ) : (
