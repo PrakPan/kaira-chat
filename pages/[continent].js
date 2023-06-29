@@ -70,16 +70,16 @@ export async function getStaticProps(context) {
   const contientTheme = themeData.data;
 
   // contient carousel :-
-  const continentData = await axiospagelistinstance("?page_type=Continents");
+  // const continentData = await axiospagelistinstance("?page_type=Continents");
   const continetCarousel = [];
-  for (let i = 0; i < continentData.data.length; i++) {
+  for (let i = 0; i < contientTheme.length; i++) {
     const hot_destinations = await axioscountrydetailsinstance(
-      `/all?continent=${continentData.data[i].destination}&hot_destinations=true`
+      `/all?continent=${contientTheme[i].destination}&hot_destinations=true`
     );
     const hot_data = hot_destinations.data.filter((e, i) => {
       if (i < 6) return e;
     });
-    continetCarousel.push({ ...continentData.data[i], hot_destinations: hot_data });
+    continetCarousel.push({ ...contientTheme[i], hot_destinations: hot_data });
   }
 
   const response = await axioscountrydetailsinstance(

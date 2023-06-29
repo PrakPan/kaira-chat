@@ -21,9 +21,22 @@ const TravelPlanner = (props) => {
   return (
     <Layout page_id={props.Data.id} destination={props.Data.destination}>
       <Head>
-        <title>{props.Data.page_title}</title>
-        <meta name="description" content={props.Data.meta_description}></meta>
-        <meta property="og:title" content={props.Data.social_share_title} />
+        <title>
+          {/* {props.Data.page_title} */}
+          {props.Data.destination} Travel Itinerary | The Tarzan Way
+        </title>
+        <meta
+          name="description"
+          // content={props.Data.meta_description}
+          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Travel the best places to visit, local cuisine, and unique experiences in ${props.Data.destination}.`}
+        ></meta>
+        <meta
+          property="og:title"
+          // content={props.Data.social_share_title}
+          content={
+            props.Data.destination + " Travel Itinerary | The Tarzan Way"
+          }
+        />
         <meta
           property="og:description"
           content={props.Data.social_media_description}
