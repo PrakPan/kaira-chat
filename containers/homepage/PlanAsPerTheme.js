@@ -8,6 +8,7 @@ import ImageLoader from '../../components/ImageLoader';
 import SkeletonCard from '../../components/ui/SkeletonCard';
 import openTailoredModal from '../../services/openTailoredModal';
 import TripsCounter from './TripsCounter';
+import Link from 'next/link';
 const Container = styled.div`
   height: 430px;
   display: grid;
@@ -116,7 +117,7 @@ const GridItem = styled.div`
   height: 100%;
   width: 100%;
 `;
-const ImageContainer = styled.div`
+const ImageContainer = styled(Link)`
   cursor: pointer;
   height: 100%;
   width: 100%;
@@ -169,21 +170,22 @@ const PlanAsPerTheme = (props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [ImgLoading, setImgLoading] = useState(true);
-  const _handleTripRedirect = (path) => {
-    if (path) window.location.href = '/asia/india/' + path;
-  };
+  // const _handleTripRedirect = (path) => {
+  //   if (path) window.location.href = '/asia/india/' + path;
+  // };
 
     const order = ['e','b','c','a']
     const ThemeContainer = props.ThemeData?.slice(0, 4).map((e, i) => (
       <GridItem
         className={order[i]}
         key={i}
-        onClick={() => _handleTripRedirect(e.path)}
+        // onClick={() => _handleTripRedirect(e.path)}
       >
         {ImgLoading && <SkeletonCard />}
         <ImageContainer
           style={ImgLoading ? { display: "none" } : { display: "initial" }}
           bg="road-trip.png"
+          href={"/asia/india/" + e.path}
         >
           <TextContainer className="AnimateTop">
             <Heading>{e.banner_heading}</Heading>

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import media from '../../media';
 import ImageLoader from '../../ImageLoader';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const ImageFade = styled.div`
   width: 100%;
@@ -13,6 +14,7 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 8px;
+  cursor : pointer;
   &:hover {
     ${ImageFade} {
       transition: 0.2s all ease-in-out;
@@ -68,33 +70,31 @@ const Experiences = (props) => {
   //       </Container>
   //   );
 
-  const _handleRedirect = (e) => {
-    e.preventDefault();
-    if (props.path) window.location.href = '/' + props.path;
-    console.log('props.path: ', props.path);
-  };
+  // const _handleRedirect = (e) => {
+  //   e.preventDefault();
+  //   if (props.path) window.location.href = '/' + props.path;
+  // };
   const path = props.city
     ? 'https://thetarzanway.com/travel-guide/city/'
     : 'https://thetarzanway.com/travel-planner/';
   return (
-    <ImageContainer
-      className="hover-pointer"
-      onClick={(e) => _handleRedirect(e)}
-    >
-      <ImageFade>
-        <ImageLoader
-          url={props.img}
-          dimensions={{ width: 800, height: 800 }}
-          dimensionsMobile={{ width: 800, height: 800 }}
-          height="35vh"
-          style={{ filter: 'brightness(0.55)'}}
-        ></ImageLoader>
-      </ImageFade>
-      <BlackContainer className="font-lexend">
-        <Heading>{props.location}</Heading>
-        <Subheading>{props.heading}</Subheading>
-      </BlackContainer>
-    </ImageContainer>
+    <Link className="hover-pointer" href={"/" + props.path}>
+      <ImageContainer>
+        <ImageFade>
+          <ImageLoader
+            url={props.img}
+            dimensions={{ width: 800, height: 800 }}
+            dimensionsMobile={{ width: 800, height: 800 }}
+            height="35vh"
+            style={{ filter: "brightness(0.55)" }}
+          ></ImageLoader>
+        </ImageFade>
+        <BlackContainer className="font-lexend">
+          <Heading>{props.location}</Heading>
+          <Subheading>{props.heading}</Subheading>
+        </BlackContainer>
+      </ImageContainer>
+    </Link>
   );
 };
 

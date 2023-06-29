@@ -4,6 +4,7 @@ import media from "../../../../media";
 import { useRouter } from "next/router";
 import { ImSearch } from "react-icons/im";
 import SkeletonCard from "../../../../ui/SkeletonCard";
+import Link from "next/link";
 const Container = styled.div`
   margin: 1rem;
 
@@ -50,7 +51,9 @@ const ImageText = styled.div`
   font-size: 0.75rem;
 `;
 
-const LocationContainer = styled.div`
+const LocationContainer = styled(Link)`
+color : black;
+text-decoration : none;
   padding: 0.3rem;
   max-width: 100%;
   display: flex;
@@ -90,13 +93,13 @@ const SkeletonContainer = styled.div`
 const NewResults = (props) => {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
-  const _handleLocationClick = (data) => {
-    if (data.path) window.location.href = "/" + data.path;
-    // if(data.cta){
-    //     if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
-    //     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
-    // }
-  };
+  // const _handleLocationClick = (data) => {
+  //   if (data.path) window.location.href = "/" + data.path;
+  //   // if(data.cta){
+  //   //     if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
+  //   //     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
+  //   // }
+  // };
 
   const skeleton = (
     <div
@@ -148,12 +151,7 @@ const NewResults = (props) => {
     <>
       <Container>
         {props.results.map((e) => (
-          <LocationContainer
-            key={e.resource_id}
-            onClick={() => {
-              _handleLocationClick(e);
-            }}
-          >
+          <LocationContainer key={e.resource_id} href={"/" + data.path}>
             <MarkerContainer>
               <ImSearch />
             </MarkerContainer>

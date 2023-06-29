@@ -4,6 +4,7 @@ import Card from '../../cards/Location';
 import media from '../../media';
 import { useRouter } from 'next/router';
 import SwiperCarousel from '../../SwiperCarousel';
+import Link from 'next/link';
  
 const LocationsBlog= (props) => {
   let isPageWide = media('(min-width: 768px)')
@@ -27,6 +28,7 @@ const _handleRedirect = (path) => {
 
     if (props.locations[i].image)
       cardsarr.push(
+        <Link href={'/' + path} style={{textDecoration : 'none'}}>
           <Card
             key={i}
             location={props.locations[i].name ? props.locations[i].name : ""}
@@ -36,6 +38,7 @@ const _handleRedirect = (path) => {
             img={props.locations[i].image}
             onclick={() => _handleRedirect(path)}
           ></Card>
+        </Link>
       );
 }
       

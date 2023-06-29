@@ -2,23 +2,25 @@ import React from 'react';
 import styled from 'styled-components';
 import {ImSearch} from 'react-icons/im'
 import SkeletonCard from '../../../../ui/SkeletonCard';
+import Link from 'next/link';
 const Container = styled.div`
     margin: 1rem;
     `;
 
 
-const LocationContainer = styled.div`
-padding: 0.3rem;
-max-width: 100%;
-display : flex;
-gap : 12px;
-align-items : center;
-border-radius : 50px;
-&:hover{
-    background : #F0F0F0;
+const LocationContainer = styled(Link)`
+  color: black;
+  text-decoration: none;
+  padding: 0.3rem;
+  max-width: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-radius: 50px;
+  &:hover {
+    background: #f0f0f0;
     cursor: pointer;
-
-}
+  }
 `;
 
 const MarkerContainer = styled.div`
@@ -47,15 +49,14 @@ margin: 1rem;
 `
 
 const NewResults = (props) => {
-  const _handleLocationClick = (data) => {
-    console.log('data: ', data);
-     if (data.path) window.location.href = "/" + data.path;
+  // const _handleLocationClick = (data) => {
+  //    if (data.path) window.location.href = "/" + data.path;
 
-    // if(data.cta){
-    // if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
-    // else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
-    // }
-  }
+  //   // if(data.cta){
+  //   // if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
+  //   // else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
+  //   // }
+  // }
   
   const skeleton = <div style={{display:'grid' , padding : '0.3rem', gap : '2px' , gridTemplateColumns : '0.5fr 5fr'}}>
   <SkeletonCard borderRadius='100%' width='44px'></SkeletonCard>
@@ -70,14 +71,21 @@ const NewResults = (props) => {
     return(      <>
         <Container>
         {props.results.map((e,i)=>
-       { if(i<5) return<LocationContainer key={e.resource_id} onClick={() => {_handleLocationClick(e)}}>
-            
-            <MarkerContainer><ImSearch /></MarkerContainer>
-            <Text>
-              <div>{e.name}</div>
-            {e.parent && <p>{e.parent}</p>}            
-            </Text>
-        </LocationContainer>}
+       { if(i<5) return (
+         <LocationContainer
+           key={e.resource_id}
+           href={"/" + data.path}
+           
+         >
+           <MarkerContainer>
+             <ImSearch />
+           </MarkerContainer>
+           <Text>
+             <div>{e.name}</div>
+             {e.parent && <p>{e.parent}</p>}
+           </Text>
+         </LocationContainer>
+       );}
         )
     }
 

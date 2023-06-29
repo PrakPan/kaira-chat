@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import SkeletonCard from "../../../../ui/SkeletonCard";
+import Link from "next/link";
 
 const Container = styled.div`
   // display: grid;
@@ -26,7 +27,9 @@ const Text = styled.div`
   }
 `;
 
-const LocationContainer = styled.div`
+const LocationContainer = styled(Link)`
+  color: black;
+  text-decoration: none;
   padding: 0.5rem;
   margin-block: auto;
   &:hover {
@@ -62,24 +65,24 @@ const Heading = styled.p`
 `;
 
 const Locations = (props) => {
-  const _handleLocationClick = (data) => {
-    if (data.path) window.location.href = "/" + data.path;
+  // const _handleLocationClick = (data) => {
+  //   if (data.path) window.location.href = "/" + data.path;
 
-    //     if(data.cta) {
-    //      props.setPannelClose()
-    //      router.push('/travel-guide/city/'+slug)
-    //      if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta
-    //      if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta
+  //   //     if(data.cta) {
+  //   //      props.setPannelClose()
+  //   //      router.push('/travel-guide/city/'+slug)
+  //   //      if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta
+  //   //      if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta
 
-    //  }
-  };
+  //   //  }
+  // };
 
   let locations = [];
   if (props.hotlocations) {
     for (var i = 0; i < 5; i++) {
       const data = props.hotlocations[i];
       locations.push(
-        <LocationContainer onClick={() => _handleLocationClick(data)}>
+        <LocationContainer href={"/" + data.path}>
           <MarkerContainer>
             <FaMapMarkerAlt />
           </MarkerContainer>

@@ -338,9 +338,7 @@ const Homepage = (props) => {
               ></SwiperLocations>
 
               <Button
-                onclick={() => {
-                  window.location.href = "/asia";
-                }}
+              link='/asia'
                 fontWeight="500"
                 boxShadow
                 borderRadius="8px"
@@ -375,7 +373,7 @@ const Homepage = (props) => {
               ></SwiperLocations>
 
               <Button
-                onclick={() => (window.location.href = "/europe")}
+              link='/europe'
                 fontWeight="500"
                 boxShadow
                 borderRadius="8px"

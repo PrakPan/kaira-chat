@@ -4,6 +4,7 @@ import media from "../media";
 import ImageLoader from "../ImageLoader";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Link from "next/link";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -72,38 +73,44 @@ const Experiences = (props) => {
     ? "https://thetarzanway.com/travel-guide/city/"
     : "https://thetarzanway.com/travel-planner/";
   return (
-    <ImageContainer
-      className="hover-pointer"
-      onClick={(e) => _handleRedirect(e)}
-      continent={props.continent}
-    >
-      <ImageFade>
-        <ImageLoader
-          url={props.img}
-          dimensions={
-            props.continent || props.hd
-              ? { width: 1500, height: 1000 }
-              : { width: 800, height: 900 }
-          }
-          dimensionsMobile={
-            props.continent || props.hd
-              ? { width: 800, height: 700 }
-              : { width: 300, height: 400 }
-          }
-          height={props.continent ? "71vh" : "35vh"}
-          onload={() => setImageLoaded(true)}
-          style={{filter : 'brightness(0.75)'}}
-        ></ImageLoader>
-      </ImageFade>
-      <BlackContainer continent={props.continent} className="font-lexend">
-        {ImageLoaded && <>
-          <Heading continent={props.continent}>{props.location}</Heading>
-          {isPageWide && (
-            <Subheading continent={props.continent}>{props.heading}</Subheading>
+    <Link href={'/' + props.path} >
+      <ImageContainer
+        className="hover-pointer"
+        onClick={(e) => _handleRedirect(e)}
+        continent={props.continent}
+      >
+        <ImageFade>
+          <ImageLoader
+            url={props.img}
+            dimensions={
+              props.continent || props.hd
+                ? { width: 1500, height: 1000 }
+                : { width: 800, height: 900 }
+            }
+            dimensionsMobile={
+              props.continent || props.hd
+                ? { width: 800, height: 700 }
+                : { width: 300, height: 400 }
+            }
+            height={props.continent ? "71vh" : "35vh"}
+            onload={() => setImageLoaded(true)}
+            style={{ filter: "brightness(0.75)" }}
+          ></ImageLoader>
+        </ImageFade>
+        <BlackContainer continent={props.continent} className="font-lexend">
+          {ImageLoaded && (
+            <>
+              <Heading continent={props.continent}>{props.location}</Heading>
+              {isPageWide && (
+                <Subheading continent={props.continent}>
+                  {props.heading}
+                </Subheading>
+              )}
+            </>
           )}
-        </>}
-      </BlackContainer>
-    </ImageContainer>
+        </BlackContainer>
+      </ImageContainer>
+    </Link>
   );
 };
 
