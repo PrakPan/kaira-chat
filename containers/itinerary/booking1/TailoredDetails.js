@@ -40,7 +40,7 @@ import { pluralDetector } from '../../../helper/shortHelpers';
 import SelectDate from './gittailored/SelectDate';
 import SelectPax from './gittailored/SelectPax';
 import dayjs from 'dayjs';
-import RegistrationModal from '../../../components/modals/terms/PW';
+import RegistrationModal from '../../../components/modals/gitregistrationform/Index';
 import VerificationModal from '../../../components/modals/verify/Index';
 import RegisteredUsersModal from '../../../components/modals/registeredusers/Index';
 import TermsModal from '../../../components/modals/terms/PW';
@@ -546,6 +546,7 @@ const Details = (props) => {
                     : getIndianPrice(
                         Math.round(props.payment.total_cost / 100)
                       )}
+                  {'/-'}
                 </div>
               </div>
             )}
@@ -583,7 +584,7 @@ const Details = (props) => {
                             Math.round(props.payment.discounted_cost) / 100
                           )
                         )}
-
+                    {'/-'}
                     {/* {!props.payment.show_per_person_cost
                       ? ' ' +
                         getIndianPrice(
@@ -1090,12 +1091,12 @@ const Details = (props) => {
               styleClass="w-full"
               onClick={() => setShowVerification(true)}
             >
-              Pay Now
+              Pay Now & Book
             </ButtonYellow>
           ) : (
             <ButtonYellow
               styleClass="w-full"
-              onClick={() => setShowRegisteredUsers(true)}
+              onClick={() => setShowRegistartion(true)}
             >
               Add Travellers Details
             </ButtonYellow>
