@@ -20,15 +20,23 @@ const TravelPlanner = (props) => {
   return (
     <Layout destination={props.Data.name} id={props.Data.id}>
       <Head>
-        <title>{props.Data.name + " | Travel Guide |  The Tarzan Way"}</title>
-        <meta name="description" content={props.Data.short_description}></meta>
+        <title>
+          {/* {props.Data.name + " | Travel Guide |  The Tarzan Way"} */}
+          {props.Data.name} Travel Itinerary | The Tarzan Way
+        </title>
+        <meta
+          name="description"
+          // content={props.Data.short_description}
+          content={`Unlock the wonders of ${props.Data.name} with The Tarzan Way's AI travel itinerary. Find insider tips, local experiences, and must-visit destinations in ${props.Data.name}.`}
+        ></meta>
         <meta
           property="og:title"
-          content={props.Data.name + " | Travel Guide |  The Tarzan Way"}
+          content={props.Data.name + " Travel Itinerary | The Tarzan Way"}
         />
         <meta
           property="og:description"
-          content={props.Data.short_description}
+          // content={props.Data.short_description}
+          content={`Unlock the wonders of ${props.Data.name} with The Tarzan Way's AI travel itinerary. Find insider tips, local experiences, and must-visit destinations in ${props.Data.name}.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>

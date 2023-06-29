@@ -22,18 +22,25 @@ const Experience = (props) => {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
       ></script>
       <Head>
-        <meta name="description" content={props.cityData.short_description} />
+        <meta
+          name="description"
+          // content={props.cityData.short_description}
+          content={`Travel ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Dive into vibrant culture, iconic landmarks, and hidden treasures in ${props.cityData.name}.`}
+        />
         <meta
           property="og:title"
-          content={props.cityData.name + " | Travel Guide |  The Tarzan Way"}
+          // content={props.cityData.name + " | Travel Guide |  The Tarzan Way"}
+          content={`Travel ${props.cityData.name} With AI Itinerary | The Tarzan Way`}
         />
         <meta
           property="og:description"
-          content={props.cityData.short_description}
+          // content={props.cityData.short_description}
+          content={`Travel ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Dive into vibrant culture, iconic landmarks, and hidden treasures in ${props.cityData.name}.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <title>
-          {props.cityData.name + " | Travel Guide |  The Tarzan Way"}
+          {/* {props.cityData.name + " | Travel Guide |  The Tarzan Way"} */}
+          Travel {props.cityData.name} With AI Itinerary | The Tarzan Way
         </title>
         <meta
           property="keywords"
