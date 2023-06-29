@@ -58,6 +58,7 @@ const QueryType = (props) => {
             {'Adults'}
           </InputLabel>
           <Select
+            className="m-0"
             disabled={true ? false : true}
             onClick={props.token ? null : () => setShowLoginModal(true)}
             native={true ? true : false}
