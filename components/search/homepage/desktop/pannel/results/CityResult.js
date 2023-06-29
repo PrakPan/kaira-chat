@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router'
+import Link from 'next/link';
 
 const Container = styled.div`
 padding: 1rem;
@@ -47,16 +48,28 @@ const _handleCTA = () => {
 const _handlePlanning = (id, name) => {
   openTailoredModal(router, id, name);
 };
-    return(
-        <Container>
-        <div >
-            <ResultTitle className="font-nunito" onClick={_handleCTA}>{props.title}</ResultTitle>
-            <p style={{opacity : "0.5", fontSize: "0.75rem", margin: "0"}} className="font-nuniti" onClick={_handleCTA}>{props.type.toUpperCase()}</p>
-        </div>
+    return (
+      <Container>
+        <Link href={"/" + props.path} style={{textDecoration : 'none' , color :"black"}}>
+          <ResultTitle className="font-lexend">
+            {props.title}
+          </ResultTitle>
+          <p
+            style={{ opacity: "0.5", fontSize: "0.75rem", margin: "0" }}
+            className="font-lexend"
+          >
+            {props.type.toUpperCase()}
+          </p>
+        </Link>
         <div className="center-div">
-            <CTA className="font-nunito" onClick={()=>_handlePlanning(props.id , props.title)}>Start Planning</CTA>
+          <CTA
+            className="font-nunito"
+            onClick={() => _handlePlanning(props.id, props.title)}
+          >
+            Start Planning
+          </CTA>
         </div>
-        </Container> 
+      </Container>
     );
 }
 

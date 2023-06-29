@@ -4,6 +4,7 @@ import media from "../../media";
 import { useState } from "react";
 // import ImageLoader from "../../UpdatedBackgroundImageLoader";
 import ImageLoader from "../../ImageLoader";
+import Link from "next/link";
 
 
 const Container = styled.div`
@@ -43,7 +44,6 @@ const Subtext = styled.p`
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [ImageLoaded, setImageLoaded] = useState(false);
-  console.log('ImageLoaded: ', ImageLoaded);
   let filters_to_show = "";
   try {
     for (var i = 0; i < props.filters.length; i++) {
@@ -53,23 +53,21 @@ const Experiences = (props) => {
     }
   } catch {}
   return (
-    <>
-      <div
+      <Link
         className="hover-pointer"
-        onClick={() => {
-          props.path ? props._handleCityRedirect(props.path) : console.log("");
-        }}
+      href={'/' + props.path}
+      style={{textDecoration : 'none' , color : 'black'}}
       >
         <div>
           <div>
             <ImageLoader
+              noLazy
               hoverpointer
               url={props.img}
               dimensions={{ width: 800, height: 800 }}
               borderRadius="10px"
               dimensionsMobile={{ width: 800, height: 800 }}
               onload={() => setImageLoaded(true)}
-              // style={{paddingTop : '100%' , borderRadius : '10px'}}
             >
               <div></div>
             </ImageLoader>
@@ -82,8 +80,7 @@ const Experiences = (props) => {
           </>
        
         </div>
-      </div>
-    </>
+      </Link>
   );
 };
 

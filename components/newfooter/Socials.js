@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
  
  const Container = styled.div`
    display: flex;
@@ -18,12 +19,13 @@ import { useState, useEffect } from 'react';
      font-size: 1.5rem;
    }
  `;
-const IconContainer = styled.div`
+const IconContainer = styled(Link)`
   border: 1px solid white;
   border-radius: 100%;
   padding: 7px;
   cursor: pointer;
-
+text-decoration : none;
+color : white;
   &:hover {
     color: white;
     border: 0px;
@@ -41,17 +43,13 @@ const Socials = (props) => {
       <Container className="font-lexend">
         <IconContainer
           hoverBg={"#1D9BF0"}
-          onClick={() =>
-            (window.location.href = "https://twitter.com/thetarzanway")
-          }
+          href="https://twitter.com/thetarzanway"
         >
           <FaTwitter />
         </IconContainer>
         <IconContainer
           hoverBg={"#3b5998"}
-          onClick={() =>
-            (window.location.href = "https://www.facebook.com/thetarzanway/")
-          }
+          href="https://twitter.com/thetarzanway"
         >
           <FaFacebookF />
         </IconContainer>
@@ -59,25 +57,19 @@ const Socials = (props) => {
           hoverBg={
             "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)"
           }
-          onClick={() =>
-            (window.location.href = "https://www.instagram.com/thetarzanway")
-          }
+          href="https://www.instagram.com/thetarzanway"
         >
           <FaInstagram />
         </IconContainer>
         <IconContainer
           hoverBg={"#0072b1"}
-          onClick={() =>
-            (window.location.href = "https://linkedin.com/company/thetarzanway")
-          }
+          href="https://linkedin.com/company/thetarzanway"
         >
           <FaLinkedinIn />
         </IconContainer>
         <IconContainer
           hoverBg={"#E60023"}
-          onClick={() =>
-            (window.location.href = "https://www.pinterest.com/thetarzanway/")
-          }
+          href="https://www.pinterest.com/thetarzanway/"
         >
           <FaPinterestP />
         </IconContainer>

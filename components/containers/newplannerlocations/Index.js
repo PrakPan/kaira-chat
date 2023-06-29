@@ -34,10 +34,10 @@ const LocationsBlog = (props) => {
 
   const router = useRouter();
 
-  const _handleCityRedirect = (path) => {
-    // router.push(`/travel-guide/city/${name}`)
-    if (path) window.location.href = "/" + path;
-  };
+  // const _handleCityRedirect = (path) => {
+  //   // router.push(`/travel-guide/city/${name}`)
+  //   if (path) window.location.href = "/" + path;
+  // };
   const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
   const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
   useEffect(() => {
@@ -73,7 +73,7 @@ const LocationsBlog = (props) => {
                   img={props.locations[i].image}
                   path={props.locations[i].path}
                   filters={props.locations[i].most_popular_for}
-                  _handleCityRedirect={_handleCityRedirect}
+                  // _handleCityRedirect={_handleCityRedirect}
 
                   // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
                 ></Card>

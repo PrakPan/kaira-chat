@@ -4,6 +4,7 @@ import media from "../media";
 import ImageLoader from "../ImageLoader";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Link from "next/link";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -29,20 +30,15 @@ const ImageContainer = styled.div`
 `;
 
 const BlackContainer = styled.div`
-  background-color: rgba(0, 0, 0, 0.4);
   width: 100%;
-  height: 100%;
   position: absolute;
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  top: 0;
-  flex-direction: column;
+  left: 50%;
+  top : 50%;
   @media screen and (min-width: 768px) {
-    justify-content: ${(props) => (props.continent ? "center" : "flex-end")};
+    ${(props) => (props.continent ? "top : 50%" : "top : unset ; bottom: 0%")};
   }
+  transform: translate(-50%, -50%);
 `;
 const Heading = styled.p`
   font-size: ${(props) => (props.continent ? "3rem" : "1.25rem")};
@@ -60,7 +56,7 @@ const Subheading = styled.p`
 
   line-height: 1;
   text-align: center;
-
+margin : 0;
   font-weight: 200;
 `;
 
@@ -77,37 +73,44 @@ const Experiences = (props) => {
     ? "https://thetarzanway.com/travel-guide/city/"
     : "https://thetarzanway.com/travel-planner/";
   return (
-    <ImageContainer
-      className="hover-pointer"
-      onClick={(e) => _handleRedirect(e)}
-      continent={props.continent}
-    >
-      <ImageFade>
-        <ImageLoader
-          url={props.img}
-          dimensions={
-            props.continent || props.hd
-              ? { width: 1500, height: 1000 }
-              : { width: 800, height: 900 }
-          }
-          dimensionsMobile={
-            props.continent || props.hd
-              ? { width: 800, height: 700 }
-              : { width: 300, height: 400 }
-          }
-          height={props.continent ? "71vh" : "35vh"}
-          onload={() => setImageLoaded(true)}
-        ></ImageLoader>
-      </ImageFade>
-      <BlackContainer continent={props.continent} className="font-lexend">
-        {ImageLoaded && <>
-          <Heading continent={props.continent}>{props.location}</Heading>
-          {isPageWide && (
-            <Subheading continent={props.continent}>{props.heading}</Subheading>
+    <Link href={'/' + props.path} >
+      <ImageContainer
+        className="hover-pointer"
+        onClick={(e) => _handleRedirect(e)}
+        continent={props.continent}
+      >
+        <ImageFade>
+          <ImageLoader
+            url={props.img}
+            dimensions={
+              props.continent || props.hd
+                ? { width: 1500, height: 1000 }
+                : { width: 800, height: 900 }
+            }
+            dimensionsMobile={
+              props.continent || props.hd
+                ? { width: 800, height: 700 }
+                : { width: 300, height: 400 }
+            }
+            height={props.continent ? "71vh" : "35vh"}
+            onload={() => setImageLoaded(true)}
+            style={{ filter: "brightness(0.75)" }}
+          ></ImageLoader>
+        </ImageFade>
+        <BlackContainer continent={props.continent} className="font-lexend">
+          {ImageLoaded && (
+            <>
+              <Heading continent={props.continent}>{props.location}</Heading>
+              {isPageWide && (
+                <Subheading continent={props.continent}>
+                  {props.heading}
+                </Subheading>
+              )}
+            </>
           )}
-        </>}
-      </BlackContainer>
-    </ImageContainer>
+        </BlackContainer>
+      </ImageContainer>
+    </Link>
   );
 };
 

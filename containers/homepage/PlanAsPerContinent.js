@@ -7,6 +7,7 @@ import ImageLoader from "../../components/ImageLoader";
 import axiosPageListInstance from '../../services/pages/list'
 import SkeletonCard from "../../components/ui/SkeletonCard";
 import openTailoredModal from "../../services/openTailoredModal";
+import Link from "next/link";
 const Container = styled.div`
   height: 90vh;
   display: grid;
@@ -99,7 +100,7 @@ const Heading = styled.div`
   }
 `;
 
-const GridItem = styled.div`
+const GridItem = styled(Link)`
   grid-area: ${(props) => props.className};
   border-radius: 8px;
   position: relative;
@@ -171,13 +172,16 @@ const PlanAsPerTheme = (props) => {
     <GridItem
       className={order[i]}
       key={i}
-      onClick={() => _handleTripRedirect(e.path)}
+      // onClick={() => _handleTripRedirect(e.path)}
+      href={'/' + e.path}
     >
       <ImageContainer>
-       { <TextContainer className="AnimateTop">
-          <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
-          {isPageWide && <div className="StartNow">Explore!</div>}
-        </TextContainer>}
+        {
+          <TextContainer className="AnimateTop">
+            <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
+            {isPageWide && <div className="StartNow">Explore!</div>}
+          </TextContainer>
+        }
         <ImageLoader
           noLazy
           fit="cover"
@@ -186,9 +190,11 @@ const PlanAsPerTheme = (props) => {
           dimensions={{ width: 1500, height: 800 }}
           dimensionsMobile={{ width: 500, height: 500 }}
           url={e.image}
+          style={{ filter: "brightness(0.75)" }}
+
           // onload={_handleImageLoaded}
         ></ImageLoader>
-       {<BlackContainer />}
+        {/* {<BlackContainer />} */}
       </ImageContainer>
     </GridItem>
   ));

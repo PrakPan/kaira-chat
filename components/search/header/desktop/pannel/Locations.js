@@ -4,6 +4,7 @@ import media from '../../../../media';
 import { useRouter } from 'next/router'
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import SkeletonCard from '../../../../ui/SkeletonCard';
+import Link from 'next/link';
 const Container = styled.div`
 
     margin: 1rem;
@@ -54,10 +55,12 @@ font-size: 0.75rem;
 
 `;
 
-const LocationContainer = styled.div`
+const LocationContainer = styled(Link)`
 padding: 0.3rem;
 max-width: 100%;
 display : flex;
+color : black;
+text-decoration : none;
 gap : 12px;
 align-items : center;
 border-radius : 50px;
@@ -95,15 +98,15 @@ color : #7e7e7e;
 const Locations = (props) => {
     const router = useRouter()
   let isPageWide = media('(min-width: 768px)');
-  const _handleLocationClick = (data) => {
-      window.location.href = '/' + data.path
-  }
+//   const _handleLocationClick = (data) => {
+//       window.location.href = '/' + data.path
+//   }
   let locations=[];
     if(props.hotlocations){
         for(var i=0; i<props.hotlocations.length; i++){
             const data = props.hotlocations[i]
             locations.push(
-                <LocationContainer onClick={() => _handleLocationClick(data)}>
+                <LocationContainer href={'/' + data.path}>
                 <MarkerContainer><FaMapMarkerAlt /></MarkerContainer>
             <Text>
               <div>{props.hotlocations[i].name}</div>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { AiFillStar } from 'react-icons/ai';
 // import ImageLoader from "../../../components/UpdatedBackgroundImageLoader";
 import ImageLoader from "../../../components/ImageLoader";
+import Link from 'next/link';
 const Card = styled.div`
   padding: 0rem;
   @media screen and (min-width: 768px) {
@@ -135,18 +136,19 @@ const CardContainer = (props) => {
                   </CardSubHeading>
                 </div>
               </RatingContainer>
-
-              <Button
-                fontWeight="500"
-                borderRadius="6px"
-                onclick={() => router.push("/itinerary/" + props.id)}
-                fontSizeDesktop="12px"
-                borderWidth="1px"
-                width="50%"
-                bgColor="#f7e700"
-              >
-                See Itinerary
-              </Button>
+              <Link href={"/itinerary/" + props.id} style={{textDecoration : 'none'}}>
+                <Button
+                  fontWeight="500"
+                  borderRadius="6px"
+                  onclick={() => router.push("/itinerary/" + props.id)}
+                  fontSizeDesktop="12px"
+                  borderWidth="1px"
+                  width="50%"
+                  bgColor="#f7e700"
+                >
+                  See itinerary
+                </Button>
+              </Link>
             </FlexBox>
           </FlexBox>
         </GridContainer>
