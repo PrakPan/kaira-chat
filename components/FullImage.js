@@ -28,8 +28,9 @@ const fullimage = (props) => {
             dimensions={{ width: 3206, height: 1202 }}
             dimensionsMobile={{ width: 900, height: 1200 }}
             className="center-div"
+            style={{ position: "absolute" }}
           >
-            {props.children}
+            <div style={{ border: "1px solid red" }}>{props.children}</div>
           </BackgroundImageLoader>
         ) : (
           <BackgroundImageLoader
@@ -39,8 +40,10 @@ const fullimage = (props) => {
             url={props.url}
             dimensions={{ width: 1806, height: 592 }}
             dimensionsMobile={{ width: 900, height: 1200 }}
+            style={{ position: "absolute" }}
           >
-            {props.children}
+            {/* {props.children} */}
+            <div style={{ border: "1px solid red" }}>{props.children}</div>
           </BackgroundImageLoader>
         )}
       </Container>
@@ -53,14 +56,16 @@ const fullimage = (props) => {
         className="center-dv"
       >
         <BackgroundImageLoader
-          padding={props.paddinzg}
+          padding={props.padding}
           filter={props.filter}
           url={props.url}
           dimensions={{ width: 3206, height: 1202 }}
           dimensionsMobile={{ width: 900, height: 1200 }}
+          style={{ position: "absolute" }}
           className="center-dv"
         >
-          {props.children}
+          {/* {props.children} */}
+          <div style={{ position : 'absolute' , zIndex : '5' , width : '100%' , height : '100%' }}>{props.children}</div>
         </BackgroundImageLoader>
       </Container>
     );

@@ -29,28 +29,38 @@ import media from '../../components/media';
         font-weight: 300;
       }
   `;
-
+const TextContainer = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  width: 100%;
+`;
 const Image = () => {
   let isPageWide = media('(min-width: 768px)')
 
 
   return (
     <BackgroundImageLoader
-      // filter="brightness(0.65)"
-      filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
+      filter="brightness(0.65)"
+      // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
       url="media/website/contactcover.webp"
       center
-      height={"max-content"}
-      padding={isPageWide ? "15vh 0" : "100px 0"}
+      height={"60vh"}
+      // padding={isPageWide ? "15vh 0" : "100px 0"}
+      style={{ position: "relative" }}
     >
       {/* <Animate> */}
-      <LetsTalk className="font-lexend">
-        <b>Let's Talk</b>
-      </LetsTalk>
-      <Text className="font-nunito">
-        We love to talk to our travel community. If you've anything you want to
-        ask, feel free to get in touch.
-      </Text>
+      <TextContainer>
+        <LetsTalk className="font-lexend">
+          <b>Let's Talk</b>
+        </LetsTalk>
+        <Text className="font-nunito">
+          We love to talk to our travel community. If you've anything you want
+          to ask, feel free to get in touch.
+        </Text>
+      </TextContainer>
       {/* </Animate> */}
     </BackgroundImageLoader>
   );
