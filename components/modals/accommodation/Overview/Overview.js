@@ -114,7 +114,7 @@ const Child = styled.div`
 
 const Heading = styled.div`
   font-weight: 600;
-  font-size: 28px;
+  font-size: 20px;
   margin-block: 1.5rem 1rem;
 `;
 
@@ -416,7 +416,7 @@ const Overview = (props) => {
       {props.data.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
-          <Address style={{ fontSize: "16px" }}>
+          <Address style={{ fontSize: "14px" }}>
             {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data.city ? props.data.city : ""}
@@ -441,7 +441,7 @@ const Overview = (props) => {
             <a
               href={props.data.google_maps_link}
               target="_blank"
-              style={{ color: "black", fontSize: "16px" }}
+              style={{ color: "black", fontSize: "14px" }}
             >
               View on Google Map
             </a>
@@ -450,7 +450,7 @@ const Overview = (props) => {
       ) : props.data.lat && props.data.long ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
-          <Address style={{ fontSize: "16px" }}>
+          <Address style={{ fontSize: "14px" }}>
             {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
             {props.data.city ? props.data.city : ""}
@@ -477,13 +477,13 @@ const Overview = (props) => {
                 props.data.lat
               },${props.data.long}+(${props.data.name.split(" ").join("+")})`}
               target="_blank"
-              style={{ color: "black", fontSize: "16px" }}
+              style={{ color: "black", fontSize: "14px" }}
             >
               View on Google Map
             </a>
             <FiChevronRight
               style={{
-                fontSize: "1.15rem",
+                fontSize: "1rem",
                 margin: "4px 0px 0px -12px",
                 display: "inline",
               }}

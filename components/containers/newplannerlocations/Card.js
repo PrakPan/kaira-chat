@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { useState } from "react";
-// import ImageLoader from "../../UpdatedBackgroundImageLoader";
-import ImageLoader from "../../ImageLoader";
+import ImageLoader from "../../UpdatedBackgroundImageLoader";
+// import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
 
 
@@ -53,34 +53,33 @@ const Experiences = (props) => {
     }
   } catch {}
   return (
-      <Link
-        className="hover-pointer"
-      href={'/' + props.path}
-      style={{textDecoration : 'none' , color : 'black'}}
-      >
-        <div>
-          <div>
-            <ImageLoader
-              noLazy
-              hoverpointer
-              url={props.img}
-              dimensions={{ width: 800, height: 800 }}
-              borderRadius="10px"
-              dimensionsMobile={{ width: 800, height: 800 }}
-              onload={() => setImageLoaded(true)}
-            >
-              <div></div>
-            </ImageLoader>
-          </div>
-        </div>
-        <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
-          <>
-            <Name className="font-lexend">{props.location}</Name>
-            <Subtext className="font-lexend">{filters_to_show}</Subtext>
-          </>
-       
-        </div>
-      </Link>
+    <Link
+      className="hover-pointer"
+      href={"/" + props.path}
+      style={{ textDecoration: "none", color: "black", cursor: "pointer" }}
+    >
+      <div>
+        <ImageLoader
+          noLazy
+          hoverpointer
+          url={props.img}
+          dimensions={{ width: 800, height: 800 }}
+          borderRadius="10px"
+          dimensionsMobile={{ width: 800, height: 800 }}
+          onload={() => setImageLoaded(true)}
+          style={{ position: "static", cursor: "pointer" }}
+          filter="brightness(0.80)"
+        >
+          <div></div>
+        </ImageLoader>
+      </div>
+      <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
+        <>
+          <Name className="font-lexend">{props.location}</Name>
+          <Subtext className="font-lexend">{filters_to_show}</Subtext>
+        </>
+      </div>
+    </Link>
   );
 };
 

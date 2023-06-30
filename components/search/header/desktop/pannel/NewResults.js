@@ -151,7 +151,7 @@ const NewResults = (props) => {
     <>
       <Container>
         {props.results.map((e) => (
-          <LocationContainer key={e.resource_id} href={"/" + data.path}>
+          <LocationContainer key={e.resource_id} href={"/" + e.path}>
             <MarkerContainer>
               <ImSearch />
             </MarkerContainer>

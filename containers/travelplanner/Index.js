@@ -325,9 +325,11 @@ const Homepage = (props) => {
   useEffect(() => {
     const user = []
     const ttw = []
+    console.log('props.experienceData.itinerary_data: ', props.experienceData.itinerary_data);
     if (props.experienceData.itinerary_data) {
       props.experienceData.itinerary_data.map((e) => {
-        if (e.user_name !== 'TTW Exclusive' &&  e.user_name !== '' && e.user_name !== 'TTW') user.push(e)
+        // if (e.user_name !== 'TTW Exclusive' &&  e.user_name !== '' && e.user_name !== 'TTW') user.push(e)
+        if (e.owner !== 'TTW') user.push(e)
         else ttw.push(e)
       }
       )

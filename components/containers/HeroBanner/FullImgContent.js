@@ -20,6 +20,7 @@ const Container = styled.div`
     margin: auto;
     grid-template-columns: auto 400px;
     margin-top: 2vh;
+    
   }
 `;
 const Heading = styled.h1`
@@ -45,7 +46,7 @@ const SubText = styled.h3`
 `;
 
 const PaddingContianer = styled.div`
-  padding: 5rem 0 0 0;
+  padding: 5rem 0 2rem 0;
   flex-grow: 1;
   @media screen and (min-width: 768px) {
     padding: 1vh 0 0 0;
@@ -79,11 +80,11 @@ const IconsContainer = styled.div`
   filter: invert(100%);
   justify-content: space-between;
   position: absolute;
-  bottom: 10px;
+  bottom: 50px;
   width: 100%;
   padding-inline: 10px;
   @media screen and (min-width: 768px) {
-    bottom: 30px;
+    // bottom: 30px;
     width: 40%;
     // bottom : -20%;
   }
