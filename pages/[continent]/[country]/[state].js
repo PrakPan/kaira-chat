@@ -23,23 +23,21 @@ const TravelPlanner = (props) => {
       <Head>
         <title>
           {/* {props.Data.page_title} */}
-          {props.Data.destination} Travel Itinerary | The Tarzan Way
+          Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary | The Tarzan Way
         </title>
         <meta
           name="description"
           // content={props.Data.meta_description}
-          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Travel the best places to visit, local cuisine, and unique experiences in ${props.Data.destination}.`}
+          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
         ></meta>
         <meta
           property="og:title"
           // content={props.Data.social_share_title}
-          content={
-            props.Data.destination + " Travel Itinerary | The Tarzan Way"
-          }
+          content={`Plan Your Trip to ${props.Data.destination} | Trip Planner & Itinerary | The Tarzan Way`}
         />
         <meta
           property="og:description"
-          content={props.Data.social_media_description}
+          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>
