@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { Link, scroller } from 'react-scroll';
+import { Link as ScrollLink, scroller } from 'react-scroll';
 
 import { AppBar } from '@mui/material';
 import { Tabs, Tab } from '@mui/material';
@@ -251,6 +251,23 @@ const SimpleTabsV2 = (props) => {
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
+
+  useEffect(() => {
+    const { t, booking, scroll } = router.query;
+    console.log('param1:', t);
+    console.log('param2:', booking);
+    if (booking) {
+      setShowFooterBannerMobile(true);
+    } else {
+      if (scroll) {
+        ScrollLink.scrollTo(scroll, {
+          smooth: true,
+          duration: 500,
+        });
+      }
+    }
+  }, [router.query]);
+
   const _hidePaymentHandler = () => {
     setShowFooterBannerMobile(true);
     setShowpayment(false);
@@ -614,21 +631,37 @@ const SimpleTabsV2 = (props) => {
       </div>
       {isPageWide && !isInView && (
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
-          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[22rem]">
+          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[18rem]">
             <div className="flex flex-row justify-between ">
               <div className="flex flex-col">
                 <div className="text-[0.725rem]">
-                  {props.payment?.is_estimated_price
-                    ? 'Estimated Price'
-                    : 'Total trip cost'}
+                  {props?.payment?.pay_only_for_one ||
+                  props?.payment?.show_per_person_cost
+                    ? 'Per Person'
+                    : props.payment?.is_estimated_price
+                    ? `${
+                        props.payment.total_cost == 0 ? '' : 'Estimated Price'
+                      }`
+                    : 'Total Cost'}
                 </div>
                 {props.payment ? (
                   <div>
                     <span className="font-bold">
                       ₹{' '}
-                      {getIndianPrice(
-                        Math.round(Math.round(props.payment.total_cost) / 100)
-                      )}
+                      {props?.payment?.pay_only_for_one ||
+                      props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
+                            Math.round(
+                              Math.round(
+                                props.payment.per_person_discounted_cost
+                              ) / 100
+                            )
+                          )
+                        : getIndianPrice(
+                            Math.round(
+                              Math.round(props.payment.discounted_cost) / 100
+                            )
+                          )}
                       {'/-'}
                     </span>
                   </div>
@@ -894,7 +927,7 @@ const SimpleTabsV2 = (props) => {
                   onClick={() => setShowFooterBannerMobile(false)}
                 />
 
-                {!props.payment.is_registration_needed ? (
+                {!props.payment.is_registration_needed || true ? (
                   <SummaryContainer
                     setUserDetails={props.setUserDetails}
                     id={props.id}
@@ -1313,17 +1346,30 @@ const SimpleTabsV2 = (props) => {
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
             <div className="text-sm">
-              {props.payment?.is_estimated_price
-                ? 'Estimated Price'
-                : 'Total trip cost'}
+              {props?.payment?.pay_only_for_one ||
+              props?.payment?.show_per_person_cost
+                ? 'Per Person'
+                : props.payment?.is_estimated_price
+                ? `${props.payment.total_cost == 0 ? '' : 'Estimated Price'}`
+                : 'Total Cost'}
             </div>
             {props.payment ? (
               <div>
                 <span className="font-bold">
                   ₹{' '}
-                  {getIndianPrice(
-                    Math.round(Math.round(props.payment.total_cost) / 100)
-                  )}
+                  {props?.payment?.pay_only_for_one ||
+                  props?.payment?.show_per_person_cost
+                    ? getIndianPrice(
+                        Math.round(
+                          Math.round(props.payment.per_person_discounted_cost) /
+                            100
+                        )
+                      )
+                    : getIndianPrice(
+                        Math.round(
+                          Math.round(props.payment.discounted_cost) / 100
+                        )
+                      )}
                   {'/-'}
                 </span>
               </div>

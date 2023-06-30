@@ -35,7 +35,7 @@ const ModalContainer = styled.div`
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   animation: 0.5s ${(props) => (props.fade === 'in' ? TopSlideIn : TopSlideOut)}
     forwards;
-  z-index: 1600;
+  z-index: 90;
   opacity: ${(props) => (props.fade === 'in' ? '1' : '0')};
   transition: opacity 0.8s linear;
 
@@ -62,7 +62,7 @@ const BlackContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1599;
+  z-index: 80;
   width: 100vw;
   height: 100vh;
   transition: background 0.6s linear;

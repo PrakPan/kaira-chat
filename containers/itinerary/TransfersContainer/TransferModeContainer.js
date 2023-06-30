@@ -144,20 +144,22 @@ const TransferModeContainer = (props) => {
     setaddboking(props.userSelected);
   }, [props.userSelected]);
   function handleCheckboxChange(e) {
-    if (props.token && props.payment?.user_allowed_to_pay) {
-      _updateSelectedTransfer();
-      // _SelectedBookingHandler({
-      //   SelectedBookingId: selectedBooking?.id,
-      //   itinerary_id: itinerary_id,
-      //   tailored_id: tailored_id,
-      //   user_selected: !booking?.user_selected,
-      //   index: index,
-      // });
+    if (!props.payment?.is_registration_needed) {
+      if (props.token && props.payment?.user_allowed_to_pay) {
+        _updateSelectedTransfer();
+        // _SelectedBookingHandler({
+        //   SelectedBookingId: selectedBooking?.id,
+        //   itinerary_id: itinerary_id,
+        //   tailored_id: tailored_id,
+        //   user_selected: !booking?.user_selected,
+        //   index: index,
+        // });
 
-      e.stopPropagation();
-    } else {
-      props.setShowLoginModal();
-      e.stopPropagation();
+        e.stopPropagation();
+      } else {
+        props.setShowLoginModal();
+        e.stopPropagation();
+      }
     }
   }
   const isDesktop = useMediaQuery('(min-width:1024px)');
@@ -216,57 +218,61 @@ const TransferModeContainer = (props) => {
     );
   }
   function HandleTransport(i) {
-    if (!props.token) {
-      props.setShowLoginModal();
-    }
-    let name = props.booking['name'];
-    let costings_breakdown = props.booking['costings_breakdown'];
-    let cost = props.booking['booking_cost'];
-    let itinerary_id = props.booking['itinerary_id'];
-    let itinerary_name = props.booking['itinerary_name'];
-    let booking_type = props.booking['booking_type'];
+    if (!payment?.is_registration_needed) {
+      if (!props.token) {
+        props.setShowLoginModal();
+      }
+      let name = props.booking['name'];
+      let costings_breakdown = props.booking['costings_breakdown'];
+      let cost = props.booking['booking_cost'];
+      let itinerary_id = props.booking['itinerary_id'];
+      let itinerary_name = props.booking['itinerary_name'];
+      let booking_type = props.booking['booking_type'];
 
-    // let accommodation = props.booking["accommodation"];
-    let tailored_id = props.booking['tailored_itinerary'];
-    let id = props.booking['id'];
-    let check_in = props.booking['check_in'];
-    let check_out = props.booking['check_out'];
-    let pax = {
-      number_of_adults: props.booking['number_of_adults'],
-      number_of_children: props.booking['number_of_children'],
-      number_of_infants: props.booking['number_of_infants'],
-    };
-    let city = props.booking['city'];
-    let room_type = props.booking['room_type'];
-    let taxi_type = props.booking['taxi_type'];
-    let transfer_type = props.booking['transfer_type'];
-    let city_id = props.booking['city_id'];
-    let destination_city = props.booking['destination_city'];
-    let duration = props.booking['duration'];
-    let origin_iata = props.booking['origin_city_iata_code'];
-    let destination_iata = props.booking['destination_city_iata_code'];
-    props._changeTaxiHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      itinerary_name,
-      cost,
-      costings_breakdown,
-      origin_iata,
-      destination_iata,
-      destination_city,
-      taxi_type,
-      transfer_type
-    );
+      // let accommodation = props.booking["accommodation"];
+      let tailored_id = props.booking['tailored_itinerary'];
+      let id = props.booking['id'];
+      let check_in = props.booking['check_in'];
+      let check_out = props.booking['check_out'];
+      let pax = {
+        number_of_adults: props.booking['number_of_adults'],
+        number_of_children: props.booking['number_of_children'],
+        number_of_infants: props.booking['number_of_infants'],
+      };
+      let city = props.booking['city'];
+      let room_type = props.booking['room_type'];
+      let taxi_type = props.booking['taxi_type'];
+      let transfer_type = props.booking['transfer_type'];
+      let city_id = props.booking['city_id'];
+      let destination_city = props.booking['destination_city'];
+      let duration = props.booking['duration'];
+      let origin_iata = props.booking['origin_city_iata_code'];
+      let destination_iata = props.booking['destination_city_iata_code'];
+      props._changeTaxiHandler(
+        name,
+        itinerary_id,
+        tailored_id,
+        id,
+        check_in,
+        check_out,
+        pax,
+        city,
+        itinerary_name,
+        cost,
+        costings_breakdown,
+        origin_iata,
+        destination_iata,
+        destination_city,
+        taxi_type,
+        transfer_type
+      );
+    }
   }
   const Facilities = [
     props.booking_type == 'Taxi' || props.booking_type == 'Bus'
-      ? props?.costings_breakdown.hasOwnProperty('luggage_bags') ? `${props?.costings_breakdown?.luggage_bags} Luggage bags` : '2 Luggage bags'
+      ? props?.costings_breakdown.hasOwnProperty('luggage_bags')
+        ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
+        : '2 Luggage bags'
       : null,
     props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
 

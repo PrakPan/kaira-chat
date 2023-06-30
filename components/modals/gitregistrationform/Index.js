@@ -146,13 +146,23 @@ const RegistrationModal = (props) => {
           }
         )
         .then((res) => {
-          // router.push('/itinerary/'+res.data.itinerary.id)
+          if (isPageWide) {
+            router.push(
+              '/itinerary/' + res.data.itinerary.id + '/?t=12&scroll=Stays'
+            );
+          } else {
+            router.push(
+              '/itinerary/' + res.data.itinerary.id + '/?t=14&booking=true'
+            );
+          }
+
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-          _saleCreateHandler(res.data.itinerary.id);
+
+          // _saleCreateHandler(res.data.itinerary.id);
         })
         .catch((err) => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-          // router.push('/itinerary/'+res.data.itinerary.id)
+          router.push('/itinerary/' + res.data.itinerary.id);
           setFormFailedError(err.response.data.message);
 
           setPaymentLoading(false);
@@ -165,7 +175,7 @@ const RegistrationModal = (props) => {
     return (
       <div>
         <Modal
-          className="booking-modal"
+          className="booking-modal z-[2000]"
           show={props.show}
           size="xl"
           onHide={props.hide}

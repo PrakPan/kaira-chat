@@ -128,32 +128,35 @@ const HotelBookingContainer = ({
   // }
   function handleCheckboxChange(e) {
     console.log('handleCheckboxChange');
-    if (token) {
-      setLoading(true);
-      _SelectedBookingHandler({
-        SelectedBookingId: selectedBooking?.id,
-        itinerary_id: itinerary_id,
-        tailored_id: tailored_id,
-        user_selected: isSelect,
-        index: index,
-      })
-        .then((data) => {
-          setLoading(false);
+    if (!payment?.is_registration_needed) {
+      if (token) {
+        setLoading(true);
 
-          setisSelect(false);
-          // Handle success
-          // Access the response data using 'data'
+        _SelectedBookingHandler({
+          SelectedBookingId: selectedBooking?.id,
+          itinerary_id: itinerary_id,
+          tailored_id: tailored_id,
+          user_selected: isSelect,
+          index: index,
         })
-        .catch((error) => {
-          setLoading(false);
+          .then((data) => {
+            setLoading(false);
 
-          // Handle failure
-          // Access the error object using 'error'
-        });
+            setisSelect(false);
+            // Handle success
+            // Access the response data using 'data'
+          })
+          .catch((error) => {
+            setLoading(false);
 
-      e.stopPropagation();
-    } else {
-      setLoginModal(!loginModal);
+            // Handle failure
+            // Access the error object using 'error'
+          });
+
+        e.stopPropagation();
+      } else {
+        setLoginModal(!loginModal);
+      }
     }
   }
   function handleSelectChange() {
@@ -408,7 +411,7 @@ const HotelBookingContainer = ({
                 >
                   <div className="text-[#01202B] ">View Detail</div>
                 </ButtonYellow> */}
-                    {token ? (
+                    {payment?.is_registration_needed ? null : token ? (
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                         <ButtonYellow
@@ -468,6 +471,7 @@ const HotelBookingContainer = ({
                   )}
                 </div>
               )} */}
+
                 {isSelect && payment?.user_allowed_to_pay && (
                   <div
                     className={`absolute  ${

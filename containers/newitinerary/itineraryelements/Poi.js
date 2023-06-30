@@ -253,7 +253,8 @@ const ItineraryPoiElement = (props) => {
                 >
                   {props.heading}
                 </div>
-                {props.city_id &&
+                {!props.payment?.is_registration_needed &&
+                  props.city_id &&
                   props.payment?.user_allowed_to_pay &&
                   !props.payment.paid_user && (
                     <div

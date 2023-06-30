@@ -289,7 +289,8 @@ const ItineraryPoiElementM = (props) => {
           <div className=" " style={{ lineHeight: '1' }}>
             <span className="inline text-[1.2rem]">
               <span className="inline ">{props.heading}</span>
-              {props.city_id &&
+              {!props.payment?.is_registration_needed &&
+                props.city_id &&
                 props.payment?.user_allowed_to_pay &&
                 !props.payment.paid_user && (
                   <div
