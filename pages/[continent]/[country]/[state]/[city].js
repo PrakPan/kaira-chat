@@ -25,22 +25,22 @@ const Experience = (props) => {
         <meta
           name="description"
           // content={props.cityData.short_description}
-          content={`Travel ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Dive into vibrant culture, iconic landmarks, and hidden treasures in ${props.cityData.name}.`}
+          content={`Explore ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Immerse yourself in iconic landmarks, hidden treasures of ${props.cityData.name}, and book your flights, accommodations, and transfers all in one go.`}
         />
         <meta
           property="og:title"
           // content={props.cityData.name + " | Travel Guide |  The Tarzan Way"}
-          content={`Travel ${props.cityData.name} With AI Itinerary | The Tarzan Way`}
+          content={`Plan Your Trip to ${props.cityData.name} | Trip Planner & Itinerary | The Tarzan Way`}
         />
         <meta
           property="og:description"
           // content={props.cityData.short_description}
-          content={`Travel ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Dive into vibrant culture, iconic landmarks, and hidden treasures in ${props.cityData.name}.`}
+          content={`Explore ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Immerse yourself in iconic landmarks, hidden treasures of ${props.cityData.name}, and book your flights, accommodations, and transfers all in one go.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <title>
           {/* {props.cityData.name + " | Travel Guide |  The Tarzan Way"} */}
-          Travel {props.cityData.name} With AI Itinerary | The Tarzan Way
+          Plan Your Trip to {props.cityData.name} | Trip Planner & Itinerary | The Tarzan Way
         </title>
         <meta
           property="keywords"
