@@ -31,6 +31,11 @@ const Container = styled.div`
 
   .SingleDatePickerInput {
     width: 100%;
+    background-color: #fff0;
+  }
+  .SingleDatePickerInput__withBorder {
+    border-radius: 0px;
+    border: white;
   }
   .SingleDatePickerInputInput_1 {
     border: none;
@@ -41,6 +46,8 @@ const Container = styled.div`
   }
   .DateInput {
     width: 100%;
+    pointer-events: none;
+    visibility: hidden;
 
     border: 1px solid #d0d5dd;
     box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
@@ -160,14 +167,14 @@ const SelectDate = (props) => {
           onFocusChange={({ focused }) => props.setFocus(focused)} // PropTypes.func.isRequired
           id="your_unique_id" // PropTypes.string.isRequired,
         />
-        <CalenderIcons className="CalentderIcons">
-          {/* <Icon>
-            <BiCalendarAlt />
-          </Icon> */}
+        {/* <CalenderIcons className="CalentderIcons">
           <Icon>
             <BiCalendarAlt />
           </Icon>
-        </CalenderIcons>
+          <Icon>
+            <BiCalendarAlt />
+          </Icon>
+        </CalenderIcons> */}
         {/* <DatePicker
           onOpen={_handleOpen}
           label="Start Date"

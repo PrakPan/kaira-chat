@@ -252,19 +252,24 @@ const SimpleTabsV2 = (props) => {
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
 
-  useEffect(() => {
+  const scrollToElement = (elementId) => {
+    scroller.scrollTo(elementId, {
+      duration: 500,
+      smooth: false,
+      spy: true,
+      offset: -50,
+    });
+  };
+
+  useLayoutEffect(() => {
     const { t, booking, scroll } = router.query;
-    console.log('param1:', t);
-    console.log('param2:', booking);
+
     if (booking) {
       setShowFooterBannerMobile(true);
-    } else {
-      if (scroll) {
-        ScrollLink.scrollTo(scroll, {
-          smooth: true,
-          duration: 500,
-        });
-      }
+    } else if (scroll) {
+      document.addEventListener('DOMContentLoaded', () => {
+        scrollToElement(scroll);
+      });
     }
   }, [router.query]);
 
@@ -272,15 +277,7 @@ const SimpleTabsV2 = (props) => {
     setShowFooterBannerMobile(true);
     setShowpayment(false);
   };
-  const scrollToElement = (elementId) => {
-    scroller.scrollTo(elementId, {
-      duration: 500,
-      smooth: false,
-      spy: true,
-      // duration={500}
-      offset: -50,
-    });
-  };
+
   const _setLocationHandler = (event) => {
     window.scrollTo(0, window.innerHeight / 2);
     setLocation(event.target.id);
@@ -341,7 +338,7 @@ const SimpleTabsV2 = (props) => {
   let RoutesData = [];
   let TransfersData = [];
   let totalcityslabs = 0;
-
+  console.log('brief idssss', props.breif);
   if (props.breif)
     if (props.breif.city_slabs)
       for (var j = 0; j < props.breif.city_slabs.length; j++) {
@@ -388,7 +385,7 @@ const SimpleTabsV2 = (props) => {
 
         processRoutes(props);
       }
-  for (var i = 0; i < props.breif.city_slabs.length; i++) {
+  for (var i = 0; i < props?.breif?.city_slabs?.length; i++) {
     if (!props.breif.city_slabs[i].is_trip_terminated) {
       locationsArr.push(
         <Location
@@ -667,11 +664,11 @@ const SimpleTabsV2 = (props) => {
                   </div>
                 ) : null}
               </div>
-              {props?.token && props?.payment?.paid_user && (
+              {/* {props?.token && props?.payment?.paid_user && (
                 <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
                   PAID
                 </div>
-              )}
+              )} */}
               {!props.token ? (
                 <div>
                   <Button
@@ -705,6 +702,7 @@ const SimpleTabsV2 = (props) => {
                         borderRadius="10px"
                         bgColor="#F7E700"
                         onclick={() => scrollToElement('Stays-Head')}
+                        onclickparams={null}
                       >
                         Proceed to Book
                       </Button>
@@ -725,51 +723,52 @@ const SimpleTabsV2 = (props) => {
                       </Button>
                     </div>
                   )
-                ) : props.payment.is_registration_needed ? (
-                  <div className="">
-                    <Button
-                      color="#111"
-                      fontWeight="600"
-                      fontSize="0.85rem"
-                      borderWidth="2px"
-                      width="11rem"
-                      borderRadius="8px"
-                      bgColor="#f8e000"
-                      onclick={() =>
-                        setShowFooterBannerMobile(!showFooterBannerMobile)
-                      }
-                    >
-                      Proceed to Book
-                    </Button>
-                  </div>
                 ) : !props.payment.paid_user ? (
-                  <div>
-                    <Button
-                      color="#111"
-                      fontWeight="400"
-                      fontSize="0.45rem"
-                      borderWidth="2px"
-                      width="12rem"
-                      borderRadius="10px"
-                      bgColor="#F7E700"
-                      onclick={() => setNewitinerary(!Newitinerary)}
-                    >
-                      Craft a new trip!
-                    </Button>
-                  </div>
-                ) : // <Button
-                //   color="#fff"
-                //   fontWeight="400"
-                //   fontSize="0.45rem"
-                //   borderWidth="2px"
-                //   width="10rem"
-                //   borderRadius="10px"
-                //   bgColor="#04AA32"
-                //   onclick={() => scrollToElement('Stays-Head')}
-                // >
-                //   View Booking
-                // </Button>
-                null
+                  props.payment.is_registration_needed ? (
+                    <div className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="11rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        onclick={() => scrollToElement('Stays-Head')}
+                      >
+                        Proceed to Book
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Button
+                        color="#111"
+                        fontWeight="400"
+                        fontSize="0.45rem"
+                        borderWidth="2px"
+                        width="12rem"
+                        borderRadius="10px"
+                        bgColor="#F7E700"
+                        onclick={() => setNewitinerary(!Newitinerary)}
+                      >
+                        Craft a new trip!
+                      </Button>
+                    </div>
+                  )
+                ) : (
+                  <Button
+                    color="#fff"
+                    fontWeight="400"
+                    fontSize="0.45rem"
+                    borderWidth="2px"
+                    width="10rem"
+                    borderRadius="10px"
+                    bgColor="#04AA32"
+                    onclick={() => scrollToElement('Stays-Head')}
+                  >
+                    View Booking
+                  </Button>
+                )
               ) : null}
             </div>
           </div>
@@ -788,27 +787,30 @@ const SimpleTabsV2 = (props) => {
         ) : null} */}
       <div id={items[0].link}>
         {/* {mapArray ? ( */}
-        <Breif
-          plan={props.plan}
-          routesData={RoutesData}
-          transfersData={TransfersData}
-          routes={props.routes}
-          payment={props.payment}
-          traveleritinerary={props.traveleritinerary}
-          // Locationlatlong={Locationlatlong}
-          // hours={hours}
-          // minutes={minutes}
-          // seconds={seconds}
-          itinerary={props.itinerary}
-          breif={props.breif}
-          // hideTimer={minimiseTimer}
-          // timeRequired={props.timeRequired}
-          // itineraryReleased={props.itineraryReleased}
-          // itineraryDate={props.itineraryDate}
-          // showTimer={showItineraryTimer}
-          // _hideTimerHandler={_minimiseTimerHandler}
-          // blur={blurItinerary}
-        ></Breif>
+        {
+          <Breif
+            plan={props.plan}
+            routesData={RoutesData}
+            transfersData={TransfersData}
+            routes={props.routes}
+            payment={props.payment}
+            traveleritinerary={props.traveleritinerary}
+            // Locationlatlong={Locationlatlong}
+            // hours={hours}
+            // minutes={minutes}
+            // seconds={seconds}
+            itinerary={props.itinerary}
+            breif={props.breif}
+            // hideTimer={minimiseTimer}
+            // timeRequired={props.timeRequired}
+            // itineraryReleased={props.itineraryReleased}
+            // itineraryDate={props.itineraryDate}
+            // showTimer={showItineraryTimer}
+            // _hideTimerHandler={_minimiseTimerHandler}
+            // blur={blurItinerary}
+          ></Breif>
+        }
+
         {/* ) : null} */}
       </div>
       {/* // for 0000000000000000000000  mobile */}
@@ -840,7 +842,7 @@ const SimpleTabsV2 = (props) => {
               // _hideTimerHandler={_minimiseTimerHandler}
               // blur={false}
               // location_selected={location}
-              city_slabs={props.breif.city_slabs}
+              city_slabs={props?.breif?.city_slabs}
               itinerary={props.itinerary}
               setItinerary={props.setItinerary}
               getPaymentHandler={props.getPaymentHandler}
@@ -870,32 +872,61 @@ const SimpleTabsV2 = (props) => {
               booking={props.booking}
             ></HotelsBooking>
           </div>
-
-          <div id={items[3].link}>
-            <TransfersContainer
-              setShowLoginModal={setShowLoginModal}
-              plan={props.plan}
-              dayslab={props?.itinerary?.day_slabs}
-              breif={props?.breif}
-              routesData={RoutesData}
-              transfers={TransfersData}
-              routes={props.routes}
-              showTaxiModal={props.showTaxiModal}
-              getPaymentHandler={props.getPaymentHandler}
-              _updateFlightBookingHandler={props._updateFlightBookingHandler}
-              setShowTaxiModal={props.setShowTaxiModal}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              _updateBookingHandler={props._updateBookingHandler}
-              showFlightModal={props.showFlightModal}
-              setShowFlightModal={_handleFlighModalShow}
-              setHideFlightModal={_handleFlightModalClose}
-              setShowBookingModal={() => props.setShowBookingModal(true)}
-              setHideBookingModal={props.setHideBookingModal}
-              payment={props.payment}
-              transferBookings={props.transferBookings}
-            />
-          </div>
+          {props.transferBookings && (
+            <div id={items[3].link}>
+              <TransfersContainer
+                setShowLoginModal={setShowLoginModal}
+                plan={props.plan}
+                dayslab={props?.itinerary?.day_slabs}
+                breif={props?.breif}
+                routesData={RoutesData}
+                transfers={TransfersData}
+                routes={props.routes}
+                showTaxiModal={props.showTaxiModal}
+                getPaymentHandler={props.getPaymentHandler}
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
+                setShowTaxiModal={props.setShowTaxiModal}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                showFlightModal={props.showFlightModal}
+                setShowFlightModal={_handleFlighModalShow}
+                setHideFlightModal={_handleFlightModalClose}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                setHideBookingModal={props.setHideBookingModal}
+                payment={props.payment}
+                transferBookings={props.transferBookings}
+              />
+            </div>
+          )}
+          {props.activityBookings && (
+            <div id={items[4].link}>
+              <ActivityBookings
+                plan={props.plan}
+                hasUserPaid={
+                  props.payment
+                    ? props.payment.paid_user
+                      ? true
+                      : false
+                    : false
+                }
+                budget={props.budget}
+                stayBookings={props.stayBookings}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                flightLoading={props.flightLoading}
+                flightBookings={props.flightBookings}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                activityBookings={props.activityBookings}
+                payment={props.payment}
+                booking={props.booking}
+              />
+            </div>
+          )}
           <Modal
             centered
             show={showFooterBannerMobile}
@@ -1038,7 +1069,7 @@ const SimpleTabsV2 = (props) => {
                   // _hideTimerHandler={_minimiseTimerHandler}
                   // blur={false}
                   // location_selected={location}
-                  city_slabs={props.breif.city_slabs}
+                  city_slabs={props?.breif?.city_slabs}
                   itinerary={props.itinerary}
                   setItinerary={props.setItinerary}
                   // newData={props.newData}
@@ -1435,38 +1466,40 @@ const SimpleTabsV2 = (props) => {
                   </Button>
                 </div>
               )
-            ) : props.payment.is_registration_needed ? (
-              <div className="">
-                <Button
-                  color="#111"
-                  fontWeight="600"
-                  fontSize="0.85rem"
-                  borderWidth="2px"
-                  width="10rem"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  onclick={() =>
-                    setShowFooterBannerMobile(!showFooterBannerMobile)
-                  }
-                >
-                  Proceed to Book
-                </Button>
-              </div>
             ) : !props.payment.paid_user ? (
-              <div className="">
-                <Button
-                  color="#111"
-                  fontWeight="600"
-                  fontSize="0.85rem"
-                  borderWidth="2px"
-                  width="10rem"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  onclick={() => setNewitinerary(!Newitinerary)}
-                >
-                  Craft a new trip!
-                </Button>
-              </div>
+              props.payment.is_registration_needed ? (
+                <div className="">
+                  <Button
+                    color="#111"
+                    fontWeight="600"
+                    fontSize="0.85rem"
+                    borderWidth="2px"
+                    width="10rem"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    onclick={() =>
+                      setShowFooterBannerMobile(!showFooterBannerMobile)
+                    }
+                  >
+                    Proceed to Book
+                  </Button>
+                </div>
+              ) : (
+                <div className="">
+                  <Button
+                    color="#111"
+                    fontWeight="600"
+                    fontSize="0.85rem"
+                    borderWidth="2px"
+                    width="10rem"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    onclick={() => setNewitinerary(!Newitinerary)}
+                  >
+                    Craft a new trip!
+                  </Button>
+                </div>
+              )
             ) : (
               <Button
                 color="#fff"

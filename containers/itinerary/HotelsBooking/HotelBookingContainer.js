@@ -87,13 +87,13 @@ const HotelBookingContainer = ({
   function Addons(Shorthand) {
     switch (Shorthand) {
       case 'EP':
-        return 'Room Only';
+        return 'No Meals Included';
       case 'CP':
         return 'Complementary Breakfast Included';
       case 'MAP':
-        return 'Breakfast/Lunch Included';
+        return 'Breakfast and Lunch/Dinner Included';
       case 'AP':
-        return 'All Meals Included';
+        return 'All meals Included';
       case 'TBO':
         return null;
       default:
@@ -480,7 +480,7 @@ const HotelBookingContainer = ({
                         : `${
                             payment?.paid_user || !payment?.user_allowed_to_pay
                               ? 'lg:bottom-10 bottom-[1.2rem]'
-                              : 'lg:bottom-10 bottom-[2.5rem]'
+                              : 'lg:bottom-10 bottom-[1.6rem]'
                           }`
                     } right-6 -m-3`}
                   >

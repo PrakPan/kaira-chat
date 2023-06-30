@@ -52,7 +52,7 @@ const Itinerary = (props) => {
     name: 'Loading Itinerary',
     images: ['null'],
   });
-  const [breif, setBreif] = useState(defaultbreif);
+  const [breif, setBreif] = useState();
   const [routes, setRoutes] = useState(defaultbreif);
 
   const [booking, setBooking] = useState(null);
@@ -118,6 +118,7 @@ const Itinerary = (props) => {
     axiosbreifinstance
       .get(`/?itinerary_id=` + props.id)
       .then((res) => {
+        console.log('brief idssss 0', res.data);
         setBreif(res.data);
         setBreifLoading(false);
         if (res.data) {

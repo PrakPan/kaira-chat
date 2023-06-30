@@ -53,15 +53,15 @@ const NewItenaryDBDMob = (props) => {
   const items = [];
   const itemsDays = [];
   function extractId(location, arr) {
+    console.log('extract location', location);
     return arr[location].slab_id;
   }
+  console.log('slabs idssss', props.city_slabs);
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
-      if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
-        break;
-      else {
+      if (props.city_slabs[i] && !props.city_slabs[i].is_trip_terminated) {
         const itenaryId =
           i % props.city_slabs[i].duration
             ? props.itinerary.day_slabs[i - 1]
@@ -71,7 +71,7 @@ const NewItenaryDBDMob = (props) => {
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
         // console.log('idssss'+ itenaryId.slab_id)
         // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
-
+        console.log('idssss' + i, props.city_slabs[i]);
         items.push({
           id: i,
           label: `${props.city_slabs[i].city_name} ${
