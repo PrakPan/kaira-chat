@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 // import ImageLoader from '../../../components/ImageLoader';
+import moment from 'moment';
 import dayjs from 'dayjs';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
@@ -139,7 +140,7 @@ const Icon = styled.div`
 
 const SelectDate = (props) => {
   const [open, setOpen] = useState(false);
-
+  const initialDate = moment(props.date, 'YYYY-MM-DD');
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const _handleOpen = () => {
@@ -159,13 +160,13 @@ const SelectDate = (props) => {
     <div id="bookingsummary-date-container">
       <Container tailoredFormModal={true}>
         <SingleDatePicker
-          date={props.date} // momentPropTypes.momentObj or null
           onDateChange={(date) => props.setDate(date)} // PropTypes.func.isRequired
           focused={props.focus} // PropTypes.bool
           numberOfMonths={1}
-          dateFormat="MM/dd/yyyy"
+          dateFormat="dd-MM-yyyy"
           onFocusChange={({ focused }) => props.setFocus(focused)} // PropTypes.func.isRequired
           id="your_unique_id" // PropTypes.string.isRequired,
+          initialDate={initialDate}
         />
         {/* <CalenderIcons className="CalentderIcons">
           <Icon>

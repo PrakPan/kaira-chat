@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import * as orderaction from '../../../store/actions/order';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MdEdit } from 'react-icons/md';
-
+import moment from 'moment';
 import {
   faRupeeSign,
   faTimes,
@@ -20,7 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
 import { getIndianPrice } from '../../../services/getIndianPrice';
-import { getHumanDate } from '../../../services/getHumanDate';
+import { getHumanDateWithYear } from '../../../services/getHumanDateWithYear';
 import urls from '../../../services/urls';
 import {
   ITINERARY_STATUSES,
@@ -33,7 +33,7 @@ import Spinner from '../../../components/Spinner';
 import ButtonYellow from '../../../components/ButtonYellow';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import Slide from '../../../Animation/framerAnimation/Slide';
-import { format, isPast, parseISO } from 'date-fns';
+import { add, format, isBefore, isPast, parseISO, startOfDay } from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { Link, scroller } from 'react-scroll';
 import { pluralDetector } from '../../../helper/shortHelpers';
@@ -78,6 +78,19 @@ const BookingListCostContainer = styled.div`
   }
 `;
 const Details = (props) => {
+  const getCurrentDateIfOlder = (dateString) => {
+    const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
+
+    const givenDate = new Date(dateString);
+    const isOlder = isBefore(givenDate, currentDate);
+
+    if (isOlder) {
+      return format(currentDate, 'yyyy-MM-dd');
+    }
+
+    return dateString;
+  };
+
   const [iscouponApplied, setiscouponApplied] = useState(
     props.payment?.coupon ? true : false
   );
@@ -93,7 +106,9 @@ const Details = (props) => {
   const [showRegistration, setShowRegistartion] = useState(false);
 
   const [pax, setPax] = useState(props?.payment?.meta_info?.number_of_adults);
-  const [date, setDate] = useState(props?.plan?.start_date);
+  const [date, setDate] = useState(
+    getCurrentDateIfOlder(props?.plan?.start_date)
+  );
 
   const _handleVerificationSuccess = () => {
     props.getPaymentHandler();
@@ -132,6 +147,14 @@ const Details = (props) => {
       setIsDatePast(true);
     }
   }, [props.plan?.start_date]);
+
+  const addDaysToDate = (dateString, numberOfDays) => {
+    const date = new Date(dateString);
+    const newDate = add(date, { days: numberOfDays });
+    const formattedDate = format(newDate, 'yyyy-MM-dd');
+    return formattedDate;
+  };
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -893,8 +916,10 @@ const Details = (props) => {
         {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
       </div>
 
-      <div className="px-0 pb-2">
-        {props?.payment?.allow_coupon_discount && !isDatePast ? (
+      <div className="px-0 pb-4">
+        {props?.payment?.allow_coupon_discount &&
+        !isDatePast &&
+        !props?.payment?.paid_user ? (
           <div>
             <div className="relative  rounded-md cursor-pointer mt-3">
               <input
@@ -980,7 +1005,7 @@ const Details = (props) => {
         ) : null}
 
         {props.payment.itinerary_status !==
-        ITINERARY_STATUSES.itinerary_finalized ? (
+          ITINERARY_STATUSES.itinerary_finalized && !props.payment.paid_user ? (
           <>
             <div className="border-y-2 border-[#F0F0F0] my-3 ml-1">
               <div className=" group flex flex-row gap-3 items-center py-[1rem]">
@@ -990,21 +1015,30 @@ const Details = (props) => {
                     {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
                     {props.plan
                       ? props.plan
-                        ? getHumanDate(
+                        ? getHumanDateWithYear(
                             format(new Date(date), 'dd-MM-yyyy').replaceAll(
                               '-',
                               '/'
                             )
                           )
                         : null
-                      : null}{' '}
-                    {props?.plan?.end_date &&
-                      -getHumanDate(
-                        format(
-                          new Date(props?.plan?.end_date),
-                          'dd-MM-yyyy'
-                        ).replaceAll('-', '/')
-                      )}
+                      : null}
+                    {' - '}
+                    {date
+                      ? getHumanDateWithYear(
+                          format(
+                            new Date(
+                              addDaysToDate(
+                                date,
+                                props?.plan?.duration_number
+                                  ? props?.plan?.duration_number
+                                  : 4
+                              )
+                            ),
+                            'dd-MM-yyyy'
+                          ).replaceAll('-', '/')
+                        )
+                      : null}
                   </div>
 
                   {props.payment.itinerary_status ===
@@ -1088,9 +1122,11 @@ const Details = (props) => {
 
       {props.payment && props.token ? (
         props.payment.itinerary_status ===
+          ITINERARY_STATUSES.itinerary_finalized ||
+        (props.payment.itinerary_status ===
           ITINERARY_STATUSES.itinerary_finalized &&
-        !props.payment.paid_user &&
-        props.payment.user_allowed_to_pay ? (
+          !props.payment.paid_user &&
+          props.payment.user_allowed_to_pay) ? (
           props.payment.total_cost > 0 ? (
             <ButtonYellow
               styleClass="w-full"

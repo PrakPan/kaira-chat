@@ -480,7 +480,7 @@ const HotelBookingContainer = ({
                         : `${
                             payment?.paid_user || !payment?.user_allowed_to_pay
                               ? 'lg:bottom-10 bottom-[1.2rem]'
-                              : 'lg:bottom-10 bottom-[1.6rem]'
+                              : 'lg:bottom-10 bottom-[1.2rem]'
                           }`
                     } right-6 -m-3`}
                   >

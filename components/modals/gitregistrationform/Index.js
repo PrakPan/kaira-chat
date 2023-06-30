@@ -150,7 +150,7 @@ const RegistrationModal = (props) => {
             router.push(
               '/itinerary/' +
                 res.data.itinerary.id +
-                '/?t=12&booking=false&scroll=Stays'
+                '/?t=2&booking=false&scroll=Stays'
             );
           } else {
             router.push(

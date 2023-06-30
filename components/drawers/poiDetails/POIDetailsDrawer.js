@@ -19,23 +19,32 @@ const POIDetailsDrawer = (props) => {
         .get(`/?id=${props.ActivityiconId}`)
         .then((res) => setData(res.data));
     } else {
-      axiosPOIdetailsInstance
-        .get(`/?id=${props.iconId}`)
-        .then((res) => setData(res.data));
+      if (props.iconId) {
+        axiosPOIdetailsInstance
+          .get(`/?id=${props.iconId}`)
+          .then((res) => setData(res.data));
+      } else {
+        setData({
+          name: props.name,
+          short_description: props.text,
+          image: props.image,
+        });
+      }
     }
   }
-
+  console.log('poiiii data', data);
   return (
     <Drawer
       show={props.show}
       anchor={'right'}
       backdrop
+      width={props.width}
       style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={props.handleCloseDrawer}
       // zIndex='1501'
     >
-      {!!data.name ? (
+      {data.name ? (
         <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
       ) : (
         <POIDetailsSkeleton
