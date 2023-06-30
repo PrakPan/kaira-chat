@@ -4,9 +4,8 @@ import Theme from '../public/Theme';
 import '../styles.css';
 import { store } from '../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import {OverlayScrollbars} from "overlayscrollbars";
+import "overlayscrollbars/overlayscrollbars.css";
 // import { hotjar } from 'react-hotjar'
 
 import { useRouter } from 'next/router';
@@ -33,6 +32,18 @@ function MyApp({ Component, pageProps, store }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+
+  useEffect(() => {
+
+    const options = {
+      scrollbars: {
+        
+      },
+    };
+
+    OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
+  }, []);
+
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
