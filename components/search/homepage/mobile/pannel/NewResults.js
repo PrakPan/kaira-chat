@@ -74,7 +74,7 @@ const NewResults = (props) => {
        { if(i<5) return (
          <LocationContainer
            key={e.resource_id}
-           href={"/" + data.path}
+           href={"/" + e.path}
            
          >
            <MarkerContainer>
