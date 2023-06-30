@@ -8,7 +8,7 @@ import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 const P = styled.div`
   font-weight: 300;
   text-align: left;
-  line-height: 30px;
+  line-height: 25px;
   position: relative;
   ${(props) => `height : ${props.clientHeight}px`};
   // max-height : none;
@@ -19,7 +19,8 @@ const P = styled.div`
   @media screen and (min-width: 768px) {\
       ${(props) => !props.more && `overflow : hidden ; height: 144px`};
   ${(props) => props.clientHeight < 144 && "height : auto"};
-    font-size: 18px;
+    font-size: 14px;
+    font-weight : 400;
   }
 `;
 
