@@ -4,8 +4,8 @@ import Theme from '../public/Theme';
 import '../styles.css';
 import { store } from '../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {OverlayScrollbars} from "overlayscrollbars";
-import "overlayscrollbars/overlayscrollbars.css";
+// import {OverlayScrollbars} from "overlayscrollbars";
+// import "overlayscrollbars/overlayscrollbars.css";
 // import { hotjar } from 'react-hotjar'
 
 import { useRouter } from 'next/router';
@@ -34,14 +34,11 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   useEffect(() => {
-
     const options = {
-      scrollbars: {
-        
-      },
+      scrollbars: {},
     };
 
-    OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
+    // OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
   }, []);
 
   useEffect(() => {
@@ -70,33 +67,32 @@ function MyApp({ Component, pageProps, store }) {
   }, [router.events]);
 
   // Freshchat bot :-
-//   var name
-//     if(localStorage.getItem("name")) name = localStorage.getItem("name").split(" ");
-//  var email = localStorage.getItem("email");
-  
-//   useEffect(() => {
-//      function handleWidgetLoaded() {
-         
-//           if (name?.length && email) {
-//             window.fcWidget.user.setFirstName(name[0]);
-//             window.fcWidget.user.setEmail(email);
-//        }
-//       }
+  //   var name
+  //     if(localStorage.getItem("name")) name = localStorage.getItem("name").split(" ");
+  //  var email = localStorage.getItem("email");
 
-//     if (window.fcWidget) {
-//       window.fcWidget.on('widget:loaded', handleWidgetLoaded);
-//     } else {
-//       window.fcWidgetOnload = handleWidgetLoaded;
-//     }
+  //   useEffect(() => {
+  //      function handleWidgetLoaded() {
 
-//     return () => {
-//       if (window.fcWidget) {
-//         window.fcWidget.off('widget:loaded', handleWidgetLoaded);
-//       }
-//     };
-//   }, []);
+  //           if (name?.length && email) {
+  //             window.fcWidget.user.setFirstName(name[0]);
+  //             window.fcWidget.user.setEmail(email);
+  //        }
+  //       }
 
-  
+  //     if (window.fcWidget) {
+  //       window.fcWidget.on('widget:loaded', handleWidgetLoaded);
+  //     } else {
+  //       window.fcWidgetOnload = handleWidgetLoaded;
+  //     }
+
+  //     return () => {
+  //       if (window.fcWidget) {
+  //         window.fcWidget.off('widget:loaded', handleWidgetLoaded);
+  //       }
+  //     };
+  //   }, []);
+
   return (
     <Theme>
       <Component {...pageProps} />
