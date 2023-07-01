@@ -211,7 +211,8 @@ const ItineraryPoiElement = (props) => {
     'Very popular',
   ];
   const ClickHandler = (child) => {
-    if (child == 'Activities') {
+    console.log('clicked element', child);
+    if (child == 'Things To Do') {
       Poi_activities({ id: 3 });
     } else {
       Poi_activities();
