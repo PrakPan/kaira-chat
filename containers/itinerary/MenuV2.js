@@ -1500,19 +1500,17 @@ const SimpleTabsV2 = (props) => {
               )
             ) : (
               <Button
-                color="#fff"
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="0px"
-                width="8rem"
-                borderRadius="8px"
-                bgColor="#04AA32"
-                onclick={() =>
-                  setShowFooterBannerMobile(!showFooterBannerMobile)
-                }
-              >
-                View Bookings
-              </Button>
+              color="#111"
+              fontWeight="600"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="10rem"
+              borderRadius="8px"
+              bgColor="#f8e000"
+                    onclick={() => scrollToElement('Stays-Head')}
+                  >
+                    View Bookings
+                  </Button>
             )
           ) : null}
         </div>
