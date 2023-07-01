@@ -164,7 +164,7 @@ const RegistrationModal = (props) => {
         })
         .catch((err) => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-          router.push('/itinerary/' + res.data.itinerary.id);
+          // router.push('/itinerary/' + res.data.itinerary.id);
           setFormFailedError(err.response.data.message);
 
           setPaymentLoading(false);

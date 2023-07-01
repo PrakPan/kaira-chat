@@ -1038,15 +1038,6 @@ const Booking = (props) => {
                     </div>
 
                     {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
-                    {updateLoadingState ? (
-                      <div className="center-div" style={{}}>
-                        <LoadingLottie
-                          height={'5rem'}
-                          width={'5rem'}
-                          margin="1rem auto"
-                        />
-                      </div>
-                    ) : null}
 
                     {viewMoreStatus && !optionsJSX.length ? (
                       <Button

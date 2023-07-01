@@ -662,11 +662,11 @@ const SimpleTabsV2 = (props) => {
                   </div>
                 ) : null}
               </div>
-              {/* {props?.token && props?.payment?.paid_user && (
+              {props?.token && props?.payment?.paid_user && (
                 <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
                   PAID
                 </div>
-              )} */}
+              )}
               {!props.token ? (
                 <div>
                   <Button
@@ -755,13 +755,13 @@ const SimpleTabsV2 = (props) => {
                   )
                 ) : (
                   <Button
-                    color="#fff"
+                    color="#111"
                     fontWeight="400"
                     fontSize="0.45rem"
                     borderWidth="2px"
-                    width="10rem"
+                    width="9rem"
                     borderRadius="10px"
-                    bgColor="#04AA32"
+                    bgColor="#F7E700"
                     onclick={() => scrollToElement('Stays-Head')}
                   >
                     View Booking

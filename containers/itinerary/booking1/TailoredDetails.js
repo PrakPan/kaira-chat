@@ -1122,11 +1122,9 @@ const Details = (props) => {
 
       {props.payment && props.token ? (
         props.payment.itinerary_status ===
-          ITINERARY_STATUSES.itinerary_finalized ||
-        (props.payment.itinerary_status ===
           ITINERARY_STATUSES.itinerary_finalized &&
-          !props.payment.paid_user &&
-          props.payment.user_allowed_to_pay) ? (
+        !props.payment.paid_user &&
+        props.payment.user_allowed_to_pay ? (
           props.payment.total_cost > 0 ? (
             <ButtonYellow
               styleClass="w-full"
@@ -1150,8 +1148,8 @@ const Details = (props) => {
               Add Hotels
             </ButtonYellow>
           )
-        ) : props.payment.is_registration_needed ? (
-          props.payment.email_reverification_needed ? (
+        ) : props?.payment?.is_registration_needed ? (
+          props?.payment?.email_reverification_needed ? (
             <ButtonYellow
               styleClass="w-full"
               onClick={() => setShowVerification(true)}
