@@ -764,7 +764,7 @@ const SimpleTabsV2 = (props) => {
                     bgColor="#F7E700"
                     onclick={() => scrollToElement('Stays-Head')}
                   >
-                    View Booking
+                    View Bookings
                   </Button>
                 )
               ) : null}
