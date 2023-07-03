@@ -5,8 +5,8 @@ import '../styles.css';
 import { store } from '../store/store';
 import { Partytown } from '@builder.io/partytown/react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import {OverlayScrollbars} from "overlayscrollbars";
-// import "overlayscrollbars/overlayscrollbars.css";
+import { OverlayScrollbars } from "overlayscrollbars";
+import "overlayscrollbars/overlayscrollbars.css";
 // import { hotjar } from 'react-hotjar'
 
 import { useRouter } from 'next/router';
