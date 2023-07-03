@@ -109,7 +109,8 @@ const Homepage = (props) => {
   // const [loading, setLoading] = useState(true);
   const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
   const [userItineraries, setUserItineraries] = useState([])
-  const [TTWItineraries , setTTWItineraries] = useState([])
+  const [TTWItineraries, setTTWItineraries] = useState([])
+  const [showMore , setShowMore] = useState(false)
 
   const [filters, setFilters] = useState({
     Trek: true,
@@ -351,7 +352,6 @@ const Homepage = (props) => {
     setOverviewHeading(props.experienceData.overview_heading);
     return () => setOverviewHeading(null)
   }, [router.query.link, props.experienceData]);
-          console.log("props: ", props);
 
   var country;
   if (props.experienceData.ancestors) {
@@ -496,8 +496,44 @@ const Homepage = (props) => {
           </Heading>
         ) : null}
         {TTWItineraries.length ? (
-          <Experiences experiences={TTWItineraries}></Experiences>
+          <Experiences
+            mobileGrid
+            experiences={showMore ? TTWItineraries : TTWItineraries.slice(0, 4)}
+          ></Experiences>
         ) : null}
+        {/* <button onClick={()=>setShowMore(true)}>more</button> */}
+
+        {!TTWItineraries.length || isPageWide ? (
+          <></>
+        ) : showMore ? (
+          <Button
+            onclick={() =>
+              openTailoredModal(
+                router,
+                props.experienceData.id,
+                props.experienceData.destination
+              )
+            }
+            borderWidth="1px"
+            fontWeight="500"
+            borderRadius="6px"
+            margin="2rem auto"
+            padding="0.5rem 2rem"
+          >
+            Unlock your adventure
+          </Button>
+        ) : (
+          <Button
+            onclick={() => setShowMore(true)}
+            borderWidth="1px"
+            fontWeight="500"
+            borderRadius="6px"
+            margin="2rem auto"
+            padding="0.5rem 2rem"
+          >
+            View more
+          </Button>
+        )}
 
         {userItineraries.length ? (
           <Heading
@@ -515,22 +551,46 @@ const Homepage = (props) => {
           <Experiences experiences={userItineraries}></Experiences>
         ) : null}
 
-        <Button
-          onclick={() =>
-            openTailoredModal(
-              router,
-              props.experienceData.id,
-              props.experienceData.destination
-            )
-          }
-          borderWidth="1px"
-          fontWeight="500"
-          borderRadius="6px"
-          margin="2rem auto"
-          padding="0.5rem 2rem"
-        >
-          Unlock your adventure
-        </Button>
+        {userItineraries.length && !isPageWide ? (
+          <Button
+            onclick={() =>
+              openTailoredModal(
+                router,
+                props.experienceData.id,
+                props.experienceData.destination
+              )
+            }
+            borderWidth="1px"
+            fontWeight="500"
+            borderRadius="6px"
+            margin="2rem auto"
+            padding="0.5rem 2rem"
+          >
+            Unlock your adventure
+          </Button>
+        ) : (
+          <></>
+        )}
+        {isPageWide ? (
+          <Button
+            onclick={() =>
+              openTailoredModal(
+                router,
+                props.experienceData.id,
+                props.experienceData.destination
+              )
+            }
+            borderWidth="1px"
+            fontWeight="500"
+            borderRadius="6px"
+            margin="2rem auto"
+            padding="0.5rem 2rem"
+          >
+            Unlock your adventure
+          </Button>
+        ) : (
+          <></>
+        )}
 
         {/* <Carousel cards={props.experienceData.locations} /> */}
       </SetWidthContainer>
