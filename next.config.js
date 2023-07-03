@@ -25,6 +25,9 @@ module.exports = {
       },
     ],
   },
+  experimental: {
+    nextScriptWorkers: true,
+  },
   // images: {
   //   disableStaticImages: true,
   // },
