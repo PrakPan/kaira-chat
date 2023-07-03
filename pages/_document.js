@@ -4,7 +4,7 @@ import { ServerStyleSheet } from 'styled-components';
 import Layout from '../components/Layout';
 import { GOOGLE_ANALTICS_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
-
+import { Partytown } from '@builder.io/partytown/react';
 // import Script from 'next/script';
 export default class MyDocument extends Document {
   //   constructor() {
@@ -39,10 +39,12 @@ export default class MyDocument extends Document {
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
           ></meta>
           <script
+            type="text/partytown"
             async
             src="https://www.googletagmanager.com/gtag/js?id=AW-738037519"
           ></script>
           <script
+            type="text/partytown"
             dangerouslySetInnerHTML={{
               __html: `
   window.dataLayer = window.dataLayer || [];
@@ -52,9 +54,9 @@ export default class MyDocument extends Document {
   `,
             }}
           />
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === 'production' && (
             <script
-              type="text/javascript"
+              type="text/partytown"
               dangerouslySetInnerHTML={{
                 __html: ` (function(c,l,a,r,i,t,y){
     c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -66,7 +68,7 @@ export default class MyDocument extends Document {
           )}
 
           <script
-            type="text/javascript"
+            type="text/partytown"
             dangerouslySetInnerHTML={{
               __html: `
    (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
@@ -77,22 +79,25 @@ export default class MyDocument extends Document {
    `,
             }}
           ></script>
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === 'production' && (
             <script
+              type="text/partytown"
               async
               src={
-                "https://www.googletagmanager.com/gtag/js?id=" +
+                'https://www.googletagmanager.com/gtag/js?id=' +
                 GOOGLE_ANALTICS_ID
               }
             />
           )}
 
           <script
+            type="text/partytown"
             src="//in.fw-cdn.com/30401267/225580.js"
             chat="false"
           ></script>
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === 'production' && (
             <script
+              type="text/partytown"
               dangerouslySetInnerHTML={{
                 __html: `
             window.dataLayer = window.dataLayer || [];
@@ -152,6 +157,7 @@ export default class MyDocument extends Document {
 
           {/* Google Tag Manager */}
           <script
+            type="text/partytown"
             dangerouslySetInnerHTML={{
               __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -197,7 +203,7 @@ export default class MyDocument extends Document {
               src="https://www.googletagmanager.com/ns.html?id=GTM-5C5GGGV"
               height="0"
               width="0"
-              style={{ display: "none", visibility: "hidden" }}
+              style={{ display: 'none', visibility: 'hidden' }}
             ></iframe>
             {/* End Google Tag Manager (noscript) */}
           </noscript>
