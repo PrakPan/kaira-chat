@@ -835,12 +835,17 @@ const Details = (props) => {
                             : 'font-lexend text-enter font-bold'
                         }
                       >
-                        {props?.payment?.coupon?.discount_type == 'Flat' ? (
-                          <div>
-                            (-) {'₹' + props.payment.coupon.discount_value}
-                          </div>
-                        ) : (
-                          <div className="flex flex-row">
+                        <div>
+                          (-){' '}
+                          {'₹' +
+                            getIndianPrice(
+                              Math.round(
+                                props?.payment?.coupon_usage?.discount / 100
+                              )
+                            )}
+                        </div>
+
+                        {/* <div className="flex flex-row">
                             <div className="flex flex-row">
                               <div className="font-normal pr-1">(-)</div>
                               <span>₹</span>
@@ -851,8 +856,7 @@ const Details = (props) => {
                                   (props.payment.coupon.discount_value / 100)
                               )
                             )}
-                          </div>
-                        )}
+                          </div> */}
                       </div>
                     </div>
                   ) : // <div

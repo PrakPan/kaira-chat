@@ -39,12 +39,10 @@ export default class MyDocument extends Document {
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
           ></meta>
           <script
-            type="text/partytown"
             async
             src="https://www.googletagmanager.com/gtag/js?id=AW-738037519"
           ></script>
           <script
-            type="text/partytown"
             dangerouslySetInnerHTML={{
               __html: `
   window.dataLayer = window.dataLayer || [];

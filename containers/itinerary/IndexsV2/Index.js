@@ -232,6 +232,7 @@ const Itinerary = (props) => {
     })
       .then((response) => {
         setStayLoading(false);
+        getPaymentHandler();
         if (response.status === 200) {
           response.json().then((json) => {
             // getPaymentHandler();
@@ -315,7 +316,7 @@ const Itinerary = (props) => {
           //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         });
       getBreifHandler();
-      getPaymentHandler();
+
       getRoutes(props.id)
         .then((res) => {
           setRoutes(res);
