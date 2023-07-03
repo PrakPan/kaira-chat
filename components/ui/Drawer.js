@@ -124,7 +124,7 @@ export default function Drawer(props) {
   const [fade, setFade] = useState("out");
   function onCLose() {
     // document.body.style.overflowY = "scroll";
-    document.body.style.overflow = "overlay";
+    document.body.style.overflow = "initial";
     setFade("out");
     setTimeout(() => {
       setOpen(false)
@@ -132,14 +132,14 @@ export default function Drawer(props) {
     }, 100);
   }
 
- function getScrollBarWidth() {
-   let el = document.createElement("div");
-   el.style.cssText = "overflow:scroll; visibility:hidden; position:absolute;";
-   document.body.appendChild(el);
-   let width = el.offsetWidth - el.clientWidth;
-   el.remove();
-   return width;
-  }
+//  function getScrollBarWidth() {
+//    let el = document.createElement("div");
+//    el.style.cssText = "overflow:scroll; visibility:hidden; position:absolute;";
+//    document.body.appendChild(el);
+//    let width = el.offsetWidth - el.clientWidth;
+//    el.remove();
+//    return width;
+//   }
   
   useEffect(() => {
       
