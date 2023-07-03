@@ -47,6 +47,7 @@
     "next-images": "^1.8.1",
     "next-redux-wrapper": "^7.0.4",
     "nprogress": "^0.2.0",
+    "overlayscrollbars": "^2.2.0",
     "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-animations": "^1.0.0",

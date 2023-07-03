@@ -14,12 +14,19 @@ const Container = styled.div`
 `;
 
 const GridContainer = styled.div`
-  @media screen and (min-width: 768px){
-    display: grid;
-    grid-template-columns: ${(props)=>(props.columns ? "repeat("+props.columns+",1fr)" : "repeat(3,1fr)")};
-    grid-template-rows: auto;
-    grid-gap: 2.5rem;
-  }
+
+
+
+// @media screen and (min-width: 768px){
+  //   display: grid;
+  //   grid-template-columns: ${(props)=>(props.columns ? "repeat("+props.columns+",1fr)" : "repeat(3,1fr)")};
+  //   grid-template-rows: auto;
+  //   grid-gap: 2.5rem;
+  // }
+`;
+
+const GridCard = styled.div`
+  margin: 1rem 0.5rem;
 `;
 
 const TextContainer = styled.div`
@@ -197,7 +204,13 @@ const Experiences = [
 
         <div className="hidden-desktop">
           {isPageLoaded ? (
-            <SwiperCarousel
+            props.mobileGrid ? <GridContainer>
+            
+                {experiencecards.map((e) => 
+                  <GridCard>{e}</GridCard>
+              )}
+              
+            </GridContainer> : <SwiperCarousel
               slidesPerView={1}
               initialIndex={0}
               pageDots={!props.navigationButtons}
@@ -205,6 +218,7 @@ const Experiences = [
               
               cards={experiencecards}
             ></SwiperCarousel>
+          
           ) : null}
         </div>
       </>

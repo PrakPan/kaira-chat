@@ -93,7 +93,7 @@ export default function Modal(props) {
     setTimeout(() => {
       if (props.onHide) props.onHide();
       // document.body.style.overflowY = 'scroll'
-      document.body.style.overflow = 'overlay';
+      document.body.style.overflow = 'initial';
 
       // if(isPageWide) document.body.style.paddingRight = '0px'
     }, 800);
@@ -101,7 +101,6 @@ export default function Modal(props) {
 
   useEffect(() => {
     if (props.show === true) {
-      console.log('props.show: ', props.show);
       document.body.style.overflow = 'hidden';
       // if(isPageWide) document.body.style.paddingRight = getScrollBarWidth() + 'px'
       setFade('in');

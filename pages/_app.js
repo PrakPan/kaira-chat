@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/globals.css';
 import Theme from '../public/Theme';
 import '../styles.css';
 import { store } from '../store/store';
 import { Partytown } from '@builder.io/partytown/react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-// import {OverlayScrollbars} from "overlayscrollbars";
-// import "overlayscrollbars/overlayscrollbars.css";
+import { OverlayScrollbars } from "overlayscrollbars";
+import "overlayscrollbars/overlayscrollbars.css";
 // import { hotjar } from 'react-hotjar'
 
 import { useRouter } from 'next/router';
@@ -15,9 +15,12 @@ import * as ga from '../lib/ga/Index';
 import { FACEBOOK_PIXEL_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
 import dynamic from 'next/dynamic';
-
+import media from '../components/media'
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
+  const ref = useRef()
+  let isPageWide = media("(min-width: 768px)");
+
   useEffect(() => {
     // mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true, ignore_dnt: true});
 
@@ -38,9 +41,10 @@ function MyApp({ Component, pageProps, store }) {
     const options = {
       scrollbars: {},
     };
-
-    // OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
-  }, []);
+    if (isPageWide) {
+      OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
+    }
+  }, [isPageWide]);
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -95,9 +99,12 @@ function MyApp({ Component, pageProps, store }) {
   //   }, []);
 
   return (
-    <Theme>
-      <Component {...pageProps} />
-    </Theme>
+    <div ref={ref}>
+      <Theme>
+        <Component {...pageProps} />
+      </Theme>
+      
+    </div>
   );
 }
 MyApp.getInitialProps = async ({ Component, ctx }) => {
