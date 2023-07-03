@@ -1,33 +1,33 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { AiFillCar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import Button from '../../../components/ui/button/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { HiPencil } from 'react-icons/hi';
-import Rating from './Rating';
-import Tips from './Tips';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { AiFillCar } from "react-icons/ai";
+import ImageLoader from "../../../components/ImageLoader";
+import Button from "../../../components/ui/button/Index";
+import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { HiPencil } from "react-icons/hi";
+import Rating from "./Rating";
+import Tips from "./Tips";
 import {
   HLine,
   newDayContainerTextpadding,
-} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
-import StarRating from '../../../components/StarRating';
-import { MdEdit } from 'react-icons/md';
-import Drawer from '../../../components/ui/Drawer';
-import { TbArrowBack } from 'react-icons/tb';
-import { IoMdClose } from 'react-icons/io';
-import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
-import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
-import axiositineraryeditinstance from '../../../services/itinerary/edit';
-import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
-import PoiList from './PoiList';
-import PoiListSkeleton from './PoiListSkeleton';
-import LogInModal from '../../../components/modals/Login';
-import { Navigation } from '../../../components/NewNavigation';
-import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+} from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import StarRating from "../../../components/StarRating";
+import { MdEdit } from "react-icons/md";
+import Drawer from "../../../components/ui/Drawer";
+import { TbArrowBack } from "react-icons/tb";
+import { IoMdClose } from "react-icons/io";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiositineraryeditinstance from "../../../services/itinerary/edit";
+import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
+import PoiList from "./PoiList";
+import PoiListSkeleton from "./PoiListSkeleton";
+import LogInModal from "../../../components/modals/Login";
+import { Navigation } from "../../../components/NewNavigation";
+import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 
 const padding = {
-  initialLeft: '60px',
+  initialLeft: "60px",
 };
 const Container = styled.div`
   display: flex;
@@ -106,8 +106,8 @@ const ItineraryPoiElement = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState();
   const items = [
-    { id: 1, label: 'Places To Visit', link: 'POI' },
-    { id: 2, label: 'Things To Do', link: 'Activities' },
+    { id: 1, label: "Places To Visit", link: "POI" },
+    { id: 2, label: "Things To Do", link: "Activities" },
   ];
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -123,7 +123,7 @@ const ItineraryPoiElement = (props) => {
 
     axiositineraryeditinstance
       .post(
-        '/',
+        "/",
         {
           itinerary_id: props.itinerary_id,
           day_slab_index: props.day_slab_index,
@@ -132,13 +132,13 @@ const ItineraryPoiElement = (props) => {
           element_data: {
             ...poi,
             element_index: props.data.element_index,
-            keys: ['icon', 'heading', 'text', 'activity_data', 'meta'],
+            keys: ["icon", "heading", "text", "activity_data", "meta"],
             element_type: ITINERARY_ELEMENT_TYPES.activity,
           },
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       )
@@ -148,7 +148,7 @@ const ItineraryPoiElement = (props) => {
       .catch((err) => {
         // setUpdateLoadingState(false);
 
-        window.alert('There seems to be a problem, please try again!');
+        window.alert("There seems to be a problem, please try again!");
       });
   };
   const _handleLoginClose = () => {
@@ -159,10 +159,10 @@ const ItineraryPoiElement = (props) => {
     setFetchingPoi(true);
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
-      .post('/', {
+      .post("/", {
         location: props?.city_id,
         duration: 10,
-        element_type: `${activity?.id ? 'Activity' : 'POI'}`,
+        element_type: `${activity?.id ? "Activity" : "POI"}`,
       })
       .then((res) => {
         if (res.data.length) {
@@ -204,15 +204,15 @@ const ItineraryPoiElement = (props) => {
   }
 
   const Experiences = [
-    'Adventure',
-    'Heritage',
-    'Spiritual',
-    'Hidden Gem',
-    'Very popular',
+    "Adventure",
+    "Heritage",
+    "Spiritual",
+    "Hidden Gem",
+    "Very popular",
   ];
   const ClickHandler = (child) => {
-    console.log('clicked element', child);
-    if (child == 'Things To Do') {
+    console.log("clicked element", child);
+    if (child == "Things To Do") {
       Poi_activities({ id: 3 });
     } else {
       Poi_activities();
@@ -230,7 +230,7 @@ const ItineraryPoiElement = (props) => {
               dimensionsMobile={{ width: 300, height: 300 }}
               borderRadius="8px"
               hoverpointer
-              onclick={() => console.log('')}
+              onclick={() => console.log("")}
               width="8rem"
               leftalign
               widthmobile="6rem"
@@ -246,7 +246,7 @@ const ItineraryPoiElement = (props) => {
             <div className="w-full">
               <div
                 className="flex flex-row w-full  justify-start items-center"
-                style={{ lineHeight: '1' }}
+                style={{ lineHeight: "1" }}
               >
                 <div
                   className="text-xl font-normal cursor-pointer"
@@ -271,7 +271,7 @@ const ItineraryPoiElement = (props) => {
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {true ? 'ATTRACTION' : 'View Less'}
+                  {true ? "ATTRACTION" : "View Less"}
                 </div>
               </div>
               {props.rating && <StarRating initialRating={4}></StarRating>}
@@ -321,7 +321,7 @@ const ItineraryPoiElement = (props) => {
 
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
-        width={'35vw'}
+        // width={'35vw'}
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
@@ -330,7 +330,7 @@ const ItineraryPoiElement = (props) => {
         name={props.heading}
         image={props.image}
         text={props.text}
-        Topheading={'Select Our Point Of Interest'}
+        Topheading={"Select Our Point Of Interest"}
       />
       {showLoginModal && (
         <div>
@@ -339,7 +339,7 @@ const ItineraryPoiElement = (props) => {
       )}
       <Drawer
         show={showDrawer}
-        anchor={'right'}
+        anchor={"right"}
         backdrop
         style={{ zIndex: 1501 }}
         className="font-lexend"
@@ -352,8 +352,8 @@ const ItineraryPoiElement = (props) => {
               onClick={() => setShowDrawer(false)}
               className="hover-pointer"
               style={{
-                fontSize: '1.75rem',
-                textAlign: 'right',
+                fontSize: "1.75rem",
+                textAlign: "right",
               }}
             ></IoMdClose>
             <div className="line-clamp-1 text-2xl font-normal ">
@@ -370,8 +370,8 @@ const ItineraryPoiElement = (props) => {
                     onClick={() => SetSelectedExprience(i)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedExprience == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
