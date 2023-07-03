@@ -148,11 +148,13 @@ const RegistrationModal = (props) => {
         .then((res) => {
           if (isPageWide) {
             router.push(
-              '/itinerary/' + res.data.itinerary.id + '/?t=12&scroll=Stays'
+              '/itinerary/' +
+                res.data.itinerary.id +
+                '/?t=2&booking=false&scroll=Stays'
             );
           } else {
             router.push(
-              '/itinerary/' + res.data.itinerary.id + '/?t=14&booking=true'
+              '/itinerary/' + res.data.itinerary.id + '/?t=2&booking=true'
             );
           }
 
@@ -162,7 +164,7 @@ const RegistrationModal = (props) => {
         })
         .catch((err) => {
           // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-          router.push('/itinerary/' + res.data.itinerary.id);
+          // router.push('/itinerary/' + res.data.itinerary.id);
           setFormFailedError(err.response.data.message);
 
           setPaymentLoading(false);

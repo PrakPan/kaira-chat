@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import * as orderaction from '../../../store/actions/order';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MdEdit } from 'react-icons/md';
-
+import moment from 'moment';
 import {
   faRupeeSign,
   faTimes,
@@ -20,7 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/router';
 import { getIndianPrice } from '../../../services/getIndianPrice';
-import { getHumanDate } from '../../../services/getHumanDate';
+import { getHumanDateWithYear } from '../../../services/getHumanDateWithYear';
 import urls from '../../../services/urls';
 import {
   ITINERARY_STATUSES,
@@ -33,7 +33,15 @@ import Spinner from '../../../components/Spinner';
 import ButtonYellow from '../../../components/ButtonYellow';
 import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
 import Slide from '../../../Animation/framerAnimation/Slide';
-import { format, isPast, parseISO } from 'date-fns';
+import {
+  add,
+  addDays,
+  format,
+  isBefore,
+  isPast,
+  parseISO,
+  startOfDay,
+} from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import { Link, scroller } from 'react-scroll';
 import { pluralDetector } from '../../../helper/shortHelpers';
@@ -44,6 +52,7 @@ import RegistrationModal from '../../../components/modals/gitregistrationform/In
 import VerificationModal from '../../../components/modals/verify/Index';
 import RegisteredUsersModal from '../../../components/modals/registeredusers/Index';
 import TermsModal from '../../../components/modals/terms/PW';
+import UiDropdown from '../../../components/UiDropdown';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -77,6 +86,20 @@ const BookingListCostContainer = styled.div`
   }
 `;
 const Details = (props) => {
+  const getCurrentDateIfOlder = (dateString) => {
+    const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
+
+    const givenDate = new Date(dateString);
+    const isOlder = isBefore(givenDate, currentDate);
+
+    if (isOlder) {
+      const nextDay = addDays(currentDate, 1); // Add one day to the current date
+      return format(nextDay, 'yyyy-MM-dd');
+    }
+
+    return dateString;
+  };
+
   const [iscouponApplied, setiscouponApplied] = useState(
     props.payment?.coupon ? true : false
   );
@@ -91,14 +114,21 @@ const Details = (props) => {
   const [showVerification, setShowVerification] = useState(false);
   const [showRegistration, setShowRegistartion] = useState(false);
 
-  const [pax, setPax] = useState(5);
-  const [date, setDate] = useState(null);
+  const [pax, setPax] = useState(props?.payment?.meta_info?.number_of_adults);
+  const [date, setDate] = useState(
+    getCurrentDateIfOlder(props?.plan?.start_date)
+  );
 
   const _handleVerificationSuccess = () => {
     props.getPaymentHandler();
     setShowVerification(false);
   };
-
+  const handleSelectOption = (option) => {
+    // Perform additional actions with the selected option
+    console.log('clicked option', option);
+    setDropdownOpen(false);
+    setPax(option);
+  };
   const [isError, setIsError] = useState({
     error: false,
     errorMsg: '',
@@ -111,6 +141,7 @@ const Details = (props) => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [focus, setFocus] = useState(false);
+  const [DropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
   const [showTerms, setShowTerms] = useState(false);
   const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
@@ -125,6 +156,14 @@ const Details = (props) => {
       setIsDatePast(true);
     }
   }, [props.plan?.start_date]);
+
+  const addDaysToDate = (dateString, numberOfDays) => {
+    const date = new Date(dateString);
+    const newDate = add(date, { days: numberOfDays });
+    const formattedDate = format(newDate, 'yyyy-MM-dd');
+    return formattedDate;
+  };
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -522,6 +561,10 @@ const Details = (props) => {
         setPaymentLoading(false);
       });
   };
+  let optionsJSX = [];
+  for (var i = props.number_of_adults; i <= 20; i++) {
+    optionsJSX.push({ i });
+  }
   return (
     <SummaryContainer
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
@@ -649,9 +692,9 @@ const Details = (props) => {
             props.plan.featured ? null : (
               <div></div>
             )}
-            {props.payment.itinerary_status ===
+            {/* {props.payment.itinerary_status ===
               ITINERARY_STATUSES.itinerary_finalized ||
-            props.plan.featured ? null : (
+            props?.payment?.paid_user ? null : (
               <SelectDate
                 date={date}
                 setDate={setDate}
@@ -659,12 +702,12 @@ const Details = (props) => {
                 focus={focus}
                 token={props.token}
               ></SelectDate>
-            )}
+            )} */}
             {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{props.payment.number_of_people}</p> */}
-            {props.payment.meta_info &&
+            {/* {props.payment.meta_info &&
             (props.payment.itinerary_status ===
               ITINERARY_STATUSES.itinerary_finalized ||
-              props.plan.featured) ? null : (
+              props?.payment?.paid_user) ? null : (
               <SelectPax
                 number_of_adults={
                   props.payment
@@ -677,7 +720,7 @@ const Details = (props) => {
                 token={props.token}
                 setShowLoginModal={props.setShowLoginModal}
               ></SelectPax>
-            )}
+            )} */}
           </div>
         ) : null}
         <div
@@ -882,8 +925,10 @@ const Details = (props) => {
         {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
       </div>
 
-      <div className="px-0 pb-2">
-        {props?.payment?.allow_coupon_discount && !isDatePast ? (
+      <div className="px-0 pb-4">
+        {props?.payment?.allow_coupon_discount &&
+        !isDatePast &&
+        !props?.payment?.paid_user ? (
           <div>
             <div className="relative  rounded-md cursor-pointer mt-3">
               <input
@@ -968,86 +1013,106 @@ const Details = (props) => {
           </div>
         ) : null}
 
-        {props.payment.itinerary_status ===
-          ITINERARY_STATUSES.itinerary_finalized || props.plan.featured ? (
-          <>
-            <div className="border-y-2 border-[#F0F0F0] my-3 ml-1">
-              <div className=" group flex flex-row gap-3 items-center py-[1rem]">
-                <BsCalendar2 className="text-md text-[#7A7A7A]" />
-                <div className="text-md font-medium text-black flex flex-row items-center gap-2">
-                  <div>
-                    {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
-                    {props.plan
-                      ? props.plan
-                        ? getHumanDate(
-                            format(
-                              new Date(props.plan.start_date),
-                              'dd-MM-yyyy'
-                            ).replaceAll('-', '/')
-                          )
-                        : null
-                      : null}{' '}
-                    -{' '}
-                    {getHumanDate(
+        <div className="border-y-2 border-[#F0F0F0] my-3 ml-1">
+          <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+            <BsCalendar2 className="text-md text-[#7A7A7A]" />
+            <div className="text-md font-medium text-black flex flex-row items-center gap-2">
+              <div>
+                {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
+                {props.plan
+                  ? props.plan
+                    ? getHumanDateWithYear(
+                        format(new Date(date), 'dd-MM-yyyy').replaceAll(
+                          '-',
+                          '/'
+                        )
+                      )
+                    : null
+                  : null}
+                {' - '}
+                {date
+                  ? getHumanDateWithYear(
                       format(
-                        new Date(props?.plan?.end_date),
+                        new Date(
+                          addDaysToDate(
+                            date,
+                            props?.plan?.duration_number
+                              ? props?.plan?.duration_number
+                              : 4
+                          )
+                        ),
                         'dd-MM-yyyy'
                       ).replaceAll('-', '/')
-                    )}
-                  </div>
-
-                  {props.payment.itinerary_status ===
-                    ITINERARY_STATUSES.itinerary_finalized ||
-                  props.plan.featured ? null : (
-                    <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
-                      <MdEdit
-                        className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                        onClick={() => setFocus(true)}
-                      />
-                    </div>
-                  )}
-                </div>
+                    )
+                  : null}
               </div>
-            </div>
-            <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
-              <BsPeopleFill className="text-md text-[#7A7A7A]" />
-              <div className=" flex flex-row items-center text-md font-medium text-black">
-                {/* {booking.number_of_adults} */}
-                <div>
-                  {props.payment.meta_info.number_of_adults}{' '}
-                  {pluralDetector(
-                    'Adult',
-                    props.payment.meta_info.number_of_adults
-                  )}{' '}
-                </div>
-                {props.payment.meta_info.number_of_children ? (
-                  <div>
-                    , {props.payment.meta_info.number_of_children} Children
-                  </div>
-                ) : null}
-                {props.payment.meta_info.number_of_infants ? (
-                  <div>
-                    , {props.payment.meta_info.number_of_infants}{' '}
-                    {pluralDetector(
-                      'Infant',
-                      props.payment.meta_info.number_of_infants
-                    )}
-                  </div>
-                ) : null}
-                {props.payment.itinerary_status ===
-                  ITINERARY_STATUSES.itinerary_finalized ||
-                props.plan.featured ? null : (
-                  <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+
+              {props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_prepared ? (
+                <>
+                  <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
                     <MdEdit
                       className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                      onClick={() => props.setShowAdultsModal(true)}
+                      onClick={() => setFocus(true)}
                     />
                   </div>
+                  <div className="w-[1rem] h-[0.2rem]">
+                    <SelectDate
+                      date={date}
+                      setDate={setDate}
+                      setFocus={setFocus}
+                      focus={focus}
+                      token={props.token}
+                    ></SelectDate>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+        <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
+          <BsPeopleFill className="text-md text-[#7A7A7A]" />
+          <div className=" flex flex-row items-center text-md font-medium text-black">
+            {/* {booking.number_of_adults} */}
+            <div>
+              {pax} {pluralDetector('Adult', pax)}{' '}
+            </div>
+            {props.payment.meta_info.number_of_children ? (
+              <div>, {props.payment.meta_info.number_of_children} Children</div>
+            ) : null}
+            {props.payment.meta_info.number_of_infants ? (
+              <div>
+                , {props.payment.meta_info.number_of_infants}{' '}
+                {pluralDetector(
+                  'Infant',
+                  props.payment.meta_info.number_of_infants
                 )}
               </div>
-            </div>
-          </>
-        ) : null}
+            ) : null}
+            {props.payment.itinerary_status ===
+            ITINERARY_STATUSES.itinerary_finalized ? null : (
+              <>
+                <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
+                  <MdEdit
+                    className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+                    onClick={() => setDropdownOpen(!DropdownOpen)}
+                  />
+                </div>
+
+                <UiDropdown
+                  hideSelector={true}
+                  DropdownOpen={DropdownOpen}
+                  options={[
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                    18, 19, 20,
+                  ]}
+                  onSelect={handleSelectOption}
+                  scrollable={true}
+                ></UiDropdown>
+              </>
+            )}
+          </div>
+        </div>
       </div>
       {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
       {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
@@ -1085,13 +1150,20 @@ const Details = (props) => {
               Add Hotels
             </ButtonYellow>
           )
-        ) : props.payment.is_registration_needed ? (
-          props.payment.email_reverification_needed ? (
+        ) : props?.payment?.is_registration_needed ? (
+          props?.payment?.email_reverification_needed ? (
             <ButtonYellow
               styleClass="w-full"
               onClick={() => setShowVerification(true)}
             >
               Pay Now & Book
+            </ButtonYellow>
+          ) : props?.payment?.paid_user ? (
+            <ButtonYellow
+              styleClass="w-full"
+              onClick={() => scrollToElement('Stays-Head')}
+            >
+              View Bookings
             </ButtonYellow>
           ) : (
             <ButtonYellow

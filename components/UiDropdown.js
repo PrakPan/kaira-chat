@@ -28,6 +28,8 @@ const DropdownHeader = styled(motion.div)`
 const DropdownOptions = styled(motion.ul)`
   position: absolute;
   top: calc(100% + 5px);
+  height: ${({ scrollable }) => (scrollable ? '10rem' : 'auto')};
+  overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
   left: 0;
   width: 100%;
   background-color: #f5f5f5;
@@ -48,7 +50,14 @@ const DropdownOption = styled(motion.li)`
   }
 `;
 
-const UiDropdown = ({ options, onSelect }) => {
+const UiDropdown = ({
+  hideSelector = false,
+  options,
+  onSelect,
+  DropdownOpen = false,
+
+  scrollable = false,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
 
@@ -59,26 +68,31 @@ const UiDropdown = ({ options, onSelect }) => {
   const handleSelect = (option) => {
     setSelectedOption(option);
     setIsOpen(false);
+
     onSelect(option);
   };
 
   return (
     <DropdownContainer>
-      <DropdownHeader onClick={handleToggle}>
-        <span>{selectedOption || 'Select an option'}</span>
-        {isOpen ? (
-          <FaChevronUp className="font-thin text-sm" />
-        ) : (
-          <FaChevronDown className="font-thin text-sm" />
-        )}
-      </DropdownHeader>
+      {!hideSelector && (
+        <DropdownHeader onClick={handleToggle}>
+          <span>{selectedOption || 'Select an option'}</span>
+          {isOpen ? (
+            <FaChevronUp className="font-thin text-sm" />
+          ) : (
+            <FaChevronDown className="font-thin text-sm" />
+          )}
+        </DropdownHeader>
+      )}
+
       <AnimatePresence>
-        {isOpen && (
+        {DropdownOpen || isOpen ? (
           <DropdownOptions
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
+            scrollable={scrollable}
           >
             {options.map((option) => (
               <DropdownOption
@@ -91,7 +105,7 @@ const UiDropdown = ({ options, onSelect }) => {
               </DropdownOption>
             ))}
           </DropdownOptions>
-        )}
+        ) : null}
       </AnimatePresence>
     </DropdownContainer>
   );

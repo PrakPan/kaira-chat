@@ -66,8 +66,14 @@ const Container = styled.div`
 `;
 
 const GridContainer = styled.div`
+  width: 14rem;
+  overflow: auto;
   display: flex;
   flex-direction: row;
+  @media screen and (min-width: 768px) {
+    width: auto;
+    overflow: none;
+  }
 `;
 //
 const ImageContainer = styled.div`
@@ -218,7 +224,7 @@ const TransferModeContainer = (props) => {
     );
   }
   function HandleTransport(i) {
-    if (!payment?.is_registration_needed) {
+    if (!props.payment?.is_registration_needed) {
       if (!props.token) {
         props.setShowLoginModal();
       }

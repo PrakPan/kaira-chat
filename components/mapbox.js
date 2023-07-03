@@ -185,6 +185,7 @@ const Mapbox = React.memo(
         center={[mapCenter?.lat, mapCenter?.long]}
         zoom={mapZoom ? mapZoom : 5}
         scrollWheelZoom={false}
+        dragging={!isDesktop}
         style={{ height: '100%', width: '100%', borderRadius: '1rem' }}
       >
         <TileLayer

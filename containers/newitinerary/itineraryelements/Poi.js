@@ -211,7 +211,8 @@ const ItineraryPoiElement = (props) => {
     'Very popular',
   ];
   const ClickHandler = (child) => {
-    if (child == 'Activities') {
+    console.log('clicked element', child);
+    if (child == 'Things To Do') {
       Poi_activities({ id: 3 });
     } else {
       Poi_activities();
@@ -320,13 +321,15 @@ const ItineraryPoiElement = (props) => {
 
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
-        width={'50vw'}
+        width={'35vw'}
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
+        image={props.image}
+        text={props.text}
         Topheading={'Select Our Point Of Interest'}
       />
       {showLoginModal && (

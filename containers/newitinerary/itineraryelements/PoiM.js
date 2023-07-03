@@ -376,12 +376,15 @@ const ItineraryPoiElementM = (props) => {
       )}
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
+        width={'100%'}
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
+        image={props.image}
+        text={props.text}
         Topheading={'Back To Itinerary'}
       />
 

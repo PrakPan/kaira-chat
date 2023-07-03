@@ -119,6 +119,7 @@ const Details = (props) => {
       }
     }
   } else {
+    console.log('inside else', props.breif.city_slabs);
     for (var i = 0; i < props.breif.city_slabs.length; i++) {
       var postion = props.breif.city_slabs[i];
 

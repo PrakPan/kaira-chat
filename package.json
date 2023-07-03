@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@builder.io/partytown": "^0.8.0",
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
     "@date-io/date-fns": "^2.11.0",
     "@emotion/react": "^11.11.0",
@@ -46,7 +47,6 @@
     "next-images": "^1.8.1",
     "next-redux-wrapper": "^7.0.4",
     "nprogress": "^0.2.0",
-    "overlayscrollbars-react": "^0.5.0",
     "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-animations": "^1.0.0",
