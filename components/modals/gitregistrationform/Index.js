@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from 'react-bootstrap';
+import Modal from '../../../components/ui/Modal';
 import styled from 'styled-components';
 import { TbArrowBack } from 'react-icons/tb';
 import media from '../../../components/media';
@@ -14,7 +14,7 @@ import TermsModal from '../terms/PW';
 import LoadingPage from '../../LoadingPage';
 import dayjs from 'dayjs';
 
-const Body = styled(Modal.Body)`
+const Body = styled.div`
   padding: 0.5rem !important;
 `;
 
@@ -175,25 +175,18 @@ const RegistrationModal = (props) => {
   };
   if (!rzVerificationLoading)
     return (
-      <div>
+      <div className="z-[99999]">
         <Modal
           className="booking-modal z-[2000]"
+          mobileWidth="100%"
+          width="60%"
           show={props.show}
+          closeIcon={false}
           size="xl"
+          borderRadius={'12px'}
           onHide={props.hide}
         >
-          <Modal.Header
-            style={{
-              height: isPageWide ? 'max-content' : '20vw',
-              position: 'sticky',
-              top: '0',
-              backgroundColor: 'white',
-              justifyContent: 'flex-start',
-              padding: !isPageWide ? '2rem 1rem' : '1rem',
-              backgroundColor: 'white',
-              zIndex: '2',
-            }}
-          >
+          <div className="flex px-4 flex-row justify-between items-center">
             <TbArrowBack
               onClick={props.hide}
               className="hover-pointer"
@@ -210,9 +203,7 @@ const RegistrationModal = (props) => {
             >
               Confirm and Pay
             </p>
-
-            {/* <StyledFontAwesomeIcon onClick={props.onHide} icon={faChevronLeft}></StyledFontAwesomeIcon> */}
-          </Modal.Header>
+          </div>
 
           <Body className="">
             <Cart
