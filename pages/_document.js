@@ -79,7 +79,6 @@ export default class MyDocument extends Document {
           ></script>
           {process.env.NODE_ENV === 'production' && (
             <script
-              type="text/partytown"
               async
               src={
                 'https://www.googletagmanager.com/gtag/js?id=' +
@@ -95,7 +94,6 @@ export default class MyDocument extends Document {
           ></script>
           {process.env.NODE_ENV === 'production' && (
             <script
-              type="text/partytown"
               dangerouslySetInnerHTML={{
                 __html: `
             window.dataLayer = window.dataLayer || [];
