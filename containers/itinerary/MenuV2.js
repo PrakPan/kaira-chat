@@ -247,7 +247,7 @@ const SimpleTabsV2 = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBookingTimer, setShowBookingTimer] = useState(true);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
-
+  const [citydatadone, setcitydatadone] = useState(false);
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
@@ -347,9 +347,9 @@ const SimpleTabsV2 = (props) => {
       }
   const locationtabwidth = 100 / totalcityslabs + 'vw';
 
-  if (!props.routes) {
-    // console.log('inside routes');
-    // console.log(props.routes);
+  // console.log('inside routes');
+  // console.log(props.routes);
+  if (!citydatadone || !props.routes) {
     async function processRoutes2(props) {
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
         // console.log('routes one', props.routes[i]);
@@ -377,10 +377,13 @@ const SimpleTabsV2 = (props) => {
           }
         }
       }
+      setcitydatadone(true);
       console.log('citydata0', CityData);
     }
     processRoutes2(props);
-  } else {
+  }
+
+  if (props.routes) {
     async function processRoutes(props) {
       for (var i = 0; i < props.routes.length; i++) {
         // console.log('routes one', props.routes[i]);
@@ -406,9 +409,10 @@ const SimpleTabsV2 = (props) => {
           TransfersData.push(props.routes[i]);
         }
       }
-      console.log('routes finished');
-      console.log(RoutesData);
-      console.log(TransfersData);
+
+      console.log('routes finished', props.routes.length);
+      console.log(RoutesData, RoutesData.length);
+      console.log(TransfersData, TransfersData.length);
     }
 
     processRoutes(props);
@@ -816,7 +820,7 @@ const SimpleTabsV2 = (props) => {
         ) : null} */}
       <div id={items[0].link}>
         {/* {mapArray ? ( */}
-        {CityData.length >= 1 && (
+        {citydatadone && (
           <Breif
             plan={props.plan}
             routesData={RoutesData}

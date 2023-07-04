@@ -120,25 +120,20 @@ const Details = (props) => {
     }
   } else {
     if (props.CityData.length >= 1) {
-      console.log('inside else', props.CityData);
+      console.log('inside else', props.CityData, props.CityData.length);
       for (var i = 0; i < props.CityData.length; i++) {
         var postion = props.CityData[i];
-
+        console.log('inside else1', postion, props.CityData.length);
         // console.log(`response city data${JSON.stringify(citydetails)}`);
         // console.log(`lat,long${citydetails.lat}`);
-        if (
-          !postion.is_departure_only &&
-          !postion.is_trip_terminated &&
-          postion.duration &&
-          postion.duration !== '0'
-        ) {
+        if (!postion.is_departure_only && !postion.is_trip_terminated) {
           Locationlatlong.push({
             dayId: getdayId(postion.day_slab_location.start_day_slab_index),
             cityData: postion,
             id: postion.gmaps_place_id,
             city_id: postion.city_id,
-            lat: postion.lat != null ? postion?.lat : 33.75,
-            long: postion.long != null ? postion?.long : 78.66,
+            lat: postion.lat,
+            long: postion.long,
             name: postion.city_name,
             duration: postion.duration,
             color: postion.color,
@@ -146,6 +141,7 @@ const Details = (props) => {
           });
         }
       }
+      console.log('inside else2', Locationlatlong);
     }
   }
   // const getdayId = (id) => {
