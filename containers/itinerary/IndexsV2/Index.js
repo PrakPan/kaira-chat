@@ -53,7 +53,7 @@ const Itinerary = (props) => {
     images: ['null'],
   });
   const [breif, setBreif] = useState();
-  const [routes, setRoutes] = useState(defaultbreif);
+  const [routes, setRoutes] = useState();
 
   const [booking, setBooking] = useState(null);
 

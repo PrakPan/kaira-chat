@@ -321,7 +321,7 @@ const ItineraryPoiElement = (props) => {
 
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
-        width={'35vw'}
+
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}

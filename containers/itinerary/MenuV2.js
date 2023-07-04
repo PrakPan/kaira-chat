@@ -335,6 +335,7 @@ const SimpleTabsV2 = (props) => {
   let locationsArr = [];
   let RoutesData = [];
   let TransfersData = [];
+  let CityData = [];
   let totalcityslabs = 0;
   console.log('brief idssss', props.breif);
   if (props.breif)
@@ -345,44 +346,74 @@ const SimpleTabsV2 = (props) => {
         }
       }
   const locationtabwidth = 100 / totalcityslabs + 'vw';
-  if (props.breif)
-    if (props.breif.city_slabs)
-      if (props.routes) {
-        // console.log('inside routes');
-        // console.log(props.routes);
 
-        async function processRoutes(props) {
-          for (var i = 0; i < props.routes.length; i++) {
-            // console.log('routes one', props.routes[i]);
-            if (props.routes[i].element_type !== 'transfer') {
-              if (props.routes[i].long) {
-                // console.log(props.routes[i].long);
-                RoutesData.push(props.routes[i]);
-              } else {
-                if (props.routes[i].city_id) {
-                  try {
-                    const data = await getCityDetails(props.routes[i].city_id);
-                    // console.log('fetchdata data');
-                    // console.log(props.routes[i], data);
-                    const updatedRoutes = replaceLatLong(props.routes[i], data);
-                    RoutesData.push(updatedRoutes);
-                    // console.log('fetchdata data in', updatedRoutes);
-                  } catch (error) {
-                    console.error(error);
-                  }
-                }
-              }
-            } else {
-              TransfersData.push(props.routes[i]);
+  if (!props.routes) {
+    // console.log('inside routes');
+    // console.log(props.routes);
+    async function processRoutes2(props) {
+      for (var i = 0; i < props.breif.city_slabs.length; i++) {
+        // console.log('routes one', props.routes[i]);
+
+        if (props.breif.city_slabs[i].long) {
+          // console.log(props.routes[i].long);
+          CityData.push(props.breif.city_slabs[i]);
+        } else {
+          if (props.breif.city_slabs[i].city_id) {
+            try {
+              const data = await getCityDetails(
+                props.breif.city_slabs[i].city_id
+              );
+              // console.log('fetchdata data');
+              // console.log(props.routes[i], data);
+              const updatedRoutes = replaceLatLong(
+                props.breif.city_slabs[i],
+                data
+              );
+              CityData.push(updatedRoutes);
+              // console.log('fetchdata data in', updatedRoutes);
+            } catch (error) {
+              console.error(error);
             }
           }
-          console.log('routes finished');
-          console.log(RoutesData);
-          console.log(TransfersData);
         }
-
-        processRoutes(props);
       }
+      console.log('citydata0', CityData);
+    }
+    processRoutes2(props);
+  } else {
+    async function processRoutes(props) {
+      for (var i = 0; i < props.routes.length; i++) {
+        // console.log('routes one', props.routes[i]);
+        if (props.routes[i].element_type !== 'transfer') {
+          if (props.routes[i].long) {
+            // console.log(props.routes[i].long);
+            RoutesData.push(props.routes[i]);
+          } else {
+            if (props.routes[i].city_id) {
+              try {
+                const data = await getCityDetails(props.routes[i].city_id);
+                // console.log('fetchdata data');
+                // console.log(props.routes[i], data);
+                const updatedRoutes = replaceLatLong(props.routes[i], data);
+                RoutesData.push(updatedRoutes);
+                // console.log('fetchdata data in', updatedRoutes);
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          }
+        } else {
+          TransfersData.push(props.routes[i]);
+        }
+      }
+      console.log('routes finished');
+      console.log(RoutesData);
+      console.log(TransfersData);
+    }
+
+    processRoutes(props);
+  }
+  console.log('citydata', CityData);
   for (var i = 0; i < props?.breif?.city_slabs?.length; i++) {
     if (!props.breif.city_slabs[i].is_trip_terminated) {
       locationsArr.push(
@@ -785,7 +816,7 @@ const SimpleTabsV2 = (props) => {
         ) : null} */}
       <div id={items[0].link}>
         {/* {mapArray ? ( */}
-        {
+        {CityData.length >= 1 && (
           <Breif
             plan={props.plan}
             routesData={RoutesData}
@@ -793,6 +824,7 @@ const SimpleTabsV2 = (props) => {
             routes={props.routes}
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}
+            CityData={CityData}
             // Locationlatlong={Locationlatlong}
             // hours={hours}
             // minutes={minutes}
@@ -807,7 +839,7 @@ const SimpleTabsV2 = (props) => {
             // _hideTimerHandler={_minimiseTimerHandler}
             // blur={blurItinerary}
           ></Breif>
-        }
+        )}
 
         {/* ) : null} */}
       </div>
@@ -1500,17 +1532,17 @@ const SimpleTabsV2 = (props) => {
               )
             ) : (
               <Button
-              color="#111"
-              fontWeight="600"
-              fontSize="0.85rem"
-              borderWidth="2px"
-              width="10rem"
-              borderRadius="8px"
-              bgColor="#f8e000"
-                    onclick={() => scrollToElement('Stays-Head')}
-                  >
-                    View Bookings
-                  </Button>
+                color="#111"
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="2px"
+                width="10rem"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                onclick={() => scrollToElement('Stays-Head')}
+              >
+                View Bookings
+              </Button>
             )
           ) : null}
         </div>

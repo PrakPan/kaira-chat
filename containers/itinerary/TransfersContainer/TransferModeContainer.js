@@ -374,7 +374,7 @@ const TransferModeContainer = (props) => {
         )}
       </div>
       {/* <div></div> */}
-      {props?.routes.length > 1 ? (
+      {props.routes && props?.routes.length > 1 ? (
         <div style={{ position: 'relative' }}>
           <Line pinColour={props.pinColour} Transfers={true} />
         </div>

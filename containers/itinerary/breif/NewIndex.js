@@ -119,30 +119,32 @@ const Details = (props) => {
       }
     }
   } else {
-    console.log('inside else', props.breif.city_slabs);
-    for (var i = 0; i < props.breif.city_slabs.length; i++) {
-      var postion = props.breif.city_slabs[i];
+    if (props.CityData.length >= 1) {
+      console.log('inside else', props.CityData);
+      for (var i = 0; i < props.CityData.length; i++) {
+        var postion = props.CityData[i];
 
-      // console.log(`response city data${JSON.stringify(citydetails)}`);
-      // console.log(`lat,long${citydetails.lat}`);
-      if (
-        !postion.is_departure_only &&
-        !postion.is_trip_terminated &&
-        postion.duration &&
-        postion.duration !== '0'
-      ) {
-        Locationlatlong.push({
-          dayId: getdayId(postion.day_slab_location.start_day_slab_index),
-          cityData: postion,
-          id: postion.gmaps_place_id,
-          city_id: postion.city_id,
-          lat: postion.lat != null ? postion?.lat : 33.75,
-          long: postion.long != null ? postion?.long : 78.66,
-          name: postion.city_name,
-          duration: postion.duration,
-          color: postion.color,
-          date: getdateId(postion.day_slab_location.start_day_slab_index),
-        });
+        // console.log(`response city data${JSON.stringify(citydetails)}`);
+        // console.log(`lat,long${citydetails.lat}`);
+        if (
+          !postion.is_departure_only &&
+          !postion.is_trip_terminated &&
+          postion.duration &&
+          postion.duration !== '0'
+        ) {
+          Locationlatlong.push({
+            dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+            cityData: postion,
+            id: postion.gmaps_place_id,
+            city_id: postion.city_id,
+            lat: postion.lat != null ? postion?.lat : 33.75,
+            long: postion.long != null ? postion?.long : 78.66,
+            name: postion.city_name,
+            duration: postion.duration,
+            color: postion.color,
+            date: getdateId(postion.day_slab_location.start_day_slab_index),
+          });
+        }
       }
     }
   }
@@ -269,7 +271,7 @@ const Details = (props) => {
         ) : null}
 
         <RouteComponent>
-          {props.routes.length >= 1 || props.itinerary?.day_slabs ? (
+          {
             <div id="route">
               <Route
                 plan={props.plan}
@@ -285,7 +287,7 @@ const Details = (props) => {
                 setShowDrawerData={setShowDrawerData}
               />
             </div>
-          ) : null}
+          }
 
           <div className="svg-container"></div>
 
