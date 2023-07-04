@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
-import Image from "next/image";
-// import LazyLoad from "react-lazyload";
+import LazyLoad from "react-lazyload";
 const ImageLoader = (props) => {
   const [error, setError] = useState(false);
   let isPageWide = media("(min-width: 768px)");
@@ -23,17 +22,6 @@ const ImageLoader = (props) => {
       },
     },
   });
-  // const colorRequest = JSON.stringify({
-  //   bucket: "thetarzanway-web",
-  //   key: props.url,
-  //   edits: {
-  //     resize: {
-  //       width: 1,
-  //       height: 1,
-  //       fit: "cover",
-  //     },
-  //   },
-  // });
   let imageRequest;
   let imageRequestMobile;
   if (isPageWide) {
@@ -136,7 +124,7 @@ const ImageLoader = (props) => {
   }
 
   const smallurl = imgUrlEndPoint + "40x30/" + props.url;
-  const Container = styled.div`
+  const Container = styled(props.noLazy ? "div" : LazyLoad)`
     @media screen and (min-width: 768px) {
       width: ${props.width ? props.width : "100%"};
     }
@@ -149,7 +137,7 @@ const ImageLoader = (props) => {
   const SmallImage = styled.img`
     width: 100%;
   `;
-  const FullImage = styled(Image)`
+  const FullImage = styled.img`
     width: 100%;
     object-fit: ${props.resizeMode ? props.resizeMode : "cover"};
     z-index: 0 !important;
@@ -176,7 +164,6 @@ const ImageLoader = (props) => {
   };
   let is_url = isValidHttpUrl(props.url);
   const fullImageLoadedHandler = () => {
-    console.log('Image Loaded')
     if (props.onload) {
       props.onload();
     }
@@ -196,8 +183,10 @@ const ImageLoader = (props) => {
             borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
         >
+        
+
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
-          {/* <SmallImage
+          <SmallImage
             src={
               !is_url
                 ? isPageLoaded
@@ -211,17 +200,9 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-          ></SmallImage> */}
+          ></SmallImage>
           <FullImage
             // loading="lazy"
-            placeholder="blur"
-            blurDataURL={
-              !is_url
-                ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : props.url
-            }
             src={
               !is_url
                 ? error
@@ -235,14 +216,12 @@ const ImageLoader = (props) => {
             onError={props.onfail ? props.onfail : _handleError}
             style={{
               height: props.height ? props.height : "auto",
-              // display: fullLoaded ? "block" : "none",
+              display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
               ...props.style,
             }}
-            height={500}
-            width={500}
           ></FullImage>
         </Container>
       );
@@ -261,7 +240,7 @@ const ImageLoader = (props) => {
         >
           {/* <img src={imgUrlEndPoint + props.url} /> */}
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
-          {/* <SmallImage
+          <SmallImage
             src={
               !is_url
                 ? isPageLoaded
@@ -275,17 +254,9 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-          ></SmallImage> */}
+          ></SmallImage>
           <FullImage
             // loading="lazy"
-            placeholder="blur"
-            blurDataURL={
-              !is_url
-                ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : props.url
-            }
             src={
               !is_url
                 ? error
@@ -299,14 +270,12 @@ const ImageLoader = (props) => {
             onError={props.onfail ? props.onfail : _handleError}
             style={{
               height: props.height ? props.height : "auto",
-              // display: fullLoaded ? "block" : "none",
+              display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
               ...props.style,
             }}
-            height={500}
-            width={500}
           ></FullImage>
         </Container>
       );
@@ -326,7 +295,7 @@ const ImageLoader = (props) => {
           }}
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
-          {/* <SmallImage
+          <SmallImage
             src={
               !is_url
                 ? isPageLoaded
@@ -340,17 +309,9 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-          ></SmallImage> */}
+          ></SmallImage>
           <FullImage
             // loading="lazy"
-            placeholder="blur"
-            blurDataURL={
-              !is_url
-                ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : props.url
-            }
             src={
               !is_url
                 ? error
@@ -367,7 +328,7 @@ const ImageLoader = (props) => {
             onError={props.onfail ? props.onfail : _handleError}
             style={{
               height: props.height ? props.height : "auto",
-              // display: fullLoaded ? "block" : "none",
+              display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -390,7 +351,7 @@ const ImageLoader = (props) => {
           }}
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
-          {/* <SmallImage
+          <SmallImage
             src={
               !is_url
                 ? isPageLoaded
@@ -404,17 +365,9 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-          ></SmallImage> */}
+          ></SmallImage>
           <FullImage
-            loading="lazy"
-            placeholder="blur"
-            blurDataURL={
-              !is_url
-                ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : props.url
-            }
+            // loading="lazy"
             src={
               !is_url
                 ? error
@@ -428,14 +381,12 @@ const ImageLoader = (props) => {
             onError={props.onfail ? props.onfail : _handleError}
             style={{
               height: props.height ? props.height : "auto",
-              // display: fullLoaded ? "block" : "none",
+              display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
               ...props.style,
             }}
-            height={500}
-            width={500}
           ></FullImage>
         </Container>
       );
