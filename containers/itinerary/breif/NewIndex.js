@@ -126,7 +126,12 @@ const Details = (props) => {
         console.log('inside else1', postion, props.CityData.length);
         // console.log(`response city data${JSON.stringify(citydetails)}`);
         // console.log(`lat,long${citydetails.lat}`);
-        if (!postion.is_departure_only && !postion.is_trip_terminated) {
+        if (
+          !postion.is_departure_only &&
+          !postion.is_trip_terminated &&
+          postion.duration &&
+          postion.duration !== '0'
+        ) {
           Locationlatlong.push({
             dayId: getdayId(postion.day_slab_location.start_day_slab_index),
             cityData: postion,

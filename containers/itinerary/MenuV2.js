@@ -248,6 +248,7 @@ const SimpleTabsV2 = (props) => {
   const [showBookingTimer, setShowBookingTimer] = useState(true);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
   const [citydatadone, setcitydatadone] = useState(false);
+  const [CityData, setCityData] = useState();
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
@@ -335,7 +336,7 @@ const SimpleTabsV2 = (props) => {
   let locationsArr = [];
   let RoutesData = [];
   let TransfersData = [];
-  let CityData = [];
+  let CityDataTemp = [];
   let totalcityslabs = 0;
   console.log('brief idssss', props.breif);
   if (props.breif)
@@ -349,16 +350,19 @@ const SimpleTabsV2 = (props) => {
 
   // console.log('inside routes');
   // console.log(props.routes);
-  if (!citydatadone || !props.routes) {
+  if (!citydatadone) {
     async function processRoutes2(props) {
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
         // console.log('routes one', props.routes[i]);
 
         if (props.breif.city_slabs[i].long) {
           // console.log(props.routes[i].long);
-          CityData.push(props.breif.city_slabs[i]);
+          CityDataTemp.push(props.breif.city_slabs[i]);
         } else {
-          if (props.breif.city_slabs[i].city_id) {
+          if (
+            props.breif.city_slabs[i].city_id &&
+            props.breif.city_slabs[i].duration > '0'
+          ) {
             try {
               const data = await getCityDetails(
                 props.breif.city_slabs[i].city_id
@@ -369,7 +373,7 @@ const SimpleTabsV2 = (props) => {
                 props.breif.city_slabs[i],
                 data
               );
-              CityData.push(updatedRoutes);
+              CityDataTemp.push(updatedRoutes);
               // console.log('fetchdata data in', updatedRoutes);
             } catch (error) {
               console.error(error);
@@ -378,6 +382,7 @@ const SimpleTabsV2 = (props) => {
         }
       }
       setcitydatadone(true);
+      setCityData(CityDataTemp);
       console.log('citydata0', CityData);
     }
     processRoutes2(props);
@@ -661,7 +666,7 @@ const SimpleTabsV2 = (props) => {
       </div>
       {isPageWide && !isInView && (
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
-          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
+          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[18rem]">
             <div className="flex flex-row justify-between ">
               <div className="flex flex-col">
                 <div className="text-[0.725rem]">
@@ -670,7 +675,9 @@ const SimpleTabsV2 = (props) => {
                     ? 'Per Person'
                     : props.payment?.is_estimated_price
                     ? `${
-                        props.payment.total_cost == 0 ? '' : 'Estimated Price'
+                        props.payment.total_cost == 0
+                          ? 'No Bookings'
+                          : 'Estimated Price'
                       }`
                     : 'Total Cost'}
                 </div>
