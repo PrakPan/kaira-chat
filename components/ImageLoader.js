@@ -211,6 +211,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
+            alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -243,6 +244,7 @@ const ImageLoader = (props) => {
             }}
             height={props.dimensions ? props.dimensions.height : 500}
             width={props.dimensions ? props.dimensions.width : 500}
+            alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
@@ -275,6 +277,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
+            alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -307,6 +310,7 @@ const ImageLoader = (props) => {
             }}
             height={props.dimensions ? props.dimensions.height : 500}
             width={props.dimensions ? props.dimensions.width : 500}
+            alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
@@ -339,6 +343,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
+            alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -372,7 +377,7 @@ const ImageLoader = (props) => {
               maxHeight: props.maxheight ? props.maxheight : "none",
               ...props.style,
             }}
-           
+            alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
@@ -410,6 +415,7 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
+            alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -441,7 +447,8 @@ const ImageLoader = (props) => {
               ...props.style,
             }}
             height={props.dimensions ? props.dimensions.height : 500}
-            width={props.dimensions ?  props.dimensions.width : 500}
+            width={props.dimensions ? props.dimensions.width : 500}
+            alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
