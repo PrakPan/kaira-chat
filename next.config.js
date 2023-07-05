@@ -2,13 +2,13 @@ module.exports = {
   async redirects() {
     return [
       {
-        source: '/sitemap',
-        destination: '/sitemap.xml',
+        source: "/sitemap",
+        destination: "/sitemap.xml",
         permanent: true,
       },
       {
-        source: '/itinerary/preview/:id',
-        destination: '/itinerary/:id',
+        source: "/itinerary/preview/:id",
+        destination: "/itinerary/:id",
         permanent: true,
       },
     ];
@@ -16,12 +16,20 @@ module.exports = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'd31aoa0ehgvjdi.cloudfront.net',
+        protocol: "https",
+        hostname: "d31aoa0ehgvjdi.cloudfront.net",
       },
       {
-        protocol: 'https',
-        hostname: 'q-xx.bstatic.com',
+        protocol: "https",
+        hostname: "q-xx.bstatic.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.travelapi.com",
+      },
+      {
+        protocol: "https",
+        hostname: "imgak.mmtcdn.com",
       },
     ],
   },

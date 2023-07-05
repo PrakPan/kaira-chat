@@ -23,17 +23,17 @@ const ImageLoader = (props) => {
       },
     },
   });
-  // const colorRequest = JSON.stringify({
-  //   bucket: "thetarzanway-web",
-  //   key: props.url,
-  //   edits: {
-  //     resize: {
-  //       width: 1,
-  //       height: 1,
-  //       fit: "cover",
-  //     },
-  //   },
-  // });
+  const colorRequest = JSON.stringify({
+    bucket: "thetarzanway-web",
+    key: props.url,
+    edits: {
+      resize: {
+        width: 1,
+        height: 1,
+        fit: "cover",
+      },
+    },
+  });
   let imageRequest;
   let imageRequestMobile;
   if (isPageWide) {
@@ -387,10 +387,15 @@ const ImageLoader = (props) => {
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
+            backgroundImage: fullLoaded
+              ? ""
+              : `url(${`${imgUrlEndPoint}/${Buffer.from(colorRequest).toString(
+                  "base64"
+                )}`})`,
           }}
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
-          {/* <SmallImage
+          <SmallImage
             src={
               !is_url
                 ? isPageLoaded
@@ -404,17 +409,17 @@ const ImageLoader = (props) => {
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-          ></SmallImage> */}
+          ></SmallImage>
           <FullImage
-            loading="lazy"
-            placeholder="blur"
-            blurDataURL={
-              !is_url
-                ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : props.url
-            }
+            loading= {props.noLazy ? "eager" : 'lazy'}
+            // placeholder="blur"
+            // blurDataURL={
+            //   !is_url
+            //     ? isPageLoaded
+            //       ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+            //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+            //     : props.url
+            // }
             src={
               !is_url
                 ? error
@@ -429,6 +434,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               // display: fullLoaded ? "block" : "none",
+              
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
