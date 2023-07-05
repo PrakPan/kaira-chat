@@ -117,12 +117,15 @@ const Personaliseform = (props) => {
     //check if city present
     if (_checkCityPresent(city)) {
     } else {
-      ga.event({
-        action: 'tailored-form-locationsselected',
-        params: {
-          location: city.name,
-        },
-      });
+      {
+        process.env.NODE_ENV === 'production' &&
+          ga.event({
+            action: 'tailored-form-locationsselected',
+            params: {
+              location: city.name,
+            },
+          });
+      }
       setSelectedCities((prev) => [...prev, city]);
     }
   };
@@ -181,12 +184,15 @@ const Personaliseform = (props) => {
 
   //Change question
   const _nextQuestionHandler = (start_date, end_date) => {
-    ga.event({
-      action: 'TTForm-next-' + Questions.questions[questionIndex],
-      params: {
-        question: '',
-      },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'TTForm-next-' + Questions.questions[questionIndex],
+          params: {
+            question: '',
+          },
+        });
+    }
     let duration;
     if (questionIndex === 4) {
       duration = endDate.diff(startDate, 'days');
@@ -220,12 +226,15 @@ const Personaliseform = (props) => {
   //Submit form
 
   const _generateData = () => {
-    ga.event({
-      action: 'TTForm-login-success',
-      params: {
-        question: '',
-      },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'TTForm-login-success',
+          params: {
+            question: '',
+          },
+        });
+    }
 
     let budget = '';
     let budget_to_send = '';
@@ -335,7 +344,10 @@ const Personaliseform = (props) => {
         if (!response.data.auto_itinerary_created) {
           router.push('/thank-you');
         } else {
-          ga.event({ action: 'TTForm-success', params: { key: '' } });
+          {
+            process.env.NODE_ENV === 'production' &&
+              ga.event({ action: 'TTForm-success', params: { key: '' } });
+          }
 
           setTimeout(function () {
             router.push('/itinerary/' + response.data.itinerary.itinerary_id);

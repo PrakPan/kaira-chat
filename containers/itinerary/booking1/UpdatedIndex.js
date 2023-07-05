@@ -166,10 +166,12 @@ const Booking = (props) => {
 
   const handleChange = (event, newValue) => {
     const tabs = ['S', 'T', 'A'];
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-tabs-' + tabs[newValue],
       params: { key: '' },
     });
+  }
 
     setValue(newValue);
   };
@@ -225,10 +227,12 @@ const Booking = (props) => {
     costings_breakdown,
     images
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-acc_change',
       params: { name: name },
     });
+  }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -265,10 +269,12 @@ const Booking = (props) => {
     origin_iata,
     destination_iata
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-flight_change',
       params: { name: name },
     });
+  }
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -305,10 +311,12 @@ const Booking = (props) => {
     taxi_type,
     transfer_type
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-taxi_change',
       params: { name: name },
     });
+  }
     setSelectedBooking({
       ...selectedBooking,
       name: name,

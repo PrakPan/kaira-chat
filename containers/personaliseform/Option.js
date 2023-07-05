@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import media from "../../components/media";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import media from '../../components/media';
 
-const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
-import ImageLoader from "../../components/ImageLoader";
-import * as ga from "../../services/ga/Index";
-import questions from "./questions";
-import questioncontansts from "./questioncontansts";
+const imgUrlEndPoint = 'https://d31aoa0ehgvjdi.cloudfront.net/';
+import ImageLoader from '../../components/ImageLoader';
+import * as ga from '../../services/ga/Index';
+import questions from './questions';
+import questioncontansts from './questioncontansts';
 const OptionContainer = styled.button`
     background-color: white;
     padding: 1rem;
@@ -33,17 +33,17 @@ const OptionContainer = styled.button`
 
 const Option = (props) => {
   const btoa = function (str) {
-    return Buffer.from(str).toString("base64");
+    return Buffer.from(str).toString('base64');
   };
 
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media('(min-width: 768px)');
 
   const [selectedState, setSelectedState] = useState(false);
   useEffect(() => {
     //Set background color if previously selected
     if (questions.questions[props.questionIndex] === questioncontansts.PAX) {
       if (props.newAnswers[questioncontansts.PAX]) {
-        if (props.newAnswers[questioncontansts.PAX]["index"] === props.index)
+        if (props.newAnswers[questioncontansts.PAX]['index'] === props.index)
           setSelectedState(true);
         else setSelectedState(false);
       } else setSelectedState(false);
@@ -91,15 +91,18 @@ const Option = (props) => {
     }
     //Option is selected
     else {
-      ga.event({
-        action:
-          "TTForm-" + props.questionIndex + "-" + props.heading
-            ? props.heading
-            : props.text,
-        params: {
-          options_selected: props.heading ? props.heading : props.text,
-        },
-      });
+      {
+        process.env.NODE_ENV === 'production' &&
+          ga.event({
+            action:
+              'TTForm-' + props.questionIndex + '-' + props.heading
+                ? props.heading
+                : props.text,
+            params: {
+              options_selected: props.heading ? props.heading : props.text,
+            },
+          });
+      }
 
       let UPDATED_NEW_ANSWERS = { ...props.newAnswers } || {};
 
@@ -162,13 +165,13 @@ const Option = (props) => {
     }
   };
   let imageRequest = JSON.stringify({
-    bucket: "thetarzanway-web",
+    bucket: 'thetarzanway-web',
     key: props.img,
     edits: {
       resize: {
         width: 400,
         height: 400,
-        fit: "cover",
+        fit: 'cover',
       },
     },
   });
@@ -179,7 +182,7 @@ const Option = (props) => {
         key={props.index}
         onClick={() => _selectOptionHandler()}
         style={{
-          backgroundColor: !selectedState ? "white" : "rgba(247, 231, 0, 0.3)",
+          backgroundColor: !selectedState ? 'white' : 'rgba(247, 231, 0, 0.3)',
         }}
       >
         <ImageLoader
@@ -192,9 +195,9 @@ const Option = (props) => {
         {props.heading && props.text ? (
           <p
             style={{
-              textAlign: "center",
-              margin: "0.5rem 0 0 0",
-              fontSize: "0.85rem",
+              textAlign: 'center',
+              margin: '0.5rem 0 0 0',
+              fontSize: '0.85rem',
             }}
             className="font-lexend"
           >
@@ -204,10 +207,10 @@ const Option = (props) => {
         {props.heading && !props.text ? (
           <p
             style={{
-              textAlign: "center",
-              margin: "0.5rem 0 0 0",
-              fontSize: "0.85rem",
-              fontWeight: "500",
+              textAlign: 'center',
+              margin: '0.5rem 0 0 0',
+              fontSize: '0.85rem',
+              fontWeight: '500',
             }}
             className="font-lexend"
           >
@@ -216,11 +219,11 @@ const Option = (props) => {
         ) : null}
         <p
           style={{
-            textAlign: "center",
-            margin: "0.75rem 0 0 0",
-            fontWeight: "300",
-            letterSpacing: "1px",
-            fontSize: "0.75rem",
+            textAlign: 'center',
+            margin: '0.75rem 0 0 0',
+            fontWeight: '300',
+            letterSpacing: '1px',
+            fontSize: '0.75rem',
           }}
           className="font-lexend"
         >

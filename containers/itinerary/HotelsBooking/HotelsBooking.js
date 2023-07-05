@@ -109,10 +109,13 @@ const HotelsBooking = (props) => {
     costings_breakdown,
     images
   ) => {
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-bookings-acc_change',
+          params: { name: name },
+        });
+    }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -548,10 +551,13 @@ const HotelsBooking = (props) => {
     props.setShowBookingModal;
   }
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-bookings-acc_change',
+          params: { name: name },
+        });
+    }
     setAddHotel(true);
     setSelectedBooking({
       check_in: check_in,

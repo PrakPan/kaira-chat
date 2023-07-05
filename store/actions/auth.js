@@ -205,12 +205,15 @@ export const auth = (mobile, password, name, email, whatsapp) => {
       .post('/complete/', updatedauthdata)
       .then((response) => {
         if (response.status === 200) {
-          ga.event({
-            action: 'number-login-success',
-            params: {
-              status: 'otp verified',
-            },
-          });
+          {
+            process.env.NODE_ENV === 'production' &&
+              ga.event({
+                action: 'number-login-success',
+                params: {
+                  status: 'otp verified',
+                },
+              });
+          }
           const userdata = {
             name: response.data.name,
             phone: response.data.phone,
@@ -243,32 +246,41 @@ export const auth = (mobile, password, name, email, whatsapp) => {
       })
       .catch((err) => {
         if (err.response.data.email) {
-          ga.event({
-            action: 'number-login-email_fail',
-            params: {
-              status: 'email fail',
-            },
-          });
+          {
+            process.env.NODE_ENV === 'production' &&
+              ga.event({
+                action: 'number-login-email_fail',
+                params: {
+                  status: 'email fail',
+                },
+              });
+          }
           dispatch(authEmailFail(err.response.data.email[0]));
         } else {
-          ga.event({
-            action: 'number-login-otp_fail',
-            params: {
-              status: 'otp fail',
-            },
-          });
+          {
+            process.env.NODE_ENV === 'production' &&
+              ga.event({
+                action: 'number-login-otp_fail',
+                params: {
+                  status: 'otp fail',
+                },
+              });
+          }
           dispatch(authOtpFail());
         }
       });
   };
 };
 export const googleAuth = (response) => {
-  ga.event({
-    action: 'google-login-initiate',
-    params: {
-      status: '',
-    },
-  });
+  {
+    process.env.NODE_ENV === 'production' &&
+      ga.event({
+        action: 'google-login-initiate',
+        params: {
+          status: '',
+        },
+      });
+  }
   return (dispatch) => {
     dispatch(authStartLoadingSocial()); //Start spinner
 
@@ -277,12 +289,15 @@ export const googleAuth = (response) => {
       .then((res) => {
         dispatch(authStopLoadingSocial());
         if (res.status === 200) {
-          ga.event({
-            action: 'google-login-success',
-            params: {
-              status: '',
-            },
-          });
+          {
+            process.env.NODE_ENV === 'production' &&
+              ga.event({
+                action: 'google-login-success',
+                params: {
+                  status: '',
+                },
+              });
+          }
           const userdata = {
             name: res.data.name,
             phone: res.data.phone,

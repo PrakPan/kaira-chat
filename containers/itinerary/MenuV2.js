@@ -285,10 +285,12 @@ const SimpleTabsV2 = (props) => {
   const handleChange = (event, newValue) => {
     // console.log('nw', event, newValue)
     const tabs = ['brief', 'itinerary', 'booking'];
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-tabs-' + tabs[newValue],
       params: {},
     });
+  }
     if (isPageWide) window.scrollTo(0, window.innerHeight);
     else window.scrollTo(0, window.innerHeight / 2);
 
@@ -500,6 +502,7 @@ const SimpleTabsV2 = (props) => {
   };
 
   const _handlePoiEditModalOpen = (poi) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-poiedit-open',
       params: {
@@ -507,6 +510,7 @@ const SimpleTabsV2 = (props) => {
         city: poi.city_id,
       },
     });
+  }
     setSelectedPoi({
       name: poi.name,
       city_id: poi.city_id,

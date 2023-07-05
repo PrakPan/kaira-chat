@@ -48,12 +48,13 @@ const [hotLocationsData, setHotLocationsData] = useState();
 
     const _onChangeHandler = (event) => {
         if(event.target.value.length %3 === 0)
+        {process.env.NODE_ENV === 'production' && 
         ga.event({
             action: "HS-locationssearched",
             params : {
               'search_text': event.target.value
             }
-          });
+          });}
         setInputValue(event.target.value);
         axiossearchsuggestinstance
           .get(`?q=` + event.target.value)

@@ -409,10 +409,11 @@ const TransfersContainer = (props) => {
     costings_breakdown,
     images
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-acc_change',
       params: { name: name },
-    });
+    });}
 
     setSelectedBooking({
       ...selectedBooking,
@@ -453,10 +454,12 @@ const TransfersContainer = (props) => {
     transfer_type,
     user_selected
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-flight_change',
       params: { name: name },
     });
+  }
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -497,10 +500,12 @@ const TransfersContainer = (props) => {
     taxi_type,
     transfer_type
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-taxi_change',
       params: { name: name },
     });
+  }
     setSelectedBooking({
       ...selectedBooking,
       name: name,

@@ -73,12 +73,14 @@ const SearchPannel = (props) => {
   const _onChangeHandler = (event) => {
     setInputValue(event.target.value);
     if (event.target.value.length % 3 === 0)
+    {process.env.NODE_ENV === 'production' && 
       ga.event({
         action: 'HS-locationssearched',
         params: {
           search_text: event.target.value,
         },
       });
+    }
     setShowP(false);
     setShowResults(true);
     setResults(null);
