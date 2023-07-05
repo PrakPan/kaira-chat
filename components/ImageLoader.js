@@ -138,6 +138,7 @@ const ImageLoader = (props) => {
 
   const smallurl = imgUrlEndPoint + "40x30/" + props.url;
   const Container = styled.div`
+    transition: filter 0.5s ease;
     @media screen and (min-width: 768px) {
       width: ${props.width ? props.width : "100%"};
     }
@@ -149,12 +150,13 @@ const ImageLoader = (props) => {
 
   const SmallImage = styled.img`
     width: 100%;
+    transition: opacity 0.5s ease;
   `;
   const FullImage = styled(Image)`
     width: 100%;
     object-fit: ${props.resizeMode ? props.resizeMode : "cover"};
     z-index: 0 !important;
-
+    transition: opacity 0.5s ease;
     &:hover {
       opacity: ${props.hoveropacity ? props.hoveropacity : "1"};
       cursor: ${props.hoverpointer ? "pointer" : "auto"};
@@ -208,6 +210,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              opacity : !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
@@ -237,6 +240,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              opacity : fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -274,6 +278,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              opacity : !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
@@ -303,6 +308,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              opacity : fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -340,6 +346,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              opacity : !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
@@ -372,6 +379,7 @@ const ImageLoader = (props) => {
             style={{
               // height: props.height ? props.height : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              opacity : fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -412,6 +420,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              opacity : !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
@@ -441,6 +450,7 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              opacity : fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
