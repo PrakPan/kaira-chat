@@ -773,33 +773,33 @@ const SimpleTabsV2 = (props) => {
               booking={props.booking}
             ></HotelsBooking>
           </div>
-          {props.transferBookings && (
-            <div id={items[3].link}>
-              <TransfersContainer
-                setShowLoginModal={setShowLoginModal}
-                plan={props.plan}
-                dayslab={props?.itinerary?.day_slabs}
-                breif={props?.breif}
-                routesData={RoutesData}
-                transfers={TransfersData}
-                routes={props.routes}
-                showTaxiModal={props.showTaxiModal}
-                getPaymentHandler={props.getPaymentHandler}
-                _updateFlightBookingHandler={props._updateFlightBookingHandler}
-                setShowTaxiModal={props.setShowTaxiModal}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                _updateBookingHandler={props._updateBookingHandler}
-                showFlightModal={props.showFlightModal}
-                setShowFlightModal={_handleFlighModalShow}
-                setHideFlightModal={_handleFlightModalClose}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
-                setHideBookingModal={props.setHideBookingModal}
-                payment={props.payment}
-                transferBookings={props.transferBookings}
-              />
-            </div>
-          )}
+
+          <div id={items[3].link}>
+            <TransfersContainer
+              setShowLoginModal={setShowLoginModal}
+              plan={props.plan}
+              dayslab={props?.itinerary?.day_slabs}
+              breif={props?.breif}
+              routesData={RoutesData}
+              transfers={TransfersData}
+              routes={props.routes}
+              showTaxiModal={props.showTaxiModal}
+              getPaymentHandler={props.getPaymentHandler}
+              _updateFlightBookingHandler={props._updateFlightBookingHandler}
+              setShowTaxiModal={props.setShowTaxiModal}
+              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              _updateBookingHandler={props._updateBookingHandler}
+              showFlightModal={props.showFlightModal}
+              setShowFlightModal={_handleFlighModalShow}
+              setHideFlightModal={_handleFlightModalClose}
+              setShowBookingModal={() => props.setShowBookingModal(true)}
+              setHideBookingModal={props.setHideBookingModal}
+              payment={props.payment}
+              transferBookings={props.transferBookings}
+            />
+          </div>
+
           {props.activityBookings && (
             <div id={items[4].link}>
               <ActivityBookings
@@ -982,35 +982,32 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props.transferBookings && (
-              <div id={items[3].link}>
-                <TransfersContainer
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  dayslab={props?.itinerary?.day_slabs}
-                  breif={props?.breif}
-                  showTaxiModal={props.showTaxiModal}
-                  routesData={RoutesData}
-                  transfers={TransfersData}
-                  routes={props.routes}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  showFlightModal={props.showFlightModal}
-                  setShowFlightModal={_handleFlighModalShow}
-                  setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  transferBookings={props?.transferBookings}
-                />
-              </div>
-            )}
+            <div id={items[3].link}>
+              <TransfersContainer
+                setShowLoginModal={setShowLoginModal}
+                plan={props.plan}
+                dayslab={props?.itinerary?.day_slabs}
+                breif={props?.breif}
+                showTaxiModal={props.showTaxiModal}
+                routesData={RoutesData}
+                transfers={TransfersData}
+                routes={props.routes}
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
+                setShowTaxiModal={props.setShowTaxiModal}
+                getPaymentHandler={props.getPaymentHandler}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                showFlightModal={props.showFlightModal}
+                setShowFlightModal={_handleFlighModalShow}
+                setHideFlightModal={_handleFlightModalClose}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                setHideBookingModal={props.setHideBookingModal}
+                payment={props.payment}
+                transferBookings={props?.transferBookings}
+              />
+            </div>
+
             {props.activityBookings && (
               <div id={items[4].link}>
                 <ActivityBookings
