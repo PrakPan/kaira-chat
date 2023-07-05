@@ -339,9 +339,9 @@ const SaifBackgroundImageLoader = (props) => {
           borderRadius: props.borderRadius ? props.borderRadius : "0",
           filter: props.filter,
           backgroundColor: "rgb(230 230 230)",
-          backgroundImage: `url(${`${imgUrlEndPoint}/${Buffer.from(
-            imageRequest
-          ).toString("base64")}`})`,
+          // backgroundImage: `url(${`${imgUrlEndPoint}/${Buffer.from(
+          //   imageRequest
+          // ).toString("base64")}`})`,
           ...props.style,
         }}
       >
