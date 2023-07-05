@@ -411,7 +411,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
-            loading= {props.noLazy ? "eager" : 'lazy'}
+            loading={props.noLazy ? "eager" : "lazy"}
             // placeholder="blur"
             // blurDataURL={
             //   !is_url
@@ -433,8 +433,7 @@ const ImageLoader = (props) => {
             onError={props.onfail ? props.onfail : _handleError}
             style={{
               height: props.height ? props.height : "auto",
-              // display: fullLoaded ? "block" : "none",
-              
+              visibility: fullLoaded ? "visible" : "hidden",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
