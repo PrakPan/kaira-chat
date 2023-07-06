@@ -100,6 +100,7 @@ const Profile = (props) => {
             width="40%"
             borderRadius="50%"
             widthmobile="40%"
+            noPlaceholder={true}
           ></ImageLoader>
           <Name className="font-lexend">{props.name}</Name>
         </ImageNameContainer>
