@@ -224,6 +224,7 @@ const Mobile = (props) => {
               dimensions={{ height: 50, width: 50 }}
               dimensionsMobile={{ height: 50, width: 50 }}
               widthmobile="20px"
+              noPlaceholder={true}
             />
           )}
           {e.link && (
@@ -259,6 +260,7 @@ const Mobile = (props) => {
               dimensions={{ height: 50, width: 50 }}
               dimensionsMobile={{ height: 50, width: 50 }}
               widthmobile="20px"
+              noPlaceholder={true}
             />
           )}
           {e.link && (
@@ -325,6 +327,7 @@ const Mobile = (props) => {
                 leftalign
                 widthmobile="52px"
                 url={"media/website/logo-only.svg"}
+                noPlaceholder={true}
               ></ImageLoader>
             </StyledLink>
             {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
@@ -389,6 +392,7 @@ const Mobile = (props) => {
                       dimensions={{ height: 50, width: 50 }}
                       dimensionsMobile={{ height: 50, width: 50 }}
                       widthmobile="20px"
+                      noPlaceholder={true}
                     />
                   }
                   <div>Logout</div>

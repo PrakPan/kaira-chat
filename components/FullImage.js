@@ -30,7 +30,7 @@ const fullimage = (props) => {
             className="center-div"
             style={{ position: "absolute" }}
           >
-            <div style={{ border: "1px solid red" }}>{props.children}</div>
+            <div>{props.children}</div>
           </BackgroundImageLoader>
         ) : (
           <BackgroundImageLoader
@@ -43,7 +43,7 @@ const fullimage = (props) => {
             style={{ position: "absolute" }}
           >
             {/* {props.children} */}
-            <div style={{ border: "1px solid red" }}>{props.children}</div>
+            <div>{props.children}</div>
           </BackgroundImageLoader>
         )}
       </Container>
