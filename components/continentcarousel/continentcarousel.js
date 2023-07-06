@@ -109,6 +109,7 @@ const Continentcarousel = (props) => {
               <div
                 className={cardsClasses[i]}
                 style={{ gridArea: cardsClasses[i] }}
+                key={e.id}
               >
                 <Card
                   key={e.id}

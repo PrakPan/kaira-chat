@@ -121,11 +121,11 @@ const NewFooter = (props) => {
     setShowLogo(true);
   }, []);
   const router = useRouter();
-  const LinksComponent = linksArr.map((e) => (
-    <div>
+  const LinksComponent = linksArr.map((e,i) => (
+    <div key={i}>
       <Heading>{e.heading}</Heading>
-      {e.data.map((data) => (
-        <Links>
+      {e.data.map((data , i) => (
+        <Links key={i}>
           {typeof data.link != "string" ? (
             <a href={data.link[0]} target="_blank">
               {data.title}

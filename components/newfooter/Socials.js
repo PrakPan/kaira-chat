@@ -29,9 +29,9 @@ color : white;
   &:hover {
     color: white;
     border: 0px;
-    background: ${(props) => (props.hoverBg ? props.hoverBg : "white")};
+    background: ${(props) => (props.hoverbg ? props.hoverbg : "white")};
     border: ${(props) =>
-      props.hoverBg ? `1px solid ${props.hoverBg}` : "white"};
+      props.hoverbg ? `1px solid ${props.hoverbg}` : "white"};
   }
 `;
  
@@ -42,19 +42,19 @@ const Socials = (props) => {
     return (
       <Container className="font-lexend">
         <IconContainer
-          hoverBg={"#1D9BF0"}
+          hoverbg={"#1D9BF0"}
           href="https://twitter.com/thetarzanway"
         >
           <FaTwitter />
         </IconContainer>
         <IconContainer
-          hoverBg={"#3b5998"}
+          hoverbg={"#3b5998"}
           href="https://twitter.com/thetarzanway"
         >
           <FaFacebookF />
         </IconContainer>
         <IconContainer
-          hoverBg={
+          hoverbg={
             "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)"
           }
           href="https://www.instagram.com/thetarzanway"
@@ -62,13 +62,13 @@ const Socials = (props) => {
           <FaInstagram />
         </IconContainer>
         <IconContainer
-          hoverBg={"#0072b1"}
+          hoverbg={"#0072b1"}
           href="https://linkedin.com/company/thetarzanway"
         >
           <FaLinkedinIn />
         </IconContainer>
         <IconContainer
-          hoverBg={"#E60023"}
+          hoverbg={"#E60023"}
           href="https://www.pinterest.com/thetarzanway/"
         >
           <FaPinterestP />
