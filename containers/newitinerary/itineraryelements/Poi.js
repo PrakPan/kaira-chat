@@ -274,7 +274,7 @@ const ItineraryPoiElement = (props) => {
                   {true ? 'ATTRACTION' : 'View Less'}
                 </div>
               </div>
-              {props.rating && <StarRating initialRating={4}></StarRating>}
+              {props.poi.rating && <StarRating initialRating={4}></StarRating>}
 
               {/* {props.poi !== undefined ? (
                 props.poi.experience_filters ? (

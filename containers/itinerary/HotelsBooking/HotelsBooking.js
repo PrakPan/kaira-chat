@@ -109,10 +109,13 @@ const HotelsBooking = (props) => {
     costings_breakdown,
     images
   ) => {
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-bookings-acc_change',
+          params: { name: name },
+        });
+    }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -486,13 +489,15 @@ const HotelsBooking = (props) => {
   const findObjectByDate = (array, date) =>
     array.find((obj) => obj.check_in === date);
   const isObjectByDate = (array, date) => {
-    const booking = findObjectByDate(array, date);
-    console.log('booking', booking);
-    if (booking) {
-      console.log('booking', true);
-      return true;
-    } else {
-      return false;
+    if (array) {
+      const booking = findObjectByDate(array, date);
+      console.log('booking', booking);
+      if (booking) {
+        console.log('booking', true);
+        return true;
+      } else {
+        return false;
+      }
     }
   };
 
@@ -546,10 +551,13 @@ const HotelsBooking = (props) => {
     props.setShowBookingModal;
   }
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-bookings-acc_change',
+          params: { name: name },
+        });
+    }
     setAddHotel(true);
     setSelectedBooking({
       check_in: check_in,
@@ -592,7 +600,7 @@ const HotelsBooking = (props) => {
   console.log('rerender HotelBookings');
   if (props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')) {
     if (props.breif.city_slabs) {
-      if (props.stayBookings) {
+      if (true) {
         for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
           console.log('inside for loop rerender HotelBookings');
           if (
