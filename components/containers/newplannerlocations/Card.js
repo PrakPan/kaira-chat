@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { useState } from "react";
-import ImageLoader from "../../UpdatedBackgroundImageLoader";
-// import ImageLoader from "../../ImageLoader";
+// import ImageLoader from "../../UpdatedBackgroundImageLoader";
+import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
 
 
@@ -43,7 +43,7 @@ const Subtext = styled.p`
 
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [ImageLoaded, setImageLoaded] = useState(false);
+  // const [ImageLoaded, setImageLoaded] = useState(false);
   let filters_to_show = "";
   try {
     for (var i = 0; i < props.filters.length; i++) {
@@ -63,14 +63,13 @@ const Experiences = (props) => {
           noLazy
           hoverpointer
           url={props.img}
-          dimensions={{ width: 800, height: 800 }}
+          dimensions={{ width: 400, height: 400 }}
           borderRadius="10px"
-          dimensionsMobile={{ width: 800, height: 800 }}
-          onload={() => setImageLoaded(true)}
-          style={{ position: "static", cursor: "pointer" }}
+          dimensionsMobile={{ width: 300, height: 300 }}
+          // onload={() => setImageLoaded(true)}
+          style={{cursor: "pointer" }}
           filter="brightness(0.80)"
         >
-          <div></div>
         </ImageLoader>
       </div>
       <div style={{ padding: "0.5rem 0" }} className="hover-pointer">

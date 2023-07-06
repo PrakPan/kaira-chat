@@ -138,6 +138,7 @@ const ImageLoader = (props) => {
 
   const smallurl = imgUrlEndPoint + "40x30/" + props.url;
   const Container = styled.div`
+    transition: filter 0.5s ease;
     @media screen and (min-width: 768px) {
       width: ${props.width ? props.width : "100%"};
     }
@@ -149,12 +150,13 @@ const ImageLoader = (props) => {
 
   const SmallImage = styled.img`
     width: 100%;
+    transition: opacity 0.5s ease;
   `;
   const FullImage = styled(Image)`
     width: 100%;
     object-fit: ${props.resizeMode ? props.resizeMode : "cover"};
     z-index: 0 !important;
-
+    transition: opacity 0.5s ease;
     &:hover {
       opacity: ${props.hoveropacity ? props.hoveropacity : "1"};
       cursor: ${props.hoverpointer ? "pointer" : "auto"};
@@ -194,10 +196,16 @@ const ImageLoader = (props) => {
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
+            backgroundImage: (fullLoaded || props.noPlaceholder)
+              ? ""
+              : `url(${`${imgUrlEndPoint}/${Buffer.from(colorRequest).toString(
+                  "base64"
+                )}`})`,
           }}
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            loading={props.noLazy ? "eager" : "lazy"}
             src={
               !is_url
                 ? isPageLoaded
@@ -208,10 +216,11 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              // opacity: !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -235,8 +244,13 @@ const ImageLoader = (props) => {
             onLoad={fullImageLoadedHandler}
             onError={props.onfail ? props.onfail : _handleError}
             style={{
-              height: props.height ? props.height : "auto",
+              height: !fullLoaded
+                ? "0px"
+                : props.height
+                ? props.height
+                : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              // opacity: fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -244,7 +258,7 @@ const ImageLoader = (props) => {
             }}
             height={props.dimensions ? props.dimensions.height : 500}
             width={props.dimensions ? props.dimensions.width : 500}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
@@ -259,11 +273,17 @@ const ImageLoader = (props) => {
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
+            backgroundImage: (fullLoaded || props.noPlaceholder)
+              ? ""
+              : `url(${`${imgUrlEndPoint}/${Buffer.from(colorRequest).toString(
+                  "base64"
+                )}`})`,
           }}
         >
           {/* <img src={imgUrlEndPoint + props.url} /> */}
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            loading={props.noLazy ? "eager" : "lazy"}
             src={
               !is_url
                 ? isPageLoaded
@@ -274,10 +294,11 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              // opacity: !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -301,8 +322,13 @@ const ImageLoader = (props) => {
             onLoad={fullImageLoadedHandler}
             onError={props.onfail ? props.onfail : _handleError}
             style={{
-              height: props.height ? props.height : "auto",
+              height: !fullLoaded
+                ? "0px"
+                : props.height
+                ? props.height
+                : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              // opacity: fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -310,7 +336,7 @@ const ImageLoader = (props) => {
             }}
             height={props.dimensions ? props.dimensions.height : 500}
             width={props.dimensions ? props.dimensions.width : 500}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
@@ -326,10 +352,16 @@ const ImageLoader = (props) => {
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
+            backgroundImage: (fullLoaded || props.noPlaceholder)
+              ? ""
+              : `url(${`${imgUrlEndPoint}/${Buffer.from(colorRequest).toString(
+                  "base64"
+                )}`})`,
             ...props.style,
           }}
         >
           <SmallImage
+            loading={props.noLazy ? "eager" : "lazy"}
             src={
               !is_url
                 ? isPageLoaded
@@ -340,10 +372,11 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              // opacity: !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -372,12 +405,13 @@ const ImageLoader = (props) => {
             style={{
               // height: props.height ? props.height : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              // opacity: fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
               ...props.style,
             }}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
@@ -386,14 +420,13 @@ const ImageLoader = (props) => {
         <Container
           blur={fullLoaded}
           onClick={props.onclick}
-          id="image-container"
           style={{
             width: props.width ? props.width : "100%",
             height: props.height ? props.height : "max-content",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
-            backgroundImage: fullLoaded
+            backgroundImage: (fullLoaded || props.noPlaceholder)
               ? ""
               : `url(${`${imgUrlEndPoint}/${Buffer.from(colorRequest).toString(
                   "base64"
@@ -402,6 +435,7 @@ const ImageLoader = (props) => {
         >
           {/* <SpinnerContainer><Spinner></Spinner></SpinnerContainer> */}
           <SmallImage
+            loading={props.noLazy ? "eager" : "lazy"}
             src={
               !is_url
                 ? isPageLoaded
@@ -412,10 +446,11 @@ const ImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
+              // opacity: !fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></SmallImage>
           <FullImage
             loading={props.noLazy ? "eager" : "lazy"}
@@ -439,8 +474,14 @@ const ImageLoader = (props) => {
             onLoad={fullImageLoadedHandler}
             onError={props.onfail ? props.onfail : _handleError}
             style={{
-              height: props.height ? props.height : "auto",
+              height: !fullLoaded
+                ? "0px"
+                : props.height
+                ? props.height
+                : "auto",
               visibility: fullLoaded ? "visible" : "hidden",
+              // display : fullLoaded ? 'initial' : 'none',
+              // opacity: fullLoaded ? 1 : 0,
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
               maxHeight: props.maxheight ? props.maxheight : "none",
@@ -448,7 +489,7 @@ const ImageLoader = (props) => {
             }}
             height={props.dimensions ? props.dimensions.height : 500}
             width={props.dimensions ? props.dimensions.width : 500}
-            alt={props.alt || "image"}
+            // alt={props.alt || "image"}
           ></FullImage>
         </Container>
       );
