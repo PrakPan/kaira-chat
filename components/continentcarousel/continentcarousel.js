@@ -93,7 +93,9 @@ const Continentcarousel = (props) => {
 
   useEffect(() => {
       const cardsArr = [];
-  for (let i = 0; i < props.data.length; i++) {
+    for (let i = 0; i < props.data.length; i++) {
+           
+    let hd = props.data[i].hot_destinations.length
       cardsArr.push(
         <GridContainer>
           <Card
@@ -117,7 +119,7 @@ const Continentcarousel = (props) => {
                   heading={e.tagline}
                   img={e.image}
                   path={e.path}
-                  hd={props.data[i].hot_destinations.length < 4}
+                  hd={hd < 4}
                 />
               </div>
             ))}
