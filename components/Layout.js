@@ -32,6 +32,9 @@ const Layout = React.memo((props) => {
 
 
   useEffect(() => {
+
+   
+
       var name;
       if (localStorage.getItem("name"))
         name = localStorage.getItem("name").split(" ");
@@ -42,13 +45,23 @@ const Layout = React.memo((props) => {
         window.fcWidget.user.setFirstName(name[0]);
         window.fcWidget.user.setEmail(email);
       }
+       
     }
     if (window.fcWidget) {
-      window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+          if (!props.token) {
+          window.fcWidget.user.clear();
+          }
+          else {
+            window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+      }
     } else {
       setTimeout(() => {
         if (window.fcWidget) {
-          window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+          if (!props.token) {
+            window.fcWidget.user.clear();
+          } else {
+            window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+          }
         }
       }, 5000);
     }

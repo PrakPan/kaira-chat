@@ -61,7 +61,6 @@ margin : 0;
 `;
 
 const Experiences = (props) => {
-  console.log('props/hd' , props.location , props.hd);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [ImageLoaded, setImageLoaded] = useState(false);
