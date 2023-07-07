@@ -61,6 +61,7 @@ margin : 0;
 `;
 
 const Experiences = (props) => {
+  console.log('props/hd' , props.location , props.hd);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [ImageLoaded, setImageLoaded] = useState(false);
@@ -84,13 +85,13 @@ const Experiences = (props) => {
             url={props.img}
             dimensions={
               props.continent || props.hd
-                ? { width: 1500, height: 1000 }
+                ? { width: 1200, height: 800 }
                 : { width: 800, height: 900 }
             }
             dimensionsMobile={
               props.continent || props.hd
-                ? { width: 800, height: 700 }
-                : { width: 300, height: 400 }
+                ? { width: 800, height: 600 }
+                : { width: 300, height: 300 }
             }
             height={props.continent ? "71vh" : "35vh"}
             onload={() => setImageLoaded(true)}

@@ -25,8 +25,8 @@ const fullimage = (props) => {
             filter={props.filter}
             center
             url={props.url}
-            dimensions={{ width: 3206, height: 1202 }}
-            dimensionsMobile={{ width: 900, height: 1200 }}
+            dimensions={{ width: 1806, height: 592 }}
+            dimensionsMobile={{ width: 607, height: 810 }}
             className="center-div"
             style={{ position: "absolute" }}
           >
@@ -39,7 +39,7 @@ const fullimage = (props) => {
             className="center-div"
             url={props.url}
             dimensions={{ width: 1806, height: 592 }}
-            dimensionsMobile={{ width: 900, height: 1200 }}
+            dimensionsMobile={{ width: 607, height: 810 }}
             style={{ position: "absolute" }}
           >
             {/* {props.children} */}
@@ -59,8 +59,8 @@ const fullimage = (props) => {
           padding={props.padding}
           filter={props.filter}
           url={props.url}
-          dimensions={{ width: 3206, height: 1202 }}
-          dimensionsMobile={{ width: 900, height: 1200 }}
+          dimensions={{ width: 2240, height: 840 }}
+          dimensionsMobile={{ width: 607, height: 810 }}
           style={{ position: "absolute" }}
           className="center-dv"
         >
