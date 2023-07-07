@@ -277,163 +277,25 @@ const SimpleTabsV2 = (props) => {
     setShowpayment(false);
   };
 
-  const _setLocationHandler = (event) => {
-    window.scrollTo(0, window.innerHeight / 2);
-    setLocation(event.target.id);
-  };
-
-  const handleChange = (event, newValue) => {
-    // console.log('nw', event, newValue)
-    const tabs = ['brief', 'itinerary', 'booking'];
-    {
-      process.env.NODE_ENV === 'production' &&
-        ga.event({
-          action: 'Itinerary-tabs-' + tabs[newValue],
-          params: {},
-        });
-    }
-    if (isPageWide) window.scrollTo(0, window.innerHeight);
-    else window.scrollTo(0, window.innerHeight / 2);
-
-    if (newValue === 1) {
-    }
-    if (newValue === 2) {
-      props.getPaymentHandler();
-      if (timerValid) {
-        setShowBookingTimer(true);
-        setBlurBooking(true);
-      }
-      if (isPageWide) window.scrollTo(0, window.innerHeight);
-      else window.scrollTo(0, window.innerHeight / 2);
-    }
-    setValue(newValue);
-  };
-
-  const replaceLatLong = (source, destination) => ({
-    ...source,
-    lat: destination.lat,
-    long: destination.long,
-  });
   //Location tabs for mobile
-  let locationsArr = [];
+
   let RoutesData = [];
   let TransfersData = [];
   let CityDataTemp = [];
   let totalcityslabs = 0;
-  console.log('brief idssss', props.breif);
-  if (props.breif)
-    if (props.breif.city_slabs)
-      for (var j = 0; j < props.breif.city_slabs.length; j++) {
-        if (!props.breif.city_slabs[j].is_trip_terminated) {
-          totalcityslabs += 1;
-        }
-      }
-  const locationtabwidth = 100 / totalcityslabs + 'vw';
 
-  // console.log('inside routes');
-  // console.log(props.routes);
-  if (!citydatadone) {
-    async function processRoutes2(props) {
-      for (var i = 0; i < props.breif.city_slabs.length; i++) {
-        // console.log('routes one', props.routes[i]);
+  totalcityslabs = newFunction(
+    props,
+    totalcityslabs,
+    citydatadone,
+    CityDataTemp,
+    setcitydatadone,
+    setCityData,
+    CityData,
+    RoutesData,
+    TransfersData
+  );
 
-        if (props.breif.city_slabs[i].long) {
-          // console.log(props.routes[i].long);
-          CityDataTemp.push(props.breif.city_slabs[i]);
-        } else {
-          if (
-            props.breif.city_slabs[i].city_id &&
-            props.breif.city_slabs[i].duration > '0'
-          ) {
-            try {
-              const data = await getCityDetails(
-                props.breif.city_slabs[i].city_id
-              );
-              // console.log('fetchdata data');
-              // console.log(props.routes[i], data);
-              const updatedRoutes = replaceLatLong(
-                props.breif.city_slabs[i],
-                data
-              );
-              CityDataTemp.push(updatedRoutes);
-              // console.log('fetchdata data in', updatedRoutes);
-            } catch (error) {
-              console.error(error);
-            }
-          }
-        }
-      }
-      setcitydatadone(true);
-      setCityData(CityDataTemp);
-      console.log('citydata0', CityData);
-    }
-    processRoutes2(props);
-  }
-
-  if (props.routes) {
-    async function processRoutes(props) {
-      for (var i = 0; i < props.routes.length; i++) {
-        // console.log('routes one', props.routes[i]);
-        if (props.routes[i].element_type !== 'transfer') {
-          if (props.routes[i].long) {
-            // console.log(props.routes[i].long);
-            RoutesData.push(props.routes[i]);
-          } else {
-            if (props.routes[i].city_id) {
-              try {
-                const data = await getCityDetails(props.routes[i].city_id);
-                // console.log('fetchdata data');
-                // console.log(props.routes[i], data);
-                const updatedRoutes = replaceLatLong(props.routes[i], data);
-                RoutesData.push(updatedRoutes);
-                // console.log('fetchdata data in', updatedRoutes);
-              } catch (error) {
-                console.error(error);
-              }
-            }
-          }
-        } else {
-          TransfersData.push(props.routes[i]);
-        }
-      }
-
-      console.log('routes finished', props.routes.length);
-      console.log(RoutesData, RoutesData.length);
-      console.log(TransfersData, TransfersData.length);
-    }
-
-    processRoutes(props);
-  }
-  console.log('citydata', CityData);
-  for (var i = 0; i < props?.breif?.city_slabs?.length; i++) {
-    if (!props.breif.city_slabs[i].is_trip_terminated) {
-      locationsArr.push(
-        <Location
-          id={i}
-          style={{ minWidth: locationtabwidth }}
-          className={
-            'font-opensans center-div border-top ' +
-            (location == i ? 'bg-yellow font-bold' : 'bg-white')
-          }
-          onClick={(event) => _setLocationHandler(event)}
-        >
-          {props.breif.city_slabs[i].city_name}
-        </Location>
-      );
-    }
-  }
-
-  useEffect(() => {
-    if (props.itineraryReleased) {
-      setShowItineraryTimer(false);
-      setShowBookingTimer(false);
-      setBlurBooking(false);
-      setBlurItinerary(false);
-      setTimerValid(false);
-    } else {
-    }
-    return () => {};
-  }, [props.itineraryDate, props.itineraryReleased, props.timeRequired]);
   useLayoutEffect(() => {
     const handleScroll = () => {
       const currentPos = window.scrollY;
@@ -1288,3 +1150,106 @@ const SimpleTabsV2 = (props) => {
 };
 
 export default SimpleTabsV2;
+function newFunction(
+  props,
+  totalcityslabs,
+  citydatadone,
+  CityDataTemp,
+  setcitydatadone,
+  setCityData,
+  CityData,
+  RoutesData,
+  TransfersData
+) {
+  function replaceLatLong(source, destination) {
+    return {
+      ...source,
+      lat: destination.lat,
+      long: destination.long,
+    };
+  }
+  if (props.breif)
+    if (props.breif.city_slabs)
+      for (var j = 0; j < props.breif.city_slabs.length; j++) {
+        if (!props.breif.city_slabs[j].is_trip_terminated) {
+          totalcityslabs += 1;
+        }
+      }
+  const locationtabwidth = 100 / totalcityslabs + 'vw';
+
+  // console.log('inside routes');
+  // console.log(props.routes);
+  if (!citydatadone) {
+    async function processRoutes2(props) {
+      for (var i = 0; i < props.breif.city_slabs.length; i++) {
+        // console.log('routes one', props.routes[i]);
+        if (props.breif.city_slabs[i].long) {
+          // console.log(props.routes[i].long);
+          CityDataTemp.push(props.breif.city_slabs[i]);
+        } else {
+          if (
+            props.breif.city_slabs[i].city_id &&
+            props.breif.city_slabs[i].duration > '0'
+          ) {
+            try {
+              const data = await getCityDetails(
+                props.breif.city_slabs[i].city_id
+              );
+              // console.log('fetchdata data');
+              // console.log(props.routes[i], data);
+              const updatedRoutes = replaceLatLong(
+                props.breif.city_slabs[i],
+                data
+              );
+              CityDataTemp.push(updatedRoutes);
+              // console.log('fetchdata data in', updatedRoutes);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        }
+      }
+      setcitydatadone(true);
+      setCityData(CityDataTemp);
+      console.log('citydata0', CityData);
+    }
+    processRoutes2(props);
+  }
+
+  if (props.routes) {
+    async function processRoutes(props) {
+      for (var i = 0; i < props.routes.length; i++) {
+        // console.log('routes one', props.routes[i]);
+        if (props.routes[i].element_type !== 'transfer') {
+          if (props.routes[i].long) {
+            // console.log(props.routes[i].long);
+            RoutesData.push(props.routes[i]);
+          } else {
+            if (props.routes[i].city_id) {
+              try {
+                const data = await getCityDetails(props.routes[i].city_id);
+                // console.log('fetchdata data');
+                // console.log(props.routes[i], data);
+                const updatedRoutes = replaceLatLong(props.routes[i], data);
+                RoutesData.push(updatedRoutes);
+                // console.log('fetchdata data in', updatedRoutes);
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          }
+        } else {
+          TransfersData.push(props.routes[i]);
+        }
+      }
+
+      console.log('routes finished', props.routes.length);
+      console.log(RoutesData, RoutesData.length);
+      console.log(TransfersData, TransfersData.length);
+    }
+
+    processRoutes(props);
+  }
+  console.log('citydata', CityData);
+  return totalcityslabs;
+}

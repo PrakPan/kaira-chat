@@ -254,7 +254,7 @@ const Details = (props) => {
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
 
       <DetailsContainer>
-        {Locationlatlong.length >= 1 ? (
+        {/* {Locationlatlong.length >= 1 ? (
           <div
             className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-[23rem] lg:mt-20 mt-8  rounded-xl"
             id="MapcontainerRoute"
@@ -269,7 +269,7 @@ const Details = (props) => {
               />
             </div>
           </div>
-        ) : null}
+        ) : null} */}
 
         <RouteComponent>
           {

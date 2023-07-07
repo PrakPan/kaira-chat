@@ -4,7 +4,7 @@ import LayoutV2 from '../../../components/LayoutV2';
 import Head from 'next/head';
 import { connect } from 'react-redux';
 import * as authaction from '../../../store/actions/auth';
-
+import { Partytown } from '@builder.io/partytown/react';
 import { useEffect } from 'react';
 // import Script from "next/script";
 const Itinerary = (props) => {
@@ -34,6 +34,7 @@ const Itinerary = (props) => {
          
           /> */}
         <script
+          type="text/partytown"
           dangerouslySetInnerHTML={{
             __html: `
                 
