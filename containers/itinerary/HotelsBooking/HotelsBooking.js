@@ -591,10 +591,16 @@ const HotelsBooking = (props) => {
     setShowDetails(true);
   }
   function convertDateFormat(dateString) {
-    const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
-    const formattedDate = format(parsedDate, 'yyyy-MM-dd');
-    console.log('formattedDate', formattedDate);
-    return formattedDate;
+    if (dateString) {
+      console.log('dateString', dateString);
+
+      const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
+      console.log('parsedDate', parsedDate);
+
+      const formattedDate = format(parsedDate, 'yyyy-MM-dd');
+      console.log('formattedDate', formattedDate);
+      return formattedDate;
+    }
   }
   const HotelArray = [];
   console.log('rerender HotelBookings');
@@ -642,26 +648,28 @@ const HotelsBooking = (props) => {
                 ></HotelBookingContainer>
               );
             } else {
-              HotelArray.push(
-                <HotelBookingContainer
-                  booking={null}
-                  index={i - 1}
-                  key={i}
-                  setShowLoginModal={props.setShowLoginModal}
-                  handleClick={handleClick}
-                  cityName={props.breif.city_slabs[i].city_name}
-                  handleClickAc={handleClickNewAc}
-                  _SelectedBookingHandler={_SelectedBookingHandler}
-                  setHideBookingModal={props.setHideBookingModal}
-                  loginModal={showLoginModal}
-                  city_id={props.breif.city_slabs[i].city_id}
-                  cityData={props.breif.city_slabs[i]}
-                  setLoginModal={setShowLoginModal}
-                  token={props.token}
-                  payment={props.payment}
-                  plan={props.plan}
-                ></HotelBookingContainer>
-              );
+              if (props.breif.city_slabs[i]?.duration != 0) {
+                HotelArray.push(
+                  <HotelBookingContainer
+                    booking={null}
+                    index={i - 1}
+                    key={i}
+                    setShowLoginModal={props.setShowLoginModal}
+                    handleClick={handleClick}
+                    cityName={props.breif.city_slabs[i].city_name}
+                    handleClickAc={handleClickNewAc}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
+                    setHideBookingModal={props.setHideBookingModal}
+                    loginModal={showLoginModal}
+                    city_id={props.breif.city_slabs[i].city_id}
+                    cityData={props.breif.city_slabs[i]}
+                    setLoginModal={setShowLoginModal}
+                    token={props.token}
+                    payment={props.payment}
+                    plan={props.plan}
+                  ></HotelBookingContainer>
+                );
+              }
             }
           } else {
             const foundObject = findObjectById(
