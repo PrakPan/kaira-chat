@@ -672,37 +672,39 @@ const HotelsBooking = (props) => {
               }
             }
           } else {
-            const foundObject = findObjectById(
-              props.stayBookings,
-              props.breif.city_slabs[i]?.accommodation_booking
-            );
-            console.log(
-              'booking-Varanasi-beforepushh',
+            if (props.stayBookings) {
+              const foundObject = findObjectById(
+                props.stayBookings,
+                props.breif.city_slabs[i]?.accommodation_booking
+              );
+              console.log(
+                'booking-Varanasi-beforepushh',
 
-              foundObject
-            );
-            HotelArray.push(
-              <HotelBookingContainer
-                booking={foundObject}
-                setShowLoginModal={props.setShowLoginModal}
-                index={findIndexById(
-                  props.stayBookings,
-                  convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
-                )}
-                cityName={props.breif.city_slabs[i].city_name}
-                key={i}
-                handleClick={handleClick}
-                handleClickAc={handleClickAc}
-                _SelectedBookingHandler={_SelectedBookingHandler}
-                setHideBookingModal={props.setHideBookingModal}
-                city_id={props.breif.city_slabs[i].city_id}
-                loginModal={showLoginModal}
-                setLoginModal={setShowLoginModal}
-                token={props.token}
-                payment={props.payment}
-                plan={props.plan}
-              ></HotelBookingContainer>
-            );
+                foundObject
+              );
+              HotelArray.push(
+                <HotelBookingContainer
+                  booking={foundObject}
+                  setShowLoginModal={props.setShowLoginModal}
+                  index={findIndexById(
+                    props.stayBookings,
+                    convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
+                  )}
+                  cityName={props.breif.city_slabs[i].city_name}
+                  key={i}
+                  handleClick={handleClick}
+                  handleClickAc={handleClickAc}
+                  _SelectedBookingHandler={_SelectedBookingHandler}
+                  setHideBookingModal={props.setHideBookingModal}
+                  city_id={props.breif.city_slabs[i].city_id}
+                  loginModal={showLoginModal}
+                  setLoginModal={setShowLoginModal}
+                  token={props.token}
+                  payment={props.payment}
+                  plan={props.plan}
+                ></HotelBookingContainer>
+              );
+            }
           }
         }
       }
