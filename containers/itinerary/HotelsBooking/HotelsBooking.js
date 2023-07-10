@@ -90,7 +90,6 @@ const HotelsBooking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [alternates, setAlternates] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
-  console.log(props.stayBookings);
   const _changeBookingHandler = (
     name,
     itinerary_id,
@@ -258,229 +257,10 @@ const HotelsBooking = (props) => {
         });
     });
   };
-  //   <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
-  // );
-  // setBookingAccommodationsMobileJSX(
-  //   <Flickity
-  //     initialIndex={props.stayFlickityIndex}
-  //     cards={bookings_accommodations}
-  //   ></Flickity>
-  // );
-  // useEffect(() => {
-  //   const script = document.createElement('script');
-  // setBookingAccommodationsDesktopJSX(
-  //   script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-  //   script.async = true;
-  //   document.body.appendChild(script);
-  // }, []);
-  // useEffect(() => {
-  //   if (props.stayBookings)
-  //     for (var i = 0; i < props.stayBookings.length; i++) {
-  //       if (props.stayBookings[i].alternate_to) {
-  //         if (!alternatesarr[props.stayBookings[i].alternate_to])
-  //           alternatesarr[props.stayBookings[i].alternate_to] = [];
-  //       }
-  //       if (!bookingcities[props.stayBookings[i].city]) {
-  //         bookingcities[props.stayBookings[i].city] = [];
-  //         alternatesarr[props.stayBookings[i].city] = [];
-  //       }
-
-  //       let oldbooking = false;
-  //       if (props.stayBookings[i].version === 'v1') oldbooking = true;
-  //       if (props.traveleritinerary) oldbooking = true;
-  //       let name = props.stayBookings[i]['name'];
-  //       let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
-  //       let cost = props.stayBookings[i]['booking_cost'];
-  //       let itinerary_id = props.stayBookings[i]['itinerary_id'];
-  //       let itinerary_name = props.stayBookings[i]['itinerary_name'];
-  //       let booking_type = props.stayBookings[i]['booking_type'];
-  //       let images = props.stayBookings[i]['images'];
-  //       let accommodation = props.stayBookings[i]['accommodation'];
-  //       let tailored_id = props.stayBookings[i]['tailored_itinerary'];
-  //       let id = props.stayBookings[i]['id'];
-  //       let check_in = props.stayBookings[i]['check_in'];
-  //       let check_out = props.stayBookings[i]['check_out'];
-  //       let pax = {
-  //         number_of_adults: props.stayBookings[i]['number_of_adults'],
-  //         number_of_children: props.stayBookings[i]['number_of_children'],
-  //         number_of_infants: props.stayBookings[i]['number_of_infants'],
-  //       };
-  //       let city = props.stayBookings[i]['city'];
-  //       let room_type = props.stayBookings[i]['room_type'];
-  //       if (oldbooking) {
-  //         bookings_accommodations.push(
-  //           <OldBookingCard
-  //             payment={props.payment}
-  //             city={props.stayBookings[i].city}
-  //             type={props.stayBookings[i].booking_type}
-  //             key={i}
-  //             setShowBookingModal={(props) =>
-  //               _changeBookingHandler(
-  //                 name,
-  //                 itinerary_id,
-  //                 tailored_id,
-  //                 accommodation,
-  //                 id,
-  //                 check_in,
-  //                 check_out,
-  //                 pax,
-  //                 city,
-  //                 room_type,
-  //                 number_of_rooms,
-  //                 itinerary_name
-  //               )
-  //             }
-  //             showBookingModal={props.showBookingModal}
-  //             setHideBookingModal={props.setHideBookingModal}
-  //             blur={props.blur}
-  //             setImagesHandler={props.setImagesHandler}
-  //             accommodation
-  //             heading={props.stayBookings[i]['name']}
-  //             setImagesHandler={_setImagesHandler}
-  //             rating={props.stayBookings[i]['user_rating']}
-  //             details={props.stayBookings[i]['points']}
-  //             rating={props.stayBookings[i]['weighted_rating']}
-  //             images={props.stayBookings[i]['images']}
-  //             price={props.stayBookings[i]['booking_cost']}
-  //             number_of_rooms={props.stayBookings[i]['number_of_rooms']}
-  //             check_in={props.stayBookings[i]['check_in']}
-  //             check_out={props.stayBookings[i]['check_out']}
-  //             room_type={props.stayBookings[i]['room_type']}
-  //           ></OldBookingCard>
-  //         );
-  //       } else {
-  //         if (props.stayBookings[i].booking_type === 'Accommodation') {
-  //           let number_of_rooms;
-  //           if (props.stayBookings[i].costings_breakdown.length)
-  //             number_of_rooms =
-  //               props.stayBookings[i].costings_breakdown[0]['number_of_rooms'];
-  //           if (
-  //             !props.stayBookings[i].user_selected &&
-  //             !props.stayBookings[i].alternate_to
-  //           ) {
-  //             bookings_accommodations.push(
-  //               <StayBookingCard
-  //                 is_registration_needed={
-  //                   props.payment ? props.payment.is_registration_needed : false
-  //                 }
-  //                 isDatePresent={props.isDatePresent}
-  //                 token={props.token}
-  //                 setShowLoginModal={setShowLoginModal}
-  //                 is_selecting={
-  //                   props.stayBookings[i].id === props.selectingBooking
-  //                 }
-  //                 _deselectBookingHandler={props._deselectStayBookingHandler}
-  //                 is_stock={props.is_stock}
-  //                 is_selected={true}
-  //                 is_auth={props.is_auth}
-  //                 are_prices_hidden={
-  //                   props.payment ? props.payment.are_prices_hidden : false
-  //                 }
-  //                 setShowBookingModal={(props) =>
-  //                   _changeBookingHandler(
-  //                     name,
-  //                     itinerary_id,
-  //                     tailored_id,
-  //                     accommodation,
-  //                     id,
-  //                     check_in,
-  //                     check_out,
-  //                     pax,
-  //                     city,
-  //                     room_type,
-  //                     number_of_rooms,
-  //                     itinerary_name,
-  //                     cost,
-  //                     costings_breakdown,
-  //                     images
-  //                   )
-  //                 }
-  //                 showBookingModal={props.showBookingModal}
-  //                 setHideBookingModal={props.setHideBookingModal}
-  //                 setImagesHandler={_setImagesHandler}
-  //                 data={props.stayBookings[i]}
-  //               ></StayBookingCard>
-  //             );
-  //             //set as selectable booking
-  //           } else if (
-  //             !props.stayBookings[i].user_selected &&
-  //             props.stayBookings[i].alternate_to
-  //           ) {
-  //             //add in alternate list
-  //             alternatesarr[props.stayBookings[i].alternate_to].push(
-  //               props.stayBookings[i]
-  //             );
-  //           } else
-  //             bookings_accommodations.push(
-  //               <StayBookingCard
-  //                 is_registration_needed={
-  //                   props.payment ? props.payment.is_registration_needed : false
-  //                 }
-  //                 isDatePresent={props.isDatePresent}
-  //                 setShowLoginModal={setShowLoginModal}
-  //                 token={props.token}
-  //                 is_selecting={
-  //                   props.stayBookings[i].id === props.selectingBooking
-  //                 }
-  //                 _deselectBookingHandler={props._deselectStayBookingHandler}
-  //                 is_stock={props.is_stock}
-  //                 is_selected={true}
-  //                 is_auth={props.is_auth}
-  //                 are_prices_hidden={
-  //                   props.payment ? props.payment.are_prices_hidden : false
-  //                 }
-  //                 setShowBookingModal={(props) =>
-  //                   _changeBookingHandler(
-  //                     name,
-  //                     itinerary_id,
-  //                     tailored_id,
-  //                     accommodation,
-  //                     id,
-  //                     check_in,
-  //                     check_out,
-  //                     pax,
-  //                     city,
-  //                     room_type,
-  //                     number_of_rooms,
-  //                     itinerary_name,
-  //                     cost,
-  //                     costings_breakdown,
-  //                     images
-  //                   )
-  //                 }
-  //                 showBookingModal={props.showBookingModal}
-  //                 setHideBookingModal={props.setHideBookingModal}
-  //                 setImagesHandler={_setImagesHandler}
-  //                 data={props.stayBookings[i]}
-  //               ></StayBookingCard>
-  //             );
-  //         }
-  //       }
-  //     }
-  //   setAlternates(alternatesarr);
-
-  //   // setBookingAccommodationsDesktopJSX(
-  //   //   <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
-  //   // );
-  //   // setBookingAccommodationsMobileJSX(
-  //   //   <Flickity
-  //   //     initialIndex={props.stayFlickityIndex}
-  //   //     cards={bookings_accommodations}
-  //   //   ></Flickity>
-  //   // );
-  // }, [
-  //   props.stayBookings,
-  //   props.selectingBooking,
-  //   props.stayFlickityIndex,
-  //   props.token,
-  //   props.payment,
-  // ]);
   function compareDates(dateString1, dateString2) {
     if (dateString1 && dateString2) {
       const date1 = parse(dateString1, 'yyyy-MM-dd', new Date());
       const date2 = parse(dateString2, 'dd/MM/yyyy', new Date());
-      console.log(date1, date2);
-      console.log(isSameDay(date1, date2));
       return isSameDay(date1, date2);
     }
 
@@ -491,9 +271,7 @@ const HotelsBooking = (props) => {
   const isObjectByDate = (array, date) => {
     if (array) {
       const booking = findObjectByDate(array, date);
-      console.log('booking', booking);
       if (booking) {
-        console.log('booking', true);
         return true;
       } else {
         return false;
@@ -592,23 +370,16 @@ const HotelsBooking = (props) => {
   }
   function convertDateFormat(dateString) {
     if (dateString) {
-      console.log('dateString', dateString);
-
       const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
-      console.log('parsedDate', parsedDate);
-
       const formattedDate = format(parsedDate, 'yyyy-MM-dd');
-      console.log('formattedDate', formattedDate);
       return formattedDate;
     }
   }
   const HotelArray = [];
-  console.log('rerender HotelBookings');
   if (props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')) {
     if (props.breif.city_slabs) {
       if (true) {
         for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
-          console.log('inside for loop rerender HotelBookings');
           if (
             props.breif.city_slabs[i]?.accommodation_booking == null ||
             props.breif.city_slabs[i]?.accommodation_booking == ''
@@ -619,12 +390,10 @@ const HotelsBooking = (props) => {
                 convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
               )
             ) {
-              console.log('bookings', true);
               const foundObject = findObjectByDate(
                 props.stayBookings,
                 convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
               );
-              console.log('bookings foundObject', foundObject);
               HotelArray.push(
                 <HotelBookingContainer
                   booking={foundObject}
@@ -676,11 +445,6 @@ const HotelsBooking = (props) => {
               const foundObject = findObjectById(
                 props.stayBookings,
                 props.breif.city_slabs[i]?.accommodation_booking
-              );
-              console.log(
-                'booking-Varanasi-beforepushh',
-
-                foundObject
               );
               HotelArray.push(
                 <HotelBookingContainer
