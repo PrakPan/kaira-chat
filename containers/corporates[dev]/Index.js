@@ -27,23 +27,45 @@ const AffiliatePage = ()=> {
   let isPageWide = media('(min-width: 768px)');
  
   return (
-     
     <div>
-      <FullImg filter={'brightness(0.7)'} zIndex={-1} center={isPageWide ? false : true}  url="media/website/duy-pham-Cecb0_8Hx-o-unsplash-min.jpeg" >
-          <FullImgContent setEnquiryOpen={() => setEnquiryOpen(true)} subheading={travelsupportcontent["subheading"]}></FullImgContent>
+      <FullImg
+        // style={isPageWide ? {} : { height: "30rem" }}
+        heightmobile={"30rem"}
+        height={"37rem"}
+        filter={"brightness(0.7)"}
+        zIndex={-1}
+        center={isPageWide ? false : true}
+        // url="media/website/duy-pham-Cecb0_8Hx-o-unsplash-min.jpeg"
+        url={
+          isPageWide
+            ? "media/page/helena-lopes-UZe35tk5UoA-unsplash.jpg"
+            : "media/page/corporates-mobile.jpg"
+        }
+      >
+        <FullImgContent
+          setEnquiryOpen={() => setEnquiryOpen(true)}
+          subheading={travelsupportcontent["subheading"]}
+        ></FullImgContent>
       </FullImg>
       <SetWidthContainer>
         <Logos></Logos>
-        <Heading margin="5rem auto" bold>Catered to every organisation's need</Heading>
+        <Heading margin="5rem auto" bold>
+          Catered to every organisation's need
+        </Heading>
         <Benefits></Benefits>
 
-        <Heading margin="5rem auto 2.5rem auto"  bold>Reviews</Heading>
+        <Heading margin="5rem auto 2.5rem auto" bold>
+          Reviews
+        </Heading>
         <CaseStudies></CaseStudies>
-{/* <WhyUs></WhyUs> */}
+        {/* <WhyUs></WhyUs> */}
         {/* <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
-        </SetWidthContainer>
-<br></br>
-    <Enquiry show={enquiryOpen} onhide={() => setEnquiryOpen(false)}></Enquiry>
+      </SetWidthContainer>
+      <br></br>
+      <Enquiry
+        show={enquiryOpen}
+        onhide={() => setEnquiryOpen(false)}
+      ></Enquiry>
     </div>
   );
 }

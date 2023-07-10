@@ -114,11 +114,9 @@ const ItineraryElement = (props) => {
             {/* {props.data?.bookings && props.data?.bookings.length > 0 ? ( */}
             <Link
               to={props.city_id ? `${props.city_id}` : "Stays-Head"}
-             
               offset={-35}
-              onClick={()=> console.log('props.city_id: ', props.city_id)}
             >
-              <TransparentButton>Add stays</TransparentButton>
+              <TransparentButton>Add Stay</TransparentButton>
             </Link>
             {/* ) : null} */}
 
