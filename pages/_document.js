@@ -32,7 +32,11 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html id="html">
-        <script chat="true" src="//in.fw-cdn.com/30401267/225580.js"></script>
+        <script
+          type="text/partytown"
+          chat="true"
+          src="//in.fw-cdn.com/30401267/225580.js"
+        ></script>
         <Head>
           <meta
             name="viewport"
