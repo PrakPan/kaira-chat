@@ -36,7 +36,7 @@ const POIDetailsDrawer = (props) => {
   return (
     <Drawer
       show={props.show}
-      anchor={'right'}
+      anchor={"right"}
       backdrop
       width={props.width}
       style={{ zIndex: 1501 }}
@@ -45,9 +45,14 @@ const POIDetailsDrawer = (props) => {
       // zIndex='1501'
     >
       {data.name ? (
-        <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
+        <POIDetails
+          itineraryDrawer={props.itineraryDrawer}
+          data={data}
+          handleCloseDrawer={props.handleCloseDrawer}
+        />
       ) : (
         <POIDetailsSkeleton
+          itineraryDrawer={props.itineraryDrawer}
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}
         />

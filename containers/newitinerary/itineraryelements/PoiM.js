@@ -278,7 +278,7 @@ const ItineraryPoiElementM = (props) => {
             dimensionsMobile={{ width: 250, height: 200 }}
             borderRadius="8px"
             hoverpointer
-            onclick={() => console.log('')}
+            onclick={() => console.log("")}
             width="70%"
             leftalign
             widthmobile="100%"
@@ -286,7 +286,7 @@ const ItineraryPoiElementM = (props) => {
           ></ImageLoader>
         ) : null}
         <div>
-          <div className=" " style={{ lineHeight: '1' }}>
+          <div className=" " style={{ lineHeight: "1" }}>
             <span className="inline text-[1.2rem]">
               <span className="inline ">{props.heading}</span>
               {!props.payment?.is_registration_needed &&
@@ -311,7 +311,7 @@ const ItineraryPoiElementM = (props) => {
               className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]"
               // onClick={() => setViewMore(!viewMore)}
             >
-              {true ? 'ATTRACTION' : 'View Less'}
+              {true ? "ATTRACTION" : "View Less"}
             </div>
           </div>
 
@@ -358,7 +358,7 @@ const ItineraryPoiElementM = (props) => {
       </GridContainer>
       <div
         className={`pt-2 text-sm font-[350] ${
-          viewMore ? 'line-clamp-0' : 'line-clamp-3'
+          viewMore ? "line-clamp-0" : "line-clamp-3"
         }`}
       >
         {props.text}
@@ -367,7 +367,7 @@ const ItineraryPoiElementM = (props) => {
         onClick={() => setShow(true)}
         className="font-medium w-full block text-end"
       >
-        {viewMore ? 'Less' : 'More'}
+        {viewMore ? "Less" : "More"}
       </span>
       {showLoginModal && (
         <div>
@@ -376,7 +376,8 @@ const ItineraryPoiElementM = (props) => {
       )}
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
-        width={'100%'}
+        itineraryDrawer
+        width={"100%"}
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
@@ -385,13 +386,13 @@ const ItineraryPoiElementM = (props) => {
         name={props.heading}
         image={props.image}
         text={props.text}
-        Topheading={'Back To Itinerary'}
+        Topheading={"Back To Itinerary"}
       />
 
       <Drawer
         ref={drawerRef}
         show={showDrawer}
-        anchor={'right'}
+        anchor={"right"}
         backdrop
         style={{ zIndex: 1501 }}
         className="font-lexend"
@@ -408,8 +409,8 @@ const ItineraryPoiElementM = (props) => {
               onClick={() => setShowDrawer(false)}
               className="hover-pointer"
               style={{
-                fontSize: '1.75rem',
-                textAlign: 'right',
+                fontSize: "1.75rem",
+                textAlign: "right",
               }}
             ></IoMdClose>
             <div className="line-clamp-1 text-2xl font-normal ">
@@ -434,12 +435,12 @@ const ItineraryPoiElementM = (props) => {
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX
         ) : (
-          <PoiListSkeleton name={'Activity'} />
+          <PoiListSkeleton name={"Activity"} />
         )}
       </Drawer>
       <Drawer
         show={showFilter}
-        anchor={'right'}
+        anchor={"right"}
         backdrop
         style={{ zIndex: 1503 }}
         className="font-lexend"
@@ -455,8 +456,8 @@ const ItineraryPoiElementM = (props) => {
                 onClick={() => setshowFilter(false)}
                 className="hover-pointer"
                 style={{
-                  fontSize: '1.75rem',
-                  textAlign: 'right',
+                  fontSize: "1.75rem",
+                  textAlign: "right",
                 }}
               ></IoMdClose>
               <div className="text-2xl font-normal line-clamp-1">Filters</div>
@@ -471,8 +472,8 @@ const ItineraryPoiElementM = (props) => {
                       onClick={() => SetSelectedExprience(i)}
                       className={`flex  font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                         SelectedExprience == i
-                          ? 'text-white border-0 bg-black '
-                          : 'border-2 bg-white text-black'
+                          ? "text-white border-0 bg-black "
+                          : "border-2 bg-white text-black"
                       } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                       key={i}
                     >
@@ -519,8 +520,8 @@ const ItineraryPoiElementM = (props) => {
             > */}
           <FloatingView>
             <TbArrowBack
-              style={{ height: '32px', width: '32px' }}
-              cursor={'pointer'}
+              style={{ height: "32px", width: "32px" }}
+              cursor={"pointer"}
               onClick={() => setShowDrawer(false)}
             />
           </FloatingView>
@@ -532,8 +533,8 @@ const ItineraryPoiElementM = (props) => {
           <Floating>
             <FaFilter
               className="text-white"
-              style={{ height: '32px', width: '32px' }}
-              cursor={'pointer'}
+              style={{ height: "32px", width: "32px" }}
+              cursor={"pointer"}
               onClick={(e) => {
                 setshowFilter(true);
               }}

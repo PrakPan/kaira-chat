@@ -230,7 +230,7 @@ const ItineraryPoiElement = (props) => {
               dimensionsMobile={{ width: 300, height: 300 }}
               borderRadius="8px"
               hoverpointer
-              onclick={() => console.log('')}
+              onclick={() => console.log("")}
               width="8rem"
               leftalign
               widthmobile="6rem"
@@ -246,7 +246,7 @@ const ItineraryPoiElement = (props) => {
             <div className="w-full">
               <div
                 className="flex flex-row w-full  justify-start items-center"
-                style={{ lineHeight: '1' }}
+                style={{ lineHeight: "1" }}
               >
                 <div
                   className="text-xl font-normal cursor-pointer"
@@ -271,7 +271,7 @@ const ItineraryPoiElement = (props) => {
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {true ? 'ATTRACTION' : 'View Less'}
+                  {true ? "ATTRACTION" : "View Less"}
                 </div>
               </div>
               {props.poi.rating && <StarRating initialRating={4}></StarRating>}
@@ -322,6 +322,7 @@ const ItineraryPoiElement = (props) => {
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
         // width={'35vw'}
+        itineraryDrawer
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
@@ -330,7 +331,7 @@ const ItineraryPoiElement = (props) => {
         name={props.heading}
         image={props.image}
         text={props.text}
-        Topheading={'Select Our Point Of Interest'}
+        Topheading={"Select Our Point Of Interest"}
       />
       {showLoginModal && (
         <div>
@@ -339,7 +340,7 @@ const ItineraryPoiElement = (props) => {
       )}
       <Drawer
         show={showDrawer}
-        anchor={'right'}
+        anchor={"right"}
         backdrop
         style={{ zIndex: 1501 }}
         className="font-lexend"
@@ -352,8 +353,8 @@ const ItineraryPoiElement = (props) => {
               onClick={() => setShowDrawer(false)}
               className="hover-pointer"
               style={{
-                fontSize: '1.75rem',
-                textAlign: 'right',
+                fontSize: "1.75rem",
+                textAlign: "right",
               }}
             ></IoMdClose>
             <div className="line-clamp-1 text-2xl font-normal ">
@@ -370,8 +371,8 @@ const ItineraryPoiElement = (props) => {
                     onClick={() => SetSelectedExprience(i)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedExprience == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >

@@ -90,6 +90,7 @@ const UserDashboard = (props) => {
 
         
       },[props.token]);
+      console.log('props.token: ', props.token);
   
 
 return (
@@ -128,7 +129,7 @@ return (
 
         {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
         {myPlansArr.length ? (
-          <Experiences navigationButtons experiences={myPlansArr}></Experiences>
+          <Experiences experiences={myPlansArr}></Experiences>
         ) : !loading ? (
           <ImageLoader
             width="40%"

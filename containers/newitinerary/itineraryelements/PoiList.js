@@ -79,7 +79,7 @@ const PoiList = ({
                     dimensionsMobile={{ width: 400, height: 400 }}
                     borderRadius="16px"
                     hoverpointer
-                    onclick={() => console.log('')}
+                    onclick={() => console.log("")}
                     width="100%"
                     height="100%"
                     leftalign
@@ -114,7 +114,7 @@ const PoiList = ({
                       </div>
                     </div>
                   </div>
-                </div>{' '}
+                </div>{" "}
                 <div
                   onClick={(e) => {
                     handleCheckboxChange(e);
@@ -123,7 +123,7 @@ const PoiList = ({
                 >
                   <CheckboxFormComponent checked={isSelect} className="mb-1" />
                   <label className="text-center">
-                    {isSelect ? 'Selected' : 'Select'}
+                    {isSelect ? "Selected" : "Select"}
                   </label>
                 </div>
                 {data.activity_data?.activity?.experience_filters[0] && (
@@ -142,7 +142,7 @@ const PoiList = ({
               className={`relative flex lg:flex-row w-full flex-col gap-4 `}
             >
               <div className="flex flex-col lg:w-[50%] w-full">
-                {' '}
+                {" "}
                 <div
                   className={`relative 'lg:h-[15rem]'
                 h-[12rem]`}
@@ -152,7 +152,7 @@ const PoiList = ({
                     dimensionsMobile={{ width: 400, height: 400 }}
                     borderRadius="16px"
                     hoverpointer
-                    onclick={() => console.log('')}
+                    onclick={() => console.log("")}
                     width="100%"
                     height="100%"
                     leftalign
@@ -199,7 +199,7 @@ const PoiList = ({
               >
                 <CheckboxFormComponent checked={isSelect} className="mb-1" />
                 <label className="text-center">
-                  {isSelect ? 'Selected' : 'Select'}
+                  {isSelect ? "Selected" : "Select"}
                 </label>
               </div>
               {data.activity_data?.poi?.experience_filters[0] && (
@@ -218,6 +218,7 @@ const PoiList = ({
       </div>
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}
+        itineraryDrawer
         show={showDetails.show}
         iconId={
           showDetails.data?.activity_data?.poi &&
@@ -229,7 +230,7 @@ const PoiList = ({
         }
         // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
-        Topheading={'Select Our Point Of Interest'}
+        Topheading={"Select Our Point Of Interest"}
       />
     </>
   );

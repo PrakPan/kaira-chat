@@ -6,6 +6,7 @@ import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
 const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -59,6 +60,24 @@ const TimeStamp = styled.p`
     left: 320px;
   }
 `;
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
+
+  @media screen and (min-width: 768px) {
+    padding-block: 1rem;
+  }
+`;
+const BackText = styled.div`
+  font-size: 1.5rem;
+  line-height: 2rem;
+`;
 
 const POIDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -99,7 +118,7 @@ const POIDetails = (props) => {
 
   return (
     <Container>
-      <div>
+     {!props.itineraryDrawer ?  <div>
         <TbArrowBack
           style={{ height: "32px", width: "32px" }}
           cursor={"pointer"}
@@ -108,6 +127,18 @@ const POIDetails = (props) => {
           }}
         />
       </div>
+:
+      <BackContainer className=" font-lexend">
+        <IoMdClose
+          className="hover-pointer"
+          onClick={(e) => {
+            props.handleCloseDrawer(e);
+          }}
+          style={{ fontSize: "2rem" }}
+        ></IoMdClose>
+        <BackText>Back to Itinerary</BackText>
+      </BackContainer>}
+
       <div>
         <ImageLoader
           borderRadius="8px"
@@ -123,7 +154,6 @@ const POIDetails = (props) => {
           }}
           noLazy
         ></ImageLoader>
-
       </div>
       {imageLoading && (
         <div

@@ -2,6 +2,7 @@ import styled from "styled-components";
 import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { TbArrowBack } from "react-icons/tb";
+import { IoMdClose } from "react-icons/io";
 const POIDetailsSkeleton = (props) => {
   const Container = styled.div`
     display: flex;
@@ -17,16 +18,45 @@ const POIDetailsSkeleton = (props) => {
     font-weight: 800;
     font-size: 20px;
   `;
+  const BackContainer = styled.div`
+    margin: 0;
+    display: flex;
+    gap: 0.5rem;
+    position: sticky;
+    z-index: 1;
+    background: white;
+    top: 0;
+    padding-block: 0.75rem;
+
+    @media screen and (min-width: 768px) {
+      padding-block: 1rem;
+    }
+  `;
+  const BackText = styled.div`
+    font-size: 1.5rem;
+    line-height: 2rem;
+  `;
   let isPageWide = media("(min-width: 768px)");
 
   return (
     <Container>
-      <div onClick={props.handleCloseDrawer}>
+      {!props.itineraryDrawer ? <div onClick={props.handleCloseDrawer}>
         <TbArrowBack
           style={{ height: "32px", width: "32px" }}
           cursor={"pointer"}
         />
       </div>
+:
+      <BackContainer className=" font-lexend">
+        <IoMdClose
+          className="hover-pointer"
+          onClick={(e) => {
+            props.handleCloseDrawer(e);
+          }}
+          style={{ fontSize: "2rem" }}
+        ></IoMdClose>
+        <BackText>Back to Itinerary</BackText>
+      </BackContainer>}
 
       <SkeletonCard width={isPageWide ? "468px" : "100%"} height={"188px"} />
       <Title>{props.name}</Title>

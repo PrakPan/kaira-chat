@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import { connect } from 'react-redux';
-import * as authaction from '../../store/actions/auth';
-import ImageLoader from '../../components/ImageLoader';
-import media from '../../components/media';
+import React from "react";
+import styled from "styled-components";
+import { connect } from "react-redux";
+import * as authaction from "../../store/actions/auth";
+import ImageLoader from "../../components/ImageLoader";
+import media from "../../components/media";
 
 const Container = styled.div`
   padding: 0.5rem;
@@ -40,7 +40,7 @@ const ImageNameContainer = styled.div`
   }
 `;
 const Profile = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   const Name = styled.p`
     font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
@@ -85,6 +85,7 @@ const Profile = (props) => {
     }
   `;
 
+
   return (
     <Container className="border-thin">
       <OverviewContainer>
@@ -93,35 +94,34 @@ const Profile = (props) => {
             dimesions={{ width: 1600, height: 1600 }}
             dimensionsMobile={{ width: 1600, height: 1600 }}
             url={
-              props.image !== 'null' && props.image !== null
+              props.image !== "null" && props.image !== null
                 ? props.image
-                : 'media/website/user.svg'
+                : "media/website/user.svg"
             }
             width="40%"
             borderRadius="50%"
             widthmobile="40%"
-            noPlaceholder={true}
           ></ImageLoader>
           <Name className="font-lexend">{props.name}</Name>
         </ImageNameContainer>
-        {!isPageWide ? <hr style={{ margin: '0' }} /> : null}
+        {!isPageWide ? <hr style={{ margin: "0" }} /> : null}
         <DetailsContainer>
           {isPageWide ? (
             <SectionHeading
               className="font-lexend"
-              style={{ fontWeight: '700', marginBottom: '2rem' }}
+              style={{ fontWeight: "700", marginBottom: "2rem" }}
             >
               Your Profile
             </SectionHeading>
           ) : null}
           <DetailHeading className="font-lexend">Contact Number</DetailHeading>
-          <DetailText style={{ marginBottom: !isPageWide ? '2rem' : '2rem' }}>
+          <DetailText style={{ marginBottom: !isPageWide ? "2rem" : "2rem" }}>
             {props.phone}
           </DetailText>
-          <DetailHeading className="font-lexend" style={{ clear: 'both' }}>
+          <DetailHeading className="font-lexend" style={{ clear: "both" }}>
             Email
           </DetailHeading>
-          <DetailText style={{ marginBottom: '0' }}>{props.email}</DetailText>
+          <DetailText style={{ marginBottom: "0" }}>{props.email}</DetailText>
         </DetailsContainer>
       </OverviewContainer>
     </Container>
