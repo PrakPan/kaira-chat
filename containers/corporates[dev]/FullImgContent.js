@@ -4,15 +4,16 @@ import Button from '../../components/ui/button/Index';
 import media from '../../components/media';
 
 const Container = styled.div`
-    text-align: center;
- color:white;
-@media screen and (min-width: 768px){
-    padding: 0 10vh;
+  text-align: center;
+  color: white;
+  padding: 50% 0;
+  @media screen and (min-width: 768px) {
+    padding: 10vh 10vh 0 10vh;
     text-align: left;
     display: flex;
-    flex-direction: column;   
+    flex-direction: column;
     justify-content: center;
-    }
+  }
 `;
 const Heading = styled.h1`
 color: white;
@@ -22,7 +23,7 @@ font-weight: 700;
 margin-bottom: 1rem;
 font-size: 2rem;
 @media screen and (min-width: 768px){
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 700;
 
 }
@@ -55,7 +56,7 @@ const FullImgContent = (props) => {
             {isPageWide ? <CompanyName className='font-lexend'>TheTarzanWay
             <span style={{fontWeight: '100'}}> For Business</span>
             </CompanyName> : null}
-            <Heading>Business Travel made productive</Heading>
+            <Heading>Hassle-Free Business Travel Partner</Heading>
             <SubText>Workcations, Retreats, Conferences, Weekend Getaways and more</SubText>
             <Button onclick={props.setEnquiryOpen} onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={isPageWide ? "2.5rem 0 0 0": '1.5rem auto'} bgColor="#f7e700" borderRadius="10px"  hoverBgColor="black" hoverColor="white" borderWidth="0px" padding="0.5rem 2rem">Schedule Callback</Button>
         </Container>

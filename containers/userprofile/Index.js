@@ -129,7 +129,7 @@ return (
 
         {/* {myPlansArr.length ? <Experiences margin="1rem" itineraries={myPlansArr} ></Experiences> : !loading ?  <ImageLoader width="40%" widthmobile="40%" margin="7.5vh auto" url={"media/website/noplans.svg"}></ImageLoader> : null} */}
         {myPlansArr.length ? (
-          <Experiences experiences={myPlansArr}></Experiences>
+          <Experiences navigationButtons experiences={myPlansArr}></Experiences>
         ) : !loading ? (
           <ImageLoader
             width="40%"
@@ -144,22 +144,22 @@ return (
           </NoPlans>
         ) : null}
         {!isPageWide && !myPlansArr.length && !loading ? (
-            <a
-              onClick={() => openTailoredModal(router)}
-              className="font-nunito"
-              style={{
-                color: "black",
-                fontWeight: "300",
-                display: "block",
-                margin: "0.5rem auto",
-                textDecoration: "none !important",
-                textAlign: "center",
-                fontSize: "1.25rem",
-                letterSpacing: "1px",
-              }}
-            >
-              Start Planning
-            </a>
+          <a
+            onClick={() => openTailoredModal(router)}
+            className="font-nunito"
+            style={{
+              color: "black",
+              fontWeight: "300",
+              display: "block",
+              margin: "0.5rem auto",
+              textDecoration: "none !important",
+              textAlign: "center",
+              fontSize: "1.25rem",
+              letterSpacing: "1px",
+            }}
+          >
+            Start Planning
+          </a>
         ) : null}
       </ContentContainer>
     </Container>

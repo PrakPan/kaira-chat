@@ -28,7 +28,7 @@ const fullimage = (props) => {
             dimensions={{ width: 1806, height: 592 }}
             dimensionsMobile={{ width: 607, height: 810 }}
             className="center-div"
-            style={{ position: "absolute" }}
+            style={{ position: "absolute", zIndex: props.zIndex }}
           >
             <div>{props.children}</div>
           </BackgroundImageLoader>
@@ -40,7 +40,7 @@ const fullimage = (props) => {
             url={props.url}
             dimensions={{ width: 1806, height: 592 }}
             dimensionsMobile={{ width: 607, height: 810 }}
-            style={{ position: "absolute" }}
+            style={{ position: "absolute", zIndex: props.zIndex }}
           >
             {/* {props.children} */}
             <div>{props.children}</div>

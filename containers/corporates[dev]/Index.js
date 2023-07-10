@@ -29,7 +29,7 @@ const AffiliatePage = ()=> {
   return (
      
     <div>
-      <FullImg  center={isPageWide ? false : true}  url="media/website/duy-pham-Cecb0_8Hx-o-unsplash-min.jpeg" >
+      <FullImg filter={'brightness(0.7)'} zIndex={-1} center={isPageWide ? false : true}  url="media/website/duy-pham-Cecb0_8Hx-o-unsplash-min.jpeg" >
           <FullImgContent setEnquiryOpen={() => setEnquiryOpen(true)} subheading={travelsupportcontent["subheading"]}></FullImgContent>
       </FullImg>
       <SetWidthContainer>
