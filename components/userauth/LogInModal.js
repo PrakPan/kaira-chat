@@ -32,7 +32,7 @@ const WhatsappCheckBox = styled.div`
   line-height: 16px;
   display: flex;
   gap: 0.3rem;
-  margin-block: 1rem 1rem;
+  margin-block: 0rem 1rem;
   align-items: center;
 `;
 
@@ -157,12 +157,12 @@ const LogIn = React.memo((props) => {
   }, []);
 
   useEffect(() => {
-    console.log("props.otpSent", props.otpSent , props.name , props.email);
-    if(props.otpSent && props.name && props.email) submitOtpHandler()
-    // if (props.otpSent && props.name && props.email) {
-    //   console.log('props.OTOP')
-    // }
-  }, [props.otpSent]);
+    console.log("props.otpSent", props.otpSent, props.name, props.email);
+      if (props.otpSent && props.name && props.email) submitOtpHandler();
+  }, [props.otpSent , props.name , props.email]);
+
+
+
   useEffect(() => {
     if (
       props.token &&
@@ -493,8 +493,8 @@ const LogIn = React.memo((props) => {
           </MobileNumberContainer>
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            boooking updates via WhatsApp
+            {/* {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
+            boooking updates via WhatsApp */}
           </WhatsappCheckBox>
 
           {props.newUser || (props.otpSent && !props.name) ? (
