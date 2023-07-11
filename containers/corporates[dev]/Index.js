@@ -11,6 +11,7 @@ import Logos from './Logos';
 import Benefits from './Benefits';
  import CaseStudies from './CaseStudies/Index';
 import Enquiry from './enquiry/Index';
+import NewCaseStudies from './NewCaseStudies/Index';
 
  
 const SetWidthContainer = styled.div`
@@ -58,6 +59,7 @@ const AffiliatePage = ()=> {
           Reviews
         </Heading>
         <CaseStudies></CaseStudies>
+        {/* <NewCaseStudies /> */}
         {/* <WhyUs></WhyUs> */}
         {/* <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
       </SetWidthContainer>
