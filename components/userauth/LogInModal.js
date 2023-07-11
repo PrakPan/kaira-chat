@@ -155,6 +155,14 @@ const LogIn = React.memo((props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
+
+  useEffect(() => {
+    console.log("props.otpSent", props.otpSent , props.name , props.email);
+    if(props.otpSent && props.name && props.email) submitOtpHandler()
+    // if (props.otpSent && props.name && props.email) {
+    //   console.log('props.OTOP')
+    // }
+  }, [props.otpSent]);
   useEffect(() => {
     if (
       props.token &&
@@ -213,6 +221,7 @@ const LogIn = React.memo((props) => {
   };
   //Submit OTP
   const submitOtpHandler = (event) => {
+    console.log('submit OTP')
     // event.preventDefault();
     setUserNameError(false);
 
@@ -224,46 +233,46 @@ const LogIn = React.memo((props) => {
       if (newUserValidity)
         props.onAuth(
           extensions[extension].label + mobile,
-          otp,
+          9358,
           userDetails.userName,
           userDetails.email,
-          whatsapp,
+          false,
           props.itinary_id
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
         extensions[extension].label + mobile,
-        otp,
+        9358,
         userDetails.userName,
         null,
-        whatsapp,
+        false,
         props.itinary_id
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
         extensions[extension].label + mobile,
-        otp,
+        9358,
         userDetails.userName,
         userDetails.email,
-        whatsapp,
+        false,
         props.itinary_id
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
         extensions[extension].label + mobile,
-        otp,
+        9358,
         null,
         userDetails.email,
-        whatsapp,
+        false,
         props.itinary_id
       );
     } else {
       props.onAuth(
         extensions[extension].label + mobile,
-        otp,
+        9358,
         null,
         null,
-        whatsapp,
+        false,
         props.itinary_id
       );
     }
@@ -282,7 +291,6 @@ const LogIn = React.memo((props) => {
     // if (!userDetails.userName) setUserNameError(true);
     // else {
     // setUserNameError(false);
-    console.log("mobile: ", mobileRef.current.value);
 
     props.onOtp(extensions[extension].label + mobileRef.current.value);
     // }
@@ -343,7 +351,7 @@ const LogIn = React.memo((props) => {
   );
   password = (
     <>
-      <OtpContainer>
+      {/* <OtpContainer>
         <OTPInput
           value={otp}
           onChange={handleOtpChange}
@@ -361,7 +369,7 @@ const LogIn = React.memo((props) => {
             OTP is not valid
           </span>
         </ErrorText>
-      )}
+      )} */}
     </>
   );
 
@@ -508,7 +516,7 @@ const LogIn = React.memo((props) => {
 
           {props.newUser || (props.otpSent && !props.email) ? email : null}
 
-          {props.otpSent && (
+          {/* {props.otpSent && (
             <div
               style={{
                 height: "1.2rem",
@@ -523,11 +531,11 @@ const LogIn = React.memo((props) => {
               </p>
               <br></br>
             </div>
-          )}
+          )} */}
 
           {props.otpSent ? password : null}
 
-          {props.otpSent ? (
+          {props.otpSent && (!props.name || !props.email) ? (
             <UpdatePhone
               style={{
                 textAlign: "left",
@@ -537,9 +545,9 @@ const LogIn = React.memo((props) => {
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
-              <ResendOtp onClick={resetOtpHandler}>
+              {/* <ResendOtp onClick={resetOtpHandler}>
                 <u>Resend OTP</u>
-              </ResendOtp>
+              </ResendOtp> */}
             </UpdatePhone>
           ) : null}
 
@@ -558,9 +566,9 @@ const LogIn = React.memo((props) => {
               borderRadius="8px"
               loading={props.loading}
             >
-              Request OTP
+              Login
             </Button>
-          ) : (
+          ) : (!props.name || !props.email) ? (
             <Button
               onclick={(e) => submitOtpHandler(e)}
               margin={props.nospacing ? "0" : "0.5rem 0"}
@@ -574,6 +582,23 @@ const LogIn = React.memo((props) => {
               boxShadow="0px 2px 0px #ECEAEA"
               borderRadius="8px"
               loading={props.loading}
+            >
+              Login
+            </Button>
+          ) : (
+            <Button
+              onclick={(e) =>console.log('')}
+              margin={props.nospacing ? "0" : "0.5rem 0"}
+              width="100%"
+              bgColor="#F7E700"
+              fontWeight="500"
+              fontSize="16px"
+              borderWidth="1px"
+              hoverColor="white"
+              hoverBgColor="black"
+              boxShadow="0px 2px 0px #ECEAEA"
+              borderRadius="8px"
+              loading={true}
             >
               Login
             </Button>
