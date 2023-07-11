@@ -16,10 +16,20 @@ const Container = styled.div`
   &:hover {
     cursor: pointer;
     .TextContainer {
-      bottom : 23%;
+      bottom: 30%;
     }
-    .CtaContainer{
-      height : 20%;
+    .CtaContainer {
+      height: 30%;
+    }
+  }
+  @media screen and (min-width: 1300px) {
+    &:hover {
+      .TextContainer {
+        bottom: 23%;
+      }
+      .CtaContainer {
+        height: 20%;
+      }
     }
   }
 `;
@@ -102,7 +112,7 @@ const Experiences = (props) => {
           color="white"
           borderColor="white"
           borderRadius="50px"
-          style={{ maxWidth: "95%", fontSize: "0.9rem" }}
+          style={{ maxWidth: "98%", fontSize: "0.85rem" }}
           loading={loading}
           onclick={() => {
             if (props.onclick) {
