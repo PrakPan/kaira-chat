@@ -14,8 +14,8 @@ const Layout = React.memo((props) => {
   // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 
   useEffect(() => {
-    // props.checkAuthState();
-    // window.scrollTo(0, 0);
+    props.checkAuthState();
+    window.scrollTo(0, 0);
   }, []);
   const router = useRouter();
 
