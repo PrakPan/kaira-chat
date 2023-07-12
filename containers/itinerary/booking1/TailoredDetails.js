@@ -473,7 +473,7 @@ const Details = (props) => {
 
   setBookingSummary();
   let message =
-    'Hey TTW! I need some help with my tailored experience - https://dev.thetarzanway.com/' +
+    'Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/' +
     router.asPath;
   // const [paymentLoading, setPaymentLoading] = useState(false);
 
