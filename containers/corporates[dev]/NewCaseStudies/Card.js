@@ -16,9 +16,13 @@ const Card = styled.div`
 
 const CardHeading = styled.p`
   font-size: 0.9rem;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
   margin-top: 5px;
+  @media screen and (min-width: 768px) {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
 `;
 const CardSubHeading = styled.p`
   font-size: 0.9rem;
@@ -39,7 +43,7 @@ const GridContainer = styled.div`
   grid-gap: 1.5rem;
 `;
 const RatingContainer = styled.div`
-  margin-bottom: 0.75rem;
+  // margin-bottom: 0.75rem;
   @media screen and (min-width: 768px) {
     flex-direction: row;
     gap: 0.75rem;
@@ -93,50 +97,60 @@ const CardContainer = (props) => {
 
             {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
             <CardListItem className="font-lexend">{props.text}</CardListItem>
-            <FlexBox>
-              <CardHeading className="font-lexend">{props.heading}</CardHeading>
+            <div style={{display : 'grid' , gridTemplateColumns : 'auto 1fr' , gap : '1rem' , alignItems : 'center'}}>
+              <ImageLoader
+                url={props.logo}
+                height="45px"
+                fit="contain"
+                overflow="contain"
+              />
 
-              <RatingContainer>
-                <div>
-                  <AiFillStar
-                    style={{
-                      color: "#FFD201",
-                      fontSize: "1.25rem",
-                      marginRight: "0.25rem",
-                    }}
-                  ></AiFillStar>
-                  <AiFillStar
-                    style={{
-                      color: "#FFD201",
-                      fontSize: "1.25rem",
-                      marginRight: "0.25rem",
-                    }}
-                  ></AiFillStar>
-                  <AiFillStar
-                    style={{
-                      color: "#FFD201",
-                      fontSize: "1.25rem",
-                      marginRight: "0.25rem",
-                    }}
-                  ></AiFillStar>
-                  <AiFillStar
-                    style={{
-                      color: "#FFD201",
-                      fontSize: "1.25rem",
-                      marginRight: "0.25rem",
-                    }}
-                  ></AiFillStar>
-                  <AiFillStar
-                    style={{ color: "#FFD201", fontSize: "1.25rem" }}
-                  ></AiFillStar>
-                </div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <CardSubHeading className="font-lexend">
-                    {props.duration + " • " + props.destination}
-                  </CardSubHeading>
-                </div>
-              </RatingContainer>
-              {/* <Link
+              <FlexBox>
+                <CardHeading className="font-lexend">
+                  {props.heading}
+                </CardHeading>
+
+                <RatingContainer>
+                  <div>
+                    <AiFillStar
+                      style={{
+                        color: "#FFD201",
+                        fontSize: "1.25rem",
+                        marginRight: "0.25rem",
+                      }}
+                    ></AiFillStar>
+                    <AiFillStar
+                      style={{
+                        color: "#FFD201",
+                        fontSize: "1.25rem",
+                        marginRight: "0.25rem",
+                      }}
+                    ></AiFillStar>
+                    <AiFillStar
+                      style={{
+                        color: "#FFD201",
+                        fontSize: "1.25rem",
+                        marginRight: "0.25rem",
+                      }}
+                    ></AiFillStar>
+                    <AiFillStar
+                      style={{
+                        color: "#FFD201",
+                        fontSize: "1.25rem",
+                        marginRight: "0.25rem",
+                      }}
+                    ></AiFillStar>
+                    <AiFillStar
+                      style={{ color: "#FFD201", fontSize: "1.25rem" }}
+                    ></AiFillStar>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <CardSubHeading className="font-lexend">
+                      {props.duration + " • " + props.destination}
+                    </CardSubHeading>
+                  </div>
+                </RatingContainer>
+                {/* <Link
                 href={"/itinerary/" + props.id}
                 style={{ textDecoration: "none" }}
               >
@@ -152,7 +166,8 @@ const CardContainer = (props) => {
                   See itinerary
                 </Button>
               </Link> */}
-            </FlexBox>
+              </FlexBox>
+            </div>
           </FlexBox>
         </GridContainer>
       </Card>
@@ -186,33 +201,33 @@ const CardContainer = (props) => {
               <AiFillStar
                 style={{
                   color: "#FFD201",
-                  fontSize: "1.25rem",
-                  marginRight: "0.25rem",
+                  fontSize: "1rem",
+                  marginRight: "0.2rem",
                 }}
               ></AiFillStar>
               <AiFillStar
                 style={{
                   color: "#FFD201",
-                  fontSize: "1.25rem",
-                  marginRight: "0.25rem",
+                  fontSize: "1rem",
+                  marginRight: "0.2rem",
                 }}
               ></AiFillStar>
               <AiFillStar
                 style={{
                   color: "#FFD201",
-                  fontSize: "1.25rem",
-                  marginRight: "0.25rem",
+                  fontSize: "1rem",
+                  marginRight: "0.2rem",
                 }}
               ></AiFillStar>
               <AiFillStar
                 style={{
                   color: "#FFD201",
-                  fontSize: "1.25rem",
-                  marginRight: "0.25rem",
+                  fontSize: "1rem",
+                  marginRight: "0.2rem",
                 }}
               ></AiFillStar>
               <AiFillStar
-                style={{ color: "#FFD201", fontSize: "1.25rem" }}
+                style={{ color: "#FFD201", fontSize: "1rem" }}
               ></AiFillStar>
             </div>
             <div style={{ display: "flex", alignItems: "center" }}>

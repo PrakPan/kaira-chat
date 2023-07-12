@@ -58,8 +58,8 @@ const AffiliatePage = ()=> {
         <Heading margin="5rem auto 2.5rem auto" bold>
           Reviews
         </Heading>
-        <CaseStudies></CaseStudies>
-        {/* <NewCaseStudies /> */}
+        {/* <CaseStudies></CaseStudies> */}
+        <NewCaseStudies />
         {/* <WhyUs></WhyUs> */}
         {/* <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
       </SetWidthContainer>
