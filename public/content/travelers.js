@@ -1,93 +1,37 @@
 const TRAVELERS = [
-  {
-    review:
-      "Our corporate retreat organized by The Tarzan Way was truly unforgettable. The location was stunning, the accommodations were comfortable, and the itinerary perfectly balanced work and leisure. The personalized touch and 24x7 support made it a remarkable experience.",
-    image: "media/testimonials/Sujitesh_Das_Badgefree.jpg",
-    name: "Sujitesh Das, Creator, Badgefree",
-    company: "Badgefree",
-    logo: "media/testimonials/Badgefree_logo.png",
-    duration: "5 Days",
-    destination: "Goa Workcation",
-  },
-  {
-    review:
-      "The Tarzan Way organized an inspiring corporate retreat that exceeded our expectations. The location was breathtaking, the accommodations were excellent. We were a group of 30+ employees and they managed our plan well. The personalized service made it a memorable experience.",
-    image: "media/testimonials/Shreyas_Jhamb_adidas.jpg",
-    name: "Shreyas Jhamb, Data Scientist, Motilal Oswal",
-    company: "Motilal Oswal",
-    logo: "media/testimonials/Motilal_Oswal_logo.jpg",
-    duration: "6 Days",
-    destination: "Manali Trip",
-  },
-  {
-    review:
-      "Our team of 15+ had the most incredible retreat in Dubai, thanks to The Tarzan Way. From the dazzling cityscape to the plush accommodations, they cared for every detail with precision. Dubai's experiences curated were amazing.",
-    image: "media/testimonials/Sankalp_Agarwal_Bioplus.jpg",
-    name: "Sankalp Agarwal, Founder of Prasan Fuji Ion",
-    company: "Fuji Ion",
-    logo: "media/testimonials/bioplus_logo.png",
-    duration: "8 Days",
-    destination: "Dubai Trip",
-  },
-  {
-    review:
-      "The workcation organized by The Tarzan Way was exceptional, especially because they planned it with my family in mind. The location was breathtaking, the accommodations were comfortable, and the itinerary seamlessly balanced work and family-friendly activities. It was a memorable experience for both work and quality time with my loved ones.",
-    image: "media/testimonials/Puneet_Raheja_Groundwrk.jpg",
-    name: "Puneet Raheja, NESCO",
-    company: "Groundwrk",
-    logo: "media/testimonials/nesco_logo.png",
-    duration: "10 Days",
-    destination: "Bhutan Getaway",
-  },
-  {
-    review:
-      "Our corporate retreats could not have been better, The Tarzan Way helped us with curating team-building activities and making sure we get the most out of our weekend away. Highly recommended for companies looking for a vacation with employees.",
-    image: "media/testimonials/siddhant_beri_pwc2.jpg",
-    name: "Siddhant Beri, Asst. Manager Data Analytics, PwC",
-    company: "PwC",
-    logo: "media/testimonials/pwc_logo.png",
-    duration: "10 Days",
-    destination: "Kasauli Retreat",
-  },
-  {
-    review:
-      "Tarzan Way has helped us for more than 5 offsite workation bookings all over India and we can trust them with all our corporate retreats and bookings, the best part is they take care of all the bookings of flights, hotels, and activities smoothly",
-    image: "media/testimonials/sandeep_morey_teg_analytics.jpg",
-    name: "Sandeep Morey, Senior Lead HR, TEG Analytics",
-    company: "TEG Analytics",
-    logo: "media/testimonials/TEG_Analytics_logo.png",
-    duration: "10 Days",
-    destination: "Workation",
-  },
-  {
-    review:
-      "The Tarzan Way has made travel booking for us a lot easier. We need 1000+ flight & hotel bookings every week for our company and The Tarzan Way has always offered the best price and booked everything on time seamlessly.",
-    image: "media/testimonials/mayank_jain_physicswallah.jpg",
-    name: "Mayank Jain, Physics Wallah",
-    company: "Physics Wallah",
-    logo: "media/testimonials/Physics_wallah_logo.jpg",
-    duration: "10 Days",
-    destination: "Trip",
-  },
-];
+{
+    'review': "The Tarzan way team I can’t thank you enough for helping me plan my trip. You guys are amazing. Janhavi & Devyani and the entire team kept checking on me. The entire team was so responsive & planned everything really well. I will definitely recommend TTW for any trip. Kudos to you guys. Lots of Love❤️❤️",
+    'image': 'media/website/explorers/nisagra.jpeg',
+    'name': 'Nisarga Gauda',
+    'duration': '5 Days',
+    'destination': 'Kashmir',
+    'id': '506ed241-dc09-4498-ac0a-d78c19f2d574'
+},
+{
+    'review': "Thank you The Tarzan Way...It was an experience to remember and very moderate experience cost..Love the way they handled things. Perfect hotels, rich experience and memories to collect. Thanks TTW.. will definitely look forward to the next trip..",
+    'image': 'media/website/explorers/prasenjeet.jpeg',
+    'name': 'Prasenjit Sharma',
+    'duration': '6 Days',
+    'destination': 'Kashmir',
+    'id': '0ec9c580-92aa-4dd6-8681-7e6eb18cca0c'
+},
+{
+    'review': "Thank you for the trip plan TTW. We had a lot of fun. Please convey our gratitude for the cab driver. He was very humble, polite and helpful.",
+    'image': 'media/website/IMG-20221231-WA0027.jpg',
+    'name': 'Hema Chandhiran',
+    'duration': '8 Days',
+    'destination': 'North East',
+    'id': '70b98d5c-7595-40bb-8182-61e0230241e0'
+}
+,
+{
+    'review': "Devayani and her team have been amazing from their meticulous attention to detail, to answering all my queries and their unwavering support via chat and call throughout our journey. Our trip was memorable thanks to the team at The Tarzan Way. I cannot recommend them enough!",
+    'image': 'media/website/IMG-20221220-WA0025.jpg',
+    'name': 'Eric Dsouza',
+    'duration': '10 Days',
+    'destination': 'Meghalaya',
+    'id': '7d6233b7-02c4-454c-9452-3e20c242cc13'
+}
+]
 
-//   const data = [
-//     {
-//       heading: "Sandeep Morey, Senior Lead HR, TEG Analytics",
-//       text: "Tarzan Way has helped us for more than 5 offsite workation bookings all over India and we can trust them with all our corporate retreats and bookings, the best part is they take care of all the bookings of flights, hotels, and activities smoothly",
-//     },
-//     {
-//       heading: "Siddhant Beri, Asst. Manager Data Analytics, PwC",
-//       text: "Our corporate retreats could not have been better, The Tarzan Way helped us with curating team-building activities and making sure we get the most out of our weekend away. Highly recommended for companies looking for a vacation with employees.",
-//     },
-//     {
-//       heading: "Rakesh Dhiman, SAMA",
-//       text: "We planned our Kashmir trip with The Tarzan Way and everything for the trip went smoothly. The on-ground coordinator Mr. Hyder was helpful and knew everything about the location. We saved almost 15% of our budget while planning with them.",
-//     },
-//     {
-//       heading: "Mayank Jain, Physics Wallah",
-//       text: "The Tarzan Way has made travel booking for us a lot easier. We need 1000+ flight & hotel bookings every week for our company and The Tarzan Way has always offered the best price and booked everything on time seamlessly.",
-//     },
-//   ];
-
-export default TRAVELERS;
+export default TRAVELERS

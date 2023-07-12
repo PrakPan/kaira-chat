@@ -33,7 +33,7 @@ export default class MyDocument extends Document {
     return (
       <Html id="html">
         <script
-          type="text/partytown"
+          // type="text/partytown"
           chat="true"
           src="//in.fw-cdn.com/30401267/225580.js"
         ></script>

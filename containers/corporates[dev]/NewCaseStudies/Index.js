@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import media from "../../../components/media";
 import Card from "./Card";
-import TRAVELERS from "../../../public/content/travelers";
+import TRAVELERS from "./ReviewsData";
 import Button from "../../../components/ui/button/Index";
 import SwiperCarousel from "../../../components/SwiperCarousel";
 import { useState } from "react";
