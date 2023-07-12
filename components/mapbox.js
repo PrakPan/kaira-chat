@@ -217,7 +217,7 @@ const Mapbox = React.memo(
               html: `
             <div class="-mt-1 -ml-2 group w-[40px] h-[40px] rounded-full grid place-items-center">
             <div class="-mt-2 drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
-              location.color
+              location.color ? location.color : '#111'
             };">
             <span class="text-white text-xs font-bold  ">  ${index + 1}</span>
          </div>

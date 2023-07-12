@@ -90,7 +90,7 @@ const POI = (props) => {
       show={props.show}
       anchor={'right'}
       backdrop
-      style={{ zIndex: 1501 }}
+      style={{ zIndex: 1525 }}
       className="font-lexend"
       onHide={props.onHide}
       mobileWidth={'100%'}

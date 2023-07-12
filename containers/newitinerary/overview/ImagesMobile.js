@@ -42,7 +42,6 @@ const MoreText = styled.div`
 `;
 const ImagesMobile = (props) => {
   useEffect(() => {}, []);
-
   return props.images.length >= 3 ? (
     <Container ConImg={props.images[1]}>
       {props.images[0] ? (

@@ -186,7 +186,7 @@ const ProfileDropDown = (props) => {
   return (
     <div
       ref={profileRef}
-      style={{ marginRight: '2.5rem', position: 'relative' }}
+      style={{ marginRight: "2.5rem", position: "relative" }}
     >
       {props.notifications.length && props.notOpenedCount ? (
         <RedDot className="center-div">1</RedDot>
@@ -196,21 +196,22 @@ const ProfileDropDown = (props) => {
         <ImageLoader
           borderRadius="50%"
           url={
-            props.image !== 'null' && props.image !== null
+            props.image !== "null" && props.image !== null
               ? props.image
-              : 'media/icons/navigation/profile-user.png'
+              : "media/icons/navigation/profile-user.png"
           }
           width="2rem"
           height="2rem"
           dimensions={{ width: 300, height: 300 }}
           onclick={props.toggleProfileList}
+          noPlaceholder={true}
         />
         {/* <ExpandProfile src={props.headerColor==="black" ? ExpandProfileIcon : null} onClick={props.toggleProfileList}/>    */}
         {isPageLoaded ? (
           <StyledFontAwesomeIcon
             icon={faChevronDown}
             onClick={props.toggleProfileList}
-            style={{ color: props.headerColor === 'black' ? 'white' : 'black' }}
+            style={{ color: props.headerColor === "black" ? "white" : "black" }}
           ></StyledFontAwesomeIcon>
         ) : null}
       </CenterNav>

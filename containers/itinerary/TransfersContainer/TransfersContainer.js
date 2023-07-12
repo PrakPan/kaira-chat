@@ -1236,7 +1236,9 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             dayslab={props.dayslab}
           ></PinSection>
-          {props?.routes.length > 1 && props?.plan?.version == 'v2' ? (
+          {props?.routes &&
+          props?.routes.length > 1 &&
+          props?.plan?.version == 'v2' ? (
             props.routes[1]?.modes ? (
               props.routes[1].modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
@@ -1333,7 +1335,7 @@ token={props.token}></TransferModeContainer>
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
              <TransferModeContainer
 token={props.token}></TransferModeContainer> */}
-          {props?.routes.length > 1 && (
+          {props?.routes && props?.routes.length > 1 && (
             <PinSection
               setCurrentPopup={false}
               dayId={

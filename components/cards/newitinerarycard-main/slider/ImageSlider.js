@@ -129,18 +129,27 @@ const ImageSlider = (props) => {
       }
        
     
-    return(
-        <Container  props={props} ref={Component} >
-            {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
-            <BackgroundImageLoader filter="none"  height={height+"px"}  url={image}  borderRadius="10px 10px 0 0"></BackgroundImageLoader>
-          
-            
-           
-         <DurationContainer>
-          {props.duration_number  ?   props.duration_number + "N/"+(parseInt(props.duration_number)+1)+"D" :  props.duration }
-         </DurationContainer>
- 
-        </Container>
+    return (
+      <Container props={props} ref={Component}>
+        {/* <ExperienceType className="font-lexend">TREK</ExperienceType> */}
+        <BackgroundImageLoader
+          dimensions={{ width: 1000, height: 500 }}
+          dimensionsMobile={{ width: 600, height: 300 }}
+          filter="none"
+          height={height + "px"}
+          url={image}
+          borderRadius="10px 10px 0 0"
+        ></BackgroundImageLoader>
+
+        <DurationContainer>
+          {props.duration_number
+            ? props.duration_number +
+              "N/" +
+              (parseInt(props.duration_number) + 1) +
+              "D"
+            : props.duration}
+        </DurationContainer>
+      </Container>
     );
 }
 export default React.memo(ImageSlider);

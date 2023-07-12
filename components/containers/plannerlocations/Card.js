@@ -83,7 +83,7 @@ const Experiences = (props) => {
         <ImageFade>
           <ImageLoader
             url={props.img}
-            dimensions={{ width: 800, height: 800 }}
+            dimensions={{ width: 500, height:500 }}
             dimensionsMobile={{ width: 800, height: 800 }}
             height="35vh"
             style={{ filter: "brightness(0.55)" }}

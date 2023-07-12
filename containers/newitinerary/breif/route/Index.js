@@ -234,7 +234,7 @@ const Route = (props) => {
         }
         pinColour={props.breif.city_slabs[0].color}
       ></PinSection>
-      {props.routes.length > 1 ? (
+      {props.routes && props.routes.length > 1 ? (
         <MidSection
           pinColour={props.breif.city_slabs[0].color}
           modes={
@@ -257,8 +257,8 @@ const Route = (props) => {
           modes={
             props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
           }
-          bookings={props.routes[1]?.bookings}
-          route={props.routes[1]}
+          // bookings={props.routes[1]?.bookings}
+          // route={props.routes[1]}
           version={props?.plan?.version}
           icon={props?.transfers[0]?.icon}
           hidemidsection={
@@ -289,7 +289,11 @@ const Route = (props) => {
         Mapid={props.breif.city_slabs[0].gmaps_place_id}
         city={props.breif.city_slabs[0].city_name}
         cityId={props.breif.city_slabs[0].city_id}
-        duration={null}
+        duration={
+          props.breif.city_slabs[0].duration
+            ? props.breif.city_slabs[0].duration
+            : null
+        }
         pinColour={props.breif.city_slabs[0].color}
       ></PinSection>
     </Container>

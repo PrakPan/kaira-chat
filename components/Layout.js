@@ -14,8 +14,8 @@ const Layout = React.memo((props) => {
   // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 
   useEffect(() => {
-    // props.checkAuthState();
-    // window.scrollTo(0, 0);
+    props.checkAuthState();
+    window.scrollTo(0, 0);
   }, []);
   const router = useRouter();
 
@@ -27,6 +27,50 @@ const Layout = React.memo((props) => {
   //     } else setShowMobilePlanner(false);
   //   }
   // }, [router.isReady, router.asPath]);
+
+  // Freshchat bot :-
+
+
+  useEffect(() => {
+
+   
+
+      var name;
+      if (localStorage.getItem("name"))
+        name = localStorage.getItem("name").split(" ");
+      var email = localStorage.getItem("email");
+
+    function handleWidgetLoaded() {
+      if (name?.length && email) {
+        window.fcWidget.user.setFirstName(name[0]);
+        window.fcWidget.user.setEmail(email);
+      }
+       
+    }
+    if (window.fcWidget) {
+          if (!props.token) {
+          window.fcWidget.user.clear();
+          }
+          else {
+            window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+      }
+    } else {
+      setTimeout(() => {
+        if (window.fcWidget) {
+          if (!props.token) {
+            window.fcWidget.user.clear();
+          } else {
+            window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+          }
+        }
+      }, 5000);
+    }
+    return () => {
+      if (window.fcWidget) {
+        window.fcWidget.off("widget:loaded", handleWidgetLoaded());
+      }
+    };
+  }, [props.token]);
 
   return (
     <div className="layout">

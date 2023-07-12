@@ -367,7 +367,7 @@ const Enquiry = (props) => {
   };
   if (!loading && !submitted)
     return (
-      <div style={{}}>
+      <>
         {showBlack && !props.tailoredFormModal ? (
           <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
         ) : null}
@@ -684,11 +684,11 @@ const Enquiry = (props) => {
             ) : null}
           </div>
         </Container>
-      </div>
+      </>
     );
   else
     return (
-      <div>
+      <>
         {showBlack && !props.tailoredFormModal ? (
           <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
         ) : null}
@@ -697,7 +697,7 @@ const Enquiry = (props) => {
           <LoadingLottie height="50%" width="50%"></LoadingLottie>
           <LoadingText>Finalizing your plan...</LoadingText>
         </Container>
-      </div>
+      </>
     );
 };
 

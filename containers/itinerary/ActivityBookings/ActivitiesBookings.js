@@ -52,10 +52,13 @@ const ActivitiesBookings = (props) => {
     costings_breakdown,
     images
   ) => {
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-bookings-acc_change',
+          params: { name: name },
+        });
+    }
 
     setSelectedBooking({
       ...selectedBooking,

@@ -53,8 +53,6 @@ const HotelBookingContainer = ({
   token,
   plan,
 }) => {
-  console.log('version', booking?.version);
-  console.log(booking?.status);
 
   // const AddbookingStatus = (booking) => {
   //   if (booking?.version == 'v2') {
@@ -127,7 +125,6 @@ const HotelBookingContainer = ({
   //   }
   // }
   function handleCheckboxChange(e) {
-    console.log('handleCheckboxChange');
     if (!payment?.is_registration_needed) {
       if (token) {
         setLoading(true);
@@ -175,13 +172,13 @@ const HotelBookingContainer = ({
   }
   const isMobile = useMediaQuery('(min-width:768px)');
   return (
-    <div className={`flex gap-1 pt-4  flex-col justify-start `}>
+    <div id={city_id} className={`flex gap-1 pt-4  flex-col justify-start `}>
       {booking ? (
         <div>
           <div>
             {handleClick && (
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                {cityName ? cityName : booking?.city}{' '}
+                {cityName ? cityName : booking?.city}{" "}
                 <span>({booking ? booking?.duration : 1}N)</span>
               </div>
             )}
@@ -198,14 +195,14 @@ const HotelBookingContainer = ({
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-                isSelect || isSearchedBooking ? 'grayscale-0' : 'grayscale'
+                isSelect || isSearchedBooking ? "grayscale-0" : "grayscale"
               } `}
             >
               <div
                 className={`relative  ${
                   currentBooking
-                    ? 'lg:h-[12rem]'
-                    : `${handleClick ? 'lg:h-[15rem]' : 'lg:h-[12rem]'}`
+                    ? "lg:h-[12rem]"
+                    : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
                 {booking?.images[0]?.image ? (
@@ -214,7 +211,7 @@ const HotelBookingContainer = ({
                     dimensionsMobile={{ width: 400, height: 400 }}
                     borderRadius="16px"
                     hoverpointer
-                    onclick={() => console.log('')}
+                    onclick={() => console.log("")}
                     width="100%"
                     height="100%"
                     leftalign
@@ -228,12 +225,12 @@ const HotelBookingContainer = ({
                     dimensionsMobile={{ width: 400, height: 400 }}
                     borderRadius="16px"
                     hoverpointer
-                    onclick={() => console.log('')}
+                    onclick={() => console.log("")}
                     width="100%"
                     height="100%"
                     leftalign
                     widthmobile="100%"
-                    url={'media/website/grey.png'}
+                    url={"media/website/grey.png"}
                   ></ImageLoader>
                 )}
                 {booking.star_category ? (
@@ -249,7 +246,7 @@ const HotelBookingContainer = ({
                 <div className="flex flex-col gap-2">
                   <div
                     className={`${
-                      currentBooking ? 'text-lg' : 'text-2xl'
+                      currentBooking ? "text-lg" : "text-2xl"
                     } font-semibold `}
                   >
                     {booking?.name}
@@ -316,7 +313,7 @@ const HotelBookingContainer = ({
                         <div className="text-sm font-[400] min-w-fit">
                           {booking.number_of_adults
                             ? booking.number_of_adults
-                            : currentBooking.number_of_adults}{' '}
+                            : currentBooking.number_of_adults}{" "}
                           Adults
                         </div>
                       </div>
@@ -343,7 +340,7 @@ const HotelBookingContainer = ({
                           <div className=" text-sm font-[400] min-w-fit">
                             {booking.number_of_adults
                               ? booking.number_of_adults
-                              : currentBooking.number_of_adults}{' '}
+                              : currentBooking.number_of_adults}{" "}
                             Adults
                           </div>
                         </div>
@@ -352,7 +349,7 @@ const HotelBookingContainer = ({
                   )}
 
                   {booking.costings_breakdown ? (
-                    <div className={`flex ${'flex-row'} gap-3 lg:mt-2 mt-0`}>
+                    <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
                       <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                         <BiBed className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] line-clamp-1">
@@ -362,7 +359,7 @@ const HotelBookingContainer = ({
                     </div>
                   ) : (
                     booking?.room_count && (
-                      <div className={`flex ${'flex-row'} gap-3 lg:mt-2 mt-0`}>
+                      <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
                         {booking?.room_count && (
                           <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                             <BiBed className="text-sm text-[#7A7A7A]" />
@@ -388,7 +385,7 @@ const HotelBookingContainer = ({
                 {currentBooking && booking?.price && (
                   <div className="flex flex-row gap-1 items-center w-full font-bold">
                     <div className="text-2xl font-bold">
-                      {'₹ ' + getIndianPrice(Math.round(booking?.price))}
+                      {"₹ " + getIndianPrice(Math.round(booking?.price))}
                     </div>
                     <div className="font-normal text-base self-end">
                       for {currentBooking?.duration} Nights
@@ -399,8 +396,8 @@ const HotelBookingContainer = ({
                   <div
                     className={`flex flex-row gap-3 items-center justify-between w-full ${
                       payment?.paid_user || !payment?.user_allowed_to_pay
-                        ? 'lh:mb-0 mb-2'
-                        : 'lg:mb-0 mb-0'
+                        ? "lh:mb-0 mb-2"
+                        : "lg:mb-0 mb-0"
                     }`}
                   >
                     {/* <ButtonYellow
@@ -421,7 +418,7 @@ const HotelBookingContainer = ({
                           }}
                         >
                           <div className="text-[#01202B] ">
-                            {!isSelect ? 'Add Hotel' : 'Change'}
+                            {!isSelect ? "Add Hotel" : "Change"}
                           </div>
                         </ButtonYellow>
                       )
@@ -433,7 +430,7 @@ const HotelBookingContainer = ({
                         }}
                       >
                         <div className="text-[#01202B] ">
-                          {!isSelect ? 'Add Hotel' : 'Change'}
+                          {!isSelect ? "Add Hotel" : "Change"}
                         </div>
                       </ButtonYellow>
                     )}
@@ -476,21 +473,21 @@ const HotelBookingContainer = ({
                   <div
                     className={`absolute  ${
                       SelectedBookingin
-                        ? 'lg:bottom-4 bottom-[1.5rem] '
+                        ? "lg:bottom-4 bottom-[1.5rem] "
                         : `${
                             payment?.paid_user || !payment?.user_allowed_to_pay
-                              ? 'lg:bottom-10 bottom-[1.2rem]'
-                              : 'lg:bottom-10 bottom-[1.2rem]'
+                              ? "lg:bottom-10 bottom-[1.2rem]"
+                              : "lg:bottom-10 bottom-[1.2rem]"
                           }`
                     } right-6 -m-3`}
                   >
                     {loading && (
                       <PulseLoader
                         style={{
-                          position: 'absolute',
-                          top: '-15%',
-                          left: '50%',
-                          transform: 'translate(-50% , -50%)',
+                          position: "absolute",
+                          top: "-15%",
+                          left: "50%",
+                          transform: "translate(-50% , -50%)",
                         }}
                         size={12}
                         speedMultiplier={0.6}
@@ -505,7 +502,7 @@ const HotelBookingContainer = ({
                     >
                       <CheckboxFormComponent checked={isSelect} />
                       <label className="text-center">
-                        {isSelect ? 'Added Booking' : 'Add Booking'}
+                        {isSelect ? "Added Booking" : "Add Booking"}
                       </label>
                     </div>
                   </div>
@@ -544,7 +541,7 @@ const HotelBookingContainer = ({
                         className="mb-0"
                       />
                       <label className="text-center">
-                        {isSelect ? 'Selected' : 'Select'}
+                        {isSelect ? "Selected" : "Select"}
                       </label>
                     </div>
                   </div>
@@ -561,7 +558,7 @@ const HotelBookingContainer = ({
               <div className="font-medium  inline">
                 <div className="font-bold flex flex-row lg:text-2xl text-xl lg:pb-2 pb-1 text-[#01202B]">
                   <div>
-                    {cityName ? cityName : cityData?.city}{' '}
+                    {cityName ? cityName : cityData?.city}{" "}
                     <span>({cityData ? cityData?.duration : 1}N)</span>
                   </div>
                 </div>
@@ -572,7 +569,7 @@ const HotelBookingContainer = ({
                     <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                     <div>
                       <div className="text-sm font-[400] ">
-                        {getHumanDate(cityData?.checkin_date)} -{' '}
+                        {getHumanDate(cityData?.checkin_date)} -{" "}
                         {getHumanDate(cityData?.checkout_date)}
                       </div>
                     </div>

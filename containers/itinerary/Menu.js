@@ -196,10 +196,11 @@ const SimpleTabs = (props) => {
 
   const handleChange = (event, newValue) => {
     const tabs = ['brief', 'itinerary', 'booking'];
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-tabs-' + tabs[newValue],
       params: {},
-    });
+    });}
     if (isPageWide) window.scrollTo(0, window.innerHeight);
     else window.scrollTo(0, window.innerHeight / 2);
 
@@ -217,23 +218,25 @@ const SimpleTabs = (props) => {
     setValue(newValue);
   };
   const openBookingDesktop = () => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-tabs-Book_Now',
       params: {
         Key: '',
       },
-    });
+    });}
     window.scrollTo(0, window.innerHeight);
     props.getPaymentHandler();
     setValue(2);
   };
   const openBookingMobile = () => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-tabs-Book_Now',
       params: {
         key: '',
       },
-    });
+    });}
     window.scrollTo(0, window.innerHeight / 2);
 
     setValue(2);
@@ -295,13 +298,14 @@ const SimpleTabs = (props) => {
   };
 
   const _handlePoiEditModalOpen = (poi) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-poiedit-open',
       params: {
         poi: poi.name,
         city: poi.city_id,
       },
-    });
+    });}
     setSelectedPoi({
       name: poi.name,
       city_id: poi.city_id,

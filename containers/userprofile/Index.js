@@ -90,6 +90,7 @@ const UserDashboard = (props) => {
 
         
       },[props.token]);
+      console.log('props.token: ', props.token);
   
 
 return (
@@ -143,22 +144,22 @@ return (
           </NoPlans>
         ) : null}
         {!isPageWide && !myPlansArr.length && !loading ? (
-            <a
-              onClick={() => openTailoredModal(router)}
-              className="font-nunito"
-              style={{
-                color: "black",
-                fontWeight: "300",
-                display: "block",
-                margin: "0.5rem auto",
-                textDecoration: "none !important",
-                textAlign: "center",
-                fontSize: "1.25rem",
-                letterSpacing: "1px",
-              }}
-            >
-              Start Planning
-            </a>
+          <a
+            onClick={() => openTailoredModal(router)}
+            className="font-nunito"
+            style={{
+              color: "black",
+              fontWeight: "300",
+              display: "block",
+              margin: "0.5rem auto",
+              textDecoration: "none !important",
+              textAlign: "center",
+              fontSize: "1.25rem",
+              letterSpacing: "1px",
+            }}
+          >
+            Start Planning
+          </a>
         ) : null}
       </ContentContainer>
     </Container>
