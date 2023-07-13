@@ -32,7 +32,7 @@ const Option = styled.option`
 const QueryType = (props) => {
   const isPageLoaded = usePageLoaded();
   const classes = useStyles();
-  const [queryType, setQueryType] = useState('');
+  // const [queryType, setQueryType] = useState('');
 
   if (isPageLoaded) {
     const queries = [
@@ -43,8 +43,8 @@ const QueryType = (props) => {
       'Others',
     ];
     const _handleQueryTypeChange = (event) => {
-      setQueryType(event.target.value);
-      props._changeDetailsHandler(event, 'type');
+     if (props.setQueryType){ props.setQueryType(event.target.value);}
+      // props._changeDetailsHandler(event, 'type');
     };
     return (
       <FormControl className={classes.fullWidth} variant="outlined">
@@ -54,12 +54,12 @@ const QueryType = (props) => {
         <Select
           native={true ? true : false}
           label="Topic of interest"
-          value={queryType}
+          value={props.queryType || ''}
           id="contact-query-select"
           onChange={_handleQueryTypeChange}
           className={classes.relative}
         >
-          <Option aria-label="None" value="" style={{ display: 'none' }} />
+          <Option aria-label="None" value="" style={{ display: "none" }} />
           <Option value={queries[0]} className="font-nunito">
             {queries[0]}
           </Option>

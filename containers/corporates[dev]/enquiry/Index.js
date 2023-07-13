@@ -34,21 +34,16 @@ const Question = styled.p`
 `;
 
 const Enquiry = (props) => {
-    let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 768px)");
   const [calendarOpen, setCalendarOpen] = useState(false);
-  console.log('calendarOpen: ', calendarOpen);
-
   const [name, setName] = useState(null);
   const [companyName, setCompanyName] = useState(null);
   const [phone, setPhone] = useState(null);
   const [email, setEmail] = useState(null);
   const [type, setType] = useState(null);
-  // const [] = useState(null);
   const [value, setValue] = useState(dayjs());
-  console.log('value: ', value);
-
   const _handleMobileChange = (event) => {
-    if (event.target.value === '1') null;
+    if (event.target.value === "1") null;
   };
 
   const [loading, setLoading] = useState(false);
@@ -78,12 +73,14 @@ const Enquiry = (props) => {
   const _submitDataHandler = () => {
     setLoading(true);
     axiosbdinstance
-      .post('/', {
+      .post("/", {
         organization_name: companyName,
         phone: phone,
         person_name: name,
         email: email,
-        service: 'wiejdn',
+        service: "wiejdn",
+        datetime: value.format("DD/MM/YYYY, HH:mm:ss"),
+        type: type || '',
       })
       .then((res) => {
         setLoading(false);
@@ -124,11 +121,19 @@ const Enquiry = (props) => {
         size="md"
         centered
         onHide={_hideModalHandler}
-        style={isPageWide ? {
-          padding: '18px',
-          width: '27rem',
-          borderRadius: '1rem'
-        } : {padding : '0px 18px 18px 18px' , width : '95%' , borderRadius: '1rem'}}
+        style={
+          isPageWide
+            ? {
+                padding: "18px",
+                width: "27rem",
+                borderRadius: "1rem",
+              }
+            : {
+                padding: "0px 18px 18px 18px",
+                width: "95%",
+                borderRadius: "1rem",
+              }
+        }
         // zIndex={1298}
       >
         {/* <Modal.Body
@@ -214,9 +219,9 @@ const Enquiry = (props) => {
             </Grid>
             <Grid item xs={12}>
               {/* <Question>Anual Budget</Question> */}
-              <Types></Types>
+              <Types queryType={type} setQueryType={setType}></Types>
             </Grid>
-            
+
             <Grid item xs={12}>
               {/* <Question>When should we call you?</Question> */}
 
