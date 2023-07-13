@@ -1409,3 +1409,6 @@ body {
   /* scrollbar-color: #ccc #fff; */
 }
 
+.css-3dah0e-MuiModal-root-MuiDialog-root {
+  z-index: 1602 !important; 
+}
