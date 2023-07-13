@@ -1,3 +1,8 @@
+/* Freshchat bot */
+#fc_frame{
+  z-index: 100 !important;
+}
+
 .snowflake {
   color: #fff;
   font-size: 1em;
