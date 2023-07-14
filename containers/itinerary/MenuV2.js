@@ -440,7 +440,7 @@ const SimpleTabsV2 = (props) => {
       </div>
       {isPageWide && !isInView && (
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
-          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[18rem]">
+          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
             <div className="flex flex-row justify-between ">
               <div className="flex flex-col">
                 <div className="text-[0.725rem]">

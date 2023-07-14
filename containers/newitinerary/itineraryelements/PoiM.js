@@ -1,31 +1,31 @@
-import styled from 'styled-components';
-import { useState, useEffect, useRef } from 'react';
-import { AiFillCar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import Button from '../../../components/ui/button/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { HiPencil } from 'react-icons/hi';
-import Rating from './Rating';
-import Tips from './Tips';
-import StarRating from '../../../components/StarRating';
-import { MdEdit } from 'react-icons/md';
-import Drawer from '../../../components/ui/Drawer';
-import { TbArrowBack } from 'react-icons/tb';
-import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
-import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
-import axiositineraryeditinstance from '../../../services/itinerary/edit';
-import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
-import PoiList from './PoiList';
-import PoiListSkeleton from './PoiListSkeleton';
-import LogInModal from '../../../components/modals/Login';
-import { Navigation } from '../../../components/NewNavigation';
-import { IoMdClose } from 'react-icons/io';
-import { FaFilter } from 'react-icons/fa';
-import ButtonYellow from '../../../components/ButtonYellow';
-import useMediaQuery from '../../../hooks/useMedia';
-import Slide from '../../../Animation/framerAnimation/Slide';
-import ScrollVisibleHOC from '../../../helper/withScrollVisibility';
-import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+import styled from "styled-components";
+import { useState, useEffect, useRef } from "react";
+import { AiFillCar } from "react-icons/ai";
+import ImageLoader from "../../../components/ImageLoader";
+import Button from "../../../components/ui/button/Index";
+import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { HiPencil } from "react-icons/hi";
+import Rating from "./Rating";
+import Tips from "./Tips";
+import StarRating from "../../../components/StarRating";
+import { MdEdit } from "react-icons/md";
+import Drawer from "../../../components/ui/Drawer";
+import { TbArrowBack } from "react-icons/tb";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiositineraryeditinstance from "../../../services/itinerary/edit";
+import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
+import PoiList from "./PoiList";
+import PoiListSkeleton from "./PoiListSkeleton";
+import LogInModal from "../../../components/modals/Login";
+import { Navigation } from "../../../components/NewNavigation";
+import { IoMdClose } from "react-icons/io";
+import { FaFilter } from "react-icons/fa";
+import ButtonYellow from "../../../components/ButtonYellow";
+import useMediaQuery from "../../../hooks/useMedia";
+import Slide from "../../../Animation/framerAnimation/Slide";
+import ScrollVisibleHOC from "../../../helper/withScrollVisibility";
+import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -36,7 +36,7 @@ const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
 
-  grid-template-columns: ${(props) => (props.image ? '1.6fr 2.5fr' : '1fr')};
+  grid-template-columns: ${(props) => (props.image ? "1.6fr 2.5fr" : "1fr")};
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
@@ -127,8 +127,8 @@ const ItineraryPoiElementM = (props) => {
   const [SelectedExprience, SetSelectedExprience] = useState();
   const [floatingButtonView, setFloatingButtonView] = useState(false);
   const items = [
-    { id: 1, label: 'Point of Interest', link: 'POIS' },
-    { id: 2, label: 'Activities', link: 'Activitiess' },
+    { id: 1, label: "Point of Interest", link: "POIS" },
+    { id: 2, label: "Activities", link: "Activitiess" },
   ];
   const drawerRef = useRef(null);
   useEffect(() => {}, []);
@@ -146,7 +146,7 @@ const ItineraryPoiElementM = (props) => {
 
     axiositineraryeditinstance
       .post(
-        '/',
+        "/",
         {
           itinerary_id: props.itinerary_id,
           day_slab_index: props.day_slab_index,
@@ -155,13 +155,13 @@ const ItineraryPoiElementM = (props) => {
           element_data: {
             ...poi,
             element_index: props.data.element_index,
-            keys: ['icon', 'heading', 'text', 'activity_data', 'meta'],
+            keys: ["icon", "heading", "text", "activity_data", "meta"],
             element_type: ITINERARY_ELEMENT_TYPES.activity,
           },
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       )
@@ -171,7 +171,7 @@ const ItineraryPoiElementM = (props) => {
       .catch((err) => {
         // setUpdateLoadingState(false);
 
-        window.alert('There seems to be a problem, please try again!');
+        window.alert("There seems to be a problem, please try again!");
       });
   };
   const _handleLoginClose = () => {
@@ -182,10 +182,10 @@ const ItineraryPoiElementM = (props) => {
     setFetchingPoi(true);
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
-      .post('/', {
+      .post("/", {
         location: props.city_id,
         duration: 10,
-        element_type: `${activity.id ? 'Activity' : 'POI'}`,
+        element_type: `${activity.id ? "Activity" : "POI"}`,
       })
       .then((res) => {
         if (res.data.length) {
@@ -226,24 +226,24 @@ const ItineraryPoiElementM = (props) => {
       .catch((err) => {});
   }
   const Experiences = [
-    'Adventure',
-    'Heritage',
-    'Spiritual',
-    'Hidden Gem',
-    'Very popular',
+    "Adventure",
+    "Heritage",
+    "Spiritual",
+    "Hidden Gem",
+    "Very popular",
   ];
   const ClickHandler = (child) => {
-    if (child == 'Activities') {
+    if (child == "Activities") {
       Poi_activities({ id: 3 });
     } else {
       Poi_activities();
     }
     console.log(child);
   };
-  const isDesktop = useMediaQuery('(min-width:1148px)');
+  const isDesktop = useMediaQuery("(min-width:1148px)");
 
   return (
-    <Container className="font-lexend">
+    <Container onClick={() => setShow(true)} className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
         <SectionOneText>{props.time}</SectionOneText>
         <AiFillCar

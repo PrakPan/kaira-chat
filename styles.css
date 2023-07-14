@@ -9,6 +9,10 @@
 
   }
 }
+#fc_frame.fc-open {
+  /* CSS when the modal is open */
+  z-index: 50000 !important;
+}
 .h-btn {
   height: 80px !important;
 }
