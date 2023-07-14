@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import FullImg from '../../components/FullImage';
 import Heading from '../../components/newheading/heading/Index';
 import FullImgContent from './FullImgContent';
+import HowItWorks from "../../components/containers/HowItWorksSlideshow";
  
 import media from '../../components/media';
   import travelsupportcontent from '../../public/content/travelsupport';
@@ -12,6 +13,7 @@ import Benefits from './Benefits';
  import CaseStudies from './CaseStudies/Index';
 import Enquiry from './enquiry/Index';
 import NewCaseStudies from './NewCaseStudies/Index';
+import BannerMobile from './banner/Mobile';
 
  
 const SetWidthContainer = styled.div`
@@ -21,14 +23,99 @@ const SetWidthContainer = styled.div`
       width: 80%;
     }
   `;
+const HowItWorksText = styled.div`
+  font-size: 1rem;
+  width: 100%;
+  margin: 0 0;
+  font-weight: 300;
 
+  @media screen and (min-width: 768px) {
+    font-size: 1rem;
+    margin: 0 0;
+    font-weight: 300;
+  }
+`;
+const HowItWorksHeading = styled.p`
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  @media screen and (min-width: 768px) {
+    font-size: 1.25rem;
+    margin: 1rem 0 0.5rem 0;
+  }
+`;
+const HowItWorksContainer = styled.div`
+  @media screen and (min-width: 768px) {
+    margin: auto;
+  }
+`;
+const CardListItem = styled.li`
+  font-size: 0.9rem;
+  font-weight: 300;
+  margin-bottom: 0.9rem;
+  line-height: 1.3;
+  @media screen and (min-width: 768px) {
+
+  text-align : left;
+  }
+  `;
+const HowitWorksHeadingsArr = [
+  <HowItWorksHeading className="font-lexend">
+    Leisure Travel
+    {/* : Team building company retreats */}
+  </HowItWorksHeading>,
+
+  <HowItWorksHeading className="font-lexend">
+    Booking Needs
+    {/* : Employee business travel needs */}
+  </HowItWorksHeading>,
+
+  <HowItWorksHeading className="font-lexend">
+    Conferences
+    {/* : Company travel excursions and conferences */}
+  </HowItWorksHeading>,
+];
+const HowitWorksContentsArr = [
+  <HowItWorksText>
+    <CardListItem>
+      Workcation to travel, work, and collaborate with all your employees
+    </CardListItem>
+    <CardListItem>
+      Weekend getaways for team building and exploring together
+    </CardListItem>
+    <CardListItem>
+      Unique experiences to instill team bonding with activites
+    </CardListItem>
+  </HowItWorksText>,
+
+  <HowItWorksText>
+    <CardListItem>
+      Book flights & hotels at cheap prices for employees
+    </CardListItem>
+    <CardListItem>
+      Track your bookings & get a dedicated travel expert
+    </CardListItem>
+    <CardListItem>24/7 travel support and booking support</CardListItem>
+  </HowItWorksText>,
+
+  <HowItWorksText>
+    <CardListItem>
+      Townhall meetings with activities during the day
+    </CardListItem>
+    <CardListItem>
+      Travel to an offsite location and meet with the team
+    </CardListItem>
+    <CardListItem>
+      Work offsite for a weekend or week while exploring
+    </CardListItem>
+  </HowItWorksText>,
+];
 const AffiliatePage = ()=> {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
 
   let isPageWide = media('(min-width: 768px)');
  
   return (
-    <div>
+    <>
       <FullImg
         // style={isPageWide ? {} : { height: "30rem" }}
         heightmobile={"30rem"}
@@ -50,16 +137,46 @@ const AffiliatePage = ()=> {
       </FullImg>
       <SetWidthContainer>
         <Logos></Logos>
-        <Heading margin="5rem auto" bold>
+        <Heading
+          noline
+          textAlign="left"
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
+          bold
+        >
           Catered to every organisation's need
         </Heading>
-        <Benefits></Benefits>
-
-        <Heading margin="5rem auto 2.5rem auto" bold>
-          Reviews
+        {/* <Benefits></Benefits> */}
+        <HowItWorksContainer>
+          <HowItWorks
+            nostart
+            corporates
+            images={[
+              "media/icons/corporates/travelling.jpg",
+              "media/icons/corporates/booking.jpg",
+              "media/icons/corporates/conference.jpg",
+            ]}
+            headings={HowitWorksHeadingsArr}
+            content={HowitWorksContentsArr}
+            dimensions={{ width: 700, height: 500 }}
+            dimensionsMobile={{ width: 1200, height: 700 }}
+          ></HowItWorks>
+        </HowItWorksContainer>
+        <Heading
+          noline
+          textAlign="left"
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
+          bold
+        >
+          Happy Community of The Tarzan Way
         </Heading>
         {/* <CaseStudies></CaseStudies> */}
-        <NewCaseStudies />
+        <NewCaseStudies setEnquiryOpen={() => setEnquiryOpen(true)} />
         {/* <WhyUs></WhyUs> */}
         {/* <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
       </SetWidthContainer>
@@ -68,7 +185,18 @@ const AffiliatePage = ()=> {
         show={enquiryOpen}
         onhide={() => setEnquiryOpen(false)}
       ></Enquiry>
-    </div>
+      {!isPageWide && (
+        <div>
+          <BannerMobile
+            onclick={() => setEnquiryOpen(true)}
+            text="Want to craft your own travel experience?"
+            buttontext="Start Now"
+            color="black"
+            buttonbgcolor="#f7e700"
+          ></BannerMobile>
+        </div>
+      )}
+    </>
   );
 }
 

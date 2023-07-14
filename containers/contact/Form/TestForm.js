@@ -132,7 +132,7 @@ export default function SignUp() {
         <GridContainer>
           {isPageLoaded ? (
             <FloatingInput
-              height='60px'
+              height="60px"
               error={checkEmpty == "fname"}
               helperText={"Please Enter Your First Name"}
               autoComplete="fname"
@@ -149,7 +149,7 @@ export default function SignUp() {
 
           {isPageLoaded ? (
             <FloatingInput
-              height='60px'
+              height="60px"
               error={checkEmpty == "lname"}
               helperText={"Please Enter Your Last Name"}
               variant="outlined"
@@ -166,7 +166,7 @@ export default function SignUp() {
         <GridContainer>
           {isPageLoaded ? (
             <FloatingInput
-              height='60px'
+              height="60px"
               error={checkEmpty == "country"}
               helperText={"Please Enter Your Country"}
               variant="outlined"
@@ -181,7 +181,7 @@ export default function SignUp() {
           ) : null}
           {isPageLoaded ? (
             <FloatingInput
-              height='60px'
+              height="60px"
               error={checkEmpty == "mobile"}
               helperText={"Please Enter Your Mobile Number"}
               variant="outlined"
@@ -197,7 +197,7 @@ export default function SignUp() {
         </GridContainer>
         {isPageLoaded ? (
           <FloatingInput
-              height='60px'
+            height="60px"
             error={emailFail}
             helperText={emailFail ? "Invalid Email" : null}
             variant="outlined"
@@ -210,22 +210,31 @@ export default function SignUp() {
             onChange={(event) => _changeDetailsHandler(event, "email")}
           />
         ) : null}
-        {isPageLoaded &&
-        <div>
-<DropDown 
-        onChange={(e)=>_changeDetailsHandler(e, "query_type")} 
-        label="Topic of interest" 
-        labelStyle={{paddingLeft : '20px'}} 
-        height='60px'
-        error={checkEmpty == "query_type"}
-        helperText={"Please Select Your Interest"}
-        >{DropDownQueries.map((e,i)=><option style={{borderBottom
-        : '1px solid #e6e6e6'}} key={i} value={e.value}>{e.text}</option>)}</DropDown>
-        </div>
-}
+        {isPageLoaded && (
+          <div>
+            <DropDown
+              onChange={(e) => _changeDetailsHandler(e, "query_type")}
+              label="Topic of interest"
+              labelStyle={{ paddingLeft: "20px" }}
+              height="60px"
+              error={checkEmpty == "query_type"}
+              helperText={"Please Select Your Interest"}
+            >
+              {DropDownQueries.map((e, i) => (
+                <option
+                  style={{ borderBottom: "1px solid #e6e6e6" }}
+                  key={i}
+                  value={e.value}
+                >
+                  {e.text}
+                </option>
+              ))}
+            </DropDown>
+          </div>
+        )}
         {isPageLoaded ? (
           <FloatingInput
-              height='60px'
+            height="60px"
             error={checkEmpty == "message"}
             helperText={"Please Enter Message"}
             variant="outlined"
@@ -262,7 +271,7 @@ export default function SignUp() {
         </Button>
 
         {/* <div style={{ width: "max-content", margin: "auto" }}> */}
-          {/* {loading ? <Spinner size={20}></Spinner> : null} */}
+        {/* {loading ? <Spinner size={20}></Spinner> : null} */}
         {/* </div> */}
         <SuccessModal
           show={submitted}

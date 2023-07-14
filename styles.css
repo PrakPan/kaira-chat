@@ -1,6 +1,16 @@
 /* Freshchat bot */
 #fc_frame{
   z-index: 100 !important;
+  bottom: 10px !important;
+  right: 25px !important;
+@media only screen and (max-width: 768px) {
+   bottom: 60px !important;
+  right: 15px !important;
+
+  }
+}
+.h-btn {
+  height: 80px !important;
 }
 
 .snowflake {

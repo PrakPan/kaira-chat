@@ -86,35 +86,37 @@ const NewCaseStudies = (props) => {
           <Container>
             {more
               ? cards.map((e, i) => <div key={i}>{e}</div>)
-              : cards.slice(0,4).map((e, i) => <div key={i}>{e}</div>)}
+              : cards.slice(0, 4).map((e, i) => <div key={i}>{e}</div>)}
           </Container>
-        {!more ?   <Button
-            // link={"/testimonials"}
-            onclick={() => setMore(true)}
-            // onclickparams={null}
-            borderWidth="1px"
-            fontSizeDesktop="12px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="auto"
-            padding="0.5rem 2rem"
-          >
-            View more
-          </Button>:
-        <Button
-            link={"/testimonials"}
-            // onclick={() => setMore(true)}
-            onclickparams={null}
-            borderWidth="1px"
-            fontSizeDesktop="12px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="auto"
-            padding="0.5rem 2rem"
-          >
-            View All
-          </Button>  
-        }
+          {!more ? (
+            <Button
+              // link={"/testimonials"}
+              onclick={() => setMore(true)}
+              // onclickparams={null}
+              borderWidth="1px"
+              fontSizeDesktop="12px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="auto"
+              padding="0.5rem 2rem"
+            >
+              View more
+            </Button>
+          ) : (
+            <Button
+              // link={"/testimonials"}
+              onclick={() => props.setEnquiryOpen()}
+              onclickparams={null}
+              borderWidth="1px"
+              fontSizeDesktop="12px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="auto"
+              padding="0.5rem 2rem"
+            >
+              Schedule Callback
+            </Button>
+          )}
         </>
       )}
 

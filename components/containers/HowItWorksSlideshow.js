@@ -13,7 +13,7 @@ const Container = styled.div`
     width: 100%;
     margin: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: ${props=>`repeat(${props.length} , 1fr)`};
     gap: 4rem;
   }
 `;
@@ -69,6 +69,7 @@ const HowItWorksSlideshow = (props) => {
           url={props.images[0]}
           width="40%"
           margin="auto"
+          
           widthmobile={props.vertical ? "40%" : "60%"}
         />
       </ImageContainer>
@@ -85,6 +86,9 @@ const HowItWorksSlideshow = (props) => {
           margin="auto"
           dimensions={{ width: 500, height: 500 }}
           widthmobile={props.vertical ? "40%" : "60%"}
+          dimensionsMobile={
+            props.dimensionsMobile || { height: 350, width: 350 }
+          }
         />
       </ImageContainer>
       <TextContainer className="center-div">
@@ -101,6 +105,9 @@ const HowItWorksSlideshow = (props) => {
           margin="auto"
           dimensions={{ width: 500, height: 500 }}
           widthmobile={props.vertical ? "40%" : "60%"}
+          dimensionsMobile={
+            props.dimensionsMobile || { height: 350, width: 350 }
+          }
         />
       </ImageContainer>
       <TextContainer className="center-div">
@@ -116,8 +123,13 @@ const HowItWorksSlideshow = (props) => {
           url={props.images[0]}
           width="80%"
           height="auto"
-          dimensions={{ width: 500, height: 500 }}
-          widthmobile={props.vertical ? "40%" : "60%"}
+          dimensions={
+            props.dimensions ? props.dimensions : { width: 500, height: 500 }
+          }
+          dimensionsMobile={props.dimensionsMobile || null}
+          widthmobile={
+            props.vertical ? "40%" : props.corporates ? "100%" : "60%"
+          }
         />
       </ImageContainer>
       <TextContainer>
@@ -132,8 +144,13 @@ const HowItWorksSlideshow = (props) => {
           resizeMode="contain"
           width="80%"
           height="auto"
-          dimensions={{ width: 500, height: 500 }}
-          widthmobile={props.vertical ? "40%" : "60%"}
+          dimensions={
+            props.dimensions ? props.dimensions : { width: 500, height: 500 }
+          }
+          dimensionsMobile={props.dimensionsMobile || null}
+          widthmobile={
+            props.vertical ? "40%" : props.corporates ? "100%" : "60%"
+          }
         />
       </ImageContainer>
       <TextContainer>
@@ -148,8 +165,13 @@ const HowItWorksSlideshow = (props) => {
           width="80%"
           resizeMode="contain"
           height="auto"
-          dimensions={{ width: 500, height: 500 }}
-          widthmobile={props.vertical ? "40%" : "60%"}
+          dimensions={
+            props.dimensions ? props.dimensions : { width: 500, height: 500 }
+          }
+          dimensionsMobile={props.dimensionsMobile || null}
+          widthmobile={
+            props.vertical ? "40%" : props.corporates ? "100%" : "60%"
+          }
         />
       </ImageContainer>
       <TextContainer>
@@ -157,26 +179,29 @@ const HowItWorksSlideshow = (props) => {
         {props.content[2]}
       </TextContainer>
     </GridContainer>,
-
-    <GridContainer key={3} style={{}}>
-      <ImageContainer>
-        <ImageLoader
-          url={props.images[3]}
-          width="80%"
-          resizeMode="contain"
-          height="auto"
-          dimensions={{ width: 500, height: 500 }}
-          widthmobile={props.vertical ? "40%" : "60%"}
-          noLazy
-        />
-      </ImageContainer>
-      <TextContainer>
-        {props.headings[3]}
-        {props.content[3]}
-      </TextContainer>
-    </GridContainer>,
   ];
-
+if(props.images[3]) slidesdesktop.push(
+  <GridContainer key={3} style={{}}>
+    <ImageContainer>
+      <ImageLoader
+        url={props.images[3]}
+        width="80%"
+        resizeMode="contain"
+        height="auto"
+        dimensions={
+          props.dimensions ? props.dimensions : { width: 500, height: 500 }
+        }
+        dimensionsMobile={props.dimensionsMobile || null}
+        widthmobile={props.vertical ? "40%" : props.corporates ? "100%" : "60%"}
+        noLazy
+      />
+    </ImageContainer>
+    <TextContainer>
+      {props.headings[3]}
+      {props.content[3]}
+    </TextContainer>
+  </GridContainer>
+);
   // if (!isPageWide) return (
   //   <div>
   //     <div>
@@ -193,7 +218,7 @@ const HowItWorksSlideshow = (props) => {
     <div>
       {isPageWide ? (
         <>
-          <Container>{slidesdesktop}</Container>
+          <Container length={slidesdesktop.length}>{slidesdesktop}</Container>
         </>
       ) : (
         <div style={{ padding: "0rem 1rem" }}>

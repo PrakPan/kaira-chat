@@ -73,14 +73,14 @@ const FullImgContent = (props) => {
             onclickparams={null}
             link="/"
             padding="0.75rem 1rem"
-            fontSize="14px"
+            fontSize="18px"
             fontWeight="500"
             bgColor="#f7e700"
-            borderRadius="10px"
+            borderRadius="7px"
             color="black"
             borderWidth="1px"
-            margin={isPageWide ? "1rem 12vh" : "1rem auto 1rem auto"}
-          >
+          margin={isPageWide ? "1rem 11vh" : "1rem auto 1rem auto"}
+                    >
             Schedule Callback
           </Button>
         {/* </div> */}
