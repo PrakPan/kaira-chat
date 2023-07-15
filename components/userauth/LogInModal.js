@@ -299,7 +299,10 @@ const LogIn = React.memo((props) => {
   };
   //Update phone
   const _updatePhoneHandler = () => {
-    props.onUpdate({ phone: extensions[extension].label + mobile });
+    props.onUpdate({
+      phone: extensions[extension].label + mobileRef.current.value,
+      whatsapp_opt_in : whatsapp,
+    });
   };
   //Mobile, name, email, password, JSX
   mobileInput = (
@@ -394,15 +397,14 @@ const LogIn = React.memo((props) => {
       {(props.token && !props.phone) ||
       (props.token && props.phone === "null") ? (
         <p
-          style={{ margin: "0 1rem 4rem 1rem", fontWeight: "100" }}
+          style={{ margin: "0 1rem 2rem 1rem", fontWeight: "200" }}
           className="font-lexend text-center"
         >
           This is where your experience captain can reach you to personalize
           your plan.
         </p>
       ) : null}
-      {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+      {(props.token && !props.phone) || (props.token && props.phone == null) ? (
         <form noValidate>
           <MobileNumberContainer>
             <CountryCodeContainer>
@@ -430,13 +432,24 @@ const LogIn = React.memo((props) => {
             </CountryCodeContainer>
             {mobileInput}
           </MobileNumberContainer>
+          <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
+            boooking updates via WhatsApp
+          </WhatsappCheckBox>
           <Button
-            fullWidth
-            variant="contained"
-            color="primary"
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
             loading={props.loading}
+            margin={props.nospacing ? "0" : "2rem 0"}
+            width="100%"
+            bgColor="#F7E700"
+            fontWeight="500"
+            fontSize="16px"
+            borderWidth="1px"
+            hoverColor="white"
+            hoverBgColor="black"
+            boxShadow="0px 2px 0px #ECEAEA"
+            borderRadius="8px"
           >
             Complete Signup
           </Button>

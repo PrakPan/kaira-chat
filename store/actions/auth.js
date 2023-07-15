@@ -235,7 +235,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
           dispatch(authSuccess(response.data.oauth.access_token)); //Store token
           dispatch(setUserDetails(userdata)); //Store user name and email
           dispatch(checkAuthTimeout(response.data.oauth.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
-          dispatch(authCloseLogin()); //close login modal
+          // dispatch(authCloseLogin()); //close login modal
           //store token details in local storage
           localStorage.setItem(
             'access_token',

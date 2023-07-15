@@ -31,6 +31,10 @@ module.exports = {
         protocol: "https",
         hostname: "imgak.mmtcdn.com",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
     ],
   },
   experimental: {

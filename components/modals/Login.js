@@ -65,8 +65,8 @@ const Enquiry = (props) => {
     }
   }, [myref]);
   useEffect(() => {
-    if (props.token) if (props.onhide) props.onhide();
-  }, [props.token, props.onhide]);
+    if (props.token && props.phone) if (props.onhide) props.onhide();
+  }, [props.token, props.onhide , props.phone]);
 
   useEffect(() => {
     function findModalWidth() {
@@ -166,6 +166,7 @@ const mapStateToPros = (state) => {
   return {
     hideloginclose: state.auth.hideloginclose,
     token: state.auth.token,
+    phone: state.auth.phone,
   };
 };
 const mapDispatchToProps = (dispatch) => {
