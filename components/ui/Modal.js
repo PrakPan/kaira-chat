@@ -104,7 +104,8 @@ export default function Modal(props) {
       document.body.style.overflow = 'hidden';
       // if(isPageWide) document.body.style.paddingRight = getScrollBarWidth() + 'px'
       setFade('in');
-    } else onCLose();
+    }
+    // else onCLose();
   }, [props.show]);
 
   return _document
