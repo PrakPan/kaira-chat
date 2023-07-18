@@ -48,7 +48,7 @@ const Itinerary = (props) => {
       {router.query.id && (
         <ItineraryContainer
           // key={router.asPath}
-          // id={router.query.id}
+          id={router.query.id}
         ></ItineraryContainer>
       )}
     </LayoutV2>
