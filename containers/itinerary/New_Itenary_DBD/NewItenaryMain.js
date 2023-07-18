@@ -165,8 +165,6 @@ const NewItenaryMain = (props) => {
       }
     };
   };
-  console.log('items');
-  console.log(items);
   function extractCityName(arr) {
     const cityObject = arr.find((obj) => obj.element_type === 'newcity');
 

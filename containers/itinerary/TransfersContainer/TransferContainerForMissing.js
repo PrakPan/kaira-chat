@@ -12,7 +12,6 @@ const TransferContainerForMissing = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [isShow, setIsShow] = useState(false);
-  console.log('hit rerender get in touch');
   const [isSucess, setIsSucess] = useState({
     value: false,
     errorMsg: '',

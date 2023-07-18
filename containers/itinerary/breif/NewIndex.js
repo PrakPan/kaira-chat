@@ -90,7 +90,6 @@ const Details = (props) => {
 
   const Locationlatlong = [];
   if (props.routesData.length >= 1) {
-    console.log('itsrendering');
     for (var i = 0; i < props.routesData.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
 
@@ -120,10 +119,8 @@ const Details = (props) => {
     }
   } else {
     if (props.CityData.length >= 1) {
-      console.log('inside else', props.CityData, props.CityData.length);
       for (var i = 0; i < props.CityData.length; i++) {
         var postion = props.CityData[i];
-        console.log('inside else1', postion, props.CityData.length);
         // console.log(`response city data${JSON.stringify(citydetails)}`);
         // console.log(`lat,long${citydetails.lat}`);
         if (
@@ -146,7 +143,6 @@ const Details = (props) => {
           });
         }
       }
-      console.log('inside else2', Locationlatlong);
     }
   }
   // const getdayId = (id) => {
@@ -245,8 +241,6 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
-  console.log('Locationlatlong');
-  console.log(Locationlatlong);
   return (
     <div>
       {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}

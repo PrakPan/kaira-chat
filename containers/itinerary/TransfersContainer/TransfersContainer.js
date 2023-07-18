@@ -357,8 +357,6 @@ const TransfersContainer = (props) => {
   //   props.payment,
   // ]);
 
-  console.log('transfersBooking');
-  console.log(props.transferBookings);
   //Stores initial order of locations
 
   const initialorder = {
@@ -562,7 +560,6 @@ const TransfersContainer = (props) => {
   function handlemap(MapId) {
     props.setPlaceID(MapId);
     scrollToTargetAdjusted();
-    console.log(`id mapp${props.active}`);
   }
   const return_booking_from_id = (arr, id) => arr.find((obj) => obj.id === id);
   const _moveUpHandler = (index) => {

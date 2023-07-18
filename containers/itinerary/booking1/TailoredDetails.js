@@ -530,10 +530,8 @@ const Details = (props) => {
 
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
-      console.log('Razorpaydata', rzp1);
       rzp1.open();
     } catch (error) {
-      console.error('An error occurred:', error);
     }
   };
   const _saleCreateHandler = (id) => {

@@ -34,7 +34,6 @@ const ActivitiesBookings = (props) => {
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [alternates, setAlternates] = useState(null);
-  console.log(props.stayBookings);
   const _changeBookingHandler = (
     name,
     itinerary_id,
@@ -383,8 +382,6 @@ const ActivitiesBookings = (props) => {
 
     setShowDetails(true);
   }
-  console.log('activityBookings');
-  console.log(props.activityBookings);
 
   return (
     <div className="lg:w-[60vw] w-full">
