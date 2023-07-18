@@ -422,8 +422,6 @@ const SimpleTabsV2 = (props) => {
     font-family: sans-serif;
   `;
 
-  console.log('payment', props.payment);
-  console.log('isInView', isInView);
   return (
     <div className={classes.root} style={{ paddingTop: '20px' }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
@@ -1211,7 +1209,6 @@ function newFunction(
       }
       setcitydatadone(true);
       setCityData(CityDataTemp);
-      console.log('citydata0', CityData);
     }
     processRoutes2(props);
   }
@@ -1219,7 +1216,6 @@ function newFunction(
   if (props.routes) {
     async function processRoutes(props) {
       for (var i = 0; i < props.routes.length; i++) {
-        // console.log('routes one', props.routes[i]);
         if (props.routes[i].element_type !== 'transfer') {
           if (props.routes[i].long) {
             // console.log(props.routes[i].long);
@@ -1243,13 +1239,9 @@ function newFunction(
         }
       }
 
-      console.log('routes finished', props.routes.length);
-      console.log(RoutesData, RoutesData.length);
-      console.log(TransfersData, TransfersData.length);
     }
 
     processRoutes(props);
   }
-  console.log('citydata', CityData);
   return totalcityslabs;
 }

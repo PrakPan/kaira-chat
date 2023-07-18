@@ -19,6 +19,7 @@ import useMediaQuery from '../../../hooks/useMedia';
 import { getHumanDate } from '../../../services/getHumanDate';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import { PulseLoader } from 'react-spinners';
+import { MdHotel } from 'react-icons/md';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -380,6 +381,14 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : null}
+                  {booking.number_of_rooms && (
+                    <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                      <MdHotel className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400] line-clamp-1">
+                        {booking.number_of_rooms} Rooms
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {currentBooking && booking?.price && (
