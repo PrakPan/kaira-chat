@@ -41,28 +41,28 @@ const MoreText = styled.div`
   margin: 0;
 `;
 const ImagesMobile = (props) => {
-  useEffect(() => {}, []);
+  // var DefaultImg = ''
+  const [DefaultImg , setDefaultImage] = useState('')
+  useEffect(() => {
+    for (let i = 0; i < props.images.length; i++){
+      if (props.images[i]) {
+        setDefaultImage(props.images[i]);
+        break;
+      }
+    }
+   }, [])
   return props.images.length >= 3 ? (
     <Container ConImg={props.images[1]}>
-      {props.images[0] ? (
+      {DefaultImg ? (
         <ImageLoader
           borderRadius="12px"
           dimensions={{ width: 922, height: 331 }}
-          url={props.images[0]}
+          url={DefaultImg}
           height="auto"
           heightMobile="auto"
           dimensionsMobile={{ width: 328, height: 141 }}
-        ></ImageLoader>
-      ) : (
-        <ImageLoader
-          borderRadius="12px"
-          dimensions={{ width: 922, height: 331 }}
-          url={props.images[3]}
-          height="auto"
-          heightMobile="auto"
-          dimensionsMobile={{ width: 328, height: 141 }}
-        ></ImageLoader>
-      )}
+          ></ImageLoader>
+      ) : <></>}
 
       {props.images[1] ? (
         <GridContainer>
