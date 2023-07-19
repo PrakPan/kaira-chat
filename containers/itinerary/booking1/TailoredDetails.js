@@ -43,7 +43,7 @@ import {
   startOfDay,
 } from 'date-fns';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
-import { Link, scroller } from 'react-scroll';
+import { scroller } from 'react-scroll';
 import { pluralDetector } from '../../../helper/shortHelpers';
 import SelectDate from './gittailored/SelectDate';
 import SelectPax from './gittailored/SelectPax';
@@ -53,6 +53,7 @@ import VerificationModal from '../../../components/modals/verify/Index';
 import RegisteredUsersModal from '../../../components/modals/registeredusers/Index';
 import TermsModal from '../../../components/modals/terms/PW';
 import UiDropdown from '../../../components/UiDropdown';
+import Link from 'next/link'
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -1222,9 +1223,9 @@ const Details = (props) => {
         </div>
       </ButtonYellow>
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-        <a href="https://dev.thetarzanway.com/terms-conditions" target="_blank">
+        <Link href="/terms-conditions" target="_blank">
           <div>Terms & Conditions</div>
-        </a>
+        </Link>
       </div>
       <RegistrationModal
         number_of_adults={
