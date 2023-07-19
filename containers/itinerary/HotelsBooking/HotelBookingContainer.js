@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ImageLoader from '../../../components/ImageLoader';
 import StarRating from '../../../components/StarRating';
-import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
+import { BsCalendar2, BsPeopleFill, BsPlus } from 'react-icons/bs';
 import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import { BiBed } from 'react-icons/bi';
 import { ImSpoonKnife } from 'react-icons/im';
@@ -20,7 +20,7 @@ import { getHumanDate } from '../../../services/getHumanDate';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import { PulseLoader } from 'react-spinners';
 import { MdHotel } from 'react-icons/md';
-
+import {BiDollarCircle} from 'react-icons/bi'
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -78,7 +78,6 @@ const HotelBookingContainer = ({
     booking?.user_selected ? false : true
   );
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     setisSelect(booking?.user_selected);
     setisSearchedBooking(booking?.user_selected ? false : true);
@@ -350,14 +349,42 @@ const HotelBookingContainer = ({
                   )}
 
                   {booking.costings_breakdown ? (
-                    <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
-                      <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                        <BiBed className="text-sm text-[#7A7A7A]" />
-                        <div className="text-sm font-[400] line-clamp-1">
-                          {booking.costings_breakdown[0].room_type}
+                    <>
+                      <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                          <BiBed className="text-sm text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] line-clamp-1">
+                            {booking.costings_breakdown[0].room_type}
+                          </div>
+                          <div>
+                            {"( "}
+                            {booking.costings_breakdown[0].number_of_rooms}{" "}
+                            {booking.costings_breakdown[0].number_of_rooms > 1
+                              ? "Rooms"
+                              : "Room"}
+                            {" )"}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                      {booking.costings_breakdown[0].number_of_extra_beds &&
+                      booking.costings_breakdown[0].number_of_extra_beds>0 ? (
+                        <div className="flex flex-row items-center lg:my-0 my-2">
+                          <BsPlus className="text-md text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] line-clamp-1">
+                            {/* Extra beds cost - ₹
+                          {booking.costings_breakdown[0].price * booking.costings_breakdown[0].extra_bed_percent_cost * 0.01}
+                          /- */}
+                            {booking.costings_breakdown[0].number_of_extra_beds}{" "}
+                            {booking.costings_breakdown[0]
+                              .number_of_extra_beds > 1
+                              ? "Extra beds"
+                              : "Extra bed"}
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </>
                   ) : (
                     booking?.room_count && (
                       <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
@@ -381,14 +408,6 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : null}
-                  {booking.number_of_rooms && (
-                    <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                      <MdHotel className="text-sm text-[#7A7A7A]" />
-                      <div className="text-sm font-[400] line-clamp-1">
-                        {booking.number_of_rooms} Rooms
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {currentBooking && booking?.price && (
