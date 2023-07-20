@@ -115,6 +115,7 @@ const AffiliatePage = (props)=> {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
 
   let isPageWide = media('(min-width: 768px)');
+        console.log("props.Experiences: ", props.Experiences);
  
   return (
     <>
@@ -167,7 +168,7 @@ const AffiliatePage = (props)=> {
           ></HowItWorks>
         </HowItWorksContainer>
 
-        <Heading
+       {props.Experiences.length ? <> <Heading
           noline
           textAlign="left"
           fontSize={isPageWide ? "32px" : "24px"}
@@ -178,7 +179,8 @@ const AffiliatePage = (props)=> {
         >
           Workcations in India
         </Heading>
-        <Experiences mobileGrid experiences={props.Experiences}></Experiences>
+          <Experiences mobileGrid experiences={props.Experiences}></Experiences>
+        </> : <></>}
         <Heading
           noline
           textAlign="left"
