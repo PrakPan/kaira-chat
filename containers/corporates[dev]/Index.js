@@ -115,7 +115,7 @@ const AffiliatePage = (props)=> {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
 
   let isPageWide = media('(min-width: 768px)');
-        console.log("props.Experiences: ", props.Experiences);
+
  
   return (
     <>
@@ -168,19 +168,54 @@ const AffiliatePage = (props)=> {
           ></HowItWorks>
         </HowItWorksContainer>
 
-       {props.Experiences.length ? <> <Heading
-          noline
-          textAlign="left"
-          fontSize={isPageWide ? "32px" : "24px"}
-          align="center"
-          aligndesktop="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
-          bold
-        >
-          Workcations in India
-        </Heading>
-          <Experiences mobileGrid experiences={props.Experiences}></Experiences>
-        </> : <></>}
+        {props.workcation_experience.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Workcation Itineraries for Corporates
+            </Heading>
+            <Experiences
+              mobileGrid
+              experiences={props.workcation_experience}
+            ></Experiences>
+          </>
+        ) : (
+          <></>
+        )}
+
+        {props.offbeat_experiences.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Offbeat getaways
+            </Heading>
+            <Experiences
+              mobileGrid
+              experiences={props.offbeat_experiences}
+            ></Experiences>
+          </>
+        ) : (
+          <></>
+        )}
+
         <Heading
           noline
           textAlign="left"
