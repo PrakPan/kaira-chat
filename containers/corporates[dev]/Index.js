@@ -71,7 +71,7 @@ const HowitWorksHeadingsArr = [
   </HowItWorksHeading>,
 
   <HowItWorksHeading className="font-lexend">
-    Conferences
+    Support & Conferences
     {/* : Company travel excursions and conferences */}
   </HowItWorksHeading>,
 ];
@@ -156,9 +156,9 @@ const AffiliatePage = (props)=> {
             nostart
             corporates
             images={[
-              "media/icons/corporates/travelling.jpg",
-              "media/icons/corporates/booking.jpg",
-              "media/icons/corporates/conference.jpg",
+              "media/icons/corporates/travel_vectorjuice.jpg",
+              "media/icons/corporates/booking_vectorjuice.jpg",
+              "media/icons/corporates/support_vectorjuice.jpg",
             ]}
             headings={HowitWorksHeadingsArr}
             content={HowitWorksContentsArr}
@@ -178,10 +178,7 @@ const AffiliatePage = (props)=> {
         >
           Workcations in India
         </Heading>
-        <Experiences
-          mobileGrid
-          experiences={props.Experiences}
-        ></Experiences>
+        <Experiences mobileGrid experiences={props.Experiences}></Experiences>
         <Heading
           noline
           textAlign="left"
