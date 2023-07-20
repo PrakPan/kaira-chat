@@ -13,7 +13,7 @@ const Container = styled.div`
   // }
   &:hover {
     .IconContainer {
-      right: -30px;
+      right: -33px;
     }
   }
 `;
