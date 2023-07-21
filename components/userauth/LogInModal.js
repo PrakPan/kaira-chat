@@ -20,7 +20,7 @@ import LoginLoadingIcon from "../ui/LoadingLottie";
 import Image from "next/image";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
-import { CONTENT_SERVER_HOST , GOOGLE_CLIENT_ID , GOOGLE_CLIENT_ID_DEV } from "../../services/constants";
+import {  GOOGLE_CLIENT_ID  } from "../../services/constants";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
