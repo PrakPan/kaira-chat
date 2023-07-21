@@ -20,6 +20,7 @@ import LoginLoadingIcon from "../ui/LoadingLottie";
 import Image from "next/image";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
+import { CONTENT_SERVER_HOST , GOOGLE_CLIENT_ID , GOOGLE_CLIENT_ID_DEV } from "../../services/constants";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -373,7 +374,9 @@ const LogIn = React.memo((props) => {
     mobileRef.current.focus();
   };
 
-  const googleResponse = (response) => {};
+  const googleResponse = (response) => {
+  console.log("GOOGLE_LOGIN_ERROR: ", response);
+  };
   // if(!props.loadingsocial)
   let isPageWide = media("(min-width: 768px)");
 
@@ -616,7 +619,10 @@ const LogIn = React.memo((props) => {
           <>
             <>
               <GoogleLogin
-                clientId="905616545950-uvachhjv75hejrp9plvodags7s1tqq20.apps.googleusercontent.com"
+                clientId={
+                  // CONTENT_SERVER_HOST.includes('dev') ? GOOGLE_CLIENT_ID_DEV : GOOGLE_CLIENT_ID
+                  GOOGLE_CLIENT_ID
+                }
                 buttonText=""
                 className="google-login-button"
                 onSuccess={props.onGoogleAuth}
