@@ -328,6 +328,7 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
+  console.log('stayBookings', props.stayBookings);
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
     {
       process.env.NODE_ENV === 'production' &&
@@ -568,7 +569,7 @@ const HotelsBooking = (props) => {
           _updateStayBookingHandler={props._updateStayBookingHandler}
           alternates={alternates}
           tailored_id={
-            props.stayBookings[0]
+            props.stayBookings && props.stayBookings[0]
               ? props.stayBookings[0]['tailored_itinerary']
               : null
           }
