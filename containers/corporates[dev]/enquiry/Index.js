@@ -142,7 +142,7 @@ const Enquiry = (props) => {
         size="md"
         centered
         onHide={_hideModalHandler}
-        height={!isPageWide && "100%"}
+        // height={!isPageWide && "100%"}
         style={
           isPageWide
             ? {
@@ -152,11 +152,11 @@ const Enquiry = (props) => {
               }
             : {
                 padding: "0px 18px 18px 18px",
-                width: "100%",
-                // borderRadius: "1rem",
+                width: "95%",
+                borderRadius: "1rem",
               }
         }
-        // zIndex={1298}
+        zIndex={1298}
       >
         {/* <Modal.Body
           style={{ padding: "1rem", minHeight: "60vh", zIndex: 50 }}
@@ -286,16 +286,16 @@ const Enquiry = (props) => {
               onclick={_submitDataHandler}
               fontSize="1rem"
               width={!isPageWide ? "auto" : "100%"}
-              style={
-                !isPageWide
-                  ? {
-                      position: "fixed",
-                      left: "1rem",
-                      right: "1rem",
-                      bottom: "1rem",
-                    }
-                  : {}
-              }
+              // style={
+              //   !isPageWide
+              //     ? {
+              //         position: "fixed",
+              //         left: "1rem",
+              //         right: "1rem",
+              //         bottom: "1rem",
+              //       }
+              //     : {}
+              // }
               padding="0.5rem 2rem"
               fontWeight="500"
               margin="2rem 0 0 0"
