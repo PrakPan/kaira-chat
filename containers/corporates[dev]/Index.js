@@ -184,7 +184,7 @@ const AffiliatePage = (props)=> {
               Workcation Itineraries for Corporates
             </Heading>
             <Experiences
-              mobileGrid
+              // mobileGrid
               experiences={props.workcation_experience}
             ></Experiences>
           </>
@@ -208,7 +208,7 @@ const AffiliatePage = (props)=> {
               Offbeat getaways
             </Heading>
             <Experiences
-              mobileGrid
+              // mobileGrid
               experiences={props.offbeat_experiences}
             ></Experiences>
           </>

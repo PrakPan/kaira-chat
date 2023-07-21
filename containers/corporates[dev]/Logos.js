@@ -3,15 +3,16 @@ import styled from 'styled-components';
 // import Button from '../../components/ui/button/Index';
 import ImageLoader from '../../components/ImageLoader';
 const Container = styled.div`
-   display: grid;
-   grid-template-columns: 1fr 1fr;
-    
-@media screen and (min-width: 768px){
-       grid-template-columns: 10vw 10vw 10vw 10vw 10vw;
-        grid-gap: 5vw;
-        width: max-content;
-        margin: 5vw auto;
-    }
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 3rem;
+  margin: 1rem;
+  @media screen and (min-width: 768px) {
+    grid-template-columns: 10vw 10vw 10vw 10vw 10vw;
+    grid-gap: 5vw;
+    width: max-content;
+    margin: 5vw auto;
+  }
 `;
 
 
