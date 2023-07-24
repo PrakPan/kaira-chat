@@ -70,9 +70,18 @@ const TimeStamp = styled.p`
 
 `;
 const CityDetails = (props) => {
-  console.log('props: ', props);
   const [imageLoading, setImageLoading] = useState(true)
   let isPageWide = media("(min-width: 768px)");
+  function scrollToTargetAdjusted(id) {
+    const element = document.getElementById(id);
+    const headerOffset = 117;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+    });
+  }
     const InfoWindowContainer = (location) => (
       <MapInfo>
         <b>{location.name}</b>
@@ -119,14 +128,15 @@ const CityDetails = (props) => {
         </div>
       )}
       <Link to={props.data.name} offset={-50} >
-        <Button
-          onclick={() => props.onHide()}
+       {props.dayId ? <Button
+          onclick={() => { props.onHide(); scrollToTargetAdjusted(props.dayId);}}
           style={{ marginInline: "auto" }}
           margin="1rem auto"
           borderRadius="8px"
+          
         >
-          View {props.data.name} itinerary
-        </Button>
+          View {props.data.name} in your itinerary
+        </Button> : <></>}
       </Link>
       {props.data.pois && props.data.pois.length ? (
         <div>

@@ -88,13 +88,13 @@ const Details = (props) => {
     return props.itinerary?.day_slabs[id]?.slab;
   };
 
+ 
+
   const Locationlatlong = [];
   if (props.routesData.length >= 1) {
     for (var i = 0; i < props.routesData.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
 
-      // console.log(`response city data${JSON.stringify(citydetails)}`);
-      // console.log(`lat,long${citydetails.lat}`);
       if (
         props.routesData[i].duration &&
         props.routesData[i].duration !== '0'
@@ -121,8 +121,6 @@ const Details = (props) => {
     if (props.CityData.length >= 1) {
       for (var i = 0; i < props.CityData.length; i++) {
         var postion = props.CityData[i];
-        // console.log(`response city data${JSON.stringify(citydetails)}`);
-        // console.log(`lat,long${citydetails.lat}`);
         if (
           !postion.is_departure_only &&
           !postion.is_trip_terminated &&
@@ -145,6 +143,15 @@ const Details = (props) => {
       }
     }
   }
+
+   function findDayIdByCityId(cityId) {
+     for (const item of Locationlatlong) {
+       if (item.city_id === cityId) {
+         return item.dayId;
+       }
+     }
+     return null; // Return null if city_id is not found in the array
+   }
   // const getdayId = (id) => {
   //   return props.itinerary?.day_slabs[id]?.slab_id;
   // };
@@ -324,6 +331,7 @@ const Details = (props) => {
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
         city_id={showDrawerData.city_id}
+        dayId={findDayIdByCityId(showDrawerData.city_id)}
       ></Drawer>
       {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>

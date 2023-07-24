@@ -11,7 +11,8 @@ import CityDetailsSkeleton from "./CityDetailsSkeleton";
 const CityDetailsDrawer = (props) => {
 
   const [data, setData] = useState(null);
-  console.log("data: ", data);
+
+   
 
 const getCityData = async () => {
   const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
@@ -48,12 +49,13 @@ const getCityData = async () => {
         {data ? (
           <CityDetails
             elevation={
-             data.elevation &&
-             data.elevation.length &&
-             data.elevation[0]?.elevation
+              data.elevation &&
+              data.elevation.length &&
+              data.elevation[0]?.elevation
             }
             data={data}
-           onHide={props.onHide}
+            onHide={props.onHide}
+            dayId={props.dayId}
           ></CityDetails>
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>

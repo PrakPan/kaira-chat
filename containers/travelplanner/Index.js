@@ -20,7 +20,6 @@ import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry"
 import WhatsappFloating from "../../components/WhatsappFloating";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
-// import MapBox from "../../components/mapbox";
 import dynamic from "next/dynamic";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
@@ -102,7 +101,6 @@ const Heading = styled.h2`
   }
 `;
 const Homepage = (props) => {
-  console.log('props: ', props);
   let isPageWide = media("(min-width: 768px)");
     const isPageLoaded = usePageLoaded();
 
@@ -326,7 +324,6 @@ const Homepage = (props) => {
   useEffect(() => {
     const user = []
     const ttw = []
-    console.log('props.experienceData.itinerary_data: ', props.experienceData.itinerary_data);
     if (props.experienceData.itinerary_data) {
       props.experienceData.itinerary_data.map((e) => {
         // if (e.user_name !== 'TTW Exclusive' &&  e.user_name !== '' && e.user_name !== 'TTW') user.push(e)

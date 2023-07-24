@@ -32,7 +32,6 @@ const POIDetailsDrawer = (props) => {
       }
     }
   }
-  console.log('poiiii data', data);
   return (
     <Drawer
       show={props.show}
