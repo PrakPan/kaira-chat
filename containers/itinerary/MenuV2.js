@@ -1209,7 +1209,7 @@ const SimpleTabsV2 = (props) => {
         text={response.msg}
         type={response.type}
         heading={response.heading}
-        show={true}
+        show={showPopup}
         setShow={setShowPopup}
       />
     </div>
