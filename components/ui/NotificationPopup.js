@@ -18,7 +18,7 @@ const PopupContainer = styled.div`
   color: white;
   border-radius: 0.5rem;
   text-align: left;
-  width : 90%;
+  width : 94vw;
   border-left: ${(props) => `10px solid ${props.bg}`};
   @media screen and (min-width: 768px) {
     width: 32rem;
