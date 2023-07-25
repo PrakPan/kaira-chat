@@ -33,12 +33,18 @@ export async function getStaticProps() {
     "18db9b62-b8d4-4a6a-8600-b9ca4df389f9",
   ];
   let offbeat_ids = [
-'553f6a52-40af-40b9-bc18-10121194026d',
-'a74a8d7f-6218-4a8f-943e-57c13b9e441f',
-'772e2aab-16f0-48d1-a485-23ca05c09a07'
-  ]
+    "553f6a52-40af-40b9-bc18-10121194026d",
+    "a74a8d7f-6218-4a8f-943e-57c13b9e441f",
+    "772e2aab-16f0-48d1-a485-23ca05c09a07",
+  ];
+    let getaway_ids = [
+      "0c400b2c-031d-424b-877e-14009fd6f0b7",
+      "13a9bc8c-f5ae-4728-a2a3-60f3db170920",
+      "c11a421c-d60f-40b1-bfa4-ab87548f7bd3",
+    ];
   var workcation_experience = [];
-  var offbeat_experiences = []
+  var offbeat_experiences = [];
+  var getaway_experiences = [];
   for (let i = 0; i < workcation_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
@@ -49,12 +55,22 @@ export async function getStaticProps() {
       console.log(e);
     }
   }
-    for (let i = 0; i < offbeat_ids.length; i++) {
+  for (let i = 0; i < offbeat_ids.length; i++) {
+    try {
+      const res = await itineraryplaninstance.get(
+        "/?itinerary_id=" + offbeat_ids[i]
+      );
+      offbeat_experiences.push(res.data);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+    for (let i = 0; i < getaway_ids.length; i++) {
       try {
         const res = await itineraryplaninstance.get(
-          "/?itinerary_id=" + offbeat_ids[i]
+          "/?itinerary_id=" + getaway_ids[i]
         );
-        offbeat_experiences.push(res.data);
+        getaway_experiences.push(res.data);
       } catch (e) {
         console.log(e);
       }
@@ -63,6 +79,7 @@ export async function getStaticProps() {
     props: {
       workcation_experience,
       offbeat_experiences,
+      getaway_experiences,
     },
   };
 }

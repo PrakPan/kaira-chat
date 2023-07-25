@@ -167,7 +167,6 @@ const AffiliatePage = (props)=> {
             dimensionsMobile={{ width: 1200, height: 700 }}
           ></HowItWorks>
         </HowItWorksContainer>
-
         {props.workcation_experience.length ? (
           <>
             <Heading
@@ -186,6 +185,29 @@ const AffiliatePage = (props)=> {
             <Experiences
               // mobileGrid
               experiences={props.workcation_experience}
+            ></Experiences>
+          </>
+        ) : (
+          <></>
+        )}
+        {props.getaway_experiences.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Corporate getaways
+            </Heading>
+            <Experiences
+              // mobileGrid
+              experiences={props.getaway_experiences}
             ></Experiences>
           </>
         ) : (
@@ -215,7 +237,6 @@ const AffiliatePage = (props)=> {
         ) : (
           <></>
         )}
-
         <Heading
           noline
           textAlign="left"
