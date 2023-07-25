@@ -10,6 +10,7 @@ import { Box } from '@mui/material';
 import GITSummaryContainer from './booking1/gittailored/Index';
 import SummaryContainer from './booking1/TailoredDetails';
 import axiosPoiCityInstance from '../../services/poi/city';
+import axiosLeadChat from "../../services/leads/chat.js";
 import Booking from './booking1/CheckLoginWrapper';
 import Register from './register/Index';
 import Breif from './breif/NewIndex';
@@ -51,6 +52,7 @@ import MakeYourPersonalised from '../../components/MakeYourPersonalised';
 import useFieldOfView from '../../hooks/useFieldOfView';
 import useInView from '../../hooks/useInView';
 import { getCityDetails } from './getCityDetails';
+import NotificationPopup from '../../components/ui/NotificationPopup';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -252,7 +254,9 @@ const SimpleTabsV2 = (props) => {
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
-
+  const [loading , setLoading] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
+  const [response, setResponse] = useState({})
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -323,6 +327,59 @@ const SimpleTabsV2 = (props) => {
   // ) {
   //   ClaimItinary(props.id, props.token);
   // }
+  
+ const _GetInTouch = () => {
+   setLoading(true);
+   
+   if (props.token) {
+     
+   const email = localStorage.getItem("email");
+   const name = localStorage.getItem("name");
+   const phone = localStorage.getItem("phone");
+   axiosLeadChat
+     .post("/", {
+       email: email,
+       name: name,
+       phone: phone,
+       source: "Itinerary",
+       query_message: `I need help in completing booking.`,
+     })
+     .then((res) => {
+       //  props.getPaymentHandler();
+
+       setResponse({
+         type: "sucess",
+         msg: res.data.message,
+         heading: "Request received.",
+       });
+      //  setIsShow(true);
+       setLoading(false);
+     })
+     .catch((err) => {
+       // setUpdateLoadingState(false);
+       if (err.response) {
+         // The request was made and the server responded with a status code
+         // that falls out of the range of 2xx
+         // The response headers
+       }
+       setResponse({
+         type: 'error',
+         msg: "Something went wrong! Please try after some time.",
+         heading : 'Error'
+       });
+      //  setIsShow(false);
+       setLoading(false);
+      //  window.alert("There seems to be a problem, please try again!", err);
+       
+     });
+     setShowPopup(true);
+   } else {
+     setLoading(false)
+     setShowLoginModal(true)
+   }
+   
+ };
+
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
@@ -556,9 +613,10 @@ const SimpleTabsV2 = (props) => {
                         width="12rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => setNewitinerary(!Newitinerary)}
+                        onclick={() => _GetInTouch()}
+                        loading={loading}
                       >
-                        Craft a new trip!
+                        Get in touch!
                       </Button>
                     </div>
                   )
@@ -581,7 +639,6 @@ const SimpleTabsV2 = (props) => {
           </div>
         </div>
       )}
-
       <div id={"Brief"}>
         {citydatadone && (
           <Breif
@@ -597,7 +654,6 @@ const SimpleTabsV2 = (props) => {
           ></Breif>
         )}
       </div>
-
       {isPageWide ? null : (
         <>
           <div id={"Itenary"}>
@@ -736,6 +792,7 @@ const SimpleTabsV2 = (props) => {
                     token={props.token}
                     setShowLoginModal={setShowLoginModal}
                     plan={props.plan}
+                    _GetInTouch={() => _GetInTouch()}
                   ></SummaryContainer>
                 ) : (
                   // width 27vw
@@ -934,6 +991,7 @@ const SimpleTabsV2 = (props) => {
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
                   plan={props.plan}
+                  _GetInTouch={() => _GetInTouch()}
                 ></SummaryContainer>
               ) : (
                 // width 27vw
@@ -973,7 +1031,6 @@ const SimpleTabsV2 = (props) => {
           ) : null}
         </SplitScreen>
       ) : null}
-
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
@@ -1095,9 +1152,10 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => setNewitinerary(!Newitinerary)}
+                    loading={loading}
+                    onclick={() => _GetInTouch()}
                   >
-                    Craft a new trip!
+                    Get in touch!
                   </Button>
                 </div>
               )
@@ -1118,7 +1176,6 @@ const SimpleTabsV2 = (props) => {
           ) : null}
         </div>
       </div>
-
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}
@@ -1133,13 +1190,13 @@ const SimpleTabsV2 = (props) => {
           setHidePoiModal={props.setHidePoiModal}
         ></PoiEditModal>
       ) : null}
-      {props.token && Newitinerary && (
+      {/* {props.token && Newitinerary && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
           onHide={() => setNewitinerary(false)}
           show={Newitinerary}
         />
-      )}
+      )} */}
       {/* <Accommodation show={true} ></Accommodation> */}
       <div className="width-[100%]">
         <LogInModal
@@ -1148,6 +1205,13 @@ const SimpleTabsV2 = (props) => {
           itinary_id={props.id}
         ></LogInModal>
       </div>
+      <NotificationPopup
+        text={response.msg}
+        type={response.type}
+        heading={response.heading}
+        show={true}
+        setShow={setShowPopup}
+      />
     </div>
   );
 };

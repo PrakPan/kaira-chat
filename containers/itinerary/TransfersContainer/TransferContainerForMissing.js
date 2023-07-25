@@ -34,7 +34,6 @@ const TransferContainerForMissing = ({
         name: name,
         phone: phone,
         source: 'Itinerary',
-
         query_message: `I need help in completing booking - Transfer from ${cityname1} to ${cityname2} for my itinerary - ${currentUrl}`,
       })
       .then((res) => {

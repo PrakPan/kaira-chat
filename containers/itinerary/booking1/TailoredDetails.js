@@ -126,7 +126,6 @@ const Details = (props) => {
   };
   const handleSelectOption = (option) => {
     // Perform additional actions with the selected option
-    console.log('clicked option', option);
     setDropdownOpen(false);
     setPax(option);
   };
@@ -567,11 +566,11 @@ const Details = (props) => {
   return (
     <SummaryContainer
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
-      style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
+      style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
     >
       <div
         className={`${
-          props.payment.paid_user ? 'bg-[#98F0AB33]' : 'bg-[#F7E70033]'
+          props.payment.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
         }  -mt-[1rem] -mx-[1rem] mb-0`}
       >
         <div className=" mx-[1rem] mt-[1rem]">
@@ -588,7 +587,7 @@ const Details = (props) => {
                     : getIndianPrice(
                         Math.round(props.payment.total_cost / 100)
                       )}
-                  {'/-'}
+                  {"/-"}
                 </div>
               </div>
             )}
@@ -606,8 +605,8 @@ const Details = (props) => {
                   show_per_person_cost={props.payment.show_per_person_cost}
                   className={
                     props.blur
-                      ? 'font-lexend blurry-text'
-                      : 'font-lexend text-3xl flex flex-row items-center font-semibold'
+                      ? "font-lexend blurry-text"
+                      : "font-lexend text-3xl flex flex-row items-center font-semibold"
                   }
                 >
                   <span>₹</span>
@@ -626,7 +625,7 @@ const Details = (props) => {
                             Math.round(props.payment.discounted_cost) / 100
                           )
                         )}
-                    {'/-'}
+                    {"/-"}
                     {/* {!props.payment.show_per_person_cost
                       ? ' ' +
                         getIndianPrice(
@@ -653,12 +652,12 @@ const Details = (props) => {
                   <div className="font-medium text-base self-end">
                     {props?.payment?.pay_only_for_one ||
                     props?.payment?.show_per_person_cost
-                      ? 'Per Person Cost'
+                      ? "Per Person Cost"
                       : props.payment?.is_estimated_price
                       ? `${
-                          props.payment.total_cost == 0 ? '' : 'Estimated Price'
+                          props.payment.total_cost == 0 ? "" : "Estimated Price"
                         }`
-                      : 'Total Cost'}
+                      : "Total Cost"}
                   </div>
                 )}
               </div>
@@ -666,8 +665,8 @@ const Details = (props) => {
 
             <div className="text-[#7A7A7A] text-sm">
               {props?.payment?.total_cost == 0
-                ? 'No bookings added yet'
-                : 'Inclusive of applicable taxes'}
+                ? "No bookings added yet"
+                : "Inclusive of applicable taxes"}
             </div>
           </div>
         </div>
@@ -675,10 +674,10 @@ const Details = (props) => {
           <div
             className="px-2 pt-2"
             style={{
-              marginBottom: '0.1rem',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gridColumnGap: '1rem',
+              marginBottom: "0.1rem",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gridColumnGap: "1rem",
             }}
           >
             {props.payment.itinerary_status ===
@@ -732,13 +731,13 @@ const Details = (props) => {
 
           <RiArrowDropDownLine
             className={` text-2xl  mt-1 transition-all duration-100 ${
-              acoordianceOpen ? '-rotate-180 ' : 'rotate-180 animate-bounce'
+              acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
             }`}
           ></RiArrowDropDownLine>
         </div>
         <div
           className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
-            acoordianceOpen ? 'in' : 'out'
+            acoordianceOpen ? "in" : "out"
           } `}
         >
           {acoordianceOpen && (
@@ -760,20 +759,20 @@ const Details = (props) => {
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text '
-                        : 'font-lexend text-enter text-sm font-normal'
+                        ? "font-lexend text-enter blurry-text "
+                        : "font-lexend text-enter text-sm font-normal"
                     }
                   >
-                    {'Service Fee'}
+                    {"Service Fee"}
                   </div>
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text font-bold'
-                        : 'font-lexend text-enter '
+                        ? "font-lexend text-enter blurry-text font-bold"
+                        : "font-lexend text-enter "
                     }
                   >
-                    {'₹ ' +
+                    {"₹ " +
                       getIndianPrice(
                         Math.round(props.payment.total_service_fee / 100)
                       )}
@@ -785,20 +784,20 @@ const Details = (props) => {
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text  '
-                        : 'font-lexend text-enter text-sm font-normal'
+                        ? "font-lexend text-enter blurry-text  "
+                        : "font-lexend text-enter text-sm font-normal"
                     }
                   >
-                    {'GST'}
+                    {"GST"}
                   </div>
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text '
-                        : 'font-lexend text-enter '
+                        ? "font-lexend text-enter blurry-text "
+                        : "font-lexend text-enter "
                     }
                   >
-                    {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
+                    {"₹ " + getIndianPrice(Math.round(props.payment.gst / 100))}
                   </div>
                 </div>
               ) : null}
@@ -809,20 +808,20 @@ const Details = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-lexend text-enter blurry-text  '
-                            : 'font-lexend text-enter text-sm font-bold  flex flex-col'
+                            ? "font-lexend text-enter blurry-text  "
+                            : "font-lexend text-enter text-sm font-bold  flex flex-col"
                         }
                       >
-                        {'Coupon Discount'}
+                        {"Coupon Discount"}
                         <div className="flex flex-row gap-1">
                           <div className="text-[#02BF2B]">
                             {props.payment.coupon.code}
                           </div>
                           <div className="font-normal ">
                             (
-                            {props?.payment?.coupon?.discount_type == 'Flat'
-                              ? 'Flat'
-                              : props.payment.coupon.discount_value + '%'}{' '}
+                            {props?.payment?.coupon?.discount_type == "Flat"
+                              ? "Flat"
+                              : props.payment.coupon.discount_value + "%"}{" "}
                             OFF)
                           </div>
                         </div>
@@ -830,13 +829,13 @@ const Details = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-lexend text-enter blurry-text '
-                            : 'font-lexend text-enter font-bold'
+                            ? "font-lexend text-enter blurry-text "
+                            : "font-lexend text-enter font-bold"
                         }
                       >
                         <div>
-                          (-){' '}
-                          {'₹' +
+                          (-){" "}
+                          {"₹" +
                             getIndianPrice(
                               Math.round(
                                 props?.payment?.coupon_usage?.discount / 100
@@ -951,7 +950,7 @@ const Details = (props) => {
                     onUnmount={() =>
                       setIsError({
                         error: false,
-                        errorMsg: '',
+                        errorMsg: "",
                       })
                     }
                     isActive={isError.error}
@@ -970,7 +969,7 @@ const Details = (props) => {
                     onUnmount={() =>
                       setIsSucess({
                         value: false,
-                        Msg: '',
+                        Msg: "",
                       })
                     }
                     isActive={isSucess.value}
@@ -1025,14 +1024,14 @@ const Details = (props) => {
                 {props.plan
                   ? props.plan
                     ? getHumanDateWithYear(
-                        format(new Date(date), 'dd-MM-yyyy').replaceAll(
-                          '-',
-                          '/'
+                        format(new Date(date), "dd-MM-yyyy").replaceAll(
+                          "-",
+                          "/"
                         )
                       )
                     : null
                   : null}
-                {' - '}
+                {" - "}
                 {date
                   ? getHumanDateWithYear(
                       format(
@@ -1044,8 +1043,8 @@ const Details = (props) => {
                               : 4
                           )
                         ),
-                        'dd-MM-yyyy'
-                      ).replaceAll('-', '/')
+                        "dd-MM-yyyy"
+                      ).replaceAll("-", "/")
                     )
                   : null}
               </div>
@@ -1078,16 +1077,16 @@ const Details = (props) => {
           <div className=" flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div>
-              {pax} {pluralDetector('Adult', pax)}{' '}
+              {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
             {props.payment.meta_info.number_of_children ? (
               <div>, {props.payment.meta_info.number_of_children} Children</div>
             ) : null}
             {props.payment.meta_info.number_of_infants ? (
               <div>
-                , {props.payment.meta_info.number_of_infants}{' '}
+                , {props.payment.meta_info.number_of_infants}{" "}
                 {pluralDetector(
-                  'Infant',
+                  "Infant",
                   props.payment.meta_info.number_of_infants
                 )}
               </div>
@@ -1148,7 +1147,7 @@ const Details = (props) => {
           ) : (
             <ButtonYellow
               styleClass="w-full"
-              onClick={() => scrollToElement('Stays-Head')}
+              onClick={() => scrollToElement("Stays-Head")}
             >
               Add Hotels
             </ButtonYellow>
@@ -1164,7 +1163,7 @@ const Details = (props) => {
           ) : props?.payment?.paid_user ? (
             <ButtonYellow
               styleClass="w-full"
-              onClick={() => scrollToElement('Stays-Head')}
+              onClick={() => scrollToElement("Stays-Head")}
             >
               View Bookings
             </ButtonYellow>
@@ -1180,10 +1179,10 @@ const Details = (props) => {
           !props.payment.paid_user && (
             <ButtonYellow
               styleClass="w-full"
-              onClick={() => setNewitinerary(true)}
+              onClick={() => props._GetInTouch()}
               // onClick={() => _saleCreateHandler(props.id)}
             >
-              Craft a new trip!
+              Get in touch!
             </ButtonYellow>
           )
         )
@@ -1214,7 +1213,7 @@ const Details = (props) => {
         styleClass="w-full mt-2"
         primary={false}
         onClick={() =>
-          (window.location.href = urls.WHATSAPP + '?text=' + message)
+          (window.location.href = urls.WHATSAPP + "?text=" + message)
         }
       >
         <div className="flex flex-row justify-center items-center">
