@@ -50,7 +50,7 @@ export async function getStaticProps() {
       const res = await itineraryplaninstance.get(
         "/?itinerary_id=" + workcation_ids[i]
       );
-      workcation_experience.push(res.data);
+      if (res.data.message !== "not found") workcation_experience.push(res.data);
     } catch (e) {
       console.log(e);
     }
@@ -60,7 +60,7 @@ export async function getStaticProps() {
       const res = await itineraryplaninstance.get(
         "/?itinerary_id=" + offbeat_ids[i]
       );
-      offbeat_experiences.push(res.data);
+      if(res.data.id) offbeat_experiences.push(res.data);
     } catch (e) {
       console.log(e);
     }
@@ -70,7 +70,7 @@ export async function getStaticProps() {
         const res = await itineraryplaninstance.get(
           "/?itinerary_id=" + getaway_ids[i]
         );
-        getaway_experiences.push(res.data);
+        if(res.data.id)getaway_experiences.push(res.data);
       } catch (e) {
         console.log(e);
       }

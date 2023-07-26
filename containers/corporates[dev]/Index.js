@@ -111,7 +111,6 @@ const HowitWorksContentsArr = [
   </HowItWorksText>,
 ];
 const AffiliatePage = (props)=> {
-  console.log('props: ', props);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
 
   let isPageWide = media('(min-width: 768px)');
