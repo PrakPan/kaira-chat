@@ -8,7 +8,7 @@ import { HiPencil } from "react-icons/hi";
 import Rating from "./Rating";
 import Tips from "./Tips";
 import StarRating from "../../../components/StarRating";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
 import { TbArrowBack } from "react-icons/tb";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
@@ -28,8 +28,6 @@ import ScrollVisibleHOC from "../../../helper/withScrollVisibility";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 
 const Container = styled.div`
-  @media screen and (min-width: 768px) {
-  }
 `;
 
 const SectionOneText = styled.span``;
@@ -113,6 +111,11 @@ const GridResponsive = styled.div`
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
 `;
+const MoreIcon = styled.div`
+display : flex;
+justify-content : flex-end;
+align-items : center;
+`
 const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -122,7 +125,6 @@ const ItineraryPoiElementM = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
-  const [viewMore, setViewMore] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState();
   const [floatingButtonView, setFloatingButtonView] = useState(false);
@@ -307,10 +309,7 @@ const ItineraryPoiElementM = (props) => {
 
           {props?.rating && <StarRating initialRating={4}></StarRating>}
           <div className="flex flex-row">
-            <div
-              className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]"
-              // onClick={() => setViewMore(!viewMore)}
-            >
+            <div className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]">
               {true ? "ATTRACTION" : "View Less"}
             </div>
           </div>
@@ -356,19 +355,13 @@ const ItineraryPoiElementM = (props) => {
           // ) : null} */}
         </div>
       </GridContainer>
-      <div
-        className={`pt-2 text-sm font-[350] ${
-          viewMore ? "line-clamp-0" : "line-clamp-3"
-        }`}
-      >
-        {props.text}
-      </div>
-      <span
-        onClick={() => setShow(true)}
-        className="font-medium w-full block text-end"
-      >
-        {viewMore ? "Less" : "More"}
-      </span>
+      <div className={`pt-2 text-sm font-[350] line-clamp-3`}>{props.text}</div>
+      <MoreIcon onClick={() => setShow(true)}>
+        <span>
+          More
+        </span>
+        <MdNavigateNext style={{ fontSize: "1.3rem"  , marginTop : '0.1rem' }} />
+      </MoreIcon>
       {showLoginModal && (
         <div>
           <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
