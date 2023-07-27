@@ -222,6 +222,7 @@ export default class MyDocument extends Document {
           </noscript>
           <Main />
           <div id="modal-portal" />
+          <div id='popup-portal' />
           <NextScript />
         </body>
       </Html>

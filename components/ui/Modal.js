@@ -109,7 +109,7 @@ export default function Modal(props) {
   }, [props.show]);
 
   return _document
-    ? ReactDOM.createPortal(
+? ReactDOM.createPortal(
         <div>
           {props.show && (
             <div

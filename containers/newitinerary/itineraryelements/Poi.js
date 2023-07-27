@@ -25,6 +25,7 @@ import PoiListSkeleton from './PoiListSkeleton';
 import LogInModal from '../../../components/modals/Login';
 import { Navigation } from '../../../components/NewNavigation';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
+import NotificationPopup from '../../../components/ui/NotificationPopup';
 
 const padding = {
   initialLeft: '60px',
@@ -99,8 +100,6 @@ const ColorTags = styled.span`
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [showDrawerListData, setshowDrawerListData] = useState(false);
-  const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -113,14 +112,7 @@ const ItineraryPoiElement = (props) => {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
-
-  function stringCompare(arr, str) {}
-  function ErrorNotDef(elem) {
-    return elem === undefined || elem === null || !elem;
-  }
   const _updatePoiHandler = (poi) => {
-    // setUpdateLoadingState(true);
-
     axiositineraryeditinstance
       .post(
         '/',
@@ -144,11 +136,21 @@ const ItineraryPoiElement = (props) => {
       )
       .then((res) => {
         props.setItinerary(res.data);
+        props.setPopupResponse({
+          text: "Your Itinerary updated successfully!",
+          heading: "Success!",
+          type: "success",
+        });
+        props.setShowPopup(true)
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
+        props.setPopupResponse({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
+        props.setShowPopup(true);
 
-        window.alert('There seems to be a problem, please try again!');
       });
   };
   const _handleLoginClose = () => {
@@ -275,41 +277,6 @@ const ItineraryPoiElement = (props) => {
                 </div>
               </div>
               {props.poi.rating && <StarRating initialRating={4}></StarRating>}
-
-              {/* {props.poi !== undefined ? (
-                props.poi.experience_filters ? (
-                  <div className={`flex gap-2 flex-row`}>
-                    {props.poi.experience_filters.map((element, index) =>
-                      element.toString() != 'Hidden Gem' ? (
-                        <div className="flex flex-row items-end">
-                          {index != 0 && (
-                            <span className="font-bold text-xl pr-1">.</span>
-                          )}
-
-                          <div
-                            className="flex  items-center text-sm  font-bold"
-                            key={index}
-                          >
-                            {' '}
-                            {element.split(' ').length > 2
-                              ? element.split(' ')[0]
-                              : element}{' '}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex font-bold" key={index}>
-                          <div
-                            className="border-solid text-center flex justify-center items-center   border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
-                            style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
-                          >
-                            {element}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : null
-              ) : null} */}
             </div>
           </div>
 
@@ -320,13 +287,10 @@ const ItineraryPoiElement = (props) => {
       </div>
 
       <POIDetailsDrawer
-        // show={props.showDrawer.isOpen}
-        // width={'35vw'}
         itineraryDrawer
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
-        // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
         image={props.image}
@@ -345,7 +309,6 @@ const ItineraryPoiElement = (props) => {
         style={{ zIndex: 1501 }}
         className="font-lexend"
         onHide={() => setShowDrawer(false)}
-        // zIndex='1501'
       >
         <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 justify-start items-start mx-auto w-[96%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
@@ -395,39 +358,20 @@ const ItineraryPoiElement = (props) => {
             ClickHandler={ClickHandler}
           />
         </div>
-        {!fetchingPoi ? (
-          // <POIDetails data={data}  handleCloseDrawer={props.handleCloseDrawer} />
-          optionsJSX
-        ) : (
-          <PoiListSkeleton />
-        )}
+        {!fetchingPoi ? optionsJSX : <PoiListSkeleton />}
 
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
           onHide={() => setShowDrawer(false)}
         />
       </Drawer>
-      {/* <div style={{display: 'flex', alignItems: 'center'}}>
-                <SectionOneText>{props.time}</SectionOneText>
-                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
-                {
-                    props.booking ? 
-                    <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>
-                         
-                        <Button
-                        borderRadius="8px"
-                        fontWeight="700"
-                        fontSize="12px"
-                        borderWidth="1.5px"
-                        padding="0.5rem 0.5rem"
-                        onclick={() => console.log('')}
-                        >
-                        View Booking
-                        </Button>
-                        </div>
-                    : null
-                }
-            </div> */}
+      {/* <NotificationPopup
+        text={response.text}
+        type={response.type}
+        heading={response.heading}
+        show={showPopup}
+        setShow={setShowPopup}
+      /> */}
     </Container>
   );
 };

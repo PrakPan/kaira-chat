@@ -350,7 +350,7 @@ const SimpleTabsV2 = (props) => {
 
        setResponse({
          type: "sucess",
-         msg: res.data.message,
+         text: res.data.message,
          heading: "Request received.",
        });
       //  setIsShow(true);
@@ -365,8 +365,8 @@ const SimpleTabsV2 = (props) => {
        }
        setResponse({
          type: 'error',
-         msg: "Something went wrong! Please try after some time.",
-         heading : 'Error'
+         text: "Something went wrong! Please try after some time.",
+         heading : 'Error!'
        });
       //  setIsShow(false);
        setLoading(false);
@@ -872,6 +872,8 @@ const SimpleTabsV2 = (props) => {
                     setItinerary={props.setItinerary}
                     getPaymentHandler={props.getPaymentHandler}
                     token={props.token}
+                    setPopupResponse={setResponse}
+                    setShowPopup={setShowPopup}
                   ></NewItenaryMain>
                 )}
               </div>
@@ -1241,7 +1243,7 @@ const SimpleTabsV2 = (props) => {
         ></LogInModal>
       </div>
       <NotificationPopup
-        text={response.msg}
+        text={response.text}
         type={response.type}
         heading={response.heading}
         show={showPopup}

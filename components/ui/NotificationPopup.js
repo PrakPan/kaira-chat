@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { MdClose } from "react-icons/md";
+import ReactDOM from 'react-dom';
 import { useEffect, useState } from "react";
 const Container = styled.div`
   position: fixed;
@@ -56,6 +57,8 @@ const InnerCircle = styled.div`
 `;
 
 export default function NotificationPopup(props) {
+  console.log('props.show: ', props.show);
+  const [_document, set_document] = useState(null);
   const [color, setColor] = useState({
     color: "mediumseagreen",
     bg: "darkgreen",
@@ -65,7 +68,9 @@ export default function NotificationPopup(props) {
     duration = props.duration * 10;
   }
   const [progress, setProgress] = useState(100);
-
+  useEffect(() => {
+    set_document(document);
+  }, []);
   useEffect(() => {
     if (props.show) {
     }
@@ -105,23 +110,25 @@ export default function NotificationPopup(props) {
         bg: "darkgreen",
       });
   }, [props.show, props.type]);
-  return (
-    <Container zIndex={props.zIndex || '5000'} show={props.show}>
-      <PopupContainer color={color.color} show={props.show} bg={color.bg}>
-        {props.heading && <Heading>{props.heading}</Heading>}
-        <Text>{props.text}</Text>
-        <div>
-          <OuterCircle
-            style={{
-              background: `conic-gradient(white 0% ${progress}%, ${color.color} ${progress}% 100%)`,
-            }}
-          >
-            <InnerCircle color={color.color}>
-              <CloseIcon onClick={() => props.setShow(false)} />
-            </InnerCircle>
-          </OuterCircle>
-        </div>
-      </PopupContainer>
-    </Container>
-  );
+  return _document
+    ? ReactDOM.createPortal(
+      <Container zIndex={props.zIndex || '5000'} show={props.show}>
+        <PopupContainer color={color.color} show={props.show} bg={color.bg}>
+          {props.heading && <Heading>{props.heading}</Heading>}
+          <Text>{props.text}</Text>
+          <div>
+            <OuterCircle
+              style={{
+                background: `conic-gradient(white 0% ${progress}%, ${color.color} ${progress}% 100%)`,
+              }}
+            >
+              <InnerCircle color={color.color}>
+                <CloseIcon onClick={() => props.setShow(false)} />
+              </InnerCircle>
+            </OuterCircle>
+          </div>
+        </PopupContainer>
+      </Container>,
+      _document.getElementById("modal-portal")
+    ) : null;
 }
