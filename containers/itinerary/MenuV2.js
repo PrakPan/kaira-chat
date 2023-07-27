@@ -53,6 +53,7 @@ import useFieldOfView from '../../hooks/useFieldOfView';
 import useInView from '../../hooks/useInView';
 import { getCityDetails } from './getCityDetails';
 import NotificationPopup from '../../components/ui/NotificationPopup';
+import ImageLoader from '../../components/ImageLoader';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -616,7 +617,23 @@ const SimpleTabsV2 = (props) => {
                         onclick={() => _GetInTouch()}
                         loading={loading}
                       >
-                        Get in touch!
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"23px"}
+                            width={"23px"}
+                            leftalign
+                            url={"media/icons/login/customer-service.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
                       </Button>
                     </div>
                   )
@@ -1155,7 +1172,23 @@ const SimpleTabsV2 = (props) => {
                     loading={loading}
                     onclick={() => _GetInTouch()}
                   >
-                    Get in touch!
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"23px"}
+                        width={"23px"}
+                        leftalign
+                        url={"media/icons/login/customer-service.png"}
+                      />{" "}
+                      <span>Get in touch!</span>
+                    </div>
                   </Button>
                 </div>
               )

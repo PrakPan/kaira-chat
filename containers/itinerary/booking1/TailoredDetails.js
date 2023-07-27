@@ -54,6 +54,7 @@ import RegisteredUsersModal from '../../../components/modals/registeredusers/Ind
 import TermsModal from '../../../components/modals/terms/PW';
 import UiDropdown from '../../../components/UiDropdown';
 import Link from 'next/link'
+import ImageLoader from '../../../components/ImageLoader';
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -1182,7 +1183,23 @@ const Details = (props) => {
               onClick={() => props._GetInTouch()}
               // onClick={() => _saleCreateHandler(props.id)}
             >
-              Get in touch!
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                }}
+              >
+                <ImageLoader
+                  dimensions={{ height: 50, width: 50 }}
+                  dimensionsMobile={{ height: 50, width: 50 }}
+                  height={"23px"}
+                  width={"23px"}
+                  leftalign
+                  url={"media/icons/login/customer-service.png"}
+                />{" "}
+                <span>Get in touch!</span>
+              </div>
             </ButtonYellow>
           )
         )

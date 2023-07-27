@@ -57,7 +57,7 @@ const Info = (props) => {
             Tour Type: <b style={{ fontWeight: "500" }}>Customisable</b>
           </TourType>
         ) : props.user_name !== "TTW Exclusive" &&
-          props.user_name !== "" &&
+          props.user_name != "" &&
           props.user_name !== "TTW" ? (
           <TourType>
             <b style={{ fontWeight: "500" }}>
