@@ -214,6 +214,7 @@ const Route = (props) => {
       </div>
 
       <PinSection
+        startingCity
         setCurrentPopup={props.setCurrentPopup}
         setShowDrawer={props.setShowDrawer}
         setShowDrawerData={props.setShowDrawerData}
@@ -278,6 +279,7 @@ const Route = (props) => {
              <MidSection></MidSection> */}
 
       <PinSection
+        endingCity
         setCurrentPopup={props.setCurrentPopup}
         dayId={props.breif.city_slabs[0].day_slab_location.start_day_slab_index}
         setShowDrawer={props.setShowDrawer}

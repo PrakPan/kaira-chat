@@ -50,81 +50,35 @@ const IconContainer = styled.div`
   transition: right 0.2s ease;
 `;
 
-const PinSection = ({
-  dayslab,
-  setShowDrawer,
-  setShowDrawerData,
-  cityData,
-  dayId,
-  setCurrentPopup,
-  lat,
-  long,
-  cityId,
-  duration,
-  city,
-  pinColour,
-  handlemap,
-  Mapid,
-}) => {
-  // const [pinhover, isPinhover] = useHover();
-  // const getdayId = (id) => {
-  //   return dayslab[id]?.slab_id;
-  // };
-  // const getdateId = (id) => {
-  //   return dayslab[id]?.slab;
-  // };
-  // useEffect(() => {
-  //   if (isPinhover) {
-  //     if (lat) {
-  //       setCurrentPopup &&
-  //         setCurrentPopup([
-  //           {
-  //             dayId: getdayId(dayId),
-  //             date: getdateId(dayId),
-  //             cityData: cityData,
-  //             id: Mapid,
-  //             city_id: cityId,
-  //             lat: lat,
-  //             long: long,
-  //             name: city,
-  //             duration: duration,
-  //             color: pinColour,
-  //           },
-  //         ]);
-  //     }
-  //   }
-  // }, [isPinhover]);
-  // ref={pinhover}
+const PinSection = (props) => {
   const handleClick = () => {
-    setShowDrawer(true);
-    setShowDrawerData(cityData);
+    if(props.startingCity || props.endingCity) return
+    props.setShowDrawer(true);
+    props.setShowDrawerData(props.cityData);
   };
   return (
     <Container className="cursor-pointer " onClick={() => handleClick()}>
-      <Pin duration={duration} pinColour={pinColour}></Pin>
+      <Pin duration={props.duration} pinColour={props.pinColour}></Pin>
       <Heading
-        pinColour={pinColour}
+        pinColour={props.pinColour}
         className={`${
-          setCurrentPopup ? "ml-4 heading" : "lg:ml-8 ml-2 heading"
+          props.setCurrentPopup ? "ml-4 heading" : "lg:ml-8 ml-2 heading"
         } `}
       >
-        {duration >= 1
-          ? city +
+        {props.duration >= 1
+          ? props.city +
             `${
-              duration > 1
-                ? ` - ${duration} Nights`
-                : `${duration == 0 ? `` : ` - ${duration}`}  Night`
+              props.duration > 1
+                ? ` - ${props.duration} Nights`
+                : `${props.duration == 0 ? `` : ` - ${props.duration}`}  Night`
             } `
-          : city}
-        {/* <div className="px-4 py-1 text-[12px] cursor-pointer border-2 border-black ml-6 font-bold font-lexend text-black rounded-md">
-          Edit
-        </div> */}
-        <IconContainer className="IconContainer">
+          : props.city}
+      {(props.startingCity || props.endingCity) ? <></> :   <IconContainer className="IconContainer">
           <MdNavigateNext
             style={{ fontSize: "1.5rem" }}
             className="AnimateRight"
           />
-        </IconContainer>
+        </IconContainer>}
       </Heading>
     </Container>
   );
