@@ -622,6 +622,7 @@ const SimpleTabsV2 = (props) => {
                             display: "flex",
                             justifyContent: "center",
                             gap: "0.5rem",
+                            alignItems: "center",
                           }}
                         >
                           <ImageLoader
@@ -1177,6 +1178,7 @@ const SimpleTabsV2 = (props) => {
                         display: "flex",
                         justifyContent: "center",
                         gap: "0.5rem",
+                        alignItems: "center",
                       }}
                     >
                       <ImageLoader

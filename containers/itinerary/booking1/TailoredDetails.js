@@ -4,7 +4,7 @@ import Heading from '../../../components/newheading/heading/Index';
 import Option from '../../../components/forms/Option';
 import Dropdown from '../../../components/forms/Dropdown';
 import { RiArrowDropDownLine, RiWhatsappFill } from 'react-icons/ri';
-import Button from '../../../components/Button';
+import Button from '../../../components/ui/button/Index';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { connect } from 'react-redux';
 import * as orderaction from '../../../store/actions/order';
@@ -1178,16 +1178,29 @@ const Details = (props) => {
           )
         ) : (
           !props.payment.paid_user && (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => props._GetInTouch()}
-              // onClick={() => _saleCreateHandler(props.id)}
+            // <ButtonYellow
+            //   styleClass="w-full"
+            //   onClick={() => props._GetInTouch()}
+            //   // onClick={() => _saleCreateHandler(props.id)}
+            // >
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              // loading={loading}
+              onclick={() => props._GetInTouch()}
+              // height='2rem'
             >
               <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   gap: "0.5rem",
+                  alignItems: "center",
                 }}
               >
                 <ImageLoader
@@ -1200,7 +1213,7 @@ const Details = (props) => {
                 />{" "}
                 <span>Get in touch!</span>
               </div>
-            </ButtonYellow>
+            </Button>
           )
         )
       ) : null}
@@ -1219,25 +1232,34 @@ const Details = (props) => {
             null
         : null}
       {!props.token ? (
-        <ButtonYellow
-          styleClass="w-full"
-          onClick={() => props.setShowLoginModal(true)}
+        <Button
+          color="#111"
+          fontWeight="500"
+          fontSize="0.85rem"
+          borderWidth="2px"
+          width="100%"
+          borderRadius="8px"
+          bgColor="#f8e000"
+          onclick={() => props.setShowLoginModal(true)}
         >
           Log in to proceed
-        </ButtonYellow>
+        </Button>
       ) : null}
-      <ButtonYellow
-        styleClass="w-full mt-2"
-        primary={false}
-        onClick={() =>
+      <Button
+        width="100%"
+        margin="0.5rem 0 0 0"
+        borderRadius="8px"
+        hoverColor="white"
+        fontWeight="400"
+        onclick={() =>
           (window.location.href = urls.WHATSAPP + "?text=" + message)
         }
       >
         <div className="flex flex-row justify-center items-center">
           <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-          <div className="text-[#01202B] ">Chat on Whatsapp</div>
+          <div>Chat on Whatsapp</div>
         </div>
-      </ButtonYellow>
+      </Button>
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
         <Link href="/terms-conditions" target="_blank">
           <div>Terms & Conditions</div>
