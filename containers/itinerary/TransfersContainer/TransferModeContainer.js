@@ -12,10 +12,11 @@ import useMediaQuery from '../../../components/media';
 import { ITINERARY_STATUSES } from '../../../services/constants';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import Slide from '../../../Animation/framerAnimation/Slide';
 import { PulseLoader } from 'react-spinners';
 import EllipsisTruncation from '../../EllipsisTruncate';
 import { checkNestedProperties } from '../../../helper/shortHelpers';
+import { connect } from 'react-redux';
+import { openNotification } from '../../../store/actions/notification';
 function formatDate(dateString) {
   const date = new parseISO(dateString);
   if (isNaN(date.getTime())) {
@@ -141,10 +142,6 @@ const Line = styled.hr`
 const TransferModeContainer = (props) => {
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState({
-    error: false,
-    errorMsg: '',
-  });
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   useEffect(() => {
     setaddboking(props.userSelected);
@@ -329,20 +326,27 @@ const TransferModeContainer = (props) => {
         setaddboking(!addbooking);
         setUpdateBookingState(false);
         setLoading(false);
+          props.openNotification({
+            text: "Your Booking updated successfully!",
+            heading: "Success!",
+            type: "success",
+          });
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
         if (err.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-
           // The response headers
           if (err.response.status === 400) {
-            setIsError({
-              error: true,
-              errorMsg: err.response.data.message,
+            props.openNotification({
+              text: err.response.data.message,
+              heading: "Error!",
+              type: "error",
             });
-          }
+          }else props.openNotification({
+              text: "There seems to be a problem, please try again!",
+              heading: "Error!",
+              type: "error",
+            });
         }
         setUpdateBookingState(false);
         setLoading(false);
@@ -352,28 +356,6 @@ const TransferModeContainer = (props) => {
 
   return (
     <Container>
-      <div className=" fixed right-[10px] top-[50px] z-[200] ">
-        {isError.error && (
-          <Slide
-            hideTime={8}
-            onUnmount={() =>
-              setIsError({
-                error: false,
-                errorMsg: '',
-              })
-            }
-            isActive={isError.error}
-            direction={-2}
-            duration={1.3}
-            ydistance={25}
-          >
-            <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
-              {isError.errorMsg}
-            </div>
-          </Slide>
-        )}
-      </div>
-      {/* <div></div> */}
       {props.routes && props?.routes.length > 1 ? (
         <div style={{ position: 'relative' }}>
           <Line pinColour={props.pinColour} Transfers={true} />
@@ -925,4 +907,17 @@ const TransferModeContainer = (props) => {
   );
 };
 
-export default TransferModeContainer;
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(
+  mapStateToPros,
+  mapDispatchToProps
+)(TransferModeContainer);

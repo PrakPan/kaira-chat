@@ -16,6 +16,7 @@ import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
 import Skeleton from './Skeleton';
 import { TbArrowBack } from 'react-icons/tb';
+import { openNotification } from '../../../store/actions/notification';
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -364,13 +365,23 @@ const Booking = (props) => {
         }, 1000); */
         props.getPaymentHandler();
         setUpdateBookingState(false);
+         props.openNotification({
+           type: "success",
+           text: "Flight updated successfully.",
+           heading: "Sucess!",
+         });
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
         setUpdateBookingState(false);
         console.log(err);
         setUnauthorized(true);
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+        props.openNotification({
+          type: "error",
+          text: "Something went wrong! Please try after some time.",
+          heading: "Error!",
+        });
       });
   };
   const _loadAccommodationsHandler = () => {
@@ -594,7 +605,9 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);

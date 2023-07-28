@@ -24,6 +24,7 @@ import Drawer from '../../ui/Drawer';
 import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
 import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
 import Slide from '../../../Animation/framerAnimation/Slide';
+import { openNotification } from '../../../store/actions/notification';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -537,14 +538,22 @@ const Booking = (props) => {
               props._updateStayBookingHandler([res.data]);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
-
+props.openNotification({
+  type: "success",
+  text: "Hotel added successfully.",
+  heading: "Sucess!",
+});
               setUpdateBookingState(false);
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-
+props.openNotification({
+  type: "error",
+  text: "Something went wrong! Please try after some time.",
+  heading: "Error!",
+});
               // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
@@ -564,12 +573,21 @@ const Booking = (props) => {
               props.getPaymentHandler();
 
               setUpdateBookingState(false);
+              props.openNotification({
+                type: "success",
+                text: "Hotel changed successfully.",
+                heading: "Sucess!",
+              });
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-
+props.openNotification({
+  type: "error",
+  text: "Something went wrong! Please try after some time.",
+  heading: "Error!",
+});
               // window.alert("There seems to be a problem, please try again!")
             });
     }
@@ -658,12 +676,21 @@ const Booking = (props) => {
               }, 1000);
               // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
+              props.openNotification({
+                type: "success",
+                text: "Hotel added successfully.",
+                heading: "Sucess!",
+              });
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-
+props.openNotification({
+  type: "error",
+  text: "Something went wrong! Please try after some time.",
+  heading: "Error!",
+});
               // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
@@ -683,12 +710,21 @@ const Booking = (props) => {
               }, 1000);
               // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
+              props.openNotification({
+                type: "success",
+                text: "Hotel changed successfully.",
+                heading: "Sucess!",
+              });
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-
+props.openNotification({
+  type: "error",
+  text: "Something went wrong! Please try after some time.",
+  heading: "Error!",
+});
               // window.alert("There seems to be a problem, please try again!")
             });
     }
@@ -1102,7 +1138,9 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);
