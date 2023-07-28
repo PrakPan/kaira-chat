@@ -12,7 +12,7 @@ import {
   newDayContainerTextpadding,
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import StarRating from '../../../components/StarRating';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdNavigateNext } from 'react-icons/md';
 import Drawer from '../../../components/ui/Drawer';
 import { TbArrowBack } from 'react-icons/tb';
 import { IoMdClose } from 'react-icons/io';
@@ -54,7 +54,14 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
-
+const MoreIcon = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  span {
+    font-weight: 400;
+    font-size: 0.875rem;
+`;
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
@@ -281,6 +288,12 @@ const ItineraryPoiElement = (props) => {
           <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
             {props.text}
           </div>
+          <MoreIcon onClick={() => setShow(true)}>
+            <span>More</span>
+            <MdNavigateNext
+              style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
+            />
+          </MoreIcon>
         </div>
       </div>
 
