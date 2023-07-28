@@ -4,11 +4,13 @@ import Footer from './newfooter/Index';
 import LogInModal from '../components/modals/Login';
 import { connect } from 'react-redux';
 import * as authaction from '../store/actions/auth';
+// import {openNotification} from '../store/actions/notification'
 import TailoredFormMobileModal from './modals/TailoredFomrMobile';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { closeTailoredModal } from '../services/openTailoredModal';
 import media from './media'
+import NotificationPopup from './ui/NotificationPopup';
 const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
   // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
@@ -30,6 +32,17 @@ const Layout = React.memo((props) => {
 
   // Freshchat bot :-
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     props.openNotification({
+  //       type: "error",
+  //       text: "this is error",
+  //       heading: "error",
+  //       duration : 20
+  //     });
+  //   },5000)
+    
+  // },[])
 
   useEffect(() => {
 
@@ -101,7 +114,7 @@ const Layout = React.memo((props) => {
         }}
         show={showMoiblePlanner}
       /> */}
-
+<NotificationPopup />
       {!props.itinerary ? <Footer></Footer> : null}
     </div>
   );
@@ -117,6 +130,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
+    // openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
 export default connect(mapStateToPros, mapDispatchToProps)(Layout);

@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { MdClose } from "react-icons/md";
 import ReactDOM from 'react-dom';
 import { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { closeNotification } from "../../store/actions/notification";
 const Container = styled.div`
   position: fixed;
   right: 1rem;
@@ -56,8 +58,7 @@ const InnerCircle = styled.div`
   border-radius: 50%;
 `;
 
-export default function NotificationPopup(props) {
-  console.log('props.show: ', props.show);
+function NotificationPopup(props) {
   const [_document, set_document] = useState(null);
   const [color, setColor] = useState({
     color: "mediumseagreen",
@@ -65,20 +66,16 @@ export default function NotificationPopup(props) {
   });
   var duration = 50;
   if (props.duration) {
-    duration = props.duration * 10;
+    duration = +props.duration * 10;
   }
   const [progress, setProgress] = useState(100);
   useEffect(() => {
     set_document(document);
   }, []);
-  useEffect(() => {
-    if (props.show) {
-    }
-  }, [props.show]);
 
   useEffect(() => {
     if (props.show) {
-      setTimeout(() => props.setShow(false), duration * 100);
+      setTimeout(() => props.closeNotification(), duration * 100);
 
       const timer = setInterval(() => {
         setProgress((prevProgress) =>
@@ -112,23 +109,47 @@ export default function NotificationPopup(props) {
   }, [props.show, props.type]);
   return _document
     ? ReactDOM.createPortal(
-      <Container zIndex={props.zIndex || '5000'} show={props.show}>
-        <PopupContainer color={color.color} show={props.show} bg={color.bg}>
-          {props.heading && <Heading>{props.heading}</Heading>}
-          <Text>{props.text}</Text>
-          <div>
-            <OuterCircle
-              style={{
-                background: `conic-gradient(white 0% ${progress}%, ${color.color} ${progress}% 100%)`,
-              }}
-            >
-              <InnerCircle color={color.color}>
-                <CloseIcon onClick={() => props.setShow(false)} />
-              </InnerCircle>
-            </OuterCircle>
-          </div>
-        </PopupContainer>
-      </Container>,
-      _document.getElementById("modal-portal")
-    ) : null;
+        <Container zIndex={props.zIndex || "5000"} show={props.show}>
+          <PopupContainer color={color.color} show={props.show} bg={color.bg}>
+            {props.heading && <Heading>{props.heading}</Heading>}
+            <Text>{props.text}</Text>
+            <div>
+              <OuterCircle
+                style={{
+                  background: `conic-gradient(white 0% ${progress}%, ${color.color} ${progress}% 100%)`,
+                }}
+              >
+                <InnerCircle color={color.color}>
+                  <CloseIcon onClick={() => props.closeNotification()} />
+                </InnerCircle>
+              </OuterCircle>
+            </div>
+          </PopupContainer>
+        </Container>,
+        _document.getElementById("modal-portal")
+      )
+    : null;
 }
+
+
+const mapStateToPros = (state) => {
+  return {
+    // hideloginclose: state.auth.hideloginclose,
+    // token: state.auth.token,
+    // phone: state.auth.phone,
+    text: state.Notification.text,
+    type: state.Notification.type,
+    heading: state.Notification.heading,
+    duration : state.Notification.duration,
+    show: state.Notification.show,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    checkAuthState: () => dispatch(authaction.checkAuthState()),
+    authCloseLogin: () => dispatch(authaction.authCloseLogin()),
+    closeNotification: (payload) => dispatch(closeNotification()),
+  };
+};
+
+export default connect(mapStateToPros, mapDispatchToProps)(NotificationPopup);
