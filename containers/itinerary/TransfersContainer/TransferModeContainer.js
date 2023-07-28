@@ -365,7 +365,7 @@ const TransferModeContainer = (props) => {
       )}
 
       {props.booking_type == 'Flight' ? (
-        <div className="mt-3 lg:ml-7 ml-2">
+        <div className="mt-3 lg:ml-7">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
             <div className="flex flex-row gap-2 justify-center items-center">
@@ -636,7 +636,7 @@ const TransferModeContainer = (props) => {
               </div>
             </div>
             <div
-              className={`lg:hidden flex flex-row gap-3 ml-2 ${
+              className={`lg:hidden flex flex-row gap-1 ml-2 ${
                 !props.userSelected ? 'lg:mt-3 mb-3' : 'lg:mt-3 mt-3'
               }  text-sm`}
             >
@@ -759,7 +759,7 @@ const TransferModeContainer = (props) => {
               </div>
             )}
 
-            <div className=" flex flex-col w-[80%] pl-1">
+            <div className=" flex flex-col w-[80%] lg:pl-1">
               <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium">
                 {/* <span className="inline  gap-3 items-center">
                   {props.booking_type == 'Taxi' && (

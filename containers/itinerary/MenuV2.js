@@ -1183,6 +1183,7 @@ const SimpleTabsV2 = (props) => {
                         dimensionsMobile={{ height: 50, width: 50 }}
                         height={"23px"}
                         width={"23px"}
+                        widthmobile={"23px"}
                         leftalign
                         url={"media/icons/login/customer-service.png"}
                       />{" "}
