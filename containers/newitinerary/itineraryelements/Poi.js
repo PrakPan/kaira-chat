@@ -26,6 +26,8 @@ import LogInModal from '../../../components/modals/Login';
 import { Navigation } from '../../../components/NewNavigation';
 import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import NotificationPopup from '../../../components/ui/NotificationPopup';
+import { connect } from 'react-redux';
+import { openNotification } from '../../../store/actions/notification';
 
 const padding = {
   initialLeft: '60px',
@@ -136,20 +138,18 @@ const ItineraryPoiElement = (props) => {
       )
       .then((res) => {
         props.setItinerary(res.data);
-        props.setPopupResponse({
+        props.openNotification({
           text: "Your Itinerary updated successfully!",
           heading: "Success!",
           type: "success",
         });
-        props.setShowPopup(true)
       })
       .catch((err) => {
-        props.setPopupResponse({
+        props.openNotification({
           text: "There seems to be a problem, please try again!",
           heading: "Error!",
           type: "error",
         });
-        props.setShowPopup(true);
 
       });
   };
@@ -213,13 +213,11 @@ const ItineraryPoiElement = (props) => {
     'Very popular',
   ];
   const ClickHandler = (child) => {
-    console.log('clicked element', child);
     if (child == 'Things To Do') {
       Poi_activities({ id: 3 });
     } else {
       Poi_activities();
     }
-    console.log(child);
   };
   return (
     <Container>
@@ -365,15 +363,17 @@ const ItineraryPoiElement = (props) => {
           onHide={() => setShowDrawer(false)}
         />
       </Drawer>
-      {/* <NotificationPopup
-        text={response.text}
-        type={response.type}
-        heading={response.heading}
-        show={showPopup}
-        setShow={setShowPopup}
-      /> */}
     </Container>
   );
 };
-
-export default ItineraryPoiElement;
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(mapStateToPros,mapDispatchToProps)(ItineraryPoiElement);

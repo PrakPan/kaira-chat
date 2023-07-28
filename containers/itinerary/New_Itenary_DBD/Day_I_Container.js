@@ -200,8 +200,6 @@ const Day_I_Container = (props) => {
               activity={element?.activity_data?.activity}
               city_id={element?.activity_data?.city?.id}
               token={props.token}
-              setPopupResponse={props.setPopupResponse}
-              setShowPopup={props.setShowPopup}
             ></ItineraryPoiElement>
           );
           break;

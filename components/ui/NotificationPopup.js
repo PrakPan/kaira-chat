@@ -134,9 +134,6 @@ function NotificationPopup(props) {
 
 const mapStateToPros = (state) => {
   return {
-    // hideloginclose: state.auth.hideloginclose,
-    // token: state.auth.token,
-    // phone: state.auth.phone,
     text: state.Notification.text,
     type: state.Notification.type,
     heading: state.Notification.heading,

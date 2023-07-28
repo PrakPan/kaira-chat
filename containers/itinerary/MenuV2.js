@@ -54,6 +54,8 @@ import useInView from '../../hooks/useInView';
 import { getCityDetails } from './getCityDetails';
 import NotificationPopup from '../../components/ui/NotificationPopup';
 import ImageLoader from '../../components/ImageLoader';
+import { connect } from 'react-redux';
+import { openNotification } from '../../store/actions/notification';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -256,8 +258,6 @@ const SimpleTabsV2 = (props) => {
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
   const [loading , setLoading] = useState(false)
-  const [showPopup, setShowPopup] = useState(false)
-  const [response, setResponse] = useState({})
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -347,12 +347,10 @@ const SimpleTabsV2 = (props) => {
      })
      .then((res) => {
        //  props.getPaymentHandler();
-
-       setResponse({
-         type: "sucess",
+       props.openNotification({
+           type: "sucess",
          text: res.data.message,
-         heading: "Request received.",
-       });
+         heading: "Request received.",})
       //  setIsShow(true);
        setLoading(false);
      })
@@ -363,17 +361,16 @@ const SimpleTabsV2 = (props) => {
          // that falls out of the range of 2xx
          // The response headers
        }
-       setResponse({
-         type: 'error',
+       props.openNotification({
+         type: "error",
          text: "Something went wrong! Please try after some time.",
-         heading : 'Error!'
+         heading: "Error!",
        });
       //  setIsShow(false);
        setLoading(false);
       //  window.alert("There seems to be a problem, please try again!", err);
        
      });
-     setShowPopup(true);
    } else {
      setLoading(false)
      setShowLoginModal(true)
@@ -872,8 +869,6 @@ const SimpleTabsV2 = (props) => {
                     setItinerary={props.setItinerary}
                     getPaymentHandler={props.getPaymentHandler}
                     token={props.token}
-                    setPopupResponse={setResponse}
-                    setShowPopup={setShowPopup}
                   ></NewItenaryMain>
                 )}
               </div>
@@ -1242,18 +1237,21 @@ const SimpleTabsV2 = (props) => {
           itinary_id={props.id}
         ></LogInModal>
       </div>
-      <NotificationPopup
-        text={response.text}
-        type={response.type}
-        heading={response.heading}
-        show={showPopup}
-        setShow={setShowPopup}
-      />
     </div>
   );
 };
 
-export default SimpleTabsV2;
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(mapStateToPros, mapDispatchToProps)(SimpleTabsV2);
 function newFunction(
   props,
   totalcityslabs,

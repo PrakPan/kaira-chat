@@ -227,8 +227,6 @@ const NewItenaryMain = (props) => {
                 setItinerary={props.setItinerary}
                 token={props.token}
                 LastElement={props.itinerary.day_slabs.length == index + 1}
-                setPopupResponse={props.setPopupResponse}
-                setShowPopup={props.setShowPopup}
               ></Day_I_Container>
             </div>
           ))}
