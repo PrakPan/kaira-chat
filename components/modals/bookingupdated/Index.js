@@ -57,7 +57,6 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log('propsIm: ', props.currentBooking.source);
 
   let isPageWide = media('(min-width: 768px)');
 
@@ -91,7 +90,6 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
 
   useEffect(() => {
-    console.log('filter filterr', filtersState);
     _updateOptionsHandlerWithFilter();
   }, [filtersState]);
   const filters = {
@@ -204,7 +202,6 @@ const Booking = (props) => {
         })
         .then((res) => {
           setUpdateLoadingState(false);
-          console.log("response founded");
           if (res.data.results.length) {
             setNoResults(false);
             let is_min_price_present = false;
@@ -312,7 +309,6 @@ const Booking = (props) => {
     }));
   };
   const _updateStarFilterHandler = (star) => {
-    console.log('filter star', star);
     /* let oldfilters = { ...filtersState };
     let newfilters = {
       ...oldfilters,
@@ -445,7 +441,6 @@ agodaAccomodation
     number_of_infants: props.selectedBooking.pax.number_of_infants,
   })
   .then((res) => {
-    console.log("founded");
     setUpdateLoadingState(false);
     if (res.data.results.length) {
       setNoResults(false);
@@ -848,10 +843,6 @@ props.openNotification({
           price_upper_range: filters.price_upper_range,
         })
         .then((res) => {
-          // setOffset(res.data.nextOffset);
-          // setOffset(offset+40);
-          console.log("response founded");
-
           // let oldoptions = optionsJSX;
           setTotalCount(res?.data?.count);
           if (res.data.results.length) {

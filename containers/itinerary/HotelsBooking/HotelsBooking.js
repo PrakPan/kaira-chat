@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import ImageLoader from '../../../components/ImageLoader';
-import StarRating from '../../../components/StarRating';
-import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
-import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
-import { ImSpoonKnife } from 'react-icons/im';
-import FullScreenGallery from '../../../components/fullscreengallery/Index';
-import BookingModal from '../../../components/modals/bookingupdated/Index';
-import * as ga from '../../../services/ga/Index';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
+import React, { useEffect, useState } from "react";
+import ImageLoader from "../../../components/ImageLoader";
+import StarRating from "../../../components/StarRating";
+import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
+import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { ImSpoonKnife } from "react-icons/im";
+import FullScreenGallery from "../../../components/fullscreengallery/Index";
+import BookingModal from "../../../components/modals/bookingupdated/Index";
+import * as ga from "../../../services/ga/Index";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 
-import ButtonYellow from '../../../components/ButtonYellow';
-import AccommodationModal from '../../../components/modals/accommodation/Index';
-import styled from 'styled-components';
-import { FaFilter } from 'react-icons/fa';
+import ButtonYellow from "../../../components/ButtonYellow";
+import AccommodationModal from "../../../components/modals/accommodation/Index";
+import styled from "styled-components";
+import { FaFilter } from "react-icons/fa";
 import {
   getDate,
   convertDateYearFormat,
-} from '../../../helper/ConvertDateFormat';
-import { connect } from 'react-redux';
-import HotelBookingContainer from './HotelBookingContainer';
-import LogInModal from '../../../components/modals/Login';
-import useMediaQuery from '../../../hooks/useMedia';
-import { TbArrowBack } from 'react-icons/tb';
-import { isDateOlderThanCurrent } from '../../../helper/isDateOlderThanCurrent';
-import Modal from '../../../components/ui/Modal';
-import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
-import { useRouter } from 'next/router';
-import { format, isEqual, isSameDay, parse } from 'date-fns';
-import Slide from '../../../Animation/framerAnimation/Slide';
-import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
+} from "../../../helper/ConvertDateFormat";
+import { connect } from "react-redux";
+import HotelBookingContainer from "./HotelBookingContainer";
+import LogInModal from "../../../components/modals/Login";
+import useMediaQuery from "../../../hooks/useMedia";
+import { TbArrowBack } from "react-icons/tb";
+import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
+import Modal from "../../../components/ui/Modal";
+import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
+import { useRouter } from "next/router";
+import { format, isEqual, isSameDay, parse } from "date-fns";
+import Slide from "../../../Animation/framerAnimation/Slide";
+import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -65,13 +65,12 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const HotelsBooking = (props) => {
-  console.log("propsImnss: ", props);
 
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
   });
-  const isDesktop = useMediaQuery('(min-width:1148px)');
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
     useState([]);
   const [showFilter, setshowFilter] = useState(false);
@@ -83,7 +82,7 @@ const HotelsBooking = (props) => {
   const [AddHotel, setAddHotel] = useState(false);
   const [isError, setIsError] = useState({
     error: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [bookingId, setBookingId] = useState(null);
@@ -92,6 +91,8 @@ const HotelsBooking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [alternates, setAlternates] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
+  const [dates, setDates] = useState({ check_in: "", check_out: "" });
+
   const _changeBookingHandler = (
     name,
     itinerary_id,
@@ -111,9 +112,9 @@ const HotelsBooking = (props) => {
     images
   ) => {
     {
-      process.env.NODE_ENV === 'production' &&
+      process.env.NODE_ENV === "production" &&
         ga.event({
-          action: 'Itinerary-bookings-acc_change',
+          action: "Itinerary-bookings-acc_change",
           params: { name: name },
         });
     }
@@ -125,8 +126,8 @@ const HotelsBooking = (props) => {
       accommodation: accommodation,
       id: id,
       tailored_id: tailored_id,
-      check_in: format(new Date(check_in), 'dd-MM-yyyy').replaceAll('-', '/'),
-      check_out: format(new Date(check_out), 'dd-MM-yyyy').replaceAll('-', '/'),
+      check_in: format(new Date(check_in), "dd-MM-yyyy").replaceAll("-", "/"),
+      check_out: format(new Date(check_out), "dd-MM-yyyy").replaceAll("-", "/"),
       pax: pax,
       city: city,
       cityId: cityId,
@@ -145,15 +146,15 @@ const HotelsBooking = (props) => {
 
   function Addons(Shorthand) {
     switch (Shorthand) {
-      case 'EP':
-        return 'Room Only';
-      case 'CP':
-        return 'Complementary Breakfast Included';
-      case 'MAP':
-        return 'Breakfast/Lunch Included';
-      case 'AP':
-        return 'All Meals Included';
-      case 'TBO':
+      case "EP":
+        return "Room Only";
+      case "CP":
+        return "Complementary Breakfast Included";
+      case "MAP":
+        return "Breakfast/Lunch Included";
+      case "AP":
+        return "All Meals Included";
+      case "TBO":
         return null;
       default:
         return null;
@@ -196,15 +197,15 @@ const HotelsBooking = (props) => {
       // const token = localStorage.getItem('access_token');
       let updated_bookings_arr = [
         {
-          id: props.stayBookings[index]['id'],
+          id: props.stayBookings[index]["id"],
 
-          accommodation: props.stayBookings[index]['accommodation'],
+          accommodation: props.stayBookings[index]["accommodation"],
 
-          booking_type: 'Accommodation',
+          booking_type: "Accommodation",
 
           remove_user_selected: true,
 
-          itinerary_id: props.stayBookings[index]['itinerary_id'],
+          itinerary_id: props.stayBookings[index]["itinerary_id"],
         },
       ];
 
@@ -221,8 +222,8 @@ const HotelsBooking = (props) => {
         //   }
         // )
         .patch(
-          'update/?booking_type=Accommodation&itinerary_id=' +
-            props.stayBookings[index]['itinerary_id'],
+          "update/?booking_type=Accommodation&itinerary_id=" +
+            props.stayBookings[index]["itinerary_id"],
           updated_bookings_arr[0],
           {
             headers: {
@@ -261,8 +262,8 @@ const HotelsBooking = (props) => {
   };
   function compareDates(dateString1, dateString2) {
     if (dateString1 && dateString2) {
-      const date1 = parse(dateString1, 'yyyy-MM-dd', new Date());
-      const date2 = parse(dateString2, 'dd/MM/yyyy', new Date());
+      const date1 = parse(dateString1, "yyyy-MM-dd", new Date());
+      const date2 = parse(dateString2, "dd/MM/yyyy", new Date());
       return isSameDay(date1, date2);
     }
 
@@ -286,30 +287,30 @@ const HotelsBooking = (props) => {
     array.findIndex((obj) => obj.check_in === id);
 
   function handleClickAc(i, data, city_id) {
-    let name = props.stayBookings[i]['name'];
-    let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
-    let cost = props.stayBookings[i]['booking_cost'];
-    let itinerary_id = props.stayBookings[i]['itinerary_id'];
-    let itinerary_name = props.stayBookings[i]['itinerary_name'];
-    let booking_type = props.stayBookings[i]['booking_type'];
-    let accommodation = props.stayBookings[i]['accommodation'];
-    let tailored_id = props.stayBookings[i]['tailored_itinerary'];
+    let name = props.stayBookings[i]["name"];
+    let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
+    let cost = props.stayBookings[i]["booking_cost"];
+    let itinerary_id = props.stayBookings[i]["itinerary_id"];
+    let itinerary_name = props.stayBookings[i]["itinerary_name"];
+    let booking_type = props.stayBookings[i]["booking_type"];
+    let accommodation = props.stayBookings[i]["accommodation"];
+    let tailored_id = props.stayBookings[i]["tailored_itinerary"];
     let user_rating = props.stayBookings[i].user_rating;
     let number_of_reviews = props.stayBookings[i].number_of_reviews;
-    let id = props.stayBookings[i]['id'];
-    let check_in = props.stayBookings[i]['check_in'];
-    let check_out = props.stayBookings[i]['check_out'];
+    let id = props.stayBookings[i]["id"];
+    let check_in = props.stayBookings[i]["check_in"];
+    let check_out = props.stayBookings[i]["check_out"];
     let pax = {
       number_of_adults:
-        props.stayBookings[i].costings_breakdown[0]['number_of_adults'],
+        props.stayBookings[i].costings_breakdown[0]["number_of_adults"],
       number_of_children:
-        props.stayBookings[i].costings_breakdown[0]['number_of_children'],
+        props.stayBookings[i].costings_breakdown[0]["number_of_children"],
       number_of_infants:
-        props.stayBookings[i].costings_breakdown[0]['number_of_infants'],
+        props.stayBookings[i].costings_breakdown[0]["number_of_infants"],
     };
-    let city = props.stayBookings[i]['city'];
+    let city = props.stayBookings[i]["city"];
     let cityId = city_id;
-    let room_type = props.stayBookings[i]['room_type'];
+    let room_type = props.stayBookings[i]["room_type"];
 
     _changeBookingHandler(
       name,
@@ -330,12 +331,11 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
-  console.log('stayBookings', props.stayBookings);
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
     {
-      process.env.NODE_ENV === 'production' &&
+      process.env.NODE_ENV === "production" &&
         ga.event({
-          action: 'Itinerary-bookings-acc_change',
+          action: "Itinerary-bookings-acc_change",
           params: { name: name },
         });
     }
@@ -353,9 +353,9 @@ const HotelsBooking = (props) => {
     let check_in = data.checkin_date;
     let check_out = data.checkout_date;
     let pax = {
-      number_of_adults: props.payment.meta_info['number_of_adults'],
-      number_of_children: props.payment.meta_info['number_of_children'],
-      number_of_infants: props.payment.meta_info['number_of_infants'],
+      number_of_adults: props.payment.meta_info["number_of_adults"],
+      number_of_children: props.payment.meta_info["number_of_children"],
+      number_of_infants: props.payment.meta_info["number_of_infants"],
     };
     let city = data.city_name;
 
@@ -366,6 +366,9 @@ const HotelsBooking = (props) => {
     props.setShowBookingModal;
   }
   function handleClick(i, id, data, city_id) {
+        let check_in = props.stayBookings[i]["check_in"];
+    let check_out = props.stayBookings[i]["check_out"];
+     setDates({ check_in, check_out });
     setBookingId(id);
     setCurrentBooking(data);
     setBookingFunData({ index: i, booking: data, city_id: city_id });
@@ -373,19 +376,19 @@ const HotelsBooking = (props) => {
   }
   function convertDateFormat(dateString) {
     if (dateString) {
-      const parsedDate = parse(dateString, 'dd/MM/yyyy', new Date());
-      const formattedDate = format(parsedDate, 'yyyy-MM-dd');
+      const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
+      const formattedDate = format(parsedDate, "yyyy-MM-dd");
       return formattedDate;
     }
   }
   const HotelArray = [];
-  if (props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')) {
+  if (props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")) {
     if (props.breif.city_slabs) {
       if (true) {
         for (var i = 1; i < props.breif.city_slabs.length - 1; i++) {
           if (
             props.breif.city_slabs[i]?.accommodation_booking == null ||
-            props.breif.city_slabs[i]?.accommodation_booking == ''
+            props.breif.city_slabs[i]?.accommodation_booking == ""
           ) {
             if (
               isObjectByDate(
@@ -495,7 +498,7 @@ const HotelsBooking = (props) => {
             onUnmount={() =>
               setIsError({
                 error: false,
-                errorMsg: '',
+                errorMsg: "",
               })
             }
             isActive={isError.error}
@@ -510,7 +513,7 @@ const HotelsBooking = (props) => {
         )}
       </div>
 
-      {props.breif.city_slabs[1]?.hasOwnProperty('accommodation_booking')
+      {props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")
         ? // props.breif.city_slabs[1]?.accommodation_booking == null
           HotelArray
         : props.stayBookings
@@ -540,6 +543,8 @@ const HotelsBooking = (props) => {
         onHide={() => setShowDetails(false)}
         id={bookingId}
         currentBooking={currentBooking}
+        check_in={dates.check_in}
+        check_out={dates.check_out}
         show={showDetails}
         payment={props.payment}
         plan={props.plan}
@@ -572,7 +577,7 @@ const HotelsBooking = (props) => {
           alternates={alternates}
           tailored_id={
             props.stayBookings && props.stayBookings[0]
-              ? props.stayBookings[0]['tailored_itinerary']
+              ? props.stayBookings[0]["tailored_itinerary"]
               : null
           }
           _updatePaymentHandler={props._updatePaymentHandler}
@@ -590,8 +595,8 @@ const HotelsBooking = (props) => {
           <Floating>
             <FaFilter
               className="text-white"
-              style={{ height: '18px', width: '18px' }}
-              cursor={'pointer'}
+              style={{ height: "18px", width: "18px" }}
+              cursor={"pointer"}
               onClick={(e) => {
                 setshowFilter(true);
               }}
@@ -611,8 +616,8 @@ const HotelsBooking = (props) => {
             > */}
           <FloatingView>
             <TbArrowBack
-              style={{ height: '28px', width: '28px' }}
-              cursor={'pointer'}
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
               onClick={props.setHideBookingModal}
             />
           </FloatingView>

@@ -469,6 +469,8 @@ const Booking = (props) => {
                   is_stock={props.is_stock}
                   is_selected={true}
                   is_auth={props.is_auth}
+                  check_in={check_in}
+                  check_out={check_out}
                   are_prices_hidden={
                     props.payment ? props.payment.are_prices_hidden : false
                   }
@@ -509,6 +511,8 @@ const Booking = (props) => {
             } else
               bookings_accommodations.push(
                 <StayBookingCard
+                  check_in={check_in}
+                  check_out={check_out}
                   is_registration_needed={
                     props.payment ? props.payment.is_registration_needed : false
                   }

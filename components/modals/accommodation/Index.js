@@ -19,6 +19,7 @@ import POIDetailsSkeleton from '../../drawers/poiDetails/POIDetailsSkeleton';
 import { CgClose } from 'react-icons/cg';
 import Skeleton from './Skeleton';
 import { IoMdClose } from 'react-icons/io';
+import dayjs from 'dayjs';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
@@ -63,17 +64,31 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const POI = (props) => {
-  // console.log('propsmodal: ', props.currentBooking);
+
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   useEffect(() => {
     if (props.show) {
       setLoading(true);
-
+      let check_in = props.check_in
+      let check_out = props.check_out
+      if (props.check_in.includes('/')) {
+        check_in = props.check_in.split("/").reverse().join("-");
+        check_out = props.check_out.split("/").reverse().join("-");
+      }
+      let paramsObj = {
+        accommodation_id : props.id,
+        show_rooms: true,
+      }
+      if (props.currentBooking && props.currentBooking.source && props.currentBooking.source == 'Agoda') {
+        paramsObj.check_in = check_in;
+        paramsObj.check_out = check_out;
+        paramsObj.source = 'Agoda'
+      }
       // change after is_group field activated in itinerary APIs
       // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
       axiosaccommodationinstance
-        .get(`/?accommodation_id=` + props.id + '&show_rooms=true')
+        .get('' , {params : paramsObj})
         .then((res) => {
           setLoading(false);
           setData(res.data);

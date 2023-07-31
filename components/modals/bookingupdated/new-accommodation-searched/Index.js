@@ -108,6 +108,8 @@ const Accommodation = (props) => {
         ></Buttons>
       </div> */}
       <AccommodationModal
+        check_in={props.selectedBooking.check_in}
+        check_out={props.selectedBooking.check_out}
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}
