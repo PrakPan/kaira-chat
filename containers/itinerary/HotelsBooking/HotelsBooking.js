@@ -65,6 +65,8 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const HotelsBooking = (props) => {
+  console.log("propsImnss: ", props);
+
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,

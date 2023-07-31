@@ -7,6 +7,7 @@ import Accommodation from './accommodation/Index';
 import AccommodationSearched from './new-accommodation-searched/Index';
 // import AccommodationModal from '../accommodation/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
+import axiosagodaaccommodationionstance from '../../../services/bookings/FetchAccomodationsAgoda'
 import Spinner from '../../Spinner';
 
 //  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
@@ -56,6 +57,8 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
+  console.log('propsIm: ', props.currentBooking.source);
+
   let isPageWide = media('(min-width: 768px)');
 
   const [optionsJSX, setOptionsJSX] = useState([]);
@@ -180,9 +183,13 @@ const Booking = (props) => {
           star_category: [],
         };
       let filters = _generateFilterKeys(FILTERS_KEY);
-
-      axiosaccommodationinstance
-        .post('/?limit=' + limit + '&offset=' + offset, {
+      var agodaAccomodation = axiosaccommodationinstance;
+      if (props.currentBooking && props.currentBooking.source) {
+        if (props.currentBooking.source === "Agoda")
+          agodaAccomodation = axiosagodaaccommodationionstance;
+      }
+      agodaAccomodation
+        .post("/?limit=" + limit + "&offset=" + offset, {
           city: props.selectedBooking.city,
           check_in: props.selectedBooking.check_in,
           check_out: props.selectedBooking.check_out,
@@ -197,7 +204,7 @@ const Booking = (props) => {
         })
         .then((res) => {
           setUpdateLoadingState(false);
-
+          console.log("response founded");
           if (res.data.results.length) {
             setNoResults(false);
             let is_min_price_present = false;
@@ -416,75 +423,81 @@ const Booking = (props) => {
     setViewMoreStatus(false);
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
-    axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=' + offset, {
-        city: props.selectedBooking.city,
-        check_in: props.selectedBooking.check_in,
-        check_out: props.selectedBooking.check_out,
+    // axiosaccommodationinstance
+      var agodaAccomodation = axiosaccommodationinstance;
+      if (props.currentBooking && props.currentBooking.source) {
+        if (props.currentBooking.source === "Agoda") agodaAccomodation = axiosagodaaccommodationionstance;
+    }
+agodaAccomodation
+  .post("/?limit=" + limit + "&offset=" + offset, {
+    city: props.selectedBooking.city,
+    check_in: props.selectedBooking.check_in,
+    check_out: props.selectedBooking.check_out,
 
-        trace: traceId,
-        star_category: filtersState.star_category,
-        accommodation_type: filtersState.type,
-        city_id: props.selectedBooking.cityId,
-        price_lower_range: filters.price_lower_range,
-        price_upper_range: filters.price_upper_range,
-        number_of_adults: props.selectedBooking.pax.number_of_adults,
-        number_of_children: props.selectedBooking.pax.number_of_children,
-        number_of_infants: props.selectedBooking.pax.number_of_infants,
-      })
-      .then((res) => {
-        setUpdateLoadingState(false);
-        if (res.data.results.length) {
-          setNoResults(false);
-          let options = [];
-          setTotalCount(res?.data?.count);
-          for (var i = 0; i < res.data.results.length; i++) {
-            //  if(res.data.results[i].images.length > 1)
-            if (res.data.results[i].name !== props.selectedBooking.name)
-              options.push(
-                <AccommodationSearched
-                  payment={props.payment}
-                  plan={props.plan}
-                  currentBooking={props.currentBooking}
-                  _setImagesHandler={props._setImagesHandler}
-                  s
-                  _updateSearchedAccommodation={_newUpdateBookingHandler}
-                  _SelectedBookingHandler={_SelectedBookingHandler}
-                  itinerary_id={props.payment.tailored_itinerary}
-                  tailored_id={props.tailored_id}
-                  _updateBookingHandler={_newUpdateBookingHandler}
-                  accommodation={res.data.results[i]}
-                  selectedBooking={props.selectedBooking}
-                  key={i}
-                  images={res.data.results.images}
-                  bookings={props.bookings}
-                ></AccommodationSearched>
-              );
-          }
-          if (res.data.next) {
-            setViewMoreStatus(true);
-            setOffset(limit);
-          } else {
-            setViewMoreStatus(false);
-            setOffset(0);
-          }
-          setMoreOptionsJSX(options);
-        } else {
-          setNoResults(true);
-          setOffset(0);
-          setViewMoreStatus(false);
-          setMoreOptionsJSX([]);
-        }
-        setLoading(false);
-        // setUpdateLoadingState(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setFetchingIsError({
-          error: true,
-          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-        });
-      });
+    trace: traceId,
+    star_category: filtersState.star_category,
+    accommodation_type: filtersState.type,
+    city_id: props.selectedBooking.cityId,
+    price_lower_range: filters.price_lower_range,
+    price_upper_range: filters.price_upper_range,
+    number_of_adults: props.selectedBooking.pax.number_of_adults,
+    number_of_children: props.selectedBooking.pax.number_of_children,
+    number_of_infants: props.selectedBooking.pax.number_of_infants,
+  })
+  .then((res) => {
+    console.log("founded");
+    setUpdateLoadingState(false);
+    if (res.data.results.length) {
+      setNoResults(false);
+      let options = [];
+      setTotalCount(res?.data?.count);
+      for (var i = 0; i < res.data.results.length; i++) {
+        //  if(res.data.results[i].images.length > 1)
+        if (res.data.results[i].name !== props.selectedBooking.name)
+          options.push(
+            <AccommodationSearched
+              payment={props.payment}
+              plan={props.plan}
+              currentBooking={props.currentBooking}
+              _setImagesHandler={props._setImagesHandler}
+              s
+              _updateSearchedAccommodation={_newUpdateBookingHandler}
+              _SelectedBookingHandler={_SelectedBookingHandler}
+              itinerary_id={props.payment.tailored_itinerary}
+              tailored_id={props.tailored_id}
+              _updateBookingHandler={_newUpdateBookingHandler}
+              accommodation={res.data.results[i]}
+              selectedBooking={props.selectedBooking}
+              key={i}
+              images={res.data.results.images}
+              bookings={props.bookings}
+            ></AccommodationSearched>
+          );
+      }
+      if (res.data.next) {
+        setViewMoreStatus(true);
+        setOffset(limit);
+      } else {
+        setViewMoreStatus(false);
+        setOffset(0);
+      }
+      setMoreOptionsJSX(options);
+    } else {
+      setNoResults(true);
+      setOffset(0);
+      setViewMoreStatus(false);
+      setMoreOptionsJSX([]);
+    }
+    setLoading(false);
+    // setUpdateLoadingState(false);
+  })
+  .catch((err) => {
+    setLoading(false);
+    setFetchingIsError({
+      error: true,
+      errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+    });
+  });
   };
 
   const _updateSearchedAccommodation = ({
@@ -815,36 +828,64 @@ props.openNotification({
     setViewMoreStatus(false);
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
-    axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=' + offset, {
-        city: props.selectedBooking.city,
-        check_in: props.selectedBooking.check_in,
-        check_out: props.selectedBooking.check_out,
-        city_id: props.selectedBooking.cityId,
-        trace: traceId,
-        number_of_adults: props.selectedBooking.pax.number_of_adults,
-        number_of_children: props.selectedBooking.pax.number_of_children,
-        number_of_infants: props.selectedBooking.pax.number_of_infants,
-        accommodation_types: filters.type,
-        price_lower_range: filters.price_lower_range,
-        price_upper_range: filters.price_upper_range,
-      })
-      .then((res) => {
-        // setOffset(res.data.nextOffset);
-        // setOffset(offset+40);
+      var agodaAccomodation = axiosaccommodationinstance;
+      if (props.currentBooking && props.currentBooking.source) {
+        if (props.currentBooking.source === "Agoda")
+          agodaAccomodation = axiosagodaaccommodationionstance;
+      }
+      agodaAccomodation
+        .post("/?limit=" + limit + "&offset=" + offset, {
+          city: props.selectedBooking.city,
+          check_in: props.selectedBooking.check_in,
+          check_out: props.selectedBooking.check_out,
+          city_id: props.selectedBooking.cityId,
+          trace: traceId,
+          number_of_adults: props.selectedBooking.pax.number_of_adults,
+          number_of_children: props.selectedBooking.pax.number_of_children,
+          number_of_infants: props.selectedBooking.pax.number_of_infants,
+          accommodation_types: filters.type,
+          price_lower_range: filters.price_lower_range,
+          price_upper_range: filters.price_upper_range,
+        })
+        .then((res) => {
+          // setOffset(res.data.nextOffset);
+          // setOffset(offset+40);
+          console.log("response founded");
 
-        // let oldoptions = optionsJSX;
-        setTotalCount(res?.data?.count);
-        if (res.data.results.length) {
-          setNoResults(false);
+          // let oldoptions = optionsJSX;
+          setTotalCount(res?.data?.count);
+          if (res.data.results.length) {
+            setNoResults(false);
 
-          let options = moreOptionsJSX.slice();
-          for (var i = 0; i < res.data.results.length; i++) {
-            try {
-              if (
-                res.data.results[i].name !== props.selectedBooking.name &&
-                res.data.results[i].rooms_available[0].prices.min_price
-              )
+            let options = moreOptionsJSX.slice();
+            for (var i = 0; i < res.data.results.length; i++) {
+              try {
+                if (
+                  res.data.results[i].name !== props.selectedBooking.name &&
+                  res.data.results[i].rooms_available[0].prices.min_price
+                )
+                  options.push(
+                    <AccommodationSearched
+                      payment={props.payment}
+                      plan={props.plan}
+                      currentBooking={props.currentBooking}
+                      _setImagesHandler={props._setImagesHandler}
+                      token={props.token}
+                      _updateSearchedAccommodation={
+                        _updateSearchedAccommodation
+                      }
+                      _SelectedBookingHandler={_SelectedBookingHandler}
+                      itinerary_id={props.payment.tailored_itinerary}
+                      tailored_id={props.tailored_id}
+                      _updateBookingHandler={_newUpdateBookingHandler}
+                      accommodation={res.data.results[i]}
+                      selectedBooking={props.selectedBooking}
+                      key={i}
+                      images={res.data.results.images}
+                      bookings={props.bookings}
+                    ></AccommodationSearched>
+                  );
+              } catch {
                 options.push(
                   <AccommodationSearched
                     payment={props.payment}
@@ -864,52 +905,32 @@ props.openNotification({
                     bookings={props.bookings}
                   ></AccommodationSearched>
                 );
-            } catch {
-              options.push(
-                <AccommodationSearched
-                  payment={props.payment}
-                  plan={props.plan}
-                  currentBooking={props.currentBooking}
-                  _setImagesHandler={props._setImagesHandler}
-                  token={props.token}
-                  _updateSearchedAccommodation={_updateSearchedAccommodation}
-                  _SelectedBookingHandler={_SelectedBookingHandler}
-                  itinerary_id={props.payment.tailored_itinerary}
-                  tailored_id={props.tailored_id}
-                  _updateBookingHandler={_newUpdateBookingHandler}
-                  accommodation={res.data.results[i]}
-                  selectedBooking={props.selectedBooking}
-                  key={i}
-                  images={res.data.results.images}
-                  bookings={props.bookings}
-                ></AccommodationSearched>
-              );
+              }
             }
-          }
-          setMoreOptionsJSX([...options]);
+            setMoreOptionsJSX([...options]);
 
-          if (res.data.next) {
-            setOffset(offset + limit);
-            setViewMoreStatus(true);
+            if (res.data.next) {
+              setOffset(offset + limit);
+              setViewMoreStatus(true);
+            } else {
+              setOffset(0);
+              setViewMoreStatus(false);
+            }
           } else {
+            setNoResults(true);
             setOffset(0);
             setViewMoreStatus(false);
+            setMoreOptionsJSX([]);
           }
-        } else {
-          setNoResults(true);
-          setOffset(0);
-          setViewMoreStatus(false);
-          setMoreOptionsJSX([]);
-        }
-        setUpdateLoadingState(false);
-      })
-      .catch((err) => {
-        setUpdateLoadingState(false);
-        setFetchingIsError({
-          error: true,
-          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+          setUpdateLoadingState(false);
+        })
+        .catch((err) => {
+          setUpdateLoadingState(false);
+          setFetchingIsError({
+            error: true,
+            errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+          });
         });
-      });
   };
   const FILTERS = {
     budget: ['Affordable', 'Average', 'Luxury', 'Luxury+'],

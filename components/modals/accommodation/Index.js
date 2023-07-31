@@ -63,7 +63,7 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const POI = (props) => {
-  console.log('propsmodal: ', props);
+  // console.log('propsmodal: ', props.currentBooking);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   useEffect(() => {
