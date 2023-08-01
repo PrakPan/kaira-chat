@@ -12,7 +12,7 @@ import ButtonYellow from '../../../components/ButtonYellow';
 
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../services/getIndianPrice';
-import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
+// import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
 

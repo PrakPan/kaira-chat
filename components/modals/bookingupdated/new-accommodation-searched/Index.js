@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import media from '../../../media';
-import Info from './Info';
-import Gallery from './gallery/Index';
-import Buttons from './Buttons';
-import AccommodationModal from '../../accommodation/Index';
-import HotelBookingContainer from '../../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
+import React, { useState } from "react";
+import styled from "styled-components";
+import media from "../../../media";
+import Info from "./Info";
+import Gallery from "./gallery/Index";
+import Buttons from "./Buttons";
+import AccommodationModal from "../../accommodation/Index";
+import HotelBookingContainer from "../../../../containers/itinerary/HotelsBooking/HotelBookingContainer";
 
 const Container = styled.div`
   /* margin: 0 0 1rem 0;
@@ -36,7 +36,7 @@ const ImageContainer = styled.div`
 `;
 
 const Accommodation = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
   //   if(!showPhotos)
   return (
@@ -108,6 +108,8 @@ const Accommodation = (props) => {
         ></Buttons>
       </div> */}
       <AccommodationModal
+        check_in={props.selectedBooking.check_in}
+        check_out={props.selectedBooking.check_out}
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}

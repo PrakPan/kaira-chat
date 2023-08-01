@@ -13,7 +13,7 @@ import ButtonYellow from '../../../components/ButtonYellow';
 
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../services/getIndianPrice';
-import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
+// import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import useMediaQuery from '../../../hooks/useMedia';
 import { getHumanDate } from '../../../services/getHumanDate';
@@ -128,15 +128,17 @@ const HotelBookingContainer = ({
     if (!payment?.is_registration_needed) {
       if (token) {
         setLoading(true);
-
         _SelectedBookingHandler({
           SelectedBookingId: selectedBooking?.id,
           itinerary_id: itinerary_id,
           tailored_id: tailored_id,
           user_selected: isSelect,
           index: index,
+          check_in: selectedBooking?.check_in,
+          check_out : selectedBooking?.check_out
         })
           .then((data) => {
+
             setLoading(false);
 
             setisSelect(false);
@@ -168,6 +170,9 @@ const HotelBookingContainer = ({
       itinerary_id: itinerary_id,
       result_index: booking?.result_index,
       category_id: booking?.category_id,
+      check_in: selectedBooking?.check_in,
+      check_out: selectedBooking?.check_out,
+      source : booking?.source
     });
   }
   const isMobile = useMediaQuery('(min-width:768px)');
@@ -190,7 +195,7 @@ const HotelBookingContainer = ({
           >
             <div
               onClick={() => {
-                currentBooking
+                (currentBooking || SelectedBookingin)
                   ? openDetails()
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
@@ -367,7 +372,7 @@ const HotelBookingContainer = ({
                         </div>
                       </div>
                       {booking.costings_breakdown[0].number_of_extra_beds &&
-                      booking.costings_breakdown[0].number_of_extra_beds>0 ? (
+                      booking.costings_breakdown[0].number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center lg:my-0 my-2">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
@@ -386,17 +391,24 @@ const HotelBookingContainer = ({
                       )}
                     </>
                   ) : (
-                    booking?.room_count && (
-                      <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
-                        {booking?.room_count && (
-                          <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                            <BiBed className="text-sm text-[#7A7A7A]" />
-                            <div className="text-sm font-[400] line-clamp-1">
-                              {booking?.room_count} room options
-                            </div>
+                    (booking?.room_count || booking.room_type_name) && (
+                      <>
+                          <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
+                    
+                              <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                                <BiBed className="text-sm text-[#7A7A7A]" />
+                                <div className="text-sm font-[400] line-clamp-1">
+                                  {(booking.source &&
+                                  booking.source === "Agoda" &&
+                                  booking.room_type_name) ? (
+                                    <>{booking.room_type_name}</>
+                                  ) : (
+                                    <> {booking?.room_count} room options</>
+                                  )}
+                                </div>
+                              </div>
                           </div>
-                        )}
-                      </div>
+                      </>
                     )
                   )}
                   {booking.costings_breakdown &&

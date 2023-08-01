@@ -562,7 +562,6 @@ const SimpleTabs = (props) => {
             setImagesHandler={props.setImagesHandler}
             payment={props.payment}
             booking={props.booking}
-            plan={props.plan}
           ></Booking>
         )}
       </TabPanel>

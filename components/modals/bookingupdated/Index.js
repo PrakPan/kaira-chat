@@ -1,30 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import styled from 'styled-components';
-import media from '../../media';
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import styled from "styled-components";
+import media from "../../media";
 // import LeftSideBar from './leftsidebar/Index';
-import Accommodation from './accommodation/Index';
-import AccommodationSearched from './new-accommodation-searched/Index';
-// import AccommodationModal from '../accommodation/Index';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
-import Spinner from '../../Spinner';
+import Accommodation from "./accommodation/Index";
+import AccommodationSearched from "./new-accommodation-searched/Index";
+import AccommodationModal from '../accommodation/Index';
+import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
+import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccomodationsAgoda";
+import Spinner from "../../Spinner";
 
 //  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 // import updateaccommodations from '../../../services/bookings/UpdateBookings';
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 // import Button from '../../Button';
-import Button from '../../ui/button/Index';
-import LogInModal from '../Login';
-import AccommodationSelected from './new-accommodation-selected/Index';
-import SectionOne from './SectionOne';
-import SectionTwo from './SectionTwo';
-import LoadingLottie from '../../ui/LoadingLottie';
-import Drawer from '../../ui/Drawer';
-import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/HotelBookingContainer';
-import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
-import Slide from '../../../Animation/framerAnimation/Slide';
-import { openNotification } from '../../../store/actions/notification';
+import Button from "../../ui/button/Index";
+import LogInModal from "../Login";
+import AccommodationSelected from "./new-accommodation-selected/Index";
+import SectionOne from "./SectionOne";
+import SectionTwo from "./SectionTwo";
+import LoadingLottie from "../../ui/LoadingLottie";
+import Drawer from "../../ui/Drawer";
+import HotelBookingContainer from "../../../containers/itinerary/HotelsBooking/HotelBookingContainer";
+import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
+import Slide from "../../../Animation/framerAnimation/Slide";
+import { openNotification } from "../../../store/actions/notification";
+import { BsXOctagon } from "react-icons/bs";
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -56,29 +58,30 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  const [showDetails, setShowDetails] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
 
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [isError, setIsError] = useState({
     error: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const [isFetchingError, setFetchingIsError] = useState({
     error: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState();
   const [filtersState, setFiltersState] = useState({
-    budget: '',
-    type: '',
-    star_category: '',
+    budget: "",
+    type: "",
+    star_category: "",
   });
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
-  const [traceId, setTraceID] = useState('');
+  const [traceId, setTraceID] = useState("");
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
 
@@ -88,37 +91,36 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
 
   useEffect(() => {
-    console.log('filter filterr', filtersState);
     _updateOptionsHandlerWithFilter();
   }, [filtersState]);
   const filters = {
     budget: [
-      'Below ₹3,000',
-      '₹3,000 - ₹6,000',
-      '₹6,000 - ₹10,000',
-      'Above ₹10,000',
+      "Below ₹3,000",
+      "₹3,000 - ₹6,000",
+      "₹6,000 - ₹10,000",
+      "Above ₹10,000",
     ],
     type: [
-      'Hotel',
-      'Homestay',
-      'Camp',
-      'Guest House',
-      'Cottage',
-      'Villa',
-      'Resort',
-      'Lodge',
-      'Service Appartment',
-      'Bed and Breakfast',
-      'Farmstay',
+      "Hotel",
+      "Homestay",
+      "Camp",
+      "Guest House",
+      "Cottage",
+      "Villa",
+      "Resort",
+      "Lodge",
+      "Service Appartment",
+      "Bed and Breakfast",
+      "Farmstay",
       // "Speciality Lodging",
       // "Boat / Cruise",
       // "Holiday Park / Caravan Park",
       // "Country House",
-      'Entire House',
+      "Entire House",
       // "Capsule Hotel",
-      'Unique',
+      "Unique",
     ],
-    star_category: ['1 star', '2 star', '3 star', '4 star', '5 star', 'All'],
+    star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
   };
 
   useEffect(() => {
@@ -153,13 +155,13 @@ const Booking = (props) => {
       let BUDGET_TEXT;
       try {
         switch (props.budget) {
-          case 'Luxury':
+          case "Luxury":
             BUDGET_TEXT = FILTERS.budget[2];
-          case 'Luxury +':
+          case "Luxury +":
             BUDGET_TEXT = FILTERS.budget[3];
-          case 'Affordable':
+          case "Affordable":
             BUDGET_TEXT = FILTERS.budget[0];
-          case 'Average':
+          case "Average":
             BUDGET_TEXT = FILTERS.budget[1];
           default:
             BUDGET_TEXT = FILTERS.budget[1];
@@ -180,9 +182,13 @@ const Booking = (props) => {
           star_category: [],
         };
       let filters = _generateFilterKeys(FILTERS_KEY);
-
-      axiosaccommodationinstance
-        .post('/?limit=' + limit + '&offset=' + offset, {
+      var agodaAccomodation = axiosaccommodationinstance;
+      if (props.currentBooking && props.currentBooking.source) {
+        if (props.currentBooking.source === "Agoda")
+          agodaAccomodation = axiosagodaaccommodationionstance;
+      }
+      agodaAccomodation
+        .post("/?limit=" + limit + "&offset=" + offset, {
           city: props.selectedBooking.city,
           check_in: props.selectedBooking.check_in,
           check_out: props.selectedBooking.check_out,
@@ -197,7 +203,6 @@ const Booking = (props) => {
         })
         .then((res) => {
           setUpdateLoadingState(false);
-
           if (res.data.results.length) {
             setNoResults(false);
             let is_min_price_present = false;
@@ -305,7 +310,6 @@ const Booking = (props) => {
     }));
   };
   const _updateStarFilterHandler = (star) => {
-    console.log('filter star', star);
     /* let oldfilters = { ...filtersState };
     let newfilters = {
       ...oldfilters,
@@ -342,13 +346,13 @@ const Booking = (props) => {
     if (!typearr.length) {
     } else {
       for (var i = 0; i < typearr.length; i++) {
-        if (typearr[i] === 'All') null;
+        if (typearr[i] === "All") null;
         else {
-          if (typearr[i] === 'Unique') {
-            type.push('Speciality Lodging');
-            type.push('Boat / Cruise');
-            type.push('Holiday Park / Caravan Park');
-            type.push('Capsule Hotel');
+          if (typearr[i] === "Unique") {
+            type.push("Speciality Lodging");
+            type.push("Boat / Cruise");
+            type.push("Holiday Park / Caravan Park");
+            type.push("Capsule Hotel");
           } else type.push(typearr[i]);
         }
       }
@@ -360,39 +364,39 @@ const Booking = (props) => {
       price_lower_range = 0;
       price_upper_range = 100000000;
     } else {
-      if (budgetarr.includes('Below ₹3,000')) {
+      if (budgetarr.includes("Below ₹3,000")) {
         price_lower_range = 1;
         price_upper_range = 300000;
-        if (budgetarr.includes('Above ₹10,000')) {
+        if (budgetarr.includes("Above ₹10,000")) {
           price_upper_range = null;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
           price_upper_range = 1000000;
-        } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
+        } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
           price_upper_range = 600000;
         }
         price_set = true;
       }
-      if (budgetarr.includes('Above ₹10,000')) {
+      if (budgetarr.includes("Above ₹10,000")) {
         price_upper_range = 100000000;
         price_lower_range = 1000000;
-        if (budgetarr.includes('Below ₹3,000')) {
+        if (budgetarr.includes("Below ₹3,000")) {
           price_lower_range = 1;
-        } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
+        } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
           price_lower_range = 300000;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
           price_lower_range = 600000;
         }
         price_set = true;
       }
       if (!price_set) {
-        if (budgetarr.includes('₹3,000 - ₹6,000')) {
+        if (budgetarr.includes("₹3,000 - ₹6,000")) {
           price_lower_range = 300000;
-          if (budgetarr.includes('₹6,000 - ₹10,000')) {
+          if (budgetarr.includes("₹6,000 - ₹10,000")) {
             price_upper_range = 1000000;
           } else price_upper_range = 600000;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
           price_lower_range = 600000;
-          if (budgetarr.includes('Above ₹10,000')) {
+          if (budgetarr.includes("Above ₹10,000")) {
             price_upper_range = 100000000;
           } else price_upper_range = 1000000;
         }
@@ -416,8 +420,14 @@ const Booking = (props) => {
     setViewMoreStatus(false);
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
-    axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=' + offset, {
+    // axiosaccommodationinstance
+    var agodaAccomodation = axiosaccommodationinstance;
+    if (props.currentBooking && props.currentBooking.source) {
+      if (props.currentBooking.source === "Agoda")
+        agodaAccomodation = axiosagodaaccommodationionstance;
+    }
+    agodaAccomodation
+      .post("/?limit=" + limit + "&offset=" + offset, {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
@@ -493,6 +503,9 @@ const Booking = (props) => {
     itinerary_id,
     result_index,
     category_id,
+    check_in,
+    check_out,
+    source,
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
@@ -505,6 +518,14 @@ const Booking = (props) => {
         }
       }
     } catch {} */
+
+    // let _in = check_in;
+    // let _out = check_out;
+    // if (check_in.includes("/")) {
+    //   _in = check_in.split("/").reverse().join("-");
+    //   _out = check_out.split("/").reverse().join("-");
+    // }
+
     let updated_bookings_arr = [
       {
         id: SelectedBookingId,
@@ -512,10 +533,12 @@ const Booking = (props) => {
         result_index: result_index,
         category_id: category_id,
 
-        booking_type: 'Accommodation',
+        booking_type: "Accommodation",
 
         itinerary_id: itinerary_id,
-
+        check_in: check_in,
+        check_out: check_out,
+        source: source,
         trace: traceId
           ? traceId
           : storeAndRetrieveValue(props?.selectedBooking?.city),
@@ -525,7 +548,7 @@ const Booking = (props) => {
       props.AddHotel
         ? axiosbookingupdateinstance
             .post(
-              'add/?booking_type=Accommodation' +
+              "add/?booking_type=Accommodation" +
                 props.selectedBooking.itinerary_id,
               updated_bookings_arr[0],
               {
@@ -538,27 +561,27 @@ const Booking = (props) => {
               props._updateStayBookingHandler([res.data]);
               // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
-props.openNotification({
-  type: "success",
-  text: "Hotel added successfully.",
-  heading: "Sucess!",
-});
+              props.openNotification({
+                type: "success",
+                text: "Hotel added successfully.",
+                heading: "Sucess!",
+              });
               setUpdateBookingState(false);
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-props.openNotification({
-  type: "error",
-  text: "Something went wrong! Please try after some time.",
-  heading: "Error!",
-});
+              props.openNotification({
+                type: "error",
+                text: "Something went wrong! Please try after some time.",
+                heading: "Error!",
+              });
               // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
             .patch(
-              'update/?booking_type=Accommodation&itinerary_id=' +
+              "update/?booking_type=Accommodation&itinerary_id=" +
                 props.selectedBooking.itinerary_id,
               updated_bookings_arr[0],
               {
@@ -583,11 +606,11 @@ props.openNotification({
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-props.openNotification({
-  type: "error",
-  text: "Something went wrong! Please try after some time.",
-  heading: "Error!",
-});
+              props.openNotification({
+                type: "error",
+                text: "Something went wrong! Please try after some time.",
+                heading: "Error!",
+              });
               // window.alert("There seems to be a problem, please try again!")
             });
     }
@@ -599,6 +622,9 @@ props.openNotification({
     itinerary_id,
     result_index,
     category_id,
+    check_in,
+    check_out,
+    source,
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
@@ -618,10 +644,12 @@ props.openNotification({
         result_index: result_index,
         category_id: category_id,
 
-        booking_type: 'Accommodation',
+        booking_type: "Accommodation",
 
         itinerary_id: itinerary_id,
-
+        check_in: check_in,
+        check_out: check_out,
+        source: source,
         trace: traceId
           ? traceId
           : storeAndRetrieveValue(props?.selectedBooking?.city),
@@ -664,7 +692,7 @@ props.openNotification({
     {
       props.AddHotel
         ? axiosbookingupdateinstance
-            .post('add/?booking_type=Accommodation', updated_bookings_arr[0], {
+            .post("add/?booking_type=Accommodation", updated_bookings_arr[0], {
               headers: {
                 Authorization: `Bearer ${props.token}`,
               },
@@ -686,16 +714,16 @@ props.openNotification({
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-props.openNotification({
-  type: "error",
-  text: "Something went wrong! Please try after some time.",
-  heading: "Error!",
-});
+              props.openNotification({
+                type: "error",
+                text: "Something went wrong! Please try after some time.",
+                heading: "Error!",
+              });
               // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
             .patch(
-              'update/?booking_type=Accommodation',
+              "update/?booking_type=Accommodation",
               updated_bookings_arr[0],
               {
                 headers: {
@@ -720,11 +748,11 @@ props.openNotification({
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-props.openNotification({
-  type: "error",
-  text: "Something went wrong! Please try after some time.",
-  heading: "Error!",
-});
+              props.openNotification({
+                type: "error",
+                text: "Something went wrong! Please try after some time.",
+                heading: "Error!",
+              });
               // window.alert("There seems to be a problem, please try again!")
             });
     }
@@ -735,6 +763,8 @@ props.openNotification({
     itinerary_id,
     result_index,
     category_id,
+    check_in,
+    check_out,
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
@@ -754,10 +784,11 @@ props.openNotification({
         result_index: result_index,
         category_id: category_id,
 
-        booking_type: 'Accommodation',
+        booking_type: "Accommodation",
 
         itinerary_id: itinerary_id,
-
+        check_in: check_in,
+        check_out: check_out,
         trace: traceId
           ? traceId
           : storeAndRetrieveValue(props?.selectedBooking?.city),
@@ -766,7 +797,7 @@ props.openNotification({
     {
       props.AddHotel
         ? axiosbookingupdateinstance
-            .post('add/?booking_type=Accommodation', updated_bookings_arr[0], {
+            .post("add/?booking_type=Accommodation", updated_bookings_arr[0], {
               headers: {
                 Authorization: `Bearer ${props.token}`,
               },
@@ -787,7 +818,7 @@ props.openNotification({
               // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
-            .patch('update/?booking_type=Accommodation', updated_bookings_arr, {
+            .patch("update/?booking_type=Accommodation", updated_bookings_arr, {
               headers: {
                 Authorization: `Bearer ${props.token}`,
               },
@@ -815,8 +846,13 @@ props.openNotification({
     setViewMoreStatus(false);
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
-    axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=' + offset, {
+    var agodaAccomodation = axiosaccommodationinstance;
+    if (props.currentBooking && props.currentBooking.source) {
+      if (props.currentBooking.source === "Agoda")
+        agodaAccomodation = axiosagodaaccommodationionstance;
+    }
+    agodaAccomodation
+      .post("/?limit=" + limit + "&offset=" + offset, {
         city: props.selectedBooking.city,
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
@@ -830,9 +866,6 @@ props.openNotification({
         price_upper_range: filters.price_upper_range,
       })
       .then((res) => {
-        // setOffset(res.data.nextOffset);
-        // setOffset(offset+40);
-
         // let oldoptions = optionsJSX;
         setTotalCount(res?.data?.count);
         if (res.data.results.length) {
@@ -912,22 +945,22 @@ props.openNotification({
       });
   };
   const FILTERS = {
-    budget: ['Affordable', 'Average', 'Luxury', 'Luxury+'],
+    budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [
-      'Hotels',
-      'Homestays',
-      'Hostels',
-      'Camps',
-      'Guest House',
-      'Cottage',
-      'Villa',
-      'Resort',
-      'Bed and Breakfast',
-      'Unique',
-      'Entire House',
-      'Capsule Hotel',
+      "Hotels",
+      "Homestays",
+      "Hostels",
+      "Camps",
+      "Guest House",
+      "Cottage",
+      "Villa",
+      "Resort",
+      "Bed and Breakfast",
+      "Unique",
+      "Entire House",
+      "Capsule Hotel",
     ],
-    star_category: ['3', '4', '5'],
+    star_category: ["3", "4", "5"],
   };
   let room = [];
   try {
@@ -942,7 +975,7 @@ props.openNotification({
       <div>
         <Drawer
           show={props.showBookingModal}
-          anchor={'right'}
+          anchor={"right"}
           backdrop
           style={{ zIndex: 1501 }}
           className="font-lexend "
@@ -956,7 +989,7 @@ props.openNotification({
                 onUnmount={() =>
                   setIsError({
                     error: false,
-                    errorMsg: '',
+                    errorMsg: "",
                   })
                 }
                 isActive={isError.error}
@@ -998,11 +1031,11 @@ props.openNotification({
             {unauthorized ? (
               <p
                 style={{
-                  borderRadius: '5px',
-                  padding: '0.25rem',
-                  backgroundColor: 'rgba(255,0,0,0.1)',
-                  color: 'red',
-                  margin: '1rem',
+                  borderRadius: "5px",
+                  padding: "0.25rem",
+                  backgroundColor: "rgba(255,0,0,0.1)",
+                  color: "red",
+                  margin: "1rem",
                 }}
                 className="text-center font-lexend"
               >
@@ -1011,23 +1044,23 @@ props.openNotification({
               </p>
             ) : null}
 
-            <GridContainer style={{ clear: 'right' }}>
+            <GridContainer style={{ clear: "right" }}>
               {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
               {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
-              <ContentContainer style={{ position: 'relative' }}>
+              <ContentContainer style={{ position: "relative" }}>
                 {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
                 {updateBookingState ? (
                   <div
                     style={{
-                      width: 'max-content',
-                      margin: 'auto',
-                      height: isPageWide ? '80vh' : '40vh',
+                      width: "max-content",
+                      margin: "auto",
+                      height: isPageWide ? "80vh" : "40vh",
                     }}
                     className="center-div text-center font-lexend"
                   >
                     <LoadingLottie
-                      height={'5rem'}
-                      width={'5rem'}
+                      height={"5rem"}
+                      width={"5rem"}
                       margin="none"
                     />
                     Please wait while we update your bookings
@@ -1039,16 +1072,18 @@ props.openNotification({
                   </div>
                 ) : !noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
-                    <div style={{ clear: 'right' }}>
+                    <div style={{ clear: "right" }}>
                       {!props.AddHotel && (
-                        <HotelBookingContainer
-                          SelectedBookingin={true}
-                          _setImagesHandler={props._setImagesHandler}
-                          selectedBooking={props.selectedBooking}
-                          booking={props.currentBooking}
-                          payment={props.payment}
-                          plan={props.plan}
-                        ></HotelBookingContainer>
+                          <HotelBookingContainer
+                            SelectedBookingin={true}
+                            _setImagesHandler={props._setImagesHandler}
+                            selectedBooking={props.selectedBooking}
+                            booking={props.currentBooking}
+                            payment={props.payment}
+                            plan={props.plan}
+                            handleClick={false}
+                            openDetails={() => setShowDetails(true)}
+                          ></HotelBookingContainer>
                       )}
 
                       {optionsJSX.length
@@ -1060,11 +1095,11 @@ props.openNotification({
                       {loading && !optionsJSX.length ? (
                         <div
                           className="center-div"
-                          style={{ height: isPageWide ? '80vh' : '40vh' }}
+                          style={{ height: isPageWide ? "80vh" : "40vh" }}
                         >
                           <LoadingLottie
-                            height={'5rem'}
-                            width={'5rem'}
+                            height={"5rem"}
+                            width={"5rem"}
                             margin="none"
                           />
                           Fetching stay recommendations for you
@@ -1110,6 +1145,15 @@ props.openNotification({
               </ContentContainer>
             </GridContainer>
           </div>
+          <AccommodationModal
+            check_in={props.selectedBooking.check_in}
+            check_out={props.selectedBooking.check_out}
+            _setImagesHandler={props._setImagesHandler}
+            onHide={() => setShowDetails(false)}
+            id={props.currentBooking.agoda_accommodation}
+            currentBooking={props.currentBooking}
+            show={showDetails}
+          ></AccommodationModal>
         </Drawer>
 
         {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
