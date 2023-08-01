@@ -128,17 +128,17 @@ const HotelBookingContainer = ({
     if (!payment?.is_registration_needed) {
       if (token) {
         setLoading(true);
-
         _SelectedBookingHandler({
           SelectedBookingId: selectedBooking?.id,
           itinerary_id: itinerary_id,
           tailored_id: tailored_id,
           user_selected: isSelect,
           index: index,
-          check_in: props.selectedBooking.check_in,
-          check_out : props.selectedBooking.check_out
+          check_in: selectedBooking?.check_in,
+          check_out : selectedBooking?.check_out
         })
           .then((data) => {
+
             setLoading(false);
 
             setisSelect(false);
@@ -162,7 +162,6 @@ const HotelBookingContainer = ({
     setisSelect(!isSelect);
   }
   function _handleUpdateChange(e) {
-    console.log('selectedBookingsd: ', booking);
     e.stopPropagation();
     handleSelectChange();
     _updateSearchedAccommodation({
