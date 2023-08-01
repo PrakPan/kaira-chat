@@ -368,7 +368,11 @@ const HotelsBooking = (props) => {
         let check_in = props.stayBookings[i]["check_in"];
     let check_out = props.stayBookings[i]["check_out"];
      setDates({ check_in, check_out });
-    setBookingId(id);
+   
+    if (data.agoda_accommodation) {
+      setBookingId(data.agoda_accommodation);
+    } 
+    else  setBookingId(id);
     setCurrentBooking(data);
     setBookingFunData({ index: i, booking: data, city_id: city_id });
     setShowDetails(true);

@@ -195,7 +195,7 @@ const HotelBookingContainer = ({
           >
             <div
               onClick={() => {
-                currentBooking
+                (currentBooking || SelectedBookingin)
                   ? openDetails()
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}

@@ -5,7 +5,7 @@ import media from "../../media";
 // import LeftSideBar from './leftsidebar/Index';
 import Accommodation from "./accommodation/Index";
 import AccommodationSearched from "./new-accommodation-searched/Index";
-// import AccommodationModal from '../accommodation/Index';
+import AccommodationModal from '../accommodation/Index';
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
 import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccomodationsAgoda";
 import Spinner from "../../Spinner";
@@ -58,6 +58,7 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
+  const [showDetails, setShowDetails] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
   const [optionsJSX, setOptionsJSX] = useState([]);
@@ -1073,14 +1074,16 @@ const Booking = (props) => {
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
                       {!props.AddHotel && (
-                        <HotelBookingContainer
-                          SelectedBookingin={true}
-                          _setImagesHandler={props._setImagesHandler}
-                          selectedBooking={props.selectedBooking}
-                          booking={props.currentBooking}
-                          payment={props.payment}
-                          plan={props.plan}
-                        ></HotelBookingContainer>
+                          <HotelBookingContainer
+                            SelectedBookingin={true}
+                            _setImagesHandler={props._setImagesHandler}
+                            selectedBooking={props.selectedBooking}
+                            booking={props.currentBooking}
+                            payment={props.payment}
+                            plan={props.plan}
+                            handleClick={false}
+                            openDetails={() => setShowDetails(true)}
+                          ></HotelBookingContainer>
                       )}
 
                       {optionsJSX.length
@@ -1142,6 +1145,15 @@ const Booking = (props) => {
               </ContentContainer>
             </GridContainer>
           </div>
+          <AccommodationModal
+            check_in={props.selectedBooking.check_in}
+            check_out={props.selectedBooking.check_out}
+            _setImagesHandler={props._setImagesHandler}
+            onHide={() => setShowDetails(false)}
+            id={props.currentBooking.agoda_accommodation}
+            currentBooking={props.currentBooking}
+            show={showDetails}
+          ></AccommodationModal>
         </Drawer>
 
         {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}

@@ -64,6 +64,7 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const POI = (props) => {
+  console.log('propsAccimmoda: ', props);
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
