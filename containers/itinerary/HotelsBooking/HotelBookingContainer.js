@@ -135,6 +135,8 @@ const HotelBookingContainer = ({
           tailored_id: tailored_id,
           user_selected: isSelect,
           index: index,
+          check_in: props.selectedBooking.check_in,
+          check_out : props.selectedBooking.check_out
         })
           .then((data) => {
             setLoading(false);
@@ -160,6 +162,7 @@ const HotelBookingContainer = ({
     setisSelect(!isSelect);
   }
   function _handleUpdateChange(e) {
+    console.log('selectedBookingsd: ', booking);
     e.stopPropagation();
     handleSelectChange();
     _updateSearchedAccommodation({
@@ -168,6 +171,9 @@ const HotelBookingContainer = ({
       itinerary_id: itinerary_id,
       result_index: booking?.result_index,
       category_id: booking?.category_id,
+      check_in: selectedBooking?.check_in,
+      check_out: selectedBooking?.check_out,
+      source : booking?.source
     });
   }
   const isMobile = useMediaQuery('(min-width:768px)');

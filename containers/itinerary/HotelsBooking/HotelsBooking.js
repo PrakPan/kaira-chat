@@ -65,7 +65,6 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const HotelsBooking = (props) => {
-
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
@@ -241,6 +240,8 @@ const HotelsBooking = (props) => {
           resolve(res.data); // Resolve the promise with the response data
         })
         .catch((err) => {
+              console.log("error happende");
+
           // setUpdateLoadingState(false);
           if (err.response) {
             // The request was made and the server responded with a status code

@@ -26,6 +26,7 @@ import HotelBookingContainer from '../../../containers/itinerary/HotelsBooking/H
 import { storeAndRetrieveValue } from '../../../helper/storeAndRetrieveValue';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import { openNotification } from '../../../store/actions/notification';
+import { BsXOctagon } from 'react-icons/bs';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -501,6 +502,9 @@ agodaAccomodation
     itinerary_id,
     result_index,
     category_id,
+    check_in,
+    check_out,
+    source
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
@@ -513,6 +517,16 @@ agodaAccomodation
         }
       }
     } catch {} */
+
+          // let _in = check_in;
+          // let _out = check_out;
+          // if (check_in.includes("/")) {
+          //   _in = check_in.split("/").reverse().join("-");
+          //   _out = check_out.split("/").reverse().join("-");
+          // }
+
+
+
     let updated_bookings_arr = [
       {
         id: SelectedBookingId,
@@ -523,7 +537,9 @@ agodaAccomodation
         booking_type: 'Accommodation',
 
         itinerary_id: itinerary_id,
-
+        check_in: check_in,
+        check_out: check_out,
+        source : source,
         trace: traceId
           ? traceId
           : storeAndRetrieveValue(props?.selectedBooking?.city),
@@ -743,6 +759,8 @@ props.openNotification({
     itinerary_id,
     result_index,
     category_id,
+    check_in,
+    check_out
   }) => {
     setUpdateBookingState(true);
     // const token = localStorage.getItem('access_token');
@@ -765,7 +783,8 @@ props.openNotification({
         booking_type: 'Accommodation',
 
         itinerary_id: itinerary_id,
-
+        check_in: check_in,
+        check_out : check_out,
         trace: traceId
           ? traceId
           : storeAndRetrieveValue(props?.selectedBooking?.city),
@@ -808,7 +827,8 @@ props.openNotification({
               // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
             })
-            .catch((err) => {
+          .catch((err) => {
+            console.log("error happendeded");
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
