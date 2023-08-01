@@ -57,7 +57,7 @@ export default class MyDocument extends Document {
   `,
             }}
           />
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === 'production' && (
             <script
               type="text/partytown"
               dangerouslySetInnerHTML={{
@@ -94,22 +94,24 @@ export default class MyDocument extends Document {
     `,
             }}
           ></script>
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === 'production' && (
             <script
               async
               src={
-                "https://www.googletagmanager.com/gtag/js?id=" +
+                'https://www.googletagmanager.com/gtag/js?id=' +
                 GOOGLE_ANALTICS_ID
               }
             />
           )}
+          {process.env.NODE_ENV === 'production' && (
+            <script
+              type="text/partytown"
+              src="//in.fw-cdn.com/30401267/225580.js"
+              chat="false"
+            ></script>
+          )}
 
-          <script
-            type="text/partytown"
-            src="//in.fw-cdn.com/30401267/225580.js"
-            chat="false"
-          ></script>
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === 'production' && (
             <script
               dangerouslySetInnerHTML={{
                 __html: `
@@ -216,13 +218,13 @@ export default class MyDocument extends Document {
               src="https://www.googletagmanager.com/ns.html?id=GTM-5C5GGGV"
               height="0"
               width="0"
-              style={{ display: "none", visibility: "hidden" }}
+              style={{ display: 'none', visibility: 'hidden' }}
             ></iframe>
             {/* End Google Tag Manager (noscript) */}
           </noscript>
           <Main />
           <div id="modal-portal" />
-          <div id='popup-portal' />
+          <div id="popup-portal" />
           <NextScript />
         </body>
       </Html>
