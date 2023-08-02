@@ -231,7 +231,7 @@ const HotelsBooking = (props) => {
           }
         )
         .then((res) => {
-          props._updateStayBookingHandler([res.data.bookings]);
+          props._updateStayBookingHandler([res.data]);
           setTimeout(function () {
             props.getPaymentHandler();
           }, 1000);

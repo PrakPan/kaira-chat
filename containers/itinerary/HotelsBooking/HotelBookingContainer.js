@@ -138,7 +138,6 @@ const HotelBookingContainer = ({
           check_out : selectedBooking?.check_out
         })
           .then((data) => {
-
             setLoading(false);
 
             setisSelect(false);
