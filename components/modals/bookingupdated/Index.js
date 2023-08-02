@@ -1086,7 +1086,8 @@ const Booking = (props) => {
                 ) : !noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
-                      {!props.AddHotel && (
+                        {/* {!props.AddHotel && (
+                          <div style={{border : '2px solid red'}}>
                         <HotelBookingContainer
                           SelectedBookingin={true}
                           _setImagesHandler={props._setImagesHandler}
@@ -1096,8 +1097,9 @@ const Booking = (props) => {
                           plan={props.plan}
                           handleClick={false}
                           openDetails={() => setShowDetails(true)}
-                        ></HotelBookingContainer>
-                      )}
+                            ></HotelBookingContainer>
+                            </div>
+                      )} */}
 
                       {optionsJSX.length
                         ? optionsJSX
