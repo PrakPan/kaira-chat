@@ -117,10 +117,10 @@ justify-content : flex-end;
 align-items : center;
 `
 const RatingContainer = styled.div`
-  margin-top: 0.3rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  margin-top: 0.4rem;
+  // display: flex;
+  // gap: 0.5rem;
+  // align-items: center;
   span {
     font-size: 0.75rem;
     font-weight: 300;
@@ -265,7 +265,7 @@ const ItineraryPoiElementM = (props) => {
 
     return (
       <div
-        style={{ color: "#ffa500", marginBottom: "0.1rem" }}
+        style={{ color: "#ffa500", marginBottom: "-0.2rem" }}
         className="flex flex-row"
       >
         {stars}
@@ -341,7 +341,12 @@ const ItineraryPoiElementM = (props) => {
             <RatingContainer>
               {/* <StarRating initialRating={4}></StarRating> */}
               <div>{_getStars(props.poi.rating)}</div>
-              <span>{props.poi.rating}</span>
+              <span>
+                {props.poi.rating}{" "}
+                {props.poi.user_ratings_total
+                  ? ` · ${props.poi.user_ratings_total} Google reviews`
+                  : ""}
+              </span>
             </RatingContainer>
           )}
           <div className="flex flex-row">

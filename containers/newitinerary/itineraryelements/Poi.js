@@ -80,7 +80,7 @@ const RatingContainer = styled.div`
   gap: 0.5rem;
   align-items: center;
   span {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 300;
     color: #727272;
   }
@@ -255,9 +255,9 @@ const ItineraryPoiElement = (props) => {
   const _getStars = (rating) => {
       var stars = [];
       for (let i = 0; i < Math.floor(rating); i++) {
-        stars.push(<FaStar style={{fontSize : '0.75rem'}} />);
+        stars.push(<FaStar style={{fontSize : '0.85rem'}} />);
       }
-    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt style={{ fontSize: "0.75rem" }} />);
+    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt style={{ fontSize: "0.85rem" }} />);
     
     return (
       <div
@@ -316,30 +316,30 @@ const ItineraryPoiElement = (props) => {
                     </div>
                   )}
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row gap-2">
                 <div
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {true ? "ATTRACTION" : "View Less"}
+                  ATTRACTION
                 </div>
+                {props.poi.rating && (
+                  <RatingContainer>
+                    {/* <StarRating initialRating={4}></StarRating> */}
+                    <div>{_getStars(props.poi.rating)}</div>
+                    <span>
+                      {props.poi.rating}{" "}
+                      {props.poi.user_ratings_total
+                        ? ` · ${props.poi.user_ratings_total} Google reviews`
+                        : ""}
+                    </span>
+                  </RatingContainer>
+                )}
               </div>
-              {props.poi.rating && (
-                <RatingContainer>
-                  {/* <StarRating initialRating={4}></StarRating> */}
-                  <div>{_getStars(props.poi.rating)}</div>
-                  <span>
-                    {props.poi.rating}{" "}
-                    {props.poi.user_ratings_total
-                      ? ` · ${props.poi.user_ratings_total} Google reviews`
-                      : ""}
-                  </span>
-                </RatingContainer>
-              )}
             </div>
           </div>
           <TextContainer>
-            <div className="line-clamp-3 font-normal text-sm mb-3">
+            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
               {props.text}
             </div>
             <MoreIcon onClick={() => setShow(true)}>
