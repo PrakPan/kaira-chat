@@ -163,7 +163,7 @@ const Day_I_Container = (props) => {
                     heading={element.heading}
                   ></RecomendationComponent>
                 )
-              : JSON.parse(element.text).length >= 1 &&
+              : JSON.parse(element.text)?.length >= 1 &&
                 dayIcontainer.push(
                   <RecomendationComponent
                     icon={element.icon}
