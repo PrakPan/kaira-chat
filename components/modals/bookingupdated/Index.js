@@ -89,39 +89,43 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
 
   const [noResults, setNoResults] = useState(false);
-
+  const [filtersObj, setFiltersObj] = useState({
+    budget: ["Affordable", "Average", "Luxury", "Luxury+"],
+    type: [],
+    star_category: ["3", "4", "5"],
+  });
   useEffect(() => {
     _updateOptionsHandlerWithFilter();
   }, [filtersState]);
-  const filters = {
-    budget: [
-      "Below ₹3,000",
-      "₹3,000 - ₹6,000",
-      "₹6,000 - ₹10,000",
-      "Above ₹10,000",
-    ],
-    type: [
-      "Hotel",
-      "Homestay",
-      "Camp",
-      "Guest House",
-      "Cottage",
-      "Villa",
-      "Resort",
-      "Lodge",
-      "Service Appartment",
-      "Bed and Breakfast",
-      "Farmstay",
-      // "Speciality Lodging",
-      // "Boat / Cruise",
-      // "Holiday Park / Caravan Park",
-      // "Country House",
-      "Entire House",
-      // "Capsule Hotel",
-      "Unique",
-    ],
-    star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
-  };
+  // const filters = {
+  //   budget: [
+  //     "Below ₹3,000",
+  //     "₹3,000 - ₹6,000",
+  //     "₹6,000 - ₹10,000",
+  //     "Above ₹10,000",
+  //   ],
+  //   type: [
+  //     "Hotel",
+  //     "Homestay",
+  //     "Camp",
+  //     "Guest House",
+  //     "Cottage",
+  //     "Villa",
+  //     "Resort",
+  //     "Lodge",
+  //     "Service Appartment",
+  //     "Bed and Breakfast",
+  //     "Farmstay",
+  //     // "Speciality Lodging",
+  //     // "Boat / Cruise",
+  //     // "Holiday Park / Caravan Park",
+  //     // "Country House",
+  //     "Entire House",
+  //     // "Capsule Hotel",
+  //     "Unique",
+  //   ],
+  //   star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
+  // };
 
   useEffect(() => {
     let options = [];
@@ -202,6 +206,15 @@ const Booking = (props) => {
           price_upper_range: filters.price_upper_range,
         })
         .then((res) => {
+          if (res.data.search && res.data.search.accommodation_types && res.data.search.accommodation_types.length) {
+            let accommodation_types = Array.from(
+              new Set(res.data.search.accommodation_types)
+            );
+            setFiltersObj({
+              ...filtersObj,
+              type: accommodation_types,
+            });
+          }
           setUpdateLoadingState(false);
           if (res.data.results.length) {
             setNoResults(false);
@@ -434,7 +447,7 @@ const Booking = (props) => {
 
         trace: traceId,
         star_category: filtersState.star_category,
-        accommodation_type: filtersState.type,
+        accommodation_type: filtersState.type != '' ? [filtersState.type] : [],
         city_id: props.selectedBooking.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
@@ -1014,7 +1027,7 @@ const Booking = (props) => {
                 showFilter={props.showFilter}
                 setshowFilter={props.setshowFilter}
                 filtersState={filtersState}
-                FILTERS={FILTERS}
+                FILTERS={filtersObj}
                 _updateStarFilterHandler={_updateStarFilterHandler}
                 _removeFilterHandler={_removeFilterHandler}
                 _addFilterHandler={_addFilterHandler}
@@ -1074,16 +1087,16 @@ const Booking = (props) => {
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
                       {!props.AddHotel && (
-                          <HotelBookingContainer
-                            SelectedBookingin={true}
-                            _setImagesHandler={props._setImagesHandler}
-                            selectedBooking={props.selectedBooking}
-                            booking={props.currentBooking}
-                            payment={props.payment}
-                            plan={props.plan}
-                            handleClick={false}
-                            openDetails={() => setShowDetails(true)}
-                          ></HotelBookingContainer>
+                        <HotelBookingContainer
+                          SelectedBookingin={true}
+                          _setImagesHandler={props._setImagesHandler}
+                          selectedBooking={props.selectedBooking}
+                          booking={props.currentBooking}
+                          payment={props.payment}
+                          plan={props.plan}
+                          handleClick={false}
+                          openDetails={() => setShowDetails(true)}
+                        ></HotelBookingContainer>
                       )}
 
                       {optionsJSX.length
