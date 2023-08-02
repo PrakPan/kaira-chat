@@ -115,7 +115,7 @@ const Child = styled.div`
 const Heading = styled.div`
   font-weight: 600;
   font-size: 20px;
-  margin-block: 1.5rem 1rem;
+  margin-block: 1rem 1rem;
 `;
 
 
@@ -369,8 +369,12 @@ const Overview = (props) => {
       <DetailsContainer>
         {props.data.check_in && props.data.check_out ? (
           <CheckInText>
-            <div>Check in: {props.data.check_in}</div>
-            <div>Check out: {props.data.check_out}</div>
+            <div>
+              Check in: {getHumanTime(props.data.check_in.substring(0, 5))}
+            </div>
+            <div>
+              Check out: {getHumanTime(props.data.check_out.substring(0, 5))}
+            </div>
           </CheckInText>
         ) : (
           <></>

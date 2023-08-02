@@ -181,7 +181,7 @@ const Details = (props) => {
     });
   };
   const getCouponHandler = (coupon) => {
-    setPaymentLoading(true);
+    // setPaymentLoading(true);
     //  props.checkAuthState();
 
     axios
@@ -202,7 +202,7 @@ const Details = (props) => {
           value: true,
           Msg: res.data.coupon_usage.message,
         });
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(true);
         setiscouponApplied(true);
 
@@ -221,7 +221,7 @@ const Details = (props) => {
         // }
       })
       .catch((error) => {
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
 
@@ -245,7 +245,7 @@ const Details = (props) => {
       });
   };
   const RemoveCoupon = () => {
-    setPaymentLoading(true);
+    // setPaymentLoading(true);
     //  props.checkAuthState();
 
     axios
@@ -266,7 +266,7 @@ const Details = (props) => {
           value: true,
           Msg: 'Coupon Removed Successfully',
         });
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
         setInputValue('');
@@ -281,7 +281,7 @@ const Details = (props) => {
         // }
       })
       .catch((error) => {
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(true);
         setIsError({
           error: true,
@@ -1131,58 +1131,76 @@ const Details = (props) => {
         !props.payment.paid_user &&
         props.payment.user_allowed_to_pay ? (
           props.payment.total_cost > 0 ? (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => _saleCreateHandler(props.id)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              onclick={() => _saleCreateHandler(props.id)}
+              loading={paymentLoading}
             >
               Pay Now & Book
-              {paymentLoading ? (
-                <Spinner
-                  color="white"
-                  display="inline"
-                  size={16}
-                  margin="0 0.5rem"
-                ></Spinner>
-              ) : null}
-            </ButtonYellow>
+            </Button>
           ) : (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => scrollToElement("Stays-Head")}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              onclick={() => scrollToElement("Stays-Head")}
             >
               Add Hotels
-            </ButtonYellow>
+            </Button>
           )
         ) : props?.payment?.is_registration_needed ? (
           props?.payment?.email_reverification_needed ? (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => setShowVerification(true)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              onclick={() => setShowVerification(true)}
             >
               Pay Now & Book
-            </ButtonYellow>
+            </Button>
           ) : props?.payment?.paid_user ? (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => scrollToElement("Stays-Head")}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              onclick={() => scrollToElement("Stays-Head")}
             >
               View Bookings
-            </ButtonYellow>
+            </Button>
           ) : (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => setShowRegistartion(true)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              onclick={() => setShowRegistartion(true)}
             >
               Add Travellers Details
-            </ButtonYellow>
+            </Button>
           )
         ) : (
           !props.payment.paid_user && (
-            // <ButtonYellow
-            //   styleClass="w-full"
-            //   onClick={() => props._GetInTouch()}
-            //   // onClick={() => _saleCreateHandler(props.id)}
-            // >
             <Button
               color="#111"
               fontWeight="500"
@@ -1220,16 +1238,7 @@ const Details = (props) => {
       {props.payment && props.token
         ? props.payment.paid_user
           ? null
-          : // (
-            //   <ButtonYellow
-            //     styleClass="w-full"
-            //     onClick={() => console.log(' ')}
-            //     onclickparam={null}
-            //   >
-            //     Get In Touch
-            //   </ButtonYellow>
-            // )
-            null
+          : null
         : null}
       {!props.token ? (
         <Button

@@ -28,6 +28,7 @@ import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import NotificationPopup from '../../../components/ui/NotificationPopup';
 import { connect } from 'react-redux';
 import { openNotification } from '../../../store/actions/notification';
+import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 
 const padding = {
   initialLeft: '60px',
@@ -54,13 +55,35 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
+const TextContainer = styled.div`
+  position: relative;
+`;
 const MoreIcon = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  position: absolute;
+    bottom: 0px;
+    transform: translate(0, 7%);
+    right: 0;
+    background: white;
+    padding-left: 10px;
   span {
-    font-weight: 400;
+    font-weight: 600;
+    cursor : pointer;
     font-size: 0.875rem;
+   }
+`;
+const RatingContainer = styled.div`
+  margin-top: 0.3rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  span {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: #727272;
+  }
 `;
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
@@ -106,7 +129,9 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
+
 const ItineraryPoiElement = (props) => {
+  console.log('propsPOO: ', props);
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
@@ -226,6 +251,24 @@ const ItineraryPoiElement = (props) => {
       Poi_activities();
     }
   };
+
+  const _getStars = (rating) => {
+      var stars = [];
+      for (let i = 0; i < Math.floor(rating); i++) {
+        stars.push(<FaStar style={{fontSize : '0.85rem'}} />);
+      }
+    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt style={{ fontSize: "0.85rem" }} />);
+    
+    return (
+      <div
+        style={{ color: "#ffa500", marginBottom: "0.1rem" }}
+        className="flex flex-row"
+      >
+        {stars}
+      </div>
+    );
+  }
+
   return (
     <Container>
       {/* <div>{props.time}</div> */}
@@ -273,30 +316,41 @@ const ItineraryPoiElement = (props) => {
                     </div>
                   )}
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row gap-2">
                 <div
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {true ? "ATTRACTION" : "View Less"}
+                  ATTRACTION
                 </div>
+                {props.poi.rating && (
+                  <RatingContainer>
+                    {/* <StarRating initialRating={4}></StarRating> */}
+                    <div>{_getStars(props.poi.rating)}</div>
+                    <span>
+                      {props.poi.rating}{" "}
+                      {props.poi.user_ratings_total
+                        ? ` · ${props.poi.user_ratings_total} Google reviews`
+                        : ""}
+                    </span>
+                  </RatingContainer>
+                )}
               </div>
-              {props.poi.rating && <StarRating initialRating={4}></StarRating>}
             </div>
           </div>
-
-          <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
-            {props.text}
-          </div>
-          <MoreIcon onClick={() => setShow(true)}>
-            <span>More</span>
-            <MdNavigateNext
-              style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
-            />
-          </MoreIcon>
+          <TextContainer>
+            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+              {props.text}
+            </div>
+            <MoreIcon onClick={() => setShow(true)}>
+              <span>...More</span>
+              <MdNavigateNext
+                style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
+              />
+            </MoreIcon>
+          </TextContainer>
         </div>
       </div>
-
       <POIDetailsDrawer
         itineraryDrawer
         show={show}

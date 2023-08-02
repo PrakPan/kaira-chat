@@ -83,17 +83,15 @@ export default function TemporaryDrawer(props) {
   };
   const _OnstarSelect = (i, currentfilter) => {
     setSelectedStar(i);
-    console.log('filter', currentfilter, i);
     props._updateStarFilterHandler(currentfilter);
   };
   const handleSelectOption = (option) => {
-    console.log('filter option:', option);
     // Perform additional actions with the selected option
     _onChangeHandler(true, option, 'type');
   };
   return (
     <div>
-      <React.Fragment key={'bottom'}>
+      <React.Fragment key={"bottom"}>
         {/* <FiltersContainer>
                 <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Budget</Filter>
                 <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Type</Filter>
@@ -128,15 +126,15 @@ export default function TemporaryDrawer(props) {
         {isPageWide && (
           <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4">
             <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 text-sm font-normal">Stars ratings</div>
+              <div className="mb-2 text-sm font-normal">Star category</div>
               <div className="flex flex-row gap-1">
-                {props.filters['star_category'].map((currentfilter, i) => (
+                {props.filters["star_category"].map((currentfilter, i) => (
                   <button
                     onClick={() => _OnstarSelect(i, currentfilter)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedStar == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
@@ -149,20 +147,20 @@ export default function TemporaryDrawer(props) {
             <div className="flex flex-col justify-start items-baseline">
               <div className="mb-2 text-sm font-normal">Budget</div>
               <div className="flex flex-row gap-1">
-                {props.filters['budget'].map((currentfilter, i) => (
+                {props.filters["budget"].map((currentfilter, i) => (
                   <button
                     onClick={(event) =>
                       _onChangeHandler(
                         event.target.textContent,
                         currentfilter,
-                        'budget',
+                        "budget",
                         i
                       )
                     }
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedBudget == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
@@ -176,7 +174,7 @@ export default function TemporaryDrawer(props) {
               <div className="mb-2 text-sm font-normal">Type</div>
               <div className="w-[12rem]">
                 <UiDropdown
-                  options={props.filters['type']}
+                  options={props.filters["type"]}
                   onSelect={handleSelectOption}
                 ></UiDropdown>
               </div>

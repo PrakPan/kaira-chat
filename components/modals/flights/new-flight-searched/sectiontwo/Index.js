@@ -164,7 +164,7 @@ const Booking = (props) =>{
           }
       }
       }, [props.data]);
-    const getTime = (datetime) => {
+  const getTime = (datetime) => {
         return(getHumanTime(datetime.substring(11,16)));
     }
     const getDate = (datetime) => {

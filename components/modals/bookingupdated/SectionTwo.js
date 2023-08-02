@@ -38,7 +38,6 @@ const Section = (props) => {
     props._updateStarFilterHandler(currentfilter, currentfilter + 1);
   };
   const handleSelectOption = (option) => {
-    console.log('Selected option:', option);
     // Perform additional actions with the selected option
     _onChangeHandler(true, option, 'type');
   };
@@ -59,7 +58,7 @@ const Section = (props) => {
       ></FiltersMobile>
       <Drawer
         show={props.showFilter}
-        anchor={'right'}
+        anchor={"right"}
         backdrop
         style={{ zIndex: 1508 }}
         className="font-lexend"
@@ -72,22 +71,22 @@ const Section = (props) => {
                 onClick={() => props.setshowFilter(false)}
                 className="hover-pointer"
                 style={{
-                  fontSize: '1.75rem',
-                  textAlign: 'right',
+                  fontSize: "1.75rem",
+                  textAlign: "right",
                 }}
               ></IoMdClose>
               <div className="text-2xl font-normal line-clamp-1">Filters</div>
             </div>
             <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 text-sm font-normal">Stars ratings</div>
+              <div className="mb-2 text-sm font-normal">Star category</div>
               <div className="flex flex-row gap-1">
-                {props.FILTERS['star_category'].map((currentfilter, i) => (
+                {props.FILTERS["star_category"].map((currentfilter, i) => (
                   <button
                     onClick={() => _OnstarSelect(i, currentfilter)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedStar == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
@@ -100,20 +99,20 @@ const Section = (props) => {
             <div className="flex flex-col justify-start items-baseline">
               <div className="mb-2 text-sm font-normal">Budget</div>
               <div className="flex flex-row gap-1">
-                {props.FILTERS['budget'].map((currentfilter, i) => (
+                {props.FILTERS["budget"].map((currentfilter, i) => (
                   <button
                     onClick={(event) =>
                       _onChangeHandler(
                         event.target.textContent,
                         currentfilter,
-                        'budget',
+                        "budget",
                         i
                       )
                     }
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedBudget == i
-                        ? 'text-white border-0 bg-black '
-                        : 'border-2 bg-white text-black'
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
@@ -127,7 +126,7 @@ const Section = (props) => {
               <div className="mb-2 text-sm font-normal">Type</div>
               <div className="w-[12rem]">
                 <UiDropdown
-                  options={props.FILTERS['type']}
+                  options={props.FILTERS["type"]}
                   onSelect={handleSelectOption}
                 ></UiDropdown>
               </div>
@@ -146,13 +145,9 @@ const Section = (props) => {
               // onClick={() => {
               //   handleClickAc(index, booking);
               // }}
+              onClick={() => props.setshowFilter(false)}
             >
-              <div
-                onClick={() => props.setshowFilter(false)}
-                className="text-[#01202B] "
-              >
-                Apply
-              </div>
+              <div className="text-[#01202B] ">Apply</div>
             </ButtonYellow>
           </div>
         </div>

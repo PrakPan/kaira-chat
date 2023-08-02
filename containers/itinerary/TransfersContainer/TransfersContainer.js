@@ -581,6 +581,7 @@ const TransfersContainer = (props) => {
       for (var i = 2; i < props.routes.length - 1; i += 2) {
         locationsArr.push(
           <PinSection
+            transfersPin
             setCurrentPopup={false}
             city={props.routes[i].city_name}
             duration={props?.routes[i]?.duration}
@@ -703,6 +704,7 @@ const TransfersContainer = (props) => {
       for (var i = 1; i < props.transferBookings.length; i++) {
         locationsArr.push(
           <PinSection
+            transfersPin
             setCurrentPopup={false}
             city={props?.transferBookings[i - 1]?.destination_city}
             duration={
@@ -1189,12 +1191,12 @@ const TransfersContainer = (props) => {
           _updateBookingHandler={props._updateBookingHandler}
           itinerary_id={
             props?.transferBookings[0]
-              ? props?.transferBookings[0]['itinerary_id']
+              ? props?.transferBookings[0]["itinerary_id"]
               : null
           }
           setHideFlightModal={props.setHideFlightModal}
           alternates={selectedBooking.id}
-          tailored_id={selectedBooking['tailored_itinerary']}
+          tailored_id={selectedBooking["tailored_itinerary"]}
           _updatePaymentHandler={props._updatePaymentHandler}
           _updateFlightHandler={props._updateFlightHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -1217,6 +1219,7 @@ const TransfersContainer = (props) => {
       {props?.transferBookings && (
         <>
           <PinSection
+            transfersPin
             setCurrentPopup={false}
             cityData={props.breif.city_slabs[0]}
             dayId={
@@ -1235,7 +1238,7 @@ const TransfersContainer = (props) => {
           ></PinSection>
           {props?.routes &&
           props?.routes.length > 1 &&
-          props?.plan?.version == 'v2' ? (
+          props?.plan?.version == "v2" ? (
             props.routes[1]?.modes ? (
               props.routes[1].modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
@@ -1276,7 +1279,7 @@ const TransfersContainer = (props) => {
               })
             ) : (
               <TransContainer>
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: "relative" }}>
                   <Line
                     pinColour={props?.breif?.city_slabs[0]?.color}
                     Transfers={true}
@@ -1308,7 +1311,7 @@ const TransfersContainer = (props) => {
               costings_breakdown={
                 props?.transferBookings[0]?.costings_breakdown
               }
-              modes={'Taxi'}
+              modes={"Taxi"}
               transferbookings={props.transferBookings}
               booking={props.transferBookings[0]}
               _changeTaxiHandler={_changeTaxiHandler}
@@ -1317,7 +1320,7 @@ const TransfersContainer = (props) => {
               index={0}
               icon={props?.transferBookings[0]?.images?.image}
               taxi_type={props?.transferBookings[0]?.taxi_type}
-              transportMode={'Taxi'}
+              transportMode={"Taxi"}
               duration={props.breif.city_slabs[0].duration}
               userSelected={props?.transferBookings[0]?.user_selected}
             />
@@ -1334,6 +1337,7 @@ token={props.token}></TransferModeContainer>
 token={props.token}></TransferModeContainer> */}
           {props?.routes && props?.routes.length > 1 && (
             <PinSection
+              transfersPin
               setCurrentPopup={false}
               dayId={
                 props.breif.city_slabs[0].day_slab_location.start_day_slab_index

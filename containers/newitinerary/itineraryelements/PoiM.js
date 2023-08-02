@@ -20,7 +20,7 @@ import PoiListSkeleton from "./PoiListSkeleton";
 import LogInModal from "../../../components/modals/Login";
 import { Navigation } from "../../../components/NewNavigation";
 import { IoMdClose } from "react-icons/io";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import ButtonYellow from "../../../components/ButtonYellow";
 import useMediaQuery from "../../../hooks/useMedia";
 import Slide from "../../../Animation/framerAnimation/Slide";
@@ -116,6 +116,17 @@ display : flex;
 justify-content : flex-end;
 align-items : center;
 `
+const RatingContainer = styled.div`
+  margin-top: 0.4rem;
+  // display: flex;
+  // gap: 0.5rem;
+  // align-items: center;
+  span {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #727272;
+  }
+`;
 const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -244,6 +255,24 @@ const ItineraryPoiElementM = (props) => {
   };
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
+  const _getStars = (rating) => {
+    var stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<FaStar style={{ fontSize: "0.75rem" }} />);
+    }
+    if (Math.floor(rating) < rating)
+      stars.push(<FaStarHalfAlt style={{ fontSize: "0.75rem" }} />);
+
+    return (
+      <div
+        style={{ color: "#ffa500", marginBottom: "-0.2rem" }}
+        className="flex flex-row"
+      >
+        {stars}
+      </div>
+    );
+  };
+
   return (
     <Container onClick={() => setShow(true)} className="font-lexend">
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -308,6 +337,18 @@ const ItineraryPoiElementM = (props) => {
           </div>
 
           {props?.rating && <StarRating initialRating={4}></StarRating>}
+          {props.poi.rating && (
+            <RatingContainer>
+              {/* <StarRating initialRating={4}></StarRating> */}
+              <div>{_getStars(props.poi.rating)}</div>
+              <span>
+                {props.poi.rating}{" "}
+                {props.poi.user_ratings_total
+                  ? ` · ${props.poi.user_ratings_total} Google reviews`
+                  : ""}
+              </span>
+            </RatingContainer>
+          )}
           <div className="flex flex-row">
             <div className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]">
               {true ? "ATTRACTION" : "View Less"}
@@ -357,10 +398,8 @@ const ItineraryPoiElementM = (props) => {
       </GridContainer>
       <div className={`pt-2 text-sm font-[350] line-clamp-3`}>{props.text}</div>
       <MoreIcon onClick={() => setShow(true)}>
-        <span>
-          More
-        </span>
-        <MdNavigateNext style={{ fontSize: "1.3rem"  , marginTop : '0.1rem' }} />
+        <span>More</span>
+        <MdNavigateNext style={{ fontSize: "1.3rem", marginTop: "0.1rem" }} />
       </MoreIcon>
       {showLoginModal && (
         <div>

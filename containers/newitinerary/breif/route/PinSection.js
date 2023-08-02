@@ -26,22 +26,6 @@ const Heading = styled.div`
   display: flex;
   align-items: center;
   position: relative;
-
-  // ----
-  // position: relative;
-  // display: inline-block;
-
-  // &::after {
-  //   content: "";
-  //   position: absolute;
-  //   left: 0;
-  //   bottom: -5px; /* Adjust this value to control the underline thickness */
-  //   width: 0;
-  //   height: 2px;
-  //   background-color: ${({ pinColour }) => pinColour};
-  //   transform-origin: left;
-  //   transition: width 0.2s ease; /* Smooth transition on width change */
-  // }
 `;
 const IconContainer = styled.div`
   position: absolute;
@@ -52,7 +36,7 @@ const IconContainer = styled.div`
 
 const PinSection = (props) => {
   const handleClick = () => {
-    if(props.startingCity || props.endingCity) return
+    if (props.startingCity || props.endingCity || props.transfersPin) return;
     props.setShowDrawer(true);
     props.setShowDrawerData(props.cityData);
   };
@@ -73,7 +57,7 @@ const PinSection = (props) => {
                 : `${props.duration == 0 ? `` : ` - ${props.duration}`}  Night`
             } `
           : props.city}
-      {(props.startingCity || props.endingCity) ? <></> :   <IconContainer className="IconContainer">
+      {(props.startingCity || props.endingCity || props.transfersPin) ? <></> :   <IconContainer className="IconContainer">
           <MdNavigateNext
             style={{ fontSize: "1.5rem" }}
             className="AnimateRight"
