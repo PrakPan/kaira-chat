@@ -28,6 +28,7 @@ import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
 import NotificationPopup from '../../../components/ui/NotificationPopup';
 import { connect } from 'react-redux';
 import { openNotification } from '../../../store/actions/notification';
+import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
 
 const padding = {
   initialLeft: '60px',
@@ -72,6 +73,17 @@ const MoreIcon = styled.div`
     cursor : pointer;
     font-size: 0.875rem;
    }
+`;
+const RatingContainer = styled.div`
+  margin-top: 0.3rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  span {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #727272;
+  }
 `;
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
@@ -119,6 +131,7 @@ const ColorTags = styled.span`
 `;
 
 const ItineraryPoiElement = (props) => {
+  console.log('propsPOO: ', props);
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
@@ -238,6 +251,24 @@ const ItineraryPoiElement = (props) => {
       Poi_activities();
     }
   };
+
+  const _getStars = (rating) => {
+      var stars = [];
+      for (let i = 0; i < Math.floor(rating); i++) {
+        stars.push(<FaStar style={{fontSize : '0.75rem'}} />);
+      }
+    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt style={{ fontSize: "0.75rem" }} />);
+    
+    return (
+      <div
+        style={{ color: "#ffa500", marginBottom: "0.1rem" }}
+        className="flex flex-row"
+      >
+        {stars}
+      </div>
+    );
+  }
+
   return (
     <Container>
       {/* <div>{props.time}</div> */}
@@ -293,11 +324,22 @@ const ItineraryPoiElement = (props) => {
                   {true ? "ATTRACTION" : "View Less"}
                 </div>
               </div>
-              {props.poi.rating && <StarRating initialRating={4}></StarRating>}
+              {props.poi.rating && (
+                <RatingContainer>
+                  {/* <StarRating initialRating={4}></StarRating> */}
+                  <div>{_getStars(props.poi.rating)}</div>
+                  <span>
+                    {props.poi.rating}{" "}
+                    {props.poi.user_ratings_total
+                      ? ` · ${props.poi.user_ratings_total} Google reviews`
+                      : ""}
+                  </span>
+                </RatingContainer>
+              )}
             </div>
           </div>
           <TextContainer>
-            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+            <div className="line-clamp-3 font-normal text-sm mb-3">
               {props.text}
             </div>
             <MoreIcon onClick={() => setShow(true)}>
