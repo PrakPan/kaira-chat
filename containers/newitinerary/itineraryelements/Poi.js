@@ -54,13 +54,24 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
+const TextContainer = styled.div`
+  position: relative;
+`;
 const MoreIcon = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  position: absolute;
+    bottom: 0px;
+    transform: translate(0, 7%);
+    right: 0;
+    background: white;
+    padding-left: 10px;
   span {
-    font-weight: 400;
+    font-weight: 600;
+    cursor : pointer;
     font-size: 0.875rem;
+   }
 `;
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
@@ -106,6 +117,7 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
+
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -284,19 +296,19 @@ const ItineraryPoiElement = (props) => {
               {props.poi.rating && <StarRating initialRating={4}></StarRating>}
             </div>
           </div>
-
-          <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
-            {props.text}
-          </div>
-          <MoreIcon onClick={() => setShow(true)}>
-            <span>More</span>
-            <MdNavigateNext
-              style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
-            />
-          </MoreIcon>
+          <TextContainer>
+            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+              {props.text}
+            </div>
+            <MoreIcon onClick={() => setShow(true)}>
+              <span>...More</span>
+              <MdNavigateNext
+                style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
+              />
+            </MoreIcon>
+          </TextContainer>
         </div>
       </div>
-
       <POIDetailsDrawer
         itineraryDrawer
         show={show}
