@@ -1191,12 +1191,12 @@ const TransfersContainer = (props) => {
           _updateBookingHandler={props._updateBookingHandler}
           itinerary_id={
             props?.transferBookings[0]
-              ? props?.transferBookings[0]["itinerary_id"]
+              ? props?.transferBookings[0]['itinerary_id']
               : null
           }
           setHideFlightModal={props.setHideFlightModal}
           alternates={selectedBooking.id}
-          tailored_id={selectedBooking["tailored_itinerary"]}
+          tailored_id={selectedBooking['tailored_itinerary']}
           _updatePaymentHandler={props._updatePaymentHandler}
           _updateFlightHandler={props._updateFlightHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -1238,8 +1238,10 @@ const TransfersContainer = (props) => {
           ></PinSection>
           {props?.routes &&
           props?.routes.length > 1 &&
-          props?.plan?.version == "v2" ? (
-            props.routes[1]?.modes ? (
+          props?.plan?.version == 'v2' ? (
+            props.routes[1]?.modes &&
+            props?.routes[1].bookings &&
+            props?.routes[1].bookings.length ? (
               props.routes[1].modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
                   props?.transferBookings,
@@ -1279,7 +1281,7 @@ const TransfersContainer = (props) => {
               })
             ) : (
               <TransContainer>
-                <div style={{ position: "relative" }}>
+                <div style={{ position: 'relative' }}>
                   <Line
                     pinColour={props?.breif?.city_slabs[0]?.color}
                     Transfers={true}
@@ -1311,7 +1313,7 @@ const TransfersContainer = (props) => {
               costings_breakdown={
                 props?.transferBookings[0]?.costings_breakdown
               }
-              modes={"Taxi"}
+              modes={'Taxi'}
               transferbookings={props.transferBookings}
               booking={props.transferBookings[0]}
               _changeTaxiHandler={_changeTaxiHandler}
@@ -1320,7 +1322,7 @@ const TransfersContainer = (props) => {
               index={0}
               icon={props?.transferBookings[0]?.images?.image}
               taxi_type={props?.transferBookings[0]?.taxi_type}
-              transportMode={"Taxi"}
+              transportMode={'Taxi'}
               duration={props.breif.city_slabs[0].duration}
               userSelected={props?.transferBookings[0]?.user_selected}
             />

@@ -326,11 +326,11 @@ const TransferModeContainer = (props) => {
         setaddboking(!addbooking);
         setUpdateBookingState(false);
         setLoading(false);
-          props.openNotification({
-            text: "Your Booking updated successfully!",
-            heading: "Success!",
-            type: "success",
-          });
+        props.openNotification({
+          text: 'Your Booking updated successfully!',
+          heading: 'Success!',
+          type: 'success',
+        });
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
@@ -339,13 +339,14 @@ const TransferModeContainer = (props) => {
           if (err.response.status === 400) {
             props.openNotification({
               text: err.response.data.message,
-              heading: "Error!",
-              type: "error",
+              heading: 'Error!',
+              type: 'error',
             });
-          }else props.openNotification({
-              text: "There seems to be a problem, please try again!",
-              heading: "Error!",
-              type: "error",
+          } else
+            props.openNotification({
+              text: 'There seems to be a problem, please try again!',
+              heading: 'Error!',
+              type: 'error',
             });
         }
         setUpdateBookingState(false);
@@ -393,7 +394,6 @@ const TransferModeContainer = (props) => {
             </div>
           </div>
           <div
-            id={props.booking.id}
             className={`mb-4 mt-2 lg:block ${
               !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
             }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 p-3  `}
@@ -728,10 +728,7 @@ const TransferModeContainer = (props) => {
             </div>
           </div>
 
-          <div
-            id={props.booking.id}
-            className="mb-4 mt-3 group min-w-full w-max  flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center "
-          >
+          <div className="mb-4 mt-3 group min-w-full w-max  flex flex-row gap-2   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center ">
             {props.icon && (
               <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
                 {props.booking_type == 'Flight' ? (
