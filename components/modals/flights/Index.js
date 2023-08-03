@@ -379,7 +379,7 @@ const Booking = (props) => {
         // window.alert('There seems to be a problem, please try again!');
         props.openNotification({
           type: "error",
-          text: "Something went wrong! Please try after some time.",
+          text: "Oops, this action is not allowed on another user's itinerary.",
           heading: "Error!",
         });
       });
@@ -494,21 +494,6 @@ const Booking = (props) => {
                       ? optionsJSX
                       : null}
                     {loading && !optionsJSX.length ? (
-                      // <div
-                      //   style={{
-                      //     width: "max-content",
-                      //     margin: "auto",
-                      //     height: isPageWide ? "80vh" : "40vh",
-                      //   }}
-                      //   className="center-div"
-                      // >
-                      //   <LoadingLottie
-                      //     height={"5rem"}
-                      //     width={"5rem"}
-                      //     margin="none"
-                      //   />
-                      //   Fetching best fares
-                      // </div>
                       <Skeleton />
                     ) : null}
                     {!loading && !optionsJSX.length ? (
@@ -526,13 +511,6 @@ const Booking = (props) => {
                     ) : null}
                   </div>
                   {moreLoadingState ? (
-                    // <div style={{ width: "max-content", margin: "auto" }}>
-                    //   <LoadingLottie
-                    //     height={"5rem"}
-                    //     width={"5rem"}
-                    //     margin="none"
-                    //   />
-                    // </div>
                     <Skeleton />
                   ) : null}
                   {viewMoreStatus && !updateBookingState ? (

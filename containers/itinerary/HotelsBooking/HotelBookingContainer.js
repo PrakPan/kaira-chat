@@ -28,6 +28,15 @@ const starHotel = styled.div`
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
+const RoomTypeGrid = styled.div`
+display: grid;
+    grid-template-columns: 1rem auto 5.5rem;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: 14px;
+    line-height: 20px;
+
+`;
 
 const HotelBookingContainer = ({
   SelectedBookingin,
@@ -72,7 +81,7 @@ const HotelBookingContainer = ({
   // const [expiredBooking, setexpiredBooking] = useState(
   //   booking?.status == 'BOOKING_EXPIRED' ? true : false
   // );
-
+console.log('bookig' , booking)
   const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
@@ -354,22 +363,25 @@ const HotelBookingContainer = ({
 
                   {booking.costings_breakdown ? (
                     <>
-                      <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
-                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                          <BiBed className="text-sm text-[#7A7A7A]" />
-                          <div className="text-sm font-[400] line-clamp-1">
-                            {booking.costings_breakdown[0].room_type}
-                          </div>
-                          <div>
-                            {"( "}
-                            {booking.costings_breakdown[0].number_of_rooms}{" "}
-                            {booking.costings_breakdown[0].number_of_rooms > 1
-                              ? "Rooms"
-                              : "Room"}
-                            {" )"}
-                          </div>
-                        </div>
+                      {/* <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}> */}
+                      {/* <div className="text-sm font-[400] gap-2 flex flex-row items-center"> */}
+                      <RoomTypeGrid>
+                      <BiBed className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400] line-clamp-1">
+                        {booking.costings_breakdown[0].room_type}
                       </div>
+                      <div>
+                        {"( "}
+                        {booking.costings_breakdown[0].number_of_rooms}{" "}
+                        {booking.costings_breakdown[0].number_of_rooms > 1
+                          ? "Rooms"
+                          : "Room"}
+                        {" )"}
+                        </div>
+                      </RoomTypeGrid>
+                        
+                      {/* </div> */}
+                      {/* </div> */}
                       {booking.costings_breakdown[0].number_of_extra_beds &&
                       booking.costings_breakdown[0].number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center my-0">
@@ -425,7 +437,7 @@ const HotelBookingContainer = ({
                 {currentBooking && booking?.price && (
                   <div className="flex flex-row gap-1 items-center w-full font-bold">
                     <div className="text-2xl font-bold">
-                      {"₹ " + getIndianPrice(Math.round(booking?.price))}
+                      {(booking.source == 'Agoda') ? "₹ " + getIndianPrice(Math.round(+booking.price/100)) : "₹ " + getIndianPrice(Math.round(booking?.price))}
                     </div>
                     <div className="font-normal text-base self-end">
                       for {currentBooking?.duration} Nights

@@ -20,6 +20,7 @@ import { connect } from 'react-redux';
 import InfiniteScroller from './InfniteScroller';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
+import { openNotification } from '../../../store/actions/notification';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -411,7 +412,12 @@ const Booking = (props) => {
         // setUpdateLoadingState(false);
         setUpdateBookingState(false);
 
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
       });
   };
   const _loadAccommodationsHandler = () => {
@@ -632,7 +638,9 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);

@@ -5,7 +5,7 @@ import media from "../../media";
 // import LeftSideBar from './leftsidebar/Index';
 import Accommodation from "./accommodation/Index";
 import AccommodationSearched from "./new-accommodation-searched/Index";
-import AccommodationModal from '../accommodation/Index';
+import AccommodationModal from "../accommodation/Index";
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
 import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccomodationsAgoda";
 import Spinner from "../../Spinner";
@@ -206,7 +206,11 @@ const Booking = (props) => {
           price_upper_range: filters.price_upper_range,
         })
         .then((res) => {
-          if (res.data.search && res.data.search.accommodation_types && res.data.search.accommodation_types.length) {
+          if (
+            res.data.search &&
+            res.data.search.accommodation_types &&
+            res.data.search.accommodation_types.length
+          ) {
             let accommodation_types = Array.from(
               new Set(res.data.search.accommodation_types)
             );
@@ -447,7 +451,7 @@ const Booking = (props) => {
 
         trace: traceId,
         star_category: filtersState.star_category,
-        accommodation_type: filtersState.type != '' ? [filtersState.type] : [],
+        accommodation_type: filtersState.type != "" ? [filtersState.type] : [],
         city_id: props.selectedBooking.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
@@ -763,7 +767,7 @@ const Booking = (props) => {
               setUnauthorized(true);
               props.openNotification({
                 type: "error",
-                text: "Something went wrong! Please try after some time.",
+                text: "You're not authorized to take this action, please contact your experience captain.",
                 heading: "Error!",
               });
               // window.alert("There seems to be a problem, please try again!")
@@ -822,12 +826,21 @@ const Booking = (props) => {
               }, 1000);
               // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
+              props.openNotification({
+                type: "success",
+                text: "Hotel changed successfully.",
+                heading: "Sucess!",
+              });
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-
+              props.openNotification({
+                type: "error",
+                text: "You're not authorized to take this action, please contact your experience captain.",
+                heading: "Error!",
+              });
               // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
@@ -843,12 +856,21 @@ const Booking = (props) => {
               }, 1000);
               // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
+              props.openNotification({
+                type: "success",
+                text: "Hotel changed successfully.",
+                heading: "Sucess!",
+              });
             })
             .catch((err) => {
               // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
-
+              props.openNotification({
+                type: "error",
+                text: "You're not authorized to take this action, please contact your experience captain.",
+                heading: "Error!",
+              });
               // window.alert("There seems to be a problem, please try again!")
             });
     }
@@ -1086,7 +1108,7 @@ const Booking = (props) => {
                 ) : !noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
-                        {/* {!props.AddHotel && (
+                      {/* {!props.AddHotel && (
                           <div style={{border : '2px solid red'}}>
                         <HotelBookingContainer
                           SelectedBookingin={true}

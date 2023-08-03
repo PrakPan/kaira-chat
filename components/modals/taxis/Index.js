@@ -24,6 +24,7 @@ import TaxiSelected from './taxi-selected/Index';
 import TaxiSearched from './taxi-searched/Index';
 import Drawer from '../../ui/Drawer';
 import { setUpdateLoading } from '../../../store/actions/auth';
+import { openNotification } from '../../../store/actions/notification';
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -257,7 +258,12 @@ const Booking = (props) => {
         // setUpdateLoadingState(false);
         setUpdateBookingState(false);
 
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+         props.openNotification({
+           type: "error",
+           text: "There seems to be a problem, please try again!",
+           heading: "Error!",
+         });
       });
   };
 
@@ -395,8 +401,13 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+// const mapDispatchToProps = (dispatch) => {
+//   return {};
+// };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);

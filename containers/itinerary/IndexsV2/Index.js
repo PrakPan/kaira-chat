@@ -22,6 +22,7 @@ import axiosPoiRoutes from '../../../services/itinerary/brief/route';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Landing from '../landing/Index';
 import Overview from '../../newitinerary/overview/Index';
+import { openNotification } from '../../../store/actions/notification';
 
 const Container = styled.div`
   width: 90%;
@@ -634,7 +635,12 @@ const Itinerary = (props) => {
 
         setCardUpdateLoading(null);
 
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
       });
   };
   const _deselectActivityBookingHandler = (booking, user_selected) => {
@@ -840,6 +846,7 @@ const mapStateToPros = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
+    openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
 

@@ -363,7 +363,7 @@ const SimpleTabsV2 = (props) => {
        }
        props.openNotification({
          type: "error",
-         text: "Something went wrong! Please try after some time.",
+         text: "There seems to be a problem, please try again!",
          heading: "Error!",
        });
       //  setIsShow(false);

@@ -160,6 +160,11 @@ const TransferModeContainer = (props) => {
 
         e.stopPropagation();
       } else {
+props.openNotification({
+  text: "Oops, this action is not allowed on another user's itinerary.",
+  heading: "Error!",
+  type: "error",
+});
         props.setShowLoginModal();
         e.stopPropagation();
       }

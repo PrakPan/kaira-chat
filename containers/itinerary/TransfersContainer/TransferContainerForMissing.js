@@ -3,6 +3,8 @@ import Button from '../../../components/Button';
 import Slide from '../../../Animation/framerAnimation/Slide';
 import axiosLeadChat from '../../../services/leads/chat.js';
 import { useRouter } from 'next/router';
+import { connect } from 'react-redux';
+import { openNotification } from '../../../store/actions/notification';
 const TransferContainerForMissing = ({
   cityname1,
   cityname2,
@@ -59,7 +61,12 @@ const TransferContainerForMissing = ({
         });
         setIsShow(false);
         setLoading(false);
-        window.alert('There seems to be a problem, please try again!', err);
+        // window.alert('There seems to be a problem, please try again!', err);
+        props.openNotification({
+          type: "error",
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+        });
       });
   };
   const SlideComponent = useMemo(
@@ -118,5 +125,16 @@ const TransferContainerForMissing = ({
     </>
   );
 };
+const mapStateToPros = (state) => {
+  return {};
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
 
-export default TransferContainerForMissing;
+export default connect(
+  mapStateToPros,
+  mapDispatchToProps
+)(TransferContainerForMissing);

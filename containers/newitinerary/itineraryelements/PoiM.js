@@ -26,6 +26,8 @@ import useMediaQuery from "../../../hooks/useMedia";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import ScrollVisibleHOC from "../../../helper/withScrollVisibility";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
+import { connect } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
 
 const Container = styled.div`
 `;
@@ -184,7 +186,12 @@ const ItineraryPoiElementM = (props) => {
       .catch((err) => {
         // setUpdateLoadingState(false);
 
-        window.alert("There seems to be a problem, please try again!");
+        // window.alert("There seems to be a problem, please try again!");
+        props.openNotification({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
       });
   };
   const _handleLoginClose = () => {
@@ -586,4 +593,17 @@ const ItineraryPoiElementM = (props) => {
   );
 };
 
-export default ItineraryPoiElementM;
+// export default ItineraryPoiElementM;
+const mapStateToPros = (state) => {
+  return {};
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(
+  mapStateToPros,
+  mapDispatchToProps
+)(ItineraryPoiElementM);
+
