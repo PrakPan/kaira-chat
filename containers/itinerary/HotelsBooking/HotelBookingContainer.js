@@ -194,7 +194,7 @@ const HotelBookingContainer = ({
           >
             <div
               onClick={() => {
-                (currentBooking || SelectedBookingin)
+                currentBooking || SelectedBookingin
                   ? openDetails()
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
@@ -372,7 +372,7 @@ const HotelBookingContainer = ({
                       </div>
                       {booking.costings_breakdown[0].number_of_extra_beds &&
                       booking.costings_breakdown[0].number_of_extra_beds > 0 ? (
-                        <div className="flex flex-row items-center lg:my-0 my-2">
+                        <div className="flex flex-row items-center my-0">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
                             {/* Extra beds cost - ₹
@@ -392,21 +392,22 @@ const HotelBookingContainer = ({
                   ) : (
                     (booking?.room_count || booking.room_type_name) && (
                       <>
-                          <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}>
-                    
-                              <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                                <BiBed className="text-sm text-[#7A7A7A]" />
-                                <div className="text-sm font-[400] line-clamp-1">
-                                  {(booking.source &&
-                                  booking.source === "Agoda" &&
-                                  booking.room_type_name) ? (
-                                    <>{booking.room_type_name}</>
-                                  ) : (
-                                    <> {booking?.room_count} room options</>
-                                  )}
-                                </div>
-                              </div>
+                        <div
+                          className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}
+                        >
+                          <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                            <BiBed className="text-sm text-[#7A7A7A]" />
+                            <div className="text-sm font-[400] line-clamp-1">
+                              {booking.source &&
+                              booking.source === "Agoda" &&
+                              booking.room_type_name ? (
+                                <>{booking.room_type_name}</>
+                              ) : (
+                                <> {booking?.room_count} room options</>
+                              )}
+                            </div>
                           </div>
+                        </div>
                       </>
                     )
                   )}
