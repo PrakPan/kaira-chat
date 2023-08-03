@@ -65,9 +65,9 @@ const TransferElements = ({
                 {meta == null || meta.estimated_cost == undefined ? null : (
                   <Link
                     to={
-                      data.bookings
+                      (data.bookings && data.bookings[0] && data.bookings[0].id)
                         ? `${data.bookings[0].id}`
-                        : 'Transfer_Container'
+                        : "Transfer_Container"
                     }
                     offset={-90}
                   >
@@ -103,11 +103,11 @@ const TransferElements = ({
                   </div>
                   {transfers.routes[0]?.legs[0].origin.shortName ? (
                     <div
-                      style={{ display: 'flex', flexDirection: 'column' }}
+                      style={{ display: "flex", flexDirection: "column" }}
                       className="text-md font-medium"
                     >
                       <div>
-                        {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
+                        {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
                         {transfers.routes[0]?.legs[0].destination.shortName}
                       </div>
                     </div>
@@ -126,7 +126,7 @@ const TransferElements = ({
                 <TransportIconFetcher
                   TransportMode={modes}
                   classname=" text-[20px]"
-                />{' '}
+                />{" "}
                 {meta?.Time}
               </div>
             </div>

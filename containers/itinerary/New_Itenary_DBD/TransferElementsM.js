@@ -40,9 +40,9 @@ const TransferElementsM = ({
                 <TransportIconFetcher
                   TransportMode={modes[0]}
                   Instyle={{
-                    fontSize: '1.75rem',
-                    marginRight: '0.5rem',
-                    color: 'black',
+                    fontSize: "1.75rem",
+                    marginRight: "0.5rem",
+                    color: "black",
                   }}
                 />
               ) : null}
@@ -54,9 +54,11 @@ const TransferElementsM = ({
               {meta == null || meta.estimated_cost == undefined ? null : (
                 <Link
                   to={
-                    data.bookings
+                    (data.bookings &&
+                    data.bookings[0] &&
+                    data.bookings[0].id)
                       ? `${data.bookings[0].id}`
-                      : 'Transfer_Container'
+                      : "Transfer_Container"
                   }
                   offset={-90}
                 >
@@ -74,7 +76,7 @@ const TransferElementsM = ({
 
         {transfers !== undefined ? (
           <TransportContainer className="pt-2">
-            <div style={{ paddingRight: '10px' }}>
+            <div style={{ paddingRight: "10px" }}>
               {/* {modes && (
                 <TransportIconFetcher
                   TransportMode={modes[0]}
@@ -93,7 +95,7 @@ const TransferElementsM = ({
                 widthmobile="2.05rem"
               ></ImageLoader> */}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               {/* {transfers.routes[0]?.legs[0].origin.shortName && (
                 <div className="text-md">
                   {transfers.routes[0]?.legs[0].origin.shortName} -{' '}
@@ -137,7 +139,7 @@ const TransferElementsM = ({
                 <TransportIconFetcher
                   TransportMode={modes[0]}
                   classname="w-fit lg:text-[1.05rem] text-[1.25rem]"
-                />{' '}
+                />{" "}
                 {meta.Time}
                 {/* {modes} */}
               </div>
