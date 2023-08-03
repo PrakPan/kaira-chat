@@ -340,11 +340,13 @@ const ItineraryPoiElementM = (props) => {
           {props.poi.rating && (
             <RatingContainer>
               {/* <StarRating initialRating={4}></StarRating> */}
-              <div>{_getStars(props.poi.rating)}</div>
+              <div style={{display : "flex" , gap : '0.3rem'}}>
+                {_getStars(props.poi.rating)} <span style={{marginBlock : '-0.15rem -0.3rem'}}>{props.poi.rating}</span>
+              </div>
               <span>
-                {props.poi.rating}{" "}
+               
                 {props.poi.user_ratings_total
-                  ? ` · ${props.poi.user_ratings_total} Google reviews`
+                  ? `${props.poi.user_ratings_total} Google reviews`
                   : ""}
               </span>
             </RatingContainer>
