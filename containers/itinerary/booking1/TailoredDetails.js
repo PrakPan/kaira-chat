@@ -1229,10 +1229,10 @@ const Details = (props) => {
                 <ImageLoader
                   dimensions={{ height: 50, width: 50 }}
                   dimensionsMobile={{ height: 50, width: 50 }}
-                  height={"23px"}
-                  width={"23px"}
+                  height={"20px"}
+                  width={"20px"}
                   leftalign
-                  url={"media/icons/login/customer-service.png"}
+                  url={"media/icons/login/customer-service-black.png"}
                 />{" "}
                 <span>Get in touch!</span>
               </div>

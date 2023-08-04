@@ -14,6 +14,7 @@ import PoiDetails from './poidetails/Index';
 import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
 import axiositineraryeditinstance from '../../../services/itinerary/edit';
 import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
+import { EXPERIENCE_FILTERS_BOX } from '../../../services/constants';
 import { openNotification } from '../../../store/actions/notification';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -80,19 +81,6 @@ const Booking = (props) => {
   const [showPoiDetails, setShowPoiDetails] = useState(false);
 
   const [poiDetails, setPoiDetails] = useState({});
-
-  const EXPERIENCE_FILTERS = [
-    'Isolated',
-    'Romantic',
-    'Heritage',
-    'Spiritual',
-    'Art and Culture',
-    'Shopping',
-    'Adventure and Outdoors',
-    'Nature and Retreat',
-    'Nightlife and Events',
-    'Science and Knowledge',
-  ];
 
   useEffect(() => {
     setOptionsJSX([]);
