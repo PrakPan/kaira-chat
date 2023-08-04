@@ -7,7 +7,7 @@ import Accommodation from "./accommodation/Index";
 import AccommodationSearched from "./new-accommodation-searched/Index";
 import AccommodationModal from "../accommodation/Index";
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
-import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccomodationsAgoda";
+import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccommodationsAgoda";
 import Spinner from "../../Spinner";
 
 //  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
@@ -78,7 +78,7 @@ const Booking = (props) => {
     type: "",
     star_category: "",
   });
-  const [limit, setLimit] = useState(10);
+  // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [traceId, setTraceID] = useState("");
@@ -186,10 +186,13 @@ const Booking = (props) => {
           star_category: [],
         };
       let filters = _generateFilterKeys(FILTERS_KEY);
+      let limit = 10
       var agodaAccomodation = axiosaccommodationinstance;
       if (props.currentBooking && props.currentBooking.source) {
-        if (props.currentBooking.source === "Agoda")
+        if (props.currentBooking.source === "Agoda") {
           agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30
+        }
       }
       agodaAccomodation
         .post("/?limit=" + limit + "&offset=" + offset, {
@@ -438,11 +441,14 @@ const Booking = (props) => {
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
     // axiosaccommodationinstance
-    var agodaAccomodation = axiosaccommodationinstance;
-    if (props.currentBooking && props.currentBooking.source) {
-      if (props.currentBooking.source === "Agoda")
-        agodaAccomodation = axiosagodaaccommodationionstance;
-    }
+      let limit = 10;
+      var agodaAccomodation = axiosaccommodationinstance;
+      if (props.currentBooking && props.currentBooking.source) {
+        if (props.currentBooking.source === "Agoda") {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        }
+      }
     agodaAccomodation
       .post("/?limit=" + limit + "&offset=" + offset, {
         city: props.selectedBooking.city,
@@ -881,11 +887,14 @@ const Booking = (props) => {
     setViewMoreStatus(false);
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
-    var agodaAccomodation = axiosaccommodationinstance;
-    if (props.currentBooking && props.currentBooking.source) {
-      if (props.currentBooking.source === "Agoda")
-        agodaAccomodation = axiosagodaaccommodationionstance;
-    }
+      let limit = 10;
+      var agodaAccomodation = axiosaccommodationinstance;
+      if (props.currentBooking && props.currentBooking.source) {
+        if (props.currentBooking.source === "Agoda") {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        }
+      }
     agodaAccomodation
       .post("/?limit=" + limit + "&offset=" + offset, {
         city: props.selectedBooking.city,
