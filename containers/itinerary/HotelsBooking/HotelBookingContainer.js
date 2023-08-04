@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import ImageLoader from '../../../components/ImageLoader';
-import StarRating from '../../../components/StarRating';
-import { BsCalendar2, BsPeopleFill, BsPlus } from 'react-icons/bs';
-import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
-import { BiBed } from 'react-icons/bi';
-import { ImSpoonKnife } from 'react-icons/im';
+import React, { useEffect, useState } from "react";
+import ImageLoader from "../../../components/ImageLoader";
+import StarRating from "../../../components/StarRating";
+import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
+import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { BiBed } from "react-icons/bi";
+import { ImSpoonKnife } from "react-icons/im";
 import {
   getDate,
   convertDateYearFormat,
-} from '../../../helper/ConvertDateFormat';
-import ButtonYellow from '../../../components/ButtonYellow';
+} from "../../../helper/ConvertDateFormat";
+import ButtonYellow from "../../../components/ButtonYellow";
 
-import styled from 'styled-components';
-import { getIndianPrice } from '../../../services/getIndianPrice';
+import styled from "styled-components";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 // import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
-import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
-import useMediaQuery from '../../../hooks/useMedia';
-import { getHumanDate } from '../../../services/getHumanDate';
-import { ITINERARY_STATUSES } from '../../../services/constants';
-import { PulseLoader } from 'react-spinners';
-import { MdHotel } from 'react-icons/md';
-import {BiDollarCircle} from 'react-icons/bi'
+import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
+import useMediaQuery from "../../../hooks/useMedia";
+import { getHumanDate } from "../../../services/getHumanDate";
+import { ITINERARY_STATUSES } from "../../../services/constants";
+import { PulseLoader } from "react-spinners";
+import { MdHotel } from "react-icons/md";
+import { BiDollarCircle } from "react-icons/bi";
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -29,13 +29,13 @@ const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 const RoomTypeGrid = styled.div`
-display: grid;
-    grid-template-columns: 1rem auto 5.5rem;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: 14px;
-    line-height: 20px;
-
+  display: grid;
+  grid-template-columns: 1rem auto 5.5rem;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 14px;
+  line-height: 20px;
+  width: fit-content;
 `;
 
 const HotelBookingContainer = ({
@@ -63,7 +63,6 @@ const HotelBookingContainer = ({
   token,
   plan,
 }) => {
-
   // const AddbookingStatus = (booking) => {
   //   if (booking?.version == 'v2') {
   //     if (booking?.status == 'BOOKING_EXPIRED') {
@@ -81,7 +80,7 @@ const HotelBookingContainer = ({
   // const [expiredBooking, setexpiredBooking] = useState(
   //   booking?.status == 'BOOKING_EXPIRED' ? true : false
   // );
-console.log('bookig' , booking)
+  console.log("bookig", booking);
   const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
@@ -93,15 +92,15 @@ console.log('bookig' , booking)
   }, [booking]);
   function Addons(Shorthand) {
     switch (Shorthand) {
-      case 'EP':
-        return 'No Meals Included';
-      case 'CP':
-        return 'Complementary Breakfast Included';
-      case 'MAP':
-        return 'Breakfast and Lunch/Dinner Included';
-      case 'AP':
-        return 'All meals Included';
-      case 'TBO':
+      case "EP":
+        return "No Meals Included";
+      case "CP":
+        return "Complementary Breakfast Included";
+      case "MAP":
+        return "Breakfast and Lunch/Dinner Included";
+      case "AP":
+        return "All meals Included";
+      case "TBO":
         return null;
       default:
         return null;
@@ -144,7 +143,7 @@ console.log('bookig' , booking)
           user_selected: isSelect,
           index: index,
           check_in: selectedBooking?.check_in,
-          check_out : selectedBooking?.check_out
+          check_out: selectedBooking?.check_out,
         })
           .then((data) => {
             setLoading(false);
@@ -180,10 +179,10 @@ console.log('bookig' , booking)
       category_id: booking?.category_id,
       check_in: selectedBooking?.check_in,
       check_out: selectedBooking?.check_out,
-      source : booking?.source
+      source: booking?.source,
     });
   }
-  const isMobile = useMediaQuery('(min-width:768px)');
+  const isMobile = useMediaQuery("(min-width:768px)");
   return (
     <div id={city_id} className={`flex gap-1 pt-4  flex-col justify-start `}>
       {booking ? (
@@ -366,20 +365,20 @@ console.log('bookig' , booking)
                       {/* <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}> */}
                       {/* <div className="text-sm font-[400] gap-2 flex flex-row items-center"> */}
                       <RoomTypeGrid>
-                      <BiBed className="text-sm text-[#7A7A7A]" />
-                      <div className="text-sm font-[400] line-clamp-1">
-                        {booking.costings_breakdown[0].room_type}
-                      </div>
-                      <div>
-                        {"( "}
-                        {booking.costings_breakdown[0].number_of_rooms}{" "}
-                        {booking.costings_breakdown[0].number_of_rooms > 1
-                          ? "Rooms"
-                          : "Room"}
-                        {" )"}
+                        <BiBed className="text-sm text-[#7A7A7A]" />
+                        <div className="text-sm font-[400] line-clamp-1">
+                          {booking.costings_breakdown[0].room_type}
+                        </div>
+                        <div>
+                          {"( "}
+                          {booking.costings_breakdown[0].number_of_rooms}{" "}
+                          {booking.costings_breakdown[0].number_of_rooms > 1
+                            ? "Rooms"
+                            : "Room"}
+                          {" )"}
                         </div>
                       </RoomTypeGrid>
-                        
+
                       {/* </div> */}
                       {/* </div> */}
                       {booking.costings_breakdown[0].number_of_extra_beds &&
@@ -437,7 +436,10 @@ console.log('bookig' , booking)
                 {currentBooking && booking?.price && (
                   <div className="flex flex-row gap-1 items-center w-full font-bold">
                     <div className="text-2xl font-bold">
-                      {(booking.source == 'Agoda') ? "₹ " + getIndianPrice(Math.round(+booking.price/100)) : "₹ " + getIndianPrice(Math.round(booking?.price))}
+                      {booking.source == "Agoda"
+                        ? "₹ " +
+                          getIndianPrice(Math.round(+booking.price / 100))
+                        : "₹ " + getIndianPrice(Math.round(booking?.price))}
                     </div>
                     <div className="font-normal text-base self-end">
                       for {currentBooking?.duration} Nights
@@ -528,8 +530,8 @@ console.log('bookig' , booking)
                         ? "lg:bottom-4 bottom-[1.5rem] "
                         : `${
                             payment?.paid_user || !payment?.user_allowed_to_pay
-                              ? "lg:bottom-10 bottom-[1.2rem]"
-                              : "lg:bottom-10 bottom-[1.2rem]"
+                              ? "lg:bottom-10 bottom-[2.5rem]"
+                              : "lg:bottom-10 bottom-[2.5rem]"
                           }`
                     } right-6 -m-3`}
                   >

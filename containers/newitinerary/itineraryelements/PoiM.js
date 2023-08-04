@@ -82,8 +82,8 @@ const Floating = styled.div`
   bottom: 10px;
   background: #01202b;
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,11 +94,11 @@ const Floating = styled.div`
 const FloatingView = styled.div`
   position: fixed;
 
-  bottom: 100px;
+  bottom: 68px;
   background: #f7e700;
   border-radius: 50%;
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -561,7 +561,7 @@ const ItineraryPoiElementM = (props) => {
             > */}
           <FloatingView>
             <TbArrowBack
-              style={{ height: "32px", width: "32px" }}
+              style={{ height: "28px", width: "28px" }}
               cursor={"pointer"}
               onClick={() => setShowDrawer(false)}
             />
@@ -574,7 +574,7 @@ const ItineraryPoiElementM = (props) => {
           <Floating>
             <FaFilter
               className="text-white"
-              style={{ height: "32px", width: "32px" }}
+              style={{ height: "18px", width: "18px" }}
               cursor={"pointer"}
               onClick={(e) => {
                 setshowFilter(true);
