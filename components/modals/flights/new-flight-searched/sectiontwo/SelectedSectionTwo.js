@@ -290,33 +290,6 @@ const Booking = (props) => {
             top: "50%",
           }}
         >
-          {/* <div
-                style={{
-                  position: "absolute",
-                  height: "0.9rem",
-                  width: "100%",
-                  top: "0.4rem",
-                  margin: "auto",
-                  display: "block",
-                }}
-              >
-                <ImageLoader
-                  height="1px"
-                  url={"media/icons/right-arrow-flight-11.png"}
-                />
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  left: "100%",
-                  top: "0.2rem",
-                  height: "0.5rem",
-                  width: "0.5rem",
-                  display: "block",
-                }}
-              >
-                <ImageLoader url={"media/icons/right-arrow-flight-12.png"} />
-              </div> */}
           <Circle style={{ left: 0 }} />
           <DottedLine></DottedLine>
           <Circle style={{ right: 0 }} />

@@ -22,7 +22,6 @@ if(props.showFareRules)
    .catch(err => {});
 },[props.showFareRules])
 
-// if(props.token)
   return (
     <div>
       <Modal
