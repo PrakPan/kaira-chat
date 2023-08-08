@@ -19,7 +19,7 @@ import useMediaQuery from "../../../hooks/useMedia";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { PulseLoader } from "react-spinners";
-import { MdHotel } from "react-icons/md";
+import { MdHotel, MdWifi } from "react-icons/md";
 import { BiDollarCircle } from "react-icons/bi";
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -80,7 +80,6 @@ const HotelBookingContainer = ({
   // const [expiredBooking, setexpiredBooking] = useState(
   //   booking?.status == 'BOOKING_EXPIRED' ? true : false
   // );
-  console.log("bookig", booking);
   const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
@@ -430,7 +429,13 @@ const HotelBookingContainer = ({
                         {Addons(booking.costings_breakdown[0].pricing_type)}
                       </div>
                     </div>
-                  ) : null}
+                  ) : null} 
+                 {booking.amenities.length && booking.amenities.includes('WIFI') ?<div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                      <MdWifi className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">
+                        WIFI available
+                      </div>
+                    </div> : <></>}
                 </div>
 
                 {currentBooking && booking?.price && (
