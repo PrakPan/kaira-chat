@@ -15,6 +15,7 @@ import { getIndianPrice } from '../../../services/getIndianPrice';
 // import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
+import { connect } from 'react-redux';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -24,17 +25,7 @@ const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
-const PoiList = ({
-  setFloatingButtonView,
-  _updatePoiHandler,
-  selectedData,
-  getPaymentHandler,
-  data,
-  setShowDrawer,
-  loginModal,
-  setLoginModal,
-  token,
-}) => {
+const PoiList = (props) => {
   const [isSelect, setisSelect] = useState(false);
   const [showDetails, setShowDetails] = useState({
     show: false,
@@ -45,25 +36,25 @@ const PoiList = ({
     setShowDetails({ show: false, data: {} });
   };
   function handleCheckboxChange(e) {
-    if (token) {
-      _updatePoiHandler(data);
+    if (props.token) {
+      props._updatePoiHandler(props.data);
       setisSelect(!isSelect);
 
-      setShowDrawer(false);
-      getPaymentHandler();
+      props.setShowDrawer(false);
+      props.getPaymentHandler();
       e.stopPropagation();
     } else {
-      setLoginModal(!loginModal);
+      props.setLoginModal(!props.loginModal);
     }
   }
   return (
     <>
       <div
-        onClick={() => setFloatingButtonView(true)}
+        onClick={() => props.setFloatingButtonView(true)}
         className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
       >
-        {data.activity_data.activity.name ? (
-          data?.activity_data?.activity?.cost && (
+        {props.data.activity_data.activity.name ? (
+          props.data?.activity_data?.activity?.cost && (
             <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
               <div
                 onClick={() => setShowDetails({ show: true, data: data })}
@@ -85,25 +76,25 @@ const PoiList = ({
                     leftalign
                     widthmobile="100%"
                     noLazy
-                    url={data.activity_data.activity.image}
+                    url={props.data.activity_data.activity.image}
                   ></ImageLoader>
                 </div>
                 <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
                   <div>
                     <div className="text-xl font-semibold  w-[80%]">
-                      {data.activity_data.activity.name}
+                      {props.data.activity_data.activity.name}
                     </div>
                     <div className="text-sm font-normal">
-                      {data.activity_data.city.name}
+                      {props.data.activity_data.city.name}
                     </div>
                     <div className="font-normal text-sm my-2 text-[#01202B] line-clamp-2">
-                      {data.text}
+                      {props.data.text}
                     </div>
                     <div>
                       <div className="flex flex-row gap-1">
                         <div className="text-2xl font-bold">
                           <span>₹</span>
-                          {data.activity_data.activity.cost}
+                          {props.data.activity_data.activity.cost}
                         </div>
                         <div className="font-normal text-base self-end">
                           per person*
@@ -117,6 +108,7 @@ const PoiList = ({
                 </div>{" "}
                 <div
                   onClick={(e) => {
+                    e.stopPropagation();
                     handleCheckboxChange(e);
                   }}
                   className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
@@ -126,9 +118,9 @@ const PoiList = ({
                     {isSelect ? "Selected" : "Select"}
                   </label>
                 </div>
-                {data.activity_data?.activity?.experience_filters[0] && (
+                {props.data.activity_data?.activity?.experience_filters[0] && (
                   <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
-                    {data.activity_data?.activity?.experience_filters[0]}
+                    {props.data.activity_data?.activity?.experience_filters[0]}
                   </ClippathComp>
                 )}
               </div>
@@ -137,7 +129,9 @@ const PoiList = ({
         ) : (
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
-              onClick={() => setShowDetails({ show: true, data: data })}
+              onClick={() => {
+                setShowDetails({ show: true, data: props.data });
+              }}
               id="POI"
               className={`relative flex lg:flex-row w-full flex-col gap-4 `}
             >
@@ -158,7 +152,7 @@ const PoiList = ({
                     leftalign
                     noLazy
                     widthmobile="100%"
-                    url={data.activity_data.poi.image}
+                    url={props.data.activity_data.poi.image}
                   ></ImageLoader>
                 </div>
               </div>
@@ -166,17 +160,17 @@ const PoiList = ({
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full  justify-between">
                 <div>
                   <div className="text-xl font-bold block w-[80%]">
-                    {data.activity_data.poi.name}
+                    {props.data.activity_data.poi.name}
                   </div>
                   <div className="text-sm font-[300]">
-                    {data.activity_data.city.name}
+                    {props.data.activity_data.city.name}
                   </div>
                   <div className="text-sm font-normal my-2 text-[#01202B] line-clamp-3">
-                    {data.text}
+                    {props.data.text}
                   </div>
 
-                  {data.activity_data.poi?.tips
-                    ? data.activity_data.poi?.tips
+                  {props.data.activity_data.poi?.tips
+                    ? props.data.activity_data.poi?.tips
                         .slice(0, 1)
                         .map((tip, index) => (
                           <div>
@@ -193,6 +187,7 @@ const PoiList = ({
               </div>
               <div
                 onClick={(e) => {
+                  e.stopPropagation();
                   handleCheckboxChange(e);
                 }}
                 className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
@@ -202,9 +197,9 @@ const PoiList = ({
                   {isSelect ? "Selected" : "Select"}
                 </label>
               </div>
-              {data.activity_data?.poi?.experience_filters[0] && (
+              {props.data.activity_data?.poi?.experience_filters[0] && (
                 <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
-                  {data.activity_data?.poi?.experience_filters[0]}
+                  {props.data.activity_data?.poi?.experience_filters[0]}
                 </ClippathComp>
               )}
             </div>
@@ -236,4 +231,13 @@ const PoiList = ({
   );
 };
 
-export default PoiList;
+const mapStateToPros = (state) => {
+  return {
+    token: state.auth.token,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+  };
+};
+export default connect(mapStateToPros, mapDispatchToProps)(PoiList);

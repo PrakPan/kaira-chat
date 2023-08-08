@@ -1,38 +1,39 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { AiFillCar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import Button from '../../../components/ui/button/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { HiPencil } from 'react-icons/hi';
-import Rating from './Rating';
-import Tips from './Tips';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { AiFillCar } from "react-icons/ai";
+import ImageLoader from "../../../components/ImageLoader";
+import Button from "../../../components/ui/button/Index";
+import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { HiPencil } from "react-icons/hi";
+import Rating from "./Rating";
+import Tips from "./Tips";
 import {
   HLine,
   newDayContainerTextpadding,
-} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
-import StarRating from '../../../components/StarRating';
-import { MdEdit, MdNavigateNext } from 'react-icons/md';
-import Drawer from '../../../components/ui/Drawer';
-import { TbArrowBack } from 'react-icons/tb';
-import { IoMdClose } from 'react-icons/io';
-import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
-import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
-import axiositineraryeditinstance from '../../../services/itinerary/edit';
-import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
-import PoiList from './PoiList';
-import PoiListSkeleton from './PoiListSkeleton';
-import LogInModal from '../../../components/modals/Login';
-import { Navigation } from '../../../components/NewNavigation';
-import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
-import NotificationPopup from '../../../components/ui/NotificationPopup';
-import { connect } from 'react-redux';
-import { openNotification } from '../../../store/actions/notification';
-import { FaStar, FaStarHalfAlt } from 'react-icons/fa';
+} from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import StarRating from "../../../components/StarRating";
+import { MdEdit, MdNavigateNext } from "react-icons/md";
+import Drawer from "../../../components/ui/Drawer";
+import { TbArrowBack } from "react-icons/tb";
+import { IoMdClose } from "react-icons/io";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiositineraryeditinstance from "../../../services/itinerary/edit";
+import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
+import PoiList from "./PoiList";
+import PoiListSkeleton from "./PoiListSkeleton";
+import LogInModal from "../../../components/modals/Login";
+import { Navigation } from "../../../components/NewNavigation";
+import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
+import NotificationPopup from "../../../components/ui/NotificationPopup";
+import { connect } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
+import { BiErrorCircle } from "react-icons/bi";
 
 const padding = {
-  initialLeft: '60px',
+  initialLeft: "60px",
 };
 const Container = styled.div`
   display: flex;
@@ -64,16 +65,24 @@ const MoreIcon = styled.div`
   justify-content: flex-end;
   align-items: center;
   position: absolute;
-    bottom: 0px;
-    transform: translate(0, 7%);
-    right: 0;
-    background: white;
-    padding-left: 10px;
+  bottom: 0px;
+  transform: translate(0, 7%);
+  right: 0;
+  background: white;
+  padding-left: 10px;
   span {
     font-weight: 600;
-    cursor : pointer;
+    cursor: pointer;
     font-size: 0.875rem;
-   }
+  }
+`;
+const EmptyMsg = styled.div`
+  margin-top: 5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
 `;
 const RatingContainer = styled.div`
   margin-top: 0.3rem;
@@ -138,16 +147,15 @@ const ItineraryPoiElement = (props) => {
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
-  const [elementType , setElementType] = useState('POI')
+  const [elementType, setElementType] = useState("POI");
   const items = [
-    { id: 1, label: 'Places To Visit', link: 'POI' },
-    { id: 2, label: 'Things To Do', link: 'Activities' },
+    { id: 1, label: "Places To Visit", link: "POI" },
+    { id: 2, label: "Things To Do", link: "Activities" },
   ];
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
-
   useEffect(() => {
     if (props.city_id && showDrawer) {
       setFetchingPoi(true);
@@ -168,7 +176,6 @@ const ItineraryPoiElement = (props) => {
 
             for (var i = 0; i < res.data.length; i++) {
               if (res.data[i].heading !== props.heading)
-                // if(res.data.results[i].name !== props.selectedBooking.name)
                 options.push(
                   <PoiList
                     key={i}
@@ -176,19 +183,9 @@ const ItineraryPoiElement = (props) => {
                     selectedData={props.data}
                     setShowDrawer={setShowDrawer}
                     getPaymentHandler={props.getPaymentHandler}
-                    // _openPoiModal={_openPoiModal}
                     data={res.data[i]}
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
-                    token={props.token}
-
-                    // tailored_id={props.tailored_id}
-                    // updateLoadingState={updateLoadingState}
-                    // itinerary_id={
-                    //   props.selectedBooking
-                    //     ? props.selectedBooking.itinerary_id
-                    //     : ''
-                    // }
                   ></PoiList>
                 );
             }
@@ -202,11 +199,10 @@ const ItineraryPoiElement = (props) => {
     }
   }, [showDrawer, elementType, SelectedExprience]);
 
-
   const _updatePoiHandler = (poi) => {
     axiositineraryeditinstance
       .post(
-        '/',
+        "/",
         {
           itinerary_id: props.itinerary_id,
           day_slab_index: props.day_slab_index,
@@ -215,13 +211,13 @@ const ItineraryPoiElement = (props) => {
           element_data: {
             ...poi,
             element_index: props.data.element_index,
-            keys: ['icon', 'heading', 'text', 'activity_data', 'meta'],
+            keys: ["icon", "heading", "text", "activity_data", "meta"],
             element_type: ITINERARY_ELEMENT_TYPES.activity,
           },
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       )
@@ -239,7 +235,6 @@ const ItineraryPoiElement = (props) => {
           heading: "Error!",
           type: "error",
         });
-
       });
   };
   const _handleLoginClose = () => {
@@ -247,20 +242,21 @@ const ItineraryPoiElement = (props) => {
     setShowLoginModal(false);
   };
   const ClickHandler = (child) => {
-    if (child == 'Things To Do') {
-      setElementType('Activity')
+    if (child == "Things To Do") {
+      setElementType("Activity");
     } else {
       setElementType("POI");
     }
   };
 
   const _getStars = (rating) => {
-      var stars = [];
-      for (let i = 0; i < Math.floor(rating); i++) {
-        stars.push(<FaStar style={{fontSize : '0.85rem'}} />);
-      }
-    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt style={{ fontSize: "0.85rem" }} />);
-    
+    var stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<FaStar style={{ fontSize: "0.85rem" }} />);
+    }
+    if (Math.floor(rating) < rating)
+      stars.push(<FaStarHalfAlt style={{ fontSize: "0.85rem" }} />);
+
     return (
       <div
         style={{ color: "#ffa500", marginBottom: "0.1rem" }}
@@ -269,7 +265,7 @@ const ItineraryPoiElement = (props) => {
         {stars}
       </div>
     );
-  }
+  };
 
   return (
     <Container>
@@ -311,7 +307,7 @@ const ItineraryPoiElement = (props) => {
                   props.payment?.user_allowed_to_pay &&
                   !props.payment.paid_user && (
                     <div
-                    onClick={()=>setShowDrawer(true)}
+                      onClick={() => setShowDrawer(true)}
                       className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                     >
                       <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -399,8 +395,8 @@ const ItineraryPoiElement = (props) => {
                 {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                   <button
                     onClick={() => {
-                      if (SelectedExprience !== i) SetSelectedExprience(i)
-                      else SetSelectedExprience(-1)
+                      if (SelectedExprience !== i) SetSelectedExprience(i);
+                      else SetSelectedExprience(-1);
                     }}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedExprience == i
@@ -428,7 +424,19 @@ const ItineraryPoiElement = (props) => {
             ClickHandler={ClickHandler}
           />
         </div>
-        {!fetchingPoi ? optionsJSX : <PoiListSkeleton />}
+        {!fetchingPoi ? (
+          optionsJSX.length ? (
+            optionsJSX
+          ) : (
+            <EmptyMsg>
+              <BiErrorCircle /> Oops, it looks like there are no{" "}
+              {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+              available.
+            </EmptyMsg>
+          )
+        ) : (
+          <PoiListSkeleton />
+        )}
 
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
@@ -448,4 +456,4 @@ const mapDispatchToProps = (dispatch) => {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
-export default connect(mapStateToPros,mapDispatchToProps)(ItineraryPoiElement);
+export default connect(mapStateToPros, mapDispatchToProps)(ItineraryPoiElement);

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { AiFillCar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
-import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { EXPERIENCE_FILTERS_BOX, ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
 import { HiPencil } from "react-icons/hi";
 import Rating from "./Rating";
 import Tips from "./Tips";
@@ -28,6 +28,7 @@ import ScrollVisibleHOC from "../../../helper/withScrollVisibility";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
+import { BiErrorCircle } from "react-icons/bi";
 
 const Container = styled.div`
 `;
@@ -129,6 +130,14 @@ const RatingContainer = styled.div`
     color: #727272;
   }
 `;
+const EmptyMsg = styled.div`
+  margin-top: 5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+`;
 const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -139,17 +148,57 @@ const ItineraryPoiElementM = (props) => {
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [SelectedExprience, SetSelectedExprience] = useState();
   const [floatingButtonView, setFloatingButtonView] = useState(false);
+  const [SelectedExprience, SetSelectedExprience] = useState(-1);
+  const [elementType, setElementType] = useState("POI");
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
   ];
-  const drawerRef = useRef(null);
-  useEffect(() => {}, []);
-  function ErrorNotDef(elem) {
-    return elem === undefined || elem === null || !elem;
-  }
+const drawerRef = useRef(null);
+  useEffect(() => {
+    if (props.city_id && showDrawer) {
+      setFetchingPoi(true);
+      if (props.city_id) setShowDrawer(true);
+      axiosaxtivitiesinstance
+        .post("/", {
+          location: props.city_id,
+          duration: 10,
+          element_type: elementType,
+          experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
+            ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
+            : [],
+        })
+        .then((res) => {
+          if (res.data.length) {
+            let options = [];
+
+            for (var i = 0; i < res.data.length; i++) {
+              if (res.data[i].heading !== props.heading)
+                // if(res.data.results[i].name !== props.selectedBooking.name)
+                options.push(
+                  <PoiList
+                    setFloatingButtonView={setFloatingButtonView}
+                    key={i}
+                    _updatePoiHandler={_updatePoiHandler}
+                    selectedData={props.data}
+                    setShowDrawer={setShowDrawer}
+                    getPaymentHandler={props.getPaymentHandler}
+                    data={res.data[i]}
+                    loginModal={showLoginModal}
+                    setLoginModal={setShowLoginModal}
+                  ></PoiList>
+                );
+            }
+            setOptionsJSX(options);
+          } else {
+            setOptionsJSX([]);
+          }
+          setFetchingPoi(false);
+        })
+        .catch((err) => { });
+    }
+  }, [showDrawer, elementType, SelectedExprience]);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -182,6 +231,11 @@ const ItineraryPoiElementM = (props) => {
       )
       .then((res) => {
         props.setItinerary(res.data);
+         props.openNotification({
+           text: "Your Itinerary updated successfully!",
+           heading: "Success!",
+           type: "success",
+         });
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
@@ -222,18 +276,10 @@ const ItineraryPoiElementM = (props) => {
                   selectedData={props.data}
                   setShowDrawer={setShowDrawer}
                   getPaymentHandler={props.getPaymentHandler}
-                  // _openPoiModal={_openPoiModal}
                   data={res.data[i]}
                   loginModal={showLoginModal}
                   setLoginModal={setShowLoginModal}
                   token={props.token}
-                  // tailored_id={props.tailored_id}
-                  // updateLoadingState={updateLoadingState}
-                  // itinerary_id={
-                  //   props.selectedBooking
-                  //     ? props.selectedBooking.itinerary_id
-                  //     : ''
-                  // }
                 ></PoiList>
               );
           }
@@ -254,11 +300,10 @@ const ItineraryPoiElementM = (props) => {
   ];
   const ClickHandler = (child) => {
     if (child == "Activities") {
-      Poi_activities({ id: 3 });
+       setElementType('Activity')
     } else {
-      Poi_activities();
+      setElementType("POI");
     }
-    console.log(child);
   };
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
@@ -347,11 +392,13 @@ const ItineraryPoiElementM = (props) => {
           {props.poi.rating && (
             <RatingContainer>
               {/* <StarRating initialRating={4}></StarRating> */}
-              <div style={{display : "flex" , gap : '0.3rem'}}>
-                {_getStars(props.poi.rating)} <span style={{marginBlock : '-0.15rem -0.3rem'}}>{props.poi.rating}</span>
+              <div style={{ display: "flex", gap: "0.3rem" }}>
+                {_getStars(props.poi.rating)}{" "}
+                <span style={{ marginBlock: "-0.15rem -0.3rem" }}>
+                  {props.poi.rating}
+                </span>
               </div>
               <span>
-               
                 {props.poi.user_ratings_total
                   ? `${props.poi.user_ratings_total} Google reviews`
                   : ""}
@@ -474,7 +521,15 @@ const ItineraryPoiElementM = (props) => {
 
         {!fetchingPoi ? (
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
-          optionsJSX
+          optionsJSX.length ? (
+            optionsJSX
+          ) : (
+            <EmptyMsg>
+              <BiErrorCircle /> Oops, it looks like there are no{" "}
+              {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+              available.
+            </EmptyMsg>
+          )
         ) : (
           <PoiListSkeleton name={"Activity"} />
         )}
@@ -508,9 +563,12 @@ const ItineraryPoiElementM = (props) => {
               <div className="flex w-[100%] flex-col justify-start items-baseline">
                 <div className="mb-2 text-sm font-normal">Experience Types</div>
                 <GridResponsive>
-                  {Experiences.map((currentfilter, i) => (
+                  {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                     <button
-                      onClick={() => SetSelectedExprience(i)}
+                      onClick={() => {
+                        if (SelectedExprience !== i) SetSelectedExprience(i);
+                        else SetSelectedExprience(-1);
+                      }}
                       className={`flex  font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                         SelectedExprience == i
                           ? "text-white border-0 bg-black "
@@ -518,7 +576,7 @@ const ItineraryPoiElementM = (props) => {
                       } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                       key={i}
                     >
-                      {currentfilter}
+                      {currentfilter.display}
                     </button>
                   ))}
                 </GridResponsive>
@@ -536,9 +594,9 @@ const ItineraryPoiElementM = (props) => {
             </ButtonYellow>
             <ButtonYellow
               className="w-1/2"
-              // onClick={() => {
-              //   handleClickAc(index, booking);
-              // }}
+              onClick={() => {
+               setshowFilter(false);
+              }}
             >
               <div className="text-[#01202B] ">Apply</div>
             </ButtonYellow>

@@ -9,7 +9,7 @@ const Container = styled.div`
     grid-template-columns: ${(props) =>
       props.ConImg ? '3.3fr 1fr' : '3.3fr 0fr'};
 
-    grid-column-gap: 2rem;
+    grid-column-gap: 1rem;
   }
 `;
 
@@ -20,10 +20,10 @@ const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr;
     margin-top: 0;
-    grid-row-gap: 2rem;
+    grid-row-gap: 1rem;
   }
 
-  grid-gap: 1rem;
+  grid-gap: 0.5rem;
 `;
 const MoreContainer = styled.div`
   position: relative;

@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-// import media from '../../media';
 import FiltersMobile from './filtersmobile/Index';
 import Drawer from '../../ui/Drawer';
 import { useState } from 'react';
