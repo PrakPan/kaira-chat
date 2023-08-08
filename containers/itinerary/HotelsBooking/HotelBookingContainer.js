@@ -10,8 +10,8 @@ import {
   convertDateYearFormat,
 } from "../../../helper/ConvertDateFormat";
 import ButtonYellow from "../../../components/ButtonYellow";
-import Button from '../../../components/ui/button/Index'
-import media from '../../../components/media'
+import Button from "../../../components/ui/button/Index";
+import media from "../../../components/media";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 // import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
@@ -65,6 +65,7 @@ const HotelBookingContainer = ({
   plan,
 }) => {
   let isDesktop = media("(min-width: 1147px)");
+  let isPageWide = media("(min-width: 768px)");
   const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
@@ -451,47 +452,50 @@ const HotelBookingContainer = ({
                         : "lg:mb-0 mb-0"
                     }`}
                   >
-                    {isDesktop && <Button
-                      // width="120px"
-                      padding="0.4rem 2rem"
-                      bgColor={"#F7E700"}
-                      borderRadius="8px"
-                      hoverColor="white"
-                      // className=" w-1/2"
-                      fontWeight="500"
-                      onclick={() =>
-                        handleClick(index, booking.accommodation, booking)
-                      }
-                    >
-                      View Detail
-                    </Button>}
+                    {isDesktop && (
+                      <Button
+                        padding="0.6rem 2.2rem"
+                        bgColor={"#F7E700"}
+                        borderRadius="8px"
+                        hoverColor="white"
+                        fontWeight="400"
+                        onclick={() =>
+                          handleClick(index, booking.accommodation, booking)
+                        }
+                      >
+                        View Detail
+                      </Button>
+                    )}
                     {payment?.is_registration_needed ? null : token ? (
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
-                        <Button
-                          // width="120px"
-                          padding="0.4rem 2rem"
-                          // className="w-1/2"
-                          borderRadius="8px"
-                          fontWeight="500"
-                          onclick={() => {
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
                             handleClickAc(index, booking, city_id);
                           }}
                         >
-                          {!isSelect ? "Add Hotel" : "Change"}
-                        </Button>
+                          <Button
+                            padding="0.6rem 2.2rem"
+                            borderRadius="8px"
+                            fontWeight="400"
+                            onclick={() => console.log("")}
+                          >
+                            {!isSelect ? "Add Hotel" : "Change"}
+                          </Button>
+                        </div>
                       )
                     ) : (
-                      <ButtonYellow
-                        className="w-1/2"
-                        onClick={() => {
+                      <Button
+                        padding="0.6rem 2.2rem"
+                        borderRadius="8px"
+                        fontWeight="400"
+                        onclick={() => {
                           setShowLoginModal(true);
                         }}
                       >
-                        <div className="text-[#01202B] ">
-                          {!isSelect ? "Add Hotel" : "Change"}
-                        </div>
-                      </ButtonYellow>
+                        {!isSelect ? "Add Hotel" : "Change"}
+                      </Button>
                     )}
 
                     {/* <div
@@ -637,14 +641,19 @@ const HotelBookingContainer = ({
               )}
             </div>
 
-            <div
-              className="px-4 lg:mt-0 mt-2 lg:w-[35%] flex justify-center items-center bg-[#F7E700] py-[11px] cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-              onClick={() => {
+            <Button
+              bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              padding="0.6rem 2.2rem"
+              hoverColor="white"
+              margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
+              onclick={() => {
                 handleClickAc(index, cityData, city_id);
               }}
             >
-              <div className="text-[#01202B] ">Add Stay in {cityName}</div>
-            </div>
+              Add Stay in {cityName}
+            </Button>
           </div>
         </div>
       )}

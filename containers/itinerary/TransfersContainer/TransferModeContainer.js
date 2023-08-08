@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
-import ImageLoader from '../../../components/ImageLoader';
-import { differenceInMinutes, format, parseISO } from 'date-fns';
-import * as ga from '../../../services/ga/Index';
-import { FaPlane } from 'react-icons/fa';
-import { IoCheckmark, IoClose } from 'react-icons/io5';
-import { LivelyButton } from '../../../components/LiveleyButton';
-import { MdEdit } from 'react-icons/md';
-import useMediaQuery from '../../../components/media';
-import { ITINERARY_STATUSES } from '../../../services/constants';
-import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import { PulseLoader } from 'react-spinners';
-import EllipsisTruncation from '../../EllipsisTruncate';
-import { checkNestedProperties } from '../../../helper/shortHelpers';
-import { connect } from 'react-redux';
-import { openNotification } from '../../../store/actions/notification';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
+import ImageLoader from "../../../components/ImageLoader";
+import { differenceInMinutes, format, parseISO } from "date-fns";
+import * as ga from "../../../services/ga/Index";
+import { FaPlane } from "react-icons/fa";
+import { IoCheckmark, IoClose } from "react-icons/io5";
+import { LivelyButton } from "../../../components/LiveleyButton";
+import { MdEdit } from "react-icons/md";
+import useMediaQuery from "../../../components/media";
+import { ITINERARY_STATUSES } from "../../../services/constants";
+import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import { PulseLoader } from "react-spinners";
+import EllipsisTruncation from "../../EllipsisTruncate";
+import { checkNestedProperties } from "../../../helper/shortHelpers";
+import { connect } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
 import { getIndianPrice } from "../../../services/getIndianPrice";
-
+import Button from "../../../components/ui/button/Index";
 const Plan = styled.div`
   position: absolute;
   left: 50%;
@@ -126,11 +126,11 @@ const ImageContainer = styled.div`
   }
 `;
 const PriceContainer = styled.div`
-display : flex;
-justify-content : space-between;
-margin-top : 0.75rem;
-align-items : center;
-`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  align-items: center;
+`;
 
 const FacilityContainer = styled.div``;
 const Line = styled.hr`
@@ -190,18 +190,18 @@ const Text = styled.p`
   }
 `;
 const FlexBox = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 `;
 
 function formatDate(dateString) {
   const date = new parseISO(dateString);
 
   if (isNaN(date.getTime())) {
-    throw new Error('Invalid date string');
+    throw new Error("Invalid date string");
   }
-  return format(date, 'EEE, dd MMM');
+  return format(date, "EEE, dd MMM");
 }
 function createCacheKey(checkIn, checkOut) {
   return `${checkIn}-${checkOut}`;
@@ -215,8 +215,8 @@ function processBookingTimes(checkIn, checkOut) {
     return cache[cacheKey];
   }
 
-  const checkInTime = format(new Date(checkIn), 'hh:mma');
-  const checkOutTime = format(new Date(checkOut), 'hh:mma');
+  const checkInTime = format(new Date(checkIn), "hh:mma");
+  const checkOutTime = format(new Date(checkOut), "hh:mma");
 
   const durationInMinutes = differenceInMinutes(
     new Date(checkOut),
@@ -235,9 +235,6 @@ function processBookingTimes(checkIn, checkOut) {
   return result;
 }
 
-
-
-
 const TransferModeContainer = (props) => {
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
@@ -251,48 +248,48 @@ const TransferModeContainer = (props) => {
         _updateSelectedTransfer();
         e.stopPropagation();
       } else {
-props.openNotification({
-  text: "Oops, this action is not allowed on another user's itinerary.",
-  heading: "Error!",
-  type: "error",
-});
+        props.openNotification({
+          text: "Oops, this action is not allowed on another user's itinerary.",
+          heading: "Error!",
+          type: "error",
+        });
         props.setShowLoginModal();
         e.stopPropagation();
       }
     }
   }
-  const isDesktop = useMediaQuery('(min-width:1024px)');
+  const isDesktop = useMediaQuery("(min-width:1024px)");
 
   function HandleFlights(i) {
     if (!props.token) {
       props.setShowLoginModal();
     }
 
-    let name = props.booking['name'];
-    let costings_breakdown = props.booking['costings_breakdown'];
-    let cost = props.booking['booking_cost'];
-    let itinerary_id = props.booking['itinerary_id'];
-    let itinerary_name = props.booking['itinerary_name'];
-    let booking_type = props.booking['booking_type'];
+    let name = props.booking["name"];
+    let costings_breakdown = props.booking["costings_breakdown"];
+    let cost = props.booking["booking_cost"];
+    let itinerary_id = props.booking["itinerary_id"];
+    let itinerary_name = props.booking["itinerary_name"];
+    let booking_type = props.booking["booking_type"];
 
-    let tailored_id = props.booking['tailored_itinerary'];
-    let id = props.booking['id'];
-    let check_in = props.booking['check_in'];
-    let check_out = props.booking['check_out'];
+    let tailored_id = props.booking["tailored_itinerary"];
+    let id = props.booking["id"];
+    let check_in = props.booking["check_in"];
+    let check_out = props.booking["check_out"];
     let pax = {
-      number_of_adults: props.booking['number_of_adults'],
-      number_of_children: props.booking['number_of_children'],
-      number_of_infants: props.booking['number_of_infants'],
+      number_of_adults: props.booking["number_of_adults"],
+      number_of_children: props.booking["number_of_children"],
+      number_of_infants: props.booking["number_of_infants"],
     };
-    let city = props.booking['city'];
-    let room_type = props.booking['room_type'];
-    let taxi_type = props.booking['taxi_type'];
-    let transfer_type = props.booking['transfer_type'];
-    let city_id = props.booking['city_id'];
-    let destination_city = props.booking['destination_city'];
-    let duration = props.booking['duration'];
-    let origin_iata = props.booking['origin_code'];
-    let destination_iata = props.booking['destination_code'];
+    let city = props.booking["city"];
+    let room_type = props.booking["room_type"];
+    let taxi_type = props.booking["taxi_type"];
+    let transfer_type = props.booking["transfer_type"];
+    let city_id = props.booking["city_id"];
+    let destination_city = props.booking["destination_city"];
+    let duration = props.booking["duration"];
+    let origin_iata = props.booking["origin_code"];
+    let destination_iata = props.booking["destination_code"];
     let user_selected = props.userSelected;
 
     props._changeFlightHandler(
@@ -320,31 +317,31 @@ props.openNotification({
       if (!props.token) {
         props.setShowLoginModal();
       }
-      let name = props.booking['name'];
-      let costings_breakdown = props.booking['costings_breakdown'];
-      let cost = props.booking['booking_cost'];
-      let itinerary_id = props.booking['itinerary_id'];
-      let itinerary_name = props.booking['itinerary_name'];
-      let booking_type = props.booking['booking_type'];
+      let name = props.booking["name"];
+      let costings_breakdown = props.booking["costings_breakdown"];
+      let cost = props.booking["booking_cost"];
+      let itinerary_id = props.booking["itinerary_id"];
+      let itinerary_name = props.booking["itinerary_name"];
+      let booking_type = props.booking["booking_type"];
 
-      let tailored_id = props.booking['tailored_itinerary'];
-      let id = props.booking['id'];
-      let check_in = props.booking['check_in'];
-      let check_out = props.booking['check_out'];
+      let tailored_id = props.booking["tailored_itinerary"];
+      let id = props.booking["id"];
+      let check_in = props.booking["check_in"];
+      let check_out = props.booking["check_out"];
       let pax = {
-        number_of_adults: props.booking['number_of_adults'],
-        number_of_children: props.booking['number_of_children'],
-        number_of_infants: props.booking['number_of_infants'],
+        number_of_adults: props.booking["number_of_adults"],
+        number_of_children: props.booking["number_of_children"],
+        number_of_infants: props.booking["number_of_infants"],
       };
-      let city = props.booking['city'];
-      let room_type = props.booking['room_type'];
-      let taxi_type = props.booking['taxi_type'];
-      let transfer_type = props.booking['transfer_type'];
-      let city_id = props.booking['city_id'];
-      let destination_city = props.booking['destination_city'];
-      let duration = props.booking['duration'];
-      let origin_iata = props.booking['origin_city_iata_code'];
-      let destination_iata = props.booking['destination_city_iata_code'];
+      let city = props.booking["city"];
+      let room_type = props.booking["room_type"];
+      let taxi_type = props.booking["taxi_type"];
+      let transfer_type = props.booking["transfer_type"];
+      let city_id = props.booking["city_id"];
+      let destination_city = props.booking["destination_city"];
+      let duration = props.booking["duration"];
+      let origin_iata = props.booking["origin_city_iata_code"];
+      let destination_iata = props.booking["destination_city_iata_code"];
       props._changeTaxiHandler(
         name,
         itinerary_id,
@@ -366,12 +363,12 @@ props.openNotification({
     }
   }
   const Facilities = [
-    props.booking_type == 'Taxi' || props.booking_type == 'Bus'
-      ? props?.costings_breakdown.hasOwnProperty('luggage_bags')
+    props.booking_type == "Taxi" || props.booking_type == "Bus"
+      ? props?.costings_breakdown.hasOwnProperty("luggage_bags")
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
-        : '2 Luggage bags'
+        : "2 Luggage bags"
       : null,
-    props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
+    props?.booking?.transfer_type == "Intracity" ? "250 kms per day" : null,
 
     props?.costings_breakdown?.taxi_occupancy ||
     props?.costings_breakdown?.no_of_seats
@@ -392,20 +389,20 @@ props.openNotification({
 
     let updated_bookings_arr = [
       {
-        id: props.booking['id'],
+        id: props.booking["id"],
         booking_type: props.booking_type,
-        itinerary_type: 'Tailored',
+        itinerary_type: "Tailored",
         user_selected: !props?.userSelected,
-        itinerary_id: props.booking['itinerary_id'],
-        taxi_type: props.booking['taxi_type'],
-        transfer_type: props.booking['transfer_type'],
+        itinerary_id: props.booking["itinerary_id"],
+        taxi_type: props.booking["taxi_type"],
+        transfer_type: props.booking["transfer_type"],
 
         costings_breakdown: props.booking?.costings_breakdown,
       },
     ];
     console.dir(updated_bookings_arr);
     axiosbookingupdateinstance
-      .post('?booking_type=Taxi,Bus,Ferry,Train,Flight', updated_bookings_arr, {
+      .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -420,9 +417,9 @@ props.openNotification({
         setUpdateBookingState(false);
         setLoading(false);
         props.openNotification({
-          text: 'Your Booking updated successfully!',
-          heading: 'Success!',
-          type: 'success',
+          text: "Your Booking updated successfully!",
+          heading: "Success!",
+          type: "success",
         });
       })
       .catch((err) => {
@@ -430,28 +427,28 @@ props.openNotification({
           if (err.response.status === 400) {
             props.openNotification({
               text: err.response.data.message,
-              heading: 'Error!',
-              type: 'error',
+              heading: "Error!",
+              type: "error",
             });
           } else
             props.openNotification({
-              text: 'There seems to be a problem, please try again!',
-              heading: 'Error!',
-              type: 'error',
+              text: "There seems to be a problem, please try again!",
+              heading: "Error!",
+              type: "error",
             });
         }
         setUpdateBookingState(false);
         setLoading(false);
-        window.alert('There seems to be a problem, please try again!');
+        window.alert("There seems to be a problem, please try again!");
       });
   };
 
-    var adult;
-    if (props.booking.number_of_adults > 1) adult = " Adults";
-    else adult = " Adult";
-    var child;
-    if (props.booking.number_of_children > 1) child = " Childs";
-    else child = " Child";
+  var adult;
+  if (props.booking.number_of_adults > 1) adult = " Adults";
+  else adult = " Adult";
+  var child;
+  if (props.booking.number_of_children > 1) child = " Childs";
+  else child = " Child";
 
   return (
     <Container>
@@ -577,7 +574,9 @@ props.openNotification({
                       className="lg:flex flex-row gap-2"
                       style={{
                         display: "grid",
-                        gridTemplateColumns: props.userSelected ?  "1fr 1fr 1fr" : '1fr 2fr 1fr',
+                        gridTemplateColumns: props.userSelected
+                          ? "1fr 1fr 1fr"
+                          : "1fr 2fr 1fr",
                       }}
                     >
                       <div className="flex flex-col">
@@ -721,14 +720,19 @@ props.openNotification({
                       </div>
                     ) : (
                       !props?.payment?.paid_user && (
-                        <div className="flex lg:mr-0 mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end">
-                          <div
-                            onClick={() => HandleFlights(props.index)}
-                            className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-                          >
-                            Add Flight
-                          </div>
-                        </div>
+                        <Button
+                          bgColor={"#F7E700"}
+                          borderRadius="8px"
+                          fontWeight="400"
+                          padding="0.6rem 2.2rem"
+                          hoverColor="white"
+                          margin="auto 0px"
+                          onclick={() => {
+                            HandleFlights(props.index);
+                          }}
+                        >
+                          Add Flight
+                        </Button>
                       )
                     )}
                   </>
@@ -833,10 +837,10 @@ props.openNotification({
                           <Cost className="font-lexend">
                             {props.booking.booking_cost
                               ? "₹" +
-                              getIndianPrice(
-                                Math.round(props.booking.booking_cost / 100)
-                              ) +
-                              "/-"
+                                getIndianPrice(
+                                  Math.round(props.booking.booking_cost / 100)
+                                ) +
+                                "/-"
                               : null}
                           </Cost>
                           <Text>
@@ -845,12 +849,15 @@ props.openNotification({
                               adult +
                               (props.booking.number_of_children
                                 ? ", " +
-                                props.booking.number_of_children +
-                                child
+                                  props.booking.number_of_children +
+                                  child
                                 : "") +
                               " )"}
                           </Text>
-                        </div>) : <></>}
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                     </FlexBox>
                     {props.userSelected ? (
                       <div>
