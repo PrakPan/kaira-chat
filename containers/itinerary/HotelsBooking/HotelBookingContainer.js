@@ -63,23 +63,7 @@ const HotelBookingContainer = ({
   token,
   plan,
 }) => {
-  // const AddbookingStatus = (booking) => {
-  //   if (booking?.version == 'v2') {
-  //     if (booking?.status == 'BOOKING_EXPIRED') {
-  //       return false;
-  //     } else {
-  //       return true;
-  //     }
-  //   } else {
-  //     return !currentBooking ? booking?.user_selected : true;
-  //   }
-  // };
 
-  // const [addbooking, setaddboking] = useState(AddbookingStatus(booking));
-  // console.log('addbooking', addbooking);
-  // const [expiredBooking, setexpiredBooking] = useState(
-  //   booking?.status == 'BOOKING_EXPIRED' ? true : false
-  // );
   const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
@@ -265,7 +249,7 @@ const HotelBookingContainer = ({
                   {booking && (
                     <div className="flex flex-col gap-1">
                       {!currentBooking && (
-                        <div className="text-sm font-normal">
+                        <div className="text-sm font-normal" style={{marginTop : '-0.5rem'}}>
                           {booking?.city}
                         </div>
                       )}
@@ -429,13 +413,16 @@ const HotelBookingContainer = ({
                         {Addons(booking.costings_breakdown[0].pricing_type)}
                       </div>
                     </div>
-                  ) : null} 
-                 {booking.amenities.length && booking.amenities.includes('WIFI') ?<div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                  ) : null}
+                  {(booking.amenities && booking.amenities.length &&
+                  booking.amenities.includes("WIFI")) ? (
+                    <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
-                      <div className="text-sm font-[400]">
-                        WIFI available
-                      </div>
-                    </div> : <></>}
+                      <div className="text-sm font-[400]">WIFI available</div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
 
                 {currentBooking && booking?.price && (
