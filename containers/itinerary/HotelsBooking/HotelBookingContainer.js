@@ -10,7 +10,8 @@ import {
   convertDateYearFormat,
 } from "../../../helper/ConvertDateFormat";
 import ButtonYellow from "../../../components/ButtonYellow";
-
+import Button from '../../../components/ui/button/Index'
+import media from '../../../components/media'
 import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 // import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
@@ -63,7 +64,7 @@ const HotelBookingContainer = ({
   token,
   plan,
 }) => {
-
+  let isDesktop = media("(min-width: 1147px)");
   const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
@@ -249,7 +250,10 @@ const HotelBookingContainer = ({
                   {booking && (
                     <div className="flex flex-col gap-1">
                       {!currentBooking && (
-                        <div className="text-sm font-normal" style={{marginTop : '-0.5rem'}}>
+                        <div
+                          className="text-sm font-normal"
+                          style={{ marginTop: "-0.5rem" }}
+                        >
                           {booking?.city}
                         </div>
                       )}
@@ -414,8 +418,9 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : null}
-                  {(booking.amenities && booking.amenities.length &&
-                  booking.amenities.includes("WIFI")) ? (
+                  {booking.amenities &&
+                  booking.amenities.length &&
+                  booking.amenities.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">WIFI available</div>
@@ -440,33 +445,41 @@ const HotelBookingContainer = ({
                 )}
                 {handleClick && (
                   <div
-                    className={`flex flex-row gap-3 items-center justify-between w-full ${
+                    className={`flex flex-row gap-2 items-end w-full ${
                       payment?.paid_user || !payment?.user_allowed_to_pay
                         ? "lh:mb-0 mb-2"
                         : "lg:mb-0 mb-0"
                     }`}
                   >
-                    {/* <ButtonYellow
-                  className=" w-1/2"
-                  onClick={() =>
-                    handleClick(index, booking.accommodation, booking)
-                  }
-                >
-                  <div className="text-[#01202B] ">View Detail</div>
-                </ButtonYellow> */}
+                    {isDesktop && <Button
+                      // width="120px"
+                      padding="0.4rem 2rem"
+                      bgColor={"#F7E700"}
+                      borderRadius="8px"
+                      hoverColor="white"
+                      // className=" w-1/2"
+                      fontWeight="500"
+                      onclick={() =>
+                        handleClick(index, booking.accommodation, booking)
+                      }
+                    >
+                      View Detail
+                    </Button>}
                     {payment?.is_registration_needed ? null : token ? (
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
-                        <ButtonYellow
-                          className="w-1/2"
-                          onClick={() => {
+                        <Button
+                          // width="120px"
+                          padding="0.4rem 2rem"
+                          // className="w-1/2"
+                          borderRadius="8px"
+                          fontWeight="500"
+                          onclick={() => {
                             handleClickAc(index, booking, city_id);
                           }}
                         >
-                          <div className="text-[#01202B] ">
-                            {!isSelect ? "Add Hotel" : "Change"}
-                          </div>
-                        </ButtonYellow>
+                          {!isSelect ? "Add Hotel" : "Change"}
+                        </Button>
                       )
                     ) : (
                       <ButtonYellow
@@ -522,8 +535,8 @@ const HotelBookingContainer = ({
                         ? "lg:bottom-4 bottom-[1.5rem] "
                         : `${
                             payment?.paid_user || !payment?.user_allowed_to_pay
-                              ? "lg:bottom-10 bottom-[2.5rem]"
-                              : "lg:bottom-10 bottom-[2.5rem]"
+                              ? "bottom-[2.2rem]"
+                              : "bottom-[2.2rem]"
                           }`
                     } right-6 -m-3`}
                   >
