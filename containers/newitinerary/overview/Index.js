@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import Button from '../../../components/ui/button/Index';
 import Details from './Details';
 import ImagesMobile from './ImagesMobile';
-import NewImages from './NewImages';
 import { useLayoutEffect } from 'react';
 const Container = styled.div``;
 const GridContainer = styled.div`
@@ -77,7 +76,6 @@ const Overview = (props) => {
       {/* <Line></Line> */}
       <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
-        {/* <NewImages images={props.images} /> */}
       </div>
     </Container>
   );
