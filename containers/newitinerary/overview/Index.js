@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import Button from '../../../components/ui/button/Index';
 import Details from './Details';
 import ImagesMobile from './ImagesMobile';
+import NewImages from './NewImages';
+import { useLayoutEffect } from 'react';
 const Container = styled.div``;
 const GridContainer = styled.div`
   display: grid;
@@ -33,7 +35,14 @@ const toTitleCase = (str) => {
   });
 };
 const Overview = (props) => {
-  useEffect(() => {}, []);
+  // useEffect(() => {}, []);
+    // var Images = [];
+
+    // useLayoutEffect(() => {
+    //   for (let i = 0; i < props.images.length; i++) {
+    //     if (props.images[i]) Images.push(props.images[i]);
+    //   }
+    // }, []);
   return (
     <Container>
       <GridContainer>
@@ -68,6 +77,7 @@ const Overview = (props) => {
       {/* <Line></Line> */}
       <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
+        {/* <NewImages images={props.images} /> */}
       </div>
     </Container>
   );

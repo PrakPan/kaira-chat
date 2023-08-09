@@ -297,7 +297,10 @@ const Itinerary = (props) => {
         .then((res) => {
           if (res.data.day_slabs.length) {
             if (res.data.is_stock) setIsStock(true);
-            setItinerary(res.data);
+            setItinerary({
+              ...res.data,
+              images: res.data.images.filter((value) => value),
+            });
             setItineraryLoading(false);
           } else {
             // window.location.href =
