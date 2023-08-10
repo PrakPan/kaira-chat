@@ -560,7 +560,7 @@ const Booking = (props) => {
                 </p>
               ) : null}
             </ContentContainer>
-            {!isPageWide && (
+            {/* {!isPageWide && (
               <>
                 <Floating>
                   <FaFilter
@@ -579,7 +579,7 @@ const Booking = (props) => {
                   />
                 </FloatingView>
               </>
-            )}
+            )} */}
           </GridContainer>
         </Drawer>
       </div>

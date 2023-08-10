@@ -173,7 +173,7 @@ const Section = (props) => {
         <Text>{props.text}</Text>
       </Heading>
 
-      {isPageWide ? FiltersSection : <></>}
+      {/* {isPageWide ? FiltersSection : <></>} */}
 
       {!isPageWide && (
         <Drawer
