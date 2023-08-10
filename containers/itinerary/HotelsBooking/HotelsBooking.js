@@ -38,7 +38,6 @@ const ClippathComp = styled.div`
 `;
 const Floating = styled.div`
   position: fixed;
-
   bottom: 10px;
   background: #01202b;
   border-radius: 50%;
@@ -454,7 +453,6 @@ const HotelsBooking = (props) => {
               const idsArray =
                 props.breif.city_slabs[i]?.accommodation_booking.split(',');
               idsArray.map((item) => {
-                console.log('bookingitem' + item);
                 const foundObject = findObjectById(props.stayBookings, item);
                 HotelArray.push(
                   <HotelBookingContainer
@@ -615,14 +613,6 @@ const HotelsBooking = (props) => {
       )}
       {!isDesktop && props.showBookingModal && (
         <div className="absolute bottom-0 right-10 z-[1510]">
-          {/* <Slide
-              hideTime={4}
-              onUnmount={() => setFloatingButtonView(!floatingButtonView)}
-              isActive={floatingButtonView}
-              direction={5}
-              duration={2}
-              xdistance={-50}
-            > */}
           <FloatingView>
             <TbArrowBack
               style={{ height: "28px", width: "28px" }}
@@ -630,7 +620,6 @@ const HotelsBooking = (props) => {
               onClick={props.setHideBookingModal}
             />
           </FloatingView>
-          {/* </Slide> */}
         </div>
       )}
       {props.token && props.showBookingModal && (

@@ -26,11 +26,14 @@ const DropDownIcon = styled.div`
   position: absolute;
   height: 1rem;
   right: 5px;
-  top: 1rem;
-  transform: rotate(0deg);
+  top: 50%;
+  // transform: ;
+  transform: rotate(0deg) translate(0%, -50%);
   transition: all 0.3s ease-out;
   transform: ${(props) =>
-    props.rotate ? `rotate(180deg) ; translate: 0px 0rem` : ""};
+    props.rotate
+      ? `rotate(180deg) translate(0%,50%)`
+      : "rotate(0deg) translate(0%, -50%)"};
 `;
 const Children = styled.div`
   position: absolute;
@@ -65,7 +68,8 @@ const Label = styled.label`
   font-size: ${(props) => props.fontSize};
   color: ${(props) => (props.error ? "red !important" : "black")};
   left: 20px;
-  top: 30%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   white-space: nowrap;
   // overflow: hidden;
   transition: 0.2s ease all;

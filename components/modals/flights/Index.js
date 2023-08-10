@@ -17,6 +17,7 @@ import Drawer from '../../ui/Drawer';
 import Skeleton from './Skeleton';
 import { TbArrowBack } from 'react-icons/tb';
 import { openNotification } from '../../../store/actions/notification';
+import { FaFilter } from 'react-icons/fa';
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -35,6 +36,20 @@ const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
   background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 85%;
+  z-index: 2;
+  cursor: pointer;
+`;
+const Floating = styled.div`
+  position: sticky;
+  bottom: 65px;
+  background: #01202b;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -83,7 +98,7 @@ const Booking = (props) => {
     errorMsg: '',
   });
   const [moreLoadingState, setMoreLoadingState] = useState(false);
-
+  const [showFilter, setShowFilter] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
   useEffect(() => {
@@ -455,6 +470,8 @@ const Booking = (props) => {
         >
           <SectionOne
             setHideBookingModal={props.setHideBookingModal}
+            showFilter={showFilter}
+            setShowFilter={setShowFilter}
             setHideFlightModal={props.setHideFlightModal}
             text={props.selectedBooking?.name}
           ></SectionOne>
@@ -493,9 +510,7 @@ const Booking = (props) => {
                     {optionsJSX.length && !updateBookingState
                       ? optionsJSX
                       : null}
-                    {loading && !optionsJSX.length ? (
-                      <Skeleton />
-                    ) : null}
+                    {loading && !optionsJSX.length ? <Skeleton /> : null}
                     {!loading && !optionsJSX.length ? (
                       <div
                         style={{
@@ -510,9 +525,7 @@ const Booking = (props) => {
                       </div>
                     ) : null}
                   </div>
-                  {moreLoadingState ? (
-                    <Skeleton />
-                  ) : null}
+                  {moreLoadingState ? <Skeleton /> : null}
                   {viewMoreStatus && !updateBookingState ? (
                     <Button
                       boxShadow
@@ -548,13 +561,24 @@ const Booking = (props) => {
               ) : null}
             </ContentContainer>
             {!isPageWide && (
-              <FloatingView>
-                <TbArrowBack
-                  style={{ height: "28px", width: "28px" }}
-                  cursor={"pointer"}
-                  onClick={props.setHideFlightModal}
-                />
-              </FloatingView>
+              <>
+                <Floating>
+                  <FaFilter
+                    style={{ height: "18px", width: "18px", color: "white" }}
+                    cursor={"pointer"}
+                    onClick={(e) => {
+                      setShowFilter(true);
+                    }}
+                  />
+                </Floating>
+                <FloatingView>
+                  <TbArrowBack
+                    style={{ height: "28px", width: "28px" }}
+                    cursor={"pointer"}
+                    onClick={props.setHideFlightModal}
+                  />
+                </FloatingView>
+              </>
             )}
           </GridContainer>
         </Drawer>
