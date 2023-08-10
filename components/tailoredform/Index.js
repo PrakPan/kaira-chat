@@ -297,7 +297,6 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
-        console.log('response: ', response);
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
@@ -308,22 +307,28 @@ const Enquiry = (props) => {
 
           // setTimeout(function () {
           if (response.data.loader_time)
-            router.push(
-              "/itinerary/" +
-                response.data.itinerary.itinerary_id +
-                "?t=" +
-                response.data.loader_time
-            );
+            // router.push(
+            //   "/itinerary/" +
+            //     response.data.itinerary.itinerary_id +
+            //     "?t=" +
+            //     response.data.loader_time
+            // );
+           
+            window.location.href = "/itinerary/" +
+              response.data.itinerary.itinerary_id +
+              "?t=" +
+              response.data.loader_time
           else
-            router.push(
-              "/itinerary/" + response.data.itinerary.itinerary_id
-            );
+            // router.push(
+            //   "/itinerary/" + response.data.itinerary.itinerary_id
+            // );
+            window.location.href =
+              "/itinerary/" + response.data.itinerary.itinerary_id;
           // }, 10000);
           setLoading(false);
         }
       })
       .catch((err) => {
-        console.log('response: ', err);
         setLoading(false);
         // window.location.href =
         //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
