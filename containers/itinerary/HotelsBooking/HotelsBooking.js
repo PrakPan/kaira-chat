@@ -403,26 +403,26 @@ const HotelsBooking = (props) => {
                 convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
               );
               HotelArray.push(
-                <HotelBookingContainer
-                  booking={foundObject}
-                  setShowLoginModal={props.setShowLoginModal}
-                  index={findIndexById(
-                    props.stayBookings,
-                    convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
-                  )}
-                  cityName={props.breif.city_slabs[i].city_name}
-                  key={i}
-                  handleClick={handleClick}
-                  handleClickAc={handleClickAc}
-                  _SelectedBookingHandler={_SelectedBookingHandler}
-                  setHideBookingModal={props.setHideBookingModal}
-                  city_id={props.breif.city_slabs[i].city_id}
-                  loginModal={showLoginModal}
-                  setLoginModal={setShowLoginModal}
-                  token={props.token}
-                  payment={props.payment}
-                  plan={props.plan}
-                ></HotelBookingContainer>
+                  <HotelBookingContainer
+                    booking={foundObject}
+                    setShowLoginModal={props.setShowLoginModal}
+                    index={findIndexById(
+                      props.stayBookings,
+                      convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
+                    )}
+                    cityName={props.breif.city_slabs[i].city_name}
+                    key={i}
+                    handleClick={handleClick}
+                    handleClickAc={handleClickAc}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
+                    setHideBookingModal={props.setHideBookingModal}
+                    city_id={props.breif.city_slabs[i].city_id}
+                    loginModal={showLoginModal}
+                    setLoginModal={setShowLoginModal}
+                    token={props.token}
+                    payment={props.payment}
+                    plan={props.plan}
+                  ></HotelBookingContainer>
               );
             } else {
               if (props.breif.city_slabs[i]?.duration != 0) {
