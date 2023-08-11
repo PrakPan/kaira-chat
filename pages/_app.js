@@ -16,6 +16,8 @@ import { FACEBOOK_PIXEL_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
 import dynamic from 'next/dynamic';
 import media from '../components/media'
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_CLIENT_ID } from '../services/constants';
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef()
@@ -73,10 +75,11 @@ function MyApp({ Component, pageProps, store }) {
 
   return (
     <div ref={ref}>
-      <Theme>
-        <Component {...pageProps} />
-      </Theme>
-      
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <Theme>
+          <Component {...pageProps} />
+        </Theme>
+      </GoogleOAuthProvider>
     </div>
   );
 }

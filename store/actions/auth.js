@@ -272,6 +272,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
   };
 };
 export const googleAuth = (response) => {
+  console.log('responseOfGooleLogin: ', response);
   {
     process.env.NODE_ENV === 'production' &&
       ga.event({
@@ -285,7 +286,7 @@ export const googleAuth = (response) => {
     dispatch(authStartLoadingSocial()); //Start spinner
 
     axiosgoogleauthinstance
-      .get('?access_token=' + response.accessToken)
+      .get('?access_token=' + response.access_token)
       .then((res) => {
         dispatch(authStopLoadingSocial());
         if (res.status === 200) {
