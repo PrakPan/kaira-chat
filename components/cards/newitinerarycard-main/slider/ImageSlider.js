@@ -110,10 +110,19 @@ const ImageSlider = (props) => {
    
       var isArr = Object.prototype.toString.call(props.images) == '[object Array]';
 
-       let image;
-      if(isArr || props.images === null)
-      image = props.images[0];
-      else image = props.images.main_image;
+       var image;
+  if (isArr || props.images === null) {
+    if (props.images && props.images.length) for (let i = 0; i < props.images.length; i++){
+      if (props.images[i]) {
+        image = props.images[i]
+        break
+      }
+    }  
+    else image = props.images[0];        
+      }
+  else image = props.images.main_image;
+  console.log("propsEcpre: ", props.images , image);
+  
          let LOCATIONS_TO_SHOW = "";
       if(props.locations){
         if(props.locations.length > 2) {
