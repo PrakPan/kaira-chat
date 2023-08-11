@@ -142,8 +142,6 @@ const ColorTags = styled.span`
 const FiltersContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  // width: 100%;
-  border : 1px solid red;
   gap : 0.25rem;
 `;
 const ItineraryPoiElement = (props) => {

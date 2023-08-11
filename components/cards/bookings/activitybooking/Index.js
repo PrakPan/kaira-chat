@@ -21,7 +21,6 @@ import ImageContainer from './imagecontainer/Index';
         position: relative;
 
     }
-    border : 1px solid red;
 `;
 
  

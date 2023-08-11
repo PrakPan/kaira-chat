@@ -377,7 +377,10 @@ const drawerRef = useRef(null);
                 props.payment?.user_allowed_to_pay &&
                 !props.payment.paid_user && (
                   <div
-                    onClick={() => Poi_activities(props.activity)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    Poi_activities(props.activity)
+                  }}
                     className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                   >
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -494,7 +497,10 @@ const drawerRef = useRef(null);
         >
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
-              onClick={() => setShowDrawer(false)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setShowDrawer(false)
+              }}
               className="hover-pointer"
               style={{
                 fontSize: "1.75rem",
