@@ -449,7 +449,7 @@ const TransferModeContainer = (props) => {
   var child;
   if (props.booking.number_of_children > 1) child = " Childs";
   else child = " Child";
-
+console.log('props.booking: ' , props.booking)
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
@@ -593,9 +593,18 @@ const TransferModeContainer = (props) => {
                             </span>
                           )}
 
-                          <span className="font-[300] ml-1 ">
-                            ({props.booking.origin_code})
-                          </span>
+                          {props.booking.origin_code ||
+                          (props.booking.origin &&
+                            props.booking.origin.code) ? (
+                            <span className="font-[300] ml-1 ">
+                              (
+                              {props.booking.origin_code ||
+                                props.booking.origin.code}
+                              )
+                            </span>
+                          ) : (
+                            <></>
+                          )}
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
                           props.plan.itinerary_status && (
@@ -664,9 +673,18 @@ const TransferModeContainer = (props) => {
                                 }
                               </span>
                             )}
-                            <span className="font-[300] ml-1">
-                              ({props.booking.destination_code})
-                            </span>
+                            {props.booking.destination_code ||
+                            (props.booking.destination &&
+                              props.booking.destination.code) ? (
+                              <span className="font-[300] ml-1 ">
+                                (
+                                {props.booking.destination_code ||
+                                  props.booking.destination.code}
+                                )
+                              </span>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                           {ITINERARY_STATUSES.itinerary_prepared !==
                             props.plan.itinerary_status && (
@@ -764,9 +782,17 @@ const TransferModeContainer = (props) => {
                           </span>
                         )}
 
-                        <span className="font-[300] ml-1 ">
-                          ({props.booking.origin_code})
-                        </span>
+                        {props.booking.origin_code ||
+                        (props.booking.origin && props.booking.origin.code) ? (
+                          <span className="font-[300] ml-1 ">
+                            (
+                            {props.booking.origin_code ||
+                              props.booking.origin.code}
+                            )
+                          </span>
+                        ) : (
+                          <></>
+                        )}
                       </div>
                       {ITINERARY_STATUSES.itinerary_prepared !==
                         props.plan.itinerary_status && (
@@ -812,7 +838,18 @@ const TransferModeContainer = (props) => {
                             </span>
                           )}
                           <span className="font-[300] ml-1">
-                            ({props.booking.destination_code})
+                            {props.booking.destination_code ||
+                            (props.booking.destination &&
+                              props.booking.destination.code) ? (
+                              <span className="font-[300] ml-1 ">
+                                (
+                                {props.booking.destination_code ||
+                                  props.booking.destination.code}
+                                )
+                              </span>
+                            ) : (
+                              <></>
+                            )}
                           </span>
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
