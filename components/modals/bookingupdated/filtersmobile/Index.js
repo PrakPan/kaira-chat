@@ -124,7 +124,7 @@ export default function TemporaryDrawer(props) {
           <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab>
         </Tabs> */}
         {isPageWide && (
-          <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4">
+          <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4 flex-wrap">
             <div className="flex flex-col justify-start items-baseline">
               <div className="mb-2 text-sm font-normal">Star category</div>
               <div className="flex flex-row gap-1">
