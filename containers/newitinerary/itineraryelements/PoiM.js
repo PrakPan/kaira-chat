@@ -109,10 +109,10 @@ const FloatingView = styled.div`
 `;
 const GridResponsive = styled.div`
   display: grid;
-  width: 90%;
+  width: 100%;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  grid-column-gap: 1rem;
-  grid-row-gap: 1rem;
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.5rem;
 `;
 const MoreIcon = styled.div`
 display : flex;
@@ -561,7 +561,7 @@ const drawerRef = useRef(null);
 
             <div className="flex w-[100%] flex-row justify-between mt-0">
               <div className="flex w-[100%] flex-col justify-start items-baseline">
-                <div className="mb-2 text-sm font-normal">Experience Types</div>
+                <div className="mb-2 text-sm font-normal mt-3">Experience Types</div>
                 <GridResponsive>
                   {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                     <button

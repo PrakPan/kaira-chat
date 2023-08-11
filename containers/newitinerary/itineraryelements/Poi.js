@@ -139,7 +139,13 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
-
+const FiltersContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  // width: 100%;
+  border : 1px solid red;
+  gap : 0.25rem;
+`;
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -372,6 +378,8 @@ const ItineraryPoiElement = (props) => {
         style={{ zIndex: 1501 }}
         className="font-lexend"
         onHide={() => setShowDrawer(false)}
+        mobileWidth={'100vw'}
+        width='50vw'
       >
         <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 justify-start items-start mx-auto w-[96%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
@@ -391,7 +399,7 @@ const ItineraryPoiElement = (props) => {
           <div className="flex flex-row justify-between mt-0">
             <div className="flex flex-col justify-start items-baseline">
               <div className="mb-2 text-sm font-normal">Experience Types</div>
-              <div className="flex flex-row gap-1">
+              <FiltersContainer>
                 {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                   <button
                     onClick={() => {
@@ -408,7 +416,7 @@ const ItineraryPoiElement = (props) => {
                     {currentfilter.display}
                   </button>
                 ))}
-              </div>
+              </FiltersContainer>
             </div>
           </div>
 
