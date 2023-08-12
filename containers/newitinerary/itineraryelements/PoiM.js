@@ -410,7 +410,7 @@ const drawerRef = useRef(null);
           )}
           <div className="flex flex-row">
             <div className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]">
-              {true ? "ATTRACTION" : "View Less"}
+              {true ? "ACTIVITY" : "View Less"}
             </div>
           </div>
 

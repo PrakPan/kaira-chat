@@ -323,7 +323,7 @@ const ItineraryPoiElement = (props) => {
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  ATTRACTION
+                  ACTIVITY
                 </div>
                 {props.poi.rating && (
                   <RatingContainer>
