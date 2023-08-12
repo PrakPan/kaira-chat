@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
@@ -14,7 +14,9 @@ import useMediaQuery from "../../../media";
 import MoreText from "../../../ui/MoreText";
 import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
+import SkeletonCard from "../../../ui/SkeletonCard";
 const starRating = (rating) => {
+
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
     stars.push(<FaStar />);
@@ -43,7 +45,6 @@ const DetailsContainer = styled.div`
   @media screen and (min-width: 768px) {
   }
 `;
-
 
 const ImageContainer = styled.div`
   width: 100%;
@@ -118,7 +119,6 @@ const Heading = styled.div`
   margin-block: 1rem 1rem;
 `;
 
-
 const Address = styled.div`
   font-weight: 400;
   font-size: 14px;
@@ -132,12 +132,33 @@ const CheckInText = styled.div`
   margin-block: 1rem;
 `;
 const FlexBox = styled.div`
-display : flex;
-justify-content : space-between;
-align-items : center;
-gap : 0.5rem;
-`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+`;
 const Overview = (props) => {
+    const [ImagesLoaded, setImagesLoaded] = useState({
+      0: false,
+      1: false,
+      2: false,
+      3: false,
+    });
+
+    function OnImageLoad(i) {
+      if (!ImagesLoaded[i]) {
+      console.log("ImagesLoaded: " , i, ImagesLoaded[i]);
+
+        setTimeout(
+          () =>
+            setImagesLoaded((prev) => {
+              return { ...prev, [i]: true };
+            }),
+          1000
+        );
+      }
+    }
+
   const isDesktop = useMediaQuery("(min-width:1148px)");
   let images = [];
   try {
@@ -189,91 +210,200 @@ const Overview = (props) => {
           {images.length > 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <ImageLoader
-                  url={images[0]}
-                  width="100%"
-                  height="100%"
-                  noLazy
-                />
+                <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                  <ImageLoader
+                    url={images[0]}
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(0)}
+                    noLazy
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[0] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
 
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                <ImageLoader
-                  url={images[1]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                  noLazy
-                />
+                <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                  <ImageLoader
+                    url={images[1]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(1)}
+                    noLazy
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[1] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
               <Child area="1 / 4 / 3 / 8" className="div3">
-                <ImageLoader
-                  url={images[2]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                />
+                <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                  <ImageLoader
+                    url={images[2]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(2)}
+                    noLazy
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[2] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
               <Child area="3 / 4 / 5 / 8" className="div4">
-                <ImageLoader
-                  url={images[3]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                  noLazy
-                />
+                <div style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
+                  <ImageLoader
+                    url={images[3]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(3)}
+                    noLazy
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[3] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
             </GridImage>
           ) : images.length == 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <ImageLoader
-                  noLazy
-                  url={images[0]}
-                  width="100%"
-                  height="100%"
-                />
+                <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                  <ImageLoader
+                    noLazy
+                    url={images[0]}
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(0)}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[0] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
 
               <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
-                <ImageLoader
-                  noLazy
-                  url={images[1]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                />
+                <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                  <ImageLoader
+                    noLazy
+                    url={images[1]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(1)}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[1] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
               <Child area="1 / 7 / 5 / 11" className="div3">
-                <ImageLoader
-                  noLazy
-                  url={images[2]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                />
+                <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                  <ImageLoader
+                    noLazy
+                    url={images[2]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(2)}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[2] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
             </GridImage>
           ) : (
             <GridImage>
               <Child area="1 / 1 / 5 / 6" className="div1 ">
-                <ImageLoader
-                  noLazy
-                  url={images[0]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                />
+                <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                  <ImageLoader
+                    noLazy
+                    url={images[0]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(0)}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[0] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
 
               <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
-                <ImageLoader
-                  noLazy
-                  url={images[1]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                />
+                <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                  <ImageLoader
+                    noLazy
+                    url={images[1]}
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(1)}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[1] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
               </Child>
             </GridImage>
           )}
@@ -304,31 +434,68 @@ const Overview = (props) => {
         <ImageContainer>
           <MGridImage>
             <Child area="1 / 1 / 4 / 7" className="div1 ">
-              <ImageLoader
-                url={images[0]}
-                fit="cover"
-                width="100%"
-                height="100%"
-              />
+              <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <ImageLoader
+                  noLazy
+                  url={images[0]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  onload={() => OnImageLoad(0)}
+                />
+              </div>
+              <div
+                style={{
+                  display: !ImagesLoaded[0] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension={"50rem"} />
+              </div>
             </Child>
 
             <Child area=" 4 / 1 / 7 / 4" className="div2 rounded-lg">
-              <ImageLoader
-                noLazy
-                url={images[1]}
-                fit="cover"
-                width="100%"
-                height="100%"
-              />
+              <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <ImageLoader
+                  noLazy
+                  url={images[1]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  onload={() => OnImageLoad(1)}
+                />
+              </div>
+              <div
+                style={{
+                  display: !ImagesLoaded[1] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension={"50rem"} />
+              </div>
             </Child>
             <Child area="4 / 4 / 7 / 7" className="div3">
-              <ImageLoader
-                noLazy
-                url={images[2]}
-                fit="cover"
-                width="100%"
-                height="100%"
-              />
+              <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                <ImageLoader
+                  noLazy
+                  url={images[2]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  onload={() => OnImageLoad(2)}
+                />
+              </div>
+              <div
+                style={{
+                  display: !ImagesLoaded[2] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension={"50rem"} />
+              </div>
             </Child>
           </MGridImage>
 
