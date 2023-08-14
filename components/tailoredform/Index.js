@@ -102,6 +102,7 @@ const LoadingText = styled.div`
   opacity: 0.8;
 `;
 const Enquiry = (props) => {
+  console.log('props.phone: ', props.phone);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -135,9 +136,9 @@ const Enquiry = (props) => {
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   useEffect(() => {
-    if (slideIndex === 2 && props.token) _submitDataHandler();
+    if (slideIndex === 2 && props.token && props.phone !== 'null') _submitDataHandler();
     setShowPopup(popupObj);
-  }, [slideIndex, props.token]);
+  }, [slideIndex, props.token, props]);
   const _handleHideBlack = () => {
     setShowBlack(false);
     setShowCities(false);
@@ -511,6 +512,7 @@ const Enquiry = (props) => {
               destination={destination}
               setDestination={setDestination}
               token={props.token}
+              phone={props.phone}
               // _handlePrev={_prevSlideHandler}
               slideIndex={slideIndex}
               cities={props.cities}
@@ -633,7 +635,7 @@ const Enquiry = (props) => {
               // )
 
 //new code without login:-
-              !props.token ? (
+              (!props.token || props.phone === 'null' ) ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     fontSize="1rem"

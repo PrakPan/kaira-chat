@@ -412,7 +412,8 @@ const LogIn = React.memo((props) => {
           your plan.
         </p>
       ) : null}
-      {(props.token && !props.phone) || (props.token && props.phone == null) ? (
+      {(props.token && !props.phone) ||
+      (props.token && props.phone == "null") ? (
         <form noValidate>
           <MobileNumberContainer>
             <CountryCodeContainer>
@@ -448,7 +449,7 @@ const LogIn = React.memo((props) => {
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
             loading={props.loading}
-            margin={props.nospacing ? "0" : "2rem 0"}
+            margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
             width="100%"
             bgColor="#F7E700"
             fontWeight="500"
