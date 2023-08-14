@@ -95,7 +95,6 @@ const Booking = (props) => {
     arrival_time_period: "",
     airline_name: "",
   });
-    console.log("filtersState: ", filtersState);
   const [airlineNames , setAirlineNames] = useState(['All'])
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
