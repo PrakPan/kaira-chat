@@ -272,7 +272,6 @@ export const auth = (mobile, password, name, email, whatsapp) => {
   };
 };
 export const googleAuth = (response) => {
-  console.log('responseOfGooleLogin: ', response);
   {
     process.env.NODE_ENV === 'production' &&
       ga.event({
