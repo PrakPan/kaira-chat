@@ -82,11 +82,21 @@ const Booking = (props) => {
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [filtersState, setFiltersState] = useState({
+  //   budget: [],
+  //   type: [],
+  //   star_category: [],
+  // });
+
   const [filtersState, setFiltersState] = useState({
-    budget: [],
-    type: [],
-    star_category: [],
+    order: "asc",
+    non_stop_flights: false,
+    departure_time_period: "",
+    arrival_time_period: "",
+    airline_name: "",
   });
+    console.log("filtersState: ", filtersState);
+  const [airlineNames , setAirlineNames] = useState(['All'])
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -103,6 +113,7 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   useEffect(() => {
     let options = [];
+    setOptionsJSX([])
     setLoading(true);
     if (props.selectedBooking && props.token)
       axiosflightsearch
@@ -118,34 +129,38 @@ const Booking = (props) => {
             city_code: props.selectedBooking.origin_iata,
             destination_city_code: props.selectedBooking.destination_iata,
             flight_cabin_class: '1',
+            ...filtersState
           },
         })
         .then((res) => {
           localStorage.setItem('tbo_trace_id', res.data.TraceId);
           // const flights
-          if (res.data.Results.length) {
-            // options.push(
-            //   <Flight
-            //     itinerary_id={props.itinerary_id}
-            //     data={props.selectedBooking}
-            //     selectedBooking={props.selectedBooking}
-            //     _updateBookingHandler={_newUpdateBookingHandler}
-            //     isSelected={true}
-            //   />
-            // );
-            for (var i = 0; i < res.data.Results.length; i++) {
-              options.push(
-                <Flight
-                  itinerary_id={props.itinerary_id}
-                  data={res.data.Results[i]}
-                  selectedBooking={props.selectedBooking}
-                  _updateBookingHandler={_newUpdateBookingHandler}
-                  isSelected={false}
-                ></Flight>
-              );
-            }
-            setOptionsJSX(options);
+          if (res.data.search && res.data.search.airline_names) {
+            setAirlineNames(['All',...res.data.search.airline_names])
           }
+            if (res.data.Results.length) {
+              // options.push(
+              //   <Flight
+              //     itinerary_id={props.itinerary_id}
+              //     data={props.selectedBooking}
+              //     selectedBooking={props.selectedBooking}
+              //     _updateBookingHandler={_newUpdateBookingHandler}
+              //     isSelected={true}
+              //   />
+              // );
+              for (var i = 0; i < res.data.Results.length; i++) {
+                options.push(
+                  <Flight
+                    itinerary_id={props.itinerary_id}
+                    data={res.data.Results[i]}
+                    selectedBooking={props.selectedBooking}
+                    _updateBookingHandler={_newUpdateBookingHandler}
+                    isSelected={false}
+                  ></Flight>
+                );
+              }
+              setOptionsJSX(options);
+            }
           if (res.data.next_page) {
             setViewMoreStatus(true);
             setOffset(offset + 20);
@@ -162,7 +177,7 @@ const Booking = (props) => {
                 errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
             })
         });
-  }, [props.selectedBooking, props.token]);
+  }, [props.selectedBooking, props.token , filtersState]);
 
   const filters = {
     budget: [
@@ -194,158 +209,158 @@ const Booking = (props) => {
     star_category: ['1 star', '2 star', '3 star', '4 star', '5 star', 'All'],
   };
 
-  const _updateOptionsHandlerWithFilter = () => {
-    setOffset(0);
-    setUpdateLoadingState(true);
-    setNoResults(false);
-    let budgetarr = filtersState.budget;
-    let typearr = filtersState.type;
-    let sta_catgeoryarr = filtersState.star_category;
+  // const _updateOptionsHandlerWithFilter = () => {
+  //   setOffset(0);
+  //   setUpdateLoadingState(true);
+  //   setNoResults(false);
+  //   let budgetarr = filtersState.budget;
+  //   let typearr = filtersState.type;
+  //   let sta_catgeoryarr = filtersState.star_category;
 
-    let type = [];
-    let price_lower_range = null;
-    let price_upper_range = null;
-    let price_set = false;
-    //TYPE FILTERS
-    if (!typearr.length) {
-      //send empty type
-    } else {
-      for (var i = 0; i < typearr.length; i++) {
-        if (typearr[i] === 'All') null;
-        else {
-          if (typearr[i] === 'Unique') {
-            type.push('Speciality Lodging');
-            type.push('Boat / Cruise');
-            type.push('Holiday Park / Caravan Park');
-            type.push('Capsule Hotel');
-          } else type.push(typearr[i]);
-        }
-      }
-    }
+  //   let type = [];
+  //   let price_lower_range = null;
+  //   let price_upper_range = null;
+  //   let price_set = false;
+  //   //TYPE FILTERS
+  //   if (!typearr.length) {
+  //     //send empty type
+  //   } else {
+  //     for (var i = 0; i < typearr.length; i++) {
+  //       if (typearr[i] === 'All') null;
+  //       else {
+  //         if (typearr[i] === 'Unique') {
+  //           type.push('Speciality Lodging');
+  //           type.push('Boat / Cruise');
+  //           type.push('Holiday Park / Caravan Park');
+  //           type.push('Capsule Hotel');
+  //         } else type.push(typearr[i]);
+  //       }
+  //     }
+  //   }
 
-    //BUDGET FILTERS
-    if (!budgetarr.length) {
-      //send default
-      price_lower_range = 0;
-      price_upper_range = 100000000;
-    } else {
-      if (budgetarr.includes('Below ₹3,000')) {
-        price_lower_range = 0;
-        price_upper_range = 300000;
-        if (budgetarr.includes('Above ₹10,000')) {
-          price_upper_range = null;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
-          price_upper_range = 1000000;
-        } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
-          price_upper_range = 600000;
-        }
-        price_set = true;
-      }
-      if (budgetarr.includes('Above ₹10,000')) {
-        price_upper_range = 100000000;
-        price_lower_range = 1000000;
-        if (budgetarr.includes('Below ₹3,000')) {
-          price_lower_range = 0;
-        } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
-          price_lower_range = 300000;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
-          price_lower_range = 600000;
-        }
-        price_set = true;
-      }
-      if (!price_set) {
-        if (budgetarr.includes('₹3,000 - ₹6,000')) {
-          price_lower_range = 300000;
-          if (budgetarr.includes('₹6,000 - ₹10,000')) {
-            price_upper_range = 1000000;
-          } else price_upper_range = 600000;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
-          price_lower_range = 600000;
-          if (budgetarr.includes('Above ₹10,000')) {
-            price_upper_range = 100000000;
-          } else price_upper_range = 1000000;
-        }
-      }
-    }
+  //   //BUDGET FILTERS
+  //   if (!budgetarr.length) {
+  //     //send default
+  //     price_lower_range = 0;
+  //     price_upper_range = 100000000;
+  //   } else {
+  //     if (budgetarr.includes('Below ₹3,000')) {
+  //       price_lower_range = 0;
+  //       price_upper_range = 300000;
+  //       if (budgetarr.includes('Above ₹10,000')) {
+  //         price_upper_range = null;
+  //       } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+  //         price_upper_range = 1000000;
+  //       } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
+  //         price_upper_range = 600000;
+  //       }
+  //       price_set = true;
+  //     }
+  //     if (budgetarr.includes('Above ₹10,000')) {
+  //       price_upper_range = 100000000;
+  //       price_lower_range = 1000000;
+  //       if (budgetarr.includes('Below ₹3,000')) {
+  //         price_lower_range = 0;
+  //       } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
+  //         price_lower_range = 300000;
+  //       } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+  //         price_lower_range = 600000;
+  //       }
+  //       price_set = true;
+  //     }
+  //     if (!price_set) {
+  //       if (budgetarr.includes('₹3,000 - ₹6,000')) {
+  //         price_lower_range = 300000;
+  //         if (budgetarr.includes('₹6,000 - ₹10,000')) {
+  //           price_upper_range = 1000000;
+  //         } else price_upper_range = 600000;
+  //       } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+  //         price_lower_range = 600000;
+  //         if (budgetarr.includes('Above ₹10,000')) {
+  //           price_upper_range = 100000000;
+  //         } else price_upper_range = 1000000;
+  //       }
+  //     }
+  //   }
 
-    setViewMoreStatus(false);
-    axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=0', {
-        cities: [props.selectedBooking.city],
-        // "check_in": "2022-02-01",
-        // "check_out": "2022-02-04",
-        check_in: props.selectedBooking.check_in,
-        check_out: props.selectedBooking.check_out,
-        accommodation_types: type,
-        price_lower_range: price_lower_range,
-        price_upper_range: price_upper_range,
-        number_of_adults: props.selectedBooking.pax.number_of_adults,
-        number_of_children: props.selectedBooking.pax.number_of_children,
-        number_of_infants: props.selectedBooking.pax.number_of_infants,
-      })
-      .then((res) => {
-        setUpdateLoadingState(false);
-        if (res.data.results.length) {
-          setNoResults(false);
-          let options = [];
-          for (var i = 0; i < res.data.results.length; i++) {
-            if (res.data.results[i].images.length > 3)
-              if (res.data.results[i].name !== props.selectedBooking.name)
-                //rmeove
-                options.push(
-                  <Accommodation
-                    selectedBooking={props.selectedBooking}
-                    tailored_id={props.tailored_id}
-                    updateLoadingState={updateLoadingState}
-                    booking_id={props.selectedBooking.id}
-                    itinerary_id={props.selectedBooking.itinerary_id}
-                    accommodation_id={res.data.results[i].id}
-                    room_type={res.data.results[i].live_data.roomtypeName}
-                    pricing_type={
-                      res.data.results[i].live_data.includeBreakfast
-                        ? 'CP'
-                        : 'EP'
-                    }
-                    _updateBookingHandler={_updateBookingHandler}
-                    type={res.data.results[i].accommodation_type}
-                    review_score={res.data.results[i].live_data.reviewScore}
-                    review_count={res.data.results[i].live_data.reviewCount}
-                    key={i}
-                    name={res.data.results[i].name}
-                    description={res.data.results[i].description}
-                    location={res.data.results[i].location}
-                    star={res.data.results[i].star_category}
-                    cost={Math.ceil(
-                      res.data.results[i].live_data.dailyRate / 100
-                    )}
-                    images={res.data.results[i].images}
-                    includeBreakfast={
-                      res.data.results[i].live_data.includeBreakfast
-                    }
-                  ></Accommodation>
-                );
-          }
-          if (res.data.next) {
-            setViewMoreStatus(true);
-            setOffset(20);
-          } else {
-            setViewMoreStatus(false);
-            setOffset(0);
-          }
-          setOptionsJSX(options);
-        } else {
-          setNoResults(true);
-          setOffset(0);
-          setViewMoreStatus(false);
-          setOptionsJSX([]);
-        }
-        setLoading(false);
-        // setUpdateLoadingState(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
-  };
+  //   setViewMoreStatus(false);
+  //   axiosaccommodationinstance
+  //     .post('/?limit=' + limit + '&offset=0', {
+  //       cities: [props.selectedBooking.city],
+  //       // "check_in": "2022-02-01",
+  //       // "check_out": "2022-02-04",
+  //       check_in: props.selectedBooking.check_in,
+  //       check_out: props.selectedBooking.check_out,
+  //       accommodation_types: type,
+  //       price_lower_range: price_lower_range,
+  //       price_upper_range: price_upper_range,
+  //       number_of_adults: props.selectedBooking.pax.number_of_adults,
+  //       number_of_children: props.selectedBooking.pax.number_of_children,
+  //       number_of_infants: props.selectedBooking.pax.number_of_infants,
+  //     })
+  //     .then((res) => {
+  //       setUpdateLoadingState(false);
+  //       if (res.data.results.length) {
+  //         setNoResults(false);
+  //         let options = [];
+  //         for (var i = 0; i < res.data.results.length; i++) {
+  //           if (res.data.results[i].images.length > 3)
+  //             if (res.data.results[i].name !== props.selectedBooking.name)
+  //               //rmeove
+  //               options.push(
+  //                 <Accommodation
+  //                   selectedBooking={props.selectedBooking}
+  //                   tailored_id={props.tailored_id}
+  //                   updateLoadingState={updateLoadingState}
+  //                   booking_id={props.selectedBooking.id}
+  //                   itinerary_id={props.selectedBooking.itinerary_id}
+  //                   accommodation_id={res.data.results[i].id}
+  //                   room_type={res.data.results[i].live_data.roomtypeName}
+  //                   pricing_type={
+  //                     res.data.results[i].live_data.includeBreakfast
+  //                       ? 'CP'
+  //                       : 'EP'
+  //                   }
+  //                   _updateBookingHandler={_updateBookingHandler}
+  //                   type={res.data.results[i].accommodation_type}
+  //                   review_score={res.data.results[i].live_data.reviewScore}
+  //                   review_count={res.data.results[i].live_data.reviewCount}
+  //                   key={i}
+  //                   name={res.data.results[i].name}
+  //                   description={res.data.results[i].description}
+  //                   location={res.data.results[i].location}
+  //                   star={res.data.results[i].star_category}
+  //                   cost={Math.ceil(
+  //                     res.data.results[i].live_data.dailyRate / 100
+  //                   )}
+  //                   images={res.data.results[i].images}
+  //                   includeBreakfast={
+  //                     res.data.results[i].live_data.includeBreakfast
+  //                   }
+  //                 ></Accommodation>
+  //               );
+  //         }
+  //         if (res.data.next) {
+  //           setViewMoreStatus(true);
+  //           setOffset(20);
+  //         } else {
+  //           setViewMoreStatus(false);
+  //           setOffset(0);
+  //         }
+  //         setOptionsJSX(options);
+  //       } else {
+  //         setNoResults(true);
+  //         setOffset(0);
+  //         setViewMoreStatus(false);
+  //         setOptionsJSX([]);
+  //       }
+  //       setLoading(false);
+  //       // setUpdateLoadingState(false);
+  //     })
+  //     .catch((err) => {
+  //       setLoading(false);
+  //     });
+  // };
 
   const _newUpdateBookingHandler = ({
     booking_id,
@@ -425,6 +440,9 @@ const Booking = (props) => {
         setMoreLoadingState(false);
         localStorage.setItem('tbo_trace_id', res.data.TraceId);
         // const flights
+        if (res.data.search && res.data.search.airline_names) {
+                        setAirlineNames(['All',...res.data.search.airline_names])
+          }
         let options = optionsJSX.slice();
         if (res.data.Results.length) {
           for (var i = 0; i < res.data.Results.length; i++) {
@@ -472,6 +490,10 @@ const Booking = (props) => {
             setHideBookingModal={props.setHideBookingModal}
             showFilter={showFilter}
             setShowFilter={setShowFilter}
+            filtersState={filtersState}
+            setFiltersState={setFiltersState}
+            airlineNames={airlineNames}
+            setAirlineNames={setAirlineNames}
             setHideFlightModal={props.setHideFlightModal}
             text={props.selectedBooking?.name}
           ></SectionOne>
@@ -560,7 +582,7 @@ const Booking = (props) => {
                 </p>
               ) : null}
             </ContentContainer>
-            {/* {!isPageWide && (
+            {!isPageWide && (
               <>
                 <Floating>
                   <FaFilter
@@ -579,7 +601,7 @@ const Booking = (props) => {
                   />
                 </FloatingView>
               </>
-            )} */}
+            )}
           </GridContainer>
         </Drawer>
       </div>

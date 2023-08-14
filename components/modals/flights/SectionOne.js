@@ -63,16 +63,19 @@ const P = styled.div`
 `;
 
 const Item = styled.div`
-  border: 2px solid #d0d5dd;
   font-size: 14px;
   cursor: pointer;
   padding: 3px 0;
-  text-align : center;
+  text-align: center;
   border-radius: 10px;
-  &:hover {
-    background: #01202b;
-    border: 2px solid #01202b;
+  background: ${(props) => (props.isSelected ? "#01202b" : "white")};
+  border: ${(props) =>
+    props.isSelected ? "2px solid #01202b" : " 2px solid #d0d5dd"};
+  color: ${(props) => (props.isSelected ? "white" : "black")};
 
+  &:hover {
+    background: #01202bcf;
+    border: 2px solid #01202bcf;
     color: white;
   }
   cursor: pointer;
@@ -97,6 +100,10 @@ const Section = (props) => {
     console.log(e)
   }
 
+  const _handleFilterChange = (key, value) => {
+    props.setFiltersState(prev=>{return {...prev , [key] : value}})
+  }
+
   const FiltersSection = (
     <FiltersContainer>
       <FlexBox>
@@ -104,7 +111,12 @@ const Section = (props) => {
           <P>Departure in</P>
           <ItemContainer>
             {ItemArr.map((e) => (
-              <Item>{e}</Item>
+              <Item
+                onClick={() => _handleFilterChange("departure_time_period", e)}
+                isSelected={props.filtersState.departure_time_period === e}
+              >
+                {e}
+              </Item>
             ))}
           </ItemContainer>
         </div>
@@ -112,7 +124,12 @@ const Section = (props) => {
           <P>Reach by</P>
           <ItemContainer>
             {ItemArr.map((e) => (
-              <Item>{e}</Item>
+              <Item
+                onClick={() => _handleFilterChange("arrival_time_period", e)}
+                isSelected={props.filtersState.arrival_time_period === e}
+              >
+                {e}
+              </Item>
             ))}
           </ItemContainer>
         </div>
@@ -123,26 +140,32 @@ const Section = (props) => {
       <DropDownContainer>
         <div style={{ width: "15rem" }}>
           <DropDown
-            onChange={(e) => _changeAirlineHandler(e, "query_type")}
+            onChange={(e) => {
+              if (e.target.value !== "All")
+                _handleFilterChange("airline_name", e.target.value);
+              else _handleFilterChange("airline_name", "");
+            }}
             height="35px"
-            label="All"
+            label="Select"
+            labelStyle={{ paddingLeft: "20px" }}
+            noFloatingabel
           >
-            {DropDownQueries.map((e, i) => (
+            {props.airlineNames.map((e, i) => (
               <option
                 style={{ borderBottom: "1px solid #e6e6e6" }}
                 key={i}
-                value={e.value}
+                value={e}
               >
-                {e.text}
+                {e}
               </option>
             ))}
           </DropDown>
         </div>
 
-        {isSelected ? (
+        {props.filtersState.non_stop_flights ? (
           <div
             onClick={() => {
-              setIsSelected(false);
+              _handleFilterChange("non_stop_flights", false);
             }}
           >
             <ImCheckboxChecked style={{ display: "inline" }} /> Nonstop
@@ -150,7 +173,7 @@ const Section = (props) => {
         ) : (
           <div
             onClick={() => {
-              setIsSelected(true);
+              _handleFilterChange("non_stop_flights", true);
             }}
           >
             <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
@@ -173,7 +196,7 @@ const Section = (props) => {
         <Text>{props.text}</Text>
       </Heading>
 
-      {/* {isPageWide ? FiltersSection : <></>} */}
+      {isPageWide ? FiltersSection : <></>}
 
       {!isPageWide && (
         <Drawer
@@ -199,7 +222,18 @@ const Section = (props) => {
 
             <ButtonContainer>
               <Button
-                onclick={() => console.log("")}
+                onclick={() =>
+                {
+                  props.setFiltersState({
+                    order: "asc",
+                    non_stop_flights: false,
+                    departure_time_period: "",
+                    arrival_time_period: "",
+                    airline_name: "",
+                  });
+props.setShowFilter(false);
+                }
+                }
                 padding="0.7rem 3rem"
                 borderRadius="0.5rem"
                 fontWeight="600"
@@ -207,7 +241,7 @@ const Section = (props) => {
                 Cancel
               </Button>
               <Button
-                onclick={() => console.log("")}
+                onclick={() => props.setShowFilter(false)}
                 bgColor={"#F7E700"}
                 padding="0.7rem 3rem"
                 borderRadius="0.5rem"

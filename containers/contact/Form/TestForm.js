@@ -215,7 +215,7 @@ export default function SignUp() {
             <DropDown
               onChange={(e) => _changeDetailsHandler(e, "query_type")}
               label="Topic of interest"
-              labelStyle={{ paddingLeft: "20px" }}
+              // labelStyle={{ paddingLeft: "20px" }}
               height="60px"
               error={checkEmpty == "query_type"}
               helperText={"Please Select Your Interest"}

@@ -26,14 +26,10 @@ const DropDownIcon = styled.div`
   position: absolute;
   height: 1rem;
   right: 5px;
-  top: 50%;
-  // transform: ;
-  transform: rotate(0deg) translate(0%, -50%);
+  top: 50;
+  transform: rotate(0deg);
   transition: all 0.3s ease-out;
-  transform: ${(props) =>
-    props.rotate
-      ? `rotate(180deg) translate(0%,50%)`
-      : "rotate(0deg) translate(0%, -50%)"};
+  transform: ${(props) => props.rotate ? `rotate(180deg)` : ""};
 `;
 const Children = styled.div`
   position: absolute;
@@ -44,7 +40,6 @@ const Children = styled.div`
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
   background: white;
   width: 100%;
-
   option {
     display: flex;
     align-items: center;
@@ -67,16 +62,14 @@ const Label = styled.label`
   pointer-events: none;
   font-size: ${(props) => props.fontSize};
   color: ${(props) => (props.error ? "red !important" : "black")};
-  left: 20px;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 4%;
+  top: 50;
   white-space: nowrap;
-  // overflow: hidden;
   transition: 0.2s ease all;
   color: ${(props) => (props.error ? "red !important" : "black")};
   ${(props) =>
     props.selected &&
-    "top: -4px;left: 10px;font-size: 11px;padding-inline: 5px;background: white;"}
+    "top: 0;left: 10%;font-size: 11px;padding-inline: 5px;background: white;transform: translate(-50%, -50%);"}
 `;
 const CountryCodeDropdown = (props) => {
   const [open, setOpen] = useState(false);
@@ -109,10 +102,14 @@ const CountryCodeDropdown = (props) => {
         width={props.width}
         style={props.labelStyle}
       >
-        <Label error={props.error} selected={selected} fontSize={props.fontSize}>
+        <Label
+          error={props.error}
+          selected={selected}
+          fontSize={props.fontSize}
+        >
           {props.label}
         </Label>
-        {selected}
+        <Label>{selected}</Label>
         <DropDownIcon rotate={open}>
           <BsCaretDownFill />
         </DropDownIcon>
