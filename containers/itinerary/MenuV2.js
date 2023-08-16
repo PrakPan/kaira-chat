@@ -10,6 +10,7 @@ import { Box } from '@mui/material';
 import GITSummaryContainer from './booking1/gittailored/Index';
 import SummaryContainer from './booking1/TailoredDetails';
 import axiosPoiCityInstance from '../../services/poi/city';
+import axiosLeadChat from "../../services/leads/chat.js";
 import Booking from './booking1/CheckLoginWrapper';
 import Register from './register/Index';
 import Breif from './breif/NewIndex';
@@ -51,6 +52,10 @@ import MakeYourPersonalised from '../../components/MakeYourPersonalised';
 import useFieldOfView from '../../hooks/useFieldOfView';
 import useInView from '../../hooks/useInView';
 import { getCityDetails } from './getCityDetails';
+import NotificationPopup from '../../components/ui/NotificationPopup';
+import ImageLoader from '../../components/ImageLoader';
+import { connect } from 'react-redux';
+import { openNotification } from '../../store/actions/notification';
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -205,8 +210,8 @@ function TabPanel(props) {
 
 const useStyles = {
   root: `
-  flex-grow-1
-  `,
+    flex-grow-1
+    `,
 };
 
 const SimpleTabsV2 = (props) => {
@@ -247,11 +252,12 @@ const SimpleTabsV2 = (props) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showBookingTimer, setShowBookingTimer] = useState(true);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
-
+  const [citydatadone, setcitydatadone] = useState(false);
+  const [CityData, setCityData] = useState();
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
-
+  const [loading , setLoading] = useState(false)
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -276,142 +282,25 @@ const SimpleTabsV2 = (props) => {
     setShowpayment(false);
   };
 
-  const _setLocationHandler = (event) => {
-    window.scrollTo(0, window.innerHeight / 2);
-    setLocation(event.target.id);
-  };
-
-  const handleChange = (event, newValue) => {
-    // console.log('nw', event, newValue)
-    const tabs = ['brief', 'itinerary', 'booking'];
-    ga.event({
-      action: 'Itinerary-tabs-' + tabs[newValue],
-      params: {},
-    });
-    if (isPageWide) window.scrollTo(0, window.innerHeight);
-    else window.scrollTo(0, window.innerHeight / 2);
-
-    if (newValue === 1) {
-    }
-    if (newValue === 2) {
-      props.getPaymentHandler();
-      if (timerValid) {
-        setShowBookingTimer(true);
-        setBlurBooking(true);
-      }
-      if (isPageWide) window.scrollTo(0, window.innerHeight);
-      else window.scrollTo(0, window.innerHeight / 2);
-    }
-    setValue(newValue);
-  };
-  const openBookingDesktop = () => {
-    ga.event({
-      action: 'Itinerary-tabs-Book_Now',
-      params: {
-        Key: '',
-      },
-    });
-    window.scrollTo(0, window.innerHeight);
-    props.getPaymentHandler();
-    setValue(2);
-  };
-  const openBookingMobile = () => {
-    ga.event({
-      action: 'Itinerary-tabs-Book_Now',
-      params: {
-        key: '',
-      },
-    });
-    window.scrollTo(0, window.innerHeight / 2);
-
-    setValue(2);
-  };
-  const replaceLatLong = (source, destination) => ({
-    ...source,
-    lat: destination.lat,
-    long: destination.long,
-  });
   //Location tabs for mobile
-  let locationsArr = [];
+
   let RoutesData = [];
   let TransfersData = [];
+  let CityDataTemp = [];
   let totalcityslabs = 0;
-  console.log('brief idssss', props.breif);
-  if (props.breif)
-    if (props.breif.city_slabs)
-      for (var j = 0; j < props.breif.city_slabs.length; j++) {
-        if (!props.breif.city_slabs[j].is_trip_terminated) {
-          totalcityslabs += 1;
-        }
-      }
-  const locationtabwidth = 100 / totalcityslabs + 'vw';
-  if (props.breif)
-    if (props.breif.city_slabs)
-      if (props.routes) {
-        // console.log('inside routes');
-        // console.log(props.routes);
 
-        async function processRoutes(props) {
-          for (var i = 0; i < props.routes.length; i++) {
-            // console.log('routes one', props.routes[i]);
-            if (props.routes[i].element_type !== 'transfer') {
-              if (props.routes[i].long) {
-                // console.log(props.routes[i].long);
-                RoutesData.push(props.routes[i]);
-              } else {
-                if (props.routes[i].city_id) {
-                  try {
-                    const data = await getCityDetails(props.routes[i].city_id);
-                    // console.log('fetchdata data');
-                    // console.log(props.routes[i], data);
-                    const updatedRoutes = replaceLatLong(props.routes[i], data);
-                    RoutesData.push(updatedRoutes);
-                    // console.log('fetchdata data in', updatedRoutes);
-                  } catch (error) {
-                    console.error(error);
-                  }
-                }
-              }
-            } else {
-              TransfersData.push(props.routes[i]);
-            }
-          }
-          console.log('routes finished');
-          console.log(RoutesData);
-          console.log(TransfersData);
-        }
+  totalcityslabs = newFunction(
+    props,
+    totalcityslabs,
+    citydatadone,
+    CityDataTemp,
+    setcitydatadone,
+    setCityData,
+    CityData,
+    RoutesData,
+    TransfersData
+  );
 
-        processRoutes(props);
-      }
-  for (var i = 0; i < props?.breif?.city_slabs?.length; i++) {
-    if (!props.breif.city_slabs[i].is_trip_terminated) {
-      locationsArr.push(
-        <Location
-          id={i}
-          style={{ minWidth: locationtabwidth }}
-          className={
-            'font-opensans center-div border-top ' +
-            (location == i ? 'bg-yellow font-bold' : 'bg-white')
-          }
-          onClick={(event) => _setLocationHandler(event)}
-        >
-          {props.breif.city_slabs[i].city_name}
-        </Location>
-      );
-    }
-  }
-
-  useEffect(() => {
-    if (props.itineraryReleased) {
-      setShowItineraryTimer(false);
-      setShowBookingTimer(false);
-      setBlurBooking(false);
-      setBlurItinerary(false);
-      setTimerValid(false);
-    } else {
-    }
-    return () => {};
-  }, [props.itineraryDate, props.itineraryReleased, props.timeRequired]);
   useLayoutEffect(() => {
     const handleScroll = () => {
       const currentPos = window.scrollY;
@@ -439,63 +328,103 @@ const SimpleTabsV2 = (props) => {
   // ) {
   //   ClaimItinary(props.id, props.token);
   // }
+  
+ const _GetInTouch = () => {
+   setLoading(true);
+   
+   if (props.token) {
+     
+   const email = localStorage.getItem("email");
+   const name = localStorage.getItem("name");
+   const phone = localStorage.getItem("phone");
+   axiosLeadChat
+     .post("/", {
+       email: email,
+       name: name,
+       phone: phone,
+       source: "Itinerary",
+       query_message: `I need help in completing booking.`,
+     })
+     .then((res) => {
+       //  props.getPaymentHandler();
+       props.openNotification({
+           type: "sucess",
+         text: res.data.message,
+         heading: "Request received.",})
+      //  setIsShow(true);
+       setLoading(false);
+     })
+     .catch((err) => {
+       // setUpdateLoadingState(false);
+       if (err.response) {
+         // The request was made and the server responded with a status code
+         // that falls out of the range of 2xx
+         // The response headers
+       }
+       props.openNotification({
+         type: "error",
+         text: "There seems to be a problem, please try again!",
+         heading: "Error!",
+       });
+      //  setIsShow(false);
+       setLoading(false);
+      //  window.alert("There seems to be a problem, please try again!", err);
+       
+     });
+   } else {
+     setLoading(false)
+     setShowLoginModal(true)
+   }
+   
+ };
+
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
   const isInView = useInView('Booking_container');
   const [activeItem, setActiveItem] = useState(1);
-  const items = props?.activityBookings
-    ? [
+  const items =  [
         { id: 1, label: 'Brief', link: 'Brief' },
         { id: 2, label: 'Itinerary', link: 'Itenary' },
-        // { id: 3, label: 'Flights',link: 'Flights' },
-        { id: 3, label: 'Stays', link: 'Stays' },
-        { id: 4, label: 'Transfers', link: 'Transfers' },
-        {
-          id: 5,
-          label: 'Activities',
-          link: 'Activities',
-        },
-      ]
-    : [
-        { id: 1, label: 'Brief', link: 'Brief' },
-        { id: 2, label: 'Itinerary', link: 'Itenary' },
-        // { id: 3, label: 'Flights',link: 'Flights' },
-        { id: 3, label: 'Stays', link: 'Stays' },
-        { id: 4, label: 'Transfers', link: 'Transfers' },
-        // {
-        //   id: 6,
-        //   label: 'Book Now',
-        //   link: 'staysBooking',
-        // },
-      ];
 
+        { id: 3, label: 'Stays', link: 'Stays' },
+    ]
+  if (props.transferBookings) {
+  items.push({ id: 4, label: "Transfers", link: "Transfers" });
+  }
+  if (props.activityBookings) {
+    items.push({
+      id: 5,
+      label: "Activities",
+      link: "Activities",
+    });
+  }
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery('(min-width:1148px)');
   const handleSelect = (itemId) => {
     setActiveItem(itemId);
   };
-  const _previewItineraryHandler = () => {
-    setBlurItinerary(false);
-    setValue(1);
-  };
-  const _minimiseTimerHandler = () => {
-    setBlurItinerary(false);
-    setMinimiseTimer(true);
-  };
+
+  // const _minimiseTimerHandler = () => {
+  //   setBlurItinerary(false);
+  //   setMinimiseTimer(true);
+  // };
   const _minimiseBookingTimerHandler = () => {
     setMinimiseBookingTimer(true);
   };
 
   const _handlePoiEditModalOpen = (poi) => {
-    ga.event({
-      action: 'Itinerary-poiedit-open',
-      params: {
-        poi: poi.name,
-        city: poi.city_id,
-      },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-poiedit-open',
+          params: {
+            poi: poi.name,
+            city: poi.city_id,
+          },
+        });
+    }
     setSelectedPoi({
       name: poi.name,
       city_id: poi.city_id,
@@ -543,82 +472,15 @@ const SimpleTabsV2 = (props) => {
     font-family: sans-serif;
   `;
 
-  // const getdayId = (id) => {
-  //   return props.itinerary?.day_slabs[id]?.slab_id;
-  // };
-  // const getdateId = (id) => {
-  //   return props.itinerary?.day_slabs[id]?.slab;
-  // };
-  // const Locationlatlong = [];
-  // useEffect(() => {
-  //   if (RoutesData.length >= 1) {
-  //     console.log('itsrendering');
-  //     for (var i = 0; i < RoutesData.length; i++) {
-  //       var postion = props.breif.city_slabs[i + 1];
-
-  //       // console.log(`response city data${JSON.stringify(citydetails)}`);
-  //       // console.log(`lat,long${citydetails.lat}`);
-  //       if (RoutesData[i].duration && RoutesData[i].duration !== '0') {
-  //         Locationlatlong.push({
-  //           dayId: getdayId(
-  //             RoutesData[i].day_slab_location.start_day_slab_index
-  //           ),
-  //           cityData: postion,
-  //           id: RoutesData[i].gmaps_place_id,
-  //           city_id: RoutesData[i].city_id,
-  //           lat: RoutesData[i].lat,
-  //           long: RoutesData[i].long,
-  //           name: RoutesData[i].city_name,
-  //           duration: RoutesData[i].duration,
-  //           color: RoutesData[i].color,
-  //           date: getdateId(
-  //             RoutesData[i].day_slab_location.start_day_slab_index
-  //           ),
-  //         });
-  //       }
-  //     }
-  //   } else {
-  //     for (var i = 0; i < props.breif.city_slabs.length; i++) {
-  //       var postion = props.breif.city_slabs[i];
-
-  //       // console.log(`response city data${JSON.stringify(citydetails)}`);
-  //       // console.log(`lat,long${citydetails.lat}`);
-  //       if (
-  //         !postion.is_departure_only &&
-  //         !postion.is_trip_terminated &&
-  //         postion.duration &&
-  //         postion.duration !== '0'
-  //       ) {
-  //         Locationlatlong.push({
-  //           dayId: getdayId(postion.day_slab_location.start_day_slab_index),
-  //           cityData: postion,
-  //           id: postion.gmaps_place_id,
-  //           city_id: postion.city_id,
-  //           lat: postion.lat ?? '18.5204',
-  //           long: postion.long ?? '73.8567',
-  //           name: postion.city_name,
-  //           duration: postion.duration,
-  //           color: postion.color,
-  //           date: getdateId(postion.day_slab_location.start_day_slab_index),
-  //         });
-  //       }
-  //     }
-  //   }
-  //   setmapArray(true);
-  // }, []);
-
-  // console.log(Locationlatlong);
-  console.log('payment', props.payment);
-  console.log('isInView', isInView);
   return (
-    <div className={classes.root} style={{ paddingTop: '20px' }}>
+    <div className={classes.root} style={{ paddingTop: "20px" }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
           <Navigation items={items} BarName="TabsName" />
         ) : (
           <ScrollableMenuTabs
             icons={false}
-            offset={isDesktop ? '0px' : '0px'}
+            offset={isDesktop ? "0px" : "0px"}
             items={items}
             BarName="TabsName"
           />
@@ -632,17 +494,19 @@ const SimpleTabsV2 = (props) => {
                 <div className="text-[0.725rem]">
                   {props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
-                    ? 'Per Person'
+                    ? "Per Person"
                     : props.payment?.is_estimated_price
                     ? `${
-                        props.payment.total_cost == 0 ? '' : 'Estimated Price'
+                        props.payment.total_cost == 0
+                          ? "No Bookings"
+                          : "Estimated Price"
                       }`
-                    : 'Total Cost'}
+                    : "Total Cost"}
                 </div>
                 {props.payment ? (
                   <div>
                     <span className="font-bold">
-                      ₹{' '}
+                      ₹{" "}
                       {props?.payment?.pay_only_for_one ||
                       props?.payment?.show_per_person_cost
                         ? getIndianPrice(
@@ -657,7 +521,7 @@ const SimpleTabsV2 = (props) => {
                               Math.round(props.payment.discounted_cost) / 100
                             )
                           )}
-                      {'/-'}
+                      {"/-"}
                     </span>
                   </div>
                 ) : null}
@@ -699,7 +563,7 @@ const SimpleTabsV2 = (props) => {
                         width="13rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement('Stays-Head')}
+                        onclick={() => scrollToElement("Stays-Head")}
                         onclickparams={null}
                       >
                         Proceed to Book
@@ -715,7 +579,7 @@ const SimpleTabsV2 = (props) => {
                         width="9rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement('Stays-Head')}
+                        onclick={() => scrollToElement("Stays-Head")}
                       >
                         Add Hotels
                       </Button>
@@ -732,7 +596,7 @@ const SimpleTabsV2 = (props) => {
                         width="11rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
-                        onclick={() => scrollToElement('Stays-Head')}
+                        onclick={() => scrollToElement("Stays-Head")}
                       >
                         Proceed to Book
                       </Button>
@@ -747,9 +611,27 @@ const SimpleTabsV2 = (props) => {
                         width="12rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => setNewitinerary(!Newitinerary)}
+                        onclick={() => _GetInTouch()}
+                        loading={loading}
                       >
-                        Craft a new trip!
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
                       </Button>
                     </div>
                   )
@@ -762,7 +644,7 @@ const SimpleTabsV2 = (props) => {
                     width="9rem"
                     borderRadius="10px"
                     bgColor="#F7E700"
-                    onclick={() => scrollToElement('Stays-Head')}
+                    onclick={() => scrollToElement("Stays-Head")}
                   >
                     View Bookings
                   </Button>
@@ -772,20 +654,8 @@ const SimpleTabsV2 = (props) => {
           </div>
         </div>
       )}
-
-      {/* {!isPageWide && value !== 2 ? (
-          <PriceBannerMobile
-            hasUserPaid={props.payment ? props.payment.paid_user : false}
-            is_registration_needed={
-              props.payment ? props.payment.is_registration_needed : false
-            }
-            openBooking={openBookingMobile}
-            payment={props.payment}
-          ></PriceBannerMobile>
-        ) : null} */}
-      <div id={items[0].link}>
-        {/* {mapArray ? ( */}
-        {
+      <div id={"Brief"}>
+        {citydatadone && (
           <Breif
             plan={props.plan}
             routesData={RoutesData}
@@ -793,63 +663,28 @@ const SimpleTabsV2 = (props) => {
             routes={props.routes}
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}
-            // Locationlatlong={Locationlatlong}
-            // hours={hours}
-            // minutes={minutes}
-            // seconds={seconds}
+            CityData={CityData}
             itinerary={props.itinerary}
             breif={props.breif}
-            // hideTimer={minimiseTimer}
-            // timeRequired={props.timeRequired}
-            // itineraryReleased={props.itineraryReleased}
-            // itineraryDate={props.itineraryDate}
-            // showTimer={showItineraryTimer}
-            // _hideTimerHandler={_minimiseTimerHandler}
-            // blur={blurItinerary}
           ></Breif>
-        }
-
-        {/* ) : null} */}
+        )}
       </div>
-      {/* // for 0000000000000000000000  mobile */}
       {isPageWide ? null : (
         <>
-          <div id={items[1].link}>
+          <div id={"Itenary"}>
             <NewItenaryDBDMob
               plan={props.plan}
               payment={props.payment}
               token={props.token}
               setShowLoginModal={setShowLoginModal}
-              // is_registration_needed={
-              //   props.payment ? props.payment.is_registration_needed : false
-              // }
-              // selectedPoi={selectedPoi}
-              // user_email={props.user_email}
-              // is_preview={props.preview}
-              // is_stock={props.is_stock}
-              // setShowPoiModal={_handlePoiEditModalOpen}
-              // traveleritinerary={props.traveleritinerary}
-              // day_slabs={props.itinerary.day_slabs}
-              // hours={hours}
-              // minutes={minutes}
-              // seconds={seconds}
-              // timeRequired={props.timeRequired}
-              // hideTimer={minimiseTimer}
-              // itineraryDate={props.itineraryDate}
-              // showTimer={false}
-              // _hideTimerHandler={_minimiseTimerHandler}
-              // blur={false}
-              // location_selected={location}
               city_slabs={props?.breif?.city_slabs}
               itinerary={props.itinerary}
               setItinerary={props.setItinerary}
               getPaymentHandler={props.getPaymentHandler}
-              // newData={props.newData}
-              // demoitinerary={props.demoitinerary}
             ></NewItenaryDBDMob>
           </div>
 
-          <div id={items[2].link}>
+          <div id={"Stays"}>
             <HotelsBooking
               setShowLoginModal={setShowLoginModal}
               plan={props.plan}
@@ -870,8 +705,9 @@ const SimpleTabsV2 = (props) => {
               booking={props.booking}
             ></HotelsBooking>
           </div>
-          {props.transferBookings && (
-            <div id={items[3].link}>
+
+          {props.transferBookings ? (
+            <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
                 plan={props.plan}
@@ -896,9 +732,12 @@ const SimpleTabsV2 = (props) => {
                 transferBookings={props.transferBookings}
               />
             </div>
+          ) : (
+            <></>
           )}
+
           {props.activityBookings && (
-            <div id={items[4].link}>
+            <div id={"Activities"}>
               <ActivityBookings
                 plan={props.plan}
                 hasUserPaid={
@@ -933,25 +772,17 @@ const SimpleTabsV2 = (props) => {
             closeIcon={true}
             onCLose={() => setShowFooterBannerMobile(false)}
             onHide={_handleLoginClose}
-            borderRadius={'12px'}
+            borderRadius={"12px"}
           >
             {props.payment ? (
               <div className=" ">
-                {/* <BookingContainer
-        payment={props.payment}
-        plan={props.plan}
-        stayBookings={props.stayBookings}
-        flightBookings={props.flightBookings}
-        activityBookings={props.activityBookings}
-        transferBookings={props.transferBookings}
-      ></BookingContainer> */}
                 <RxCross2
                   style={{
-                    position: 'absolute',
-                    top: '15px',
-                    right: '15px',
-                    fontSize: '1.5rem',
-                    cursor: 'pointer',
+                    position: "absolute",
+                    top: "15px",
+                    right: "15px",
+                    fontSize: "1.5rem",
+                    cursor: "pointer",
                   }}
                   onClick={() => setShowFooterBannerMobile(false)}
                 />
@@ -976,6 +807,7 @@ const SimpleTabsV2 = (props) => {
                     token={props.token}
                     setShowLoginModal={setShowLoginModal}
                     plan={props.plan}
+                    _GetInTouch={() => _GetInTouch()}
                   ></SummaryContainer>
                 ) : (
                   // width 27vw
@@ -1026,7 +858,7 @@ const SimpleTabsV2 = (props) => {
         >
           <div>
             {isPageWide ? (
-              <div id={items[1].link}>
+              <div id={"Itenary"}>
                 {props?.itinerary && (
                   <NewItenaryMain
                     setShowLoginModal={setShowLoginModal}
@@ -1041,103 +873,26 @@ const SimpleTabsV2 = (props) => {
                 )}
               </div>
             ) : (
-              <div id={items[1].link}>
+              <div id={"Itenary"}>
                 <NewItenaryDBDMob
                   plan={props.plan}
                   payment={props.payment}
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
-                  // is_registration_needed={
-                  //   props.payment ? props.payment.is_registration_needed : false
-                  // }
-                  // selectedPoi={selectedPoi}
-                  // user_email={props.user_email}
-                  // is_preview={props.preview}
-                  // is_stock={props.is_stock}
-                  // setShowPoiModal={_handlePoiEditModalOpen}
-                  // traveleritinerary={props.traveleritinerary}
-                  // day_slabs={props.itinerary.day_slabs}
-                  // hours={hours}
-                  // minutes={minutes}
-                  // seconds={seconds}
-                  // timeRequired={props.timeRequired}
-                  // hideTimer={minimiseTimer}
-                  // itineraryDate={props.itineraryDate}
-                  // showTimer={false}
-                  // _hideTimerHandler={_minimiseTimerHandler}
-                  // blur={false}
-                  // location_selected={location}
                   city_slabs={props?.breif?.city_slabs}
                   itinerary={props.itinerary}
                   setItinerary={props.setItinerary}
-                  // newData={props.newData}
                   getPaymentHandler={props.getPaymentHandler}
-
-                  // demoitinerary={props.demoitinerary}
                 ></NewItenaryDBDMob>
               </div>
             )}
-            {/* {isPageWide ? (
-          <div id={items[1].link}>
-            <ItineraryContainer
-              is_registration_needed={
-                props.payment ? props.payment.is_registration_needed : false
-              }
-              selectedPoi={selectedPoi}
-              user_email={props.user_email}
-              is_preview={props.preview}
-              is_stock={props.is_stock}
-              setShowPoiModal={_handlePoiEditModalOpen}
-              traveleritinerary={props.traveleritinerary}
-              hideTimer={minimiseTimer}
-              timeRequired={props.timeRequired}
-              itineraryReleased={props.itineraryReleased}
-              itineraryDate={props.itineraryDate}
-              showTimer={false}
-              _hideTimerHandler={_minimiseTimerHandler}
-              blur={false}
-              city_slabs={props.breif.city_slabs}
-              itinerary={props.itinerary}
-              newData={props.newData}
-              demoitinerary={props.demoitinerary}
-            ></ItineraryContainer>
-          </div>
-        ) : (
-          <div id={items[1].link}>
-            <ItineraryContainerMobile
-              is_registration_needed={
-                props.payment ? props.payment.is_registration_needed : false
-              }
-              selectedPoi={selectedPoi}
-              user_email={props.user_email}
-              is_preview={props.preview}
-              is_stock={props.is_stock}
-              setShowPoiModal={_handlePoiEditModalOpen}
-              traveleritinerary={props.traveleritinerary}
-              day_slabs={props.itinerary.day_slabs}
-              hours={hours}
-              minutes={minutes}
-              seconds={seconds}
-              timeRequired={props.timeRequired}
-              hideTimer={minimiseTimer}
-              itineraryDate={props.itineraryDate}
-              showTimer={false}
-              _hideTimerHandler={_minimiseTimerHandler}
-              blur={false}
-              location_selected={location}
-              city_slabs={props.breif.city_slabs}
-              itinerary={props.itinerary}
-              newData={props.newData}
-              demoitinerary={props.demoitinerary}
-            ></ItineraryContainerMobile>
-          </div>
-        )} */}
+
             {isGroup ? (
-              <div id={items[2].link}>
+              <div id={"Stays"}>
                 <Register></Register>
               </div>
             ) : (
-              <div id={items[2].link}>
+              <div id={"Stays"}>
                 <HotelsBooking
                   setShowLoginModal={setShowLoginModal}
                   plan={props.plan}
@@ -1164,8 +919,8 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props.transferBookings && (
-              <div id={items[3].link}>
+            {props.transferBookings ? (
+              <div id={"Transfers"}>
                 <TransfersContainer
                   setShowLoginModal={setShowLoginModal}
                   plan={props.plan}
@@ -1192,9 +947,12 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props?.transferBookings}
                 />
               </div>
+            ) : (
+              <></>
             )}
+
             {props.activityBookings && (
-              <div id={items[4].link}>
+              <div id={"Activities"}>
                 <ActivityBookings
                   plan={props.plan}
                   hasUserPaid={
@@ -1228,14 +986,6 @@ const SimpleTabsV2 = (props) => {
               id="Booking_container"
               className="sticky top-[6rem] mt-40 ml-4"
             >
-              {/* <BookingContainer
-                  payment={props.payment}
-                  plan={props.plan}
-                  stayBookings={props.stayBookings}
-                  flightBookings={props.flightBookings}
-                  activityBookings={props.activityBookings}
-                  transferBookings={props.transferBookings}
-                ></BookingContainer> */}
               {!props.payment.is_registration_needed || true ? (
                 <SummaryContainer
                   setUserDetails={props.setUserDetails}
@@ -1256,6 +1006,7 @@ const SimpleTabsV2 = (props) => {
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
                   plan={props.plan}
+                  _GetInTouch={() => _GetInTouch()}
                 ></SummaryContainer>
               ) : (
                 // width 27vw
@@ -1295,97 +1046,21 @@ const SimpleTabsV2 = (props) => {
           ) : null}
         </SplitScreen>
       ) : null}
-
-      {/* {isGroup ? (
-          <div id={items[2].link}>
-            <Register></Register>
-          </div>
-        ) : (
-          <div id={items[2].link}>
-            <Booking
-              itinerary={props.itinerary}
-              _updateStayBookingHandler={props._updateStayBookingHandler}
-              _updateFlightBookingHandler={props._updateFlightBookingHandler}
-              hasUserPaid={props.payment ? props.payment.paid_user : false}
-              payment_status={router.query.payment_status}
-              plan={props.plan}
-              isDatePresent={props.isDatePresent}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              showTaxiModal={props.showTaxiModal}
-              setShowTaxiModal={props.setShowTaxiModal}
-              paymentLoading={props.paymentLoading}
-              budget={props.budget}
-              _deselectActivityBookingHandler={
-                props._deselectActivityBookingHandler
-              }
-              activityFlickityIndex={props.activityFlickityIndex}
-              _deselectFlightBookingHandler={
-                props._deselectFlightBookingHandler
-              }
-              flightFlickityIndex={props.flightFlickityIndex}
-              _deselectTransferBookingHandler={
-                props._deselectTransferBookingHandler
-              }
-              transferFlickityIndex={props.transferFlickityIndex}
-              stayFlickityIndex={props.stayFlickityIndex}
-              setStayFlickityIndex={props.setStayFlickityIndex}
-              selectingBooking={props.selectingBooking}
-              _deselectStayBookingHandler={props._deselectStayBookingHandler}
-              getPaymentHandler={props.getPaymentHandler}
-              flightLoading={props.flightLoading}
-              transferLoading={props.transferLoading}
-              cardUpdateLoading={props.cardUpdateLoading}
-              activityBookings={props.activityBookings}
-              flightBookings={props.flightBookings}
-              transferBookings={props.transferBookings}
-              stayBookings={props.stayBookings}
-              _selectTaxiHandler={props._selectTaxiHandler}
-              showFlightModal={props.showFlightModal}
-              setShowFlightModal={_handleFlighModalShow}
-              setHideFlightModal={_handleFlightModalClose}
-              user_email={props.user_email}
-              no_bookings={props.no_bookings}
-              traveleritinerary={props.traveleritinerary}
-              preview={props.preview}
-              id={props.id}
-              is_stock={props.is_stock}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              _updateBookingHandler={props._updateBookingHandler}
-              setShowBookingModal={() => props.setShowBookingModal(true)}
-              showBookingModal={props.showBookingModal}
-              setHideBookingModal={props.setHideBookingModal}
-              payment={props.payment}
-              booking={props.booking}
-              hours={hours}
-              minutes={minutes}
-              seconds={seconds}
-              timeRequired={props.timeRequired}
-              hideTimer={minimseBookingTimer}
-              showTimer={false}
-              itineraryDate={props.itineraryDate}
-              blur={false}
-              openItinerary={_previewItineraryHandler}
-              _handleTimerClose={_minimiseBookingTimerHandler}
-              setImagesHandler={props.setImagesHandler}
-            ></Booking>
-          </div>
-        )} */}
-
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
             <div className="text-sm">
               {props?.payment?.pay_only_for_one ||
               props?.payment?.show_per_person_cost
-                ? 'Per Person'
+                ? "Per Person"
                 : props.payment?.is_estimated_price
-                ? `${props.payment.total_cost == 0 ? '' : 'Estimated Price'}`
-                : 'Total Cost'}
+                ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                : "Total Cost"}
             </div>
             {props.payment ? (
               <div>
                 <span className="font-bold">
-                  ₹{' '}
+                  ₹{" "}
                   {props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
                     ? getIndianPrice(
@@ -1399,7 +1074,7 @@ const SimpleTabsV2 = (props) => {
                           Math.round(props.payment.discounted_cost) / 100
                         )
                       )}
-                  {'/-'}
+                  {"/-"}
                 </span>
               </div>
             ) : null}
@@ -1458,7 +1133,7 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => scrollToElement('Stays-Head')}
+                    onclick={() => scrollToElement("Stays-Head")}
                   >
                     Add Hotels
                   </Button>
@@ -1492,51 +1167,69 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => setNewitinerary(!Newitinerary)}
+                    loading={loading}
+                    onclick={() => _GetInTouch()}
                   >
-                    Craft a new trip!
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"20px"}
+                        width={"20px"}
+                        widthmobile={"20px"}
+                        leftalign
+                        url={"media/icons/login/customer-service-black.png"}
+                      />{" "}
+                      <span>Get in touch!</span>
+                    </div>
                   </Button>
                 </div>
               )
             ) : (
               <Button
-              color="#111"
-              fontWeight="600"
-              fontSize="0.85rem"
-              borderWidth="2px"
-              width="10rem"
-              borderRadius="8px"
-              bgColor="#f8e000"
-                    onclick={() => scrollToElement('Stays-Head')}
-                  >
-                    View Bookings
-                  </Button>
+                color="#111"
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="2px"
+                width="10rem"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                onclick={() => scrollToElement("Stays-Head")}
+              >
+                View Bookings
+              </Button>
             )
           ) : null}
         </div>
       </div>
-
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}
           itinerary_id={props.id}
           selectedPoi={selectedPoi}
           tailored_id={
-            props.booking ? props.booking[0]['tailored_itinerary'] : ''
+            props.booking ? props.booking[0]["tailored_itinerary"] : ""
           }
           _updatePaymentHandler={props._updatePaymentHandler}
-          setShowPoiModal={() => _handlePoiEditModalOpen({ name: 'kasol' })}
+          setShowPoiModal={() => _handlePoiEditModalOpen({ name: "kasol" })}
           showPoiModal={props.showPoiModal}
           setHidePoiModal={props.setHidePoiModal}
         ></PoiEditModal>
       ) : null}
-      {props.token && Newitinerary && (
+      {/* {props.token && Newitinerary && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
           onHide={() => setNewitinerary(false)}
           show={Newitinerary}
         />
-      )}
+      )} */}
       {/* <Accommodation show={true} ></Accommodation> */}
       <div className="width-[100%]">
         <LogInModal
@@ -1549,4 +1242,111 @@ const SimpleTabsV2 = (props) => {
   );
 };
 
-export default SimpleTabsV2;
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(mapStateToPros, mapDispatchToProps)(SimpleTabsV2);
+function newFunction(
+  props,
+  totalcityslabs,
+  citydatadone,
+  CityDataTemp,
+  setcitydatadone,
+  setCityData,
+  CityData,
+  RoutesData,
+  TransfersData
+) {
+  function replaceLatLong(source, destination) {
+    return {
+      ...source,
+      lat: destination.lat,
+      long: destination.long,
+    };
+  }
+  if (props.breif)
+    if (props.breif.city_slabs)
+      for (var j = 0; j < props.breif.city_slabs.length; j++) {
+        if (!props.breif.city_slabs[j].is_trip_terminated) {
+          totalcityslabs += 1;
+        }
+      }
+  const locationtabwidth = 100 / totalcityslabs + 'vw';
+
+  // console.log('inside routes');
+  // console.log(props.routes);
+  if (!citydatadone) {
+    async function processRoutes2(props) {
+      for (var i = 0; i < props.breif.city_slabs.length; i++) {
+        // console.log('routes one', props.routes[i]);
+        if (props.breif.city_slabs[i].long) {
+          // console.log(props.routes[i].long);
+          CityDataTemp.push(props.breif.city_slabs[i]);
+        } else {
+          if (
+            props.breif.city_slabs[i].city_id &&
+            props.breif.city_slabs[i].duration > '0'
+          ) {
+            try {
+              const data = await getCityDetails(
+                props.breif.city_slabs[i].city_id
+              );
+              // console.log('fetchdata data');
+              // console.log(props.routes[i], data);
+              const updatedRoutes = replaceLatLong(
+                props.breif.city_slabs[i],
+                data
+              );
+              CityDataTemp.push(updatedRoutes);
+              // console.log('fetchdata data in', updatedRoutes);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        }
+      }
+      setcitydatadone(true);
+      setCityData(CityDataTemp);
+    }
+    processRoutes2(props);
+  }
+
+  if (props.routes) {
+    async function processRoutes(props) {
+      for (var i = 0; i < props.routes.length; i++) {
+        if (props.routes[i].element_type !== 'transfer') {
+          if (props.routes[i].long) {
+            // console.log(props.routes[i].long);
+            RoutesData.push(props.routes[i]);
+          } else {
+            if (props.routes[i].city_id) {
+              try {
+                const data = await getCityDetails(props.routes[i].city_id);
+                // console.log('fetchdata data');
+                // console.log(props.routes[i], data);
+                const updatedRoutes = replaceLatLong(props.routes[i], data);
+                RoutesData.push(updatedRoutes);
+                // console.log('fetchdata data in', updatedRoutes);
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          }
+        } else {
+          TransfersData.push(props.routes[i]);
+        }
+      }
+
+    }
+
+    processRoutes(props);
+  }
+  return totalcityslabs;
+}

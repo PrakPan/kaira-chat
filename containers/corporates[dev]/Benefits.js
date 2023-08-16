@@ -51,7 +51,6 @@ const FullImgContent = (props) => {
                     <CardListItem >Workcation to travel, work, and collaborate with all your employees</CardListItem>
                     <CardListItem>Weekend getaways for team building and exploring together</CardListItem>
                     <CardListItem>Unique experiences to instill team bonding with activites</CardListItem>
-
                 </ul>
             </Card>
           

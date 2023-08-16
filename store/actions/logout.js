@@ -29,7 +29,6 @@ export const logout = () => {
         headers: headers,
       })
       .then((response) => {
-        console.log("response: ", response);
         localStorage.removeItem("access_token");
         localStorage.removeItem("name");
         localStorage.removeItem("email");

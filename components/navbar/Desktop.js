@@ -224,6 +224,7 @@ const Navbar = (props) => {
                   widthmobile="55px"
                   margin="0.5rem 0.5rem 0.5rem 2rem"
                   url={"media/website/logo-only.svg"}
+                  noPlaceholder={true}
                 ></ImageLoader>
               ) : props.headerColor === "black" ? (
                 <Link
@@ -240,6 +241,7 @@ const Navbar = (props) => {
                     leftalign
                     url={"media/website/logowhite.svg"}
                     margin="0.5rem 0.5rem 0.5rem 2rem"
+                    noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
               ) : (
@@ -254,6 +256,7 @@ const Navbar = (props) => {
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
                     url={"media/website/logo-only.svg"}
+                    noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
               )}{" "}

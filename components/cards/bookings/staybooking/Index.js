@@ -91,7 +91,7 @@ const Booking = (props) =>{
                 
                     </div>
             </div>
-            <AccommodationModal  _setImagesHandler={props.setImagesHandler} onHide={() => setShowDetails(false)} id={props.data.accommodation} show={showDetails}></AccommodationModal>
+            <AccommodationModal check_in={props.check_in} check_out={props.check_out}  _setImagesHandler={props.setImagesHandler} onHide={() => setShowDetails(false)} id={props.data.accommodation} show={showDetails}></AccommodationModal>
 
         </Container>
         </div>

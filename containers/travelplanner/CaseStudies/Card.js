@@ -175,7 +175,7 @@ const CardContainer = (props) => {
             url={props.image}
             dimensionsMobile={{ width: 600, height: 600 }}
             dimensions={{ width: 900, height: 900 }}
-            style={{ paddingTop: "100%", borderRadius: "10px" }}
+            // style={{ paddingTop: "100%", borderRadius: "10px" }}
           ></ImageLoader>
 
           <CardHeading className="font-lexend">{props.heading}</CardHeading>

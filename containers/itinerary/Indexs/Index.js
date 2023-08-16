@@ -16,6 +16,7 @@ import { ITINERARY_STATUSES } from '../../../services/constants';
 import { TRAVELER_ITINERARIES } from '../../../services/constants';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Landing from '../landing/Index';
+import { openNotification } from '../../../store/actions/notification';
 
 const Container = styled.div`
   width: 100%;
@@ -554,7 +555,12 @@ const Itinerary = (props) => {
 
         setCardUpdateLoading(null);
 
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+        props.openNotification({
+          type: "error",
+          text: "Something went wrong! Please try after some time.",
+          heading: "Error!",
+        });
       });
   };
   const _deselectActivityBookingHandler = (booking, user_selected) => {
@@ -726,9 +732,9 @@ const mapStateToPros = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
+    openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
-
 export default connect(
   mapStateToPros,
   mapDispatchToProps

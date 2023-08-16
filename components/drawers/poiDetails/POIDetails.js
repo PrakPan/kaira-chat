@@ -6,6 +6,7 @@ import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
 const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -43,7 +44,7 @@ const Container = styled.div`
     width: 500px;
   }
 `;
-const TimeStamp = styled.p`
+const TimeStamp = styled.span`
   height: 31px;
   padding: 4px 8px;
   background-color: #000000bf;
@@ -52,15 +53,37 @@ const TimeStamp = styled.p`
   font-size: 14px;
   font-weight: 600;
   position: absolute;
-  top: 185px;
-  left: 20px;
+  left: 10px;
+  bottom: 10px;
   @media screen and (min-width: 768px) {
-    top: 185px;
-    left: 320px;
+    bottom: 10px;
+
+    left: 300px;
   }
 `;
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
 
+  @media screen and (min-width: 768px) {
+    padding-block: 1rem;
+  }
+`;
+const BackText = styled.div`
+  font-size: 1.5rem;
+  line-height: 2rem;
+`;
+const ImageContainer = styled.div`
+position : relative;
+`
 const POIDetails = (props) => {
+  console.log('props.dataaada: ', props.data);
   let isPageWide = media("(min-width: 768px)");
   const [imageLoading, setImageLoading] = useState(true);
 
@@ -96,19 +119,32 @@ const POIDetails = (props) => {
   }
   if (Math.floor(props.data.rating) < props.data.rating)
     stars.push(<FaStarHalfAlt />);
-
   return (
     <Container>
-      <div>
-        <TbArrowBack
-          style={{ height: "32px", width: "32px" }}
-          cursor={"pointer"}
-          onClick={(e) => {
-            props.handleCloseDrawer(e);
-          }}
-        />
-      </div>
-      <div>
+      {!props.itineraryDrawer ? (
+        <div>
+          <TbArrowBack
+            style={{ height: "32px", width: "32px" }}
+            cursor={"pointer"}
+            onClick={(e) => {
+              props.handleCloseDrawer(e);
+            }}
+          />
+        </div>
+      ) : (
+        <BackContainer className=" font-lexend">
+          <IoMdClose
+            className="hover-pointer"
+            onClick={(e) => {
+              props.handleCloseDrawer(e);
+            }}
+            style={{ fontSize: "2rem" }}
+          ></IoMdClose>
+          <BackText>Back to Itinerary</BackText>
+        </BackContainer>
+      )}
+
+      <ImageContainer>
         <ImageLoader
           borderRadius="8px"
           marginTop="23px"
@@ -123,23 +159,16 @@ const POIDetails = (props) => {
           }}
           noLazy
         ></ImageLoader>
-
-      </div>
+        {(props.data.ideal_duration_hours || props.data.ideal_duration_number) ? (
+          <TimeStamp>
+            Approx Time : {props.data.ideal_duration_hours || props.data.ideal_duration_number} hrs
+          </TimeStamp>
+        ) : <></>}
+      </ImageContainer>
       {imageLoading && (
         <div
           style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
         />
-      )}
-
-      {props.data.ideal_duration_hours && (
-        <TimeStamp>
-          Approx Time : {props.data.ideal_duration_hours} hrs
-        </TimeStamp>
-      )}
-      {props.data.ideal_duration_number && (
-        <TimeStamp>
-          Approx Time : {props.data.ideal_duration_number} hrs
-        </TimeStamp>
       )}
 
       <div>
@@ -173,10 +202,11 @@ const POIDetails = (props) => {
       </div>
       {props.data.cost && (
         <div className="flex flex-row">
-          Cost: <div className="font-semibold px-1">₹</div> {getHumanDate}{" "}
-          {props.data.cost}{" "}
-          <div>
-            {props.data.price_category == "individual" ? "Per person" : null}
+          Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}
+          {" /- "}
+          <div style={{marginLeft : '0.5rem'}}>
+            {/* {props.data.price_category == "individual" ? "Per person" : null} */}
+           Per person
           </div>
         </div>
       )}

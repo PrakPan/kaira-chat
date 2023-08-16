@@ -164,7 +164,7 @@ const Booking = (props) =>{
           }
       }
       }, [props.data]);
-    const getTime = (datetime) => {
+  const getTime = (datetime) => {
         return(getHumanTime(datetime.substring(11,16)));
     }
     const getDate = (datetime) => {
@@ -284,33 +284,6 @@ const Booking = (props) =>{
                 top: "50%",
               }}
             >
-              {/* <div
-                style={{
-                  position: "absolute",
-                  height: "0.9rem",
-                  width: "100%",
-                  top: "0.4rem",
-                  margin: "auto",
-                  display: "block",
-                }}
-              >
-                <ImageLoader
-                  height="1px"
-                  url={"media/icons/right-arrow-flight-11.png"}
-                />
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  left: "100%",
-                  top: "0.2rem",
-                  height: "0.5rem",
-                  width: "0.5rem",
-                  display: "block",
-                }}
-              >
-                <ImageLoader url={"media/icons/right-arrow-flight-12.png"} />
-              </div> */}
               <Circle style={{ left: 0 }} />
               <DottedLine></DottedLine>
               <Circle style={{ right: 0 }} />
@@ -395,7 +368,6 @@ const Booking = (props) =>{
                         style={{
                           fontSize: "0.70rem",
                           fontWeight: "400",
-                          // color: "rgba(91, 89, 89, 1)",
                           marginTop: "0px",
                         }}
                       >
@@ -423,8 +395,6 @@ const Booking = (props) =>{
                         style={{
                           fontSize: "0.70rem",
                           fontWeight: "400",
-                          // color: "rgba(91, 89, 89, 1)",
-                          // marginTop: "-4px",
                           marginTop: !isPageWide ? "-4px" : "0px",
                         }}
                       >
@@ -454,8 +424,6 @@ const Booking = (props) =>{
                     style={{
                       fontSize: "14px",
                       fontWeight: "400",
-                      // color: "rgba(91, 89, 89, 1)",
-                      // textAlign: "right",
                       marginTop: "0.25rem",
                     }}
                   >
@@ -479,112 +447,6 @@ const Booking = (props) =>{
                 <div></div>
               )}
             </div>
-            {/* {isPageWide ? (
-              <div>
-                {props.data.Segments ? (
-                  props.data.Segments[0].length ? (
-                    <div
-                      className="font-lexend"
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "300",
-                        // color: "rgba(91, 89, 89, 1)",
-                        // textAlign: "right",
-                        marginTop: "0.25rem",
-                      }}
-                    >
-                      {props.data.Segments[0][0].Origin.Airport.AirportName}
-                    </div>
-                  ) : (
-                    <div></div>
-                  )
-                ) : (
-                  <div></div>
-                )}
-                {props.data.Segments ? (
-                  props.data.Segments[0].length ? (
-                    <div
-                      className="font-lexend"
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "300",
-                        // color: "rgba(91, 89, 89, 1)",
-                        // textAlign: "right",
-                        marginTop: "0.25rem",
-                      }}
-                    >
-                      {props.data.Segments[0][0].Origin.Airport.Terminal
-                        ? "Terminal " +
-                          props.data.Segments[0][0].Origin.Airport.Terminal
-                        : ""}
-                    </div>
-                  ) : (
-                    <div></div>
-                  )
-                ) : (
-                  <div></div>
-                )}
-              </div>
-            ) : (
-              <></>
-            )}
-            <div></div> */}
-            {/* {isPageWide ? (
-              <div>
-                {props.data.Segments ? (
-                  props.data.Segments[0].length ? (
-                    <div
-                      className="font-lexend"
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "300",
-                        // color: "rgba(91, 89, 89, 1)",
-                        // textAlign: "right",
-                        marginTop: "0.25rem",
-                      }}
-                    >
-                      {
-                        props.data.Segments[0][
-                          props.data.Segments[0].length - 1
-                        ].Destination.Airport.AirportName
-                      }
-                    </div>
-                  ) : (
-                    <div></div>
-                  )
-                ) : (
-                  <div></div>
-                )}
-                {props.data.Segments ? (
-                  props.data.Segments[0].length ? (
-                    <div
-                      className="font-lexend"
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "300",
-                        // color: "rgba(91, 89, 89, 1)",
-                        // textAlign: "right",
-                        marginTop: "0.25rem",
-                      }}
-                    >
-                      {props.data.Segments[0][props.data.Segments[0].length - 1]
-                        .Destination.Airport.Terminal
-                        ? "Terminal " +
-                          props.data.Segments[0][
-                            props.data.Segments[0].length - 1
-                          ].Destination.Airport.Terminal
-                        : ""}
-                    </div>
-                  ) : (
-                    <div></div>
-                  )
-                ) : (
-                  <div></div>
-                )}
-              </div>
-            ) : (
-              <></>
-            )} */}
           </DetailsGridContainer>
         </GridContainer>
       );

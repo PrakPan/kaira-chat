@@ -357,8 +357,6 @@ const TransfersContainer = (props) => {
   //   props.payment,
   // ]);
 
-  console.log('transfersBooking');
-  console.log(props.transferBookings);
   //Stores initial order of locations
 
   const initialorder = {
@@ -562,7 +560,6 @@ const TransfersContainer = (props) => {
   function handlemap(MapId) {
     props.setPlaceID(MapId);
     scrollToTargetAdjusted();
-    console.log(`id mapp${props.active}`);
   }
   const return_booking_from_id = (arr, id) => arr.find((obj) => obj.id === id);
   const _moveUpHandler = (index) => {
@@ -584,6 +581,7 @@ const TransfersContainer = (props) => {
       for (var i = 2; i < props.routes.length - 1; i += 2) {
         locationsArr.push(
           <PinSection
+            transfersPin
             setCurrentPopup={false}
             city={props.routes[i].city_name}
             duration={props?.routes[i]?.duration}
@@ -706,6 +704,7 @@ const TransfersContainer = (props) => {
       for (var i = 1; i < props.transferBookings.length; i++) {
         locationsArr.push(
           <PinSection
+            transfersPin
             setCurrentPopup={false}
             city={props?.transferBookings[i - 1]?.destination_city}
             duration={
@@ -1220,6 +1219,7 @@ const TransfersContainer = (props) => {
       {props?.transferBookings && (
         <>
           <PinSection
+            transfersPin
             setCurrentPopup={false}
             cityData={props.breif.city_slabs[0]}
             dayId={
@@ -1236,8 +1236,12 @@ const TransfersContainer = (props) => {
             pinColour={props.breif.city_slabs[0].color}
             dayslab={props.dayslab}
           ></PinSection>
-          {props?.routes.length > 1 && props?.plan?.version == 'v2' ? (
-            props.routes[1]?.modes ? (
+          {props?.routes &&
+          props?.routes.length > 1 &&
+          props?.plan?.version == 'v2' ? (
+            props.routes[1]?.modes &&
+            props?.routes[1].bookings &&
+            props?.routes[1].bookings.length ? (
               props.routes[1].modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
                   props?.transferBookings,
@@ -1333,8 +1337,9 @@ token={props.token}></TransferModeContainer>
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
              <TransferModeContainer
 token={props.token}></TransferModeContainer> */}
-          {props?.routes.length > 1 && (
+          {props?.routes && props?.routes.length > 1 && (
             <PinSection
+              transfersPin
               setCurrentPopup={false}
               dayId={
                 props.breif.city_slabs[0].day_slab_location.start_day_slab_index

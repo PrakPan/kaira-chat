@@ -12,7 +12,7 @@ import {
   newDayContainerTextpadding,
 } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
 import StarRating from "../../../components/StarRating";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
 import { TbArrowBack } from "react-icons/tb";
 import { IoMdClose } from "react-icons/io";
@@ -25,6 +25,12 @@ import PoiListSkeleton from "./PoiListSkeleton";
 import LogInModal from "../../../components/modals/Login";
 import { Navigation } from "../../../components/NewNavigation";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
+import NotificationPopup from "../../../components/ui/NotificationPopup";
+import { connect } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
+import { BiErrorCircle } from "react-icons/bi";
 
 const padding = {
   initialLeft: "60px",
@@ -51,7 +57,44 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
-
+const TextContainer = styled.div`
+  position: relative;
+`;
+const MoreIcon = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  bottom: 0px;
+  transform: translate(0, 7%);
+  right: 0;
+  background: white;
+  padding-left: 10px;
+  span {
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+`;
+const EmptyMsg = styled.div`
+  margin-top: 5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+`;
+const RatingContainer = styled.div`
+  margin-top: 0.3rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  span {
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: #727272;
+  }
+`;
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
@@ -96,15 +139,15 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
+
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [showDrawerListData, setshowDrawerListData] = useState(false);
-  const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [SelectedExprience, SetSelectedExprience] = useState();
+  const [SelectedExprience, SetSelectedExprience] = useState(-1);
+  const [elementType, setElementType] = useState("POI");
   const items = [
     { id: 1, label: "Places To Visit", link: "POI" },
     { id: 2, label: "Things To Do", link: "Activities" },
@@ -113,14 +156,50 @@ const ItineraryPoiElement = (props) => {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
+  useEffect(() => {
+    if (props.city_id && showDrawer) {
+      setFetchingPoi(true);
+      setShowDrawer(true);
+      axiosaxtivitiesinstance
+        .post("/", {
+          location: props?.city_id,
+          duration: 10,
+          // element_type: `${activity?.id ? "Activity" : "POI"}`,
+          element_type: elementType,
+          experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
+            ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
+            : [],
+        })
+        .then((res) => {
+          if (res.data.length) {
+            let options = [];
 
-  function stringCompare(arr, str) {}
-  function ErrorNotDef(elem) {
-    return elem === undefined || elem === null || !elem;
-  }
+            for (var i = 0; i < res.data.length; i++) {
+              if (res.data[i].heading !== props.heading)
+                options.push(
+                  <PoiList
+                    key={i}
+                    _updatePoiHandler={_updatePoiHandler}
+                    selectedData={props.data}
+                    setShowDrawer={setShowDrawer}
+                    getPaymentHandler={props.getPaymentHandler}
+                    data={res.data[i]}
+                    loginModal={showLoginModal}
+                    setLoginModal={setShowLoginModal}
+                  ></PoiList>
+                );
+            }
+            setOptionsJSX(options);
+          } else {
+            setOptionsJSX([]);
+          }
+          setFetchingPoi(false);
+        })
+        .catch((err) => {});
+    }
+  }, [showDrawer, elementType, SelectedExprience]);
+
   const _updatePoiHandler = (poi) => {
-    // setUpdateLoadingState(true);
-
     axiositineraryeditinstance
       .post(
         "/",
@@ -144,81 +223,50 @@ const ItineraryPoiElement = (props) => {
       )
       .then((res) => {
         props.setItinerary(res.data);
+        props.openNotification({
+          text: "Your Itinerary updated successfully!",
+          heading: "Success!",
+          type: "success",
+        });
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
-
-        window.alert("There seems to be a problem, please try again!");
+        props.openNotification({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
       });
   };
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
-  function Poi_activities(activity) {
-    setFetchingPoi(true);
-    if (props.city_id) setShowDrawer(true);
-    axiosaxtivitiesinstance
-      .post("/", {
-        location: props?.city_id,
-        duration: 10,
-        element_type: `${activity?.id ? "Activity" : "POI"}`,
-      })
-      .then((res) => {
-        if (res.data.length) {
-          let options = [];
-
-          for (var i = 0; i < res.data.length; i++) {
-            if (res.data[i].heading !== props.heading)
-              // if(res.data.results[i].name !== props.selectedBooking.name)
-              options.push(
-                <PoiList
-                  key={i}
-                  _updatePoiHandler={_updatePoiHandler}
-                  selectedData={props.data}
-                  setShowDrawer={setShowDrawer}
-                  getPaymentHandler={props.getPaymentHandler}
-                  // _openPoiModal={_openPoiModal}
-                  data={res.data[i]}
-                  loginModal={showLoginModal}
-                  setLoginModal={setShowLoginModal}
-                  token={props.token}
-
-                  // tailored_id={props.tailored_id}
-                  // updateLoadingState={updateLoadingState}
-                  // itinerary_id={
-                  //   props.selectedBooking
-                  //     ? props.selectedBooking.itinerary_id
-                  //     : ''
-                  // }
-                ></PoiList>
-              );
-          }
-          setOptionsJSX(options);
-        } else {
-          setOptionsJSX([]);
-        }
-        setFetchingPoi(false);
-      })
-      .catch((err) => {});
-  }
-
-  const Experiences = [
-    "Adventure",
-    "Heritage",
-    "Spiritual",
-    "Hidden Gem",
-    "Very popular",
-  ];
   const ClickHandler = (child) => {
-    console.log("clicked element", child);
     if (child == "Things To Do") {
-      Poi_activities({ id: 3 });
+      setElementType("Activity");
     } else {
-      Poi_activities();
+      setElementType("POI");
     }
-    console.log(child);
   };
+
+  const _getStars = (rating) => {
+    var stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<FaStar style={{ fontSize: "0.85rem" }} />);
+    }
+    if (Math.floor(rating) < rating)
+      stars.push(<FaStarHalfAlt style={{ fontSize: "0.85rem" }} />);
+
+    return (
+      <div
+        style={{ color: "#ffa500", marginBottom: "0.1rem" }}
+        className="flex flex-row"
+      >
+        {stars}
+      </div>
+    );
+  };
+
   return (
     <Container>
       {/* <div>{props.time}</div> */}
@@ -259,73 +307,53 @@ const ItineraryPoiElement = (props) => {
                   props.payment?.user_allowed_to_pay &&
                   !props.payment.paid_user && (
                     <div
-                      onClick={() => Poi_activities(props?.activity)}
+                      onClick={() => setShowDrawer(true)}
                       className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                     >
                       <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                     </div>
                   )}
               </div>
-              <div className="flex flex-row">
+              <div className="flex flex-row gap-2">
                 <div
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {true ? "ATTRACTION" : "View Less"}
+                  ATTRACTION
                 </div>
+                {props.poi.rating && (
+                  <RatingContainer>
+                    {/* <StarRating initialRating={4}></StarRating> */}
+                    <div>{_getStars(props.poi.rating)}</div>
+                    <span>
+                      {props.poi.rating}{" "}
+                      {props.poi.user_ratings_total
+                        ? ` · ${props.poi.user_ratings_total} Google reviews`
+                        : ""}
+                    </span>
+                  </RatingContainer>
+                )}
               </div>
-              {props.rating && <StarRating initialRating={4}></StarRating>}
-
-              {/* {props.poi !== undefined ? (
-                props.poi.experience_filters ? (
-                  <div className={`flex gap-2 flex-row`}>
-                    {props.poi.experience_filters.map((element, index) =>
-                      element.toString() != 'Hidden Gem' ? (
-                        <div className="flex flex-row items-end">
-                          {index != 0 && (
-                            <span className="font-bold text-xl pr-1">.</span>
-                          )}
-
-                          <div
-                            className="flex  items-center text-sm  font-bold"
-                            key={index}
-                          >
-                            {' '}
-                            {element.split(' ').length > 2
-                              ? element.split(' ')[0]
-                              : element}{' '}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex font-bold" key={index}>
-                          <div
-                            className="border-solid text-center flex justify-center items-center   border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
-                            style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
-                          >
-                            {element}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : null
-              ) : null} */}
             </div>
           </div>
-
-          <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
-            {props.text}
-          </div>
+          <TextContainer>
+            <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">
+              {props.text}
+            </div>
+            <MoreIcon onClick={() => setShow(true)}>
+              <span>...More</span>
+              <MdNavigateNext
+                style={{ fontSize: "1.3rem", marginTop: "0.1rem" }}
+              />
+            </MoreIcon>
+          </TextContainer>
         </div>
       </div>
-
       <POIDetailsDrawer
-        // show={props.showDrawer.isOpen}
-        // width={'35vw'}
+        itineraryDrawer
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
-        // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
         image={props.image}
@@ -344,7 +372,6 @@ const ItineraryPoiElement = (props) => {
         style={{ zIndex: 1501 }}
         className="font-lexend"
         onHide={() => setShowDrawer(false)}
-        // zIndex='1501'
       >
         <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 justify-start items-start mx-auto w-[96%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
@@ -365,9 +392,12 @@ const ItineraryPoiElement = (props) => {
             <div className="flex flex-col justify-start items-baseline">
               <div className="mb-2 text-sm font-normal">Experience Types</div>
               <div className="flex flex-row gap-1">
-                {Experiences.map((currentfilter, i) => (
+                {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                   <button
-                    onClick={() => SetSelectedExprience(i)}
+                    onClick={() => {
+                      if (SelectedExprience !== i) SetSelectedExprience(i);
+                      else SetSelectedExprience(-1);
+                    }}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedExprience == i
                         ? "text-white border-0 bg-black "
@@ -375,7 +405,7 @@ const ItineraryPoiElement = (props) => {
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
-                    {currentfilter}
+                    {currentfilter.display}
                   </button>
                 ))}
               </div>
@@ -395,8 +425,15 @@ const ItineraryPoiElement = (props) => {
           />
         </div>
         {!fetchingPoi ? (
-          // <POIDetails data={data}  handleCloseDrawer={props.handleCloseDrawer} />
-          optionsJSX
+          optionsJSX.length ? (
+            optionsJSX
+          ) : (
+            <EmptyMsg>
+              <BiErrorCircle /> Oops, it looks like there are no{" "}
+              {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+              available.
+            </EmptyMsg>
+          )
         ) : (
           <PoiListSkeleton />
         )}
@@ -406,29 +443,17 @@ const ItineraryPoiElement = (props) => {
           onHide={() => setShowDrawer(false)}
         />
       </Drawer>
-      {/* <div style={{display: 'flex', alignItems: 'center'}}>
-                <SectionOneText>{props.time}</SectionOneText>
-                <AiFillCar style={{margin: '-2px 0  0 0.5rem'}}></AiFillCar>
-                {
-                    props.booking ? 
-                    <div style={{flexGrow: '1', justifyContent: 'flex-end', display: 'flex'}}>
-                         
-                        <Button
-                        borderRadius="8px"
-                        fontWeight="700"
-                        fontSize="12px"
-                        borderWidth="1.5px"
-                        padding="0.5rem 0.5rem"
-                        onclick={() => console.log('')}
-                        >
-                        View Booking
-                        </Button>
-                        </div>
-                    : null
-                }
-            </div> */}
     </Container>
   );
 };
-
-export default ItineraryPoiElement;
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(mapStateToPros, mapDispatchToProps)(ItineraryPoiElement);

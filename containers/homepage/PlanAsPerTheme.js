@@ -169,7 +169,7 @@ const PlanAsPerTheme = (props) => {
   let isPageWide = media('(min-width: 768px)');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [ImgLoading, setImgLoading] = useState(true);
+  // const [ImgLoading, setImgLoading] = useState(true);
   // const _handleTripRedirect = (path) => {
   //   if (path) window.location.href = '/asia/india/' + path;
   // };
@@ -181,9 +181,9 @@ const PlanAsPerTheme = (props) => {
         key={i}
         // onClick={() => _handleTripRedirect(e.path)}
       >
-        {ImgLoading && <SkeletonCard />}
+        {/* {ImgLoading && <SkeletonCard />} */}
         <ImageContainer
-          style={ImgLoading ? { display: "none" } : { display: "initial" }}
+          // style={ImgLoading ? { display: "none" } : { display: "initial" }}
           bg="road-trip.png"
           href={"/asia/india/" + e.path}
         >
@@ -193,7 +193,7 @@ const PlanAsPerTheme = (props) => {
           </TextContainer>
           <ImageLoader
             noLazy
-            onload={() => setImgLoading(false)}
+            // onload={() => setImgLoading(false)}
             fit="cover"
             width="100%"
             height="100%"

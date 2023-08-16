@@ -1,3 +1,22 @@
+/* Freshchat bot */
+#fc_frame{
+  z-index: 100 !important;
+  bottom: 10px !important;
+  right: 25px !important;
+@media only screen and (max-width: 768px) {
+   bottom: 60px !important;
+  right: 15px !important;
+
+  }
+}
+#fc_frame.fc-open {
+  /* CSS when the modal is open */
+  z-index: 50000 !important;
+}
+.h-btn {
+  height: 80px !important;
+}
+
 .snowflake {
   color: #fff;
   font-size: 1em;
@@ -1404,3 +1423,6 @@ body {
   /* scrollbar-color: #ccc #fff; */
 }
 
+.css-3dah0e-MuiModal-root-MuiDialog-root {
+  z-index: 1602 !important; 
+}

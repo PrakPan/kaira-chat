@@ -3,6 +3,12 @@ module.exports = {
     browser: true,
     es2021: true,
   },
+  overrides: [
+    {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      // other ESLint rules...
+    },
+  ],
   extends: [
     'plugin:react/recommended',
     'airbnb',

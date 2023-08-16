@@ -6,18 +6,18 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
 const P = styled.div`
-  font-weight: 300;
+  font-weight: 400;
   text-align: left;
-  line-height: 30px;
+  line-height: 25px;
   position: relative;
   ${(props) => `height : ${props.clientHeight}px`};
   // max-height : none;
-  ${(props) => !props.more && "overflow : hidden ; height: 205px"};
-  ${props=>props.clientHeight < 205 && 'height : auto'};
+  ${(props) => !props.more && "overflow : hidden ; height: 221px"};
+  ${(props) => props.clientHeight < 221 && "height : auto"};
   transition: height 0.3s ease;
 
   @media screen and (min-width: 768px) {
-    font-size: 18px;
+    font-size: 14px;
   }
 `;
 
@@ -41,14 +41,14 @@ const Text = (props) => {
           <p ref={ref}>
             {props.text}
           </p>
-          {clientHeight > 205 && (
+          {clientHeight > 221 && (
             <p
               className="hover-pointer text-container"
               onClick={() => setMore(!more)}
               style={{
                 position: "absolute",
                 right: "0",
-                bottom: "-8px",
+                bottom: "-5px",
                 marginBottom: "0px",
                 backgroundColor: "white",
                 zIndex: "2",

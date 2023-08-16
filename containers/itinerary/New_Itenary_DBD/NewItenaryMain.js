@@ -165,8 +165,6 @@ const NewItenaryMain = (props) => {
       }
     };
   };
-  console.log('items');
-  console.log(items);
   function extractCityName(arr) {
     const cityObject = arr.find((obj) => obj.element_type === 'newcity');
 
@@ -197,19 +195,19 @@ const NewItenaryMain = (props) => {
       <ScrollableMenuTabs
         classStyle="pb-2"
         icons={items.length < 5 ? false : true}
-        offset={'45px'}
+        offset={"45px"}
         items={items}
         BarName="CityName"
-        Mstyle={'round'}
+        Mstyle={"round"}
       ></ScrollableMenuTabs>
       {props.itinerary && (
         <ScrollableMenuTabs
           icons={false}
-          offset={'80px'}
+          offset={"80px"}
           items={itemsDays}
           BarName="CityName"
           year={yearCalc(props?.itinerary?.day_slabs[0]?.slab)}
-          Mstyle={'round'}
+          Mstyle={"round"}
           Iterable="date"
           vertical={true}
         ></ScrollableMenuTabs>

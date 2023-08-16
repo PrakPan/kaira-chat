@@ -35,7 +35,7 @@ const ModalContainer = styled.div`
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
   animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)}
     forwards;
-  z-index: 1600;
+  z-index: ${(props) => props.zIndex || "1600"};
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   transition: opacity 0.8s linear;
 
@@ -62,7 +62,7 @@ const BlackContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1599;
+  z-index: ${props=>props.zIndex || '1599'};
   width: 100vw;
   height: 100vh;
   transition: background 0.6s linear;
@@ -104,20 +104,22 @@ export default function Modal(props) {
       document.body.style.overflow = 'hidden';
       // if(isPageWide) document.body.style.paddingRight = getScrollBarWidth() + 'px'
       setFade('in');
-    } else onCLose();
+    }
+    // else onCLose();
   }, [props.show]);
 
   return _document
-    ? ReactDOM.createPortal(
+? ReactDOM.createPortal(
         <div>
           {props.show && (
             <div
               className="font-lexend"
-              style={{ position: 'relative', ...props.style }}
+              style={{ position: "relative", ...props.style }}
             >
               <BlackContainer
                 fade={fade}
                 onClick={props.backdrop && onCLose}
+                zIndex={props.zIndex ? props.zIndex - 1 : 1599}
               ></BlackContainer>
               <ModalContainer
                 fade={fade}
@@ -134,15 +136,16 @@ export default function Modal(props) {
                 height={props.height}
                 bgColor={props.bgColor}
                 centered={props.centered}
+                zIndex={props.zIndex ? props.zIndex : 1600}
               >
                 {props.closeIcon && (
                   <RxCross2
                     style={{
-                      position: 'absolute',
-                      top: '15px',
-                      right: '15px',
-                      fontSize: '1.5rem',
-                      cursor: 'pointer',
+                      position: "absolute",
+                      top: "15px",
+                      right: "15px",
+                      fontSize: "1.5rem",
+                      cursor: "pointer",
                     }}
                     onClick={onCLose}
                   />
@@ -152,7 +155,7 @@ export default function Modal(props) {
             </div>
           )}
         </div>,
-        _document.getElementById('modal-portal')
+        _document.getElementById("modal-portal")
       )
     : null;
 }

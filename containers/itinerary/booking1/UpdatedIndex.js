@@ -166,10 +166,12 @@ const Booking = (props) => {
 
   const handleChange = (event, newValue) => {
     const tabs = ['S', 'T', 'A'];
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-tabs-' + tabs[newValue],
       params: { key: '' },
     });
+  }
 
     setValue(newValue);
   };
@@ -225,10 +227,12 @@ const Booking = (props) => {
     costings_breakdown,
     images
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-acc_change',
       params: { name: name },
     });
+  }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -265,10 +269,12 @@ const Booking = (props) => {
     origin_iata,
     destination_iata
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-flight_change',
       params: { name: name },
     });
+  }
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -305,10 +311,12 @@ const Booking = (props) => {
     taxi_type,
     transfer_type
   ) => {
+    {process.env.NODE_ENV === 'production' && 
     ga.event({
       action: 'Itinerary-bookings-taxi_change',
       params: { name: name },
     });
+  }
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -461,6 +469,8 @@ const Booking = (props) => {
                   is_stock={props.is_stock}
                   is_selected={true}
                   is_auth={props.is_auth}
+                  check_in={check_in}
+                  check_out={check_out}
                   are_prices_hidden={
                     props.payment ? props.payment.are_prices_hidden : false
                   }
@@ -501,6 +511,8 @@ const Booking = (props) => {
             } else
               bookings_accommodations.push(
                 <StayBookingCard
+                  check_in={check_in}
+                  check_out={check_out}
                   is_registration_needed={
                     props.payment ? props.payment.is_registration_needed : false
                   }

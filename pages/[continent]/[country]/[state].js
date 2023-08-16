@@ -56,10 +56,10 @@ export async function getStaticPaths() {
   // const res = await axiosTravelPlannerInstance.get('/list')
   // const data = res.data
 
-  // const res = await axiossearchallinstance.get('?type=State')
-  const res = await axios.get(
-    "https://apis.tarzanway.com/search/all/?type=State"
-  );
+  const res = await axiossearchallinstance.get('?type=State')
+  // const res = await axios.get(
+  //   "https://apis.tarzanway.com/search/all/?type=State"
+  // );
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {

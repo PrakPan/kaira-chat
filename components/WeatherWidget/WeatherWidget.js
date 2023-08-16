@@ -26,6 +26,7 @@ const WeatherWidget = ({
   setShowDrawerData,
   cnt = 7,
   apiKey = 'e2fe4bf0d3954e25a493b899a559f43d',
+  noSkeleton
 }) => {
   // const [showWidget, setShowWidget] = useState(false);
   // const currentDate = new Date();
@@ -84,7 +85,7 @@ const WeatherWidget = ({
     setShowDrawerData(location.cityData);
   }
 
-  if (isLoading) {
+  if (isLoading && !noSkeleton) {
     return (
       <div>
         <SkeletonCard height="1.6rem" width="16rem"></SkeletonCard>

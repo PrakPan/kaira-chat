@@ -103,26 +103,22 @@ const ItineraryElement = (props) => {
         </div>
         <div
           style={{
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             paddingLeft: newDayContainerTextpadding.initialLeft,
           }}
         >
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>
 
-            {props.data?.bookings && props.data?.bookings.length > 0 ? (
-              <Link
-                to={
-                  props.data.bookings
-                    ? `${props.data.bookings[0]?.id}`
-                    : 'Stays-Head'
-                }
-                offset={-90}
-              >
-                <TransparentButton>View Selected Hotel</TransparentButton>
-              </Link>
-            ) : null}
+            {/* {props.data?.bookings && props.data?.bookings.length > 0 ? ( */}
+            <Link
+              to={props.city_id ? `${props.city_id}` : "Stays-Head"}
+              offset={-35}
+            >
+              <TransparentButton>Add Stay</TransparentButton>
+            </Link>
+            {/* ) : null} */}
 
             <div>
               <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">

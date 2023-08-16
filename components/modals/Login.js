@@ -65,8 +65,8 @@ const Enquiry = (props) => {
     }
   }, [myref]);
   useEffect(() => {
-    if (props.token) if (props.onhide) props.onhide();
-  }, [props.token, props.onhide]);
+    if (props.token && props.phone) if (props.onhide) props.onhide();
+  }, [props.token, props.onhide , props.phone]);
 
   useEffect(() => {
     function findModalWidth() {
@@ -89,25 +89,25 @@ const Enquiry = (props) => {
         <Modal
           centered
           closeIcon
-          backdrop={props.hideloginclose ? 'static' : true}
+          backdrop={props.hideloginclose ? "static" : true}
           show={props.show}
           onHide={props.hideloginclose ? null : props.onhide}
           borderRadius="20px"
-          width={modalWidth + '%'}
+          width={modalWidth + "%"}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: '50% 50%' }}>
+          <div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
             <div
               style={{
-                backgroundColor: '#2C2C2C',
-                height: '100%',
-                width: '100%',
-                display: showImage ? 'none' : 'block',
+                backgroundColor: "#2C2C2C",
+                height: "100%",
+                width: "100%",
+                display: showImage ? "none" : "block",
               }}
             ></div>
-            <ImgContainer style={{ display: showImage ? 'block' : 'none' }}>
+            <ImgContainer style={{ display: showImage ? "block" : "none" }}>
               <ImageLoader
                 noLazy
-                url={'media/website/login-background.png'}
+                url={"media/website/login-background.png"}
                 height="100%"
                 width="100%"
                 onload={() => setShowImage(true)}
@@ -117,16 +117,18 @@ const Enquiry = (props) => {
                 {TagsContent.map((e, i) => (
                   <TagItem key={i}>
                     <ImageLoader
-                      borderRadius={'0.4rem 0 0 0.4rem'}
+                      noLazy
+                      borderRadius={"0.4rem 0 0 0.4rem"}
                       url={e.icon}
                       dimensions={{ width: 200, height: 200 }}
+                      noPlaceholder={true}
                     />
                     <p className="font-lexend">{e.text}</p>
                   </TagItem>
                 ))}
               </ImgTagsContainer>
             </ImgContainer>
-            <div style={{ padding: '20px' }}>
+            <div style={{ padding: "20px" }}>
               <Login
                 ref={myref}
                 onhide={props.onhide}
@@ -164,6 +166,7 @@ const mapStateToPros = (state) => {
   return {
     hideloginclose: state.auth.hideloginclose,
     token: state.auth.token,
+    phone: state.auth.phone,
   };
 };
 const mapDispatchToProps = (dispatch) => {

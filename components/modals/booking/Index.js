@@ -20,6 +20,7 @@ import { connect } from 'react-redux';
 import InfiniteScroller from './InfniteScroller';
 // import Button from '../../Button';
 import Button from '../../ui/button/Index';
+import { openNotification } from '../../../store/actions/notification';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -146,6 +147,8 @@ const Booking = (props) => {
             // options.push(<Accommodation selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} booking_id={props.selectedBooking.id} itinerary_id={props.selectedBooking.itinerary_id}  accommodation_id={res.data.results[i].id} room_type={res.data.results[i].live_data.roomtypeName} pricing_type={res.data.results[i].live_data.includeBreakfast ? "CP" : "EP"}  _updateBookingHandler={_updateBookingHandler} type={res.data.results[i].accommodation_type} review_score={res.data.results[i].live_data.reviewScore}   review_count={res.data.results[i].live_data.reviewCount} key={i} name={res.data.results[i].name} description={res.data.results[i].description} location={res.data.results[i].location} star={res.data.results[i].star_category} cost={Math.ceil(res.data.results[i].live_data.dailyRate/100)} images={res.data.results[i].images}  room_type={res.data.results[i].live_data.roomtypeName}  includeBreakfast={res.data.results[i].live_data.includeBreakfast} ></Accommodation>)
             options.push(
               <Accommodation
+                check_in={props.selectedBooking.check_in}
+                check_out={props.selectedBooking.check_out}
                 _setImagesHandler={props._setImagesHandler}
                 selectedBooking={props.selectedBooking}
                 cost={Math.ceil(res.data.results[i].price_lower_range)}
@@ -409,7 +412,12 @@ const Booking = (props) => {
         // setUpdateLoadingState(false);
         setUpdateBookingState(false);
 
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
       });
   };
   const _loadAccommodationsHandler = () => {
@@ -630,7 +638,9 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);

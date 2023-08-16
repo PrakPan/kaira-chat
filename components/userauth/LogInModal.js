@@ -20,6 +20,7 @@ import LoginLoadingIcon from "../ui/LoadingLottie";
 import Image from "next/image";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
+import {  GOOGLE_CLIENT_ID  } from "../../services/constants";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -158,10 +159,8 @@ const LogIn = React.memo((props) => {
 
   useEffect(() => {
     console.log("props.otpSent", props.otpSent, props.name, props.email);
-      if (props.otpSent && props.name && props.email) submitOtpHandler();
-  }, [props.otpSent , props.name , props.email]);
-
-
+    if (props.otpSent && props.name && props.email) submitOtpHandler();
+  }, [props.otpSent, props.name, props.email]);
 
   useEffect(() => {
     if (
@@ -221,7 +220,6 @@ const LogIn = React.memo((props) => {
   };
   //Submit OTP
   const submitOtpHandler = (event) => {
-    console.log('submit OTP')
     // event.preventDefault();
     setUserNameError(false);
 
@@ -307,7 +305,10 @@ const LogIn = React.memo((props) => {
   };
   //Update phone
   const _updatePhoneHandler = () => {
-    props.onUpdate({ phone: extensions[extension].label + mobile });
+    props.onUpdate({
+      phone: extensions[extension].label + mobileRef.current.value,
+      whatsapp_opt_in : whatsapp,
+    });
   };
   //Mobile, name, email, password, JSX
   mobileInput = (
@@ -378,7 +379,9 @@ const LogIn = React.memo((props) => {
     mobileRef.current.focus();
   };
 
-  const googleResponse = (response) => {};
+  const googleResponse = (response) => {
+  console.log("GOOGLE_LOGIN_ERROR: ", response);
+  };
   // if(!props.loadingsocial)
   let isPageWide = media("(min-width: 768px)");
 
@@ -402,7 +405,7 @@ const LogIn = React.memo((props) => {
       {(props.token && !props.phone) ||
       (props.token && props.phone === "null") ? (
         <p
-          style={{ margin: "0 1rem 4rem 1rem", fontWeight: "100" }}
+          style={{ margin: "0 1rem 2rem 1rem", fontWeight: "200" }}
           className="font-lexend text-center"
         >
           This is where your experience captain can reach you to personalize
@@ -439,12 +442,19 @@ const LogIn = React.memo((props) => {
             {mobileInput}
           </MobileNumberContainer>
           <Button
-            fullWidth
-            variant="contained"
-            color="primary"
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
             loading={props.loading}
+margin={props.nospacing ? "0" : "2rem 0"}
+            width="100%"
+            bgColor="#F7E700"
+            fontWeight="500"
+            fontSize="16px"
+            borderWidth="1px"
+            hoverColor="white"
+            hoverBgColor="black"
+            boxShadow="0px 2px 0px #ECEAEA"
+            borderRadius="8px"
           >
             Complete Signup
           </Button>
@@ -566,9 +576,10 @@ const LogIn = React.memo((props) => {
               borderRadius="8px"
               loading={props.loading}
             >
-              Login
+                {/* Request OTP */}
+                Login
             </Button>
-          ) : (!props.name || !props.email) ? (
+          ) : !props.name || !props.email ? (
             <Button
               onclick={(e) => submitOtpHandler(e)}
               margin={props.nospacing ? "0" : "0.5rem 0"}
@@ -587,7 +598,7 @@ const LogIn = React.memo((props) => {
             </Button>
           ) : (
             <Button
-              onclick={(e) =>console.log('')}
+              onclick={(e) => console.log("")}
               margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
               bgColor="#F7E700"
@@ -628,7 +639,10 @@ const LogIn = React.memo((props) => {
           <>
             <>
               <GoogleLogin
-                clientId="905616545950-uvachhjv75hejrp9plvodags7s1tqq20.apps.googleusercontent.com"
+                clientId={
+                  // CONTENT_SERVER_HOST.includes('dev') ? GOOGLE_CLIENT_ID_DEV : GOOGLE_CLIENT_ID
+                  GOOGLE_CLIENT_ID
+                }
                 buttonText=""
                 className="google-login-button"
                 onSuccess={props.onGoogleAuth}

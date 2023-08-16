@@ -1,38 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Heading from '../../../components/newheading/heading/Index';
-import Option from '../../../components/forms/Option';
-import Dropdown from '../../../components/forms/Dropdown';
-import { RiArrowDropDownLine, RiWhatsappFill } from 'react-icons/ri';
-import Button from '../../../components/Button';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import { connect } from 'react-redux';
-import * as orderaction from '../../../store/actions/order';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { MdEdit } from 'react-icons/md';
-import moment from 'moment';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import Heading from "../../../components/newheading/heading/Index";
+import Option from "../../../components/forms/Option";
+import Dropdown from "../../../components/forms/Dropdown";
+import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
+import Button from "../../../components/ui/button/Index";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { connect } from "react-redux";
+import * as orderaction from "../../../store/actions/order";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { MdEdit } from "react-icons/md";
+import moment from "moment";
 import {
   faRupeeSign,
   faTimes,
   faMale,
   faChild,
   faBaby,
-} from '@fortawesome/free-solid-svg-icons';
-import { useRouter } from 'next/router';
-import { getIndianPrice } from '../../../services/getIndianPrice';
-import { getHumanDateWithYear } from '../../../services/getHumanDateWithYear';
-import urls from '../../../services/urls';
+} from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
+import { getIndianPrice } from "../../../services/getIndianPrice";
+import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
+import urls from "../../../services/urls";
 import {
   ITINERARY_STATUSES,
   MIS_SERVER_HOST,
-} from '../../../services/constants';
-import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
-import axios from 'axios';
-import Accordion from './Accordion';
-import Spinner from '../../../components/Spinner';
-import ButtonYellow from '../../../components/ButtonYellow';
-import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
-import Slide from '../../../Animation/framerAnimation/Slide';
+} from "../../../services/constants";
+import axiossalecreateinstance from "../../../services/sales/itinerary/SaleCreate";
+import axios from "axios";
+import Accordion from "./Accordion";
+import Spinner from "../../../components/Spinner";
+import ButtonYellow from "../../../components/ButtonYellow";
+import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
+import Slide from "../../../Animation/framerAnimation/Slide";
 import {
   add,
   addDays,
@@ -41,18 +41,20 @@ import {
   isPast,
   parseISO,
   startOfDay,
-} from 'date-fns';
-import MakeYourPersonalised from '../../../components/MakeYourPersonalised';
-import { Link, scroller } from 'react-scroll';
-import { pluralDetector } from '../../../helper/shortHelpers';
-import SelectDate from './gittailored/SelectDate';
-import SelectPax from './gittailored/SelectPax';
-import dayjs from 'dayjs';
-import RegistrationModal from '../../../components/modals/gitregistrationform/Index';
-import VerificationModal from '../../../components/modals/verify/Index';
-import RegisteredUsersModal from '../../../components/modals/registeredusers/Index';
-import TermsModal from '../../../components/modals/terms/PW';
-import UiDropdown from '../../../components/UiDropdown';
+} from "date-fns";
+import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
+import { scroller } from "react-scroll";
+import { pluralDetector } from "../../../helper/shortHelpers";
+import SelectDate from "./gittailored/SelectDate";
+import SelectPax from "./gittailored/SelectPax";
+import dayjs from "dayjs";
+import RegistrationModal from "../../../components/modals/gitregistrationform/Index";
+import VerificationModal from "../../../components/modals/verify/Index";
+import RegisteredUsersModal from "../../../components/modals/registeredusers/Index";
+import TermsModal from "../../../components/modals/terms/PW";
+import UiDropdown from "../../../components/UiDropdown";
+import Link from "next/link";
+import ImageLoader from "../../../components/ImageLoader";
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
@@ -70,8 +72,8 @@ const INR = styled.div`
   font-size: 1.8rem;
 
   &:after {
-    content: 'Per Adult';
-    display: ${(props) => (props.show_per_person_cost ? 'block' : 'none')};
+    content: "Per Adult";
+    display: ${(props) => (props.show_per_person_cost ? "block" : "none")};
     font-size: 1.5rem;
     font-weight: 800;
   }
@@ -94,7 +96,7 @@ const Details = (props) => {
 
     if (isOlder) {
       const nextDay = addDays(currentDate, 1); // Add one day to the current date
-      return format(nextDay, 'yyyy-MM-dd');
+      return format(nextDay, "yyyy-MM-dd");
     }
 
     return dateString;
@@ -109,7 +111,7 @@ const Details = (props) => {
   const [isDatePast, setIsDatePast] = useState(false);
   const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [inputValue, setInputValue] = useState(
-    props.payment?.coupon ? props.payment?.coupon?.code : ''
+    props.payment?.coupon ? props.payment?.coupon?.code : ""
   );
   const [showVerification, setShowVerification] = useState(false);
   const [showRegistration, setShowRegistartion] = useState(false);
@@ -125,17 +127,16 @@ const Details = (props) => {
   };
   const handleSelectOption = (option) => {
     // Perform additional actions with the selected option
-    console.log('clicked option', option);
     setDropdownOpen(false);
     setPax(option);
   };
   const [isError, setIsError] = useState({
     error: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const [isSucess, setIsSucess] = useState({
     value: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const [showAdultsModal, setShowAdultsModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
@@ -160,32 +161,32 @@ const Details = (props) => {
   const addDaysToDate = (dateString, numberOfDays) => {
     const date = new Date(dateString);
     const newDate = add(date, { days: numberOfDays });
-    const formattedDate = format(newDate, 'yyyy-MM-dd');
+    const formattedDate = format(newDate, "yyyy-MM-dd");
     return formattedDate;
   };
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
-      smooth: 'easeInOutQuart',
+      smooth: "easeInOutQuart",
       spy: true,
       // duration={500}
       offset: -150,
     });
   };
   const getCouponHandler = (coupon) => {
-    setPaymentLoading(true);
+    // setPaymentLoading(true);
     //  props.checkAuthState();
 
     axios
       .post(
-        MIS_SERVER_HOST + '/payment/coupon/apply/',
+        MIS_SERVER_HOST + "/payment/coupon/apply/",
         {
           itinerary_id: props.id,
           coupon: coupon,
@@ -201,13 +202,13 @@ const Details = (props) => {
           value: true,
           Msg: res.data.coupon_usage.message,
         });
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(true);
         setiscouponApplied(true);
 
         setIsError({
           error: false,
-          errorMsg: '',
+          errorMsg: "",
         });
 
         props.getPaymentHandler();
@@ -220,7 +221,7 @@ const Details = (props) => {
         // }
       })
       .catch((error) => {
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
 
@@ -236,20 +237,20 @@ const Details = (props) => {
 
           setIsError({
             error: true,
-            errorMsg: 'Invalid Coupon Or Coupon Expired',
+            errorMsg: "Invalid Coupon Or Coupon Expired",
           });
         }
 
-        setInputValue('');
+        setInputValue("");
       });
   };
   const RemoveCoupon = () => {
-    setPaymentLoading(true);
+    // setPaymentLoading(true);
     //  props.checkAuthState();
 
     axios
       .post(
-        MIS_SERVER_HOST + '/payment/coupon/apply/',
+        MIS_SERVER_HOST + "/payment/coupon/apply/",
         {
           itinerary_id: props.id,
           coupon: null,
@@ -263,12 +264,12 @@ const Details = (props) => {
       .then((res) => {
         setIsSucess({
           value: true,
-          Msg: 'Coupon Removed Successfully',
+          Msg: "Coupon Removed Successfully",
         });
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(false);
         setiscouponApplied(false);
-        setInputValue('');
+        setInputValue("");
 
         props.getPaymentHandler();
         //check if user has already paid
@@ -280,22 +281,22 @@ const Details = (props) => {
         // }
       })
       .catch((error) => {
-        setPaymentLoading(false);
+        // setPaymentLoading(false);
         setIsDisabled(true);
         setIsError({
           error: true,
-          errorMsg: 'Coupon Removed Failed',
+          errorMsg: "Coupon Removed Failed",
         });
       });
   };
   function handleSubmit(e) {
     if (props.token) {
-      if (inputValue !== '') {
+      if (inputValue !== "") {
         getCouponHandler(inputValue);
       } else {
         setIsError({
           error: true,
-          errorMsg: 'Please Enter Something',
+          errorMsg: "Please Enter Something",
         });
       }
     } else {
@@ -313,77 +314,77 @@ const Details = (props) => {
             if (props.payment.costings_breakdown[booking].user_selected) {
               if (
                 props.payment.costings_breakdown[booking].booking_type ===
-                'Accommodation'
+                "Accommodation"
               ) {
                 bookingslist.push(
                   <p
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
+                      fontSize: "0.75rem",
+                      fontWeight: "400",
+                      letterSpacing: "1px",
+                      marginBottom: "0.25rem",
                     }}
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text'
-                        : 'font-lexend text-enter'
+                        ? "font-lexend text-enter blurry-text"
+                        : "font-lexend text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail[
-                      'duration'
+                      "duration"
                     ] +
-                      'N at ' +
-                      props.payment.costings_breakdown[booking].detail['name']}
+                      "N at " +
+                      props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '3fr 1fr',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
+                      display: "grid",
+                      gridTemplateColumns: "3fr 1fr",
+                      margin: "0.5rem 0",
+                      gridGap: "1rem",
                     }}
                   >
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-lexend text-enter blurry-text'
-                          : 'font-lexend text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail[
-                        'duration'
+                        "duration"
                       ] +
-                        'N at ' +
+                        "N at " +
                         props.payment.costings_breakdown[booking].detail[
-                          'name'
+                          "name"
                         ]}
                     </p>
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-lexend text-enter blurry-text'
-                          : 'font-lexend text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {'₹ ' +
+                      {"₹ " +
                         getIndianPrice(
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
-                              'booking_cost'
+                              "booking_cost"
                             ] / 100
                           )
                         )}
@@ -394,62 +395,62 @@ const Details = (props) => {
                 bookingslist.push(
                   <p
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
+                      fontSize: "0.75rem",
+                      fontWeight: "400",
+                      letterSpacing: "1px",
+                      marginBottom: "0.25rem",
                     }}
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text'
-                        : 'font-lexend text-enter'
+                        ? "font-lexend text-enter blurry-text"
+                        : "font-lexend text-enter"
                     }
                   >
-                    {props.payment.costings_breakdown[booking].detail['name']}
+                    {props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '3fr 1fr',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
+                      display: "grid",
+                      gridTemplateColumns: "3fr 1fr",
+                      margin: "0.5rem 0",
+                      gridGap: "1rem",
                     }}
                   >
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-lexend text-enter blurry-text'
-                          : 'font-lexend text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {props.payment.costings_breakdown[booking].detail['name']}
+                      {props.payment.costings_breakdown[booking].detail["name"]}
                     </p>
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-lexend text-enter blurry-text'
-                          : 'font-lexend text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {'₹ ' +
+                      {"₹ " +
                         getIndianPrice(
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
-                              'booking_cost'
+                              "booking_cost"
                             ] / 100
                           )
                         )}
@@ -473,7 +474,7 @@ const Details = (props) => {
 
   setBookingSummary();
   let message =
-    'Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/' +
+    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/" +
     router.asPath;
   // const [paymentLoading, setPaymentLoading] = useState(false);
 
@@ -483,10 +484,10 @@ const Details = (props) => {
     let razorpayOptions = {
       amount: data.amount,
       // "currency": "INR",
-      name: 'The Tarzan Way Payment Portal',
-      description: ' data.data.description',
+      name: "The Tarzan Way Payment Portal",
+      description: " data.data.description",
       image:
-        'https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480',
+        "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data.order_id,
       //Payment successfull handler passed to razorpay
       handler: function (response) {
@@ -494,7 +495,7 @@ const Details = (props) => {
 
         axios
           .post(
-            'https://dev.suppliers.tarzanway.com/sales/verify/',
+            "https://dev.suppliers.tarzanway.com/sales/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -524,23 +525,20 @@ const Details = (props) => {
         contact: props.phone,
       },
       theme: {
-        color: '#F7e700',
+        color: "#F7e700",
       },
     };
 
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
-      console.log('Razorpaydata', rzp1);
       rzp1.open();
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
+    } catch (error) {}
   };
   const _saleCreateHandler = (id) => {
     setPaymentLoading(true);
     axiossalecreateinstance
       .post(
-        '/',
+        "/",
         {
           itinerary_id: id,
         },
@@ -568,11 +566,11 @@ const Details = (props) => {
   return (
     <SummaryContainer
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
-      style={{ marginBottom: props.traveleritinerary ? '12.5vh' : '0' }}
+      style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
     >
       <div
         className={`${
-          props.payment.paid_user ? 'bg-[#98F0AB33]' : 'bg-[#F7E70033]'
+          props.payment.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
         }  -mt-[1rem] -mx-[1rem] mb-0`}
       >
         <div className=" mx-[1rem] mt-[1rem]">
@@ -589,7 +587,7 @@ const Details = (props) => {
                     : getIndianPrice(
                         Math.round(props.payment.total_cost / 100)
                       )}
-                  {'/-'}
+                  {"/-"}
                 </div>
               </div>
             )}
@@ -607,8 +605,8 @@ const Details = (props) => {
                   show_per_person_cost={props.payment.show_per_person_cost}
                   className={
                     props.blur
-                      ? 'font-lexend blurry-text'
-                      : 'font-lexend text-3xl flex flex-row items-center font-semibold'
+                      ? "font-lexend blurry-text"
+                      : "font-lexend text-3xl flex flex-row items-center font-semibold"
                   }
                 >
                   <span>₹</span>
@@ -627,7 +625,7 @@ const Details = (props) => {
                             Math.round(props.payment.discounted_cost) / 100
                           )
                         )}
-                    {'/-'}
+                    {"/-"}
                     {/* {!props.payment.show_per_person_cost
                       ? ' ' +
                         getIndianPrice(
@@ -654,12 +652,12 @@ const Details = (props) => {
                   <div className="font-medium text-base self-end">
                     {props?.payment?.pay_only_for_one ||
                     props?.payment?.show_per_person_cost
-                      ? 'Per Person Cost'
+                      ? "Per Person Cost"
                       : props.payment?.is_estimated_price
                       ? `${
-                          props.payment.total_cost == 0 ? '' : 'Estimated Price'
+                          props.payment.total_cost == 0 ? "" : "Estimated Price"
                         }`
-                      : 'Total Cost'}
+                      : "Total Cost"}
                   </div>
                 )}
               </div>
@@ -667,8 +665,8 @@ const Details = (props) => {
 
             <div className="text-[#7A7A7A] text-sm">
               {props?.payment?.total_cost == 0
-                ? 'No bookings added yet'
-                : 'Inclusive of applicable taxes'}
+                ? "No bookings added yet"
+                : "Inclusive of applicable taxes"}
             </div>
           </div>
         </div>
@@ -676,10 +674,10 @@ const Details = (props) => {
           <div
             className="px-2 pt-2"
             style={{
-              marginBottom: '0.1rem',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gridColumnGap: '1rem',
+              marginBottom: "0.1rem",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gridColumnGap: "1rem",
             }}
           >
             {props.payment.itinerary_status ===
@@ -733,13 +731,13 @@ const Details = (props) => {
 
           <RiArrowDropDownLine
             className={` text-2xl  mt-1 transition-all duration-100 ${
-              acoordianceOpen ? '-rotate-180 ' : 'rotate-180 animate-bounce'
+              acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
             }`}
           ></RiArrowDropDownLine>
         </div>
         <div
           className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
-            acoordianceOpen ? 'in' : 'out'
+            acoordianceOpen ? "in" : "out"
           } `}
         >
           {acoordianceOpen && (
@@ -761,20 +759,20 @@ const Details = (props) => {
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text '
-                        : 'font-lexend text-enter text-sm font-normal'
+                        ? "font-lexend text-enter blurry-text "
+                        : "font-lexend text-enter text-sm font-normal"
                     }
                   >
-                    {'Service Fee'}
+                    {"Service Fee"}
                   </div>
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text font-bold'
-                        : 'font-lexend text-enter '
+                        ? "font-lexend text-enter blurry-text font-bold"
+                        : "font-lexend text-enter "
                     }
                   >
-                    {'₹ ' +
+                    {"₹ " +
                       getIndianPrice(
                         Math.round(props.payment.total_service_fee / 100)
                       )}
@@ -786,20 +784,20 @@ const Details = (props) => {
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text  '
-                        : 'font-lexend text-enter text-sm font-normal'
+                        ? "font-lexend text-enter blurry-text  "
+                        : "font-lexend text-enter text-sm font-normal"
                     }
                   >
-                    {'GST'}
+                    {"GST"}
                   </div>
                   <div
                     className={
                       props.blur
-                        ? 'font-lexend text-enter blurry-text '
-                        : 'font-lexend text-enter '
+                        ? "font-lexend text-enter blurry-text "
+                        : "font-lexend text-enter "
                     }
                   >
-                    {'₹ ' + getIndianPrice(Math.round(props.payment.gst / 100))}
+                    {"₹ " + getIndianPrice(Math.round(props.payment.gst / 100))}
                   </div>
                 </div>
               ) : null}
@@ -810,20 +808,20 @@ const Details = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-lexend text-enter blurry-text  '
-                            : 'font-lexend text-enter text-sm font-bold  flex flex-col'
+                            ? "font-lexend text-enter blurry-text  "
+                            : "font-lexend text-enter text-sm font-bold  flex flex-col"
                         }
                       >
-                        {'Coupon Discount'}
+                        {"Coupon Discount"}
                         <div className="flex flex-row gap-1">
                           <div className="text-[#02BF2B]">
                             {props.payment.coupon.code}
                           </div>
                           <div className="font-normal ">
                             (
-                            {props?.payment?.coupon?.discount_type == 'Flat'
-                              ? 'Flat'
-                              : props.payment.coupon.discount_value + '%'}{' '}
+                            {props?.payment?.coupon?.discount_type == "Flat"
+                              ? "Flat"
+                              : props.payment.coupon.discount_value + "%"}{" "}
                             OFF)
                           </div>
                         </div>
@@ -831,13 +829,13 @@ const Details = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-lexend text-enter blurry-text '
-                            : 'font-lexend text-enter font-bold'
+                            ? "font-lexend text-enter blurry-text "
+                            : "font-lexend text-enter font-bold"
                         }
                       >
                         <div>
-                          (-){' '}
-                          {'₹' +
+                          (-){" "}
+                          {"₹" +
                             getIndianPrice(
                               Math.round(
                                 props?.payment?.coupon_usage?.discount / 100
@@ -952,7 +950,7 @@ const Details = (props) => {
                     onUnmount={() =>
                       setIsError({
                         error: false,
-                        errorMsg: '',
+                        errorMsg: "",
                       })
                     }
                     isActive={isError.error}
@@ -971,7 +969,7 @@ const Details = (props) => {
                     onUnmount={() =>
                       setIsSucess({
                         value: false,
-                        Msg: '',
+                        Msg: "",
                       })
                     }
                     isActive={isSucess.value}
@@ -1026,14 +1024,14 @@ const Details = (props) => {
                 {props.plan
                   ? props.plan
                     ? getHumanDateWithYear(
-                        format(new Date(date), 'dd-MM-yyyy').replaceAll(
-                          '-',
-                          '/'
+                        format(new Date(date), "dd-MM-yyyy").replaceAll(
+                          "-",
+                          "/"
                         )
                       )
                     : null
                   : null}
-                {' - '}
+                {" - "}
                 {date
                   ? getHumanDateWithYear(
                       format(
@@ -1045,8 +1043,8 @@ const Details = (props) => {
                               : 4
                           )
                         ),
-                        'dd-MM-yyyy'
-                      ).replaceAll('-', '/')
+                        "dd-MM-yyyy"
+                      ).replaceAll("-", "/")
                     )
                   : null}
               </div>
@@ -1079,16 +1077,16 @@ const Details = (props) => {
           <div className=" flex flex-row items-center text-md font-medium text-black">
             {/* {booking.number_of_adults} */}
             <div>
-              {pax} {pluralDetector('Adult', pax)}{' '}
+              {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
             {props.payment.meta_info.number_of_children ? (
               <div>, {props.payment.meta_info.number_of_children} Children</div>
             ) : null}
             {props.payment.meta_info.number_of_infants ? (
               <div>
-                , {props.payment.meta_info.number_of_infants}{' '}
+                , {props.payment.meta_info.number_of_infants}{" "}
                 {pluralDetector(
-                  'Infant',
+                  "Infant",
                   props.payment.meta_info.number_of_infants
                 )}
               </div>
@@ -1132,101 +1130,156 @@ const Details = (props) => {
         !props.payment.paid_user &&
         props.payment.user_allowed_to_pay ? (
           props.payment.total_cost > 0 ? (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => _saleCreateHandler(props.id)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => _saleCreateHandler(props.id)}
+              loading={paymentLoading}
             >
               Pay Now & Book
-              {paymentLoading ? (
-                <Spinner
-                  color="white"
-                  display="inline"
-                  size={16}
-                  margin="0 0.5rem"
-                ></Spinner>
-              ) : null}
-            </ButtonYellow>
+            </Button>
           ) : (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => scrollToElement('Stays-Head')}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => scrollToElement("Stays-Head")}
             >
               Add Hotels
-            </ButtonYellow>
+            </Button>
           )
         ) : props?.payment?.is_registration_needed ? (
           props?.payment?.email_reverification_needed ? (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => setShowVerification(true)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => setShowVerification(true)}
             >
               Pay Now & Book
-            </ButtonYellow>
+            </Button>
           ) : props?.payment?.paid_user ? (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => scrollToElement('Stays-Head')}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => scrollToElement("Stays-Head")}
             >
               View Bookings
-            </ButtonYellow>
+            </Button>
           ) : (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => setShowRegistartion(true)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => setShowRegistartion(true)}
             >
               Add Travellers Details
-            </ButtonYellow>
+            </Button>
           )
         ) : (
           !props.payment.paid_user && (
-            <ButtonYellow
-              styleClass="w-full"
-              onClick={() => setNewitinerary(true)}
-              // onClick={() => _saleCreateHandler(props.id)}
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="0.85rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              // loading={loading}
+              padding="12px"
+              onclick={() => props._GetInTouch()}
+              // height='2rem'
             >
-              Craft a new trip!
-            </ButtonYellow>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  alignItems: "center",
+                }}
+              >
+                <ImageLoader
+                  dimensions={{ height: 50, width: 50 }}
+                  dimensionsMobile={{ height: 50, width: 50 }}
+                  height={"20px"}
+                  width={"20px"}
+                  leftalign
+                  url={"media/icons/login/customer-service-black.png"}
+                />{" "}
+                <span>Get in touch!</span>
+              </div>
+            </Button>
           )
         )
       ) : null}
       {props.payment && props.token
         ? props.payment.paid_user
           ? null
-          : // (
-            //   <ButtonYellow
-            //     styleClass="w-full"
-            //     onClick={() => console.log(' ')}
-            //     onclickparam={null}
-            //   >
-            //     Get In Touch
-            //   </ButtonYellow>
-            // )
-            null
+          : null
         : null}
       {!props.token ? (
-        <ButtonYellow
-          styleClass="w-full"
-          onClick={() => props.setShowLoginModal(true)}
+        <Button
+          color="#111"
+          fontWeight="500"
+          fontSize="0.85rem"
+          borderWidth="2px"
+          width="100%"
+          borderRadius="8px"
+          bgColor="#f8e000"
+          padding="12px"
+          onclick={() => props.setShowLoginModal(true)}
         >
           Log in to proceed
-        </ButtonYellow>
+        </Button>
       ) : null}
-      <ButtonYellow
-        styleClass="w-full mt-2"
-        primary={false}
-        onClick={() =>
-          (window.location.href = urls.WHATSAPP + '?text=' + message)
+      <Button
+        width="100%"
+        margin="0.5rem 0 0 0"
+        borderRadius="8px"
+        hoverColor="white"
+        fontWeight="400"
+        padding="12px"
+        onclick={() =>
+          (window.location.href = urls.WHATSAPP + "?text=" + message)
         }
       >
         <div className="flex flex-row justify-center items-center">
           <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-          <div className="text-[#01202B] ">Chat on Whatsapp</div>
+          <div>Chat on Whatsapp</div>
         </div>
-      </ButtonYellow>
+      </Button>
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-        <a href="https://dev.thetarzanway.com/terms-conditions" target="_blank">
+        <Link href="/terms-conditions" target="_blank">
           <div>Terms & Conditions</div>
-        </a>
+        </Link>
       </div>
       <RegistrationModal
         number_of_adults={

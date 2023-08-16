@@ -36,7 +36,6 @@ const NewItenaryDBDMob = (props) => {
     border-radius: 8px;
     padding: 0.5rem;
   `;
-  console.log('itenary...' + JSON.stringify(props.itinerary));
 
   const [activeItem, setActiveItem] = useState(0);
 
@@ -53,10 +52,8 @@ const NewItenaryDBDMob = (props) => {
   const items = [];
   const itemsDays = [];
   function extractId(location, arr) {
-    console.log('extract location', location);
     return arr[location].slab_id;
   }
-  console.log('slabs idssss', props.city_slabs);
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -71,7 +68,6 @@ const NewItenaryDBDMob = (props) => {
         // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
         // console.log('idssss'+ itenaryId.slab_id)
         // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
-        console.log('idssss' + i, props.city_slabs[i]);
         items.push({
           id: i,
           label: `${props.city_slabs[i].city_name} ${
@@ -150,7 +146,7 @@ const NewItenaryDBDMob = (props) => {
       </div> */}
       <ScrollableMenuTabs
         icons={false}
-        offset={'89px'}
+        offset={items.length ? '89px' : '50px'}
         items={itemsDays}
         BarName="CityName"
         year={'2023'}

@@ -1,59 +1,74 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
-import ImageLoader from '../../../components/ImageLoader';
-import { differenceInMinutes, format, parseISO } from 'date-fns';
-import * as ga from '../../../services/ga/Index';
-import { FaPlane } from 'react-icons/fa';
-import { IoCheckmark, IoClose } from 'react-icons/io5';
-import { LivelyButton } from '../../../components/LiveleyButton';
-import { MdEdit } from 'react-icons/md';
-import useMediaQuery from '../../../components/media';
-import { ITINERARY_STATUSES } from '../../../services/constants';
-import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import Slide from '../../../Animation/framerAnimation/Slide';
-import { PulseLoader } from 'react-spinners';
-import EllipsisTruncation from '../../EllipsisTruncate';
-import { checkNestedProperties } from '../../../helper/shortHelpers';
-function formatDate(dateString) {
-  const date = new parseISO(dateString);
-  if (isNaN(date.getTime())) {
-    throw new Error('Invalid date string');
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
+import ImageLoader from "../../../components/ImageLoader";
+import { differenceInMinutes, format, parseISO } from "date-fns";
+import * as ga from "../../../services/ga/Index";
+import { FaPlane } from "react-icons/fa";
+import { IoCheckmark, IoClose } from "react-icons/io5";
+import { LivelyButton } from "../../../components/LiveleyButton";
+import { MdEdit } from "react-icons/md";
+import useMediaQuery from "../../../components/media";
+import { ITINERARY_STATUSES } from "../../../services/constants";
+import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import { PulseLoader } from "react-spinners";
+import EllipsisTruncation from "../../EllipsisTruncate";
+import { checkNestedProperties } from "../../../helper/shortHelpers";
+import { connect } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
+import { getIndianPrice } from "../../../services/getIndianPrice";
+import Button from "../../../components/ui/button/Index";
+const Plan = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  transform: translate(-50%, -45%);
+`;
+const Circle = styled.div`
+  border: 1px solid #7a7a7a;
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  background: white;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-38%);
+`;
+const DottedLine = styled.div`
+  position: relative;
+  height: 2px;
+  width: 100%;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, #7a7a7a 5px, transparent 5px);
+    background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
   }
-  return format(date, 'EEE, dd MMMM');
-}
-function createCacheKey(checkIn, checkOut) {
-  return `${checkIn}-${checkOut}`;
-}
-
-function processBookingTimes(checkIn, checkOut) {
-  const cache = processBookingTimes.cache || (processBookingTimes.cache = {});
-
-  const cacheKey = createCacheKey(checkIn, checkOut);
-  if (cache[cacheKey]) {
-    return cache[cacheKey];
+`;
+const LogoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex-direction: row;
+  gap: 1rem;
+  @media screen and (min-width: 768px) {
+    padding-left: 0.25rem;
+    flex-direction: column;
+    font-weight: 400;
+    gap: 0rem;
+    text-align: center;
+    font-size: 0.8rem;
   }
-
-  const checkInTime = format(new Date(checkIn), 'hh:mm a');
-  const checkOutTime = format(new Date(checkOut), 'hh:mm a');
-
-  const durationInMinutes = differenceInMinutes(
-    new Date(checkOut),
-    new Date(checkIn)
-  );
-  const durationHours = Math.floor(durationInMinutes / 60);
-  const durationMinutes = durationInMinutes % 60;
-
-  const result = {
-    checkInTime: checkInTime,
-    checkOutTime: checkOutTime,
-    duration: `${durationHours}h ${durationMinutes}m`,
-  };
-
-  cache[cacheKey] = result;
-  return result;
-}
+`;
 
 const Container = styled.div`
   display: grid;
@@ -73,6 +88,21 @@ const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     width: auto;
     overflow: none;
+  }
+`;
+const InfoContainer = styled.div`
+  width: 100%;
+  margin-block: auto;
+  @media screen and (min-width: 1100px) {
+    width: 70%;
+  }
+  @media screen and (min-width: 1600px) {
+    width: 50%;
+  }
+  @media screen and (max-width: 768px) {
+    span {
+      font-size: 14px;
+    }
   }
 `;
 //
@@ -95,6 +125,13 @@ const ImageContainer = styled.div`
     transform: scale(1.05);
   }
 `;
+const PriceContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  align-items: center;
+`;
+
 const FacilityContainer = styled.div``;
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
@@ -132,19 +169,75 @@ const Line = styled.hr`
   left: 50%;
   
 
-  border-color: ${(props) => (props.pinColour ? props.pinColour : 'black')};
+  border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
   min-height: 10vw;
   height: 100%;
   margin: 0rem 0 0rem 0rem; */
 `;
+const Cost = styled.p`
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+`;
+const Text = styled.p`
+  font-size: 12px;
+  font-weight: 300;
+  margin: 0;
+  text-align: left;
+  @media screen and (min-width: 768px) {
+    text-align: center;
+  }
+`;
+const FlexBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+`;
+
+function formatDate(dateString) {
+  const date = new parseISO(dateString);
+
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date string");
+  }
+  return format(date, "EEE, dd MMM");
+}
+function createCacheKey(checkIn, checkOut) {
+  return `${checkIn}-${checkOut}`;
+}
+
+function processBookingTimes(checkIn, checkOut) {
+  const cache = processBookingTimes.cache || (processBookingTimes.cache = {});
+
+  const cacheKey = createCacheKey(checkIn, checkOut);
+  if (cache[cacheKey]) {
+    return cache[cacheKey];
+  }
+
+  const checkInTime = format(new Date(checkIn), "hh:mma");
+  const checkOutTime = format(new Date(checkOut), "hh:mma");
+
+  const durationInMinutes = differenceInMinutes(
+    new Date(checkOut),
+    new Date(checkIn)
+  );
+  const durationHours = Math.floor(durationInMinutes / 60);
+  const durationMinutes = durationInMinutes % 60;
+
+  const result = {
+    checkInTime: checkInTime,
+    checkOutTime: checkOutTime,
+    duration: `${durationHours}h ${durationMinutes}m`,
+  };
+
+  cache[cacheKey] = result;
+  return result;
+}
 
 const TransferModeContainer = (props) => {
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState({
-    error: false,
-    errorMsg: '',
-  });
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   useEffect(() => {
     setaddboking(props.userSelected);
@@ -153,54 +246,50 @@ const TransferModeContainer = (props) => {
     if (!props.payment?.is_registration_needed) {
       if (props.token && props.payment?.user_allowed_to_pay) {
         _updateSelectedTransfer();
-        // _SelectedBookingHandler({
-        //   SelectedBookingId: selectedBooking?.id,
-        //   itinerary_id: itinerary_id,
-        //   tailored_id: tailored_id,
-        //   user_selected: !booking?.user_selected,
-        //   index: index,
-        // });
-
         e.stopPropagation();
       } else {
+        props.openNotification({
+          text: "Oops, this action is not allowed on another user's itinerary.",
+          heading: "Error!",
+          type: "error",
+        });
         props.setShowLoginModal();
         e.stopPropagation();
       }
     }
   }
-  const isDesktop = useMediaQuery('(min-width:1024px)');
+  const isDesktop = useMediaQuery("(min-width:1024px)");
 
   function HandleFlights(i) {
     if (!props.token) {
       props.setShowLoginModal();
     }
 
-    let name = props.booking['name'];
-    let costings_breakdown = props.booking['costings_breakdown'];
-    let cost = props.booking['booking_cost'];
-    let itinerary_id = props.booking['itinerary_id'];
-    let itinerary_name = props.booking['itinerary_name'];
-    let booking_type = props.booking['booking_type'];
+    let name = props.booking["name"];
+    let costings_breakdown = props.booking["costings_breakdown"];
+    let cost = props.booking["booking_cost"];
+    let itinerary_id = props.booking["itinerary_id"];
+    let itinerary_name = props.booking["itinerary_name"];
+    let booking_type = props.booking["booking_type"];
 
-    // let accommodation = props.booking["accommodation"];
-    let tailored_id = props.booking['tailored_itinerary'];
-    let id = props.booking['id'];
-    let check_in = props.booking['check_in'];
-    let check_out = props.booking['check_out'];
+    let tailored_id = props.booking["tailored_itinerary"];
+    let id = props.booking["id"];
+    let check_in = props.booking["check_in"];
+    let check_out = props.booking["check_out"];
     let pax = {
-      number_of_adults: props.booking['number_of_adults'],
-      number_of_children: props.booking['number_of_children'],
-      number_of_infants: props.booking['number_of_infants'],
+      number_of_adults: props.booking["number_of_adults"],
+      number_of_children: props.booking["number_of_children"],
+      number_of_infants: props.booking["number_of_infants"],
     };
-    let city = props.booking['city'];
-    let room_type = props.booking['room_type'];
-    let taxi_type = props.booking['taxi_type'];
-    let transfer_type = props.booking['transfer_type'];
-    let city_id = props.booking['city_id'];
-    let destination_city = props.booking['destination_city'];
-    let duration = props.booking['duration'];
-    let origin_iata = props.booking['origin_code'];
-    let destination_iata = props.booking['destination_code'];
+    let city = props.booking["city"];
+    let room_type = props.booking["room_type"];
+    let taxi_type = props.booking["taxi_type"];
+    let transfer_type = props.booking["transfer_type"];
+    let city_id = props.booking["city_id"];
+    let destination_city = props.booking["destination_city"];
+    let duration = props.booking["duration"];
+    let origin_iata = props.booking["origin_code"];
+    let destination_iata = props.booking["destination_code"];
     let user_selected = props.userSelected;
 
     props._changeFlightHandler(
@@ -228,32 +317,31 @@ const TransferModeContainer = (props) => {
       if (!props.token) {
         props.setShowLoginModal();
       }
-      let name = props.booking['name'];
-      let costings_breakdown = props.booking['costings_breakdown'];
-      let cost = props.booking['booking_cost'];
-      let itinerary_id = props.booking['itinerary_id'];
-      let itinerary_name = props.booking['itinerary_name'];
-      let booking_type = props.booking['booking_type'];
+      let name = props.booking["name"];
+      let costings_breakdown = props.booking["costings_breakdown"];
+      let cost = props.booking["booking_cost"];
+      let itinerary_id = props.booking["itinerary_id"];
+      let itinerary_name = props.booking["itinerary_name"];
+      let booking_type = props.booking["booking_type"];
 
-      // let accommodation = props.booking["accommodation"];
-      let tailored_id = props.booking['tailored_itinerary'];
-      let id = props.booking['id'];
-      let check_in = props.booking['check_in'];
-      let check_out = props.booking['check_out'];
+      let tailored_id = props.booking["tailored_itinerary"];
+      let id = props.booking["id"];
+      let check_in = props.booking["check_in"];
+      let check_out = props.booking["check_out"];
       let pax = {
-        number_of_adults: props.booking['number_of_adults'],
-        number_of_children: props.booking['number_of_children'],
-        number_of_infants: props.booking['number_of_infants'],
+        number_of_adults: props.booking["number_of_adults"],
+        number_of_children: props.booking["number_of_children"],
+        number_of_infants: props.booking["number_of_infants"],
       };
-      let city = props.booking['city'];
-      let room_type = props.booking['room_type'];
-      let taxi_type = props.booking['taxi_type'];
-      let transfer_type = props.booking['transfer_type'];
-      let city_id = props.booking['city_id'];
-      let destination_city = props.booking['destination_city'];
-      let duration = props.booking['duration'];
-      let origin_iata = props.booking['origin_city_iata_code'];
-      let destination_iata = props.booking['destination_city_iata_code'];
+      let city = props.booking["city"];
+      let room_type = props.booking["room_type"];
+      let taxi_type = props.booking["taxi_type"];
+      let transfer_type = props.booking["transfer_type"];
+      let city_id = props.booking["city_id"];
+      let destination_city = props.booking["destination_city"];
+      let duration = props.booking["duration"];
+      let origin_iata = props.booking["origin_city_iata_code"];
+      let destination_iata = props.booking["destination_city_iata_code"];
       props._changeTaxiHandler(
         name,
         itinerary_id,
@@ -275,12 +363,12 @@ const TransferModeContainer = (props) => {
     }
   }
   const Facilities = [
-    props.booking_type == 'Taxi' || props.booking_type == 'Bus'
-      ? props?.costings_breakdown.hasOwnProperty('luggage_bags')
+    props.booking_type == "Taxi" || props.booking_type == "Bus"
+      ? props?.costings_breakdown.hasOwnProperty("luggage_bags")
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
-        : '2 Luggage bags'
+        : "2 Luggage bags"
       : null,
-    props?.booking?.transfer_type == 'Intracity' ? '250 kms per day' : null,
+    props?.booking?.transfer_type == "Intracity" ? "250 kms per day" : null,
 
     props?.costings_breakdown?.taxi_occupancy ||
     props?.costings_breakdown?.no_of_seats
@@ -301,20 +389,20 @@ const TransferModeContainer = (props) => {
 
     let updated_bookings_arr = [
       {
-        id: props.booking['id'],
+        id: props.booking["id"],
         booking_type: props.booking_type,
-        itinerary_type: 'Tailored',
+        itinerary_type: "Tailored",
         user_selected: !props?.userSelected,
-        itinerary_id: props.booking['itinerary_id'],
-        taxi_type: props.booking['taxi_type'],
-        transfer_type: props.booking['transfer_type'],
+        itinerary_id: props.booking["itinerary_id"],
+        taxi_type: props.booking["taxi_type"],
+        transfer_type: props.booking["transfer_type"],
 
         costings_breakdown: props.booking?.costings_breakdown,
       },
     ];
     console.dir(updated_bookings_arr);
     axiosbookingupdateinstance
-      .post('?booking_type=Taxi,Bus,Ferry,Train,Flight', updated_bookings_arr, {
+      .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -322,82 +410,72 @@ const TransferModeContainer = (props) => {
       .then((res) => {
         props._updateTaxiBookingHandler(res.data.bookings);
 
-        //  props.getPaymentHandler();
         setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
         setaddboking(!addbooking);
         setUpdateBookingState(false);
         setLoading(false);
+        props.openNotification({
+          text: "Your Booking updated successfully!",
+          heading: "Success!",
+          type: "success",
+        });
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
         if (err.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-
-          // The response headers
           if (err.response.status === 400) {
-            setIsError({
-              error: true,
-              errorMsg: err.response.data.message,
+            props.openNotification({
+              text: err.response.data.message,
+              heading: "Error!",
+              type: "error",
             });
-          }
+          } else
+            props.openNotification({
+              text: "There seems to be a problem, please try again!",
+              heading: "Error!",
+              type: "error",
+            });
         }
         setUpdateBookingState(false);
         setLoading(false);
-        window.alert('There seems to be a problem, please try again!');
+        window.alert("There seems to be a problem, please try again!");
       });
   };
 
+  var adult;
+  if (props.booking.number_of_adults > 1) adult = " Adults";
+  else adult = " Adult";
+  var child;
+  if (props.booking.number_of_children > 1) child = " Childs";
+  else child = " Child";
+
   return (
     <Container>
-      <div className=" fixed right-[10px] top-[50px] z-[200] ">
-        {isError.error && (
-          <Slide
-            hideTime={8}
-            onUnmount={() =>
-              setIsError({
-                error: false,
-                errorMsg: '',
-              })
-            }
-            isActive={isError.error}
-            direction={-2}
-            duration={1.3}
-            ydistance={25}
-          >
-            <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
-              {isError.errorMsg}
-            </div>
-          </Slide>
-        )}
-      </div>
-      {/* <div></div> */}
-      {props?.routes.length > 1 ? (
-        <div style={{ position: 'relative' }}>
+      {props.routes && props?.routes.length > 1 ? (
+        <div style={{ position: "relative" }}>
           <Line pinColour={props.pinColour} Transfers={true} />
         </div>
       ) : (
-        <div style={{ position: 'relative' }}></div>
+        <div style={{ position: "relative" }}></div>
       )}
 
-      {props.booking_type == 'Flight' ? (
-        <div className="mt-3 lg:ml-7 ml-2">
+      {props.booking_type == "Flight" ? (
+        <div className="mt-3 lg:ml-7">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
             <div className="flex flex-row gap-2 justify-center items-center">
               <div
                 className={`${
-                  props.booking_type == 'Train'
-                    ? 'lg:bottom-4 hidden'
-                    : 'lg:bottom-[3.6rem] hidden'
+                  props.booking_type == "Train"
+                    ? "lg:bottom-4 hidden"
+                    : "lg:bottom-[3.6rem] hidden"
                 } `}
                 onClick={(e) => {
                   handleCheckboxChange(e);
                 }}
               >
-                <CheckboxFormComponent checked={addbooking} />{' '}
+                <CheckboxFormComponent checked={addbooking} />{" "}
               </div>
               {props.userSelected ? (
                 <div className=" text-md font-semibold  text-[#277004] ">
@@ -407,18 +485,18 @@ const TransferModeContainer = (props) => {
                 <div className=" text-md font-semibold text-[#E00000]  ">
                   Excluded
                 </div>
-              )}{' '}
+              )}{" "}
             </div>
           </div>
           <div
             id={props.booking.id}
             className={`mb-4 mt-2 lg:block ${
-              !props.userSelected ? 'flex flex-col-reverse' : 'flex flex-col'
+              !props.userSelected ? "flex flex-col-reverse" : "flex flex-col"
             }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 p-3  `}
           >
-            <div className="flex flex-row gap-2    ">
+            <div className="flex flex-row gap-4    ">
               {props.userSelected && (
-                <div>
+                <LogoContainer>
                   <div className="">
                     {props.booking?.airline_code ? (
                       <ImageContainer>
@@ -434,74 +512,74 @@ const TransferModeContainer = (props) => {
                         ></ImageLoader>
                       </ImageContainer>
                     ) : (
-                      // <TransportIconFetcher
-                      //   TransportMode={props.booking_type}
-                      //   Instyle={{
-                      //     fontSize: '2.75rem',
-                      //     height: '3rem',
-                      //     width: '4rem',
-                      //     color: 'black',
-                      //   }}
-                      // />
                       <TransportIconFetcher
                         TransportMode={props.booking_type}
                         Instyle={{
-                          fontSize: '2.75rem',
-                          height: '3rem',
-                          width: '5rem',
-                          color: 'black',
+                          fontSize: "2.75rem",
+                          height: "3rem",
+                          width: "5rem",
+                          color: "black",
                         }}
                       />
                     )}
                   </div>
-
-                  {props.booking?.airline_code && (
-                    <div className="flex font-normal w-[4rem] text-sm  mt-1 line-clamp-2">
+                  <div>
+                    {props.booking?.airline_code && (
                       <EllipsisTruncation
                         text={props?.booking.airline_name}
                         maxCharacters={8}
                         tooltipText={props?.booking.airline_name}
                         tooltipPosition="top"
                       />
-                    </div>
-                  )}
-                </div>
+                    )}
+                    {!isDesktop && (
+                      <div>
+                        {props.userSelected ? (
+                          <div
+                            className="min-w-max text-[0.8rem]"
+                            style={{
+                              textAlign: "center",
+                              marginTop: "-0.3rem",
+                              fontWeight: "300",
+                            }}
+                          >
+                            {props.booking.via_airports &&
+                            props.booking.costings_breakdown
+                              ? `(${
+                                  props.booking.costings_breakdown.Segments[0]
+                                    .length - 1
+                                } Lay)`
+                              : "(Nonstop)"}
+                            {props.booking?.airline_code && (
+                              <span className="ml-1">
+                                {props.booking.duration
+                                  ? ` (${props.booking.duration}h)`
+                                  : processBookingTimes(
+                                      props.booking.check_in,
+                                      props.booking.check_out
+                                    ).duration}
+                              </span>
+                            )}
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                </LogoContainer>
               )}
 
               <div className="flex lg:flex-row flex-col lg:justify-between justify-center w-full">
-                <div className="flex flex-col lg:justify-center justify-start gap-1 lg:w-[40%] w-[100%]">
-                  {/* <div className="flex lg:flex-row flex-col lg:items-center items-baseline justify-between w-full">
-                    <div className="inline  gap-2 items-center ">
-                      {props.userSelected ? (
+                {isDesktop && (
+                  <InfoContainer>
                     <div
-                      onClick={() => HandleFlights(props.index)}
-                      className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                      className="lg:flex flex-row gap-2"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: props.userSelected
+                          ? "1fr 1fr 1fr"
+                          : "1fr 2fr 1fr",
+                      }}
                     >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => HandleFlights(props.index)}
-                      className="px-2 py-1 inline-block cursor-pointer rounded-lg shadow-sm ml-2 border-2 border-black  text-black font-medium text-sm"
-                    >
-                      Add Flight
-                    </div>
-                  )}
-                    </div>
-                    <div>
-                  {props.userSelected ? (
-                    <div className=" text-md font-bold  text-[#277004] ">
-                      Included
-                    </div>
-                  ) : (
-                    <div className=" text-md font-bold text-[#E00000]  ">
-                      Excluded
-                    </div>
-                  )}
-                </div>
-                  </div> */}
-                  {isDesktop && (
-                    <div className="lg:flex   flex-row  gap-3  ">
                       <div className="flex flex-col">
                         <div className="text-[#01202B] text-lg font-medium min-w-max">
                           {props.booking?.airline_code && (
@@ -528,47 +606,64 @@ const TransferModeContainer = (props) => {
 
                         <div className="min-w-max">{props.booking.city}</div>
                       </div>
-                      <div className="flex flex-row justify-center items-center">
-                        <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-                        <div className="relative w-32 flex justify-center items-center">
-                          <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
-                          <div className="flex mb-2 flex-col  justify-center items-center font-[200]">
-                            <FaPlane className=" " />
+                      <div
+                        style={{
+                          margin: "0",
+                          position: "relative",
+                          height: "0px",
+                          top: "50%",
+                        }}
+                      >
+                        <Circle style={{ left: 0 }} />
+                        <DottedLine></DottedLine>
+                        <Circle style={{ right: 0 }} />
+                        <Plan>
+                          <FaPlane style={{ fontSize: "1.25rem" }} />
+                        </Plan>
 
-                            {props.userSelected ? (
-                              <div className="min-w-max text-[0.8rem]">
-                                {props.booking.via_airports &&
-                                props.booking.costings_breakdown
-                                  ? `(${
-                                      props.booking.costings_breakdown
-                                        .Segments[0].length - 1
-                                    } Lay)`
-                                  : '(Nonstop)'}
-                                {props.booking?.airline_code && (
-                                  <span className="ml-1">
-                                    {props.booking.duration
-                                      ? ` (${props.booking.duration}h)`
-                                      : processBookingTimes(
-                                          props.booking.check_in,
-                                          props.booking.check_out
-                                        ).duration}
-                                  </span>
-                                )}
-                              </div>
-                            ) : null}
+                        {props.userSelected ? (
+                          <div
+                            className="min-w-max text-[0.8rem]"
+                            style={{
+                              textAlign: "center",
+                              marginTop: "0.2rem",
+                              fontWeight: "300",
+                            }}
+                          >
+                            {props.booking.via_airports &&
+                            props.booking.costings_breakdown
+                              ? `(${
+                                  props.booking.costings_breakdown.Segments[0]
+                                    .length - 1
+                                } Lay)`
+                              : "(Nonstop)"}
+                            {props.booking?.airline_code && (
+                              <span className="ml-1">
+                                {props.booking.duration
+                                  ? ` (${props.booking.duration}h)`
+                                  : processBookingTimes(
+                                      props.booking.check_in,
+                                      props.booking.check_out
+                                    ).duration}
+                              </span>
+                            )}
                           </div>
-                        </div>
-
-                        <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
+                        ) : null}
                       </div>
+
                       <div className="flex flex-row justify-between w-full">
                         <div>
                           <div className="text-[#01202B] text-lg font-medium min-w-max">
-                            {props.booking?.airline_code &&
-                              processBookingTimes(
-                                props.booking.check_in,
-                                props.booking.check_out
-                              ).checkOutTime}
+                            {props.booking?.airline_code && (
+                              <span>
+                                {
+                                  processBookingTimes(
+                                    props.booking.check_in,
+                                    props.booking.check_out
+                                  ).checkOutTime
+                                }
+                              </span>
+                            )}
                             <span className="font-[300] ml-1">
                               ({props.booking.destination_code})
                             </span>
@@ -585,136 +680,213 @@ const TransferModeContainer = (props) => {
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </InfoContainer>
+                )}
+                {isDesktop && (
+                  <>
+                    {props.userSelected ? (
+                      <div className="flex lg:flex-col md:flex-row lg:justify-center justify-between items-center">
+                        <div className="flex  mr-3 lg:w-full w-full flex-col lg:justify-center justify-start lg:items-end items-start">
+                          {props.booking.duration && (
+                            <div className="flex pl-2  font-[300]">
+                              <div>
+                                {props.booking.via_airports
+                                  ? `(${
+                                      props.booking.costings_breakdown
+                                        .Segments[0].length - 1
+                                    } Lay)`
+                                  : "(Nonstop)"}
+                                {
+                                  processBookingTimes(
+                                    props.booking.check_in,
+                                    props.booking.check_out
+                                  ).duration
+                                }
+                                {props.booking.duration
+                                  ? ` (${props.booking.duration}h)`
+                                  : null}
+                              </div>
+                            </div>
+                          )}
+                        </div>
 
-                {props.userSelected ? (
-                  <div className="flex lg:flex-col md:flex-row lg:justify-center justify-between items-center">
-                    <div className="flex  mr-3 lg:w-full w-full flex-col lg:justify-center justify-start lg:items-end items-start">
-                      {/* <div>
-                      <div className="flex flex-row w-full justify-end items-center gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#277004] ">
-                        <IoCheckmark></IoCheckmark>
-                       
+                        {!props?.payment?.paid_user && (
+                          <div
+                            onClick={() => HandleFlights(props.index)}
+                            className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                          >
+                            Change Flight
+                          </div>
+                        )}
                       </div>
-                      </div> */}
+                    ) : (
+                      !props?.payment?.paid_user && (
+                        <Button
+                          bgColor={"#F7E700"}
+                          borderRadius="8px"
+                          fontWeight="400"
+                          padding="0.6rem 2.2rem"
+                          hoverColor="white"
+                          margin="auto 0px"
+                          onclick={() => {
+                            HandleFlights(props.index);
+                          }}
+                        >
+                          Add Flight
+                        </Button>
+                      )
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
 
-                      {props.booking.duration && (
-                        <div className="flex pl-2  font-[300]">
-                          <div>
-                            {props.booking.via_airports
-                              ? `(${
-                                  props.booking.costings_breakdown.Segments[0]
-                                    .length - 1
-                                } Lay)`
-                              : '(Nonstop)'}
+            {!isDesktop && (
+              <>
+                <InfoContainer>
+                  <div
+                    className="lg:flex flex-row gap-2"
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr 1fr",
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <div className="text-[#01202B] text-lg font-medium min-w-max">
+                        {props.booking?.airline_code && (
+                          <span>
                             {
                               processBookingTimes(
                                 props.booking.check_in,
                                 props.booking.check_out
-                              ).duration
+                              ).checkInTime
                             }
-                            {props.booking.duration
-                              ? ` (${props.booking.duration}h)`
-                              : null}
-                          </div>
+                          </span>
+                        )}
+
+                        <span className="font-[300] ml-1 ">
+                          ({props.booking.origin_code})
+                        </span>
+                      </div>
+                      {ITINERARY_STATUSES.itinerary_prepared !==
+                        props.plan.itinerary_status && (
+                        <div className="min-w-max text-[0.8rem] -mt-1">
+                          {formatDate(props.booking.check_in)}
                         </div>
                       )}
 
-                      {/* <div>airline_name</div> */}
-                    </div>
-
-                    {!props?.payment?.paid_user && (
                       <div
-                        onClick={() => HandleFlights(props.index)}
-                        className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                        className="min-w-max"
+                        style={{ fontWeight: "400", fontSize: "0.8rem" }}
                       >
-                        Change Flight
+                        {props.booking.city}
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  !props?.payment?.paid_user && (
+                    </div>
                     <div
-                      className="flex lg:mr-0 mr-3 lg:w-[40%] w-full flex-col lg:justify-center justify-end lg:items-end items-end
-              "
+                      style={{
+                        margin: "0",
+                        position: "relative",
+                        height: "0px",
+                        top: "50%",
+                      }}
                     >
-                      {/* <div className="flex flex-row w-full lg:justify-end justify-start items-center t gap-2 text-sm font-normal lg:mb-3 mb-1 text-[#E00000]  ">
-                      <IoClose></IoClose> No Flight Yet
-                    </div> */}
+                      <Circle style={{ left: 0 }} />
+                      <DottedLine></DottedLine>
+                      <Circle style={{ right: 0 }} />
+                      <Plan>
+                        <FaPlane style={{ fontSize: "1.25rem" }} />
+                      </Plan>
+                    </div>
 
-                      <div
-                        onClick={() => HandleFlights(props.index)}
-                        className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-                      >
-                        Add Flight
+                    <div className="flex flex-row justify-between w-full">
+                      <div>
+                        <div className="text-[#01202B] text-lg font-medium min-w-max">
+                          {props.booking?.airline_code && (
+                            <span>
+                              {
+                                processBookingTimes(
+                                  props.booking.check_in,
+                                  props.booking.check_out
+                                ).checkOutTime
+                              }
+                            </span>
+                          )}
+                          <span className="font-[300] ml-1">
+                            ({props.booking.destination_code})
+                          </span>
+                        </div>
+                        {ITINERARY_STATUSES.itinerary_prepared !==
+                          props.plan.itinerary_status && (
+                          <div className="min-w-max text-[0.8rem] -mt-1">
+                            {formatDate(props.booking.check_out)}
+                          </div>
+                        )}
+                        <div
+                          className="min-w-max"
+                          style={{ fontWeight: "400", fontSize: "0.8rem" }}
+                        >
+                          {props.booking.destination_city}
+                        </div>
                       </div>
                     </div>
-                  )
-                )}
-              </div>
-            </div>
-            <div
-              className={`lg:hidden flex flex-row gap-3 ml-2 ${
-                !props.userSelected ? 'lg:mt-3 mb-3' : 'lg:mt-3 mt-3'
-              }  text-sm`}
-            >
-              <div className="flex flex-col">
-                <div className="text-[#01202B] font-normal">
-                  ({props.booking.origin_code})
-                </div>
-                {ITINERARY_STATUSES.itinerary_prepared !==
-                  props?.plan?.itinerary_status && (
-                  <div className="min-w-max">
-                    {formatDate(props.booking.check_in)}
                   </div>
-                )}
 
-                <div>{props.booking.city}</div>
-              </div>
-              <div className="flex flex-row justify-center items-center">
-                <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-                <div className="relative w-12 flex justify-center items-center">
-                  <div className="absolute border-t w-full pb-4  border-dotted border-gray-700 "></div>
-                  <div className="flex flex-col  justify-center items-center">
-                    <FaPlane className="" />
-                    <div>
+                  <PriceContainer>
+                    <FlexBox>
                       {props.userSelected ? (
                         <div>
-                          {props?.booking?.via_airports &&
-                          checkNestedProperties(
-                            props.booking?.costings_breakdown?.Segments
-                          )
-                            ? `(${
-                                props.booking?.costings_breakdown?.Segments[0]
-                                  .length - 1
-                              } Lay)`
-                            : '(Nonstop)'}
-                          {props.booking.duration
-                            ? ` (${props.booking.duration}h)`
-                            : null}
+                          <Cost className="font-lexend">
+                            {props.booking.booking_cost
+                              ? "₹" +
+                                getIndianPrice(
+                                  Math.round(props.booking.booking_cost / 100)
+                                ) +
+                                "/-"
+                              : null}
+                          </Cost>
+                          <Text>
+                            {"( " +
+                              props.booking.number_of_adults +
+                              adult +
+                              (props.booking.number_of_children
+                                ? ", " +
+                                  props.booking.number_of_children +
+                                  child
+                                : "") +
+                              " )"}
+                          </Text>
                         </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="h-2 w-2 rounded-full border-2 mb-4"></div>
-              </div>
-              <div className="flex flex-row justify-between w-full">
-                <div>
-                  <div className="text-[#01202B] font-medium">
-                    ({props.booking.destination_code})
-                  </div>
-                  {ITINERARY_STATUSES.itinerary_prepared !==
-                    props?.payment?.itinerary_status && (
-                    <div className="min-w-max">
-                      {formatDate(props.booking.check_out)}
-                    </div>
-                  )}
-                  <div>{props.booking.destination_city}</div>
-                </div>
-              </div>
-            </div>
+                      ) : (
+                        <></>
+                      )}
+                    </FlexBox>
+                    {props.userSelected ? (
+                      <div>
+                        {!props?.payment?.paid_user && (
+                          <div
+                            onClick={() => HandleFlights(props.index)}
+                            className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                          >
+                            Change
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      !props?.payment?.paid_user && (
+                        <div>
+                          <div
+                            onClick={() => HandleFlights(props.index)}
+                            className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                          >
+                            Add Flight
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </PriceContainer>
+                </InfoContainer>
+              </>
+            )}
           </div>
         </div>
       ) : (
@@ -724,15 +896,15 @@ const TransferModeContainer = (props) => {
             <div className="flex flex-row gap-2 justify-center items-center">
               <div
                 className={`${
-                  props.booking_type !== 'Taxi'
-                    ? 'lg:bottom-4 hidden'
-                    : 'lg:bottom-[3.6rem] hidden'
+                  props.booking_type !== "Taxi"
+                    ? "lg:bottom-4 hidden"
+                    : "lg:bottom-[3.6rem] hidden"
                 } `}
                 onClick={(e) => {
                   handleCheckboxChange(e);
                 }}
               >
-                <CheckboxFormComponent checked={addbooking} />{' '}
+                <CheckboxFormComponent checked={addbooking} />{" "}
               </div>
               {props.userSelected ? (
                 <div className=" text-md font-semibold  text-[#277004] ">
@@ -742,7 +914,7 @@ const TransferModeContainer = (props) => {
                 <div className=" text-md font-semibold text-[#E00000]  ">
                   Excluded
                 </div>
-              )}{' '}
+              )}{" "}
             </div>
           </div>
 
@@ -752,13 +924,13 @@ const TransferModeContainer = (props) => {
           >
             {props.icon && (
               <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
-                {props.booking_type == 'Flight' ? (
+                {props.booking_type == "Flight" ? (
                   <TransportIconFetcher
                     TransportMode={props.booking_type}
                     Instyle={{
-                      fontSize: '2.75rem',
-                      marginRight: '0.8rem',
-                      color: 'black',
+                      fontSize: "2.75rem",
+                      marginRight: "0.8rem",
+                      color: "black",
                     }}
                   />
                 ) : (
@@ -767,7 +939,6 @@ const TransferModeContainer = (props) => {
                       className=" object-contain"
                       url={props.icon}
                       leftalign
-                      // dimensions={{ width: 900, height: 500 }}
                       height="4rem"
                       width="4rem"
                       widthmobile="3rem"
@@ -777,39 +948,11 @@ const TransferModeContainer = (props) => {
               </div>
             )}
 
-            <div className=" flex flex-col w-[80%] pl-1">
-              <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium">
-                {/* <span className="inline  gap-3 items-center">
-                  {props.booking_type == 'Taxi' && (
-                    <div
-                      onClick={() => HandleTransport(props.index)}
-                      className="cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                    >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                    // <LivelyButton
-
-                    //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                    // >
-                    //   Change
-                    // </LivelyButton>
-                  )}
-                </span> */}
-                {/* <div>
-                  {props.userSelected ? (
-                    <div className=" text-md font-bold  text-[#277004] ">
-                      Included
-                    </div>
-                  ) : (
-                    <div className=" text-md font-bold text-[#E00000]  ">
-                      Excluded
-                    </div>
-                  )}
-                </div> */}
-              </div>
+            <div className=" flex flex-col w-[80%] lg:pl-1">
+              <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
               <div className="sm:text-sm text-[0.93rem]">
-                {props.booking_type == 'Taxi'
-                  ? 'Private transfer '
+                {props.booking_type == "Taxi"
+                  ? "Private transfer "
                   : props.booking_type}
                 {props?.booking?.costings_breakdown?.duration?.text && (
                   <div className="inline-block ml-1">
@@ -819,19 +962,13 @@ const TransferModeContainer = (props) => {
               </div>
               <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
                 {props.taxi_type && <div>{props.taxi_type}</div>}
-                {props.booking_type == 'Taxi' && (
+                {props.booking_type == "Taxi" && (
                   <div
                     onClick={() => HandleTransport(props.index)}
                     className=" cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                   >
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                   </div>
-                  // <LivelyButton
-
-                  //   className="px-4 py-1 text-[12px]  cursor-pointer border-2 border-black ml-1  font-bold font-lexend text-black rounded-md"
-                  // >
-                  //   Change
-                  // </LivelyButton>
                 )}
               </div>
 
@@ -860,44 +997,31 @@ const TransferModeContainer = (props) => {
                 </FacilityContainer>
               )}
             </div>
-            {/* {isDesktop &&
-              props.booking_type == 'Taxi' &&
-              !props?.payment?.paid_user &&
-              props.payment?.user_allowed_to_pay && (
-                <div
-                  onClick={() => HandleTransport(props.index)}
-                  className="px-[1.6rem]  lg:inline-block min-w-fit mr-3 bg-[#F7E700] py-[8px]  cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-                >
-                  {props.booking.user_selected
-                    ? `Change ${props.booking_type}`
-                    : 'Add to Itinerary'}
-                </div>
-              )} */}
             {!props?.payment?.paid_user && (
               <div>
                 <div
                   className={`absolute  ${
                     true
                       ? `${
-                          props.booking_type == 'Taxi'
-                            ? 'lg:bottom-[3.6rem]'
-                            : 'lg:bottom-[3.6rem]'
+                          props.booking_type == "Taxi"
+                            ? "lg:bottom-[3.6rem]"
+                            : "lg:bottom-[3.6rem]"
                         }  bottom-[1.5rem] `
                       : `${
                           props.payment?.paid_user ||
                           !props.payment?.user_allowed_to_pay
-                            ? 'lg:bottom-10 bottom-[1.2rem]'
-                            : 'lg:bottom-10 bottom-[2.5rem]'
+                            ? "lg:bottom-10 bottom-[1.2rem]"
+                            : "lg:bottom-10 bottom-[2.5rem]"
                         }`
                   } right-8 -m-3`}
                 >
                   {loading && (
                     <PulseLoader
                       style={{
-                        position: 'absolute',
-                        top: '-25%',
-                        left: '50%',
-                        transform: 'translate(-50% , -50%)',
+                        position: "absolute",
+                        top: "-25%",
+                        left: "50%",
+                        transform: "translate(-50% , -50%)",
                       }}
                       size={6}
                       speedMultiplier={0.6}
@@ -912,7 +1036,7 @@ const TransferModeContainer = (props) => {
                   >
                     <CheckboxFormComponent checked={addbooking} />
                     <label className="text-center sm:text-sm text-[0.7rem]">
-                      {addbooking ? 'Added Booking' : 'Add Booking'}
+                      {addbooking ? "Added Booking" : "Add Booking"}
                     </label>
                   </div>
                 </div>
@@ -925,4 +1049,17 @@ const TransferModeContainer = (props) => {
   );
 };
 
-export default TransferModeContainer;
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+export default connect(
+  mapStateToPros,
+  mapDispatchToProps
+)(TransferModeContainer);

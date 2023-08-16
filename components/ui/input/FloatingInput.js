@@ -79,7 +79,9 @@ const FloatingInput = forwardRef((props,ref) => {
       onChange={(e) => {
         props.onChange && props.onChange(e);
         setValueState(e.target.value)
-      }}
+       }}
+       onFocus={(e) => props.onFocus && props.onFocus(e)}
+       onBlur={(e)=>props.onBlur && props.onBlur(e)}
       ref={ref} 
     />
     <Label filled={

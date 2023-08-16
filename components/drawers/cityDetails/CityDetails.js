@@ -1,20 +1,20 @@
-import React from 'react'
-import { useState } from 'react';
-import ImageLoader from '../../ImageLoader';
-import media from '../../media'
-import styled from 'styled-components';
-import Text from './Text';
-import WeatherWidget from '../../WeatherWidget/WeatherWidget';
+import React from "react";
+import { useState } from "react";
+import ImageLoader from "../../ImageLoader";
+import media from "../../media";
+import styled from "styled-components";
+import Text from "./Text";
+import WeatherWidget from "../../WeatherWidget/WeatherWidget";
 import dynamic from "next/dynamic";
-import Button from '../../ui/button/Index'
-import { Link } from 'react-scroll';
+import Button from "../../ui/button/Index";
+import { Link } from "react-scroll";
 const MapBox = dynamic(() => import("../../Map.js"), {
   ssr: false,
 });
 const Title = styled.p`
-  font-weight: 800;
+  font-weight: 600;
   font-size: 20px;
-  margin-block : 1rem 0rem;
+  margin-block: 1rem 0rem;
 `;
 const MapInfo = styled.div`
   b {
@@ -24,7 +24,7 @@ const MapInfo = styled.div`
 const Heading = styled.p`
   font-size: 18px;
   font-weight: 600;
-  margin-block : 0rem;
+  margin-block: 0rem;
 `;
 const WeatherContainer = styled.div`
   border: 1px solid #eceaea;
@@ -40,12 +40,12 @@ const WeatherContainer = styled.div`
     margin-top: 0rem;
   }
 `;
-    const TextBold = styled.p`
-      line-height: 24px;
-      font-weight: 600;
-      margin: 0;
-      color: rgb(1, 32, 43);
-    `;
+const TextBold = styled.p`
+  line-height: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: rgb(1, 32, 43);
+`;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -67,25 +67,33 @@ const TimeStamp = styled.p`
   position: absolute;
   bottom: 0px;
   right: 20px;
-
 `;
 const CityDetails = (props) => {
-  console.log('props: ', props);
-  const [imageLoading, setImageLoading] = useState(true)
+  const [imageLoading, setImageLoading] = useState(true);
   let isPageWide = media("(min-width: 768px)");
-    const InfoWindowContainer = (location) => (
-      <MapInfo>
-        <b>{location.name}</b>
-        <div>
-          {location.experience_filters.map((e, i) =>
-            i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
-          )}
-        </div>
-        {location.ideal_duration_hours && (
-          <p>Ideal duration : {location.ideal_duration_hours} hrs</p>
+  function scrollToTargetAdjusted(id) {
+    const element = document.getElementById(id);
+    const headerOffset = 117;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+    });
+  }
+  const InfoWindowContainer = (location) => (
+    <MapInfo>
+      <b>{location.name}</b>
+      <div>
+        {location.experience_filters.map((e, i) =>
+          i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
         )}
-      </MapInfo>
-    );
+      </div>
+      {location.ideal_duration_hours && (
+        <p>Ideal duration : {location.ideal_duration_hours} hrs</p>
+      )}
+    </MapInfo>
+  );
   return (
     <Container style={{ padding: "0.5rem 1rem" }}>
       <div style={{ position: "relative" }}>
@@ -118,15 +126,22 @@ const CityDetails = (props) => {
           <Text text={props.data.short_description} />
         </div>
       )}
-      <Link to={props.data.name} offset={-50} >
-        <Button
-          onclick={() => props.onHide()}
-          style={{ marginInline: "auto" }}
-          margin="1rem auto"
-          borderRadius="8px"
-        >
-          View {props.data.name} itinerary
-        </Button>
+      <Link to={props.data.name} offset={-50}>
+        {props.dayId ? (
+          <Button
+            onclick={() => {
+              props.onHide();
+              scrollToTargetAdjusted(props.dayId);
+            }}
+            style={{ marginInline: "auto" }}
+            margin="1rem auto"
+            borderRadius="8px"
+          >
+            View {props.data.name} in your itinerary
+          </Button>
+        ) : (
+          <></>
+        )}
       </Link>
       {props.data.pois && props.data.pois.length ? (
         <div>
@@ -166,6 +181,6 @@ const CityDetails = (props) => {
       )}
     </Container>
   );
-}
+};
 
-export default CityDetails
+export default CityDetails;

@@ -22,6 +22,7 @@ import axiosPoiRoutes from '../../../services/itinerary/brief/route';
 import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
 import Landing from '../landing/Index';
 import Overview from '../../newitinerary/overview/Index';
+import { openNotification } from '../../../store/actions/notification';
 
 const Container = styled.div`
   width: 90%;
@@ -53,7 +54,7 @@ const Itinerary = (props) => {
     images: ['null'],
   });
   const [breif, setBreif] = useState();
-  const [routes, setRoutes] = useState(defaultbreif);
+  const [routes, setRoutes] = useState();
 
   const [booking, setBooking] = useState(null);
 
@@ -118,7 +119,6 @@ const Itinerary = (props) => {
     axiosbreifinstance
       .get(`/?itinerary_id=` + props.id)
       .then((res) => {
-        console.log('brief idssss 0', res.data);
         setBreif(res.data);
         setBreifLoading(false);
         if (res.data) {
@@ -183,7 +183,6 @@ const Itinerary = (props) => {
               setPaymentLoading(false);
             })
             .catch((err) => {
-              console.log(err);
             });
         } else {
           setPayment(res.data);
@@ -209,8 +208,6 @@ const Itinerary = (props) => {
         // }
       })
       .catch((error) => {
-        console.log('err claim');
-
         setPaymentLoading(false);
       });
   };
@@ -281,10 +278,7 @@ const Itinerary = (props) => {
   useEffect(() => {
     var IntervalTiming;
     if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
-    console.log('IntervalTiming: ', IntervalTiming);
-
     if (!IntervalTiming) {
-      console.log('IntervalTiming: ', 'notime');
       fetchData();
     } else
       setTimeout(() => {
@@ -303,7 +297,10 @@ const Itinerary = (props) => {
         .then((res) => {
           if (res.data.day_slabs.length) {
             if (res.data.is_stock) setIsStock(true);
-            setItinerary(res.data);
+            setItinerary({
+              ...res.data,
+              images: res.data.images.filter((value) => value),
+            });
             setItineraryLoading(false);
           } else {
             // window.location.href =
@@ -322,7 +319,6 @@ const Itinerary = (props) => {
           setRoutes(res);
         })
         .catch((err) => {
-          console.log(`error in routes${err}`);
         });
       axios
         .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
@@ -642,7 +638,12 @@ const Itinerary = (props) => {
 
         setCardUpdateLoading(null);
 
-        window.alert('There seems to be a problem, please try again!');
+        // window.alert('There seems to be a problem, please try again!');
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
       });
   };
   const _deselectActivityBookingHandler = (booking, user_selected) => {
@@ -833,8 +834,7 @@ const Itinerary = (props) => {
   } else
     return (
       <div>
-        {' '}
-        <Spinner></Spinner>{' '}
+        <Spinner></Spinner>
       </div>
     );
 };
@@ -849,6 +849,7 @@ const mapStateToPros = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
+    openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
 

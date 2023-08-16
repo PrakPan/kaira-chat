@@ -6,8 +6,6 @@ import useMediaQuery from '../../../components/media';
 const CityDetails = ({ data }) => {
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const [imageLoading, setImageLoading] = useState(true);
-  console.log('data');
-  console.log(data);
   return (
     <div className="px-3 w-[100vw] lg:w-[35vw]">
       <div style={imageLoading ? { display: 'none' } : { display: 'initial' }}>

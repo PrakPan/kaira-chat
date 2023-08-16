@@ -34,7 +34,7 @@ const ActivitiesBookings = (props) => {
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [alternates, setAlternates] = useState(null);
-  console.log(props.stayBookings);
+  const [dates, setDates] = useState({ check_in : '' , check_out : ''})
   const _changeBookingHandler = (
     name,
     itinerary_id,
@@ -52,10 +52,13 @@ const ActivitiesBookings = (props) => {
     costings_breakdown,
     images
   ) => {
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
+    {
+      process.env.NODE_ENV === 'production' &&
+        ga.event({
+          action: 'Itinerary-bookings-acc_change',
+          params: { name: name },
+        });
+    }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -376,12 +379,13 @@ const ActivitiesBookings = (props) => {
     props.setShowBookingModal;
   }
   function handleClick(i, id) {
+        let check_in = props.stayBookings[i]["check_in"];
+    let check_out = props.stayBookings[i]["check_out"];
+    setDates({check_in , check_out})
     setBookingId(id);
 
     setShowDetails(true);
   }
-  console.log('activityBookings');
-  console.log(props.activityBookings);
 
   return (
     <div className="lg:w-[60vw] w-full">
@@ -393,7 +397,7 @@ const ActivitiesBookings = (props) => {
         ? props.activityBookings.map((booking, index) => (
             <div className="flex gap-1 pt-4  flex-col justify-start">
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                {booking?.city}:{' '}
+                {booking?.city}:{" "}
                 {booking.duration && <span>({booking?.duration}N)</span>}
               </div>
               <div className=" shadow-md rounded-lg transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-500/50 border-[#ECEAEA]  hover:border-[#ffa500] shadow-[#ECEAEA] lg:p-4 p-2">
@@ -404,7 +408,7 @@ const ActivitiesBookings = (props) => {
                       dimensionsMobile={{ width: 400, height: 400 }}
                       borderRadius="8px"
                       hoverpointer
-                      onclick={() => console.log('')}
+                      onclick={() => console.log("")}
                       width="100%"
                       height="100%"
                       leftalign
@@ -426,7 +430,7 @@ const ActivitiesBookings = (props) => {
                       {booking.points &&
                         booking.points.map((data, i) => (
                           <div className="flex flex-col gap-1 ">
-                            {data !== '' && (
+                            {data !== "" && (
                               <div className="flex flex-row gap-1 ">
                                 <div>{i + 1}. </div>
                                 <div>{data}</div>
@@ -455,7 +459,7 @@ const ActivitiesBookings = (props) => {
                           <div className="text-md font-medium ">
                             {booking.check_in && getDate(booking.check_in)}
                             {booking.check_out &&
-                              ' - ' + ' ' + getDate(booking.check_out)}
+                              " - " + " " + getDate(booking.check_out)}
                           </div>
                         </div>
                       </div>
@@ -469,8 +473,8 @@ const ActivitiesBookings = (props) => {
                               booking.costings_breakdown[0]?.room_type,
                               4
                             )
-                              ? 'lg:flex-row flex-col'
-                              : 'flex-row'
+                              ? "lg:flex-row flex-col"
+                              : "flex-row"
                           } gap-3`}
                         >
                           <div className="text-md font-medium gap-2 flex flex-row items-center">
@@ -535,6 +539,8 @@ const ActivitiesBookings = (props) => {
         : null}
       <AccommodationModal
         _setImagesHandler={_setImagesHandler}
+        check_in={dates.check_in}
+        check_out={dates.check_out}
         onHide={() => setShowDetails(false)}
         id={bookingId}
         show={showDetails}
@@ -548,7 +554,7 @@ const ActivitiesBookings = (props) => {
           alternates={alternates}
           tailored_id={
             props.stayBookings
-              ? props.stayBookings[0]['tailored_itinerary']
+              ? props.stayBookings[0]["tailored_itinerary"]
               : null
           }
           _updatePaymentHandler={props._updatePaymentHandler}

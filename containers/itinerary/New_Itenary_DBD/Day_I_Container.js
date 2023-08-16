@@ -102,7 +102,6 @@ const Day_I_Container = (props) => {
   }
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements, slab) {
-    console.log('JsonArray', JsonArray.length);
     JsonArray.map((element, index) => {
       switch (element.element_type) {
         case 'transfer':
@@ -140,6 +139,7 @@ const Day_I_Container = (props) => {
               time="9:00AM"
               heading={element.heading}
               text={element.text}
+              city_id={element?.current_city_id}
             ></ItineraryElement>
           );
           break;
@@ -163,7 +163,7 @@ const Day_I_Container = (props) => {
                     heading={element.heading}
                   ></RecomendationComponent>
                 )
-              : JSON.parse(element.text).length >= 1 &&
+              : JSON.parse(element.text)?.length >= 1 &&
                 dayIcontainer.push(
                   <RecomendationComponent
                     icon={element.icon}
@@ -204,7 +204,6 @@ const Day_I_Container = (props) => {
           );
           break;
         default:
-          console.log(`Sorry, we are out of ${element.element_type}.`);
       }
     });
   }

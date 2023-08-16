@@ -124,7 +124,6 @@ const ScrollableMenuTabs = ({
       }
     }
 
-    console.log(ref.current);
     setCanScrollLeft(tabContainer.scrollLeft > 10);
   };
 

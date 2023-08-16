@@ -206,10 +206,11 @@ const Mobile = (props) => {
     },
   ];
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
-  const MainLinksDiv = LinksArr.map((e) => {
+  const MainLinksDiv = LinksArr.map((e,i) => {
     if (e.type === "main")
       return (
         <ListItem
+          key={i}
           onClick={e.onclick && e.onclick}
           style={
             router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
@@ -224,6 +225,7 @@ const Mobile = (props) => {
               dimensions={{ height: 50, width: 50 }}
               dimensionsMobile={{ height: 50, width: 50 }}
               widthmobile="20px"
+              noPlaceholder={true}
             />
           )}
           {e.link && (
@@ -241,10 +243,11 @@ const Mobile = (props) => {
       );
   });
 
-  const OtherLinksDiv = LinksArr.map((e) => {
+  const OtherLinksDiv = LinksArr.map((e,i) => {
     if (e.type == "others")
       return (
         <ListItem
+          key={i}
           onClick={e.onclick && e.onclick}
           style={
             router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
@@ -259,6 +262,7 @@ const Mobile = (props) => {
               dimensions={{ height: 50, width: 50 }}
               dimensionsMobile={{ height: 50, width: 50 }}
               widthmobile="20px"
+              noPlaceholder={true}
             />
           )}
           {e.link && (
@@ -325,6 +329,7 @@ const Mobile = (props) => {
                 leftalign
                 widthmobile="52px"
                 url={"media/website/logo-only.svg"}
+                noPlaceholder={true}
               ></ImageLoader>
             </StyledLink>
             {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
@@ -389,6 +394,7 @@ const Mobile = (props) => {
                       dimensions={{ height: 50, width: 50 }}
                       dimensionsMobile={{ height: 50, width: 50 }}
                       widthmobile="20px"
+                      noPlaceholder={true}
                     />
                   }
                   <div>Logout</div>
