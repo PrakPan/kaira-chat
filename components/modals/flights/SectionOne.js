@@ -87,6 +87,20 @@ const ButtonContainer = styled.div`
   width: 100%;
   bottom: 1.2rem;
 `;
+const FloatingView = styled.div`
+  position: fixed;
+  bottom: 75px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 81%;
+  z-index: 2;
+  cursor: pointer;
+`;
 const ItemArr = ['Morning', 'Afternoon', 'Evening','Night']
 const Section = (props) => {
   const [isSelected, setIsSelected] = useState(false)
@@ -101,7 +115,17 @@ const Section = (props) => {
   }
 
   const _handleFilterChange = (key, value) => {
-    props.setFiltersState(prev=>{return {...prev , [key] : value}})
+
+    const obj = {
+      order: "asc",
+      non_stop_flights: false,
+      departure_time_period: "",
+      arrival_time_period: "",
+      airline_name: "",
+    };
+
+    if(props.filtersState[key] === value) props.setFiltersState(prev=>{return {...prev , [key] : obj[key]}})
+    else props.setFiltersState(prev=>{return {...prev , [key] : value}})
   }
 
   const FiltersSection = (
@@ -222,8 +246,7 @@ const Section = (props) => {
 
             <ButtonContainer>
               <Button
-                onclick={() =>
-                {
+                onclick={() => {
                   props.setFiltersState({
                     order: "asc",
                     non_stop_flights: false,
@@ -231,9 +254,8 @@ const Section = (props) => {
                     arrival_time_period: "",
                     airline_name: "",
                   });
-props.setShowFilter(false);
-                }
-                }
+                  props.setShowFilter(false);
+                }}
                 padding="0.7rem 3rem"
                 borderRadius="0.5rem"
                 fontWeight="600"
@@ -241,7 +263,10 @@ props.setShowFilter(false);
                 Cancel
               </Button>
               <Button
-                onclick={() => props.setShowFilter(false)}
+                onclick={() => {
+                  props._FetchFlightsHandler();
+                  props.setShowFilter(false);
+                }}
                 bgColor={"#F7E700"}
                 padding="0.7rem 3rem"
                 borderRadius="0.5rem"
@@ -251,6 +276,15 @@ props.setShowFilter(false);
               </Button>
             </ButtonContainer>
           </Container>
+          {!isPageWide && (
+            <FloatingView>
+              <TbArrowBack
+                style={{ height: "28px", width: "28px" }}
+                cursor={"pointer"}
+                onClick={() => props.setShowFilter(false)}
+              />
+            </FloatingView>
+          )}
         </Drawer>
       )}
     </Container>

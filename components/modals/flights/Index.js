@@ -95,6 +95,7 @@ const Booking = (props) => {
     arrival_time_period: "",
     airline_name: "",
   });
+
   const [airlineNames , setAirlineNames] = useState(['All'])
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -110,13 +111,22 @@ const Booking = (props) => {
   const [showFilter, setShowFilter] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
+  
   useEffect(() => {
+    _FetchFlightsHandler();
+  },[])
+  useEffect(() => {
+      if(isPageWide) _FetchFlightsHandler()
+  }, [props.selectedBooking, props.token, filtersState]);
+  
+
+  const _FetchFlightsHandler = () => {
     let options = [];
-    setOptionsJSX([])
+    setOptionsJSX([]);
     setLoading(true);
     if (props.selectedBooking && props.token)
       axiosflightsearch
-        .get('/?limit=' + limit + '&offset=' + offset, {
+        .get("/?limit=" + limit + "&offset=" + offset, {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
@@ -127,39 +137,39 @@ const Booking = (props) => {
             check_in: props.selectedBooking.check_in,
             city_code: props.selectedBooking.origin_iata,
             destination_city_code: props.selectedBooking.destination_iata,
-            flight_cabin_class: '1',
-            ...filtersState
+            flight_cabin_class: "1",
+            ...filtersState,
           },
         })
         .then((res) => {
-          localStorage.setItem('tbo_trace_id', res.data.TraceId);
+          localStorage.setItem("tbo_trace_id", res.data.TraceId);
           // const flights
           if (res.data.search && res.data.search.airline_names) {
-            setAirlineNames(['All',...res.data.search.airline_names])
+            setAirlineNames(["All", ...res.data.search.airline_names]);
           }
-            if (res.data.Results.length) {
-              // options.push(
-              //   <Flight
-              //     itinerary_id={props.itinerary_id}
-              //     data={props.selectedBooking}
-              //     selectedBooking={props.selectedBooking}
-              //     _updateBookingHandler={_newUpdateBookingHandler}
-              //     isSelected={true}
-              //   />
-              // );
-              for (var i = 0; i < res.data.Results.length; i++) {
-                options.push(
-                  <Flight
-                    itinerary_id={props.itinerary_id}
-                    data={res.data.Results[i]}
-                    selectedBooking={props.selectedBooking}
-                    _updateBookingHandler={_newUpdateBookingHandler}
-                    isSelected={false}
-                  ></Flight>
-                );
-              }
-              setOptionsJSX(options);
+          if (res.data.Results.length) {
+            // options.push(
+            //   <Flight
+            //     itinerary_id={props.itinerary_id}
+            //     data={props.selectedBooking}
+            //     selectedBooking={props.selectedBooking}
+            //     _updateBookingHandler={_newUpdateBookingHandler}
+            //     isSelected={true}
+            //   />
+            // );
+            for (var i = 0; i < res.data.Results.length; i++) {
+              options.push(
+                <Flight
+                  itinerary_id={props.itinerary_id}
+                  data={res.data.Results[i]}
+                  selectedBooking={props.selectedBooking}
+                  _updateBookingHandler={_newUpdateBookingHandler}
+                  isSelected={false}
+                ></Flight>
+              );
             }
+            setOptionsJSX(options);
+          }
           if (res.data.next_page) {
             setViewMoreStatus(true);
             setOffset(offset + 20);
@@ -172,11 +182,12 @@ const Booking = (props) => {
         .catch((err) => {
           setLoading(false);
           setFetchingIsError({
-              error: true,
-                errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-            })
+            error: true,
+            errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+          });
         });
-  }, [props.selectedBooking, props.token , filtersState]);
+  };
+
 
   const filters = {
     budget: [
@@ -486,6 +497,7 @@ const Booking = (props) => {
           // zIndex='1501'
         >
           <SectionOne
+            _FetchFlightsHandler={_FetchFlightsHandler}
             setHideBookingModal={props.setHideBookingModal}
             showFilter={showFilter}
             setShowFilter={setShowFilter}
@@ -535,9 +547,10 @@ const Booking = (props) => {
                     {!loading && !optionsJSX.length ? (
                       <div
                         style={{
-                          width: "max-content",
+                          // width: "max-content",
+                          textAlign: "center",
                           margin: "auto",
-                          height: isPageWide ? "80vh" : "40vh",
+                          height: isPageWide ? "80vh" : "70vh",
                         }}
                         className="center-div"
                       >
@@ -547,7 +560,10 @@ const Booking = (props) => {
                     ) : null}
                   </div>
                   {moreLoadingState ? <Skeleton /> : null}
-                  {viewMoreStatus && !updateBookingState ? (
+                  {viewMoreStatus &&
+                  !updateBookingState &&
+                  !loading &&
+                  optionsJSX.length ? (
                     <Button
                       boxShadow
                       onclickparam={null}
