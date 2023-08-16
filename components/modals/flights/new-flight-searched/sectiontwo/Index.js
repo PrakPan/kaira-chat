@@ -9,6 +9,7 @@ import { differenceInMinutes, format } from "date-fns";
 
 import { FaPlane } from 'react-icons/fa';
 import media from '../../../../media'
+import SkeletonCard from '../../../../ui/SkeletonCard';
  
 function createCacheKey(checkIn, checkOut) {
   return `${checkIn}-${checkOut}`;
@@ -141,6 +142,8 @@ const Booking = (props) =>{
 
   const [url, setUrl] = useState('media/website/grey.png')
   const [airLineName, setAirLineName] = useState('')
+  const [ImageLoaded, setImageLoaded] = useState(false)
+  
   useEffect(() => {
       
     if (props.data) {
@@ -178,7 +181,22 @@ const Booking = (props) =>{
         <GridContainer>
           <FlexBox>
             <LogoContainer>
-              <Image src={url}></Image>
+              <div style={{ display: !ImageLoaded ? "initial" : "none" }}>
+                <SkeletonCard
+                  width={isPageWide ? "80px" : "50px"}
+                  height={isPageWide ? "80px" : "50px"}
+                  // mb="0.5rem"
+                  borderRadius={"50%"}
+                />
+              </div>
+              <div style={{ display: ImageLoaded ? "initial" : "none" }}>
+
+                <Image src={url} onLoad={() => {
+                  setTimeout(() => {
+                  setImageLoaded(true);                    
+                  },500)
+                }}></Image>
+                </div>
             </LogoContainer>
             <div>
               <Text>{airLineName}</Text>

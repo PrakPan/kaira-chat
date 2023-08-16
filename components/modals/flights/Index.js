@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import styled from 'styled-components';
-import media from '../../media';
-import Accommodation from './accommodation/Index';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import { connect } from 'react-redux';
-import axiosflightsearch from '../../../services/bookings/FlightSearch';
-import LogInModal from '../Login';
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import styled from "styled-components";
+import media from "../../media";
+import Accommodation from "./accommodation/Index";
+import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import { connect } from "react-redux";
+import axiosflightsearch from "../../../services/bookings/FlightSearch";
+import LogInModal from "../Login";
 
-import SectionOne from './SectionOne';
-import Button from '../../ui/button/Index';
-import Flight from './new-flight-searched/Index';
-import LoadingLottie from '../../ui/LoadingLottie';
-import Drawer from '../../ui/Drawer';
-import Skeleton from './Skeleton';
-import { TbArrowBack } from 'react-icons/tb';
-import { openNotification } from '../../../store/actions/notification';
-import { FaFilter } from 'react-icons/fa';
+import SectionOne from "./SectionOne";
+import Button from "../../ui/button/Index";
+import Flight from "./new-flight-searched/Index";
+import LoadingLottie from "../../ui/LoadingLottie";
+import Drawer from "../../ui/Drawer";
+import Skeleton from "./Skeleton";
+import { TbArrowBack } from "react-icons/tb";
+import { openNotification } from "../../../store/actions/notification";
+import { FaFilter } from "react-icons/fa";
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -77,7 +77,7 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
@@ -96,7 +96,7 @@ const Booking = (props) => {
     airline_name: "",
   });
 
-  const [airlineNames , setAirlineNames] = useState(['All'])
+  const [airlineNames, setAirlineNames] = useState(["All"]);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -105,20 +105,19 @@ const Booking = (props) => {
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [isFetchingError, setFetchingIsError] = useState({
     error: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const [moreLoadingState, setMoreLoadingState] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-  
+
   useEffect(() => {
     _FetchFlightsHandler();
-  },[])
+  }, []);
   useEffect(() => {
-      if(isPageWide) _FetchFlightsHandler()
+    if (isPageWide) _FetchFlightsHandler();
   }, [props.selectedBooking, props.token, filtersState]);
-  
 
   const _FetchFlightsHandler = () => {
     let options = [];
@@ -188,35 +187,34 @@ const Booking = (props) => {
         });
   };
 
-
   const filters = {
     budget: [
-      'Below ₹3,000',
-      '₹3,000 - ₹6,000',
-      '₹6,000 - ₹10,000',
-      'Above ₹10,000',
+      "Below ₹3,000",
+      "₹3,000 - ₹6,000",
+      "₹6,000 - ₹10,000",
+      "Above ₹10,000",
     ],
     type: [
-      'Hotel',
-      'Homestay',
-      'Camp',
-      'Guest House',
-      'Cottage',
-      'Villa',
-      'Resort',
-      'Lodge',
-      'Service Appartment',
-      'Bed and Breakfast',
-      'Farmstay',
+      "Hotel",
+      "Homestay",
+      "Camp",
+      "Guest House",
+      "Cottage",
+      "Villa",
+      "Resort",
+      "Lodge",
+      "Service Appartment",
+      "Bed and Breakfast",
+      "Farmstay",
       // "Speciality Lodging",
       // "Boat / Cruise",
       // "Holiday Park / Caravan Park",
       // "Country House",
-      'Entire House',
+      "Entire House",
       // "Capsule Hotel",
-      'Unique',
+      "Unique",
     ],
-    star_category: ['1 star', '2 star', '3 star', '4 star', '5 star', 'All'],
+    star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
   };
 
   // const _updateOptionsHandlerWithFilter = () => {
@@ -382,18 +380,18 @@ const Booking = (props) => {
     let updated_bookings_arr = [];
 
     updated_bookings_arr.push({
-      trace_id: localStorage.getItem('tbo_trace_id'),
+      trace_id: localStorage.getItem("tbo_trace_id"),
       id: booking_id,
       user_selected: true,
-      booking_type: 'Flight',
+      booking_type: "Flight",
       itinerary_id: itinerary_id,
       result_index: result_index,
-      itinerary_type: 'Tailored',
+      itinerary_type: "Tailored",
     });
 
     // const token = localStorage.getItem('access_token');
     axiosbookingupdateinstance
-      .post('?booking_type=Flight', updated_bookings_arr, {
+      .post("?booking_type=Flight", updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -405,11 +403,11 @@ const Booking = (props) => {
         }, 1000); */
         props.getPaymentHandler();
         setUpdateBookingState(false);
-         props.openNotification({
-           type: "success",
-           text: "Flight updated successfully.",
-           heading: "Sucess!",
-         });
+        props.openNotification({
+          type: "success",
+          text: "Flight updated successfully.",
+          heading: "Sucess!",
+        });
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
@@ -428,10 +426,10 @@ const Booking = (props) => {
     // setUpdateLoadingState(true);
     setViewMoreStatus(false);
     setMoreLoadingState(true);
-    let trace_id = localStorage.getItem('tbo_trace_id');
+    let trace_id = localStorage.getItem("tbo_trace_id");
 
     axiosflightsearch
-      .get('/?limit=' + limit + '&offset=' + offset, {
+      .get("/?limit=" + limit + "&offset=" + offset, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -442,17 +440,17 @@ const Booking = (props) => {
           check_in: props.selectedBooking.check_in,
           city_code: props.selectedBooking.origin_iata,
           destination_city_code: props.selectedBooking.destination_iata,
-          flight_cabin_class: '1',
+          flight_cabin_class: "1",
           trace_id: trace_id,
         },
       })
       .then((res) => {
         setMoreLoadingState(false);
-        localStorage.setItem('tbo_trace_id', res.data.TraceId);
+        localStorage.setItem("tbo_trace_id", res.data.TraceId);
         // const flights
         if (res.data.search && res.data.search.airline_names) {
-                        setAirlineNames(['All',...res.data.search.airline_names])
-          }
+          setAirlineNames(["All", ...res.data.search.airline_names]);
+        }
         let options = optionsJSX.slice();
         if (res.data.Results.length) {
           for (var i = 0; i < res.data.Results.length; i++) {
@@ -540,7 +538,6 @@ const Booking = (props) => {
               ) : !noResults && !updateLoadingState && !unauthorized ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
-                    {/* <Skeleton /> */}
                     {optionsJSX.length && !updateBookingState
                       ? optionsJSX
                       : null}
