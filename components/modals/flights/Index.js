@@ -540,6 +540,7 @@ const Booking = (props) => {
               ) : !noResults && !updateLoadingState && !unauthorized ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
+                    {/* <Skeleton /> */}
                     {optionsJSX.length && !updateBookingState
                       ? optionsJSX
                       : null}
