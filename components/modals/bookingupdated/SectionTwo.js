@@ -32,7 +32,7 @@ const Section = (props) => {
     if (checked) props._addFilterHandler(filter, heading);
     else props._removeFilterHandler(filter, heading);
   };
-  const _OnstarSelect = ({ i, currentfilter }) => {
+  const _OnstarSelect = (i, currentfilter) => {
     setSelectedStar(i);
     props._updateStarFilterHandler(currentfilter, currentfilter + 1);
   };
@@ -63,7 +63,7 @@ const Section = (props) => {
         className="font-lexend"
         onHide={() => props.setshowFilter(false)}
       >
-        <div className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
+        <div className="w-[100vw] px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">
           <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4">
             <div className="flex flex-row gap-3 my-0 justify-start items-center">
               <IoMdClose
@@ -81,7 +81,9 @@ const Section = (props) => {
               <div className="flex flex-row gap-1">
                 {props.FILTERS["star_category"].map((currentfilter, i) => (
                   <button
+                    style={{ border: "2px solid red" }}
                     onClick={() => _OnstarSelect(i, currentfilter)}
+                    // onClick={() => console.log("currentfilter", currentfilter , i)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedStar == i
                         ? "text-white border-0 bg-black "
