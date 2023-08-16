@@ -81,7 +81,6 @@ const Section = (props) => {
               <div className="flex flex-row gap-1">
                 {props.FILTERS["star_category"].map((currentfilter, i) => (
                   <button
-                    style={{ border: "2px solid red" }}
                     onClick={() => _OnstarSelect(i, currentfilter)}
                     // onClick={() => console.log("currentfilter", currentfilter , i)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
