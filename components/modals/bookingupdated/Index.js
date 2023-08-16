@@ -27,6 +27,7 @@ import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { openNotification } from "../../../store/actions/notification";
 import { BsXOctagon } from "react-icons/bs";
+import Skeleton from './Skeleton'
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -1162,7 +1163,6 @@ const Booking = (props) => {
                             ></HotelBookingContainer>
                             </div>
                       )} */}
-
                       {optionsJSX.length
                         ? optionsJSX
                         : moreOptionsJSX.length
@@ -1170,17 +1170,18 @@ const Booking = (props) => {
                         : null}
                       {/* {moreOptionsJSX} */}
                       {loading && !optionsJSX.length ? (
-                        <div
-                          className="center-div"
-                          style={{ height: isPageWide ? "80vh" : "40vh" }}
-                        >
-                          <LoadingLottie
-                            height={"5rem"}
-                            width={"5rem"}
-                            margin="none"
-                          />
-                          Fetching stay recommendations for you
-                        </div>
+                        // <div
+                        //   className="center-div"
+                        //   style={{ height: isPageWide ? "80vh" : "40vh" }}
+                        // >
+                        //   <LoadingLottie
+                        //     height={"5rem"}
+                        //     width={"5rem"}
+                        //     margin="none"
+                        //   />
+                        //   Fetching stay recommendations for you
+                        // </div>
+                        <Skeleton />
                       ) : null}
                       {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
                     </div>
