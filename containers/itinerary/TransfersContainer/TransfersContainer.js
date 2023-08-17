@@ -590,7 +590,7 @@ const TransfersContainer = (props) => {
             index={i}
           ></PinSection>
         );
-        var modes
+        var modes = false
         if (props.routes[i + 1]?.modes) {
           modes = props.routes[i + 1]?.modes;
         }
@@ -1171,7 +1171,7 @@ const TransfersContainer = (props) => {
 
   // }
 
-        var modes
+        var modes = false
         if (props.routes[1]?.modes) {
           modes = props.routes[1]?.modes;
         }
