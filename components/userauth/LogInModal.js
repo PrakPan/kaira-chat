@@ -9,7 +9,6 @@ import styled from "styled-components";
 import extensions from "../../public/content/extensionsdata";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import GoogleLogin from "react-google-login";
 import CountryCodeDropdown from "./CountryDropdown";
 import { FiChevronDown } from "react-icons/fi";
 import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
@@ -20,7 +19,9 @@ import LoginLoadingIcon from "../ui/LoadingLottie";
 import Image from "next/image";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
-import {  GOOGLE_CLIENT_ID  } from "../../services/constants";
+import { GOOGLE_CLIENT_ID } from "../../services/constants";
+// import { OAuthButton } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -33,7 +34,7 @@ const WhatsappCheckBox = styled.div`
   line-height: 16px;
   display: flex;
   gap: 0.3rem;
-  margin-block: 0rem 1rem;
+  margin-block: 1rem 1rem;
   align-items: center;
 `;
 
@@ -156,12 +157,6 @@ const LogIn = React.memo((props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
-
-  useEffect(() => {
-    console.log("props.otpSent", props.otpSent, props.name, props.email);
-    if (props.otpSent && props.name && props.email) submitOtpHandler();
-  }, [props.otpSent, props.name, props.email]);
-
   useEffect(() => {
     if (
       props.token &&
@@ -231,46 +226,46 @@ const LogIn = React.memo((props) => {
       if (newUserValidity)
         props.onAuth(
           extensions[extension].label + mobile,
-          9358,
+          otp,
           userDetails.userName,
           userDetails.email,
-          false,
+          whatsapp,
           props.itinary_id
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
         extensions[extension].label + mobile,
-        9358,
+        otp,
         userDetails.userName,
         null,
-        false,
+        whatsapp,
         props.itinary_id
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
         extensions[extension].label + mobile,
-        9358,
+        otp,
         userDetails.userName,
         userDetails.email,
-        false,
+        whatsapp,
         props.itinary_id
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
         extensions[extension].label + mobile,
-        9358,
+        otp,
         null,
         userDetails.email,
-        false,
+        whatsapp,
         props.itinary_id
       );
     } else {
       props.onAuth(
         extensions[extension].label + mobile,
-        9358,
+        otp,
         null,
         null,
-        false,
+        whatsapp,
         props.itinary_id
       );
     }
@@ -289,7 +284,6 @@ const LogIn = React.memo((props) => {
     // if (!userDetails.userName) setUserNameError(true);
     // else {
     // setUserNameError(false);
-
     props.onOtp(extensions[extension].label + mobileRef.current.value);
     // }
   };
@@ -307,7 +301,7 @@ const LogIn = React.memo((props) => {
   const _updatePhoneHandler = () => {
     props.onUpdate({
       phone: extensions[extension].label + mobileRef.current.value,
-      whatsapp_opt_in : whatsapp,
+      whatsapp_opt_in: whatsapp,
     });
   };
   //Mobile, name, email, password, JSX
@@ -352,7 +346,7 @@ const LogIn = React.memo((props) => {
   );
   password = (
     <>
-      {/* <OtpContainer>
+      <OtpContainer>
         <OTPInput
           value={otp}
           onChange={handleOtpChange}
@@ -370,7 +364,7 @@ const LogIn = React.memo((props) => {
             OTP is not valid
           </span>
         </ErrorText>
-      )} */}
+      )}
     </>
   );
 
@@ -380,8 +374,14 @@ const LogIn = React.memo((props) => {
   };
 
   const googleResponse = (response) => {
-  console.log("GOOGLE_LOGIN_ERROR: ", response);
+    console.log("GOOGLE_LOGIN_ERROR: ", response);
   };
+
+  const _handleGoogleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
+    onError: (response) => googleResponse(response),
+  });
+
   // if(!props.loadingsocial)
   let isPageWide = media("(min-width: 768px)");
 
@@ -413,7 +413,7 @@ const LogIn = React.memo((props) => {
         </p>
       ) : null}
       {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+      (props.token && props.phone == "null") ? (
         <form noValidate>
           <MobileNumberContainer>
             <CountryCodeContainer>
@@ -441,11 +441,15 @@ const LogIn = React.memo((props) => {
             </CountryCodeContainer>
             {mobileInput}
           </MobileNumberContainer>
+          <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
+            boooking updates via WhatsApp
+          </WhatsappCheckBox>
           <Button
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
             loading={props.loading}
-margin={props.nospacing ? "0" : "2rem 0"}
+            margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
             width="100%"
             bgColor="#F7E700"
             fontWeight="500"
@@ -503,8 +507,8 @@ margin={props.nospacing ? "0" : "2rem 0"}
           </MobileNumberContainer>
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-            {/* {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            boooking updates via WhatsApp */}
+            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
+            boooking updates via WhatsApp
           </WhatsappCheckBox>
 
           {props.newUser || (props.otpSent && !props.name) ? (
@@ -526,7 +530,7 @@ margin={props.nospacing ? "0" : "2rem 0"}
 
           {props.newUser || (props.otpSent && !props.email) ? email : null}
 
-          {/* {props.otpSent && (
+          {props.otpSent && (
             <div
               style={{
                 height: "1.2rem",
@@ -541,11 +545,11 @@ margin={props.nospacing ? "0" : "2rem 0"}
               </p>
               <br></br>
             </div>
-          )} */}
+          )}
 
           {props.otpSent ? password : null}
 
-          {props.otpSent && (!props.name || !props.email) ? (
+          {props.otpSent ? (
             <UpdatePhone
               style={{
                 textAlign: "left",
@@ -555,9 +559,9 @@ margin={props.nospacing ? "0" : "2rem 0"}
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
-              {/* <ResendOtp onClick={resetOtpHandler}>
+              <ResendOtp onClick={resetOtpHandler}>
                 <u>Resend OTP</u>
-              </ResendOtp> */}
+              </ResendOtp>
             </UpdatePhone>
           ) : null}
 
@@ -576,10 +580,9 @@ margin={props.nospacing ? "0" : "2rem 0"}
               borderRadius="8px"
               loading={props.loading}
             >
-                {/* Request OTP */}
-                Login
+              Request OTP
             </Button>
-          ) : !props.name || !props.email ? (
+          ) : (
             <Button
               onclick={(e) => submitOtpHandler(e)}
               margin={props.nospacing ? "0" : "0.5rem 0"}
@@ -593,23 +596,6 @@ margin={props.nospacing ? "0" : "2rem 0"}
               boxShadow="0px 2px 0px #ECEAEA"
               borderRadius="8px"
               loading={props.loading}
-            >
-              Login
-            </Button>
-          ) : (
-            <Button
-              onclick={(e) => console.log("")}
-              margin={props.nospacing ? "0" : "0.5rem 0"}
-              width="100%"
-              bgColor="#F7E700"
-              fontWeight="500"
-              fontSize="16px"
-              borderWidth="1px"
-              hoverColor="white"
-              hoverBgColor="black"
-              boxShadow="0px 2px 0px #ECEAEA"
-              borderRadius="8px"
-              loading={true}
             >
               Login
             </Button>
@@ -638,69 +624,53 @@ margin={props.nospacing ? "0" : "2rem 0"}
 
           <>
             <>
-              <GoogleLogin
-                clientId={
-                  // CONTENT_SERVER_HOST.includes('dev') ? GOOGLE_CLIENT_ID_DEV : GOOGLE_CLIENT_ID
-                  GOOGLE_CLIENT_ID
-                }
-                buttonText=""
-                className="google-login-button"
-                onSuccess={props.onGoogleAuth}
-                onFailure={googleResponse}
-                render={(renderProps) => (
-                  <Button
-                    onclick={() => {
-                      console.log("button clicked");
-                      renderProps.onClick();
+              <Button
+                onclick={() => _handleGoogleLogin()}
+                margin={"0"}
+                width="100%"
+                bgColor="#F9F9F9"
+                fontWeight="500"
+                fontSize="16px"
+                borderWidth="0px"
+                hoverColor="white"
+                hoverBgColor="black"
+                boxShadow="0px 2px 0px #ECEAEA"
+                borderRadius="8px"
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      height: "1.5rem",
+                      width: "1.5rem",
+                      margin: "0 0.5rem",
                     }}
-                    margin={"0"}
-                    width="100%"
-                    bgColor="#F9F9F9"
-                    fontWeight="500"
-                    fontSize="16px"
-                    borderWidth="0px"
-                    hoverColor="white"
-                    hoverBgColor="black"
-                    boxShadow="0px 2px 0px #ECEAEA"
-                    borderRadius="8px"
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: "1.5rem",
-                          width: "1.5rem",
-                          margin: "0 0.5rem",
-                        }}
-                      >
-                        <ImageLoader
-                          dimensions={{ height: 100, width: 100 }}
-                          url={"media/icons/login/google.svg"}
-                          height="1.5rem"
-                          width="1.5rem"
-                        />
-                      </div>
-                      <p
-                        style={{
-                          margin: "0",
-                          fontWeight: "500",
-                          fontSize: "1rem",
-                          display: "inline",
-                        }}
-                        className="font-lexend"
-                      >
-                        Sign in with Google
-                      </p>
-                    </div>
-                    {/* {props.loadingsocial ? <Spinner display="inline" size={16} margin="0 0 0 0.5rem"></Spinner>: null} */}
-                  </Button>
-                )}
-              />
+                    <ImageLoader
+                      dimensions={{ height: 100, width: 100 }}
+                      url={"media/icons/login/google.svg"}
+                      height="1.5rem"
+                      width="1.5rem"
+                    />
+                  </div>
+                  <p
+                    style={{
+                      margin: "0",
+                      fontWeight: "500",
+                      fontSize: "1rem",
+                      display: "inline",
+                    }}
+                    className="font-lexend"
+                  >
+                    Sign in with Google
+                  </p>
+                </div>
+              </Button>
             </>
             {/* <Grid item xs={6}>
         <FacebookLogin

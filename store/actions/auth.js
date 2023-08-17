@@ -285,7 +285,7 @@ export const googleAuth = (response) => {
     dispatch(authStartLoadingSocial()); //Start spinner
 
     axiosgoogleauthinstance
-      .get('?access_token=' + response.accessToken)
+      .get('?access_token=' + response.access_token)
       .then((res) => {
         dispatch(authStopLoadingSocial());
         if (res.status === 200) {

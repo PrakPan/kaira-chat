@@ -135,9 +135,9 @@ const Enquiry = (props) => {
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   useEffect(() => {
-    if (slideIndex === 2 && props.token) _submitDataHandler();
+    if (slideIndex === 2 && props.token && props.phone !== 'null') _submitDataHandler();
     setShowPopup(popupObj);
-  }, [slideIndex, props.token]);
+  }, [slideIndex, props.token, props.phone]);
   const _handleHideBlack = () => {
     setShowBlack(false);
     setShowCities(false);
@@ -511,6 +511,7 @@ const Enquiry = (props) => {
               destination={destination}
               setDestination={setDestination}
               token={props.token}
+              phone={props.phone}
               // _handlePrev={_prevSlideHandler}
               slideIndex={slideIndex}
               cities={props.cities}
@@ -575,8 +576,7 @@ const Enquiry = (props) => {
               </div>
             ) : null}
             {slideIndex === 1 ? (
-              
-// old code - with login :-
+              // old code - with login :-
               // !props.token ? (
               //   <div style={{ display: "flex", justifyContent: "flex-end" }}>
               //     <Button
@@ -632,8 +632,8 @@ const Enquiry = (props) => {
               //   </div>
               // )
 
-//new code without login:-
-              !props.token ? (
+              //new code without login:-
+              !props.token || props.phone === "null" ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     fontSize="1rem"
@@ -659,33 +659,34 @@ const Enquiry = (props) => {
                     Continue
                   </Button>
                 </div>
-              ) :
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={loading}
-                  onclick={_submitDataHandler}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    loading={loading}
+                    onclick={_submitDataHandler}
+                  >
+                    Get Itinerary!
+                  </Button>
+                </div>
+              )
             ) : null}
           </div>
         </Container>
