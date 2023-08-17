@@ -73,7 +73,7 @@ const FlickityComp = (props) => {
               ></SlideTwo>
             </Card>
           ) : null}
-          {props.slideIndex === 2 && (!props.token || props.phone === 'null') ? (
+     {props.slideIndex === 2 && (!props.token || props.phone === 'null') ? (
             <Login nospacing noheading noicons hideloginclose noclose></Login>
           ) : null}
           {/* <Card><SlideOne></SlideOne></Card> */}

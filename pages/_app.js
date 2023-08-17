@@ -1,26 +1,26 @@
-import { useEffect, useRef, useState } from 'react';
-import '../styles/globals.css';
-import Theme from '../public/Theme';
-import '../styles.css';
-import { store } from '../store/store';
-import { Partytown } from '@builder.io/partytown/react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect, useRef, useState } from "react";
+import "../styles/globals.css";
+import Theme from "../public/Theme";
+import "../styles.css";
+import { store } from "../store/store";
+import { Partytown } from "@builder.io/partytown/react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { OverlayScrollbars } from "overlayscrollbars";
 import "overlayscrollbars/overlayscrollbars.css";
 // import { hotjar } from 'react-hotjar'
 
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
-import * as ga from '../lib/ga/Index';
-import { FACEBOOK_PIXEL_ID } from '../services/constants';
-import mixpanel from 'mixpanel-browser';
-import dynamic from 'next/dynamic';
-import media from '../components/media'
+import * as ga from "../lib/ga/Index";
+import { FACEBOOK_PIXEL_ID } from "../services/constants";
+import mixpanel from "mixpanel-browser";
+import dynamic from "next/dynamic";
+import media from "../components/media";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { GOOGLE_CLIENT_ID } from '../services/constants';
+import { GOOGLE_CLIENT_ID } from "../services/constants";
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
-  const ref = useRef()
+  const ref = useRef();
   let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps, store }) {
     // const { asPath } = useRouter()
     // hotjar.initialize(HOTJAR_HJID, HOTJAR_HJSV)
 
-    const jssStyles = document.querySelector('#jss-server-side');
+    const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
@@ -54,22 +54,22 @@ function MyApp({ Component, pageProps, store }) {
     };
     //When the component is mounted, subscribe to router changes
     //and log those page views
-    router.events.on('routeChangeComplete', handleRouteChange);
+    router.events.on("routeChangeComplete", handleRouteChange);
 
     // If the component is unmounted, unsubscribe
     // from the event with the `off` method
-    import('react-facebook-pixel')
+    import("react-facebook-pixel")
       .then((x) => x.default)
       .then((ReactPixel) => {
         ReactPixel.init(FACEBOOK_PIXEL_ID); // facebookPixelId
         ReactPixel.pageView();
 
-        router.events.on('routeChangeComplete', () => {
+        router.events.on("routeChangeComplete", () => {
           ReactPixel.pageView();
         });
       });
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
+      router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
 

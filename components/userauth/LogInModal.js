@@ -301,7 +301,7 @@ const LogIn = React.memo((props) => {
   const _updatePhoneHandler = () => {
     props.onUpdate({
       phone: extensions[extension].label + mobileRef.current.value,
-      whatsapp_opt_in : whatsapp,
+      whatsapp_opt_in: whatsapp,
     });
   };
   //Mobile, name, email, password, JSX
@@ -374,7 +374,7 @@ const LogIn = React.memo((props) => {
   };
 
   const googleResponse = (response) => {
-  console.log("GOOGLE_LOGIN_ERROR: ", response);
+    console.log("GOOGLE_LOGIN_ERROR: ", response);
   };
 
   const _handleGoogleLogin = useGoogleLogin({

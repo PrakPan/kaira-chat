@@ -87,6 +87,11 @@ const BookingListCostContainer = styled.div`
     overflow-y: auto;
   }
 `;
+const GetInTouchContainer = styled.div`
+  &:hover img {
+    filter: invert(100%);
+  }
+`;
 const Details = (props) => {
   const getCurrentDateIfOlder = (dateString) => {
     const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
@@ -1205,38 +1210,40 @@ const Details = (props) => {
           )
         ) : (
           !props.payment.paid_user && (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="0.85rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              // loading={loading}
-              padding="12px"
-              onclick={() => props._GetInTouch()}
-              // height='2rem'
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                  alignItems: "center",
-                }}
+            <GetInTouchContainer>
+              <Button
+                color="#111"
+                fontWeight="500"
+                fontSize="0.85rem"
+                borderWidth="2px"
+                width="100%"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                // loading={loading}
+                padding="12px"
+                onclick={() => props._GetInTouch()}
+                // height='2rem'
               >
-                <ImageLoader
-                  dimensions={{ height: 50, width: 50 }}
-                  dimensionsMobile={{ height: 50, width: 50 }}
-                  height={"20px"}
-                  width={"20px"}
-                  leftalign
-                  url={"media/icons/login/customer-service-black.png"}
-                />{" "}
-                <span>Get in touch!</span>
-              </div>
-            </Button>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <ImageLoader
+                    dimensions={{ height: 50, width: 50 }}
+                    dimensionsMobile={{ height: 50, width: 50 }}
+                    height={"20px"}
+                    width={"20px"}
+                    leftalign
+                    url={"media/icons/login/customer-service-black.png"}
+                  />{" "}
+                  <span>Get in touch!</span>
+                </div>
+              </Button>
+            </GetInTouchContainer>
           )
         )
       ) : null}
