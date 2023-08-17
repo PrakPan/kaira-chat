@@ -580,8 +580,6 @@ const TransfersContainer = (props) => {
   if (props?.plan?.version == ITINERARY_VERSION.version_2) {
     if (props?.routes) {
       for (var i = 2; i < props.routes.length - 1; i += 2) {
-      console.log("props.routes[i + 1]: ", props.routes[i+1]);
-
         locationsArr.push(
           <PinSection
             transfersPin
@@ -690,7 +688,6 @@ const TransfersContainer = (props) => {
                }
              })
            : locationsArr.push(
-               <>
                  <TransContainer>
                    <div style={{ position: "relative" }}>
                      <Line
@@ -698,7 +695,6 @@ const TransfersContainer = (props) => {
                        Transfers={true}
                      />
                    </div>
-                   <div style={{ border: `1px solid red` }}>
                      <TransferContainerForMissing
                        cityname1={props?.routes[i]?.city_name}
                        cityname2={props?.routes[i + 2]?.city_name}
@@ -706,9 +702,7 @@ const TransfersContainer = (props) => {
                        name={props?.name}
                        phone={props?.phone}
                      />
-                   </div>
                  </TransContainer>
-               </>
              );
         }
       }

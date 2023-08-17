@@ -213,6 +213,11 @@ const useStyles = {
     flex-grow-1
     `,
 };
+const GetInTouchContainer = styled.div`
+  &:hover img {
+    filter: invert(100%);
+  }
+`;
 
 const SimpleTabsV2 = (props) => {
   let isPageWide = media('(min-width: 768px)');
@@ -602,7 +607,7 @@ const SimpleTabsV2 = (props) => {
                       </Button>
                     </div>
                   ) : (
-                    <div>
+                    <GetInTouchContainer>
                       <Button
                         color="#111"
                         fontWeight="400"
@@ -633,7 +638,7 @@ const SimpleTabsV2 = (props) => {
                           <span>Get in touch!</span>
                         </div>
                       </Button>
-                    </div>
+                    </GetInTouchContainer>
                   )
                 ) : (
                   <Button
@@ -1158,7 +1163,7 @@ const SimpleTabsV2 = (props) => {
                   </Button>
                 </div>
               ) : (
-                <div className="">
+                <GetInTouchContainer className="">
                   <Button
                     color="#111"
                     fontWeight="600"
@@ -1190,7 +1195,7 @@ const SimpleTabsV2 = (props) => {
                       <span>Get in touch!</span>
                     </div>
                   </Button>
-                </div>
+                </GetInTouchContainer>
               )
             ) : (
               <Button
