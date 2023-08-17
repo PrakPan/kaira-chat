@@ -430,6 +430,7 @@ const ItineraryPoiElement = (props) => {
             ClickHandler={ClickHandler}
           />
         </div>
+        {/* <PoiListSkeleton /> */}
         {!fetchingPoi ? (
           optionsJSX.length ? (
             optionsJSX

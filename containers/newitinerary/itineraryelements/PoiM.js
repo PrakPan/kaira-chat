@@ -524,7 +524,7 @@ const drawerRef = useRef(null);
             ClickHandler={ClickHandler}
           />
         </div>
-
+{/* <PoiListSkeleton /> */}
         {!fetchingPoi ? (
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX.length ? (
