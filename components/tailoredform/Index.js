@@ -138,7 +138,7 @@ const Enquiry = (props) => {
   useEffect(() => {
     if (slideIndex === 2 && props.token && props.phone !== 'null') _submitDataHandler();
     setShowPopup(popupObj);
-  }, [slideIndex, props.token, props]);
+  }, [slideIndex, props.token, props.phone]);
   const _handleHideBlack = () => {
     setShowBlack(false);
     setShowCities(false);
