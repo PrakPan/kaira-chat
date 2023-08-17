@@ -1,15 +1,15 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
 // import Pin from './Pin';
-import { MdOutlineFlightTakeoff } from 'react-icons/md';
-import { TransportIconFetcher } from '../../../../helper/TransportIconFetcher';
-import ImageLoader from '../../../../components/ImageLoader';
+import { MdOutlineFlightTakeoff } from "react-icons/md";
+import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
+import ImageLoader from "../../../../components/ImageLoader";
 const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
   min-height: 5rem;
   @media screen and (min-width: 768px) {
-    min-height: ${(props) => (props.hidemidsection ? '4.5rem' : '8rem')};
+    min-height: ${(props) => (props.hidemidsection ? "4.5rem" : "8rem")};
   }
 `;
 // const Heading = styled.div`
@@ -41,10 +41,10 @@ const Line = styled.hr`
   opacity: initial;
 
   @media screen and (min-width: 768px) {
-    width: ${(props) => (props.hidemidsection ? '6rem' : '8rem')};
+    width: ${(props) => (props.hidemidsection ? "6rem" : "8rem")};
     height: 1.7px;
-    top: ${(props) => (props.hidemidsection ? '22px' : '46px')};
-    right: ${(props) => (props.hidemidsection ? '-31px' : '-46px')};
+    top: ${(props) => (props.hidemidsection ? "22px" : "46px")};
+    right: ${(props) => (props.hidemidsection ? "-31px" : "-46px")};
   }
   /* border-style: dashed;
   border-width: 1.4px;
@@ -52,7 +52,7 @@ const Line = styled.hr`
   left: 50%;
   
 
-  border-color: ${(props) => (props.pinColour ? props.pinColour : 'black')};
+  border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
   min-height: 10vw;
   height: 100%;
   margin: 0rem 0 0rem 0rem; */
@@ -69,11 +69,11 @@ const Text = styled.div`
 `;
 const MidSection = (props) => {
   useEffect(() => {}, []);
-  console.log('bookings-1');
+  console.log("bookings-1");
   console.log(props.bookings);
   return (
     <Container className="font-lexend" hidemidsection={props.hidemidsection}>
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: "relative" }}>
         <Line
           pinColour={props.pinColour}
           hidemidsection={props.hidemidsection}
@@ -81,19 +81,22 @@ const MidSection = (props) => {
       </div>
       {!props.hidemidsection && (
         <>
-          {props.version == 'v2' ? (
+          {props.version == "v2" ? (
             <Text>
-              {props.route?.modes && (
-                <TransportIconFetcher
-                  TransportMode={props.route?.modes[0]}
-                  Instyle={{
-                    fontSize: '1.4rem',
-                    marginRight: '0.8rem',
-                    color: '#4d4d4d',
-                  }}
-                />
-              )}
-
+              {props.route?.modes &&
+                props.route?.modes.length &&
+                props.bookings &&
+                props.bookings.length &&
+                props.bookings[0].booking_type && (
+                  <TransportIconFetcher
+                    TransportMode={props.route?.modes[0]}
+                    Instyle={{
+                      fontSize: "1.4rem",
+                      marginRight: "0.8rem",
+                      color: "#4d4d4d",
+                    }}
+                  />
+                )}
               {props?.bookings?.map((element, index) => (
                 <div className="flex flex-row" key={index}>
                   <div className="flex flex-row pr-0">
@@ -105,7 +108,9 @@ const MidSection = (props) => {
                 </div>
               ))}
 
-              {props.duration && <div>: {props.duration}</div>}
+              {props.route?.modes &&
+                props.route?.modes.length &&
+                props.duration && <div>: {props.duration}</div>}
 
               {/* {props.icon && (
             <ImageLoader
@@ -136,9 +141,9 @@ const MidSection = (props) => {
                 <TransportIconFetcher
                   TransportMode={props.modes}
                   Instyle={{
-                    fontSize: '1.4rem',
-                    marginRight: '0.8rem',
-                    color: '#4d4d4d',
+                    fontSize: "1.4rem",
+                    marginRight: "0.8rem",
+                    color: "#4d4d4d",
                   }}
                 />
               )}
