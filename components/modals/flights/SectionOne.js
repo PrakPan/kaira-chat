@@ -9,6 +9,7 @@ import { FaFilter } from 'react-icons/fa';
 import { TbArrowBack } from 'react-icons/tb';
 import Drawer from '../../ui/Drawer';
 import Button from '../../ui/button/Index'
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 const Heading = styled.div`
   margin: 0;
   display: flex;
@@ -62,9 +63,11 @@ const P = styled.div`
   }
 `;
 const TextContainer = styled.div`
-font-size : 0.875rem;
-font-weight : 400;
-`
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin: 0.5rem auto;
+  width: 95%;
+`;
 const Item = styled.div`
   font-size: 14px;
   cursor: pointer;
@@ -104,20 +107,33 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
-const ItemArr = ['Morning', 'Afternoon', 'Evening','Night']
-const Section = (props) => {
-  const [isSelected, setIsSelected] = useState(false)
-  let isPageWide = media("(min-width: 768px)");
-  
-  const DropDownQueries = [
-    {text : 'All' , value : 'All'}
-  ]
-
-  const _changeAirlineHandler = (e) => {
-    console.log(e)
+const SortContainer = styled.div`
+  position: absolute;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background: white;
+  border-radius: 0.5rem;
+  left: 0;
+  padding: 0.5rem;
+  z-index : 2;
+`;
+const SortItem = styled.div`
+  text-align: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  :hover {
+    background: #f7f3f3;
   }
+`;
+const ItemArr = ['Morning', 'Afternoon', 'Evening', 'Night']
+const sortItems = ['Price' , 'Duration']
+const Section = (props) => {
+  const [sortShow, setSortShow] = useState(false);
+  const [SelectedSort, setSelectedSort] = useState(props.filtersState.sort_by);
 
-  const _handleFilterChange = (key, value) => {
+  let isPageWide = media("(min-width: 768px)");
+    const _handleFilterChange = (key, value) => {
 
     const obj = {
       order: "asc",
@@ -125,6 +141,7 @@ const Section = (props) => {
       departure_time_period: "",
       arrival_time_period: "",
       airline_name: "",
+      sort_by: "price",
     };
 
     if(props.filtersState[key] === value) props.setFiltersState(prev=>{return {...prev , [key] : obj[key]}})
@@ -225,7 +242,58 @@ const Section = (props) => {
 
       {isPageWide ? FiltersSection : <></>}
 
-      {/* <TextContainer>Showing flights</TextContainer> */}
+      <TextContainer>
+        Showing {props.flightCount} {props.text} {isPageWide ? '|' : <br/>} Sort by:{" "}
+        <div
+          style={{
+            display: "inline",
+            position: "relative",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            setSortShow(!sortShow);
+          }}
+        >
+          <b>
+            {SelectedSort}
+            {sortShow ? (
+              <FiChevronUp
+                style={{
+                  display: "inline",
+                  fontWeight: 900,
+                  fontSize: "1.2rem",
+                }}
+              />
+            ) : (
+              <FiChevronDown
+                style={{
+                  display: "inline",
+                  fontWeight: 900,
+                  fontSize: "1.2rem",
+                }}
+              />
+            )}
+          </b>
+          {sortShow ? (
+            <SortContainer>
+              {sortItems.map((e, i) => (
+                <SortItem
+                  key={i}
+                  onClick={() => {
+                    setSelectedSort(e);
+                    _handleFilterChange("sort_by", e.toLowerCase());
+                  }}
+                  selected={e === SelectedSort}
+                >
+                  {e}
+                </SortItem>
+              ))}
+            </SortContainer>
+          ) : (
+            <></>
+          )}
+        </div>
+      </TextContainer>
 
       {!isPageWide && (
         <Drawer

@@ -94,6 +94,7 @@ const Booking = (props) => {
     departure_time_period: "",
     arrival_time_period: "",
     airline_name: "",
+    sort_by: "price",
   });
 
   const [airlineNames, setAirlineNames] = useState(["All"]);
@@ -111,7 +112,7 @@ const Booking = (props) => {
   const [showFilter, setShowFilter] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-
+  const [flightCount, setFlightsCount] = useState(0);
   useEffect(() => {
     _FetchFlightsHandler();
   }, []);
@@ -145,6 +146,7 @@ const Booking = (props) => {
           // const flights
           if (res.data.search && res.data.search.airline_names) {
             setAirlineNames(["All", ...res.data.search.airline_names]);
+            setFlightsCount(res.data.count);
           }
           if (res.data.Results.length) {
             // options.push(
@@ -450,6 +452,7 @@ const Booking = (props) => {
         // const flights
         if (res.data.search && res.data.search.airline_names) {
           setAirlineNames(["All", ...res.data.search.airline_names]);
+          setFlightsCount(res.data.count);
         }
         let options = optionsJSX.slice();
         if (res.data.Results.length) {
@@ -503,6 +506,7 @@ const Booking = (props) => {
             setFiltersState={setFiltersState}
             airlineNames={airlineNames}
             setAirlineNames={setAirlineNames}
+            flightCount={flightCount}
             setHideFlightModal={props.setHideFlightModal}
             text={props.selectedBooking?.name}
           ></SectionOne>

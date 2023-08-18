@@ -200,7 +200,7 @@ export default function TemporaryDrawer(props) {
             </div>
           </div>
         )}
-        {!props.loading ? (
+        {!props.loading && props?.totalCount ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
             Showing {props?.totalCount} stays in {props.booking_city} | Sort by:{" "}
             <div
