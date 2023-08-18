@@ -7,6 +7,7 @@ import { Tabs, Tab } from '@mui/material';
 import { IoMdStar } from 'react-icons/io';
 import media from '../../../media';
 import UiDropdown from '../../../UiDropdown';
+import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 const FiltersContainer = styled.div`
   display: flex;
   margin: 0.5rem 0;
@@ -24,7 +25,24 @@ const NewFilter = styled.div`
   justify-content: center;
   text-align: center;
 `;
-
+const SortContainer = styled.div`
+  position: absolute;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background: white;
+  border-radius : 0.5rem;
+  left: 0;
+  padding: 0.5rem;
+`;
+const SortItem = styled.div`
+  text-align: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1.5rem;
+  font-weight: 500;
+  cursor : pointer;
+  :hover {
+    background: #f7f3f3;
+  }
+`;
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -49,7 +67,8 @@ export default function TemporaryDrawer(props) {
   const [filterHeading, setFilterHeading] = useState('Budget');
   const [SelectedStar, setSelectedStar] = useState();
   const [SelectedBudget, setSelectedBudget] = useState();
-
+  const [SelectedSort , setSelectedSort] = useState(props.filters.sort[0])
+  const [sortShow , setSortShow] = useState(false)
   const _selectFilter = (event, filter) => {
     if (filter === 0) setFilterHeading('Budget');
     else if (filter === 1) setFilterHeading('Type');
@@ -183,7 +202,56 @@ export default function TemporaryDrawer(props) {
         )}
         {!props.loading ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
-            Showing {props?.totalCount} stays in {props.booking_city}
+            Showing {props?.totalCount} stays in {props.booking_city} | Sort by:{" "}
+            <div
+              style={{
+                display: "inline",
+                position: "relative",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setSortShow(!sortShow);
+              }}
+            >
+              <b>
+                {SelectedSort}
+                {sortShow ? (
+                  <FiChevronUp
+                    style={{
+                      display: "inline",
+                      fontWeight: 900,
+                      fontSize: "1.2rem",
+                    }}
+                  />
+                ) : (
+                  <FiChevronDown
+                    style={{
+                      display: "inline",
+                      fontWeight: 900,
+                      fontSize: "1.2rem",
+                    }}
+                  />
+                )}
+              </b>
+              {sortShow ? (
+                <SortContainer>
+                  {props.filters["sort"].map((e, i) => (
+                    <SortItem
+                      key={i}
+                      onClick={() => {
+                        setSelectedSort(e);
+                        props._addFilterHandler(e.toLowerCase(), "sort");
+                      }}
+                      selected={e === SelectedSort}
+                    >
+                      {e}
+                    </SortItem>
+                  ))}
+                </SortContainer>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         ) : null}
 

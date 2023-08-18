@@ -78,6 +78,7 @@ const Booking = (props) => {
     budget: "",
     type: "",
     star_category: "",
+    sort : 'price',
   });
   // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
@@ -94,6 +95,7 @@ const Booking = (props) => {
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: ["3", "4", "5"],
+    sort : ['Price' , 'Popularity']
   });
   useEffect(() => {
     _updateOptionsHandlerWithFilter();
@@ -208,6 +210,8 @@ const Booking = (props) => {
           trace: storeAndRetrieveValue(props.selectedBooking.city),
           price_lower_range: filters.price_lower_range,
           price_upper_range: filters.price_upper_range,
+          sort_by: filters.sort_by,
+          sort_order : 'asc'
         })
         .then((res) => {
           if (
@@ -370,11 +374,16 @@ const Booking = (props) => {
     let budgetarr = filtersState.budget;
     let typearr = filtersState.type;
     let sta_catgeoryarr = filtersState.star_category;
+    let sort = filtersState.sort
 
     let type = [];
     let price_lower_range = null;
     let price_upper_range = null;
+    let sort_by = 'price';
     let price_set = false;
+    
+    if(sort === 'popularity') sort_by = 'popularity'
+
     if (!typearr.length) {
     } else {
       for (var i = 0; i < typearr.length; i++) {
@@ -456,6 +465,7 @@ const Booking = (props) => {
       type: type,
       price_lower_range: price_lower_range,
       price_upper_range: price_upper_range,
+      sort_by: sort_by,
     };
   };
   const _updateOptionsHandlerWithFilter = () => {
@@ -494,6 +504,8 @@ const Booking = (props) => {
         number_of_adults: props.selectedBooking.pax.number_of_adults,
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
+        sort_by: filters.sort_by,
+        sort_order : 'asc'
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -943,6 +955,8 @@ const Booking = (props) => {
         accommodation_types: filters.type,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
+        sort_by : filters.sort_by,
+        sort_order: "asc",
       })
       .then((res) => {
         // let oldoptions = optionsJSX;
@@ -963,33 +977,6 @@ const Booking = (props) => {
                   res.data.results[i].images[0]
                 )
                   options.push(
-                      <AccommodationSearched
-                        payment={props.payment}
-                        plan={props.plan}
-                        currentBooking={props.currentBooking}
-                        _setImagesHandler={props._setImagesHandler}
-                        token={props.token}
-                        _updateSearchedAccommodation={
-                          _updateSearchedAccommodation
-                        }
-                        _SelectedBookingHandler={_SelectedBookingHandler}
-                        itinerary_id={props.payment.tailored_itinerary}
-                        tailored_id={props.tailored_id}
-                        _updateBookingHandler={_newUpdateBookingHandler}
-                        accommodation={res.data.results[i]}
-                        selectedBooking={props.selectedBooking}
-                        key={i}
-                        images={res.data.results.images}
-                        bookings={props.bookings}
-                      ></AccommodationSearched>
-                  );
-            } catch {
-              if (
-                res.data.results[i].images &&
-                res.data.results[i].images.length &&
-                res.data.results[i].images[0]
-              )
-                options.push(
                     <AccommodationSearched
                       payment={props.payment}
                       plan={props.plan}
@@ -1009,6 +996,31 @@ const Booking = (props) => {
                       images={res.data.results.images}
                       bookings={props.bookings}
                     ></AccommodationSearched>
+                  );
+            } catch {
+              if (
+                res.data.results[i].images &&
+                res.data.results[i].images.length &&
+                res.data.results[i].images[0]
+              )
+                options.push(
+                  <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
+                    currentBooking={props.currentBooking}
+                    _setImagesHandler={props._setImagesHandler}
+                    token={props.token}
+                    _updateSearchedAccommodation={_updateSearchedAccommodation}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
+                    itinerary_id={props.payment.tailored_itinerary}
+                    tailored_id={props.tailored_id}
+                    _updateBookingHandler={_newUpdateBookingHandler}
+                    accommodation={res.data.results[i]}
+                    selectedBooking={props.selectedBooking}
+                    key={i}
+                    images={res.data.results.images}
+                    bookings={props.bookings}
+                  ></AccommodationSearched>
                 );
             }
           }

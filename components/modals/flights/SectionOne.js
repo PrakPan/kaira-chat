@@ -61,7 +61,10 @@ const P = styled.div`
     font-weight: 400;
   }
 `;
-
+const TextContainer = styled.div`
+font-size : 0.875rem;
+font-weight : 400;
+`
 const Item = styled.div`
   font-size: 14px;
   cursor: pointer;
@@ -221,6 +224,8 @@ const Section = (props) => {
       </Heading>
 
       {isPageWide ? FiltersSection : <></>}
+
+      {/* <TextContainer>Showing flights</TextContainer> */}
 
       {!isPageWide && (
         <Drawer
