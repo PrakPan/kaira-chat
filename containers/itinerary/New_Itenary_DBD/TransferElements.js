@@ -17,6 +17,7 @@ import { formatNumber } from '../../../helper/formatNumber';
 import { Text } from '../../newitinerary/itineraryelements/ItineraryFoodElement';
 import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
 import { Link } from 'react-scroll';
+import { MdDoneAll } from 'react-icons/md';
 const TransferElements = ({
   time,
   heading,
@@ -29,6 +30,7 @@ const TransferElements = ({
   newcity,
   LastTransfer,
 }) => {
+  console.log('super prop' , data)
   function isValueUndefined(value) {
     return value === undefined;
   }
@@ -65,17 +67,28 @@ const TransferElements = ({
                 {meta == null || meta.estimated_cost == undefined ? null : (
                   <Link
                     to={
-                      (data.bookings && data.bookings[0] && data.bookings[0].id)
+                      data.bookings && data.bookings[0] && data.bookings[0].id
                         ? `${data.bookings[0].id}`
                         : "Transfer_Container"
                     }
                     offset={-90}
                   >
                     <TransparentButton>
-                      {modes ? `Add ${modes} ` : null}
-                      {/* ₹
-                      {formatNumber(Math.round(meta.estimated_cost))
-                      } */}
+                      {data.bookings &&
+                      data.bookings[0] &&
+                      data.bookings[0].user_selected ? (
+                        <>
+                          <MdDoneAll
+                            style={{
+                              display: "inline",
+                              marginRight: "0.35rem",
+                            }}
+                          />{" "}
+                          {modes ? `${modes} added` : null}
+                        </>
+                      ) : (
+                        <>{modes ? `Add ${modes} ` : null}</>
+                      )}
                     </TransparentButton>
                   </Link>
                 )}

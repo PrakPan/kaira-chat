@@ -13,6 +13,7 @@ import {
 } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
 import isSameDay from 'date-fns/isSameDay';
 import { parse } from 'date-fns';
+import { MdDoneAll } from 'react-icons/md';
 const padding = {
   initialLeft: '60px',
 };
@@ -79,6 +80,7 @@ function compareDates(dateString1, dateString2) {
   return false;
 }
 const ItineraryElement = (props) => {
+  console.log('suprt props: ', props);
   useEffect(() => {}, []);
 
   return (
@@ -116,7 +118,21 @@ const ItineraryElement = (props) => {
               to={props.city_id ? `${props.city_id}` : "Stays-Head"}
               offset={-35}
             >
-              <TransparentButton>Add Stay</TransparentButton>
+              {props.data &&
+              props.data.bookings &&
+              props.data.bookings.length &&
+              props.data.bookings[0].user_selected ? (
+                <TransparentButton>
+                  <MdDoneAll
+                    style={{
+                      display: "inline",
+                      marginRight: "0.35rem",
+                    }}
+                  />{" "} Stay added
+                </TransparentButton>
+              ) : (
+                <TransparentButton>Add Stay</TransparentButton>
+              )}
             </Link>
             {/* ) : null} */}
 
