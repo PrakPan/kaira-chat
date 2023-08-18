@@ -83,11 +83,11 @@ const MidSection = (props) => {
         <>
           {props.version == "v2" ? (
             <Text>
-              {props.route?.modes &&
+              {(props.route?.modes &&
                 props.route?.modes.length &&
                 props.bookings &&
                 props.bookings.length &&
-                props.bookings[0].booking_type && (
+                props.bookings[0].booking_type) ? (
                   <TransportIconFetcher
                     TransportMode={props.route?.modes[0]}
                     Instyle={{
@@ -96,7 +96,7 @@ const MidSection = (props) => {
                       color: "#4d4d4d",
                     }}
                   />
-                )}
+                ) : <></>}
               {props?.bookings?.map((element, index) => (
                 <div className="flex flex-row" key={index}>
                   <div className="flex flex-row pr-0">
@@ -108,9 +108,9 @@ const MidSection = (props) => {
                 </div>
               ))}
 
-              {props.route?.modes &&
+              {(props.route?.modes &&
                 props.route?.modes.length &&
-                props.duration && <div>: {props.duration}</div>}
+                props.duration) ? <div>: {props.duration}</div> : <></>}
 
               {/* {props.icon && (
             <ImageLoader

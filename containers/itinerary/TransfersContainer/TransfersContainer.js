@@ -1179,7 +1179,7 @@ const TransfersContainer = (props) => {
         var modes = false
         if (props.routes[1]?.modes && props.routes[1]?.modes.length) {
           modes = props.routes[1]?.modes;
-        } else if (props.routes[1]?.bookings) {
+        } else if (props.routes[1]?.bookings && props.routes[1]?.bookings.length) {
           modes = props.routes[1]?.bookings;
         }
 
@@ -1261,8 +1261,7 @@ const TransfersContainer = (props) => {
           props?.routes.length > 1 &&
           props?.plan?.version == "v2" &&
           !props.plan.is_released_for_customer ? (
-            props.routes[1]?.modes ||
-            (props?.routes[1].bookings && props?.routes[1].bookings.length) ? (
+            modes ? (
               modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
                   props?.transferBookings,
