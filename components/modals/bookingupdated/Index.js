@@ -327,7 +327,6 @@ const Booking = (props) => {
         });
     }
   }, [props.alternates, props.budget]);
-
   const _addFilterHandler = (filter, heading) => {
     let oldfilters = filtersState;
     let oldfiltersheadingarr = filtersState[heading];
@@ -390,51 +389,69 @@ const Booking = (props) => {
         }
       }
     }
-
-    //BUDGET FILTERS
-    if (!budgetarr.length) {
-      //send default
-      price_lower_range = 0;
-      price_upper_range = 100000000;
-    } else {
-      if (budgetarr.includes("Below ₹3,000")) {
-        price_lower_range = 1;
+      if(budgetarr === "Affordable")  {
+        price_lower_range = 0;
         price_upper_range = 300000;
-        if (budgetarr.includes("Above ₹10,000")) {
-          price_upper_range = null;
-        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
-          price_upper_range = 1000000;
-        } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
-          price_upper_range = 600000;
-        }
-        price_set = true;
       }
-      if (budgetarr.includes("Above ₹10,000")) {
-        price_upper_range = 100000000;
+      else if(budgetarr === "Average")  {
+        price_lower_range = 300000;
+        price_upper_range = 600000;
+      }
+      else if(budgetarr === "Luxury")  {
+        price_lower_range = 600000;
+        price_upper_range = 1000000;
+      }
+      else if(budgetarr === "Luxury+")  {
         price_lower_range = 1000000;
-        if (budgetarr.includes("Below ₹3,000")) {
-          price_lower_range = 1;
-        } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
-          price_lower_range = 300000;
-        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
-          price_lower_range = 600000;
-        }
-        price_set = true;
+        price_upper_range = null;
       }
-      if (!price_set) {
-        if (budgetarr.includes("₹3,000 - ₹6,000")) {
-          price_lower_range = 300000;
-          if (budgetarr.includes("₹6,000 - ₹10,000")) {
-            price_upper_range = 1000000;
-          } else price_upper_range = 600000;
-        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
-          price_lower_range = 600000;
-          if (budgetarr.includes("Above ₹10,000")) {
-            price_upper_range = 100000000;
-          } else price_upper_range = 1000000;
-        }
+      else {
+        price_lower_range: null;
+        price_upper_range: null;
       }
-    }
+    //BUDGET FILTERS
+    // if (!budgetarr.length) {
+    //   price_lower_range = 0;
+    //   price_upper_range = 100000000;
+    // } else {
+    //   if (budgetarr.includes("Below ₹3,000")) {
+    //     price_lower_range = 1;
+    //     price_upper_range = 300000;
+    //     if (budgetarr.includes("Above ₹10,000")) {
+    //       price_upper_range = null;
+    //     } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
+    //       price_upper_range = 1000000;
+    //     } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
+    //       price_upper_range = 600000;
+    //     }
+    //     price_set = true;
+    //   }
+    //   if (budgetarr.includes("Above ₹10,000")) {
+    //     price_upper_range = 100000000;
+    //     price_lower_range = 1000000;
+    //     if (budgetarr.includes("Below ₹3,000")) {
+    //       price_lower_range = 1;
+    //     } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
+    //       price_lower_range = 300000;
+    //     } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
+    //       price_lower_range = 600000;
+    //     }
+    //     price_set = true;
+    //   }
+    //   if (!price_set) {
+    //     if (budgetarr.includes("₹3,000 - ₹6,000")) {
+    //       price_lower_range = 300000;
+    //       if (budgetarr.includes("₹6,000 - ₹10,000")) {
+    //         price_upper_range = 1000000;
+    //       } else price_upper_range = 600000;
+    //     } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
+    //       price_lower_range = 600000;
+    //       if (budgetarr.includes("Above ₹10,000")) {
+    //         price_upper_range = 100000000;
+    //       } else price_upper_range = 1000000;
+    //     }
+    //   }
+    // }
     return {
       type: type,
       price_lower_range: price_lower_range,
