@@ -69,7 +69,6 @@ const Text = styled.div`
 `;
 const MidSection = (props) => {
   useEffect(() => {}, []);
-  console.log('bookings-1' ,props.bookings , props.route?.modes);
   return (
     <Container className="font-lexend" hidemidsection={props.hidemidsection}>
       <div style={{ position: "relative" }}>
