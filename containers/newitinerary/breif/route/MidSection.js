@@ -69,8 +69,6 @@ const Text = styled.div`
 `;
 const MidSection = (props) => {
   useEffect(() => {}, []);
-  console.log("bookings-1");
-  console.log(props.bookings);
   return (
     <Container className="font-lexend" hidemidsection={props.hidemidsection}>
       <div style={{ position: "relative" }}>
@@ -83,20 +81,29 @@ const MidSection = (props) => {
         <>
           {props.version == "v2" ? (
             <Text>
-              {(props.route?.modes &&
-                props.route?.modes.length &&
-                props.bookings &&
+              {props.route?.modes && props.route?.modes.length ? (
+                <TransportIconFetcher
+                  TransportMode={props.route?.modes[0]}
+                  Instyle={{
+                    fontSize: "1.4rem",
+                    marginRight: "0.8rem",
+                    color: "#4d4d4d",
+                  }}
+                />
+              ) : props.bookings &&
                 props.bookings.length &&
-                props.bookings[0].booking_type) ? (
-                  <TransportIconFetcher
-                    TransportMode={props.route?.modes[0]}
-                    Instyle={{
-                      fontSize: "1.4rem",
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) : <></>}
+                props.bookings[0].booking_type ? (
+                <TransportIconFetcher
+                  TransportMode={props.bookings[0].booking_type}
+                  Instyle={{
+                    fontSize: "1.4rem",
+                    marginRight: "0.8rem",
+                    color: "#4d4d4d",
+                  }}
+                />
+              ) : (
+                <></>
+              )}
               {props?.bookings?.map((element, index) => (
                 <div className="flex flex-row" key={index}>
                   <div className="flex flex-row pr-0">
@@ -108,9 +115,13 @@ const MidSection = (props) => {
                 </div>
               ))}
 
-              {(props.route?.modes &&
-                props.route?.modes.length &&
-                props.duration) ? <div>: {props.duration}</div> : <></>}
+              {props.route?.modes &&
+              props.route?.modes.length &&
+              props.duration ? (
+                <div>: {props.duration}</div>
+              ) : (
+                <></>
+              )}
 
               {/* {props.icon && (
             <ImageLoader
