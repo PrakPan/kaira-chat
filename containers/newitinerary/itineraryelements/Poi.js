@@ -323,7 +323,10 @@ const ItineraryPoiElement = (props) => {
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {props.activity_data.activity.id ? 'ACTIVITY' : 'ATTRACTION'}
+                  {(props.activity_data &&
+                  props.activity_data.activity && props.activity_data.activity.id)
+                    ? "ACTIVITY"
+                    : "ATTRACTION"}
                 </div>
                 {props.poi.rating && (
                   <RatingContainer>
@@ -376,8 +379,8 @@ const ItineraryPoiElement = (props) => {
         style={{ zIndex: 1501 }}
         className="font-lexend"
         onHide={() => setShowDrawer(false)}
-        mobileWidth={'100vw'}
-        width='50vw'
+        mobileWidth={"100vw"}
+        width="50vw"
       >
         <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 justify-start items-start mx-auto w-[96%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
