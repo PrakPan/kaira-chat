@@ -1178,13 +1178,20 @@ const TransfersContainer = (props) => {
 
   // }
 
-        var modes = false
-        if (props.routes[1]?.modes && props.routes[1]?.modes.length) {
-          modes = props.routes[1]?.modes;
-        } else if (props.routes[1]?.bookings && props.routes[1]?.bookings.length) {
-          modes = props.routes[1]?.bookings;
-        }
-
+  var modes = false;
+  if (
+    props?.routes &&
+    props?.routes.length > 1 &&
+    props?.plan?.version == "v2" &&
+    !props.plan.is_released_for_customer
+  ) {
+    if (props.routes[1]?.modes && props.routes[1]?.modes.length) {
+      modes = props.routes[1]?.modes;
+    } else if (props.routes[1]?.bookings && props.routes[1]?.bookings.length) {
+      modes = props.routes[1]?.bookings;
+    }
+  }
+  
   return (
     <Container id="Stays-Head">
       <div
