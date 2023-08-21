@@ -826,8 +826,15 @@ const Details = (props) => {
                             (
                             {props?.payment?.coupon?.discount_type == "Flat"
                               ? "Flat"
+                              : props?.payment?.coupon?.discount_type ==
+                                "1 Night Free Stay"
+                              ? `INR ${getIndianPrice(
+                                  Math.round(
+                                    props?.payment?.coupon_usage?.discount / 100
+                                  )
+                                )}`
                               : props.payment.coupon.discount_value + "%"}{" "}
-                            OFF)
+                            OFF!)
                           </div>
                         </div>
                       </div>
