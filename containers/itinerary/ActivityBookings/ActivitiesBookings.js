@@ -400,13 +400,13 @@ const ActivitiesBookings = (props) => {
                 {booking?.city}:{" "}
                 {booking.duration && <span>({booking?.duration}N)</span>}
               </div>
-              <div className=" shadow-md rounded-lg transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-500/50 border-[#ECEAEA]  hover:border-[#ffa500] shadow-[#ECEAEA] lg:p-4 p-2">
-                <div className="relative flex lg:flex-row flex-col gap-4">
-                  <div className="relative lg:w-1/3 lg:h-[15rem] w-full h-[12rem]">
+              <div className=" shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-500/50 border-[#ECEAEA]  hover:border-[#ffa500] shadow-[#ECEAEA] lg:p-4 p-3">
+                <div className="relative flex lg:flex-row w-full flex-col gap-4  grayscale-0 ">
+                  <div className="relative lg:h-[15rem] lg:w-[30%] w-full h-[12rem]">
                     <ImageLoader
                       dimensions={{ width: 400, height: 400 }}
                       dimensionsMobile={{ width: 400, height: 400 }}
-                      borderRadius="8px"
+                      borderRadius="16px"
                       hoverpointer
                       onclick={() => console.log("")}
                       width="100%"
@@ -424,14 +424,16 @@ const ActivitiesBookings = (props) => {
                     ) : null}
                   </div>
                   <div className="flex flex-col gap-2 text-[#01202B]">
-                    <div className="text-lg font-bold ">{booking?.name}</div>
-                    <div className="flex flex-col gap-1">
-                      <div className="text-sm font-medium">{booking?.city}</div>
+                    <div className="text-2xl font-semibold ">
+                      {booking?.name}
+                    </div>
+                    <div className="flex flex-col gap-1 -mt-2">
+                      <div className="text-sm font-normal">{booking?.city}</div>
                       {booking.points &&
                         booking.points.map((data, i) => (
-                          <div className="flex flex-col gap-1 ">
+                          <div className="flex flex-col gap-0">
                             {data !== "" && (
-                              <div className="flex flex-row gap-1 ">
+                              <div className="flex flex-row gap-1 text-sm font-[400] line-clamp-1">
                                 <div>{i + 1}. </div>
                                 <div>{data}</div>
                               </div>
@@ -446,7 +448,7 @@ const ActivitiesBookings = (props) => {
                           <div>{booking?.user_rating}</div>
                           {booking.number_of_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-medium underline">
-                              {booking.number_of_reviews} Google reviews
+                              {booking.number_of_reviews} Reviews
                             </div>
                           )}
                         </div>
@@ -454,9 +456,9 @@ const ActivitiesBookings = (props) => {
                     </div>
                     {booking.check_in && (
                       <div className="flex flex-row gap-2 items-center">
-                        <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                        <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
                         <div>
-                          <div className="text-md font-medium ">
+                          <div className="text-sm font-[400] line-clamp-1">
                             {booking.check_in && getDate(booking.check_in)}
                             {booking.check_out &&
                               " - " + " " + getDate(booking.check_out)}
