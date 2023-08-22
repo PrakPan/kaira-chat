@@ -470,7 +470,7 @@ const HotelBookingContainer = ({
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                         <div
-                          onClick={(e) => {
+                            onClick={(e) => {
                             e.stopPropagation();
                             handleClickAc(index, booking, city_id);
                           }}
@@ -486,16 +486,19 @@ const HotelBookingContainer = ({
                         </div>
                       )
                     ) : (
+                        <div onClick={(e) => {
+                          e.stopPropagation();
+                          setShowLoginModal(true);
+                        }}>
                       <Button
                         padding="0.6rem 2.2rem"
                         borderRadius="8px"
                         fontWeight="400"
-                        onclick={() => {
-                          setShowLoginModal(true);
-                        }}
+                          onclick={()=>console.log('')}
                       >
                         {!isSelect ? "Add Hotel" : "Change"}
-                      </Button>
+                          </Button>
+                          </div>
                     )}
 
                     {/* <div
