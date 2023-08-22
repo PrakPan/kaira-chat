@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import * as logout from "../../store/actions/logout";
 import * as authaction from "../../store/actions/auth";
-import { changeScrollBehaviour } from "../../store/actions/scroll";
 import { connect } from "react-redux";
 import { OverlayScrollbars } from "overlayscrollbars";
 import "overlayscrollbars/overlayscrollbars.css";
@@ -209,7 +208,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onLogout: () => dispatch(logout.logout()),
     authShowLogin: () => dispatch(authaction.authShowLogin()),
-    changeScrollBehaviour: (data) => dispatch(changeScrollBehaviour(data)),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Navbar));

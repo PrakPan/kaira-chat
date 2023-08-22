@@ -102,7 +102,6 @@ const LoadingText = styled.div`
   opacity: 0.8;
 `;
 const Enquiry = (props) => {
-  console.log('props.phone: ', props.phone);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();

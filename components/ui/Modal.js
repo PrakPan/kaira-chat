@@ -1,11 +1,11 @@
-import styled, { keyframes } from 'styled-components';
-import { RxCross2 } from 'react-icons/rx';
-import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
-import media from '../media';
-import { ClaimItinary } from '../../store/actions/auth';
-import { connect } from 'react-redux';
-import { changeScrollBehaviour } from '../../store/actions/scroll';
+import styled, { keyframes } from "styled-components";
+import { RxCross2 } from "react-icons/rx";
+import { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import media from "../media";
+import { ClaimItinary } from "../../store/actions/auth";
+import { connect } from "react-redux";
+import { changeScrollBehaviour } from "../../store/actions/scroll";
 const TopSlideIn = keyframes`
 from { 
   transform: translate(-50%,-100%);
@@ -64,38 +64,44 @@ const BlackContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: ${props=>props.zIndex || '1599'};
+  z-index: ${(props) => props.zIndex || "1599"};
   width: 100vw;
   height: 100vh;
   transition: background 0.6s linear;
 `;
 
- function Modal(props) {
+function Modal(props) {
+  const hasRendered = useRef(false);
   const [_document, set_document] = useState(null);
+  const [open , setOpen] = useState(false)
   useEffect(() => {
     set_document(document);
   }, []);
-   const [fade, setFade] = useState('out');
+  const [fade, setFade] = useState("out");
   function onCLose() {
-    setFade('out');
+    setFade("out");
     setTimeout(() => {
       if (props.onHide) props.onHide();
-      // document.body.style.overflow = 'initial';
-      props.changeScrollBehaviour({ overflow: 'scroll' })
+      props.changeScrollBehaviour({ overflow: "scroll" });
+    setOpen(false);
     }, 800);
   }
   useEffect(() => {
-    if (props.show === true) {
-      // document.body.style.overflow = 'hidden';
-      props.changeScrollBehaviour({ overflow: "hidden" });
-      setFade('in');
+    if (hasRendered.current) {
+      if (props.show === true) {
+        props.changeScrollBehaviour({ overflow: "hidden" });
+        setFade("in");
+        setOpen(true)
+      } else onCLose();
+    } else {
+      hasRendered.current = true;
     }
   }, [props.show]);
 
   return _document
-? ReactDOM.createPortal(
+    ? ReactDOM.createPortal(
         <div>
-          {props.show && (
+          {open && (
             <div
               className="font-lexend"
               style={{ position: "relative", ...props.style }}
@@ -146,7 +152,7 @@ const BlackContainer = styled.div`
 
 const mapStateToProps = (state) => {
   return {
-    overflow: state.scroll.overflow
+    overflow: state.scroll.overflow,
   };
 };
 const mapDispatchToProps = (dispatch) => {

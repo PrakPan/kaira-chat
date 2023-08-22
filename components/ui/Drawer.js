@@ -5,6 +5,7 @@ import ReactDOM from "react-dom";
 import media from "../media";
 import { connect } from "react-redux";
 import { changeScrollBehaviour } from "../../store/actions/scroll";
+import { useRef } from "react";
 
 const leftSlideIn = keyframes`
 from { 
@@ -117,31 +118,32 @@ const BlackContainer = styled.div`
 `;
 function Drawer(props) {
   const [_document, set_document] = useState(null);
-  let isPageWide = media("(min-width: 768px)");
+  const hasRendered = useRef(false);
   const [open , setOpen] = useState(false)
     useEffect(() => {
       set_document(document);
     }, []);
   const [fade, setFade] = useState("out");
   function onCLose() {
-      // props.changeScrollBehaviour({ overflow: "scroll" });
-
     setFade("out");
     setTimeout(() => {
-      setOpen(false)
-      if(props.onHide) props.onHide()
-    }, 100);
+      if (props.onHide) props.onHide();
+      props.changeScrollBehaviour({ overflow: "scroll" });
+      setOpen(false);
+    }, 800);
   }
 
   useEffect(() => {
-      
-    if (props.show === true) {
-        
-          setOpen(true)
-      // props.changeScrollBehaviour({ overflow: "hidden" });
+    if (hasRendered.current) {
+      if (props.show === true) {
+        props.changeScrollBehaviour({ overflow: "hidden" });
         setFade("in");
+        setOpen(true);
       } else onCLose();
-    }, [props.show]);
+    } else {
+      hasRendered.current = true;
+    }
+  }, [props.show]);
   
   return _document
     ? ReactDOM.createPortal(

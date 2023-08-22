@@ -2,7 +2,6 @@ import * as actionTypes from "../actions/actionsTypes";
 
 // Define initial state
 const initialState = {
-  //   activeComponent: null,
 overflow : 'scroll'
 };
 
