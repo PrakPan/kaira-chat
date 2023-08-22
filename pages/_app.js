@@ -39,14 +39,19 @@ function MyApp({ Component, pageProps, store }) {
     }
   }, []);
 
-  useEffect(() => {
-    const options = {
-      scrollbars: {},
-    };
-    if (isPageWide) {
-      OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
-    }
-  }, [isPageWide]);
+  // useEffect(() => {
+  //   const options = {
+  //     overflow: {
+  //       // y : 'scroll'
+  //     },
+  //     scrollbars: {
+  //       autoHide : 'scroll'
+  //     },
+  //   };
+  //   if (isPageWide) {
+  //     OverlayScrollbars(document.body, options); // Initialize OverlayScrollbars on the body element
+  //   }
+  // }, [isPageWide]);
 
   useEffect(() => {
     const handleRouteChange = (url) => {

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import media from '../media';
 import { ClaimItinary } from '../../store/actions/auth';
+import { connect } from 'react-redux';
+import { changeScrollBehaviour } from '../../store/actions/scroll';
 const TopSlideIn = keyframes`
 from { 
   transform: translate(-50%,-100%);
@@ -68,44 +70,26 @@ const BlackContainer = styled.div`
   transition: background 0.6s linear;
 `;
 
-export default function Modal(props) {
+ function Modal(props) {
   const [_document, set_document] = useState(null);
-  let isPageWide = media('(min-width: 768px)');
-
-  function getScrollBarWidth() {
-    let el = document.createElement('div');
-    el.style.cssText = 'overflow:scroll; visibility:hidden; position:absolute;';
-    document.body.appendChild(el);
-    let width = el.offsetWidth - el.clientWidth;
-    el.remove();
-    return width;
-  }
   useEffect(() => {
     set_document(document);
-    // return () => {
-    // document.body.style.overflow = "overlay";
-    // };
   }, []);
-  const [fade, setFade] = useState('out');
+   const [fade, setFade] = useState('out');
   function onCLose() {
     setFade('out');
-
     setTimeout(() => {
       if (props.onHide) props.onHide();
-      // document.body.style.overflowY = 'scroll'
-      document.body.style.overflow = 'initial';
-
-      // if(isPageWide) document.body.style.paddingRight = '0px'
+      // document.body.style.overflow = 'initial';
+      props.changeScrollBehaviour({ overflow: 'scroll' })
     }, 800);
   }
-
   useEffect(() => {
     if (props.show === true) {
-      document.body.style.overflow = 'hidden';
-      // if(isPageWide) document.body.style.paddingRight = getScrollBarWidth() + 'px'
+      // document.body.style.overflow = 'hidden';
+      props.changeScrollBehaviour({ overflow: "hidden" });
       setFade('in');
     }
-    // else onCLose();
   }, [props.show]);
 
   return _document
@@ -159,3 +143,16 @@ export default function Modal(props) {
       )
     : null;
 }
+
+const mapStateToProps = (state) => {
+  return {
+    overflow: state.scroll.overflow
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeScrollBehaviour: (payload) =>
+      dispatch(changeScrollBehaviour(payload)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Modal);

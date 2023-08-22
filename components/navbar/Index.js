@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 
 import * as logout from "../../store/actions/logout";
 import * as authaction from "../../store/actions/auth";
+import { changeScrollBehaviour } from "../../store/actions/scroll";
 import { connect } from "react-redux";
-
+import { OverlayScrollbars } from "overlayscrollbars";
+import "overlayscrollbars/overlayscrollbars.css";
 import IndexDesktop from "./Desktop";
 import media from "../media";
 import NewMobile from "./mobile/Index";
@@ -14,6 +16,7 @@ import { closeTailoredModal } from "../../services/openTailoredModal";
 import { useRouter } from "next/router";
 
 const Navbar = React.memo((props) => {
+  const [scrollbarInstance, setScrollbarInstance] = useState(null);
   let isPageWide = media("(min-width: 768px)");
   const [hideNav, setHideNav] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
@@ -32,6 +35,24 @@ const Navbar = React.memo((props) => {
         } else setShowMobilePlanner(false);
       }
     }, [router.isReady, router.asPath]);
+    const options = {
+      overflow: {
+        y : props.overflow
+      },
+      scrollbars: {
+        autoHide: "scroll",
+      },
+    };
+    useEffect(() => {
+     if (scrollbarInstance) {
+       scrollbarInstance.destroy();
+      }
+     const scrollPosition = window.scrollY;
+      const newScrollbarInstance = OverlayScrollbars(document.body, options);
+       window.scrollTo(0, scrollPosition);
+     setScrollbarInstance(newScrollbarInstance);
+    }, [isPageWide, props.overflow]);
+  
 
   useEffect(() => {
     if (props.token)
@@ -180,6 +201,7 @@ const mapStateToProps = (state) => {
     token: state.auth.token,
     name: state.auth.name,
     image: state.auth.image,
+    overflow: state.scroll.overflow
     // showLogin: state.auth.showLogin,
   };
 };
@@ -187,6 +209,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onLogout: () => dispatch(logout.logout()),
     authShowLogin: () => dispatch(authaction.authShowLogin()),
+    changeScrollBehaviour: (data) => dispatch(changeScrollBehaviour(data)),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Navbar));

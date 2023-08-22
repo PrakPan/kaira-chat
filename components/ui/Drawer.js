@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import media from "../media";
+import { connect } from "react-redux";
+import { changeScrollBehaviour } from "../../store/actions/scroll";
 
 const leftSlideIn = keyframes`
 from { 
@@ -113,18 +115,17 @@ const BlackContainer = styled.div`
   height: 100vh;
   transition: background 0.5s linear;
 `;
-export default function Drawer(props) {
+function Drawer(props) {
   const [_document, set_document] = useState(null);
   let isPageWide = media("(min-width: 768px)");
   const [open , setOpen] = useState(false)
     useEffect(() => {
       set_document(document);
-      // return () => { (document.body.style.overflow = "overlay");}
     }, []);
   const [fade, setFade] = useState("out");
   function onCLose() {
-    // document.body.style.overflowY = "scroll";
-    document.body.style.overflow = "initial";
+      // props.changeScrollBehaviour({ overflow: "scroll" });
+
     setFade("out");
     setTimeout(() => {
       setOpen(false)
@@ -132,23 +133,12 @@ export default function Drawer(props) {
     }, 100);
   }
 
-//  function getScrollBarWidth() {
-//    let el = document.createElement("div");
-//    el.style.cssText = "overflow:scroll; visibility:hidden; position:absolute;";
-//    document.body.appendChild(el);
-//    let width = el.offsetWidth - el.clientWidth;
-//    el.remove();
-//    return width;
-//   }
-  
   useEffect(() => {
       
     if (props.show === true) {
         
           setOpen(true)
-        document.body.style.overflow = "hidden";
-       
-        // if (isPageWide) document.body.style.paddingRight = getScrollBarWidth() + "px";
+      // props.changeScrollBehaviour({ overflow: "hidden" });
         setFade("in");
       } else onCLose();
     }, [props.show]);
@@ -182,3 +172,17 @@ export default function Drawer(props) {
       )
     : null;
 }
+
+
+const mapStateToProps = (state) => {
+  return {
+    overflow: state.scroll.overflow
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeScrollBehaviour: (payload) =>
+      dispatch(changeScrollBehaviour(payload)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Drawer);

@@ -15,7 +15,6 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.NOTIFICATION_OPEN:
 
-    console.log("action: ", action);
       return {
         ...state,
         text: action.payload.text,
