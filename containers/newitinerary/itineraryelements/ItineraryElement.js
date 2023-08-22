@@ -1,21 +1,21 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { AiFillCar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import Button from '../../../components/ui/button/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { FaHome } from 'react-icons/fa';
-import { Link } from 'react-scroll';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { AiFillCar } from "react-icons/ai";
+import ImageLoader from "../../../components/ImageLoader";
+import Button from "../../../components/ui/button/Index";
+import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { FaHome } from "react-icons/fa";
+import { Link } from "react-scroll";
 import {
   HLine,
   TransparentButton,
   newDayContainerTextpadding,
-} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
-import isSameDay from 'date-fns/isSameDay';
-import { parse } from 'date-fns';
-import { MdDoneAll } from 'react-icons/md';
+} from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import isSameDay from "date-fns/isSameDay";
+import { parse } from "date-fns";
+import { MdDoneAll } from "react-icons/md";
 const padding = {
-  initialLeft: '60px',
+  initialLeft: "60px",
 };
 const Container = styled.div`
   display: flex;
@@ -33,7 +33,7 @@ const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: ${(props) => (props.image ? '1fr 2fr' : '1fr')};
+  grid-template-columns: ${(props) => (props.image ? "1fr 2fr" : "1fr")};
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
@@ -70,8 +70,8 @@ export const TInfoContainer = styled.div`
 `;
 function compareDates(dateString1, dateString2) {
   if (dateString1 && dateString2) {
-    const date1 = parse(dateString1, 'dd/MM/yyyy', new Date());
-    const date2 = parse(dateString2, 'yyyy-MM-dd', new Date());
+    const date1 = parse(dateString1, "dd/MM/yyyy", new Date());
+    const date2 = parse(dateString2, "yyyy-MM-dd", new Date());
 
     console.log(isSameDay(date1, date2));
     return isSameDay(date1, date2);
@@ -80,7 +80,7 @@ function compareDates(dateString1, dateString2) {
   return false;
 }
 const ItineraryElement = (props) => {
-  console.log('suprt props: ', props);
+  console.log("suprt props: ", props);
   useEffect(() => {}, []);
 
   return (
@@ -120,18 +120,24 @@ const ItineraryElement = (props) => {
             >
               {props.data &&
               props.data.bookings &&
-              props.data.bookings.length &&
-              props.data.bookings[0].user_selected ? (
-                <TransparentButton>
-                  <MdDoneAll
-                    style={{
-                      display: "inline",
-                      marginRight: "0.35rem",
-                    }}
-                  />{" "} Stay added
-                </TransparentButton>
+              props.data.bookings.length ? (
+                <>
+                  {props.data.bookings[0].user_selected ? (
+                    <TransparentButton>
+                      <MdDoneAll
+                        style={{
+                          display: "inline",
+                          marginRight: "0.35rem",
+                        }}
+                      />{" "}
+                      Stay added
+                    </TransparentButton>
+                  ) : (
+                    <TransparentButton>Add Stay</TransparentButton>
+                  )}
+                </>
               ) : (
-                <TransparentButton>Add Stay</TransparentButton>
+                <></>
               )}
             </Link>
             {/* ) : null} */}
