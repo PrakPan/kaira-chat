@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ImageLoader from '../../components/ImageLoader';
+import TripsCounter from '../homepage/TripsCounter';
+import axiosCountInstance from "../../services/itinerary/count";
 
 const Text = styled.h1`
   position: relative;
@@ -58,14 +60,10 @@ const StoriesHeading = styled.span`
 `;
 
 const TravellerCounter = () => {
-  const [counter, setCounter] = useState(1214);
-
+    const [count, setCount] = useState(null);
   useEffect(() => {
-    const timer =
-      counter < 1321 && setInterval(() => setCounter(counter + 1), 10);
-    return () => clearInterval(timer);
-  }, [counter]);
-
+    axiosCountInstance.get("").then((res) => setCount(res.data.user));
+  }, []);
   return (
     <div className="font-lexend center-div text-center">
       <Container>
@@ -86,7 +84,10 @@ const TravellerCounter = () => {
             url={'media/testimonials/leaf.svg'}
           />
         </LeafContainer>
-        <Text>{counter}</Text>
+        <Text>
+
+          {count}
+        </Text>
         <Text>Travellers and Counting</Text>
       </Container>
     </div>
