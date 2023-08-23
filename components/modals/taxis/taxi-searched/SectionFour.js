@@ -42,6 +42,7 @@ margin:   0;
  }
  `;
 const Section= (props) => {
+  console.log('propsSection: ', props);
     let isPageWide = media('(min-width: 768px)')
     const [showCounter, setShowCounter] = useState(false);
     const [counterValue, setCounterValue] = useState(1);
@@ -61,7 +62,8 @@ const Section= (props) => {
       <Container className='font-lexend'>  
       <GridContainer>
         <div className='center-div' style={{marginRight: '0.5rem'}}><Cost>
-      {"₹ " + (getIndianPrice(Math.round(props.data.price * counterValue/100)) )+" /-"}
+      {/* {"₹ " + (getIndianPrice(Math.round(props.data.price * counterValue/100)) )+" /-"} */}
+      {"₹ " +  props.data.fare.totalAmount+" /-"}
       </Cost></div>
             {/* <Button width="100%" borderRadius="0 0 0 10px" borderStyle="solid solid none none" borderColor="rgba(222, 222, 222, 1)" borderWidth="1px" onclickparam={null} onclick={() => console.log('test')}>View Details</Button> */}
             {/* {!showCounter ? 

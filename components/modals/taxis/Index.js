@@ -8,6 +8,7 @@ import media from '../../media';
 // import AccommodationModal from '../accommodation/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
 import axiostaxiinstance from '../../../services/bookings/FetchTaxiRecommendations';
+import axiostaxigozoinstance from '../../../services/bookings/FetchTaxiRecommendationsGozo'
 import Spinner from '../../Spinner';
 
 //  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
@@ -40,13 +41,13 @@ const GridContainer = styled.div`
 const OptionsContainer = styled.div`
   min-height: 40vh;
   overflow-x: hidden;
-  width: 100%;
+  width: 95%;
   position: relative;
+  margin: auto;
 
   @media screen and (min-width: 768px) {
     min-height: 80vh;
-    width: 80%;
-    margin: auto;
+    width: 90%;
   }
 `;
 const ContentContainer = styled.div`
@@ -149,57 +150,75 @@ const Booking = (props) => {
           locations: 'Munnar,Kochi',
         };
       }
-      axiostaxiinstance
-        .get('/', {
-          //  params:   {
-          //         "transfer_type": props.selectedBooking.transfer_type,
-          //         "duration": props.selectedBooking.costings_breakdown["duration"].value,
-          //         "distance": props.selectedBooking.costings_breakdown["distance"].value,
-          //     }
-
-          params: {
-            ...params,
-          },
+      // axiostaxiinstance
+      //   .get('/', {
+      //     params: {
+      //       ...params,
+      //     },
+      //   })
+      //   .then((res) => {
+      //     setLoading(false);
+      //     setUpdateLoadingState(false);
+      //     if (res.data[0].choices.length) {
+      //       setNoResults(false);
+      //       let is_min_price_present = false;
+      //       let options = [];
+      //       for (var i = 0; i < res.data[0].choices.length; i++) {
+      //         options.push(
+      //           <TaxiSearched
+      //             _updateSearchedTaxi={_updateSearchedTaxi}
+      //             selectedBooking={props.selectedBooking}
+      //             data={res.data[0].choices[i]}
+      //           ></TaxiSearched>
+      //         );
+      //       }
+      //       if (!options.length) setNoResults(true);
+      //       setMoreOptionsJSX(options);
+      //       if (res.data.next) {
+      //         setViewMoreStatus(true);
+      //         setOffset(offset + 20);
+      //       } else {
+      //         setViewMoreStatus(false);
+      //         setOffset(0);
+      //       }
+      //     } else {
+      //       setNoResults(true);
+      //       setOffset(0);
+      //       setViewMoreStatus(false);
+      //       setMoreOptionsJSX([]);
+      //     }
+      //     setLoading(false);
+      //   })
+      //   .catch((err) => { });
+      
+      axiostaxigozoinstance
+        .post("/", {
+          booking_id: props.selectedBooking.id,
+          tripType: props.selectedBooking.transfer_type,
+          cabType: [],
+          startDate: props.selectedBooking.check_in,
         })
         .then((res) => {
-          setLoading(false);
+          setLoading(true);
           setUpdateLoadingState(false);
-          if (res.data[0].choices.length) {
+          if (
+            res.data.data &&
+            res.data.data.cabRate &&
+            res.data.data.cabRate.length
+          ) {
             setNoResults(false);
-            let is_min_price_present = false;
             let options = [];
-            for (var i = 0; i < res.data[0].choices.length; i++) {
-              // try{
-              //     for(var j = 0 ; j < res.data.results[i].rooms_available.length; j++){
-              //         if(res.data.results[i].rooms_available[j].prices.min_price) {
-              //             is_min_price_present = true;
-              //             break;
-              //         }
-              // }
-
-              //  if(res.data.results[i].name !== props.selectedBooking.name  && is_min_price_present)
+            for (var i = 0; i < res.data.data.cabRate.length; i++) {
               options.push(
                 <TaxiSearched
                   _updateSearchedTaxi={_updateSearchedTaxi}
                   selectedBooking={props.selectedBooking}
-                  data={res.data[0].choices[i]}
+                  data={res.data.data.cabRate[i]}
                 ></TaxiSearched>
               );
-              // }
-              // catch{
-              //     options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
-
-              // }
             }
             if (!options.length) setNoResults(true);
             setMoreOptionsJSX(options);
-            if (res.data.next) {
-              setViewMoreStatus(true);
-              setOffset(offset + 20);
-            } else {
-              setViewMoreStatus(false);
-              setOffset(0);
-            }
           } else {
             setNoResults(true);
             setOffset(0);
@@ -207,8 +226,8 @@ const Booking = (props) => {
             setMoreOptionsJSX([]);
           }
           setLoading(false);
-        })
-        .catch((err) => {});
+        }).catch((err) => {});
+      
     }
   }, [props.alternates, props.budget]);
 

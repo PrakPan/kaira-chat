@@ -313,6 +313,8 @@ const TransferModeContainer = (props) => {
     );
   }
   function HandleTransport(i) {
+      console.log("props.booking: ", props.booking);
+
     if (!props.payment?.is_registration_needed) {
       if (!props.token) {
         props.setShowLoginModal();
@@ -449,7 +451,6 @@ const TransferModeContainer = (props) => {
   var child;
   if (props.booking.number_of_children > 1) child = " Childs";
   else child = " Child";
-console.log('props.booking: ' , props.booking)
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (

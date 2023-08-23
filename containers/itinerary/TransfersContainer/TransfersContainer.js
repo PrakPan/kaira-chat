@@ -1231,7 +1231,7 @@ const TransfersContainer = (props) => {
           _updateFlightHandler={props._updateFlightHandler}
           setHideBookingModal={props.setHideBookingModal}
           selectedBooking={selectedBooking}
-          setShowFlightModal={props.setShowFlightModal}
+          setShowFlightModal={props.setShowFlightMoTaxiModaldal}
           showFlightModal={props.showFlightModal}
         ></FlightModal>
       ) : null}
