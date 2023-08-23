@@ -539,17 +539,18 @@ const ActivitiesBookings = (props) => {
             </div>
           ))
         : null}
-      <AccommodationModal
+      {/* <AccommodationModal
         _setImagesHandler={_setImagesHandler}
         check_in={dates.check_in}
         check_out={dates.check_out}
         onHide={() => setShowDetails(false)}
         id={bookingId}
         show={showDetails}
-      ></AccommodationModal>
+      ></AccommodationModal> */}
 
-      {props.showBookingModal ? (
+      {/* {props.showBookingModal ? (
         <BookingModal
+          activity
           _setImagesHandler={_setImagesHandler}
           getPaymentHandler={props.getPaymentHandler}
           _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -566,7 +567,7 @@ const ActivitiesBookings = (props) => {
           showBookingModal={props.showBookingModal}
           setHideBookingModal={props.setHideBookingModal}
         ></BookingModal>
-      ) : null}
+      ) : null} */}
       {images ? (
         <FullScreenGallery
           closeGalleryHandler={() => setImages(null)}
