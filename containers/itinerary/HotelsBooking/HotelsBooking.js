@@ -572,7 +572,7 @@ const HotelsBooking = (props) => {
           <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
         </div>
       )}
-      {props.showBookingModal ? (
+      {/* {props.showBookingModal ? ( */}
         <BookingModal
           showFilter={showFilter}
           setshowFilter={setshowFilter}
@@ -596,7 +596,7 @@ const HotelsBooking = (props) => {
           setHideBookingModal={props.setHideBookingModal}
           AddHotel={AddHotel}
         ></BookingModal>
-      ) : null}
+      {/* ) : null} */}
       {!isDesktop && props.showBookingModal && (
         <div className="absolute bottom-0 right-10 z-[1502]">
           <Floating>

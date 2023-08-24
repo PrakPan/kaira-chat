@@ -1522,7 +1522,7 @@ const Booking = (props) => {
                   </TabPanel>
                 </BookingsContainer>
                 {summaryContainerJSX}
-                {props.showBookingModal ? (
+                {/* {props.showBookingModal ? ( */}
                   <BookingModal
                     _setImagesHandler={_setImagesHandler}
                     getPaymentHandler={props.getPaymentHandler}
@@ -1540,14 +1540,14 @@ const Booking = (props) => {
                     showBookingModal={props.showBookingModal}
                     setHideBookingModal={props.setHideBookingModal}
                   ></BookingModal>
-                ) : null}
+                {/* ) : null} */}
                 {props.traveleritinerary ? (
                   <DesktopBanner
                     onclick={() => openTailoredModal(router)}
                     text="Want to personalize your own experience like this?"
                   ></DesktopBanner>
                 ) : null}
-                {props.showFlightModal ? (
+                {/* {props.showFlightModal ? ( */}
                   <FlightModal
                     getPaymentHandler={props.getPaymentHandler}
                     _updateFlightBookingHandler={
@@ -1568,7 +1568,7 @@ const Booking = (props) => {
                     setShowFlightModal={props.setShowFlightModal}
                     showFlightModal={props.showFlightModal}
                   ></FlightModal>
-                ) : null}
+                {/* ) : null} */}
                 {props.showTaxiModal ? (
                   <TaxiModal
                     getPaymentHandler={props.getPaymentHandler}
@@ -1896,7 +1896,7 @@ const Booking = (props) => {
               )}
               {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-              {props.showBookingModal ? (
+              {/* {props.showBookingModal ? ( */}
                 <BookingModal
                   budget={props.budget}
                   _setImagesHandler={_setImagesHandler}
@@ -1911,7 +1911,7 @@ const Booking = (props) => {
                   showBookingModal={props.showBookingModal}
                   setHideBookingModal={props.setHideBookingModal}
                 ></BookingModal>
-              ) : null}
+              {/* ) : null} */}
               {props.traveleritinerary ? (
                 <div className="hidden-desktop">
                   <Banner
