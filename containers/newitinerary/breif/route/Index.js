@@ -12,7 +12,6 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
-  console.log('propsRoute: ', props);
   //Stores initial order of locations
   const initialorder = {
     0: {
@@ -59,7 +58,6 @@ const Route = (props) => {
   function handlemap(MapId) {
     props.setPlaceID(MapId);
     scrollToTargetAdjusted();
-    console.log(`id mapp${props.active}`);
   }
 
   const _moveUpHandler = (index) => {
@@ -136,6 +134,76 @@ const Route = (props) => {
           ></MidSection>
         );
       }
+    }
+    else {
+     if (props.breif)
+       if (props.breif.city_slabs) {
+         for (var i = 1; i < props.breif.city_slabs.length; i++) {
+           if (props.breif.city_slabs[i].is_departure_only)
+             startingcity = props.breif.city_slabs[0].city_name;
+           if (props.breif.city_slabs[i].is_trip_terminated)
+             endingcity = props.breif.city_slabs[i].city_name;
+           //If duration present and not 0, not trip terminated or departure only city show in route
+           if (
+             !props.breif.city_slabs[i].is_trip_terminated &&
+             !props.breif.city_slabs[i].is_departure_only &&
+             !props.breif.city_slabs[i].is_departure_only &&
+             props.breif.city_slabs[i].duration &&
+             props.breif.city_slabs[i].duration !== "0"
+           ) {
+             locationsArr.push(
+               <PinSection
+                 setCurrentPopup={props.setCurrentPopup}
+                 handlemap={handlemap}
+                 dayId={
+                   props.breif.city_slabs[i].day_slab_location
+                     .start_day_slab_index
+                 }
+                 setShowDrawer={props.setShowDrawer}
+                 setShowDrawerData={props.setShowDrawerData}
+                 cityData={props.breif.city_slabs[i]}
+                 dayslab={props.dayslab}
+                 lat={props.breif.city_slabs[i].lat}
+                 long={props.breif.city_slabs[i].long}
+                 Mapid={props.breif.city_slabs[i].gmaps_place_id}
+                 city={props.breif.city_slabs[i].city_name}
+                 cityId={props.breif.city_slabs[i].city_id}
+                 duration={
+                   props.breif.city_slabs[i].duration
+                     ? props.breif.city_slabs[i].duration
+                     : null
+                 }
+                 pinColour={props.breif.city_slabs[i].color}
+                 data={order[i]}
+                 _moveDownHandler={_moveDownHandler}
+                 _moveUpHandler={_moveUpHandler}
+                 index={i}
+               ></PinSection>
+             );
+             locationsArr.push(
+               <MidSection
+                 pinColour={props.breif.city_slabs[i].color}
+                 modes={
+                   props?.transfers[i + 1]?.modes
+                     ? props?.transfers[i + 1]?.modes[0]
+                     : "Taxi"
+                 }
+                 hidemidsection={true}
+                 icon={null}
+                 routesData={props.routesData}
+                 version={"v1"}
+                 transportMode={props.breif.city_slabs[i].intracity_transport}
+                 duration={props.breif.city_slabs[i].duration}
+               ></MidSection>
+             );
+           }
+         }
+         if (!startingcity) startingcity = props.breif.city_slabs[0].city_name;
+         if (!endingcity)
+           endingcity =
+             props.breif.city_slabs[props.breif.city_slabs.length - 1]
+               .city_name;
+       }
     }
   } else {
     if (props.breif)
@@ -246,10 +314,15 @@ const Route = (props) => {
           version={props?.plan?.version}
           icon={props?.transfers[0]?.icon}
           hidemidsection={
-            props?.plan?.version == ITINERARY_VERSION.version_2 ? false : true
+            props?.plan?.version == ITINERARY_VERSION.version_2 &&
+            !props.routes &&
+            props.routes &&
+            props.routes.length
+              ? false
+              : true
           }
           routesData={props.routesData}
-          transportMode={'Taxi'}
+          transportMode={"Taxi"}
           duration={props.routes[1]?.meta?.Time}
         ></MidSection>
       ) : (
@@ -263,10 +336,15 @@ const Route = (props) => {
           version={props?.plan?.version}
           icon={props?.transfers[0]?.icon}
           hidemidsection={
-            props?.plan?.version == ITINERARY_VERSION.version_2 ? false : true
+            props?.plan?.version == ITINERARY_VERSION.version_2 &&
+            !props.routes &&
+            props.routes &&
+            props.routes.length
+              ? false
+              : true
           }
           routesData={props.routesData}
-          transportMode={'Taxi'}
+          transportMode={"Taxi"}
           duration={props.breif.city_slabs[0].duration}
         ></MidSection>
       )}
