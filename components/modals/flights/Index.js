@@ -114,10 +114,10 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [flightCount, setFlightsCount] = useState(0);
   useEffect(() => {
-    _FetchFlightsHandler();
-  }, []);
+    if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
+  }, [props.showFlightModal]);
   useEffect(() => {
-    if (isPageWide) _FetchFlightsHandler();
+    if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
   }, [props.selectedBooking, props.token, filtersState]);
 
   const _FetchFlightsHandler = () => {
@@ -482,6 +482,7 @@ const Booking = (props) => {
         setMoreLoadingState(false);
       });
   };
+
   if (props.token)
     return (
       <div>
@@ -490,8 +491,8 @@ const Booking = (props) => {
           backdrop
           style={{ zIndex: 1501 }}
           className="font-lexend"
-          // show={props.showFlightModal}
-          show={true}
+          show={props.showFlightModal}
+          // show={true}
           onHide={props.setHideFlightModal}
           mobileWidth={"100%"}
           width={"50%"}

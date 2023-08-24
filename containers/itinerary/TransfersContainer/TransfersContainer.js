@@ -74,6 +74,7 @@ const Line = styled.hr`
   margin: 0rem 0 0rem 0rem; */
 `;
 const TransfersContainer = (props) => {
+
   // useEffect(() => {
   //   console.log(props.transferBookings);
   //   if (props.transferBookings)
@@ -1214,7 +1215,7 @@ const TransfersContainer = (props) => {
           onHide={() => props.setShowTaxiModal(false)}
         />
       )}
-      {props.showFlightModal ? (
+      {/* {props.showFlightModal ? ( */}
         <FlightModal
           getPaymentHandler={props.getPaymentHandler}
           _updateFlightBookingHandler={props._updateFlightBookingHandler}
@@ -1234,7 +1235,7 @@ const TransfersContainer = (props) => {
           setShowFlightModal={props.setShowFlightModal}
           showFlightModal={props.showFlightModal}
         ></FlightModal>
-      ) : null}
+      {/* ) : null} */}
       {props.showTaxiModal ? (
         <TaxiModal
           getPaymentHandler={props.getPaymentHandler}
