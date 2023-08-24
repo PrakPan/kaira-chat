@@ -1236,7 +1236,7 @@ const TransfersContainer = (props) => {
           showFlightModal={props.showFlightModal}
         ></FlightModal>
       {/* ) : null} */}
-      {props.showTaxiModal ? (
+      {/* {props.showTaxiModal ? ( */}
         <TaxiModal
           getPaymentHandler={props.getPaymentHandler}
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -1246,7 +1246,7 @@ const TransfersContainer = (props) => {
           _updatePaymentHandler={props._updatePaymentHandler}
           selectedBooking={selectedBooking}
         ></TaxiModal>
-      ) : null}
+      {/* ) : null} */}
       {props?.transferBookings && (
         <>
           <PinSection
