@@ -119,7 +119,7 @@ const Booking = (props) => {
   }, [props.alternates, props.bookings]);
 
   useEffect(() => {
-    if (!props.alternates) {
+    if (!props.alternates && props.showTaxiModal) {
       let params = null;
       try {
         if (props.selectedBooking.transfer_type === 'Intercity one-way') {
@@ -229,7 +229,7 @@ const Booking = (props) => {
         }).catch((err) => {});
       
     }
-  }, [props.alternates, props.budget]);
+  }, [props.alternates, props.budget , props.showTaxiModal]);
 
   const _updateSearchedTaxi = ({
     itinerary_id,
