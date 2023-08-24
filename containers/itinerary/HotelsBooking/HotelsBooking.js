@@ -221,7 +221,7 @@ const HotelsBooking = (props) => {
         // )
         .patch(
           "update/?booking_type=Accommodation&itinerary_id=" +
-            props.stayBookings[index]["itinerary_id"],
+          props.stayBookings[index]["itinerary_id"],
           updated_bookings_arr[0],
           {
             headers: {
@@ -281,9 +281,11 @@ const HotelsBooking = (props) => {
   };
 
   const findObjectById = (array, id) => array.find((obj) => obj.id === id);
-  const findIndexById = (array, id) =>
-    array.findIndex((obj) => obj.check_in === id);
-
+  const findIndexById = (array, id) =>{
+    const result_id = array.findIndex((obj) => obj.check_in === id);
+    if (result_id === -1) return 0
+    else return result_id
+}
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]["name"];
     let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
