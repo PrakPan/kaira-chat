@@ -111,6 +111,7 @@ const Enquiry = (props) => {
                 height="100%"
                 width="100%"
                 onload={() => setShowImage(true)}
+                borderRadius="20px 0 0 20px"
               ></ImageLoader>
 
               <ImgTagsContainer>
