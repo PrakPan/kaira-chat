@@ -6,6 +6,7 @@ import media from "../media";
 import { ClaimItinary } from "../../store/actions/auth";
 import { connect } from "react-redux";
 import { changeScrollBehaviour } from "../../store/actions/scroll";
+import { memo } from "react";
 const TopSlideIn = keyframes`
 from {
   transform: translate(-50%,-100%);
@@ -161,7 +162,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(changeScrollBehaviour(payload)),
   };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(Modal);
+export default connect(mapStateToProps, mapDispatchToProps)(memo(Modal));
 
 
 
