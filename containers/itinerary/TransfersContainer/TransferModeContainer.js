@@ -9,6 +9,7 @@ import { IoCheckmark, IoClose } from "react-icons/io5";
 import { LivelyButton } from "../../../components/LiveleyButton";
 import { MdEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
+import media from '../../../components/media'
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
@@ -236,6 +237,7 @@ function processBookingTimes(checkIn, checkOut) {
 }
 
 const TransferModeContainer = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
@@ -313,8 +315,6 @@ const TransferModeContainer = (props) => {
     );
   }
   function HandleTransport(i) {
-      console.log("props.booking: ", props.booking);
-
     if (!props.payment?.is_registration_needed) {
       if (!props.token) {
         props.setShowLoginModal();
@@ -977,7 +977,7 @@ const TransferModeContainer = (props) => {
                       className=" object-contain"
                       url={props.icon}
                       leftalign
-                      height="4rem"
+                      height= {isPageWide ? '4rem' : "3rem"}
                       width="4rem"
                       widthmobile="3rem"
                     ></ImageLoader>

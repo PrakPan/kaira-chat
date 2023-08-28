@@ -24,7 +24,7 @@ display: flex;
 const Heading = styled.p`
 font-size: 15px;
     font-weight: 700;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.2rem 0;
     line-height: 1;
 `;
 const Location = styled.p`
@@ -47,7 +47,12 @@ font-weight: 300;
 margin:0;
 letter-spacing: 1px;
 color: rgba(91, 89, 89, 1);
-
+`;
+const ModelText = styled.div`
+  font-size: 0.8rem;
+  color: #888080;
+  font-weight: 300;
+  margin: 0 0 0.5rem 0;
 `;
 const Section= (props) => {
     let isPageWide = media('(min-width: 768px)')
@@ -61,38 +66,86 @@ const Section= (props) => {
   
   }
     if(props.data)
-    return(
+    return (
       <Container>
-        <Heading>{props.selectedBooking.transfer_type ==='Intercity round-trip' ? 'Round-trip Taxi' : 'One-way Taxi' }</Heading>
-      <RouteContainer className='font-lexend'>  
- 
-          <Location className="font-lexend">{props.selectedBooking.city}</Location>
-            <div style={{margin: '0 2px'}}>
-              <ImageLoader url="media/icons/bookings/next.png" leftalign dimensions={{width: 200, height: 200}} width="1.25rem" widthmobile="1.25rem" ></ImageLoader>
-            </div>
-            <Location className="font-lexend">{props.selectedBooking.destination_city}</Location>
-           
-      </RouteContainer>
-      
-    <div style={{display: 'flex',  gap: '0.5rem', marginBottom: '0.75rem', marginTop: '0.75rem'}}>
-                    <ImageLoader url="media/icons/bookings/distance.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                    <div style={{display: 'flex', gap: '1rem'}}> 
-                        {props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.distance?  <div>
-                            <IconHeading className='font-lexend'>{props.selectedBooking.costings_breakdown.distance.text}</IconHeading>
-                            <Text className='font-nunito'>Included</Text>
- 
-                        </div> : null : null} 
-                        {props.selectedBooking.costings_breakdown ? props.selectedBooking.costings_breakdown.duration ? <div>
-                            <IconHeading className='font-lexend'>{props.selectedBooking.costings_breakdown.duration.text}</IconHeading>
-                            <Text className='font-nunito'>Included</Text>
- 
-                        </div> : null : null}
-                    </div>
-    </div>
-    <SectionFour selectedBooking={props.selectedBooking} _updateSearchedTaxi={props._updateSearchedTaxi} data={props.data} setShowTaxiModal={props.setShowTaxiModal}></SectionFour>
+        <Heading>
+          {props.data.cab && props.data.cab.category ? (
+            <>
+              {props.data.cab.category}{" "}
+              <>{props.data.cab.fuelType && isPageWide ? `(${props.data.cab.fuelType})` : <></>}</>
+            </>
+          ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
+            "Round-trip Taxi"
+          ) : (
+            "One-way Taxi"
+          )}
+        </Heading>
+       {isPageWide &&  <ModelText>{props.data.cab.model}</ModelText>}
+        <RouteContainer className="font-lexend">
+          <Location className="font-lexend">
+            {props.selectedBooking.city}
+          </Location>
+          <div style={{ margin: "0 2px" }}>
+            <ImageLoader
+              url="media/icons/bookings/next.png"
+              leftalign
+              dimensions={{ width: 200, height: 200 }}
+              width="1.25rem"
+              widthmobile="1.25rem"
+            ></ImageLoader>
+          </div>
+          <Location className="font-lexend">
+            {props.selectedBooking.destination_city}
+          </Location>
+        </RouteContainer>
 
+        <div
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            marginBottom: "0.75rem",
+            marginTop: "0.75rem",
+          }}
+        >
+          <ImageLoader
+            url="media/icons/bookings/distance.png"
+            height="1.5rem"
+            width="1.5rem"
+            widthmobile="1.5rem"
+            dimensions={{ width: 100, height: 100 }}
+            margin="0"
+            leftalign
+          ></ImageLoader>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            {props.data.distance ? (
+              <div>
+                <IconHeading className="font-lexend">
+                  {props.data.distance} kms
+                </IconHeading>
+                <Text className="font-nunito">Included</Text>
+              </div>
+            ) : null}
+            {props.data.estimatedDuration ? (
+              <div>
+                <IconHeading className="font-lexend">
+                  {Math.floor(props.data.estimatedDuration / 60) +
+                    "-" +
+                    (+Math.floor(props.data.estimatedDuration / 60) + 1)}{" "}
+                  Hours
+                </IconHeading>
+                <Text className="font-nunito">Included</Text>
+              </div>
+            ) : null}
+          </div>
+        </div>
+        <SectionFour
+          selectedBooking={props.selectedBooking}
+          _updateSearchedTaxi={props._updateSearchedTaxi}
+          data={props.data}
+          setShowTaxiModal={props.setShowTaxiModal}
+        ></SectionFour>
       </Container>
-  ); 
+    ); 
   else return null;
 }
 

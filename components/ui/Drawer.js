@@ -128,7 +128,7 @@ function Drawer(props) {
     setFade("out");
     setTimeout(() => {
       if (props.onHide) props.onHide();
-      props.changeScrollBehaviour({ overflow: "scroll" });
+      // props.changeScrollBehaviour({ overflow: "scroll" });
       setOpen(false);
     }, 800);
   }
@@ -136,7 +136,7 @@ function Drawer(props) {
   useEffect(() => {
     if (hasRendered.current) {
       if (props.show === true) {
-        props.changeScrollBehaviour({ overflow: "hidden" });
+        // props.changeScrollBehaviour({ overflow: "hidden" });
         setFade("in");
         setOpen(true);
       } else onCLose();

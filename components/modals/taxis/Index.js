@@ -213,7 +213,10 @@ const Booking = (props) => {
                 <TaxiSearched
                   _updateSearchedTaxi={_updateSearchedTaxi}
                   selectedBooking={props.selectedBooking}
-                  data={res.data.data.cabRate[i]}
+                  data={{
+                    ...res.data.data.cabRate[i],
+                    estimatedDuration: res.data.data.estimatedDuration,
+                  }}
                 ></TaxiSearched>
               );
             }
@@ -290,7 +293,7 @@ const Booking = (props) => {
     return (
       <div>
         <Drawer
-          anchor={'right'}
+          anchor={"right"}
           backdrop
           style={{ zIndex: 1501 }}
           className="font-lexend"
@@ -298,19 +301,22 @@ const Booking = (props) => {
           onHide={props.setHideTaxiModal}
           // zIndex='1501'
         >
-          <SectionOne setHideTaxiModal={props.setHideTaxiModal}></SectionOne>
+          <SectionOne
+            selectedBooking={props.selectedBooking}
+            setHideTaxiModal={props.setHideTaxiModal}
+          ></SectionOne>
           <div>
-            <GridContainer style={{ clear: 'right' }}>
+            <GridContainer style={{ clear: "right" }}>
               {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
               {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
-              <ContentContainer style={{ position: 'relative' }}>
+              <ContentContainer style={{ position: "relative" }}>
                 {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
                 {updateBookingState ? (
                   <div
                     style={{
-                      width: 'max-content',
-                      margin: 'auto',
-                      height: isPageWide ? '80vh' : '40vh',
+                      width: "max-content",
+                      margin: "auto",
+                      height: isPageWide ? "80vh" : "40vh",
                     }}
                     className="center-div text-center font-lexend"
                   >
@@ -320,7 +326,7 @@ const Booking = (props) => {
                 ) : null}
                 {!noResults && !updateBookingState ? (
                   <OptionsContainer id="options">
-                    <div style={{ clear: 'right' }}>
+                    <div style={{ clear: "right" }}>
                       <TaxiSelected
                         _setImagesHandler={props._setImagesHandler}
                         selectedBooking={props.selectedBooking}
@@ -335,7 +341,7 @@ const Booking = (props) => {
                       {loading && !optionsJSX.length ? (
                         <div
                           className="center-div"
-                          style={{ height: isPageWide ? '80vh' : '40vh' }}
+                          style={{ height: isPageWide ? "80vh" : "40vh" }}
                         >
                           <LoadingLottie
                             height="5rem"
