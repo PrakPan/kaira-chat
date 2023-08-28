@@ -17,6 +17,7 @@ import {
   convertDateYearFormat,
 } from '../../../helper/ConvertDateFormat';
 import { connect } from 'react-redux';
+import { BiTimeFive } from 'react-icons/bi';
 
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
@@ -453,7 +454,8 @@ const ActivitiesBookings = (props) => {
                           )}
                         </div>
                       )}
-                    </div>
+                  </div>
+                  <div className='flex gap-3'>
                     {booking.check_in && (
                       <div className="flex flex-row gap-2 items-center">
                         <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
@@ -466,6 +468,17 @@ const ActivitiesBookings = (props) => {
                         </div>
                       </div>
                     )}
+                    {booking.ideal_duration_hours_text && (
+                      <div className="flex flex-row gap-1 items-center">
+                        <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
+                        <div>
+                          <div className="text-sm font-[400] line-clamp-1">
+                            {booking.ideal_duration_hours_text}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    </div>
 
                     {booking.costings_breakdown[0] && (
                       <div>

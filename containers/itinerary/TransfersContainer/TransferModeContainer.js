@@ -378,7 +378,7 @@ const TransferModeContainer = (props) => {
           props?.costings_breakdown?.taxi_occupancy
             ? props?.costings_breakdown?.taxi_occupancy
             : props?.costings_breakdown?.no_of_seats
-        } Seater`
+        } Seats`
       : null,
     props?.costings_breakdown?.distance?.text
       ? `${props?.costings_breakdown?.distance?.text}`
