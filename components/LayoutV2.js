@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { closeTailoredModal } from '../services/openTailoredModalV2';
 import media from './media'
+import { memo } from 'react';
 const LayoutV2 = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
@@ -74,4 +75,4 @@ const mapDispatchToProps = (dispatch) => {
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
   };
 };
-export default connect(mapStateToPros, mapDispatchToProps)(LayoutV2);
+export default connect(mapStateToPros, mapDispatchToProps)(memo(LayoutV2));

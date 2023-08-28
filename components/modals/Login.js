@@ -101,6 +101,7 @@ const Enquiry = (props) => {
                 backgroundColor: "#2C2C2C",
                 height: "100%",
                 width: "100%",
+                borderRadius : "20px 0 0 20px",
                 display: showImage ? "none" : "block",
               }}
             ></div>

@@ -454,30 +454,30 @@ const ActivitiesBookings = (props) => {
                           )}
                         </div>
                       )}
-                  </div>
-                  <div className='flex gap-3'>
-                    {booking.check_in && (
-                      <div className="flex flex-row gap-2 items-center">
-                        <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                        <div>
-                          <div className="text-sm font-[400] line-clamp-1">
-                            {booking.check_in && getDate(booking.check_in)}
-                            {booking.check_out &&
-                              " - " + " " + getDate(booking.check_out)}
+                    </div>
+                    <div className="flex gap-3">
+                      {booking.check_in && (
+                        <div className="flex flex-row gap-2 items-center">
+                          <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
+                          <div>
+                            <div className="text-sm font-[400] line-clamp-1">
+                              {booking.check_in && getDate(booking.check_in)}
+                              {booking.check_out &&
+                                " - " + " " + getDate(booking.check_out)}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                    {booking.ideal_duration_hours_text && (
-                      <div className="flex flex-row gap-1 items-center">
-                        <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
-                        <div>
-                          <div className="text-sm font-[400] line-clamp-1">
-                            {booking.ideal_duration_hours_text}
+                      )}
+                      {booking.ideal_duration_hours_text && (
+                        <div className="flex flex-row gap-1 items-center">
+                          <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
+                          <div>
+                            <div className="text-sm font-[400] line-clamp-1">
+                              {booking.ideal_duration_hours_text}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                     </div>
 
                     {booking.costings_breakdown[0] && (
