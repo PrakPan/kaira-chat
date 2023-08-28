@@ -17,6 +17,7 @@ import {
   convertDateYearFormat,
 } from '../../../helper/ConvertDateFormat';
 import { connect } from 'react-redux';
+import { BiTimeFive } from 'react-icons/bi';
 
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
