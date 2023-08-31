@@ -593,17 +593,10 @@ console.log('props.booking: ' , props.booking)
                             </span>
                           )}
 
-                          {props.booking.origin_code ||
-                          (props.booking.origin &&
-                            props.booking.origin.code) ? (
+                          {props.booking?.airline_code && (
                             <span className="font-[300] ml-1 ">
-                              (
-                              {props.booking.origin_code ||
-                                props.booking.origin.code}
-                              )
+                              ({props.booking.origin_code})
                             </span>
-                          ) : (
-                            <></>
                           )}
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
@@ -673,17 +666,10 @@ console.log('props.booking: ' , props.booking)
                                 }
                               </span>
                             )}
-                            {props.booking.destination_code ||
-                            (props.booking.destination &&
-                              props.booking.destination.code) ? (
-                              <span className="font-[300] ml-1 ">
-                                (
-                                {props.booking.destination_code ||
-                                  props.booking.destination.code}
-                                )
+                            {props.booking?.airline_code && (
+                              <span className="font-[300] ml-1">
+                                ({props.booking.destination_code})
                               </span>
-                            ) : (
-                              <></>
                             )}
                           </div>
                           {ITINERARY_STATUSES.itinerary_prepared !==
@@ -782,16 +768,10 @@ console.log('props.booking: ' , props.booking)
                           </span>
                         )}
 
-                        {props.booking.origin_code ||
-                        (props.booking.origin && props.booking.origin.code) ? (
+                        {props.booking?.airline_code && (
                           <span className="font-[300] ml-1 ">
-                            (
-                            {props.booking.origin_code ||
-                              props.booking.origin.code}
-                            )
+                            ({props.booking.origin_code})
                           </span>
-                        ) : (
-                          <></>
                         )}
                       </div>
                       {ITINERARY_STATUSES.itinerary_prepared !==
@@ -837,20 +817,11 @@ console.log('props.booking: ' , props.booking)
                               }
                             </span>
                           )}
-                          <span className="font-[300] ml-1">
-                            {props.booking.destination_code ||
-                            (props.booking.destination &&
-                              props.booking.destination.code) ? (
-                              <span className="font-[300] ml-1 ">
-                                (
-                                {props.booking.destination_code ||
-                                  props.booking.destination.code}
-                                )
-                              </span>
-                            ) : (
-                              <></>
-                            )}
-                          </span>
+                          {props.booking?.airline_code && (
+                            <span className="font-[300] ml-1">
+                              ({props.booking.destination_code})
+                            </span>
+                          )}
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
                           props.plan.itinerary_status && (
