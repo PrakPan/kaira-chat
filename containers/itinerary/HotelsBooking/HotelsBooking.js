@@ -370,7 +370,7 @@ const HotelsBooking = (props) => {
     let check_out = props.stayBookings[i]["check_out"];
      setDates({ check_in, check_out });
    
-    if (data.agoda_accommodation) {
+    if (data.source === 'Agoda') {
       setBookingId(data.agoda_accommodation);
     } 
     else  setBookingId(id);

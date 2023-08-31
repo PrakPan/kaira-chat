@@ -593,9 +593,11 @@ const TransferModeContainer = (props) => {
                             </span>
                           )}
 
-                          <span className="font-[300] ml-1 ">
-                            ({props.booking.origin_code})
-                          </span>
+                          {props.booking?.airline_code && (
+                            <span className="font-[300] ml-1 ">
+                              ({props.booking.origin_code})
+                            </span>
+                          )}
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
                           props.plan.itinerary_status && (
@@ -664,9 +666,11 @@ const TransferModeContainer = (props) => {
                                 }
                               </span>
                             )}
-                            <span className="font-[300] ml-1">
-                              ({props.booking.destination_code})
-                            </span>
+                            {props.booking?.airline_code && (
+                              <span className="font-[300] ml-1">
+                                ({props.booking.destination_code})
+                              </span>
+                            )}
                           </div>
                           {ITINERARY_STATUSES.itinerary_prepared !==
                             props.plan.itinerary_status && (
@@ -764,9 +768,11 @@ const TransferModeContainer = (props) => {
                           </span>
                         )}
 
-                        <span className="font-[300] ml-1 ">
-                          ({props.booking.origin_code})
-                        </span>
+                        {props.booking?.airline_code && (
+                          <span className="font-[300] ml-1 ">
+                            ({props.booking.origin_code})
+                          </span>
+                        )}
                       </div>
                       {ITINERARY_STATUSES.itinerary_prepared !==
                         props.plan.itinerary_status && (
@@ -811,9 +817,11 @@ const TransferModeContainer = (props) => {
                               }
                             </span>
                           )}
-                          <span className="font-[300] ml-1">
-                            ({props.booking.destination_code})
-                          </span>
+                          {props.booking?.airline_code && (
+                            <span className="font-[300] ml-1">
+                              ({props.booking.destination_code})
+                            </span>
+                          )}
                         </div>
                         {ITINERARY_STATUSES.itinerary_prepared !==
                           props.plan.itinerary_status && (

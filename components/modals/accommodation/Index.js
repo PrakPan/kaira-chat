@@ -20,6 +20,7 @@ import { CgClose } from 'react-icons/cg';
 import Skeleton from './Skeleton';
 import { IoMdClose } from 'react-icons/io';
 import dayjs from 'dayjs';
+import { openNotification } from '../../../store/actions/notification';
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
@@ -63,14 +64,25 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 90%;
+  margin: auto;
+  text-align: center;
+`;
 const POI = (props) => {
   console.log('propsAccimmoda: ', props);
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
+  const [error  ,setError] = useState(false)
   useEffect(() => {
     if (props.show) {
       setLoading(true);
+      setError(false)
       let check_in = props.check_in
       let check_out = props.check_out
       if (props.check_in.includes('/')) {
@@ -96,6 +108,12 @@ const POI = (props) => {
         })
         .catch((error) => {
           setLoading(false);
+          setError(true)
+           props.openNotification({
+             type: "error",
+             text: "There seems to be a problem, please try again!",
+             heading: "Error!",
+           });
           // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         });
     }
@@ -104,12 +122,12 @@ const POI = (props) => {
   return (
     <Drawer
       show={props.show}
-      anchor={'right'}
+      anchor={"right"}
       backdrop
       style={{ zIndex: 1525 }}
       className="font-lexend"
       onHide={props.onHide}
-      mobileWidth={'100%'}
+      mobileWidth={"100%"}
       width="50%"
       zIndex="1501"
     >
@@ -119,32 +137,36 @@ const POI = (props) => {
             <IoMdClose
               className="hover-pointer"
               onClick={props.onHide}
-              style={{ fontSize: '2rem' }}
+              style={{ fontSize: "2rem" }}
             ></IoMdClose>
             <BackText>Back to Itinerary</BackText>
           </BackContainer>
-          <div>
-            <Overview
-              _setImagesHandler={props._setImagesHandler}
-              user_rating={props.user_rating}
-              currentBooking={props.currentBooking}
-              number_of_reviews={props.number_of_reviews}
-              data={data}
-              images={data.images ? data.images : []}
-              experience_filters={
-                props.poi ? props.poi.experience_filters : null
-              }
-              name={props.poi ? props.poi.name : null}
-              duration={props.poi ? props.poi.ideal_duration_hours : null}
-              BookingButton={props.BookingButton}
-              BookingButtonFun={props.BookingButtonFun}
-            ></Overview>
-          </div>
+          {!error ? (
+            <div>
+              <Overview
+                _setImagesHandler={props._setImagesHandler}
+                user_rating={props.user_rating}
+                currentBooking={props.currentBooking}
+                number_of_reviews={props.number_of_reviews}
+                data={data}
+                images={data.images ? data.images : []}
+                experience_filters={
+                  props.poi ? props.poi.experience_filters : null
+                }
+                name={props.poi ? props.poi.name : null}
+                duration={props.poi ? props.poi.ideal_duration_hours : null}
+                BookingButton={props.BookingButton}
+                BookingButtonFun={props.BookingButtonFun}
+              ></Overview>
+            </div>
+          ) : (
+            <ErrorContainer>Oops! There seems to be a problem, please try again later!</ErrorContainer>
+          )}
           {!isPageWide && (
             <FloatingView>
               <TbArrowBack
-                style={{ height: '28px', width: '28px' }}
-                cursor={'pointer'}
+                style={{ height: "28px", width: "28px" }}
+                cursor={"pointer"}
                 onClick={props.onHide}
               />
             </FloatingView>
@@ -163,7 +185,9 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(POI);
