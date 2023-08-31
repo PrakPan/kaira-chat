@@ -62,11 +62,10 @@ const Container = styled.div`
   margin: 0;
   display: flex;
   gap: 0.5rem;
-  align-items : center;
-  margin: 1rem;
+  align-items: center;
+  margin: 1rem 0.2rem;
   @media screen and (min-width: 768px) {
-    width : 50vw;
-
+    margin: 1rem;
   }
 `;
 const Text = styled.div`

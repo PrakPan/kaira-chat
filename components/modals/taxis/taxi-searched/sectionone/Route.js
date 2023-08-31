@@ -72,7 +72,13 @@ const Section= (props) => {
           {props.data.cab && props.data.cab.category ? (
             <>
               {props.data.cab.category}{" "}
-              <>{props.data.cab.fuelType && isPageWide ? `(${props.data.cab.fuelType})` : <></>}</>
+              <>
+                {props.data.cab.fuelType && isPageWide ? (
+                  `(${props.data.cab.fuelType})`
+                ) : (
+                  <></>
+                )}
+              </>
             </>
           ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
             "Round-trip Taxi"
@@ -80,7 +86,7 @@ const Section= (props) => {
             "One-way Taxi"
           )}
         </Heading>
-       {isPageWide &&  <ModelText>{props.data.cab.model}</ModelText>}
+        {isPageWide && <ModelText>{props.data.cab.model}</ModelText>}
         <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
@@ -115,6 +121,7 @@ const Section= (props) => {
             dimensions={{ width: 100, height: 100 }}
             margin="0"
             leftalign
+            noLazy
           ></ImageLoader>
           <div style={{ display: "flex", gap: "1rem" }}>
             {props.data.distance ? (
@@ -139,6 +146,7 @@ const Section= (props) => {
           </div>
         </div>
         <SectionFour
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           selectedBooking={props.selectedBooking}
           _updateSearchedTaxi={props._updateSearchedTaxi}
           data={props.data}

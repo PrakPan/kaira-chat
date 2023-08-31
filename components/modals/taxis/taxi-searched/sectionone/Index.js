@@ -21,7 +21,6 @@ border-width: 1px;
  
  
 const Section= (props) => {
-  console.log('props.dataaasa: ', props.data);
     let isPageWide = media('(min-width: 768px)')
      if(props.data)
     return (
@@ -40,6 +39,7 @@ const Section= (props) => {
           {props.data.cab && props.data.cab.image ? (
             <ImageLoader
               is_url
+              noLazy
               url={props.data.cab.image}
               width="100%"
               widthmobile="100%"
@@ -78,6 +78,7 @@ const Section= (props) => {
         </div>
         {/* <div style={{padding:'1rem 0 1rem 0.5rem'}}><ImageLoader url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="2.5rem" ></ImageLoader></div> */}
         <Route
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           selectedBooking={props.selectedBooking}
           data={props.data}
           _updateSearchedTaxi={props._updateSearchedTaxi}

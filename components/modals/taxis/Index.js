@@ -41,7 +41,7 @@ const GridContainer = styled.div`
 const OptionsContainer = styled.div`
   min-height: 40vh;
   overflow-x: hidden;
-  width: 95%;
+  width: 97%;
   position: relative;
   margin: auto;
 
@@ -62,7 +62,7 @@ const Booking = (props) => {
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
-
+  const [error , setError] = useState(false)
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     budget: [],
@@ -119,6 +119,7 @@ const Booking = (props) => {
   }, [props.alternates, props.bookings]);
 
   useEffect(() => {
+          setError(false);
     if (!props.alternates && props.showTaxiModal) {
       let params = null;
       try {
@@ -213,9 +214,11 @@ const Booking = (props) => {
                 <TaxiSearched
                   _updateSearchedTaxi={_updateSearchedTaxi}
                   selectedBooking={props.selectedBooking}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                   data={{
                     ...res.data.data.cabRate[i],
                     estimatedDuration: res.data.data.estimatedDuration,
+                    trace_id: res.data.trace_id,
                   }}
                 ></TaxiSearched>
               );
@@ -229,7 +232,15 @@ const Booking = (props) => {
             setMoreOptionsJSX([]);
           }
           setLoading(false);
-        }).catch((err) => {});
+        }).catch((err) => {
+          setLoading(false)
+          setError(true)
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again later!",
+            heading: "Error!",
+          });
+        });
       
     }
   }, [props.alternates, props.budget , props.showTaxiModal]);
@@ -288,7 +299,6 @@ const Booking = (props) => {
          });
       });
   };
-
   if (props.token)
     return (
       <div>
@@ -299,6 +309,8 @@ const Booking = (props) => {
           className="font-lexend"
           show={props.showTaxiModal}
           onHide={props.setHideTaxiModal}
+          mobileWidth={"100%"}
+          width="50%"
           // zIndex='1501'
         >
           <SectionOne
@@ -324,13 +336,13 @@ const Booking = (props) => {
                     Please wait while we update your bookings
                   </div>
                 ) : null}
-                {!noResults && !updateBookingState ? (
+                {!noResults && !error && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
-                      <TaxiSelected
+                      {/* <TaxiSelected
                         _setImagesHandler={props._setImagesHandler}
                         selectedBooking={props.selectedBooking}
-                      ></TaxiSelected>
+                      ></TaxiSelected> */}
 
                       {optionsJSX.length
                         ? optionsJSX
@@ -386,6 +398,11 @@ const Booking = (props) => {
                     Oops, we couldn't find what you were searching but we are
                     already adding new and approved accommodations to our
                     database everyday!
+                  </OptionsContainer>
+                ) : null}
+                {error ? (
+                  <OptionsContainer className="font-lexend center-div text-center">
+                    Oops, There seems to be a problem, please try again later!
                   </OptionsContainer>
                 ) : null}
                 {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}

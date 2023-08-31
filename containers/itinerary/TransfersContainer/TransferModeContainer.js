@@ -384,7 +384,12 @@ const TransferModeContainer = (props) => {
       ? `${props?.costings_breakdown?.distance?.text}`
       : null,
   ];
-
+function truncateString(str, maxLength) {
+  if (str.length > maxLength) {
+    return str.slice(0, maxLength - 3) + "...";
+  }
+  return str;
+}
   const _updateSelectedTransfer = () => {
     setUpdateBookingState(true);
     setLoading(true);
@@ -977,9 +982,9 @@ const TransferModeContainer = (props) => {
                       className=" object-contain"
                       url={props.icon}
                       leftalign
-                      height= {isPageWide ? '4rem' : "3rem"}
+                      height={"3rem"}
                       width="4rem"
-                      widthmobile="3rem"
+                      widthmobile="4rem"
                     ></ImageLoader>
                   )
                 )}
@@ -988,9 +993,13 @@ const TransferModeContainer = (props) => {
 
             <div className=" flex flex-col w-[80%] lg:pl-1">
               <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
-              <div className="sm:text-sm text-[0.93rem]">
+              <div className="sm:text-sm text-[0.85rem]">
                 {props.booking_type == "Taxi"
-                  ? "Private transfer "
+                  ? props.booking.costings_breakdown &&
+                    props.booking.costings_breakdown.gozo &&
+                    props.booking.costings_breakdown.gozo.model
+                    ? isPageWide ? props.booking.costings_breakdown.gozo.model :  truncateString(props.booking.costings_breakdown.gozo.model,25)
+                    : "Private transfer "
                   : props.booking_type}
                 {props?.booking?.costings_breakdown?.duration?.text && (
                   <div className="inline-block ml-1">
