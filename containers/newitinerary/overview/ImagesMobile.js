@@ -54,8 +54,6 @@ const TwoImageContainer = styled.div`
 `;
 const ImagesMobile = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
-  console.log("propsImagesMobile: ", props);
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,
