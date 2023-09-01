@@ -101,7 +101,8 @@ const RoomType = (props) => {
     }
   }, [props.data]);
   let image = 'media/icons/bookings/notfounds/noroom.png';
-  if (props.images.length) {
+
+  if (props.images && props.images.length) {
     for (var i = 0; i < props.images.length; i++) {
       if (props.images[i].ImageType === '2') {
         image = props.images[i].ImageUrl;
