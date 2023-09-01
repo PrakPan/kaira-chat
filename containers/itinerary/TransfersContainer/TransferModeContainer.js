@@ -262,7 +262,7 @@ const TransferModeContainer = (props) => {
 
   function HandleFlights(i) {
     if (!props.token) {
-      props.setShowLoginModal();
+      return props.setShowLoginModal(true);
     }
 
     let name = props.booking["name"];
@@ -449,7 +449,6 @@ const TransferModeContainer = (props) => {
   var child;
   if (props.booking.number_of_children > 1) child = " Childs";
   else child = " Child";
-console.log('props.booking: ' , props.booking)
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (

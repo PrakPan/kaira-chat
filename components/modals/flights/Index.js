@@ -624,12 +624,15 @@ const Booking = (props) => {
         </Drawer>
       </div>
     );
-  else
-    return (
-      <div>
-        <LogInModal show={true} onhide={props.setHideFlightModal}></LogInModal>
-      </div>
-    );
+  // else
+  //   return (
+  //     <div>
+  //       <LogInModal
+  //         show={showLoginModal}
+  //         onhide={()=>setShowLoginModal(false)}
+  //       ></LogInModal>
+  //     </div>
+  //   );
 };
 
 const mapStateToPros = (state) => {
