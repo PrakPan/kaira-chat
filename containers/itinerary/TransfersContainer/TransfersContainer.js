@@ -607,7 +607,10 @@ const TransfersContainer = (props) => {
         {
           modes
             ? modes.map((mode, index) => {
-                if (props?.transferBookings) {
+                if (
+                  props?.transferBookings &&
+                  props?.routes[i + 1].bookings[index]?.id
+                ) {
                   var CurrentBooking = return_booking_from_id(
                     props?.transferBookings,
                     props?.routes[i + 1].bookings[index]?.id
