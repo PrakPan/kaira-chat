@@ -1,15 +1,16 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
 // import Button from '../../../components/ui/button/Index';
-import ImageLoader from '../../../components/ImageLoader';
-import { useLayoutEffect } from 'react';
-import SkeletonCard from '../../../components/ui/SkeletonCard';
+import ImageLoader from "../../../components/ImageLoader";
+import { useLayoutEffect } from "react";
+import media from "../../../components/media";
+import SkeletonCard from "../../../components/ui/SkeletonCard";
 const Container = styled.div`
   display: grid;
   @media screen and (min-width: 768px) {
     grid-template-columns: ${(props) =>
-      props.ConImg ? '3.3fr 1fr' : '3.3fr 0fr'};
-    height : 400px;
+      props.ConImg ? "3.3fr 1fr" : "3.3fr 0fr"};
+    height: 400px;
     grid-column-gap: 1rem;
   }
 `;
@@ -22,7 +23,7 @@ const GridContainer = styled.div`
     grid-template-columns: 1fr;
     margin-top: 0;
     grid-row-gap: 1rem;
-    height : 400px;
+    height: 400px;
   }
 
   grid-gap: 0.5rem;
@@ -42,10 +43,23 @@ const MoreText = styled.div`
   position: absolute;
   margin: 0;
 `;
+const TwoImageContainer = styled.div`
+  height: 400px;
+  display: grid;
+  gap: 0.7rem;
+  @media screen and (min-width: 768px) {
+    gap: 1rem;
+    grid-template-columns: 2fr 1fr;
+  }
+`;
 const ImagesMobile = (props) => {
-  const [ImagesLoaded , setImagesLoaded] = useState({0 : false , 1 : false , 2 : false})
+  let isPageWide = media("(min-width: 768px)");
+  const [ImagesLoaded, setImagesLoaded] = useState({
+    0: false,
+    1: false,
+    2: false,
+  });
   function OnImageLoad(i) {
-
     if (!ImagesLoaded[i]) {
       setTimeout(
         () =>
@@ -54,7 +68,6 @@ const ImagesMobile = (props) => {
           }),
         1000
       );
-      
     }
   }
 
@@ -139,6 +152,53 @@ const ImagesMobile = (props) => {
         </GridContainer>
       ) : null}
     </Container>
+  ) : props.images.length === 2 ? (
+    <>
+      <TwoImageContainer>
+        <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+          <ImageLoader
+            borderRadius="12px"
+            dimensions={{ width: 1071, height: 400 }}
+            url={props.images[0]}
+            height={isPageWide ? "400px" : "190px"}
+            // heightMobile="200px"
+            dimensionsMobile={{ width: 328, height: 141 }}
+            onload={() => OnImageLoad(0)}
+            noLazy
+          ></ImageLoader>
+        </div>
+        <div
+          style={{
+            display: !ImagesLoaded[0] ? "initial" : "none",
+            borderRadius: "12px",
+            overflow: "hidden",
+          }}
+        >
+          <SkeletonCard />
+        </div>
+        <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+          <ImageLoader
+            borderRadius="12px"
+            url={props.images[1]}
+            dimensions={{ width: 436, height: 150 }}
+            height={isPageWide ? "400px" : "190px"}
+            heightMobile="auto"
+            dimensionsMobile={{ width: 160, height: 90 }}
+            onload={() => OnImageLoad(1)}
+            noLazy
+          ></ImageLoader>
+        </div>
+        <div
+          style={{
+            display: !ImagesLoaded[1] ? "initial" : "none",
+            borderRadius: "12px",
+            overflow: "hidden",
+          }}
+        >
+          <SkeletonCard />
+        </div>
+      </TwoImageContainer>
+    </>
   ) : (
     <Container>
       <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>

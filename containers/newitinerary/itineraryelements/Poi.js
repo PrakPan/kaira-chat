@@ -287,6 +287,7 @@ const ItineraryPoiElement = (props) => {
               leftalign
               widthmobile="6rem"
               url={props.image}
+              noLazy
             ></ImageLoader>
           ) : (
             <div className="w-[6rem]"></div>

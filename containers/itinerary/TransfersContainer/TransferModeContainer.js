@@ -264,7 +264,7 @@ const TransferModeContainer = (props) => {
 
   function HandleFlights(i) {
     if (!props.token) {
-      props.setShowLoginModal();
+      return props.setShowLoginModal(true);
     }
 
     let name = props.booking["name"];
@@ -317,7 +317,7 @@ const TransferModeContainer = (props) => {
   function HandleTransport(i) {
     if (!props.payment?.is_registration_needed) {
       if (!props.token) {
-        props.setShowLoginModal();
+        return props.setShowLoginModal(true);
       }
       let name = props.booking["name"];
       let costings_breakdown = props.booking["costings_breakdown"];
