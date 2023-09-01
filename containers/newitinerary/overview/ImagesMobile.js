@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 // import Button from '../../../components/ui/button/Index';
 import ImageLoader from "../../../components/ImageLoader";
 import { useLayoutEffect } from "react";
-import media from '../../../components/media'
+import media from "../../../components/media";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 const Container = styled.div`
   display: grid;

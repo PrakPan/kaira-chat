@@ -34,7 +34,7 @@ const FoodItem = (props) => {
         url={props.ImageUrl}
       ></ImageLoader>
       <div>
-        <Heading className="font-normal text-lg lg:text-xl">
+        <Heading className="font-normal text-lg lg:text-md">
           {props.heading}
         </Heading>
         <div className="pt-1 text-sm font-[350] line-clamp-3  ">
