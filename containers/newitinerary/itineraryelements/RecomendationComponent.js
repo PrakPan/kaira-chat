@@ -93,7 +93,7 @@ const RecomendationComponent = (props) => {
             <GridContainerMobile
               style={
                 props.icon !== "media/icons/default/recommendation.svg"
-                  ? { gridTemplateColumns: "1.6fr 2.5fr" , gap : '0.5rem' }
+                  ? { gridTemplateColumns: "1.6fr 2.5fr", gap: "0.5rem" }
                   : { gridTemplateColumns: "44px auto" }
               }
             >
@@ -125,14 +125,18 @@ const RecomendationComponent = (props) => {
               </div>
             </GridContainerMobile>
           ) : (
-            <div className="lg:text-lg text-[1.2rem] lg:font-medium font-normal pb-3">
-              {props.heading}
-            </div>
+            <div className="text-xl font-normal pb-3">{props.heading}</div>
           )}
           {props.recomendation ? (
             <div>
               {!isJson(props.recomendation) ? (
-                <div className={isPageWide  ? "pt-1 font-normal text-sm" : 'pt-2 text-sm font-[350]'}>
+                <div
+                  className={
+                    isPageWide
+                      ? "pt-1 font-normal text-sm"
+                      : "pt-2 text-sm font-[350]"
+                  }
+                >
                   {props.recomendation}
                 </div>
               ) : (
