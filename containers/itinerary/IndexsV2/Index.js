@@ -106,6 +106,7 @@ const Itinerary = (props) => {
 
   const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
   const [is_stock, setIsStock] = useState(false);
+  const hasRendered = useRef(false);
   // const closeGalleryHandler = () => {
   //   setImages(null);
   //   setShowbooking(true);
@@ -115,6 +116,13 @@ const Itinerary = (props) => {
   //     //do stuff with the script
   // };
   // script.src =`(function (d, w, c) { if(!d.getElementById("spd-busns-spt")) { var n = d.getElementsByTagName('script')[0], s = d.createElement('script'); var loaded = false; s.id = "spd-busns-spt"; s.async = "async"; s.setAttribute("data-self-init", "false"); s.setAttribute("data-init-type", "opt"); s.src = 'https://cdn.in-freshbots.ai/assets/share/js/freshbots.min.js'; s.setAttribute("data-client", "3225c221f3048e75e5a6ef1d6a5227c59290c8f1"); s.setAttribute("data-bot-hash", "74b6cd8cbe305eba5699361061f2c6fc1ec8607b"); s.setAttribute("data-env", "prod"); s.setAttribute("data-region", "in"); if (c) { s.onreadystatechange = s.onload = function () { if (!loaded) { c(); } loaded = true; }; } n.parentNode.insertBefore(s, n); } }) (document, window, function () { Freshbots.initiateWidget({ autoInitChat: false, getClientParams: function () { return {"cstmr::eml":"","cstmr::phn":"","cstmr::nm":""}; } }, function(successResponse) { }, function(errorResponse) { }); });`;
+  
+  useEffect(() => {
+     if (hasRendered.current) {
+       if (props.token) getPaymentHandler()
+     } else hasRendered.current = true;
+  },[props.token])
+
   const getBreifHandler = () => {
     axiosbreifinstance
       .get(`/?itinerary_id=` + props.id)
