@@ -20,6 +20,7 @@ import PriceBannerMobile from './PriceBannerMobile';
 import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
 import * as ga from '../../services/ga/Index';
 import { useRouter } from 'next/router';
+import { CONTENT_SERVER_HOST } from '../../services/constants';
 
 const Location = styled.div`
   padding: 1rem;
@@ -196,11 +197,14 @@ const SimpleTabs = (props) => {
 
   const handleChange = (event, newValue) => {
     const tabs = ['brief', 'itinerary', 'booking'];
-    {process.env.NODE_ENV === 'production' && 
-    ga.event({
-      action: 'Itinerary-tabs-' + tabs[newValue],
-      params: {},
-    });}
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-tabs-" + tabs[newValue],
+          params: {},
+        });
+    }
     if (isPageWide) window.scrollTo(0, window.innerHeight);
     else window.scrollTo(0, window.innerHeight / 2);
 
@@ -218,7 +222,8 @@ const SimpleTabs = (props) => {
     setValue(newValue);
   };
   const openBookingDesktop = () => {
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-tabs-Book_Now',
       params: {
@@ -230,7 +235,8 @@ const SimpleTabs = (props) => {
     setValue(2);
   };
   const openBookingMobile = () => {
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-tabs-Book_Now',
       params: {
@@ -298,7 +304,8 @@ const SimpleTabs = (props) => {
   };
 
   const _handlePoiEditModalOpen = (poi) => {
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-poiedit-open',
       params: {

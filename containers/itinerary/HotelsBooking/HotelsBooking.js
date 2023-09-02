@@ -29,6 +29,7 @@ import { useRouter } from "next/router";
 import { format, isEqual, isSameDay, parse } from "date-fns";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
+import { CONTENT_SERVER_HOST } from "../../../services/constants";
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -109,13 +110,14 @@ const HotelsBooking = (props) => {
     costings_breakdown,
     images
   ) => {
-    {
-      process.env.NODE_ENV === "production" &&
-        ga.event({
-          action: "Itinerary-bookings-acc_change",
-          params: { name: name },
-        });
-    }
+   {
+     process.env.NODE_ENV === "production" &&
+       !CONTENT_SERVER_HOST.includes("dev") &&
+       ga.event({
+         action: "Itinerary-bookings-acc_change",
+         params: { name: name },
+       });
+   }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -334,6 +336,7 @@ const HotelsBooking = (props) => {
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
     {
       process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
         ga.event({
           action: "Itinerary-bookings-acc_change",
           params: { name: name },

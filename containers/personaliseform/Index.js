@@ -22,6 +22,7 @@ import { format } from 'date-fns';
 
 // import questions from './questions';
 import questioncontansts from './questioncontansts';
+import { CONTENT_SERVER_HOST } from '../../services/constants';
 const Container = styled.div`
   min-height: 100vh;
   // padding-top: 22vw;
@@ -118,9 +119,10 @@ const Personaliseform = (props) => {
     if (_checkCityPresent(city)) {
     } else {
       {
-        process.env.NODE_ENV === 'production' &&
+        process.env.NODE_ENV === "production" &&
+          !CONTENT_SERVER_HOST.includes("dev") &&
           ga.event({
-            action: 'tailored-form-locationsselected',
+            action: "tailored-form-locationsselected",
             params: {
               location: city.name,
             },
@@ -185,11 +187,12 @@ const Personaliseform = (props) => {
   //Change question
   const _nextQuestionHandler = (start_date, end_date) => {
     {
-      process.env.NODE_ENV === 'production' &&
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
         ga.event({
-          action: 'TTForm-next-' + Questions.questions[questionIndex],
+          action: "TTForm-next-" + Questions.questions[questionIndex],
           params: {
-            question: '',
+            question: "",
           },
         });
     }
@@ -227,11 +230,12 @@ const Personaliseform = (props) => {
 
   const _generateData = () => {
     {
-      process.env.NODE_ENV === 'production' &&
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
         ga.event({
-          action: 'TTForm-login-success',
+          action: "TTForm-login-success",
           params: {
-            question: '',
+            question: "",
           },
         });
     }
@@ -344,10 +348,11 @@ const Personaliseform = (props) => {
         if (!response.data.auto_itinerary_created) {
           router.push('/thank-you');
         } else {
-          {
-            process.env.NODE_ENV === 'production' &&
-              ga.event({ action: 'TTForm-success', params: { key: '' } });
-          }
+         {
+           process.env.NODE_ENV === "production" &&
+             !CONTENT_SERVER_HOST.includes("dev") &&
+             ga.event({ action: "TTForm-success", params: { key: "" } });
+         }
 
           setTimeout(function () {
             router.push('/itinerary/' + response.data.itinerary.itinerary_id);

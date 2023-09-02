@@ -18,6 +18,7 @@ import {
 } from '../../../helper/ConvertDateFormat';
 import { connect } from 'react-redux';
 import { BiTimeFive } from 'react-icons/bi';
+import { CONTENT_SERVER_HOST } from '../../../services/constants';
 
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
@@ -53,13 +54,14 @@ const ActivitiesBookings = (props) => {
     costings_breakdown,
     images
   ) => {
-    {
-      process.env.NODE_ENV === 'production' &&
-        ga.event({
-          action: 'Itinerary-bookings-acc_change',
-          params: { name: name },
-        });
-    }
+   {
+     process.env.NODE_ENV === "production" &&
+       !CONTENT_SERVER_HOST.includes("dev") &&
+       ga.event({
+         action: "Itinerary-bookings-acc_change",
+         params: { name: name },
+       });
+   }
 
     setSelectedBooking({
       ...selectedBooking,

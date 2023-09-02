@@ -11,6 +11,7 @@ import NewResults from './NewResults';
 import { ImSearch } from 'react-icons/im';
 import { MdCancel } from 'react-icons/md';
 import { RxCross2 } from 'react-icons/rx';
+import { CONTENT_SERVER_HOST } from '../../../../../services/constants';
 
 const Container = styled.div`
   background-color: white;
@@ -73,13 +74,15 @@ const SearchPannel = (props) => {
   const _onChangeHandler = (event) => {
     setInputValue(event.target.value);
     if (event.target.value.length % 3 === 0)
-    {process.env.NODE_ENV === 'production' && 
-      ga.event({
-        action: 'HS-locationssearched',
-        params: {
-          search_text: event.target.value,
-        },
-      });
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "HS-locationssearched",
+          params: {
+            search_text: event.target.value,
+          },
+        });
     }
     setShowP(false);
     setShowResults(true);

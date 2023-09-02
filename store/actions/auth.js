@@ -6,6 +6,7 @@ import axiosfbauthinstance from '../../services/user/fbAuth';
 import axiosClaims from '../../services/sales/itinerary/Claim';
 import axiosuserinstance from '../../services/user/info';
 import * as ga from '../../services/ga/Index';
+import { CONTENT_SERVER_HOST } from '../../services/constants';
 //Open login modal
 export const authShowLogin = () => {
   return {
@@ -205,8 +206,8 @@ export const auth = (mobile, password, name, email, whatsapp) => {
       .post('/complete/', updatedauthdata)
       .then((response) => {
         if (response.status === 200) {
-          {
-            process.env.NODE_ENV === 'production' &&
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
               ga.event({
                 action: 'number-login-success',
                 params: {
@@ -246,8 +247,8 @@ export const auth = (mobile, password, name, email, whatsapp) => {
       })
       .catch((err) => {
         if (err.response.data.email) {
-          {
-            process.env.NODE_ENV === 'production' &&
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
               ga.event({
                 action: 'number-login-email_fail',
                 params: {
@@ -257,8 +258,8 @@ export const auth = (mobile, password, name, email, whatsapp) => {
           }
           dispatch(authEmailFail(err.response.data.email[0]));
         } else {
-          {
-            process.env.NODE_ENV === 'production' &&
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
               ga.event({
                 action: 'number-login-otp_fail',
                 params: {
@@ -273,11 +274,12 @@ export const auth = (mobile, password, name, email, whatsapp) => {
 };
 export const googleAuth = (response) => {
   {
-    process.env.NODE_ENV === 'production' &&
+    process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev") &&
       ga.event({
-        action: 'google-login-initiate',
+        action: "google-login-initiate",
         params: {
-          status: '',
+          status: "",
         },
       });
   }
@@ -289,8 +291,8 @@ export const googleAuth = (response) => {
       .then((res) => {
         dispatch(authStopLoadingSocial());
         if (res.status === 200) {
-          {
-            process.env.NODE_ENV === 'production' &&
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
               ga.event({
                 action: 'google-login-success',
                 params: {
