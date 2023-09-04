@@ -202,7 +202,7 @@ export default function TemporaryDrawer(props) {
         )}
         {!props.loading && props?.totalCount ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
-            Showing {props?.totalCount} stays in {props.booking_city} | Sort by:{" "}
+            Showing {props?.totalCount} stays in {props.booking_city} {isPageWide ? '|' : <br />} Sort by:{" "}
             <div
               style={{
                 display: "inline",

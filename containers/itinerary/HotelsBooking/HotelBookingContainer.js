@@ -228,7 +228,10 @@ const HotelBookingContainer = ({
                       widthmobile="100%"
                       noLazy
                       url={img}
-                      onfail={() => { setImageFail(true);  setImageLoaded(true);}}
+                      onfail={() => {
+                        setImageFail(true);
+                        setImageLoaded(true);
+                      }}
                       onload={() => {
                         setTimeout(() => {
                           setImageLoaded(true);

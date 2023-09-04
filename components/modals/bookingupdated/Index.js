@@ -78,7 +78,7 @@ const Booking = (props) => {
     budget: "",
     type: "",
     star_category: "",
-    sort: "price",
+    sort: "recommended",
   });
   // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
@@ -95,7 +95,7 @@ const Booking = (props) => {
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: ["3", "4", "5"],
-    sort: ["Price", "Popularity"],
+    sort: ["Recommended", "Price", "Popularity"],
   });
   useEffect(() => {
       if (props.showBookingModal) {
@@ -106,7 +106,7 @@ const Booking = (props) => {
           budget: "",
           type: "",
           star_category: "",
-          sort: "price",
+          sort: "recommended",
         });
     }
   }, [
@@ -406,6 +406,7 @@ const Booking = (props) => {
     let price_set = false;
 
     if (sort === "popularity") sort_by = "popularity";
+    if (sort === "recommended") sort_by = "recommended";
 
     if (!typearr.length) {
     } else {
