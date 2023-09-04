@@ -104,16 +104,31 @@ const MidSection = (props) => {
               ) : (
                 <></>
               )}
-              {props?.bookings?.map((element, index) => (
-                <div className="flex flex-row" key={index}>
-                  <div className="flex flex-row pr-0">
-                    {element.booking_type}
-                    {index !== props?.bookings.length - 1 && (
-                      <span className="pr-2">,</span>
-                    )}
+              {props.bookings && props.bookings.length ? (
+                props?.bookings?.map((element, index) => (
+                  <div className="flex flex-row" key={index}>
+                    <div className="flex flex-row pr-0">
+                      {element.booking_type}
+                      {index !== props?.bookings.length - 1 && (
+                        <span className="pr-2">,</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : props.modes && props.modes.length ? (
+                props.modes?.map((element, index) => (
+                  <div className="flex flex-row" key={index}>
+                    <div className="flex flex-row pr-0">
+                      {element}
+                      {index !== props.modes.length - 1 && (
+                        <span className="pr-2">,</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
 
               {props.route?.modes &&
               props.route?.modes.length &&

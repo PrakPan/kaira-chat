@@ -25,7 +25,7 @@ export function TransportIconFetcher({ TransportMode, Instyle, classname }) {
     case 'Ferry':
       return <IoMdBoat style={Instyle} className={classname} />;
     case 'Bus':
-      return <FaBus style={Instyle} className={classname} />;
+      return <FaBus style={{...Instyle , fontSize : '1.2rem'}} className={classname} />;
     default:
       return <IoCar style={Instyle} className={classname} />;
   }

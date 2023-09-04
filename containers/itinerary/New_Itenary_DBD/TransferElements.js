@@ -30,7 +30,6 @@ const TransferElements = ({
   newcity,
   LastTransfer,
 }) => {
-  console.log('super prop' , data)
   function isValueUndefined(value) {
     return value === undefined;
   }
