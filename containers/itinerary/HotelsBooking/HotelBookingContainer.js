@@ -67,6 +67,7 @@ const HotelBookingContainer = ({
   let isDesktop = media("(min-width: 1147px)");
   let isPageWide = media("(min-width: 768px)");
   const [isSelect, setisSelect] = useState(booking?.user_selected);
+  const [imageFail, setImageFail] = useState(false)
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
   );
@@ -168,6 +169,15 @@ const HotelBookingContainer = ({
     });
   }
   const isMobile = useMediaQuery("(min-width:768px)");
+  let img = ''
+  if (booking && booking.images && booking.images.length)
+    for (let i = 0; i < booking.images.length; i++) {
+      if (booking.images[i].image) {
+        img = booking.images[i].image;
+        break;
+      }
+    }
+
   return (
     <div id={city_id} className={`flex gap-1 pt-4  flex-col justify-start `}>
       {booking ? (
@@ -202,7 +212,7 @@ const HotelBookingContainer = ({
                     : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
-                {booking?.images[0]?.image ? (
+                {img && !imageFail ? (
                   <ImageLoader
                     dimensions={{ width: 400, height: 400 }}
                     dimensionsMobile={{ width: 400, height: 400 }}
@@ -214,21 +224,24 @@ const HotelBookingContainer = ({
                     leftalign
                     widthmobile="100%"
                     noLazy
-                    url={booking.images[0]?.image}
+                    url={img}
+                    onfail={() => setImageFail(true)}
                   ></ImageLoader>
                 ) : (
-                  <ImageLoader
-                    dimensions={{ width: 400, height: 400 }}
-                    dimensionsMobile={{ width: 400, height: 400 }}
-                    borderRadius="16px"
-                    hoverpointer
-                    onclick={() => console.log("")}
-                    width="100%"
-                    height="100%"
-                    leftalign
-                    widthmobile="100%"
-                    url={"media/website/grey.png"}
-                  ></ImageLoader>
+                  <div style={{ height: "100%"}}>
+                    <ImageLoader
+                      dimensions={{ width: 400, height: 400 }}
+                      dimensionsMobile={{ width: 400, height: 400 }}
+                      borderRadius="16px"
+                      hoverpointer
+                      onclick={() => console.log("")}
+                      width="100%"
+                      height="100%"
+                      leftalign
+                      widthmobile="100%"
+                      url={"media/icons/bookings/notfounds/noroom.png"}
+                    ></ImageLoader>
+                  </div>
                 )}
                 {booking.star_category ? (
                   <starHotel
@@ -470,7 +483,7 @@ const HotelBookingContainer = ({
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                         <div
-                            onClick={(e) => {
+                          onClick={(e) => {
                             e.stopPropagation();
                             handleClickAc(index, booking, city_id);
                           }}
@@ -486,19 +499,21 @@ const HotelBookingContainer = ({
                         </div>
                       )
                     ) : (
-                        <div onClick={(e) => {
+                      <div
+                        onClick={(e) => {
                           e.stopPropagation();
                           setShowLoginModal(true);
-                        }}>
-                      <Button
-                        padding="0.6rem 2.2rem"
-                        borderRadius="8px"
-                        fontWeight="400"
-                          onclick={()=>console.log('')}
+                        }}
                       >
-                        {!isSelect ? "Add Hotel" : "Change"}
-                          </Button>
-                          </div>
+                        <Button
+                          padding="0.6rem 2.2rem"
+                          borderRadius="8px"
+                          fontWeight="400"
+                          onclick={() => console.log("")}
+                        >
+                          {!isSelect ? "Add Hotel" : "Change"}
+                        </Button>
+                      </div>
                     )}
 
                     {/* <div
