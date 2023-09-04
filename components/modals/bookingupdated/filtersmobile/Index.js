@@ -31,6 +31,7 @@ const SortContainer = styled.div`
   background: white;
   border-radius : 0.5rem;
   left: 0;
+  width : max-content;
   padding: 0.5rem;
 `;
 const SortItem = styled.div`
@@ -202,7 +203,8 @@ export default function TemporaryDrawer(props) {
         )}
         {!props.loading && props?.totalCount ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
-            Showing {props?.totalCount} stays in {props.booking_city} {isPageWide ? '|' : <br />} Sort by:{" "}
+            Showing {props?.totalCount} stays in {props.booking_city}{" "}
+            {isPageWide ? "|" : <br />} Sort by:{" "}
             <div
               style={{
                 display: "inline",

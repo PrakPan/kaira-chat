@@ -95,26 +95,26 @@ const Booking = (props) => {
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: ["3", "4", "5"],
-    sort: ["Recommended", "Price", "Popularity"],
+    sort: ["Recommended", "Popular", "Price: high to low" , "Price: low to high"],
   });
   useEffect(() => {
-      if (props.showBookingModal) {
+    if (props.showBookingModal) {
       _updateOptionsHandlerWithFilter();
-    }
-      else {
-        setFiltersState({
-          budget: "",
-          type: "",
-          star_category: "",
-          sort: "recommended",
-        });
+    } else {
+      setFiltersState({
+        budget: "",
+        type: "",
+        star_category: "",
+        sort: "recommended",
+      });
     }
   }, [
     filtersState.budget,
     filtersState.type,
     filtersState.star_category,
     filtersState.sort,
-    props.showBookingModal]);
+    props.showBookingModal,
+  ]);
   // const filters = {
   //   budget: [
   //     "Below ₹3,000",
@@ -404,9 +404,9 @@ const Booking = (props) => {
     let price_upper_range = null;
     let sort_by = "price";
     let price_set = false;
-
-    if (sort === "popularity") sort_by = "popularity";
+    if (sort === "popular") sort_by = "popularity";
     if (sort === "recommended") sort_by = "recommended";
+    if (sort === "price: high to low" || sort === "price: low to high") sort_by = 'price'
 
     if (!typearr.length) {
     } else {
@@ -497,9 +497,11 @@ const Booking = (props) => {
     let budgetarr = filtersState.budget;
 
     let filters = _generateFilterKeys(filtersState);
-    //BUDGET FILTERS
+    let sort_order = 'asc'
+    if (filtersState.sort === "price: high to low") sort_order = 'desc'
+      //BUDGET FILTERS
 
-    setViewMoreStatus(false);
+      setViewMoreStatus(false);
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
     // axiosaccommodationinstance
@@ -527,7 +529,7 @@ const Booking = (props) => {
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
         sort_by: filters.sort_by,
-        sort_order: "asc",
+        sort_order: sort_order,
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -1138,21 +1140,21 @@ const Booking = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                 ></SectionOne>
                 {/* {!loading && ( */}
-                  <SectionTwo
-                    loading={loading}
-                    showFilter={props.showFilter}
-                    setshowFilter={props.setshowFilter}
-                    filtersState={filtersState}
-                    FILTERS={filtersObj}
-                    _updateStarFilterHandler={_updateStarFilterHandler}
-                    _removeFilterHandler={_removeFilterHandler}
-                    _addFilterHandler={_addFilterHandler}
-                    booking_city={props?.selectedBooking?.city}
-                    No_of_stays={optionsJSX.length + moreOptionsJSX.length}
-                    payment={props.payment}
-                    plan={props.plan}
-                    TotalCount={totalCount}
-                  ></SectionTwo>
+                <SectionTwo
+                  loading={loading}
+                  showFilter={props.showFilter}
+                  setshowFilter={props.setshowFilter}
+                  filtersState={filtersState}
+                  FILTERS={filtersObj}
+                  _updateStarFilterHandler={_updateStarFilterHandler}
+                  _removeFilterHandler={_removeFilterHandler}
+                  _addFilterHandler={_addFilterHandler}
+                  booking_city={props?.selectedBooking?.city}
+                  No_of_stays={optionsJSX.length + moreOptionsJSX.length}
+                  payment={props.payment}
+                  plan={props.plan}
+                  TotalCount={totalCount}
+                ></SectionTwo>
                 {/* )} */}
               </div>
               <div className="lg:w-[100%] w-[95%] mx-auto">
