@@ -5,6 +5,7 @@ import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { BiBed } from "react-icons/bi";
 import { ImSpoonKnife } from "react-icons/im";
+import Skeleton from "../../../components/ui/SkeletonCard";
 import {
   getDate,
   convertDateYearFormat,
@@ -67,7 +68,8 @@ const HotelBookingContainer = ({
   let isDesktop = media("(min-width: 1147px)");
   let isPageWide = media("(min-width: 768px)");
   const [isSelect, setisSelect] = useState(booking?.user_selected);
-  const [imageFail, setImageFail] = useState(false)
+  const [imageFail, setImageFail] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
   );
@@ -169,7 +171,7 @@ const HotelBookingContainer = ({
     });
   }
   const isMobile = useMediaQuery("(min-width:768px)");
-  let img = ''
+  let img = "";
   if (booking && booking.images && booking.images.length)
     for (let i = 0; i < booking.images.length; i++) {
       if (booking.images[i].image) {
@@ -212,23 +214,8 @@ const HotelBookingContainer = ({
                     : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
-                {img && !imageFail ? (
-                  <ImageLoader
-                    dimensions={{ width: 400, height: 400 }}
-                    dimensionsMobile={{ width: 400, height: 400 }}
-                    borderRadius="16px"
-                    hoverpointer
-                    onclick={() => console.log("")}
-                    width="100%"
-                    height="100%"
-                    leftalign
-                    widthmobile="100%"
-                    noLazy
-                    url={img}
-                    onfail={() => setImageFail(true)}
-                  ></ImageLoader>
-                ) : (
-                  <div style={{ height: "100%"}}>
+                <div style={{ display: imageLoaded ? "initial" : "none" }}>
+                  {img && !imageFail ? (
                     <ImageLoader
                       dimensions={{ width: 400, height: 400 }}
                       dimensionsMobile={{ width: 400, height: 400 }}
@@ -239,10 +226,47 @@ const HotelBookingContainer = ({
                       height="100%"
                       leftalign
                       widthmobile="100%"
-                      url={"media/icons/bookings/notfounds/noroom.png"}
+                      noLazy
+                      url={img}
+                      onfail={() => { setImageFail(true);  setImageLoaded(true);}}
+                      onload={() => {
+                        setTimeout(() => {
+                          setImageLoaded(true);
+                        }, 1000);
+                      }}
                     ></ImageLoader>
-                  </div>
-                )}
+                  ) : (
+                    <div style={{ height: "100%" }}>
+                      <ImageLoader
+                        dimensions={{ width: 400, height: 400 }}
+                        dimensionsMobile={{ width: 400, height: 400 }}
+                        borderRadius="16px"
+                        hoverpointer
+                        onclick={() => console.log("")}
+                        width="100%"
+                        height="100%"
+                        leftalign
+                        widthmobile="100%"
+                        onload={() => {
+                          setTimeout(() => {
+                            setImageLoaded(true);
+                          }, 1000);
+                        }}
+                        url={"media/icons/bookings/notfounds/noroom.png"}
+                      ></ImageLoader>
+                    </div>
+                  )}
+                </div>
+                <div
+                  style={{
+                    height: "100%",
+                    overflow: "hidden",
+                    borderRadius: "16px",
+                    display: !imageLoaded ? "block" : "none",
+                  }}
+                >
+                  <Skeleton />
+                </div>
                 {booking.star_category ? (
                   <starHotel
                     starHotel
@@ -447,13 +471,27 @@ const HotelBookingContainer = ({
                 {currentBooking && booking?.price && (
                   <div className="flex flex-row gap-1 items-center w-full font-bold">
                     <div className="text-2xl font-bold">
-                      {booking.source == "Agoda"
-                        ? "₹ " +
-                          getIndianPrice(Math.round(+booking.price / 100))
-                        : "₹ " + getIndianPrice(Math.round(booking?.price))}
+                      {booking.source === "Agoda"
+                        ? "₹" +
+                          getIndianPrice(Math.round(+booking.price / 100)) +
+                          "/-"
+                        : "₹" +
+                          getIndianPrice(Math.round(booking?.price)) +
+                          "/-"}
                     </div>
-                    <div className="font-normal text-base self-end">
-                      for {currentBooking?.duration} Nights
+                    <div
+                      className="font-normal text-base self-end"
+                      style={{
+                        height: "auto",
+                        marginBottom: "0.15rem",
+                        fontWeight: 300,
+                      }}
+                    >
+                      {booking.source === "Agoda" ? (
+                        <>per night</>
+                      ) : (
+                        <>for {currentBooking?.duration} Nights</>
+                      )}
                     </div>
                   </div>
                 )}
