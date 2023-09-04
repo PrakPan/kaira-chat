@@ -215,7 +215,6 @@ const HotelBookingContainer = ({
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
-                  {img && !imageFail ? (
                     <ImageLoader
                       dimensions={{ width: 400, height: 400 }}
                       dimensionsMobile={{ width: 400, height: 400 }}
@@ -227,7 +226,11 @@ const HotelBookingContainer = ({
                       leftalign
                       widthmobile="100%"
                       noLazy
-                      url={img}
+                      url={
+                        img && !imageFail
+                          ? img
+                          : "media/icons/bookings/notfounds/noroom.png"
+                      }
                       onfail={() => {
                         setImageFail(true);
                         setImageLoaded(true);
@@ -238,27 +241,7 @@ const HotelBookingContainer = ({
                         }, 1000);
                       }}
                     ></ImageLoader>
-                  ) : (
-                    <div style={{ height: "100%" }}>
-                      <ImageLoader
-                        dimensions={{ width: 400, height: 400 }}
-                        dimensionsMobile={{ width: 400, height: 400 }}
-                        borderRadius="16px"
-                        hoverpointer
-                        onclick={() => console.log("")}
-                        width="100%"
-                        height="100%"
-                        leftalign
-                        widthmobile="100%"
-                        onload={() => {
-                          setTimeout(() => {
-                            setImageLoaded(true);
-                          }, 1000);
-                        }}
-                        url={"media/icons/bookings/notfounds/noroom.png"}
-                      ></ImageLoader>
-                    </div>
-                  )}
+                  
                 </div>
                 <div
                   style={{
