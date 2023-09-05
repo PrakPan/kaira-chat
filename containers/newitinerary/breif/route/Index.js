@@ -131,7 +131,7 @@ const Route = (props) => {
             bookings={props.routes[i + 1]?.bookings}
             routesData={props.routesData}
             duration={props.routes[i + 1]?.meta?.Time}
-          ></MidSection>
+            ></MidSection>
         );
       }
     }
@@ -274,7 +274,6 @@ const Route = (props) => {
             props.breif.city_slabs[props.breif.city_slabs.length - 1].city_name;
       }
   }
-
   return (
     <Container>
       <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
@@ -315,7 +314,6 @@ const Route = (props) => {
           icon={props?.transfers[0]?.icon}
           hidemidsection={
             props?.plan?.version == ITINERARY_VERSION.version_2 &&
-            !props.routes &&
             props.routes &&
             props.routes.length
               ? false
@@ -324,29 +322,28 @@ const Route = (props) => {
           routesData={props.routesData}
           transportMode={"Taxi"}
           duration={props.routes[1]?.meta?.Time}
-        ></MidSection>
+          ></MidSection>
       ) : (
-        <MidSection
-          pinColour={props.breif.city_slabs[0].color}
-          modes={
-            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
-          }
-          // bookings={props.routes[1]?.bookings}
-          // route={props.routes[1]}
-          version={props?.plan?.version}
-          icon={props?.transfers[0]?.icon}
-          hidemidsection={
-            props?.plan?.version == ITINERARY_VERSION.version_2 &&
-            !props.routes &&
-            props.routes &&
-            props.routes.length
-              ? false
-              : true
-          }
-          routesData={props.routesData}
-          transportMode={"Taxi"}
-          duration={props.breif.city_slabs[0].duration}
-        ></MidSection>
+          <MidSection
+            pinColour={props.breif.city_slabs[0].color}
+            modes={
+              props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
+            }
+            // bookings={props.routes[1]?.bookings}
+            // route={props.routes[1]}
+            version={props?.plan?.version}
+            icon={props?.transfers[0]?.icon}
+            hidemidsection={
+              props?.plan?.version == ITINERARY_VERSION.version_2 &&
+              props.routes &&
+              props.routes.length
+                ? false
+                : true
+            }
+            routesData={props.routesData}
+            transportMode={"Taxi"}
+            duration={props.breif.city_slabs[0].duration}
+          ></MidSection>
       )}
 
       {locationsArr}

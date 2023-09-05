@@ -68,77 +68,84 @@ const Text = styled.div`
   margin: 0rem 0 0rem 1rem;
 `;
 const MidSection = (props) => {
-  useEffect(() => {}, []);
-  return (
-    <Container className="font-lexend" hidemidsection={props.hidemidsection}>
-      <div style={{ position: "relative" }}>
-        <Line
-          pinColour={props.pinColour}
-          hidemidsection={props.hidemidsection}
-        />
-      </div>
-      {!props.hidemidsection && (
-        <>
-          {props.version == "v2" ? (
-            <Text>
-              {props.route?.modes && props.route?.modes.length ? (
-                <TransportIconFetcher
-                  TransportMode={props.route?.modes[0]}
-                  Instyle={{
-                    fontSize: "1.4rem",
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              ) : props.bookings &&
-                props.bookings.length &&
-                props.bookings[0].booking_type ? (
-                <TransportIconFetcher
-                  TransportMode={props.bookings[0].booking_type}
-                  Instyle={{
-                    fontSize: "1.4rem",
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              ) : (
-                <></>
-              )}
-              {props.bookings && props.bookings.length ? (
-                props?.bookings?.map((element, index) => (
-                  <div className="flex flex-row" key={index}>
-                    <div className="flex flex-row pr-0">
-                      {element.booking_type}
-                      {index !== props?.bookings.length - 1 && (
-                        <span className="pr-2">,</span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : props.modes && props.modes.length ? (
-                props.modes?.map((element, index) => (
-                  <div className="flex flex-row" key={index}>
-                    <div className="flex flex-row pr-0">
-                      {element}
-                      {index !== props.modes.length - 1 && (
-                        <span className="pr-2">,</span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <></>
-              )}
 
-              {props.route?.modes &&
-              props.route?.modes.length &&
-              props.duration ? (
-                <div>: {props.duration}</div>
-              ) : (
-                <></>
-              )}
+  let hidemidsection = props.hidemidsection
+  if (props.route && props.route.modes && props.route.modes.length) hidemidsection = false
+  else if (props.bookings && props.bookings.length) hidemidsection = false
+  else hidemidsection = true
+  
+    return (
+      <Container className="font-lexend" hidemidsection={hidemidsection}>
+        <div style={{ position: "relative" }}>
+          <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
+        </div>
+        {!hidemidsection && (
+          <>
+            {props.version == "v2" ? (
+              <Text>
+                {props.route?.modes && props.route?.modes.length ? (
+                  <TransportIconFetcher
+                    TransportMode={props.route?.modes[0]}
+                    Instyle={{
+                      fontSize:
+                        props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
+                      marginRight: "0.8rem",
+                      color: "#4d4d4d",
+                    }}
+                  />
+                ) : props.bookings &&
+                  props.bookings.length &&
+                  props.bookings[0].booking_type ? (
+                  <TransportIconFetcher
+                    TransportMode={props.bookings[0].booking_type}
+                    Instyle={{
+                      fontSize:
+                        props.bookings[0].booking_type === "Bus"
+                          ? "1.2rem"
+                          : "1.4rem",
 
-              {/* {props.icon && (
+                      marginRight: "0.8rem",
+                      color: "#4d4d4d",
+                    }}
+                  />
+                ) : (
+                  <></>
+                )}
+                {props.bookings && props.bookings.length ? (
+                  props?.bookings?.map((element, index) => (
+                    <div className="flex flex-row" key={index}>
+                      <div className="flex flex-row pr-0">
+                        {element.booking_type}
+                        {index !== props?.bookings.length - 1 && (
+                          <span className="pr-2">,</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : props.modes && props.modes.length ? (
+                  props.modes?.map((element, index) => (
+                    <div className="flex flex-row" key={index}>
+                      <div className="flex flex-row pr-0">
+                        {element}
+                        {index !== props.modes.length - 1 && (
+                          <span className="pr-2">,</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <></>
+                )}
+
+                {props.route?.modes &&
+                props.route?.modes.length &&
+                props.duration ? (
+                  <div>: {props.duration}</div>
+                ) : (
+                  <></>
+                )}
+
+                {/* {props.icon && (
             <ImageLoader
               url={props.icon}
               leftalign
@@ -148,13 +155,13 @@ const MidSection = (props) => {
             ></ImageLoader>
           )} */}
 
-              {/* <MdOutlineFlightTakeoff
+                {/* <MdOutlineFlightTakeoff
             style={{  }}
           /> */}
-            </Text>
-          ) : (
-            <Text>
-              {/* {props.icon && (
+              </Text>
+            ) : (
+              <Text>
+                {/* {props.icon && (
           <ImageLoader
             url={props.icon}
             leftalign
@@ -163,28 +170,28 @@ const MidSection = (props) => {
             widthmobile="1.25rem"
           ></ImageLoader>
         )} */}
-              {props.modes && (
-                <TransportIconFetcher
-                  TransportMode={props.modes}
-                  Instyle={{
-                    fontSize: "1.4rem",
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              )}
-              {/* <MdOutlineFlightTakeoff
+                {props.modes && (
+                  <TransportIconFetcher
+                    TransportMode={props.modes}
+                    Instyle={{
+                      fontSize: props.modes === 'Bus' ? '1.2rem' : "1.4rem",
+                      marginRight: "0.8rem",
+                      color: "#4d4d4d",
+                    }}
+                  />
+                )}
+                {/* <MdOutlineFlightTakeoff
           style={{  }}
         /> */}
-              {props.modes ? `${props.modes} :` : null} {props.duration}
-            </Text>
-          )}
-        </>
-      )}
+                {props.modes ? `${props.modes} :` : null} {props.duration}
+              </Text>
+            )}
+          </>
+        )}
 
-      {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
-    </Container>
-  );
+        {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
+      </Container>
+    );
 };
 
 export default MidSection;
