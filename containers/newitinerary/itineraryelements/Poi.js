@@ -252,7 +252,6 @@ const ItineraryPoiElement = (props) => {
       setElementType("POI");
     }
   };
-
   const _getStars = (rating) => {
     var stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {
@@ -270,13 +269,15 @@ const ItineraryPoiElement = (props) => {
       </div>
     );
   };
-
   return (
     <Container>
       {/* <div>{props.time}</div> */}
       <div className="group flex flex-row items-center pt-3">
-        <div className="bg-white w-[6rem]" onClick={() => setShow(true)}>
-          {props.image ? (
+        <div
+          className="bg-white w-[6rem]"
+          onClick={() => setShow(true)}
+        >
+          {props.image && props.image !== "media/icons/default/activity.svg" ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
               dimensionsMobile={{ width: 300, height: 300 }}
@@ -290,7 +291,21 @@ const ItineraryPoiElement = (props) => {
               noLazy
             ></ImageLoader>
           ) : (
-            <div className="w-[6rem]"></div>
+              <div style={{width: "6rem", display: 'flex' , justifyContent : 'center'}}>
+              <ImageLoader
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log("")}
+                width="3.25rem"
+                height="3.25rem"
+                leftalign
+                widthmobile="6rem"
+                  url={"media/icons/general/dice.png"}
+                noLazy
+              ></ImageLoader>
+            </div>
           )}
         </div>
 
@@ -324,8 +339,9 @@ const ItineraryPoiElement = (props) => {
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {(props.activity_data &&
-                  props.activity_data.activity && props.activity_data.activity.id)
+                  {props.activity_data &&
+                  props.activity_data.activity &&
+                  props.activity_data.activity.id
                     ? "ACTIVITY"
                     : "ATTRACTION"}
                 </div>

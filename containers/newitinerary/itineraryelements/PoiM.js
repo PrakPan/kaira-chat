@@ -37,8 +37,9 @@ const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
 
-  grid-template-columns: ${(props) => (props.image ? "1.6fr 2.5fr" : "1fr")};
-  grid-column-gap: 0.5rem;
+  grid-template-columns: ${(props) =>
+    props.image ? "1.6fr 2.5fr" : "44px auto"};
+  grid-column-gap: ${(props) => (props.image ? "0.5rem" : "0")};
 `;
 const Text = styled.p`
   overflow: hidden;
@@ -354,20 +355,42 @@ const drawerRef = useRef(null);
           </div>
         ) : null}
       </div> */}
-      <GridContainer image={props.image}>
-        {props.image ? (
+      <GridContainer
+        image={
+          props.image && props.image !== "media/icons/default/activity.svg"
+        }
+      >
+        {props.image && props.image !== "media/icons/default/activity.svg" ? (
           <ImageLoader
-            dimensions={{ width: 250, height: 200 }}
-            dimensionsMobile={{ width: 250, height: 200 }}
+            dimensions={{ width: 300, height: 300 }}
+            dimensionsMobile={{ width: 300, height: 300 }}
             borderRadius="8px"
             hoverpointer
             onclick={() => console.log("")}
-            width="70%"
+            width="8rem"
             leftalign
             widthmobile="100%"
             url={props.image}
+            noLazy
           ></ImageLoader>
-        ) : null}
+        ) : (
+          <div
+            style={{display: "flex", justifyContent: "left" }}
+          >
+            <ImageLoader
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 300, height: 300 }}
+              borderRadius="8px"
+              hoverpointer
+              onclick={() => console.log("")}
+              width="3.25rem"
+              widthmobile="30px"
+              leftalign
+              url={"media/icons/general/dice.png"}
+              noLazy
+            ></ImageLoader>
+          </div>
+        )}
         <div>
           <div className=" " style={{ lineHeight: "1" }}>
             <span className="inline text-[1.2rem]">
