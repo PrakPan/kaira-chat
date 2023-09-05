@@ -52,6 +52,7 @@ const NewItenaryDBDMob = (props) => {
   const items = [];
   const itemsDays = [];
   function extractId(location, arr) {
+    if (arr.length <= location) return arr[arr.length - 1].slab_id;
     return arr[location].slab_id;
   }
   if (props.itinerary.day_slabs) {
