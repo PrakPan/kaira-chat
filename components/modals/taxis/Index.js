@@ -26,6 +26,7 @@ import TaxiSearched from './taxi-searched/Index';
 import Drawer from '../../ui/Drawer';
 import { setUpdateLoading } from '../../../store/actions/auth';
 import { openNotification } from '../../../store/actions/notification';
+import Skeleton from './Skeleton';
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -280,18 +281,13 @@ const Booking = (props) => {
       })
       .then((res) => {
         props._updateTaxiBookingHandler(res.data.bookings);
-
-        //  props.getPaymentHandler();
         setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
         setUpdateBookingState(false);
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
         setUpdateBookingState(false);
-
-        // window.alert('There seems to be a problem, please try again!');
          props.openNotification({
            type: "error",
            text: "There seems to be a problem, please try again!",
@@ -311,7 +307,6 @@ const Booking = (props) => {
           onHide={props.setHideTaxiModal}
           mobileWidth={"100%"}
           width="50%"
-          // zIndex='1501'
         >
           <SectionOne
             selectedBooking={props.selectedBooking}
@@ -319,10 +314,7 @@ const Booking = (props) => {
           ></SectionOne>
           <div>
             <GridContainer style={{ clear: "right" }}>
-              {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
-              {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
               <ContentContainer style={{ position: "relative" }}>
-                {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
                 {updateBookingState ? (
                   <div
                     style={{
@@ -336,20 +328,15 @@ const Booking = (props) => {
                     Please wait while we update your bookings
                   </div>
                 ) : null}
+                {/* <Skeleton /> */}
                 {!noResults && !error && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
-                      {/* <TaxiSelected
-                        _setImagesHandler={props._setImagesHandler}
-                        selectedBooking={props.selectedBooking}
-                      ></TaxiSelected> */}
-
                       {optionsJSX.length
                         ? optionsJSX
                         : moreOptionsJSX.length
                         ? moreOptionsJSX
                         : null}
-                      {/* {moreOptionsJSX} */}
                       {loading && !optionsJSX.length ? (
                         <div
                           className="center-div"
@@ -363,10 +350,7 @@ const Booking = (props) => {
                           Fetching recommendations for you
                         </div>
                       ) : null}
-                      {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
                     </div>
-
-                    {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
                     {updateLoadingState ? (
                       <div className="center-div" style={{}}>
                         <LoadingLottie
@@ -390,7 +374,6 @@ const Booking = (props) => {
                         View More
                       </Button>
                     ) : null}
-                    {/* {noResults ? 'NO RESULTS' : null} */}
                   </OptionsContainer>
                 ) : null}
                 {noResults ? (
@@ -405,20 +388,10 @@ const Booking = (props) => {
                     Oops, There seems to be a problem, please try again later!
                   </OptionsContainer>
                 ) : null}
-                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-                {/* {
-                   !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   } 
-             */}
-                {/* <ButtonToTop className='center-div'>
-                   <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
-                </ButtonToTop> */}
               </ContentContainer>
             </GridContainer>
           </div>
         </Drawer>
-
-        {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
       </div>
     );
   else
@@ -443,9 +416,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
-// const mapDispatchToProps = (dispatch) => {
-//   return {};
-// };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),

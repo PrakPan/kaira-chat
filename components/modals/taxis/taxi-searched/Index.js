@@ -17,9 +17,7 @@ import SectionFour from './SectionFour';
     @media screen and (min-width: 768px){
         border-radius: 10px;
         position: relative;
-
     }
-    
 `;
 
  

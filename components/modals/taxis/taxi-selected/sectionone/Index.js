@@ -7,7 +7,7 @@ import DropDown from './Dropdown';
 const Container = styled.div`
 
 display: grid;
-grid-template-columns: 9rem auto;
+grid-template-columns: 7.5rem auto;
   border-style: none none solid none;
 border-color: rgba(238, 238, 238, 1);
 border-width: 1px;
