@@ -338,17 +338,18 @@ const Booking = (props) => {
                         ? moreOptionsJSX
                         : null}
                       {loading && !optionsJSX.length ? (
-                        <div
-                          className="center-div"
-                          style={{ height: isPageWide ? "80vh" : "40vh" }}
-                        >
-                          <LoadingLottie
-                            height="5rem"
-                            width="5rem"
-                            margin="none"
-                          />
-                          Fetching recommendations for you
-                        </div>
+                        // <div
+                        //   className="center-div"
+                        //   style={{ height: isPageWide ? "80vh" : "40vh" }}
+                        // >
+                        //   <LoadingLottie
+                        //     height="5rem"
+                        //     width="5rem"
+                        //     margin="none"
+                        //   />
+                        //   Fetching recommendations for you
+                        // </div>
+                        <Skeleton />
                       ) : null}
                     </div>
                     {updateLoadingState ? (
