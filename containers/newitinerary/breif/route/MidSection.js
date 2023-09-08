@@ -122,12 +122,12 @@ const MidSection = (props) => {
                       </div>
                     </div>
                   ))
-                ) : props.modes && props.modes.length ? (
-                  props.modes?.map((element, index) => (
+                ) : props.route && props.route.modes && props.route.modes.length ? (
+                  props.route.modes.map((element, index) => (
                     <div className="flex flex-row" key={index}>
                       <div className="flex flex-row pr-0">
                         {element}
-                        {index !== props.modes.length - 1 && (
+                        {index !== props.route.modes.length - 1 && (
                           <span className="pr-2">,</span>
                         )}
                       </div>
