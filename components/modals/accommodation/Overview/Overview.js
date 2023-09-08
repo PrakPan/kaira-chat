@@ -143,6 +143,12 @@ const Overview = (props) => {
     2: false,
     3: false,
   });
+  const [ImagesError, setImagesError] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -155,6 +161,13 @@ const Overview = (props) => {
       );
     }
   }
+    function OnImageError(i) {
+      if (!ImagesError[i]) {
+        setImagesError((prev) => {
+          return { ...prev, [i]: true };
+        })
+          }
+    }
 
   const isDesktop = useMediaQuery("(min-width:1148px)");
   let images = [];
@@ -210,10 +223,11 @@ const Overview = (props) => {
               <Child area="1 / 1 / 5 / 4" className="div1 ">
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[0]}
+                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
                     noLazy
                   />
                 </div>
@@ -231,11 +245,12 @@ const Overview = (props) => {
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[1]}
+                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
                     noLazy
                   />
                 </div>
@@ -252,11 +267,12 @@ const Overview = (props) => {
               <Child area="1 / 4 / 3 / 8" className="div3">
                 <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[2]}
+                    url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(2)}
+                    onfail={() => OnImageError(2)}
                     noLazy
                   />
                 </div>
@@ -273,11 +289,12 @@ const Overview = (props) => {
               <Child area="3 / 4 / 5 / 8" className="div4">
                 <div style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[3]}
+                    url={ImagesError[3] ? 'media/icons/bookings/notfounds/noroom.png' :  images[3]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(3)}
+                    onfail={() => OnImageError(3)}
                     noLazy
                   />
                 </div>
@@ -298,10 +315,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[0]}
+                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
                   />
                 </div>
                 <div
@@ -319,11 +337,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[1]}
+                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
                   />
                 </div>
                 <div
@@ -340,11 +359,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[2]}
+                    url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(2)}
+                    onfail={() => OnImageError(2)}
                   />
                 </div>
                 <div
@@ -364,11 +384,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[0]}
+                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
                   />
                 </div>
                 <div
@@ -386,11 +407,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[1]}
+                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
                   />
                 </div>
                 <div
@@ -409,11 +431,12 @@ const Overview = (props) => {
               <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                 <ImageLoader
                   noLazy
-                  url={images[0]}
+                  url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                   fit="cover"
                   width="100%"
                   height="100%"
                   onload={() => OnImageLoad(0)}
+                  onfail={() => OnImageError(0)}
                   dimensions={{ height: 800, width: 1200 }}
                 />
               </div>
@@ -463,11 +486,12 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={images[0]}
+                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                       fit="cover"
                       width="100%"
                       height="100%"
                       onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
                     />
                   </div>
                   <div
@@ -487,11 +511,12 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={images[1]}
+                      url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                       fit="cover"
                       width="100%"
                       height="100%"
                       onload={() => OnImageLoad(1)}
+                      onfail={() => OnImageError(1)}
                     />
                   </div>
                   <div
@@ -510,11 +535,12 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={images[2]}
+                      url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
                       fit="cover"
                       width="100%"
                       height="100%"
                       onload={() => OnImageLoad(2)}
+                      onfail={() => OnImageError(2)}
                     />
                   </div>
                   <div
@@ -536,11 +562,12 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={images[0]}
+                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                       fit="cover"
                       width="100%"
                       height="100%"
                       onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
                     />
                   </div>
                   <div
@@ -560,11 +587,12 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={images[1]}
+                      url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                       fit="cover"
                       width="100%"
                       height="100%"
                       onload={() => OnImageLoad(1)}
+                      onfail={() => OnImageError(1)}
                     />
                   </div>
                   <div
@@ -586,11 +614,12 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={images[0]}
+                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                       fit="cover"
                       width="100%"
                       height="100%"
                       onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
                     />
                   </div>
                   <div
@@ -712,7 +741,7 @@ const Overview = (props) => {
             <div style={{ height: "30px", width: "30px" }}>
               <Image
                 noLazy
-                url={"media/icons/google-maps.png"}
+                url={ImagesError[i] ? 'media/icons/bookings/notfounds/noroom.png' :  "media/icons/google-maps.png"}
                 height="30px"
                 width="30px"
               />
@@ -746,7 +775,7 @@ const Overview = (props) => {
             <div style={{ height: "30px", width: "30px" }}>
               <Image
                 noLazy
-                url={"media/icons/google-maps.png"}
+                url={ImagesError[i] ? 'media/icons/bookings/notfounds/noroom.png' :  "media/icons/google-maps.png"}
                 height="30px"
                 width="30px"
               />
