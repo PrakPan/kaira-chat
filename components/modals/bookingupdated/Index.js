@@ -73,7 +73,7 @@ const Booking = (props) => {
     errorMsg: "",
   });
   const [loading, setLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState();
+  const [totalCount, setTotalCount] = useState(0);
   const [filtersState, setFiltersState] = useState({
     budget: "",
     type: "",
@@ -89,13 +89,18 @@ const Booking = (props) => {
 
   const [moreLoadingState, setMoreLoadingState] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-
+  const [sourceChange, setSourceChange] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [filtersObj, setFiltersObj] = useState({
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: ["3", "4", "5"],
-    sort: ["Recommended", "Popular", "Price: high to low" , "Price: low to high"],
+    sort: [
+      "Recommended",
+      "Popular",
+      "Price: high to low",
+      "Price: low to high",
+    ],
   });
   useEffect(() => {
     if (props.showBookingModal) {
@@ -406,7 +411,8 @@ const Booking = (props) => {
     let price_set = false;
     if (sort === "popular") sort_by = "popularity";
     if (sort === "recommended") sort_by = "recommended";
-    if (sort === "price: high to low" || sort === "price: low to high") sort_by = 'price'
+    if (sort === "price: high to low" || sort === "price: low to high")
+      sort_by = "price";
 
     if (!typearr.length) {
     } else {
@@ -497,11 +503,11 @@ const Booking = (props) => {
     let budgetarr = filtersState.budget;
 
     let filters = _generateFilterKeys(filtersState);
-    let sort_order = 'asc'
-    if (filtersState.sort === "price: high to low") sort_order = 'desc'
-      //BUDGET FILTERS
+    let sort_order = "asc";
+    if (filtersState.sort === "price: high to low") sort_order = "desc";
+    //BUDGET FILTERS
 
-      setViewMoreStatus(false);
+    setViewMoreStatus(false);
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
     // axiosaccommodationinstance
@@ -536,7 +542,9 @@ const Booking = (props) => {
         if (res.data.results.length) {
           setNoResults(false);
           let options = [];
-          setTotalCount(res?.data?.count);
+          setTotalCount((prev) => {
+            return prev + res?.data?.count;
+          });
           for (var i = 0; i < res.data.results.length; i++) {
             //  if(res.data.results[i].images.length > 1)
             if (res.data.results[i].name !== props.selectedBooking.name)
@@ -569,7 +577,8 @@ const Booking = (props) => {
             setViewMoreStatus(true);
             setOffset(limit);
           } else {
-            setViewMoreStatus(false);
+            setSourceChange(true);
+            setViewMoreStatus(true);
             setOffset(0);
           }
           setMoreOptionsJSX(options);
@@ -962,8 +971,21 @@ const Booking = (props) => {
     var agodaAccomodation = axiosaccommodationinstance;
     if (props.currentBooking && props.currentBooking.source) {
       if (props.currentBooking.source === "Agoda") {
-        agodaAccomodation = axiosagodaaccommodationionstance;
-        limit = 30;
+        if (sourceChange) {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        } else {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        }
+      } else {
+        if (sourceChange) {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        } else {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        }
       }
     }
     agodaAccomodation
@@ -984,7 +1006,10 @@ const Booking = (props) => {
       })
       .then((res) => {
         // let oldoptions = optionsJSX;
-        setTotalCount(res?.data?.count);
+        setTotalCount((prev) => {
+          return prev + res?.data?.count;
+        });
+
         if (res.data.results.length) {
           setNoResults(false);
 
@@ -1054,8 +1079,14 @@ const Booking = (props) => {
             setOffset(offset + limit);
             setViewMoreStatus(true);
           } else {
-            setOffset(0);
-            setViewMoreStatus(false);
+            if (sourceChange) {
+              setOffset(0);
+              setViewMoreStatus(false);
+            } else {
+              setSourceChange(true);
+              setViewMoreStatus(true);
+              setOffset(0);
+            }
           }
         } else {
           setNoResults(true);
