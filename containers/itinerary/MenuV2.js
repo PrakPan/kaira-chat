@@ -445,6 +445,16 @@ const SimpleTabsV2 = (props) => {
   const _handleFlightModalClose = () => {
     props.setShowFlightModal(false);
   };
+    const _handleMenuTabsChange = (tabName) => {
+      if (
+        process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev")
+      ) {
+        ga.event({
+          action: "Itinerary-tabs-" + tabName.toLowerCase(),
+        });
+      }
+    };
   const Navbar = styled.div`
     position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
     z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
@@ -481,7 +491,11 @@ const SimpleTabsV2 = (props) => {
     <div className={classes.root} style={{ paddingTop: "20px" }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
-          <Navigation items={items} BarName="TabsName" />
+          <Navigation
+            items={items}
+            BarName="TabsName"
+            ClickHandler={_handleMenuTabsChange}
+          />
         ) : (
           <ScrollableMenuTabs
             icons={false}
