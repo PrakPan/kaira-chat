@@ -28,7 +28,6 @@ const NearbyLocations = (props) => {
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
   const [cards, setCards] = useState([])
   const [hide , setHide] = useState(false)
-console.log('props: ', props);
   useEffect(() => {
     
 let cardsArr = []

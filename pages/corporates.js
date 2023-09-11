@@ -52,7 +52,6 @@ export async function getStaticProps() {
       );
       if (res.data.message !== "not found") workcation_experience.push(res.data);
     } catch (e) {
-      console.log(e);
     }
   }
   for (let i = 0; i < offbeat_ids.length; i++) {
@@ -62,7 +61,6 @@ export async function getStaticProps() {
       );
       if(res.data.id) offbeat_experiences.push(res.data);
     } catch (e) {
-      console.log(e);
     }
   }
     for (let i = 0; i < getaway_ids.length; i++) {
@@ -72,7 +70,6 @@ export async function getStaticProps() {
         );
         if(res.data.id)getaway_experiences.push(res.data);
       } catch (e) {
-        console.log(e);
       }
     }
   return {

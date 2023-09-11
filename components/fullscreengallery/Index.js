@@ -24,8 +24,6 @@ const Cross = styled.p`
 `;
 
 const FullScreenGallery = (props) => {
-  console.log('gallery images');
-  console.log(props.images);
   return (
     <Container style={{ zIndex: '2000' }}>
       <Cross>

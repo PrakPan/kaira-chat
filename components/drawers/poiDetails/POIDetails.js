@@ -83,7 +83,6 @@ const ImageContainer = styled.div`
 position : relative;
 `
 const POIDetails = (props) => {
-  console.log('props.dataaada: ', props.data);
   let isPageWide = media("(min-width: 768px)");
   const [imageLoading, setImageLoading] = useState(true);
 

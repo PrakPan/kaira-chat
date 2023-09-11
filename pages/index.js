@@ -85,7 +85,6 @@ var data = []
     europeLocations = resp.data;  
   }
 catch(e){
-  console.log(e)
     locations = []
     asiaLocations = []
     europeLocations = []

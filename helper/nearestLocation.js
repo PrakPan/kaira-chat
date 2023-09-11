@@ -28,7 +28,6 @@ function toRad(Value) {
   return (Value * Math.PI) / 180;
 }
 function distance(lat1, lat2, lon1, lon2) {
-  console.log(lat1, lat2, lon1, lon2);
   // The math module contains a function
   // named toRadians which converts from
   // degrees to radians.
@@ -49,7 +48,6 @@ function distance(lat1, lat2, lon1, lon2) {
   // Radius of earth in kilometers. Use 3956
   // for miles
   const r = 6371;
-  console.log(c * r);
   // calculate the result
   return c * r;
 }
@@ -71,7 +69,6 @@ function NearestLocation(typeAddress) {
     //     const first = distanceArray.sort();
     // }
   });
-  console.log(`.......${distanceArray}`);
   const filtered = distanceArray.filter((element, index) => index % 2 === 0);
   // var firstelement = filtered.sort()[0];
   // const firstData = distanceArray.filter((element, index) => {
@@ -79,12 +76,6 @@ function NearestLocation(typeAddress) {
   // });
   const shortElement =
     distanceArray[distanceArray.indexOf(filtered.sort((a, b) => a - b)[0]) + 1];
-
-  console.log(
-    `.........in nearest function ${shortElement.geometry.coordinates}`
-  );
-  console.log(`.........in nearest function ${filtered.sort()}`);
-  console.log(`.........in nearest function ${filtered.sort()[0]}`);
   return shortElement;
 }
 

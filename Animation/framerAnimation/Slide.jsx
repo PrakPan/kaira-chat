@@ -16,18 +16,14 @@ const Slide = ({
   useEffect(() => {
     if (hideTime !== null && onUnmount !== null && isActive === true) {
       const timeout = setTimeout(() => {
-        console.log('timeout');
         setIsMounted(false);
         onUnmountComponent();
       }, hideTime * 1000);
       return () => clearTimeout(timeout);
     }
-    console.log('timeout out');
   }, [hideTime, onUnmount]);
   const onUnmountComponent = () => {
     const timeout = setTimeout(() => {
-      console.log('timeout');
-
       onUnmount();
     }, 1000);
     return () => clearTimeout(timeout);

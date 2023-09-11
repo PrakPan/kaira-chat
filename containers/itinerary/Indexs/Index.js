@@ -46,7 +46,6 @@ const Itinerary = (props) => {
   const [booking, setBooking] = useState(null);
 
   const [itineraryLoading, setItineraryLoading] = useState(true);
-  console.log('itineraryLoading: ', itineraryLoading);
   const [briefLoading, setBreifLoading] = useState(true);
   const [stayLoading, setStayLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);

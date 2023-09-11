@@ -19,9 +19,6 @@ const LayoutV2 = (props) => {
   }, []);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
-  console.log('router');
-  // console.log(router);
-
   useEffect(() => {
     if (router.isReady) {
       const queries = router.query;

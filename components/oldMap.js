@@ -148,11 +148,9 @@ function oldMap(props) {
     strokeWeight: 2,
   };
   const onLoad = (polyline) => {
-    console.log('Polyline onLoad:', polyline);
   };
 
   const onUnmount = (polyline) => {
-    console.log('Polyline onUnmount:', polyline);
   };
 
   return isLoaded ? (

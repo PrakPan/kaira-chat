@@ -91,7 +91,6 @@ const Homepage = (props) => {
         const IpAddress = res.data.ip;
         if (IpAddress) getUserLocation(IpAddress);
       } catch (e) {
-        console.log(e);
       }
     }
     async function getUserLocation(ip) {
@@ -105,7 +104,6 @@ const Homepage = (props) => {
           props.changeUserLocation({location : data})
         };
       } catch (e) {
-        console.log(e);
       }
     }
   }, []);

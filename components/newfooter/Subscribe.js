@@ -116,7 +116,6 @@ const Subscribe = (props) => {
           .catch((error) => {
             alert("There was a problem, please refresh and try again.");
             setLoading(false);
-            console.log(error)
           });
         }
 

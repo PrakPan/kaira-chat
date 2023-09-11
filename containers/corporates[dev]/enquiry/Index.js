@@ -102,7 +102,6 @@ const Enquiry = (props) => {
         type: type || '',
       })
       .then((res) => {
-        console.log('res: ', res);
         setLoading(false);
 
         setSubmitted(true);
