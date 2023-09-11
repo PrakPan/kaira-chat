@@ -35,6 +35,8 @@ import openTailoredModal from "../../services/openTailoredModal";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { changeUserLocation } from "../../store/actions/userLocation";
+import { connect } from "react-redux";
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -77,7 +79,11 @@ const Homepage = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   useLayoutEffect(() => {
-    if (!Cookies.get("userLocation")) getUserIp();
+    const userLocation = Cookies.get("userLocation");
+    if (!userLocation) getUserIp();
+    else {
+      props.changeUserLocation({location : JSON.parse(userLocation)});
+    }
 
     async function getUserIp() {
       try {
@@ -93,8 +99,11 @@ const Homepage = (props) => {
         const res = await axios.get(
           `https://apis.tarzanway.com/search/user_location/?ip=${ip}`
         );
-        const data = JSON.stringify(res.data);
-        if (res.data) Cookies.set("userLocation", data, { expires: 7 });
+        const data = res.data;
+        if (res.data) {
+          Cookies.set("userLocation", JSON.stringify(data), { expires: 3 })
+          props.changeUserLocation({location : data})
+        };
       } catch (e) {
         console.log(e);
       }
@@ -489,4 +498,13 @@ const Homepage = (props) => {
 // }
 
 // export default connect(mapStateToPros)(Homepage);
-export default Homepage;
+const mapStateToProps = (state) => {
+  return {
+    userLocation: state.UserLocation.location  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeUserLocation: (payload) => dispatch(changeUserLocation(payload)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

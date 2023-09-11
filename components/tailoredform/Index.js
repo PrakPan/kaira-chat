@@ -144,20 +144,21 @@ const Enquiry = (props) => {
     setShowSearchStarting(false);
   };
   let isPageWide = media('(min-width: 768px)');
-  const LocationCookie = Cookies.get('userLocation');
+  // const LocationCookie = Cookies.get('userLocation');
 
   useEffect(() => {
-    if (!startingLocation) {
-      if (LocationCookie) {
-        const userLocation = JSON.parse(LocationCookie);
+    // if (!startingLocation) {
+    
+      if (props.userLocation) {
+        const userLocation = props.userLocation;
         if (userLocation.text && userLocation.place_id)
           setStartingLocation({
             name: userLocation.text,
             place_id: userLocation.place_id,
           });
       }
-    }
-  }, [LocationCookie]);
+    // }
+  }, [props.userLocation]);
 
   var selectedObj;
 
@@ -714,6 +715,7 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
     phone: state.auth.phone,
     email: state.auth.email,
+    userLocation: state.UserLocation.location,
   };
 };
 const mapDispatchToProps = (dispatch) => {

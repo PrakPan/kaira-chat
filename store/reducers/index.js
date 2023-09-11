@@ -5,6 +5,7 @@ import Updateloading from './Updateloading';
 import ActiveComponent from './ActiveComponent';
 import Notification from './Notification'
 import Scroll from './Scroll'
+import UserLocation from './UserLocation'
 import { HYDRATE } from 'next-redux-wrapper';
 
 const rootReducer = combineReducers({
@@ -13,7 +14,8 @@ const rootReducer = combineReducers({
   Updateloading: Updateloading,
   ActiveComponent: ActiveComponent,
   Notification: Notification,
-  scroll : Scroll
+  scroll: Scroll, 
+  UserLocation : UserLocation
 });
 
 export default rootReducer;
