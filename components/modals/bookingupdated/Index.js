@@ -1266,11 +1266,16 @@ const Booking = (props) => {
                             ></HotelBookingContainer>
                             </div>
                       )} */}
-                          {optionsJSX.length
-                            ? optionsJSX
-                            : moreOptionsJSX.length
-                            ? moreOptionsJSX
-                            : null}
+                          {optionsJSX.length ? (
+                            <>
+                              {optionsJSX}
+                              {!viewMoreStatus && <Skeleton />}
+                            </>
+                          ) : moreOptionsJSX.length ? (
+                            <>
+                              {moreOptionsJSX} {!viewMoreStatus && <Skeleton />}
+                            </>
+                          ) : null}
                           {/* {moreOptionsJSX} */}
                           {loading && !optionsJSX.length ? (
                             // <div
@@ -1284,6 +1289,7 @@ const Booking = (props) => {
                             //   />
                             //   Fetching stay recommendations for you
                             // </div>
+
                             <Skeleton />
                           ) : null}
                           {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
