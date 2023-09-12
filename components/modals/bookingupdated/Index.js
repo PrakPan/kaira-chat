@@ -79,6 +79,7 @@ const Booking = (props) => {
     star_category: "",
     sort: "recommended",
   });
+
   // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -359,14 +360,6 @@ const Booking = (props) => {
   //   }
   // }, [props.alternates, props.budget, props.showBookingModal]);
   const _addFilterHandler = (filter, heading) => {
-    let oldfilters = filtersState;
-    let oldfiltersheadingarr = filtersState[heading];
-    /* 
-    let newfilters = {
-      ...oldfilters,
-      [heading]: filter,
-    };
-    setFiltersState(newfilters); */
     setFiltersState((prevState) => ({
       ...prevState,
       [heading]: filter,
@@ -384,18 +377,14 @@ const Booking = (props) => {
       star_category: star,
     }));
   };
-  const _removeFilterHandler = (filter, heading) => {
-    let oldfilters = filtersState;
-    let oldfiltersheadingarr = filtersState[heading];
-    const index = oldfiltersheadingarr.indexOf(filter);
-
-    oldfiltersheadingarr.splice(index, 1);
-    let newfilters = {
-      ...oldfilters,
-      [heading]: oldfiltersheadingarr,
+  const _removeFilterHandler = (heading) => {
+    let oldfilters = {
+      budget: "",
+      type: "",
+      star_category: "",
+      sort: "recommended",
     };
-
-    setFiltersState(newfilters);
+    setFiltersState(prev=>({...prev , [heading] : oldfilters[heading]}))
   };
   const _generateFilterKeys = (filtersState) => {
     let budgetarr = filtersState.budget;
@@ -552,6 +541,19 @@ const Booking = (props) => {
       .then((res) => {
         setUpdateLoadingState(false);
         if (res.data.results.length) {
+          if (
+            res.data.search &&
+            res.data.search.accommodation_types &&
+            res.data.search.accommodation_types.length
+          ) {
+            let accommodation_types = Array.from(
+              new Set(res.data.search.accommodation_types)
+            );
+            setFiltersObj({
+              ...filtersObj,
+              type: accommodation_types,
+            });
+          }
           setNoResults(false);
           let options = [];
           for (var i = 0; i < res.data.results.length; i++) {
@@ -1023,7 +1025,21 @@ const Booking = (props) => {
 
         if (res.data.results.length) {
           setNoResults(false);
-
+          if (res.data.results.length) {
+            if (
+              res.data.search &&
+              res.data.search.accommodation_types &&
+              res.data.search.accommodation_types.length
+            ) {
+              let accommodation_types = Array.from(
+                new Set(res.data.search.accommodation_types)
+              );
+              setFiltersObj({
+                ...filtersObj,
+                type: accommodation_types,
+              });
+            }
+          }
           let options = moreOptionsJSX.slice();
           for (var i = 0; i < res.data.results.length; i++) {
             try {

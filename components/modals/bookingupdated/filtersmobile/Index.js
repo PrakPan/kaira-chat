@@ -66,7 +66,7 @@ export default function TemporaryDrawer(props) {
   const [state, setState] = React.useState(false);
   const [filterSelected, setFilterSelected] = useState(null);
   const [filterHeading, setFilterHeading] = useState('Budget');
-  const [SelectedStar, setSelectedStar] = useState();
+  const [SelectedStar, setSelectedStar] = useState(-1);
   const [SelectedBudget, setSelectedBudget] = useState();
   const [SelectedSort , setSelectedSort] = useState(props.filters.sort[0])
   const [sortShow , setSortShow] = useState(false)
@@ -95,13 +95,22 @@ export default function TemporaryDrawer(props) {
   const _handleChange = (event, value) => {};
   const _onChangeHandler = (checked, filter, heading, i) => {
     if (heading == 'budget') {
+      if (SelectedBudget == i) {
+        props._removeFilterHandler(heading)
+        setSelectedBudget(-1)
+        return
+      }
       setSelectedBudget(i);
     }
-
     if (checked) props._addFilterHandler(filter, heading);
-    else props._removeFilterHandler(filter, heading);
+    else props._removeFilterHandler(heading);
   };
   const _OnstarSelect = (i, currentfilter) => {
+    if (SelectedStar == i) {
+      setSelectedStar(-1)
+      props._updateStarFilterHandler('');
+      return
+    }
     setSelectedStar(i);
     props._updateStarFilterHandler(currentfilter);
   };
