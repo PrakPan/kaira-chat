@@ -1015,6 +1015,7 @@ const Booking = (props) => {
         number_of_adults: props.selectedBooking.pax.number_of_adults,
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
+        star_category: filtersState.star_category,
         accommodation_types: filters.type,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
