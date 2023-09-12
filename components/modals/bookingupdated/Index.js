@@ -495,7 +495,7 @@ const Booking = (props) => {
     };
   };
 
-  const _updateOptionsHandlerWithFilter = () => {
+  const _updateOptionsHandlerWithFilter = (gear) => {
     setLoading(true);
     setOffset(0);
     setUpdateLoadingState(true);
@@ -515,8 +515,21 @@ const Booking = (props) => {
     var agodaAccomodation = axiosaccommodationinstance;
     if (props.currentBooking && props.currentBooking.source) {
       if (props.currentBooking.source === "Agoda") {
-        agodaAccomodation = axiosagodaaccommodationionstance;
-        limit = 30;
+        if (gear === 'second') {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        } else {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        }
+      } else {
+        if (gear === "second") {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        } else {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        }
       }
     }
     agodaAccomodation
@@ -592,6 +605,11 @@ const Booking = (props) => {
         // setUpdateLoadingState(false);
       })
       .catch((err) => {
+        if (err.response.status === 400 && gear !== 'second') {
+          setSourceChange(true)
+          _updateOptionsHandlerWithFilter('second')
+          return
+        }
         setLoading(false);
         setFetchingIsError({
           error: true,
@@ -599,7 +617,6 @@ const Booking = (props) => {
         });
       });
   };
-
   const _updateSearchedAccommodation = ({
     SelectedBookingId,
     Selected_id,
