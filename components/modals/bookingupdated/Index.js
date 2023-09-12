@@ -73,7 +73,6 @@ const Booking = (props) => {
     errorMsg: "",
   });
   const [loading, setLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
   const [filtersState, setFiltersState] = useState({
     budget: "",
     type: "",
@@ -555,9 +554,6 @@ const Booking = (props) => {
         if (res.data.results.length) {
           setNoResults(false);
           let options = [];
-          setTotalCount((prev) => {
-            return prev + res?.data?.count;
-          });
           for (var i = 0; i < res.data.results.length; i++) {
             //  if(res.data.results[i].images.length > 1)
             if (res.data.results[i].name !== props.selectedBooking.name)
@@ -1024,9 +1020,6 @@ const Booking = (props) => {
       })
       .then((res) => {
         // let oldoptions = optionsJSX;
-        setTotalCount((prev) => {
-          return prev + res?.data?.count;
-        });
 
         if (res.data.results.length) {
           setNoResults(false);
@@ -1202,7 +1195,7 @@ const Booking = (props) => {
                   No_of_stays={optionsJSX.length + moreOptionsJSX.length}
                   payment={props.payment}
                   plan={props.plan}
-                  TotalCount={totalCount}
+                  TotalCount={optionsJSX.length ? optionsJSX.length : moreOptionsJSX.length}
                 ></SectionTwo>
                 {/* )} */}
               </div>
