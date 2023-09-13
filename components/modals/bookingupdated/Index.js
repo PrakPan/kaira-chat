@@ -73,13 +73,13 @@ const Booking = (props) => {
     errorMsg: "",
   });
   const [loading, setLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState();
   const [filtersState, setFiltersState] = useState({
     budget: "",
     type: "",
     star_category: "",
-    sort: "price",
+    sort: "recommended",
   });
+
   // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -89,32 +89,37 @@ const Booking = (props) => {
 
   const [moreLoadingState, setMoreLoadingState] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-
+  const [sourceChange, setSourceChange] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [filtersObj, setFiltersObj] = useState({
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: ["3", "4", "5"],
-    sort: ["Price", "Popularity"],
+    sort: [
+      "Recommended",
+      "Popular",
+      "Price: high to low",
+      "Price: low to high",
+    ],
   });
   useEffect(() => {
-      if (props.showBookingModal) {
+    if (props.showBookingModal) {
       _updateOptionsHandlerWithFilter();
-    }
-      else {
-        setFiltersState({
-          budget: "",
-          type: "",
-          star_category: "",
-          sort: "price",
-        });
+    } else {
+      setFiltersState({
+        budget: "",
+        type: "",
+        star_category: "",
+        sort: "recommended",
+      });
     }
   }, [
     filtersState.budget,
     filtersState.type,
     filtersState.star_category,
     filtersState.sort,
-    props.showBookingModal]);
+    props.showBookingModal,
+  ]);
   // const filters = {
   //   budget: [
   //     "Below ₹3,000",
@@ -355,14 +360,6 @@ const Booking = (props) => {
   //   }
   // }, [props.alternates, props.budget, props.showBookingModal]);
   const _addFilterHandler = (filter, heading) => {
-    let oldfilters = filtersState;
-    let oldfiltersheadingarr = filtersState[heading];
-    /* 
-    let newfilters = {
-      ...oldfilters,
-      [heading]: filter,
-    };
-    setFiltersState(newfilters); */
     setFiltersState((prevState) => ({
       ...prevState,
       [heading]: filter,
@@ -380,18 +377,14 @@ const Booking = (props) => {
       star_category: star,
     }));
   };
-  const _removeFilterHandler = (filter, heading) => {
-    let oldfilters = filtersState;
-    let oldfiltersheadingarr = filtersState[heading];
-    const index = oldfiltersheadingarr.indexOf(filter);
-
-    oldfiltersheadingarr.splice(index, 1);
-    let newfilters = {
-      ...oldfilters,
-      [heading]: oldfiltersheadingarr,
+  const _removeFilterHandler = (heading) => {
+    let oldfilters = {
+      budget: "",
+      type: "",
+      star_category: "",
+      sort: "recommended",
     };
-
-    setFiltersState(newfilters);
+    setFiltersState((prev) => ({ ...prev, [heading]: oldfilters[heading] }));
   };
   const _generateFilterKeys = (filtersState) => {
     let budgetarr = filtersState.budget;
@@ -404,8 +397,10 @@ const Booking = (props) => {
     let price_upper_range = null;
     let sort_by = "price";
     let price_set = false;
-
-    if (sort === "popularity") sort_by = "popularity";
+    if (sort === "popular") sort_by = "popularity";
+    if (sort === "recommended") sort_by = "recommended";
+    if (sort === "price: high to low" || sort === "price: low to high")
+      sort_by = "price";
 
     if (!typearr.length) {
     } else {
@@ -488,14 +483,20 @@ const Booking = (props) => {
     };
   };
 
-  const _updateOptionsHandlerWithFilter = () => {
+  const _updateOptionsHandlerWithFilter = (gear) => {
     setLoading(true);
     setOffset(0);
     setUpdateLoadingState(true);
     setNoResults(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
     let budgetarr = filtersState.budget;
 
     let filters = _generateFilterKeys(filtersState);
+    let sort_order = "asc";
+    if (filtersState.sort === "price: high to low") sort_order = "desc";
     //BUDGET FILTERS
 
     setViewMoreStatus(false);
@@ -506,8 +507,21 @@ const Booking = (props) => {
     var agodaAccomodation = axiosaccommodationinstance;
     if (props.currentBooking && props.currentBooking.source) {
       if (props.currentBooking.source === "Agoda") {
-        agodaAccomodation = axiosagodaaccommodationionstance;
-        limit = 30;
+        if (gear === "second") {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        } else {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        }
+      } else {
+        if (gear === "second") {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        } else {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        }
       }
     }
     agodaAccomodation
@@ -526,14 +540,26 @@ const Booking = (props) => {
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
         sort_by: filters.sort_by,
-        sort_order: "asc",
+        sort_order: sort_order,
       })
       .then((res) => {
         setUpdateLoadingState(false);
         if (res.data.results.length) {
+          if (
+            res.data.search &&
+            res.data.search.accommodation_types &&
+            res.data.search.accommodation_types.length
+          ) {
+            let accommodation_types = Array.from(
+              new Set(res.data.search.accommodation_types)
+            );
+            setFiltersObj({
+              ...filtersObj,
+              type: accommodation_types,
+            });
+          }
           setNoResults(false);
           let options = [];
-          setTotalCount(res?.data?.count);
           for (var i = 0; i < res.data.results.length; i++) {
             //  if(res.data.results[i].images.length > 1)
             if (res.data.results[i].name !== props.selectedBooking.name)
@@ -566,7 +592,8 @@ const Booking = (props) => {
             setViewMoreStatus(true);
             setOffset(limit);
           } else {
-            setViewMoreStatus(false);
+            setSourceChange(true);
+            setViewMoreStatus(true);
             setOffset(0);
           }
           setMoreOptionsJSX(options);
@@ -580,6 +607,11 @@ const Booking = (props) => {
         // setUpdateLoadingState(false);
       })
       .catch((err) => {
+        if (err.response.status === 400 && gear !== "second") {
+          setSourceChange(true);
+          _updateOptionsHandlerWithFilter("second");
+          return;
+        }
         setLoading(false);
         setFetchingIsError({
           error: true,
@@ -587,7 +619,6 @@ const Booking = (props) => {
         });
       });
   };
-
   const _updateSearchedAccommodation = ({
     SelectedBookingId,
     Selected_id,
@@ -953,14 +984,31 @@ const Booking = (props) => {
   const _loadAccommodationsHandler = () => {
     setUpdateLoadingState(true);
     setViewMoreStatus(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
     let limit = 10;
     var agodaAccomodation = axiosaccommodationinstance;
     if (props.currentBooking && props.currentBooking.source) {
       if (props.currentBooking.source === "Agoda") {
-        agodaAccomodation = axiosagodaaccommodationionstance;
-        limit = 30;
+        if (sourceChange) {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        } else {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        }
+      } else {
+        if (sourceChange) {
+          agodaAccomodation = axiosagodaaccommodationionstance;
+          limit = 30;
+        } else {
+          agodaAccomodation = axiosaccommodationinstance;
+          limit = 10;
+        }
       }
     }
     agodaAccomodation
@@ -973,6 +1021,7 @@ const Booking = (props) => {
         number_of_adults: props.selectedBooking.pax.number_of_adults,
         number_of_children: props.selectedBooking.pax.number_of_children,
         number_of_infants: props.selectedBooking.pax.number_of_infants,
+        star_category: filtersState.star_category,
         accommodation_types: filters.type,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
@@ -981,10 +1030,24 @@ const Booking = (props) => {
       })
       .then((res) => {
         // let oldoptions = optionsJSX;
-        setTotalCount(res?.data?.count);
+
         if (res.data.results.length) {
           setNoResults(false);
-
+          if (res.data.results.length) {
+            if (
+              res.data.search &&
+              res.data.search.accommodation_types &&
+              res.data.search.accommodation_types.length
+            ) {
+              let accommodation_types = Array.from(
+                new Set(res.data.search.accommodation_types)
+              );
+              setFiltersObj({
+                ...filtersObj,
+                type: accommodation_types,
+              });
+            }
+          }
           let options = moreOptionsJSX.slice();
           for (var i = 0; i < res.data.results.length; i++) {
             try {
@@ -1051,8 +1114,14 @@ const Booking = (props) => {
             setOffset(offset + limit);
             setViewMoreStatus(true);
           } else {
-            setOffset(0);
-            setViewMoreStatus(false);
+            if (sourceChange) {
+              setOffset(0);
+              setViewMoreStatus(false);
+            } else {
+              setSourceChange(true);
+              setViewMoreStatus(true);
+              setOffset(0);
+            }
           }
         } else {
           setNoResults(true);
@@ -1137,21 +1206,25 @@ const Booking = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                 ></SectionOne>
                 {/* {!loading && ( */}
-                  <SectionTwo
-                    loading={loading}
-                    showFilter={props.showFilter}
-                    setshowFilter={props.setshowFilter}
-                    filtersState={filtersState}
-                    FILTERS={filtersObj}
-                    _updateStarFilterHandler={_updateStarFilterHandler}
-                    _removeFilterHandler={_removeFilterHandler}
-                    _addFilterHandler={_addFilterHandler}
-                    booking_city={props?.selectedBooking?.city}
-                    No_of_stays={optionsJSX.length + moreOptionsJSX.length}
-                    payment={props.payment}
-                    plan={props.plan}
-                    TotalCount={totalCount}
-                  ></SectionTwo>
+                <SectionTwo
+                  loading={loading}
+                  showFilter={props.showFilter}
+                  setshowFilter={props.setshowFilter}
+                  filtersState={filtersState}
+                  FILTERS={filtersObj}
+                  _updateStarFilterHandler={_updateStarFilterHandler}
+                  _removeFilterHandler={_removeFilterHandler}
+                  _addFilterHandler={_addFilterHandler}
+                  booking_city={props?.selectedBooking?.city}
+                  No_of_stays={optionsJSX.length + moreOptionsJSX.length}
+                  payment={props.payment}
+                  plan={props.plan}
+                  TotalCount={
+                    optionsJSX.length
+                      ? optionsJSX.length
+                      : moreOptionsJSX.length
+                  }
+                ></SectionTwo>
                 {/* )} */}
               </div>
               <div className="lg:w-[100%] w-[95%] mx-auto">
@@ -1214,11 +1287,16 @@ const Booking = (props) => {
                             ></HotelBookingContainer>
                             </div>
                       )} */}
-                          {optionsJSX.length
-                            ? optionsJSX
-                            : moreOptionsJSX.length
-                            ? moreOptionsJSX
-                            : null}
+                          {optionsJSX.length ? (
+                            <>
+                              {optionsJSX}
+                              {!viewMoreStatus && <Skeleton />}
+                            </>
+                          ) : moreOptionsJSX.length ? (
+                            <>
+                              {moreOptionsJSX} {!viewMoreStatus && <Skeleton />}
+                            </>
+                          ) : null}
                           {/* {moreOptionsJSX} */}
                           {loading && !optionsJSX.length ? (
                             // <div
@@ -1232,6 +1310,7 @@ const Booking = (props) => {
                             //   />
                             //   Fetching stay recommendations for you
                             // </div>
+
                             <Skeleton />
                           ) : null}
                           {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}

@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import Pannel from './Pannel';
-import styled from 'styled-components';
-import { Tabs, Tab } from '@mui/material';
-import { IoMdStar } from 'react-icons/io';
-import media from '../../../media';
-import UiDropdown from '../../../UiDropdown';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import React, { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import Pannel from "./Pannel";
+import styled from "styled-components";
+import { Tabs, Tab } from "@mui/material";
+import { IoMdStar } from "react-icons/io";
+import media from "../../../media";
+import UiDropdown from "../../../UiDropdown";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import DropDown from "../../../ui/DropDown";
 const FiltersContainer = styled.div`
   display: flex;
   margin: 0.5rem 0;
@@ -29,8 +30,9 @@ const SortContainer = styled.div`
   position: absolute;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background: white;
-  border-radius : 0.5rem;
+  border-radius: 0.5rem;
   left: 0;
+  width: max-content;
   padding: 0.5rem;
 `;
 const SortItem = styled.div`
@@ -38,7 +40,7 @@ const SortItem = styled.div`
   padding: 0.2rem 0.5rem;
   border-radius: 1.5rem;
   font-weight: 500;
-  cursor : pointer;
+  cursor: pointer;
   :hover {
     background: #f7f3f3;
   }
@@ -60,18 +62,18 @@ function TabPanel(props) {
 }
 
 export default function TemporaryDrawer(props) {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   const [state, setState] = React.useState(false);
   const [filterSelected, setFilterSelected] = useState(null);
-  const [filterHeading, setFilterHeading] = useState('Budget');
-  const [SelectedStar, setSelectedStar] = useState();
+  const [filterHeading, setFilterHeading] = useState("Budget");
+  const [SelectedStar, setSelectedStar] = useState(-1);
   const [SelectedBudget, setSelectedBudget] = useState();
-  const [SelectedSort , setSelectedSort] = useState(props.filters.sort[0])
-  const [sortShow , setSortShow] = useState(false)
+  const [SelectedSort, setSelectedSort] = useState(props.filters.sort[0]);
+  const [sortShow, setSortShow] = useState(false);
   const _selectFilter = (event, filter) => {
-    if (filter === 0) setFilterHeading('Budget');
-    else if (filter === 1) setFilterHeading('Type');
+    if (filter === 0) setFilterHeading("Budget");
+    else if (filter === 1) setFilterHeading("Type");
     // else setFilterHeading('Star Category');
     setFilterSelected(filter);
     setState(true);
@@ -79,8 +81,8 @@ export default function TemporaryDrawer(props) {
 
   const toggleDrawer = (open) => (event) => {
     if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
     ) {
       return;
     }
@@ -93,20 +95,30 @@ export default function TemporaryDrawer(props) {
   };
   const _handleChange = (event, value) => {};
   const _onChangeHandler = (checked, filter, heading, i) => {
-    if (heading == 'budget') {
+    if (heading == "budget") {
+      if (SelectedBudget == i) {
+        props._removeFilterHandler(heading);
+        setSelectedBudget(-1);
+        return;
+      }
       setSelectedBudget(i);
     }
-
     if (checked) props._addFilterHandler(filter, heading);
-    else props._removeFilterHandler(filter, heading);
+    else props._removeFilterHandler(heading);
   };
   const _OnstarSelect = (i, currentfilter) => {
+    if (SelectedStar == i) {
+      setSelectedStar(-1);
+      props._updateStarFilterHandler("");
+      return;
+    }
     setSelectedStar(i);
     props._updateStarFilterHandler(currentfilter);
   };
   const handleSelectOption = (option) => {
-    // Perform additional actions with the selected option
-    _onChangeHandler(true, option, 'type');
+    if (option == 'All') return _onChangeHandler(true, '', "type");
+    
+    _onChangeHandler(true, option, "type");
   };
   return (
     <div>
@@ -193,16 +205,60 @@ export default function TemporaryDrawer(props) {
               <div className="mb-2 text-sm font-normal">Type</div>
               <div className="w-[12rem]">
                 <UiDropdown
-                  options={props.filters["type"]}
+                  options={['All' , ...props.filters["type"]]}
                   onSelect={handleSelectOption}
                 ></UiDropdown>
               </div>
+              {/* <div className="w-[12rem]">
+                <DropDown
+                  onChange={(e) => {
+                    handleSelectOption(e.target.value)
+                  }}
+                  height="35px"
+                  label="Select"
+                  labelStyle={{ paddingLeft: "20px"}}
+                  noFloatingabel
+                  width="12rem"
+                >
+                  <option
+                    style={{
+                      borderBottom: "1px solid #e6e6e6",
+                      whiteSpace: "normal",
+                      height: "fit-content",
+                      textAlign: "center",
+                      paddingBlock: "0.5rem",
+                      cursor: "pointer",
+                    }}
+                    key={-1}
+                    value={''}
+                  >
+                    <div>All</div>
+                  </option>
+                  {props.filters["type"].map((e, i) => (
+                    <option
+                      style={{
+                        borderBottom: "1px solid #e6e6e6",
+                        whiteSpace: "normal",
+                        height: "fit-content",
+                        textAlign: "center",
+                        paddingBlock: "0.5rem",
+                        cursor: "pointer",
+                      }}
+                      key={i}
+                      value={e}
+                    >
+                      <div>{e}</div>
+                    </option>
+                  ))}
+                </DropDown>
+              </div> */}
             </div>
           </div>
         )}
         {!props.loading && props?.totalCount ? (
           <div className="text-sm font-normal w-[95%] mx-auto mt-3">
-            Showing {props?.totalCount} stays in {props.booking_city} | Sort by:{" "}
+            Showing {props?.totalCount} stays in {props.booking_city}{" "}
+            {isPageWide ? "|" : <br />} Sort by:{" "}
             <div
               style={{
                 display: "inline",

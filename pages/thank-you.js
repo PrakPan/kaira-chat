@@ -71,7 +71,6 @@ export async function getStaticProps() {
     const loc = await axiospagelistinstance.get(``);
     locations = loc.data;
   } catch (e) {
-    console.log(e);
     locations = [];
   }
   const ThemeData = data.map((e) => {

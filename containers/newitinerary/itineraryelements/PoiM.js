@@ -37,8 +37,9 @@ const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
 
-  grid-template-columns: ${(props) => (props.image ? "1.6fr 2.5fr" : "1fr")};
-  grid-column-gap: 0.5rem;
+  grid-template-columns: ${(props) =>
+    props.image ? "1.6fr 2.5fr" : "44px auto"};
+  grid-column-gap: ${(props) => (props.image ? "0.5rem" : "0")};
 `;
 const Text = styled.p`
   overflow: hidden;
@@ -354,20 +355,42 @@ const drawerRef = useRef(null);
           </div>
         ) : null}
       </div> */}
-      <GridContainer image={props.image}>
-        {props.image ? (
+      <GridContainer
+        image={
+          props.image && props.image !== "media/icons/default/activity.svg"
+        }
+      >
+        {props.image && props.image !== "media/icons/default/activity.svg" ? (
           <ImageLoader
-            dimensions={{ width: 250, height: 200 }}
-            dimensionsMobile={{ width: 250, height: 200 }}
+            dimensions={{ width: 300, height: 300 }}
+            dimensionsMobile={{ width: 300, height: 300 }}
             borderRadius="8px"
             hoverpointer
             onclick={() => console.log("")}
-            width="70%"
+            width="8rem"
             leftalign
             widthmobile="100%"
             url={props.image}
+            noLazy
           ></ImageLoader>
-        ) : null}
+        ) : (
+          <div
+            style={{display: "flex", justifyContent: "left" }}
+          >
+            <ImageLoader
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 300, height: 300 }}
+              borderRadius="8px"
+              hoverpointer
+              onclick={() => console.log("")}
+              width="3.25rem"
+              widthmobile="30px"
+              leftalign
+              url={"media/icons/general/dice.png"}
+              noLazy
+            ></ImageLoader>
+          </div>
+        )}
         <div>
           <div className=" " style={{ lineHeight: "1" }}>
             <span className="inline text-[1.2rem]">
@@ -377,10 +400,10 @@ const drawerRef = useRef(null);
                 props.payment?.user_allowed_to_pay &&
                 !props.payment.paid_user && (
                   <div
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    Poi_activities(props.activity)
-                  }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      Poi_activities(props.activity);
+                    }}
                     className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                   >
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -410,7 +433,11 @@ const drawerRef = useRef(null);
           )}
           <div className="flex flex-row">
             <div className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]">
-              {true ? "ACTIVITY" : "View Less"}
+              {props.activity_data &&
+              props.activity_data.activity &&
+              props.activity_data.activity.id
+                ? "ACTIVITY"
+                : "ATTRACTION"}
             </div>
           </div>
 
@@ -498,8 +525,8 @@ const drawerRef = useRef(null);
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
               onClick={(e) => {
-                e.stopPropagation()
-                setShowDrawer(false)
+                e.stopPropagation();
+                setShowDrawer(false);
               }}
               className="hover-pointer"
               style={{
@@ -524,7 +551,7 @@ const drawerRef = useRef(null);
             ClickHandler={ClickHandler}
           />
         </div>
-{/* <PoiListSkeleton /> */}
+        {/* <PoiListSkeleton /> */}
         {!fetchingPoi ? (
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX.length ? (
@@ -567,7 +594,9 @@ const drawerRef = useRef(null);
 
             <div className="flex w-[100%] flex-row justify-between mt-0">
               <div className="flex w-[100%] flex-col justify-start items-baseline">
-                <div className="mb-2 text-sm font-normal mt-3">Experience Types</div>
+                <div className="mb-2 text-sm font-normal mt-3">
+                  Experience Types
+                </div>
                 <GridResponsive>
                   {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
                     <button
@@ -601,7 +630,7 @@ const drawerRef = useRef(null);
             <ButtonYellow
               className="w-1/2"
               onClick={() => {
-               setshowFilter(false);
+                setshowFilter(false);
               }}
             >
               <div className="text-[#01202B] ">Apply</div>

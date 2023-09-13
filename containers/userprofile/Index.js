@@ -90,7 +90,6 @@ const UserDashboard = (props) => {
 
         
       },[props.token]);
-      console.log('props.token: ', props.token);
   
 
 return (

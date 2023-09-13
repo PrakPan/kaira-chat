@@ -8,6 +8,7 @@ import * as ga from '../../../../../services/ga/Index';
 import { ImSearch } from 'react-icons/im';
 import { MdCancel } from 'react-icons/md';
 import axiossearchsuggestinstance from '../../../../../services/search/searchsuggest';
+import { CONTENT_SERVER_HOST } from '../../../../../services/constants';
 const Container = styled.div`
   background-color: white;
   border-radius: 5px 5px 1rem 1rem !important;
@@ -62,9 +63,10 @@ const SearchPannel = (props) => {
   const [showP, setShowP] = useState(false);
   const _onChangeHandler = (event) => {
     if (event.target.value.length % 3 === 0)
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
       ga.event({
-        action: 'HS-locationssearched',
+        action: "HS-locationssearched",
         params: {
           search_text: event.target.value,
         },

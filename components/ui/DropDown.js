@@ -21,6 +21,7 @@ const SelectBox = styled.div`
   justify-content: ${(props) => (props.labelCenter ? "center" : "left")};
   height: ${(props) => props.height || "3rem"};
   width: ${(props) => props.width || "100%"};
+  cursor : pointer;
 `;
 const DropDownIcon = styled.div`
   position: absolute;
@@ -109,7 +110,7 @@ const CountryCodeDropdown = (props) => {
         >
           {props.label}
         </Label>
-        <Label>{selected}</Label>
+        <Label optionLabel>{selected}</Label>
         <DropDownIcon rotate={open}>
           <BsCaretDownFill />
         </DropDownIcon>

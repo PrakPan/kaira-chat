@@ -30,12 +30,17 @@ const Section = (props) => {
     }
 
     if (checked) props._addFilterHandler(filter, heading);
-    else props._removeFilterHandler(filter, heading);
+    else props._removeFilterHandler(filter);
   };
-  const _OnstarSelect = (i, currentfilter) => {
-    setSelectedStar(i);
-    props._updateStarFilterHandler(currentfilter, currentfilter + 1);
-  };
+   const _OnstarSelect = (i, currentfilter) => {
+     if (SelectedStar == i) {
+       setSelectedStar(-1);
+       props._updateStarFilterHandler("");
+       return;
+     }
+     setSelectedStar(i);
+     props._updateStarFilterHandler(currentfilter);
+   };
   const handleSelectOption = (option) => {
     // Perform additional actions with the selected option
     _onChangeHandler(true, option, 'type');
@@ -90,7 +95,7 @@ const Section = (props) => {
                     } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
-                    {currentfilter}
+                    {currentfilter} hi
                     <IoMdStar />
                   </button>
                 ))}

@@ -5,6 +5,7 @@ import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { BiBed } from "react-icons/bi";
 import { ImSpoonKnife } from "react-icons/im";
+import Skeleton from "../../../components/ui/SkeletonCard";
 import {
   getDate,
   convertDateYearFormat,
@@ -67,6 +68,8 @@ const HotelBookingContainer = ({
   let isDesktop = media("(min-width: 1147px)");
   let isPageWide = media("(min-width: 768px)");
   const [isSelect, setisSelect] = useState(booking?.user_selected);
+  const [imageFail, setImageFail] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
   );
@@ -168,6 +171,15 @@ const HotelBookingContainer = ({
     });
   }
   const isMobile = useMediaQuery("(min-width:768px)");
+  let img = "";
+  if (booking && booking.images && booking.images.length)
+    for (let i = 0; i < booking.images.length; i++) {
+      if (booking.images[i].image) {
+        img = booking.images[i].image;
+        break;
+      }
+    }
+
   return (
     <div id={city_id} className={`flex gap-1 pt-4  flex-col justify-start `}>
       {booking ? (
@@ -202,34 +214,45 @@ const HotelBookingContainer = ({
                     : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
-                {booking?.images[0]?.image ? (
-                  <ImageLoader
-                    dimensions={{ width: 400, height: 400 }}
-                    dimensionsMobile={{ width: 400, height: 400 }}
-                    borderRadius="16px"
-                    hoverpointer
-                    onclick={() => console.log("")}
-                    width="100%"
-                    height="100%"
-                    leftalign
-                    widthmobile="100%"
-                    noLazy
-                    url={booking.images[0]?.image}
-                  ></ImageLoader>
-                ) : (
-                  <ImageLoader
-                    dimensions={{ width: 400, height: 400 }}
-                    dimensionsMobile={{ width: 400, height: 400 }}
-                    borderRadius="16px"
-                    hoverpointer
-                    onclick={() => console.log("")}
-                    width="100%"
-                    height="100%"
-                    leftalign
-                    widthmobile="100%"
-                    url={"media/website/grey.png"}
-                  ></ImageLoader>
-                )}
+                <div style={{ display: imageLoaded ? "initial" : "none" }}>
+                    <ImageLoader
+                      dimensions={{ width: 400, height: 400 }}
+                      dimensionsMobile={{ width: 400, height: 400 }}
+                      borderRadius="16px"
+                      hoverpointer
+                      onclick={() => console.log("")}
+                      width="100%"
+                      height="100%"
+                      leftalign
+                      widthmobile="100%"
+                      noLazy
+                      url={
+                        img && !imageFail
+                          ? img
+                          : "media/icons/bookings/notfounds/noroom.png"
+                      }
+                      onfail={() => {
+                        setImageFail(true);
+                        setImageLoaded(true);
+                      }}
+                      onload={() => {
+                        setTimeout(() => {
+                          setImageLoaded(true);
+                        }, 1000);
+                      }}
+                    ></ImageLoader>
+                  
+                </div>
+                <div
+                  style={{
+                    height: "100%",
+                    overflow: "hidden",
+                    borderRadius: "16px",
+                    display: !imageLoaded ? "block" : "none",
+                  }}
+                >
+                  <Skeleton />
+                </div>
                 {booking.star_category ? (
                   <starHotel
                     starHotel
@@ -434,13 +457,27 @@ const HotelBookingContainer = ({
                 {currentBooking && booking?.price && (
                   <div className="flex flex-row gap-1 items-center w-full font-bold">
                     <div className="text-2xl font-bold">
-                      {booking.source == "Agoda"
-                        ? "₹ " +
-                          getIndianPrice(Math.round(+booking.price / 100))
-                        : "₹ " + getIndianPrice(Math.round(booking?.price))}
+                      {booking.source === "Agoda"
+                        ? "₹" +
+                          getIndianPrice(Math.round(+booking.price / 100)) +
+                          "/-"
+                        : "₹" +
+                          getIndianPrice(Math.round(booking?.price)) +
+                          "/-"}
                     </div>
-                    <div className="font-normal text-base self-end">
-                      for {currentBooking?.duration} Nights
+                    <div
+                      className="font-normal text-base self-end"
+                      style={{
+                        height: "auto",
+                        marginBottom: "0.15rem",
+                        fontWeight: 300,
+                      }}
+                    >
+                      {booking.source === "Agoda" ? (
+                        <>per night</>
+                      ) : (
+                        <>for {currentBooking?.duration} Nights</>
+                      )}
                     </div>
                   </div>
                 )}
@@ -470,7 +507,7 @@ const HotelBookingContainer = ({
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                         <div
-                            onClick={(e) => {
+                          onClick={(e) => {
                             e.stopPropagation();
                             handleClickAc(index, booking, city_id);
                           }}
@@ -486,19 +523,21 @@ const HotelBookingContainer = ({
                         </div>
                       )
                     ) : (
-                        <div onClick={(e) => {
+                      <div
+                        onClick={(e) => {
                           e.stopPropagation();
                           setShowLoginModal(true);
-                        }}>
-                      <Button
-                        padding="0.6rem 2.2rem"
-                        borderRadius="8px"
-                        fontWeight="400"
-                          onclick={()=>console.log('')}
+                        }}
                       >
-                        {!isSelect ? "Add Hotel" : "Change"}
-                          </Button>
-                          </div>
+                        <Button
+                          padding="0.6rem 2.2rem"
+                          borderRadius="8px"
+                          fontWeight="400"
+                          onclick={() => console.log("")}
+                        >
+                          {!isSelect ? "Add Hotel" : "Change"}
+                        </Button>
+                      </div>
                     )}
 
                     {/* <div

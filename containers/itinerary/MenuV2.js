@@ -47,7 +47,7 @@ import TransfersContainer from './TransfersContainer/TransfersContainer';
 import LogInModal from '../../components/modals/Login';
 import Modal from '../../components/ui/Modal';
 import { ClaimItinary } from '../../store/actions/auth';
-import { ITINERARY_STATUSES } from '../../services/constants';
+import { CONTENT_SERVER_HOST, ITINERARY_STATUSES } from '../../services/constants';
 import MakeYourPersonalised from '../../components/MakeYourPersonalised';
 import useFieldOfView from '../../hooks/useFieldOfView';
 import useInView from '../../hooks/useInView';
@@ -420,16 +420,17 @@ const SimpleTabsV2 = (props) => {
   };
 
   const _handlePoiEditModalOpen = (poi) => {
-    {
-      process.env.NODE_ENV === 'production' &&
-        ga.event({
-          action: 'Itinerary-poiedit-open',
-          params: {
-            poi: poi.name,
-            city: poi.city_id,
-          },
-        });
-    }
+   {
+     process.env.NODE_ENV === "production" &&
+       !CONTENT_SERVER_HOST.includes("dev") &&
+       ga.event({
+         action: "Itinerary-poiedit-open",
+         params: {
+           poi: poi.name,
+           city: poi.city_id,
+         },
+       });
+   }
     setSelectedPoi({
       name: poi.name,
       city_id: poi.city_id,
@@ -445,6 +446,14 @@ const SimpleTabsV2 = (props) => {
   const _handleFlightModalClose = () => {
     props.setShowFlightModal(false);
   };
+  const _handleMenuTabsChange = (tabName) => {
+    if(process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev")) {
+       ga.event({
+         action: "Itinerary-tabs-" + tabName.toLowerCase(),
+       });
+       }
+  }
   const Navbar = styled.div`
     position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
     z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
@@ -481,7 +490,7 @@ const SimpleTabsV2 = (props) => {
     <div className={classes.root} style={{ paddingTop: "20px" }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
-          <Navigation items={items} BarName="TabsName" />
+          <Navigation items={items} BarName="TabsName" ClickHandler={_handleMenuTabsChange} />
         ) : (
           <ScrollableMenuTabs
             icons={false}

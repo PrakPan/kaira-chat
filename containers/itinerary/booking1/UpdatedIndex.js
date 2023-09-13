@@ -31,6 +31,7 @@ import TaxiModal from '../../../components/modals/taxis/Index';
 import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
 import openTailoredModal from '../../../services/openTailoredModal';
 import SwiperCarousel from '../../../components/SwiperCarousel';
+import { CONTENT_SERVER_HOST } from '../../../services/constants';
 
 const Container = styled.div`
   width: 100%;
@@ -166,7 +167,8 @@ const Booking = (props) => {
 
   const handleChange = (event, newValue) => {
     const tabs = ['S', 'T', 'A'];
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-bookings-tabs-' + tabs[newValue],
       params: { key: '' },
@@ -227,7 +229,8 @@ const Booking = (props) => {
     costings_breakdown,
     images
   ) => {
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-bookings-acc_change',
       params: { name: name },
@@ -269,7 +272,8 @@ const Booking = (props) => {
     origin_iata,
     destination_iata
   ) => {
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-bookings-flight_change',
       params: { name: name },
@@ -311,7 +315,8 @@ const Booking = (props) => {
     taxi_type,
     transfer_type
   ) => {
-    {process.env.NODE_ENV === 'production' && 
+    {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') &&
     ga.event({
       action: 'Itinerary-bookings-taxi_change',
       params: { name: name },

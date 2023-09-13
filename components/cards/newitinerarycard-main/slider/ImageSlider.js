@@ -121,7 +121,6 @@ const ImageSlider = (props) => {
     else image = props.images[0];        
       }
   else image = props.images.main_image;
-  console.log("propsEcpre: ", props.images , image);
   
          let LOCATIONS_TO_SHOW = "";
       if(props.locations){

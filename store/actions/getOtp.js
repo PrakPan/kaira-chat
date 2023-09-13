@@ -2,6 +2,7 @@ import * as actionTypes from './actionsTypes';
 import axiosauthinstance from '../../services/user/auth';
 import { setUserDetails } from './auth';
 import * as ga from '../../services/ga/Index';
+import { CONTENT_SERVER_HOST } from '../../services/constants';
 //Show spinner
 export const authStartLoading = () => {
   return {
@@ -32,11 +33,12 @@ export const getotp = (mobile) => {
     username: mobile,
   };
   {
-    process.env.NODE_ENV === 'production' &&
+    process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev") &&
       ga.event({
-        action: 'number-login-request',
+        action: "number-login-request",
         params: {
-          status: '',
+          status: "",
         },
       });
   }
@@ -47,11 +49,12 @@ export const getotp = (mobile) => {
       .then((response) => {
         if (response.data.message == 'success') {
           {
-            process.env.NODE_ENV === 'production' &&
+            process.env.NODE_ENV === "production" &&
+              !CONTENT_SERVER_HOST.includes("dev") &&
               ga.event({
-                action: 'number-login-initiate',
+                action: "number-login-initiate",
                 params: {
-                  status: '',
+                  status: "",
                 },
               });
           }

@@ -35,7 +35,6 @@ border: 1px solid #F0F0F0;
 `;
 
 const NewItinerary = (props) => {
-    console.log(props)
    const [offsets, setOffsets] = useState({
     "Brief" : null,
     "Itinerary": null,

@@ -16,7 +16,6 @@ import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 const starRating = (rating) => {
-
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
     stars.push(<FaStar />);
@@ -138,34 +137,46 @@ const FlexBox = styled.div`
   gap: 0.5rem;
 `;
 const Overview = (props) => {
-    const [ImagesLoaded, setImagesLoaded] = useState({
-      0: false,
-      1: false,
-      2: false,
-      3: false,
-    });
+  const [ImagesLoaded, setImagesLoaded] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
+  const [ImagesError, setImagesError] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
 
-    function OnImageLoad(i) {
-      if (!ImagesLoaded[i]) {
-      console.log("ImagesLoaded: " , i, ImagesLoaded[i]);
-
-        setTimeout(
-          () =>
-            setImagesLoaded((prev) => {
-              return { ...prev, [i]: true };
-            }),
-          1000
-        );
-      }
+  function OnImageLoad(i) {
+    if (!ImagesLoaded[i]) {
+      setTimeout(
+        () =>
+          setImagesLoaded((prev) => {
+            return { ...prev, [i]: true };
+          }),
+        1000
+      );
+    }
+  }
+    function OnImageError(i) {
+      if (!ImagesError[i]) {
+        setImagesError((prev) => {
+          return { ...prev, [i]: true };
+        })
+          }
     }
 
   const isDesktop = useMediaQuery("(min-width:1148px)");
   let images = [];
   try {
     for (var i = 0; i < props.images.length; i++) {
-      images.push(props.images[i].image);
+      if (props.images[i].image) images.push(props.images[i].image);
     }
   } catch {}
+
   return (
     <Container>
       <FlexBox>
@@ -212,10 +223,11 @@ const Overview = (props) => {
               <Child area="1 / 1 / 5 / 4" className="div1 ">
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[0]}
+                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
                     noLazy
                   />
                 </div>
@@ -233,11 +245,12 @@ const Overview = (props) => {
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[1]}
+                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
                     noLazy
                   />
                 </div>
@@ -254,11 +267,12 @@ const Overview = (props) => {
               <Child area="1 / 4 / 3 / 8" className="div3">
                 <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[2]}
+                    url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(2)}
+                    onfail={() => OnImageError(2)}
                     noLazy
                   />
                 </div>
@@ -275,11 +289,12 @@ const Overview = (props) => {
               <Child area="3 / 4 / 5 / 8" className="div4">
                 <div style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={images[3]}
+                    url={ImagesError[3] ? 'media/icons/bookings/notfounds/noroom.png' :  images[3]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(3)}
+                    onfail={() => OnImageError(3)}
                     noLazy
                   />
                 </div>
@@ -300,10 +315,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[0]}
+                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
                   />
                 </div>
                 <div
@@ -321,11 +337,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[1]}
+                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
                   />
                 </div>
                 <div
@@ -342,11 +359,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[2]}
+                    url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(2)}
+                    onfail={() => OnImageError(2)}
                   />
                 </div>
                 <div
@@ -360,17 +378,18 @@ const Overview = (props) => {
                 </div>
               </Child>
             </GridImage>
-          ) : (
+          ) : images.length == 2 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 6" className="div1 ">
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[0]}
+                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
                   />
                 </div>
                 <div
@@ -388,11 +407,12 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={images[1]}
+                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
                     fit="cover"
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
                   />
                 </div>
                 <div
@@ -406,6 +426,31 @@ const Overview = (props) => {
                 </div>
               </Child>
             </GridImage>
+          ) : (
+            <Child style={{ height: "19rem" }}>
+              <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <ImageLoader
+                  noLazy
+                  url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                  fit="cover"
+                  width="100%"
+                  height="100%"
+                  onload={() => OnImageLoad(0)}
+                  onfail={() => OnImageError(0)}
+                  dimensions={{ height: 800, width: 1200 }}
+                />
+              </div>
+              <div
+                style={{
+                  display: !ImagesLoaded[0] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                  borderRadius: "8px",
+                }}
+              >
+                <SkeletonCard lottieDimension={"100%"} />
+              </div>
+            </Child>
           )}
 
           {props.images ? (
@@ -433,70 +478,162 @@ const Overview = (props) => {
       ) : (
         <ImageContainer>
           <MGridImage>
-            <Child area="1 / 1 / 4 / 7" className="div1 ">
-              <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
-                <ImageLoader
-                  noLazy
-                  url={images[0]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                  onload={() => OnImageLoad(0)}
-                />
-              </div>
-              <div
-                style={{
-                  display: !ImagesLoaded[0] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <SkeletonCard lottieDimension={"50rem"} />
-              </div>
-            </Child>
+            {images.length >= 3 ? (
+              <>
+                <Child area="1 / 1 / 4 / 7" className="div1 ">
+                  <div
+                    style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      noLazy
+                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
 
-            <Child area=" 4 / 1 / 7 / 4" className="div2 rounded-lg">
-              <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
-                <ImageLoader
-                  noLazy
-                  url={images[1]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                  onload={() => OnImageLoad(1)}
-                />
-              </div>
-              <div
-                style={{
-                  display: !ImagesLoaded[1] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <SkeletonCard lottieDimension={"50rem"} />
-              </div>
-            </Child>
-            <Child area="4 / 4 / 7 / 7" className="div3">
-              <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
-                <ImageLoader
-                  noLazy
-                  url={images[2]}
-                  fit="cover"
-                  width="100%"
-                  height="100%"
-                  onload={() => OnImageLoad(2)}
-                />
-              </div>
-              <div
-                style={{
-                  display: !ImagesLoaded[2] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <SkeletonCard lottieDimension={"50rem"} />
-              </div>
-            </Child>
+                <Child area=" 4 / 1 / 7 / 4" className="div2 rounded-lg">
+                  <div
+                    style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      noLazy
+                      url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(1)}
+                      onfail={() => OnImageError(1)}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[1] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+                <Child area="4 / 4 / 7 / 7" className="div3">
+                  <div
+                    style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      noLazy
+                      url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(2)}
+                      onfail={() => OnImageError(2)}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[2] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+              </>
+            ) : images.length === 2 ? (
+              <>
+                <Child area="1 / 1 / 4 / 7" className="div1 ">
+                  <div
+                    style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      noLazy
+                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+
+                <Child area=" 4 / 1 / 7 / 7" className="div2 rounded-lg">
+                  <div
+                    style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      noLazy
+                      url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(1)}
+                      onfail={() => OnImageError(1)}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[1] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+              </>
+            ) : (
+              <>
+                <Child area="1 / 1 / 7 / 7" className="div1 ">
+                  <div
+                    style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      noLazy
+                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+              </>
+            )}
           </MGridImage>
 
           {props.images ? (
@@ -604,7 +741,7 @@ const Overview = (props) => {
             <div style={{ height: "30px", width: "30px" }}>
               <Image
                 noLazy
-                url={"media/icons/google-maps.png"}
+                url={ImagesError[i] ? 'media/icons/bookings/notfounds/noroom.png' :  "media/icons/google-maps.png"}
                 height="30px"
                 width="30px"
               />
@@ -638,7 +775,7 @@ const Overview = (props) => {
             <div style={{ height: "30px", width: "30px" }}>
               <Image
                 noLazy
-                url={"media/icons/google-maps.png"}
+                url={ImagesError[i] ? 'media/icons/bookings/notfounds/noroom.png' :  "media/icons/google-maps.png"}
                 height="30px"
                 width="30px"
               />

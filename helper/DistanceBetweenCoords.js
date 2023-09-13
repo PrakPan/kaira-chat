@@ -2,7 +2,6 @@ function toRad(Value) {
   return (Value * Math.PI) / 180;
 }
 function distance(lat1, lat2, lon1, lon2) {
-  console.log(lat1, lat2, lon1, lon2);
   // The math module contains a function
   // named toRadians which converts from
   // degrees to radians.
@@ -23,7 +22,6 @@ function distance(lat1, lat2, lon1, lon2) {
   // Radius of earth in kilometers. Use 3956
   // for miles
   const r = 6371;
-  console.log(c * r);
   // calculate the result
   return c * r;
 }

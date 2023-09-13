@@ -82,11 +82,7 @@ const ScrollableTabs = ({ Mstyle = 'simple', items, activeItem, onSelect }) => {
 
   const handleScrollRight = () => {
     const tabsContainer = tabsContainerRef.current;
-    console.log('leftclick');
-    console.log(tabsContainer);
-
     const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
-    console.log(scrollDistance);
     tabsContainer.scrollBy({
       left: scrollDistance,
       behavior: 'smooth',

@@ -88,9 +88,6 @@ const ItineraryFoodElement = (props) => {
   // }else{
   //     recomendation  = props.recomendation
   // }
-
-  console.log('recomendation...' + props.recomendation);
-
   return (
     <>
       <Container className="font-lexend pt-3">

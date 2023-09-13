@@ -46,7 +46,6 @@ const BookingContainer = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(`input value ${inputValue}`);
     if (inputValue.length > 0) {
       if (props.payment.coupon.code == inputValue) {
         setiscouponApplied(true);
@@ -304,7 +303,6 @@ const BookingContainer = (props) => {
         setPaymentLoading(false);
       });
   };
-  console.log(props.payment);
   setBookingSummary();
   return (
     <font>

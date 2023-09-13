@@ -5,7 +5,6 @@ export function isDateOlderThanCurrent(dateString) {
   //   const parsedDate = parse(date, 'dd-MM-yyyy', new Date());
 
   //   return isBefore(parsedDate, currentDate);
-  console.log('datestring');
   if (dateString != null) {
     const parts = dateString.split('-');
     const day = parseInt(parts[0], 10);

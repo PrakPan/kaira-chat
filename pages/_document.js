@@ -2,7 +2,7 @@ import Document, { Html, Head, Main, NextScript } from 'next/document';
 // Import styled components ServerStyleSheet
 import { ServerStyleSheet } from 'styled-components';
 import Layout from '../components/Layout';
-import { GOOGLE_ANALTICS_ID } from '../services/constants';
+import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from '../services/constants';
 import mixpanel from 'mixpanel-browser';
 import { Partytown } from '@builder.io/partytown/react';
 // import Script from 'next/script';
@@ -57,7 +57,8 @@ export default class MyDocument extends Document {
   `,
             }}
           />
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') && (
             <script
               type="text/partytown"
               dangerouslySetInnerHTML={{
@@ -94,7 +95,8 @@ export default class MyDocument extends Document {
     `,
             }}
           ></script>
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') && (
             <script
               async
               src={
@@ -103,7 +105,8 @@ export default class MyDocument extends Document {
               }
             />
           )}
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') && (
             <script
               type="text/partytown"
               src="//in.fw-cdn.com/30401267/225580.js"
@@ -111,7 +114,8 @@ export default class MyDocument extends Document {
             ></script>
           )}
 
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') && (
             <script
               dangerouslySetInnerHTML={{
                 __html: `
@@ -171,7 +175,8 @@ export default class MyDocument extends Document {
           />
 
           {/* Google Tag Manager */}
-          {process.env.NODE_ENV === "production" && (
+          {process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes('dev') && (
             <script
               type="text/partytown"
               dangerouslySetInnerHTML={{

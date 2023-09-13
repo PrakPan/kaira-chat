@@ -16,7 +16,7 @@ const Person = (props) => {
   return(
       <div className='bordr'>
        
- <TextField  autoFocus value={props.otp} onFocus={null} onChange={(event) => props.setOtp(event.target.value)} onBlur={() => console.log(props.otp)} error={props.otpVerificationFailed? true : false } helperText={props.otpVerificationFailed ? `Try Again ` : null} type="text" placeholder="0000" key="otp"  variant="outlined" required fullWidth name="otp"  label="OTP" id="otp" />
+ <TextField  autoFocus value={props.otp} onFocus={null} onChange={(event) => props.setOtp(event.target.value)} onBlur={() => console.log('')} error={props.otpVerificationFailed? true : false } helperText={props.otpVerificationFailed ? `Try Again ` : null} type="text" placeholder="0000" key="otp"  variant="outlined" required fullWidth name="otp"  label="OTP" id="otp" />
        </div>
   );
 

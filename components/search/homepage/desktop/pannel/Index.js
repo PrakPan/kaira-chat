@@ -8,6 +8,7 @@ import Locations from './Locations';
 import * as ga from '../../../../../services/ga/Index';
 import axioslocationsinstance from '../../../../../services/search/search'
 import axiossearchsuggestinstance from '../../../../../services/search/searchsuggest'
+import { CONTENT_SERVER_HOST } from '../../../../../services/constants';
 const Container = styled.div`
     background-color: white;
     border-radius: 2rem !important;
@@ -48,13 +49,16 @@ const [hotLocationsData, setHotLocationsData] = useState();
 
     const _onChangeHandler = (event) => {
         if(event.target.value.length %3 === 0)
-        {process.env.NODE_ENV === 'production' && 
-        ga.event({
-            action: "HS-locationssearched",
-            params : {
-              'search_text': event.target.value
-            }
-          });}
+        {
+          process.env.NODE_ENV === "production" &&
+            !CONTENT_SERVER_HOST.includes("dev") &&
+            ga.event({
+              action: "HS-locationssearched",
+              params: {
+                search_text: event.target.value,
+              },
+            });
+        }
         setInputValue(event.target.value);
         axiossearchsuggestinstance
           .get(`?q=` + event.target.value)

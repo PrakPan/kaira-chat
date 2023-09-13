@@ -374,7 +374,6 @@ const LogIn = React.memo((props) => {
   };
 
   const googleResponse = (response) => {
-    console.log("GOOGLE_LOGIN_ERROR: ", response);
   };
 
   const _handleGoogleLogin = useGoogleLogin({

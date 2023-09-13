@@ -15,11 +15,7 @@ const ToolTip = ({ children, data }) => {
   //   const [positionLive, componentRef] = useComponentPosition(
   //     debounce(() => true, 250)
   //   );
-  useEffect(() => {
-    console.log(
-      `X: ${position.x} Y: ${position.y} isIntersecting: ${position.isIntersecting}`
-    );
-  }, [position]);
+
   return (
     <div className="relative" ref={hoverRef}>
       <div>

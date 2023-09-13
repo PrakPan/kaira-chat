@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import * as authaction from '../../../store/actions/auth';
 import { Partytown } from '@builder.io/partytown/react';
 import { useEffect } from 'react';
+import { CONTENT_SERVER_HOST } from '../../../services/constants';
 // import Script from "next/script";
 const Itinerary = (props) => {
   const router = useRouter();
@@ -33,18 +34,18 @@ const Itinerary = (props) => {
               src='https://thetarzanway-web.s3.us-west-2.amazonaws.com/scripts/itinerarybot.js'
          
           /> */}
-        {process.env.NODE_ENV === 'production' && (
-
-          <script
-            type="text/partytown"
-            dangerouslySetInnerHTML={{
-              __html: `
+        {process.env.NODE_ENV === "production" &&
+          !CONTENT_SERVER_HOST.includes("dev") && (
+            <script
+              type="text/partytown"
+              dangerouslySetInnerHTML={{
+                __html: `
                 
                 (function (d, w, c) { if(!d.getElementById("spd-busns-spt")) { var n = d.getElementsByTagName('script')[0], s = d.createElement('script'); var loaded = false; s.id = "spd-busns-spt"; s.async = "async"; s.setAttribute("data-self-init", "false"); s.setAttribute("data-init-type", "opt"); s.src = 'https://cdn.in-freshbots.ai/assets/share/js/freshbots.min.js'; s.setAttribute("data-client", "3225c221f3048e75e5a6ef1d6a5227c59290c8f1"); s.setAttribute("data-bot-hash", "74b6cd8cbe305eba5699361061f2c6fc1ec8607b"); s.setAttribute("data-env", "prod"); s.setAttribute("data-region", "in"); if (c) { s.onreadystatechange = s.onload = function () { if (!loaded) { c(); } loaded = true; }; } n.parentNode.insertBefore(s, n); } }) (document, window, function () { Freshbots.initiateWidget({ autoInitChat: false, getClientParams: function () { return {"cstmr::eml":"","cstmr::phn":"","cstmr::nm":""}; } }, function(successResponse) { }, function(errorResponse) { }); });
             `,
-            }}
-          />
-        )}
+              }}
+            />
+          )}
       </Head>
       {/* <script dangerouslySetInnerHTML={{
     __html: `(function (d, w, c) { if(!d.getElementById("spd-busns-spt")) { var n = d.getElementsByTagName('script')[0], s = d.createElement('script'); var loaded = false; s.id = "spd-busns-spt"; s.async = "async"; s.setAttribute("data-self-init", "false"); s.setAttribute("data-init-type", "opt"); s.src = 'https://cdn.in-freshbots.ai/assets/share/js/freshbots.min.js'; s.setAttribute("data-client", "3225c221f3048e75e5a6ef1d6a5227c59290c8f1"); s.setAttribute("data-bot-hash", "74b6cd8cbe305eba5699361061f2c6fc1ec8607b"); s.setAttribute("data-env", "prod"); s.setAttribute("data-region", "in"); if (c) { s.onreadystatechange = s.onload = function () { if (!loaded) { c(); } loaded = true; }; } n.parentNode.insertBefore(s, n); } }) (document, window, function () { Freshbots.initiateWidget({ autoInitChat: false, getClientParams: function () { return {"cstmr::eml":"","cstmr::phn":"","cstmr::nm":""}; } }, function(successResponse) { }, function(errorResponse) { }); });`}}/> */}

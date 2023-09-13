@@ -7,6 +7,7 @@ import ImageLoader from '../../components/ImageLoader';
 import * as ga from '../../services/ga/Index';
 import questions from './questions';
 import questioncontansts from './questioncontansts';
+import { CONTENT_SERVER_HOST } from '../../services/constants';
 const OptionContainer = styled.button`
     background-color: white;
     padding: 1rem;
@@ -91,18 +92,19 @@ const Option = (props) => {
     }
     //Option is selected
     else {
-      {
-        process.env.NODE_ENV === 'production' &&
-          ga.event({
-            action:
-              'TTForm-' + props.questionIndex + '-' + props.heading
-                ? props.heading
-                : props.text,
-            params: {
-              options_selected: props.heading ? props.heading : props.text,
-            },
-          });
-      }
+     {
+       process.env.NODE_ENV === "production" &&
+         !CONTENT_SERVER_HOST.includes("dev") &&
+         ga.event({
+           action:
+             "TTForm-" + props.questionIndex + "-" + props.heading
+               ? props.heading
+               : props.text,
+           params: {
+             options_selected: props.heading ? props.heading : props.text,
+           },
+         });
+     }
 
       let UPDATED_NEW_ANSWERS = { ...props.newAnswers } || {};
 

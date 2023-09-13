@@ -73,14 +73,12 @@ function compareDates(dateString1, dateString2) {
     const date1 = parse(dateString1, "dd/MM/yyyy", new Date());
     const date2 = parse(dateString2, "yyyy-MM-dd", new Date());
 
-    console.log(isSameDay(date1, date2));
     return isSameDay(date1, date2);
   }
 
   return false;
 }
 const ItineraryElement = (props) => {
-  console.log("suprt props: ", props);
   useEffect(() => {}, []);
 
   return (

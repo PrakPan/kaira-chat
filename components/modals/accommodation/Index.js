@@ -74,8 +74,6 @@ const ErrorContainer = styled.div`
   text-align: center;
 `;
 const POI = (props) => {
-  console.log('propsAccimmoda: ', props);
-
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error  ,setError] = useState(false)

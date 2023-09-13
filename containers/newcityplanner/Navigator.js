@@ -69,7 +69,7 @@ const Navigator = (props) => {
       </TitleContainer>
       <div className="hidden-mobile">
         <Button
-          onclick={() => console.log('clicked')}
+          onclick={() => console.log('')}
           fontWeight="500"
           hoverBgColor="white"
           fontSize="14px"

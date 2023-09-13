@@ -119,9 +119,10 @@ const SearchField = (props) => {
   };
   const _handleChangeNew = (event) => {
     if (event.target.value.length % 3 === 0) {
-      process.env.NODE_ENV === 'production' &&
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
         ga.event({
-          action: 'tailored-form-locationssearched',
+          action: "tailored-form-locationssearched",
           params: {
             search_text: event.target.value,
           },
