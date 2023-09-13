@@ -384,7 +384,7 @@ const Booking = (props) => {
       star_category: "",
       sort: "recommended",
     };
-    setFiltersState(prev=>({...prev , [heading] : oldfilters[heading]}))
+    setFiltersState((prev) => ({ ...prev, [heading]: oldfilters[heading] }));
   };
   const _generateFilterKeys = (filtersState) => {
     let budgetarr = filtersState.budget;
@@ -488,6 +488,10 @@ const Booking = (props) => {
     setOffset(0);
     setUpdateLoadingState(true);
     setNoResults(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
     let budgetarr = filtersState.budget;
 
     let filters = _generateFilterKeys(filtersState);
@@ -503,7 +507,7 @@ const Booking = (props) => {
     var agodaAccomodation = axiosaccommodationinstance;
     if (props.currentBooking && props.currentBooking.source) {
       if (props.currentBooking.source === "Agoda") {
-        if (gear === 'second') {
+        if (gear === "second") {
           agodaAccomodation = axiosaccommodationinstance;
           limit = 10;
         } else {
@@ -603,10 +607,10 @@ const Booking = (props) => {
         // setUpdateLoadingState(false);
       })
       .catch((err) => {
-        if (err.response.status === 400 && gear !== 'second') {
-          setSourceChange(true)
-          _updateOptionsHandlerWithFilter('second')
-          return
+        if (err.response.status === 400 && gear !== "second") {
+          setSourceChange(true);
+          _updateOptionsHandlerWithFilter("second");
+          return;
         }
         setLoading(false);
         setFetchingIsError({
@@ -980,6 +984,10 @@ const Booking = (props) => {
   const _loadAccommodationsHandler = () => {
     setUpdateLoadingState(true);
     setViewMoreStatus(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
     // setMoreLoadingState(true);
     let filters = _generateFilterKeys(filtersState);
     let limit = 10;
@@ -1211,7 +1219,11 @@ const Booking = (props) => {
                   No_of_stays={optionsJSX.length + moreOptionsJSX.length}
                   payment={props.payment}
                   plan={props.plan}
-                  TotalCount={optionsJSX.length ? optionsJSX.length : moreOptionsJSX.length}
+                  TotalCount={
+                    optionsJSX.length
+                      ? optionsJSX.length
+                      : moreOptionsJSX.length
+                  }
                 ></SectionTwo>
                 {/* )} */}
               </div>
