@@ -6,6 +6,8 @@ import Accordion, {
   AccordionDetails,
 } from "../../../ui/Accordion";
 import axiosgozotaxiupdateinstance from "../../../../services/bookings/UpdateTaxiGozo";
+import { openNotification } from "../../../../store/actions/notification";
+
 
 import Button from "../../../ui/button/Index";
 import {
@@ -144,8 +146,21 @@ const Section = (props) => {
           womanTravelling: 0,
         },
       })
-      .then((res) =>
-        props._updateTaxiBookingHandler([res.data]))
+      .then((res) => {
+        props.openNotification({
+          type: "success",
+          text: "Taxi changed successfully.",
+          heading: "Sucess!",
+        });
+        props._updateTaxiBookingHandler([res.data])
+      })
+      .catch((e) => {
+         props.openNotification({
+           type: "error",
+           text: "There seems to be a problem, please try again after some time!",
+           heading: "Error!",
+         });
+      })
   };
 
   return (
@@ -237,6 +252,8 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
 };
 export default connect(mapStateToPros, mapDispatchToProps)(Section);
