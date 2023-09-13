@@ -19,6 +19,7 @@ import { getIndianPrice } from "../../../../services/getIndianPrice";
 import DropDown from "./Dropdown";
 import { ImCheckboxUnchecked } from "react-icons/im";
 import { connect } from "react-redux";
+import { PulseLoader } from "react-spinners";
 const Container = styled.div`
   margin: 0;
   @media screen and (min-width: 768px) {
@@ -92,6 +93,7 @@ const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showCounter, setShowCounter] = useState(false);
   const [counterValue, setCounterValue] = useState(1);
+  const [loading , setLoading] = useState(false)
 
   const _increaseCounter = () => {
     setCounterValue(counterValue + 1);
@@ -110,6 +112,7 @@ const Section = (props) => {
   //    if(props.data)
 
   const _updateBookingHandler = () => {
+    setLoading(true)
     axiosgozotaxiupdateinstance
       .post("", {
         itinerary_id: props.selectedBooking.itinerary_id,
@@ -147,6 +150,7 @@ const Section = (props) => {
         },
       })
       .then((res) => {
+    setLoading(false);
         props.openNotification({
           type: "success",
           text: "Taxi changed successfully.",
@@ -155,6 +159,7 @@ const Section = (props) => {
         props._updateTaxiBookingHandler([res.data])
       })
       .catch((e) => {
+        setLoading(false)
          props.openNotification({
            type: "error",
            text: "There seems to be a problem, please try again after some time!",
@@ -231,11 +236,17 @@ const Section = (props) => {
               }
               onclick={props._updateSearchedTaxi}
             ></DropDown> */}
-          <SelectBox onClick={_updateBookingHandler}>
-            <div>
-              <ImCheckboxUnchecked style={{ display: "inline" }} />
-            </div>
-            <span>Select </span>
+          <SelectBox>
+            {loading ? (
+              <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+            ) : (
+              <>
+                <div onClick={_updateBookingHandler}>
+                  <ImCheckboxUnchecked style={{ display: "inline" }} />
+                </div>
+                <span onClick={_updateBookingHandler}>Select </span>
+              </>
+            )}
           </SelectBox>
         </GridContainer>
       </FlexBox>

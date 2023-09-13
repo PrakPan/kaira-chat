@@ -98,6 +98,7 @@ const Section= (props) => {
               dimensions={{ width: 200, height: 200 }}
               width="1.25rem"
               widthmobile="1.25rem"
+              noLazy
             ></ImageLoader>
           </div>
           <Location className="font-lexend">
