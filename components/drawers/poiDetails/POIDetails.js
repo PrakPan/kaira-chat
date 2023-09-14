@@ -38,7 +38,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 16px;
+  padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
   width: 100vw;
   @media screen and (min-width: 768px) {
     width: 500px;
@@ -80,11 +80,11 @@ const BackText = styled.div`
   line-height: 2rem;
 `;
 const ImageContainer = styled.div`
-position : relative;
-`
+  position: relative;
+`;
 const POIDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [imageLoading, setImageLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   var about = (
     <p>
@@ -119,7 +119,7 @@ const POIDetails = (props) => {
   if (Math.floor(props.data.rating) < props.data.rating)
     stars.push(<FaStarHalfAlt />);
   return (
-    <Container>
+    <Container itineraryDrawer={props.itineraryDrawer}>
       {!props.itineraryDrawer ? (
         <div>
           <TbArrowBack
@@ -144,31 +144,58 @@ const POIDetails = (props) => {
       )}
 
       <ImageContainer>
-        <ImageLoader
-          borderRadius="8px"
-          marginTop="23px"
-          widthMobile="100%"
-          style={imageLoading ? { display: "none" } : {}}
-          url={props.data.image}
-          dimensionsMobile={{ width: 500, height: 280 }}
-          dimensions={{ width: 468, height: 188 }}
-          yuu
-          onload={() => {
-            setImageLoading(false);
-          }}
-          noLazy
-        ></ImageLoader>
-        {(props.data.ideal_duration_hours || props.data.ideal_duration_number) ? (
+        <div>
+          <div style={{ display: imageLoaded ? "initial" : "none" }}>
+            <ImageLoader
+              borderRadius="8px"
+              marginTop="23px"
+              widthMobile="100%"
+              // style={imageLoading ? { display: "none" } : {}}
+              url={props.data.image}
+              dimensionsMobile={{ width: 500, height: 280 }}
+              dimensions={{ width: 468, height: 188 }}
+              yuu
+              onload={() => {
+                setTimeout(() => {
+                  setImageLoaded(true);
+                }, 1000);
+              }}
+              noLazy
+            ></ImageLoader>
+          </div>
+          <div
+            style={{
+              display: !imageLoaded ? "initial" : "none",
+            }}
+          >
+            <div
+              style={{
+                width: isPageWide ? "468px" : "100%",
+                height: "188px",
+                overflow: "hidden",
+                borderRadius: "8px",
+              }}
+            >
+              <SkeletonCard />
+            </div>
+          </div>
+        </div>
+        {props.data.ideal_duration_hours || props.data.ideal_duration_number ? (
           <TimeStamp>
-            Approx Time : {props.data.ideal_duration_hours || props.data.ideal_duration_number} hrs
+            Approx Time :{" "}
+            {props.data.ideal_duration_hours ||
+              props.data.ideal_duration_number}{" "}
+            hrs
           </TimeStamp>
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </ImageContainer>
-      {imageLoading && (
+      {/* {!imageLoaded && (
         <div
           style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
         />
-      )}
+      )} */}
 
       <div>
         <Title>{props.data.name}</Title>
@@ -203,9 +230,9 @@ const POIDetails = (props) => {
         <div className="flex flex-row">
           Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}
           {" /- "}
-          <div style={{marginLeft : '0.5rem'}}>
+          <div style={{ marginLeft: "0.5rem" }}>
             {/* {props.data.price_category == "individual" ? "Per person" : null} */}
-           Per person
+            Per person
           </div>
         </div>
       )}
