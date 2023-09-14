@@ -10,16 +10,16 @@ function TripsCounter() {
     let isPageWide = media("(min-width: 768px)");
     
 useEffect(() => {
-  axiosCountInstance.get("").then((res) => setCount(res.data.user));
+  axiosCountInstance.get("").then((res) => {setCount(res.data.user) , setCountShow(res.data.user - 2000)});
 }, []);
 useEffect(() => {
-  if (countToShow != count) {
+  if (countToShow != count && count) {
     setTimeout(() => {
       if (countToShow < count) setCountShow((prev) => prev + 9);
       else setCountShow(count);
     }, [2]);
   }
-}, [countToShow, inViewport]);
+}, [countToShow, inViewport , count]);
   return (
     <div
       ref={ref}
