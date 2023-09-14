@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import Modal from '../../ui/Modal'
 import styled from 'styled-components';
 import Notification from './Notification';
-// import Heading from '../../heading/Heading';
 import Heading from '../../newheading/heading/Index';
 import media from '../../media';
 import axiosnotificationsinstance from '../../../services/user/notifications/notifications';
 import { connect } from 'react-redux';
 import ImageLoader from '../../ImageLoader';
-import { RxCross2 } from 'react-icons/rx';
-
 const ClearAll = styled.div`
   width: max-content;
   margin: 2rem auto;
@@ -75,25 +72,22 @@ const Enquiry = (props) => {
       <Modal
         show={props.show}
         onHide={_handleClose}
-        size={isPageWide ? 'md' : 'lg'}
+        width="31.5rem"
+        mobilewidth='95%'
+        closeIcon
+        style={{
+          borderStyle: "solid",
+          borderWidth: "5px",
+          borderColor: "#f7e700",
+          minHeight: isPageWide ? "90vh" : "95vh",
+        }}
       >
-        <Modal.Body
-          style={{
-            borderStyle: 'solid',
-            borderWidth: '5px',
-            borderColor: '#f7e700',
-            minHeight: isPageWide ? '90vh' : '95vh',
-          }}
-        >
-          <RxCross2
-            onClick={_handleClose}
-            style={{ width: '1rem', float: 'right' }}
-          />
+        <div style={{}}>
           <Heading
             noline
             align="center"
             aligndesktop="center"
-            margin={!isPageWide ? '2rem' : '5rem auto'}
+            margin={!isPageWide ? "2rem" : "5rem auto"}
             bold
           >
             Notifications
@@ -104,7 +98,8 @@ const Enquiry = (props) => {
             <ImageLoader
               width="60%"
               widthmobile="70%"
-              url={'media/website/nonotifications.svg'}
+              noLazy
+              url={"media/website/nonotifications.svg"}
             />
           )}
           {notificationsArr.length > 1 ? (
@@ -112,7 +107,7 @@ const Enquiry = (props) => {
               Clear All
             </ClearAll>
           ) : null}
-        </Modal.Body>
+        </div>
       </Modal>
     </div>
   );

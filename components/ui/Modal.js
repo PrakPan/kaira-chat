@@ -10,18 +10,22 @@ import { memo } from "react";
 const TopSlideIn = keyframes`
 from {
   transform: translate(-50%,-100%);
+  opacity : 0;
 }
 to {
   transform: translate(-50%,-50%);
+  opacity : 1;
 }
 `;
 
 const TopSlideOut = keyframes`
 from {
   transform: translate(-50%,-50%);
+  opacity : 1;
 }
 to {
   transform: translate(-50%,-100%);
+  opacity : 0;
 }
 
 `;
@@ -39,8 +43,8 @@ const ModalContainer = styled.div`
   animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)}
     forwards;
   z-index: ${(props) => props.zIndex || "1600"};
-  opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
-  transition: opacity 0.8s linear;
+  // opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
+  // transition: opacity 0.8s linear;
 
   ${(props) => (props.overflow ? props.overflow : "overflow : auto")};
   overscroll-behavior: contain;

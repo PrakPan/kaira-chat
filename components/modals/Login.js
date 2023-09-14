@@ -155,11 +155,9 @@ const Enquiry = (props) => {
           token={props.token}
           itinary_id={props.itinary_id}
         >
-          {/* <Modal.Body style={{padding: "0"}} > */}
           <div style={{ padding: '20px' }}>
             <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
           </div>
-          {/* </Modal.Body> */}
         </Modal>
       </div>
     );
