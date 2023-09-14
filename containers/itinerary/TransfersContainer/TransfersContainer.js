@@ -19,7 +19,7 @@ const Container = styled.div`
   }
   @media screen and (min-width: 360px) {
     width: 100%;
-    margin: 0 -0.4rem 0 -0.4rem;
+    margin: 0 -0.4rem 0 0rem;
   }
   margin-bottom: 1.5rem;
 `;
