@@ -423,12 +423,6 @@ const Enquiry = (props) => {
               text="Please select your group type!"
             />
           )}
-
-          {/* <Modal  backdrop={true} show={props.show}  size="md" centered onHide={_hideModalHandler} style={{padding: "0"}}> */}
-          {/* <Modal.Body style={{padding: "1rem", minHeight: '60vh'}} className="center-div" > */}
-
-          {/* <div onClick={(e) => _prevSlideHandler}>Back</div> */}
-
           <div
             style={{
               padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",

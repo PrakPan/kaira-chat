@@ -138,7 +138,6 @@ const Enquiry = (props) => {
               ></Login>
             </div>
           </div>
-          {/* </Modal.Body> */}
         </Modal>
       </div>
     );
