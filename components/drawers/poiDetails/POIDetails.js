@@ -105,9 +105,9 @@ const POIDetails = (props) => {
   );
 
   var tips = (
-    <ul>
+    <ul style={{paddingLeft : '0.5rem'}}>
       {props.data.tips?.map((e, i) => (
-        <li key={i}>{e}</li>
+        <li key={i}>- {e}</li>
       ))}
     </ul>
   );
@@ -267,7 +267,7 @@ const POIDetails = (props) => {
         </div>
       )}
 
-      {props.data.tips && (
+      {props.data.tips && props.data.tips.length && (
         <div>
           <Heading>Tips</Heading>
           <Text>{tips}</Text>

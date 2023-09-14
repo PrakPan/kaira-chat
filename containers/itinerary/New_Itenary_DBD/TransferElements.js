@@ -37,7 +37,7 @@ const TransferElements = ({
     <>
       <Container className="pt-3  ">
         <div className="flex flex-row relative">
-          <div>
+          <div className="flex align-items-center">
             {modes ? (
               <div className="w-[6.15rem] grid place-items-center">
                 <TransportIconFetcher
