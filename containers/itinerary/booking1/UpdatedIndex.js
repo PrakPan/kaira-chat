@@ -1,37 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import BookingCard from '../../../components/cards/bookings/activitybooking/Index';
-import SummaryContainer from './TailoredDetails';
-import GITSummaryContainer from './gittailored/Index';
-import ComingSoon from './ComingSoon';
-import FullScreenGallery from '../../../components/fullscreengallery/Index';
-import Timer from '../timer/Index';
-import { connect } from 'react-redux';
-import BookingModal from '../../../components/modals/bookingupdated/Index';
-import FlightModal from '../../../components/modals/flights/Index';
-import OldBookingCard from '../../../components/cards/Booking';
-import { useRouter } from 'next/router';
-import media from '../../../components/media';
-import DesktopBanner from '../../../components/containers/Banner';
-import Banner from '../../homepage/banner/Mobile';
-import DesktopCardContainer from './DesktopCardCotainer';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import { getIndianPrice } from '../../../services/getIndianPrice';
-import * as ga from '../../../services/ga/Index';
-import urls from '../../../services/urls';
-import StayBookingCard from '../../../components/cards/bookings/staybooking/Index';
-import FlightBookingCard from '../../../components/cards/bookings/flightbooking/Index';
-import TaxiBookingCard from '../../../components/cards/bookings/taxibooking/Index';
-import BusBookingCard from '../../../components/cards/bookings/busbooking/Index';
-import FooterBannerMobile from './FooterBannerMobile';
-import ImageLoader from '../../../components/ImageLoader';
-import LogInModal from '../../../components/modals/Login';
-import TaxiModal from '../../../components/modals/taxis/Index';
-import FerryBookingCard from '../../../components/cards/bookings/ferrybooking/Index';
-import openTailoredModal from '../../../services/openTailoredModal';
-import SwiperCarousel from '../../../components/SwiperCarousel';
-import { CONTENT_SERVER_HOST } from '../../../services/constants';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import BookingCard from "../../../components/cards/bookings/activitybooking/Index";
+import SummaryContainer from "./TailoredDetails";
+import GITSummaryContainer from "./gittailored/Index";
+import ComingSoon from "./ComingSoon";
+import FullScreenGallery from "../../../components/fullscreengallery/Index";
+import Timer from "../timer/Index";
+import { connect } from "react-redux";
+import BookingModal from "../../../components/modals/bookingupdated/Index";
+import FlightModal from "../../../components/modals/flights/Index";
+import OldBookingCard from "../../../components/cards/Booking";
+import { useRouter } from "next/router";
+import media from "../../../components/media";
+import DesktopBanner from "../../../components/containers/Banner";
+import Banner from "../../homepage/banner/Mobile";
+import DesktopCardContainer from "./DesktopCardCotainer";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import { getIndianPrice } from "../../../services/getIndianPrice";
+import * as ga from "../../../services/ga/Index";
+import urls from "../../../services/urls";
+import StayBookingCard from "../../../components/cards/bookings/staybooking/Index";
+import FlightBookingCard from "../../../components/cards/bookings/flightbooking/Index";
+import TaxiBookingCard from "../../../components/cards/bookings/taxibooking/Index";
+import BusBookingCard from "../../../components/cards/bookings/busbooking/Index";
+import FooterBannerMobile from "./FooterBannerMobile";
+import ImageLoader from "../../../components/ImageLoader";
+import LogInModal from "../../../components/modals/Login";
+import TaxiModal from "../../../components/modals/taxis/Index";
+import FerryBookingCard from "../../../components/cards/bookings/ferrybooking/Index";
+import openTailoredModal from "../../../services/openTailoredModal";
+import SwiperCarousel from "../../../components/SwiperCarousel";
+import { CONTENT_SERVER_HOST } from "../../../services/constants";
 
 const Container = styled.div`
   width: 100%;
@@ -166,19 +166,20 @@ const Booking = (props) => {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
-    const tabs = ['S', 'T', 'A'];
-    {process.env.NODE_ENV === "production" &&
-      !CONTENT_SERVER_HOST.includes('dev') &&
-    ga.event({
-      action: 'Itinerary-bookings-tabs-' + tabs[newValue],
-      params: { key: '' },
-    });
-  }
+    const tabs = ["S", "T", "A"];
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-bookings-tabs-" + tabs[newValue],
+          params: { key: "" },
+        });
+    }
 
     setValue(newValue);
   };
 
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const [alternates, setAlternates] = useState(null);
   const [showpayment, setShowpayment] = useState(false);
   const [images, setImages] = useState(null);
@@ -229,13 +230,14 @@ const Booking = (props) => {
     costings_breakdown,
     images
   ) => {
-    {process.env.NODE_ENV === "production" &&
-      !CONTENT_SERVER_HOST.includes('dev') &&
-    ga.event({
-      action: 'Itinerary-bookings-acc_change',
-      params: { name: name },
-    });
-  }
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-bookings-acc_change",
+          params: { name: name },
+        });
+    }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -272,13 +274,14 @@ const Booking = (props) => {
     origin_iata,
     destination_iata
   ) => {
-    {process.env.NODE_ENV === "production" &&
-      !CONTENT_SERVER_HOST.includes('dev') &&
-    ga.event({
-      action: 'Itinerary-bookings-flight_change',
-      params: { name: name },
-    });
-  }
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-bookings-flight_change",
+          params: { name: name },
+        });
+    }
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -315,13 +318,14 @@ const Booking = (props) => {
     taxi_type,
     transfer_type
   ) => {
-    {process.env.NODE_ENV === "production" &&
-      !CONTENT_SERVER_HOST.includes('dev') &&
-    ga.event({
-      action: 'Itinerary-bookings-taxi_change',
-      params: { name: name },
-    });
-  }
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-bookings-taxi_change",
+          params: { name: name },
+        });
+    }
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -369,8 +373,8 @@ const Booking = (props) => {
   let alternatesarr = [];
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -387,27 +391,27 @@ const Booking = (props) => {
         }
 
         let oldbooking = false;
-        if (props.stayBookings[i].version === 'v1') oldbooking = true;
+        if (props.stayBookings[i].version === "v1") oldbooking = true;
         if (props.traveleritinerary) oldbooking = true;
-        let name = props.stayBookings[i]['name'];
-        let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
-        let cost = props.stayBookings[i]['booking_cost'];
-        let itinerary_id = props.stayBookings[i]['itinerary_id'];
-        let itinerary_name = props.stayBookings[i]['itinerary_name'];
-        let booking_type = props.stayBookings[i]['booking_type'];
-        let images = props.stayBookings[i]['images'];
-        let accommodation = props.stayBookings[i]['accommodation'];
-        let tailored_id = props.stayBookings[i]['tailored_itinerary'];
-        let id = props.stayBookings[i]['id'];
-        let check_in = props.stayBookings[i]['check_in'];
-        let check_out = props.stayBookings[i]['check_out'];
+        let name = props.stayBookings[i]["name"];
+        let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
+        let cost = props.stayBookings[i]["booking_cost"];
+        let itinerary_id = props.stayBookings[i]["itinerary_id"];
+        let itinerary_name = props.stayBookings[i]["itinerary_name"];
+        let booking_type = props.stayBookings[i]["booking_type"];
+        let images = props.stayBookings[i]["images"];
+        let accommodation = props.stayBookings[i]["accommodation"];
+        let tailored_id = props.stayBookings[i]["tailored_itinerary"];
+        let id = props.stayBookings[i]["id"];
+        let check_in = props.stayBookings[i]["check_in"];
+        let check_out = props.stayBookings[i]["check_out"];
         let pax = {
-          number_of_adults: props.stayBookings[i]['number_of_adults'],
-          number_of_children: props.stayBookings[i]['number_of_children'],
-          number_of_infants: props.stayBookings[i]['number_of_infants'],
+          number_of_adults: props.stayBookings[i]["number_of_adults"],
+          number_of_children: props.stayBookings[i]["number_of_children"],
+          number_of_infants: props.stayBookings[i]["number_of_infants"],
         };
-        let city = props.stayBookings[i]['city'];
-        let room_type = props.stayBookings[i]['room_type'];
+        let city = props.stayBookings[i]["city"];
+        let room_type = props.stayBookings[i]["room_type"];
         if (oldbooking) {
           bookings_accommodations.push(
             <OldBookingCard
@@ -436,25 +440,25 @@ const Booking = (props) => {
               blur={props.blur}
               setImagesHandler={props.setImagesHandler}
               accommodation
-              heading={props.stayBookings[i]['name']}
+              heading={props.stayBookings[i]["name"]}
               setImagesHandler={_setImagesHandler}
-              rating={props.stayBookings[i]['user_rating']}
-              details={props.stayBookings[i]['points']}
-              rating={props.stayBookings[i]['weighted_rating']}
-              images={props.stayBookings[i]['images']}
-              price={props.stayBookings[i]['booking_cost']}
-              number_of_rooms={props.stayBookings[i]['number_of_rooms']}
-              check_in={props.stayBookings[i]['check_in']}
-              check_out={props.stayBookings[i]['check_out']}
-              room_type={props.stayBookings[i]['room_type']}
+              rating={props.stayBookings[i]["user_rating"]}
+              details={props.stayBookings[i]["points"]}
+              rating={props.stayBookings[i]["weighted_rating"]}
+              images={props.stayBookings[i]["images"]}
+              price={props.stayBookings[i]["booking_cost"]}
+              number_of_rooms={props.stayBookings[i]["number_of_rooms"]}
+              check_in={props.stayBookings[i]["check_in"]}
+              check_out={props.stayBookings[i]["check_out"]}
+              room_type={props.stayBookings[i]["room_type"]}
             ></OldBookingCard>
           );
         } else {
-          if (props.stayBookings[i].booking_type === 'Accommodation') {
+          if (props.stayBookings[i].booking_type === "Accommodation") {
             let number_of_rooms;
             if (props.stayBookings[i].costings_breakdown.length)
               number_of_rooms =
-                props.stayBookings[i].costings_breakdown[0]['number_of_rooms'];
+                props.stayBookings[i].costings_breakdown[0]["number_of_rooms"];
             if (
               !props.stayBookings[i].user_selected &&
               !props.stayBookings[i].alternate_to
@@ -464,6 +468,7 @@ const Booking = (props) => {
                   is_registration_needed={
                     props.payment ? props.payment.is_registration_needed : false
                   }
+                  payment={props.payment}
                   isDatePresent={props.isDatePresent}
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
@@ -577,7 +582,11 @@ const Booking = (props) => {
       //   centeredSlides
       //   cards={bookings_accommodations}
       // ></SwiperCarousel>
-      <>{bookings_accommodations.map((e) => <div style={{marginBottom : '2rem'}}>{e}</div>)}</>
+      <>
+        {bookings_accommodations.map((e) => (
+          <div style={{ marginBottom: "2rem" }}>{e}</div>
+        ))}
+      </>
     );
   }, [
     props.stayBookings,
@@ -592,36 +601,36 @@ const Booking = (props) => {
       for (var i = 0; i < props.transferBookings.length; i++) {
         if (true) {
           let oldbooking = false;
-          if (props.transferBookings[i].version === 'v1') oldbooking = true;
+          if (props.transferBookings[i].version === "v1") oldbooking = true;
           if (props.traveleritinerary) oldbooking = true;
-          let name = props.transferBookings[i]['name'];
+          let name = props.transferBookings[i]["name"];
           let costings_breakdown =
-            props.transferBookings[i]['costings_breakdown'];
-          let cost = props.transferBookings[i]['booking_cost'];
-          let itinerary_id = props.transferBookings[i]['itinerary_id'];
-          let itinerary_name = props.transferBookings[i]['itinerary_name'];
-          let booking_type = props.transferBookings[i]['booking_type'];
+            props.transferBookings[i]["costings_breakdown"];
+          let cost = props.transferBookings[i]["booking_cost"];
+          let itinerary_id = props.transferBookings[i]["itinerary_id"];
+          let itinerary_name = props.transferBookings[i]["itinerary_name"];
+          let booking_type = props.transferBookings[i]["booking_type"];
 
           // let accommodation = props.transferBookings[i]["accommodation"];
-          let tailored_id = props.transferBookings[i]['tailored_itinerary'];
-          let id = props.transferBookings[i]['id'];
-          let check_in = props.transferBookings[i]['check_in'];
-          let check_out = props.transferBookings[i]['check_out'];
+          let tailored_id = props.transferBookings[i]["tailored_itinerary"];
+          let id = props.transferBookings[i]["id"];
+          let check_in = props.transferBookings[i]["check_in"];
+          let check_out = props.transferBookings[i]["check_out"];
           let pax = {
-            number_of_adults: props.transferBookings[i]['number_of_adults'],
-            number_of_children: props.transferBookings[i]['number_of_children'],
-            number_of_infants: props.transferBookings[i]['number_of_infants'],
+            number_of_adults: props.transferBookings[i]["number_of_adults"],
+            number_of_children: props.transferBookings[i]["number_of_children"],
+            number_of_infants: props.transferBookings[i]["number_of_infants"],
           };
-          let city = props.transferBookings[i]['city'];
-          let room_type = props.transferBookings[i]['room_type'];
-          let taxi_type = props.transferBookings[i]['taxi_type'];
-          let transfer_type = props.transferBookings[i]['transfer_type'];
-          let city_id = props.transferBookings[i]['city_id'];
-          let destination_city = props.transferBookings[i]['destination_city'];
-          let duration = props.transferBookings[i]['duration'];
-          let origin_iata = props.transferBookings[i]['origin_city_iata_code'];
+          let city = props.transferBookings[i]["city"];
+          let room_type = props.transferBookings[i]["room_type"];
+          let taxi_type = props.transferBookings[i]["taxi_type"];
+          let transfer_type = props.transferBookings[i]["transfer_type"];
+          let city_id = props.transferBookings[i]["city_id"];
+          let destination_city = props.transferBookings[i]["destination_city"];
+          let duration = props.transferBookings[i]["duration"];
+          let origin_iata = props.transferBookings[i]["origin_city_iata_code"];
           let destination_iata =
-            props.transferBookings[i]['destination_city_iata_code'];
+            props.transferBookings[i]["destination_city_iata_code"];
           if (oldbooking) {
             bookings_transfers.push(
               <OldBookingCard
@@ -648,15 +657,15 @@ const Booking = (props) => {
                 blur={props.blur}
                 setImagesHandler={props.setImagesHandler}
                 accommodation
-                heading={props.transferBookings[i]['name']}
-                details={props.transferBookings[i]['points']}
-                rating={props.transferBookings[i]['user_rating']}
+                heading={props.transferBookings[i]["name"]}
+                details={props.transferBookings[i]["points"]}
+                rating={props.transferBookings[i]["user_rating"]}
                 setImagesHandler={_setImagesHandler}
-                images={props.transferBookings[i]['images']}
+                images={props.transferBookings[i]["images"]}
               ></OldBookingCard>
             );
           } else {
-            if (props.transferBookings[i].booking_type === 'Taxi')
+            if (props.transferBookings[i].booking_type === "Taxi")
               bookings_transfers.push(
                 <TaxiBookingCard
                   is_registration_needed={
@@ -706,7 +715,7 @@ const Booking = (props) => {
                   setHideTaxiModal={() => props.setShowTaxiModal(false)}
                 ></TaxiBookingCard>
               );
-            else if (props.transferBookings[i].booking_type === 'Bus')
+            else if (props.transferBookings[i].booking_type === "Bus")
               bookings_transfers.push(
                 <BusBookingCard
                   is_registration_needed={
@@ -735,7 +744,7 @@ const Booking = (props) => {
                   setImagesHandler={_setImagesHandler}
                 ></BusBookingCard>
               );
-            else if (props.transferBookings[i].booking_type === 'Ferry')
+            else if (props.transferBookings[i].booking_type === "Ferry")
               bookings_transfers.push(
                 <FerryBookingCard
                   is_registration_needed={
@@ -785,7 +794,7 @@ const Booking = (props) => {
                   setHideTaxiModal={() => props.setShowTaxiModal(false)}
                 ></FerryBookingCard>
               );
-            else if (props.transferBookings[i].booking_type === 'Rental')
+            else if (props.transferBookings[i].booking_type === "Rental")
               bookings_transfers.push(
                 <TaxiBookingCard
                   rental
@@ -862,29 +871,29 @@ const Booking = (props) => {
     if (props.flightBookings)
       for (var i = 0; i < props.flightBookings.length; i++) {
         let oldbooking = false;
-        if (props.flightBookings[i].version === 'v1') oldbooking = true;
+        if (props.flightBookings[i].version === "v1") oldbooking = true;
         if (props.traveleritinerary) oldbooking = true;
-        let name = props.flightBookings[i]['name'];
-        let costings_breakdown = props.flightBookings[i]['costings_breakdown'];
-        let cost = props.flightBookings[i]['booking_cost'];
-        let itinerary_id = props.flightBookings[i]['itinerary_id'];
-        let itinerary_name = props.flightBookings[i]['itinerary_name'];
-        let booking_type = props.flightBookings[i]['booking_type'];
+        let name = props.flightBookings[i]["name"];
+        let costings_breakdown = props.flightBookings[i]["costings_breakdown"];
+        let cost = props.flightBookings[i]["booking_cost"];
+        let itinerary_id = props.flightBookings[i]["itinerary_id"];
+        let itinerary_name = props.flightBookings[i]["itinerary_name"];
+        let booking_type = props.flightBookings[i]["booking_type"];
 
         // let accommodation = props.transferBookings[i]["accommodation"];
-        let tailored_id = props.flightBookings[i]['tailored_itinerary'];
-        let id = props.flightBookings[i]['id'];
-        let check_in = props.flightBookings[i]['check_in'];
-        let check_out = props.flightBookings[i]['check_out'];
+        let tailored_id = props.flightBookings[i]["tailored_itinerary"];
+        let id = props.flightBookings[i]["id"];
+        let check_in = props.flightBookings[i]["check_in"];
+        let check_out = props.flightBookings[i]["check_out"];
         let pax = {
-          number_of_adults: props.flightBookings[i]['number_of_adults'],
-          number_of_children: props.flightBookings[i]['number_of_children'],
-          number_of_infants: props.flightBookings[i]['number_of_infants'],
+          number_of_adults: props.flightBookings[i]["number_of_adults"],
+          number_of_children: props.flightBookings[i]["number_of_children"],
+          number_of_infants: props.flightBookings[i]["number_of_infants"],
         };
-        let city = props.flightBookings[i]['city'];
-        let room_type = props.flightBookings[i]['room_type'];
-        let origin_iata = props.flightBookings[i]['origin_code'];
-        let destination_iata = props.flightBookings[i]['destination_code'];
+        let city = props.flightBookings[i]["city"];
+        let room_type = props.flightBookings[i]["room_type"];
+        let origin_iata = props.flightBookings[i]["origin_code"];
+        let destination_iata = props.flightBookings[i]["destination_code"];
         if (oldbooking) {
           bookings_flights.push(
             <OldBookingCard
@@ -913,10 +922,10 @@ const Booking = (props) => {
               blur={props.blur}
               setImagesHandler={props.setImagesHandler}
               accommodation
-              heading={props.flightBookings[i]['name']}
-              details={props.flightBookings[i]['points']}
-              rating={props.flightBookings[i]['user_rating']}
-              images={props.flightBookings[i]['images']}
+              heading={props.flightBookings[i]["name"]}
+              details={props.flightBookings[i]["points"]}
+              rating={props.flightBookings[i]["user_rating"]}
+              images={props.flightBookings[i]["images"]}
             ></OldBookingCard>
           );
         } else {
@@ -1018,28 +1027,28 @@ const Booking = (props) => {
         }
 
         let oldbooking = false;
-        if (props.activityBookings[i].version === 'v1') oldbooking = true;
+        if (props.activityBookings[i].version === "v1") oldbooking = true;
         if (props.traveleritinerary) oldbooking = true;
-        let name = props.activityBookings[i]['name'];
+        let name = props.activityBookings[i]["name"];
         let costings_breakdown =
-          props.activityBookings[i]['costings_breakdown'];
-        let cost = props.activityBookings[i]['booking_cost'];
-        let itinerary_id = props.activityBookings[i]['itinerary_id'];
-        let itinerary_name = props.activityBookings[i]['itinerary_name'];
-        let booking_type = props.activityBookings[i]['booking_type'];
+          props.activityBookings[i]["costings_breakdown"];
+        let cost = props.activityBookings[i]["booking_cost"];
+        let itinerary_id = props.activityBookings[i]["itinerary_id"];
+        let itinerary_name = props.activityBookings[i]["itinerary_name"];
+        let booking_type = props.activityBookings[i]["booking_type"];
 
-        let accommodation = props.activityBookings[i]['accommodation'];
-        let tailored_id = props.activityBookings[i]['tailored_itinerary'];
-        let id = props.activityBookings[i]['id'];
-        let check_in = props.activityBookings[i]['check_in'];
-        let check_out = props.activityBookings[i]['check_out'];
+        let accommodation = props.activityBookings[i]["accommodation"];
+        let tailored_id = props.activityBookings[i]["tailored_itinerary"];
+        let id = props.activityBookings[i]["id"];
+        let check_in = props.activityBookings[i]["check_in"];
+        let check_out = props.activityBookings[i]["check_out"];
         let pax = {
-          number_of_adults: props.activityBookings[i]['number_of_adults'],
-          number_of_children: props.activityBookings[i]['number_of_children'],
-          number_of_infants: props.activityBookings[i]['number_of_infants'],
+          number_of_adults: props.activityBookings[i]["number_of_adults"],
+          number_of_children: props.activityBookings[i]["number_of_children"],
+          number_of_infants: props.activityBookings[i]["number_of_infants"],
         };
-        let city = props.activityBookings[i]['city'];
-        let room_type = props.activityBookings[i]['room_type'];
+        let city = props.activityBookings[i]["city"];
+        let room_type = props.activityBookings[i]["room_type"];
 
         if (oldbooking) {
           bookings_activities.push(
@@ -1067,11 +1076,11 @@ const Booking = (props) => {
               blur={props.blur}
               setImagesHandler={props.setImagesHandler}
               accommodation
-              heading={props.activityBookings[i]['name']}
-              details={props.activityBookings[i]['points']}
-              rating={props.activityBookings[i]['user_rating']}
+              heading={props.activityBookings[i]["name"]}
+              details={props.activityBookings[i]["points"]}
+              rating={props.activityBookings[i]["user_rating"]}
               setImagesHandler={_setImagesHandler}
-              images={props.activityBookings[i]['images']}
+              images={props.activityBookings[i]["images"]}
             ></OldBookingCard>
           );
         } else {
@@ -1101,7 +1110,7 @@ const Booking = (props) => {
               itinerary_name={itinerary_name}
               _selectTaxiHandler={props._selectTaxiHandler}
               is_selected={props.activityBookings[i].user_selected}
-              price={props.activityBookings[i]['booking_cost']}
+              price={props.activityBookings[i]["booking_cost"]}
               is_auth={props.is_auth}
               are_prices_hidden={
                 props.payment ? props.payment.are_prices_hidden : false
@@ -1112,10 +1121,10 @@ const Booking = (props) => {
               blur={props.blur}
               setImagesHandler={_setImagesHandler}
               accommodation
-              heading={props.activityBookings[i]['name']}
-              details={props.activityBookings[i]['points']}
-              rating={props.activityBookings[i]['user_rating']}
-              images={props.activityBookings[i]['images']}
+              heading={props.activityBookings[i]["name"]}
+              details={props.activityBookings[i]["points"]}
+              rating={props.activityBookings[i]["user_rating"]}
+              images={props.activityBookings[i]["images"]}
             ></BookingCard>
           );
         }
@@ -1199,7 +1208,7 @@ const Booking = (props) => {
   ]);
 
   let message =
-    'Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com' +
+    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     router.asPath;
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -1211,18 +1220,18 @@ const Booking = (props) => {
     setShowLoginModal(false);
   };
   const REGISTRATION_PAYMENT_MESSAGES = {
-    CREATED_ONE: 'Your payment of amount INR ',
+    CREATED_ONE: "Your payment of amount INR ",
     CREATED_TWO:
       " was successful and your Payment Reference Id has been sent to you via email. An invitation email has already been sent to all the registered users but you can also copy this itinerary's link and share it yourself.",
     FAILURE:
-      'Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ',
+      "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
   };
   const TAILORED_PAYMENT_MESSAGES = {
-    CREATED_ONE: 'Your payment of amount INR ',
+    CREATED_ONE: "Your payment of amount INR ",
     CREATED_TWO:
-      ' was successful and your Payment Reference Id has been sent to you via email.',
+      " was successful and your Payment Reference Id has been sent to you via email.",
     FAILURE:
-      'Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ',
+      "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
   };
 
   if (true) {
@@ -1241,22 +1250,22 @@ const Booking = (props) => {
                 ></Timer>
               ) : null}
               <Container>
-                <BookingsContainer style={{ marginTop: '0' }}>
+                <BookingsContainer style={{ marginTop: "0" }}>
                   {props.payment && props.payment_status ? (
                     props.payment.paid_user ? (
                       <BookingSuccessContainer
                         style={{
                           backgroundColor: props.payment.paid_user
-                            ? 'rgba(0,128,10,0.1)'
-                            : 'rgba(255,0,0,0.1)',
+                            ? "rgba(0,128,10,0.1)"
+                            : "rgba(255,0,0,0.1)",
                         }}
                       >
                         <div className="center-div">
                           <ImageLoader
                             url={
                               props.payment.paid_user
-                                ? 'media/icons/bookings/payment/success-green.svg'
-                                : 'media/icons/bookings/payment/fail-red.svg'
+                                ? "media/icons/bookings/payment/success-green.svg"
+                                : "media/icons/bookings/payment/fail-red.svg"
                             }
                             height="max-content"
                             margin="0"
@@ -1266,11 +1275,11 @@ const Booking = (props) => {
                         </div>
                         <BookingSuccessText
                           style={{
-                            color: props.payment.paid_user ? 'green' : 'red',
+                            color: props.payment.paid_user ? "green" : "red",
                           }}
                         >
                           <div
-                            style={{ lineHeight: '2' }}
+                            style={{ lineHeight: "2" }}
                             className="font-lexend"
                           >
                             {props.payment.paid_user
@@ -1301,12 +1310,12 @@ const Booking = (props) => {
                   {!props.payment_status && props.payment ? (
                     props.payment.paid_user ? (
                       <BookingSuccessContainer
-                        style={{ backgroundColor: 'rgba(0,128,10,0.1)' }}
+                        style={{ backgroundColor: "rgba(0,128,10,0.1)" }}
                       >
                         <div className="center-div">
                           <ImageLoader
                             url={
-                              'media/icons/bookings/payment/success-green.svg'
+                              "media/icons/bookings/payment/success-green.svg"
                             }
                             height="max-content"
                             margin="0"
@@ -1314,9 +1323,9 @@ const Booking = (props) => {
   margin-left: 0.5rem;"
                           ></ImageLoader>
                         </div>
-                        <BookingSuccessText style={{ color: 'green' }}>
+                        <BookingSuccessText style={{ color: "green" }}>
                           <div
-                            style={{ lineHeight: '2' }}
+                            style={{ lineHeight: "2" }}
                             className="font-lexend"
                           >
                             {props.is_registration_needed
@@ -1343,7 +1352,7 @@ const Booking = (props) => {
                   <Tabs
                     value={value}
                     onChange={handleChange}
-                    variant={!isPageWide ? 'scrollable' : 'fullWidth'}
+                    variant={!isPageWide ? "scrollable" : "fullWidth"}
                     scrollButtons={!isPageWide ? true : false}
                     allowScrollButtonsMobile
                     indicatorColor="#f7e700"
@@ -1352,19 +1361,19 @@ const Booking = (props) => {
                     <Tab
                       label={
                         props.stayBookings
-                          ? 'Stays' + ' (' + props.stayBookings.length + ')'
-                          : 'Stays'
+                          ? "Stays" + " (" + props.stayBookings.length + ")"
+                          : "Stays"
                       }
                       className="bookingdetail-tab font-lexend"
                     ></Tab>
                     <Tab
                       label={
                         props.transferBookings
-                          ? 'Transfers' +
-                            ' (' +
+                          ? "Transfers" +
+                            " (" +
                             props.transferBookings.length +
-                            ')'
-                          : 'Transfers'
+                            ")"
+                          : "Transfers"
                       }
                       className="bookingdetail-tab font-lexend"
                       id="bookingdetail-tab-transfers"
@@ -1372,24 +1381,24 @@ const Booking = (props) => {
                     {props.flightBookings ? (
                       props.flightBookings.length ? (
                         <Tab
-                          label={props.flightBookings ? 'Flights' : 'Flights'}
+                          label={props.flightBookings ? "Flights" : "Flights"}
                           className="bookingdetail-tab font-lexend"
                           id="bookingdetail-tab-flights"
                         ></Tab>
                       ) : (
                         <Tab
-                          label={'Flights'}
+                          label={"Flights"}
                           className="bookingdetail-tab font-lexend"
                           id="bookingdetail-tab-flights"
-                          style={{ display: 'none' }}
+                          style={{ display: "none" }}
                         ></Tab>
                       )
                     ) : (
                       <Tab
-                        label={'Flights'}
+                        label={"Flights"}
                         className="bookingdetail-tab font-lexend"
                         id="bookingdetail-tab-flights"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                       ></Tab>
                     )}
 
@@ -1398,26 +1407,26 @@ const Booking = (props) => {
                         <Tab
                           label={
                             props.activityBookings
-                              ? 'Activities' +
-                                ' (' +
+                              ? "Activities" +
+                                " (" +
                                 props.activityBookings.length +
-                                ')'
-                              : 'Activities'
+                                ")"
+                              : "Activities"
                           }
                           className="bookingdetail-tab font-lexend"
                         ></Tab>
                       ) : (
                         <Tab
-                          label={'Activities'}
+                          label={"Activities"}
                           className="bookingdetail-tab font-lexend"
-                          style={{ display: 'none' }}
+                          style={{ display: "none" }}
                         ></Tab>
                       )
                     ) : (
                       <Tab
-                        label={'Activities'}
+                        label={"Activities"}
                         className="bookingdetail-tab font-lexend"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                       ></Tab>
                     )}
                   </Tabs>
@@ -1443,7 +1452,7 @@ const Booking = (props) => {
                       <div className="center-div">
                         <p
                           className="font-lexend text-center"
-                          style={{ margin: '1rem 0' }}
+                          style={{ margin: "1rem 0" }}
                         >
                           Nothing to see here
                         </p>
@@ -1452,7 +1461,7 @@ const Booking = (props) => {
                       <div className="center-dov">
                         <p
                           className="font-lexend text-center"
-                          style={{ margin: '1rem 0' }}
+                          style={{ margin: "1rem 0" }}
                         >
                           Nothing to see here
                         </p>
@@ -1528,23 +1537,23 @@ const Booking = (props) => {
                 </BookingsContainer>
                 {summaryContainerJSX}
                 {/* {props.showBookingModal ? ( */}
-                  <BookingModal
-                    _setImagesHandler={_setImagesHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    alternates={alternates[selectedBooking.id]}
-                    tailored_id={
-                      props.stayBookings
-                        ? props.stayBookings[0]['tailored_itinerary']
-                        : null
-                    }
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    selectedBooking={selectedBooking}
-                    setShowBookingModal={props.setShowBookingModal}
-                    showBookingModal={props.showBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                  ></BookingModal>
+                <BookingModal
+                  _setImagesHandler={_setImagesHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  alternates={alternates[selectedBooking.id]}
+                  tailored_id={
+                    props.stayBookings
+                      ? props.stayBookings[0]["tailored_itinerary"]
+                      : null
+                  }
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  selectedBooking={selectedBooking}
+                  setShowBookingModal={props.setShowBookingModal}
+                  showBookingModal={props.showBookingModal}
+                  setHideBookingModal={props.setHideBookingModal}
+                ></BookingModal>
                 {/* ) : null} */}
                 {props.traveleritinerary ? (
                   <DesktopBanner
@@ -1553,36 +1562,36 @@ const Booking = (props) => {
                   ></DesktopBanner>
                 ) : null}
                 {/* {props.showFlightModal ? ( */}
-                  <FlightModal
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateFlightBookingHandler={
-                      props._updateFlightBookingHandler
-                    }
-                    _updateBookingHandler={props._updateBookingHandler}
-                    itinerary_id={
-                      props.stayBookings.length
-                        ? props.flightBookings[0]['itinerary_id']
-                        : null
-                    }
-                    setHideFlightModal={props.setHideFlightModal}
-                    alternates={alternates[selectedBooking.id]}
-                    tailored_id={props.flightBookings[0]['tailored_itinerary']}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateFlightHandler={props._updateFlightHandler}
-                    selectedBooking={selectedBooking}
-                    setShowFlightModal={props.setShowFlightModal}
-                    showFlightModal={props.showFlightModal}
-                  ></FlightModal>
+                <FlightModal
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                  _updateBookingHandler={props._updateBookingHandler}
+                  itinerary_id={
+                    props.stayBookings.length
+                      ? props.flightBookings[0]["itinerary_id"]
+                      : null
+                  }
+                  setHideFlightModal={props.setHideFlightModal}
+                  alternates={alternates[selectedBooking.id]}
+                  tailored_id={props.flightBookings[0]["tailored_itinerary"]}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateFlightHandler={props._updateFlightHandler}
+                  selectedBooking={selectedBooking}
+                  setShowFlightModal={props.setShowFlightModal}
+                  showFlightModal={props.showFlightModal}
+                ></FlightModal>
                 {/* ) : null} */}
                 {/* {props.showTaxiModal ? ( */}
-                  <TaxiModal
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                    setHideTaxiModal={() => props.setShowTaxiModal(false)}
-                    showTaxiModal={props.showTaxiModal}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    selectedBooking={selectedBooking}
-                  ></TaxiModal>
+                <TaxiModal
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  setHideTaxiModal={() => props.setShowTaxiModal(false)}
+                  showTaxiModal={props.showTaxiModal}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  selectedBooking={selectedBooking}
+                ></TaxiModal>
                 {/* ) : null} */}
               </Container>
               {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
@@ -1597,11 +1606,11 @@ const Booking = (props) => {
       } else {
         if (!showLoginModal)
           return (
-            <Container style={{ marginTop: '0' }}>
+            <Container style={{ marginTop: "0" }}>
               {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
               {!showpayment ? (
                 <BookingsContainer
-                  style={{ marginTop: props.showTimer ? '-50vh' : '0' }}
+                  style={{ marginTop: props.showTimer ? "-50vh" : "0" }}
                 >
                   {props.payment_status && props.payment ? (
                     props.payment.is_registration_needed ? (
@@ -1609,16 +1618,16 @@ const Booking = (props) => {
                         <BookingSuccessContainer
                           style={{
                             backgroundColor: props.payment.paid_user
-                              ? 'rgba(0,128,10,0.1)'
-                              : 'rgba(255,0,0,0.1)',
+                              ? "rgba(0,128,10,0.1)"
+                              : "rgba(255,0,0,0.1)",
                           }}
                         >
                           <div className="center-div">
                             <ImageLoader
                               url={
                                 props.payment.paid_user
-                                  ? 'media/icons/bookings/payment/success-green.svg'
-                                  : 'media/icons/bookings/payment/fail-red.svg'
+                                  ? "media/icons/bookings/payment/success-green.svg"
+                                  : "media/icons/bookings/payment/fail-red.svg"
                               }
                               height="max-content"
                               margin="0"
@@ -1628,11 +1637,11 @@ const Booking = (props) => {
                           </div>
                           <BookingSuccessText
                             style={{
-                              color: props.payment.paid_user ? 'green' : 'red',
+                              color: props.payment.paid_user ? "green" : "red",
                             }}
                           >
                             <div
-                              style={{ lineHeight: '2' }}
+                              style={{ lineHeight: "2" }}
                               className="font-lexend"
                             >
                               {props.payment.paid_user
@@ -1653,7 +1662,7 @@ const Booking = (props) => {
                                       )
                                     ) +
                                     TAILORED_PAYMENT_MESSAGES.CREATED_TWO
-                                : REGISTRATION_PAYMENT_MESSAGES.FAILURE}{' '}
+                                : REGISTRATION_PAYMENT_MESSAGES.FAILURE}{" "}
                             </div>
                             {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
                    </CopyLink>: null } */}
@@ -1666,12 +1675,12 @@ const Booking = (props) => {
                   {!props.payment_status && props.payment ? (
                     props.payment.paid_user ? (
                       <BookingSuccessContainer
-                        style={{ backgroundColor: 'rgba(0,128,10,0.1)' }}
+                        style={{ backgroundColor: "rgba(0,128,10,0.1)" }}
                       >
                         <div className="center-div">
                           <ImageLoader
                             url={
-                              'media/icons/bookings/payment/success-green.svg'
+                              "media/icons/bookings/payment/success-green.svg"
                             }
                             height="max-content"
                             margin="0"
@@ -1679,9 +1688,9 @@ const Booking = (props) => {
   margin-left: 0.5rem;"
                           ></ImageLoader>
                         </div>
-                        <BookingSuccessText style={{ color: 'green' }}>
+                        <BookingSuccessText style={{ color: "green" }}>
                           <div
-                            style={{ lineHeight: '2' }}
+                            style={{ lineHeight: "2" }}
                             className="font-lexend"
                           >
                             {props.payment.is_registration_needed
@@ -1708,7 +1717,7 @@ const Booking = (props) => {
                   <Tabs
                     value={value}
                     onChange={handleChange}
-                    variant={!isPageWide ? 'scrollable' : 'fullWidth'}
+                    variant={!isPageWide ? "scrollable" : "fullWidth"}
                     scrollButtons={false}
                     allowScrollButtonsMobile
                     indicatorColor="#f7e700"
@@ -1717,19 +1726,19 @@ const Booking = (props) => {
                     <Tab
                       label={
                         props.stayBookings
-                          ? 'Stays' + ' (' + props.stayBookings.length + ')'
-                          : 'Stays'
+                          ? "Stays" + " (" + props.stayBookings.length + ")"
+                          : "Stays"
                       }
                       className="bookingdetail-tab font-lexend"
                     ></Tab>
                     <Tab
                       label={
                         props.transferBookings
-                          ? 'Transfers' +
-                            ' (' +
+                          ? "Transfers" +
+                            " (" +
                             props.transferBookings.length +
-                            ')'
-                          : 'Transfers'
+                            ")"
+                          : "Transfers"
                       }
                       className="bookingdetail-tab font-lexend"
                       id="bookingdetail-tab-transfers"
@@ -1737,22 +1746,22 @@ const Booking = (props) => {
                     {props.flightBookings ? (
                       props.flightBookings.length ? (
                         <Tab
-                          label={props.flightBookings ? 'Flights' : 'Flights'}
+                          label={props.flightBookings ? "Flights" : "Flights"}
                           className="bookingdetail-tab font-lexend"
                           id="bookingdetail-tab-flights"
                         ></Tab>
                       ) : (
                         <Tab
-                          label={'Flights'}
-                          style={{ display: 'none' }}
+                          label={"Flights"}
+                          style={{ display: "none" }}
                           className="bookingdetail-tab font-lexend"
                           id="bookingdetail-tab-flights"
                         ></Tab>
                       )
                     ) : (
                       <Tab
-                        label={'Flights'}
-                        style={{ display: 'none' }}
+                        label={"Flights"}
+                        style={{ display: "none" }}
                         className="bookingdetail-tab font-lexend"
                         id="bookingdetail-tab-flights"
                       ></Tab>
@@ -1763,26 +1772,26 @@ const Booking = (props) => {
                         <Tab
                           label={
                             props.activityBookings
-                              ? 'Activities' +
-                                ' (' +
+                              ? "Activities" +
+                                " (" +
                                 props.activityBookings.length +
-                                ')'
-                              : 'Activities (0)'
+                                ")"
+                              : "Activities (0)"
                           }
                           className="bookingdetail-tab font-lexend"
                         ></Tab>
                       ) : (
                         <Tab
-                          label={'Activities'}
+                          label={"Activities"}
                           className="bookingdetail-tab font-lexend"
-                          style={{ display: 'none' }}
+                          style={{ display: "none" }}
                         ></Tab>
                       )
                     ) : (
                       <Tab
-                        label={'Activities'}
+                        label={"Activities"}
                         className="bookingdetail-tab font-lexend"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                       ></Tab>
                     )}
                   </Tabs>
@@ -1809,7 +1818,7 @@ const Booking = (props) => {
                       <div className="center-div">
                         <p
                           className="font-lexend text-center"
-                          style={{ margin: '1rem 0' }}
+                          style={{ margin: "1rem 0" }}
                         >
                           Nothing to see here
                         </p>
@@ -1818,7 +1827,7 @@ const Booking = (props) => {
                       <div className="center-dov">
                         <p
                           className="font-lexend text-center"
-                          style={{ margin: '1rem 0' }}
+                          style={{ margin: "1rem 0" }}
                         >
                           Nothing to see here
                         </p>
@@ -1902,20 +1911,20 @@ const Booking = (props) => {
               {/* {showpayment &&props.payment.payment_info ?
              <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
               {/* {props.showBookingModal ? ( */}
-                <BookingModal
-                  budget={props.budget}
-                  _setImagesHandler={_setImagesHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  alternates={alternates[selectedBooking.id]}
-                  tailored_id={props.stayBookings[0]['tailored_itinerary']}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  selectedBooking={selectedBooking}
-                  setShowBookingModal={props.setShowBookingModal}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                ></BookingModal>
+              <BookingModal
+                budget={props.budget}
+                _setImagesHandler={_setImagesHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                alternates={alternates[selectedBooking.id]}
+                tailored_id={props.stayBookings[0]["tailored_itinerary"]}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                selectedBooking={selectedBooking}
+                setShowBookingModal={props.setShowBookingModal}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+              ></BookingModal>
               {/* ) : null} */}
               {props.traveleritinerary ? (
                 <div className="hidden-desktop">
@@ -1934,10 +1943,10 @@ const Booking = (props) => {
                   }
                   getPaymentHandler={props.getPaymentHandler}
                   _updateBookingHandler={props._updateBookingHandler}
-                  itinerary_id={props.flightBookings[0]['itinerary_id']}
+                  itinerary_id={props.flightBookings[0]["itinerary_id"]}
                   setHideFlightModal={props.setHideFlightModal}
                   alternates={alternates[selectedBooking.id]}
-                  tailored_id={props.flightBookings[0]['tailored_itinerary']}
+                  tailored_id={props.flightBookings[0]["tailored_itinerary"]}
                   _updatePaymentHandler={props._updatePaymentHandler}
                   _updateFlightHandler={props._updateFlightHandler}
                   selectedBooking={selectedBooking}
@@ -1946,14 +1955,14 @@ const Booking = (props) => {
                 ></FlightModal>
               ) : null}
               {/* {props.showTaxiModal ? ( */}
-                <TaxiModal
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  setHideTaxiModal={() => props.setShowTaxiModal(false)}
-                  showTaxiModal={props.showTaxiModal}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  selectedBooking={selectedBooking}
-                ></TaxiModal>
+              <TaxiModal
+                getPaymentHandler={props.getPaymentHandler}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                setHideTaxiModal={() => props.setShowTaxiModal(false)}
+                showTaxiModal={props.showTaxiModal}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                selectedBooking={selectedBooking}
+              ></TaxiModal>
               {/* ) : null} */}
 
               {showFooterBannerMobile ? (
@@ -1968,7 +1977,7 @@ const Booking = (props) => {
                   paymentLoading={props.paymentLoading}
                   payment={props.payment}
                   openWhatsapp={() =>
-                    (window.location.href = urls.WHATSAPP + '?text=' + message)
+                    (window.location.href = urls.WHATSAPP + "?text=" + message)
                   }
                   openBooking={_showPaymentHandler}
                 ></FooterBannerMobile>

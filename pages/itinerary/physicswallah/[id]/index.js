@@ -1,4 +1,4 @@
-import ItineraryContainer from '../../../../containers/itinerary/Indexs/Index';
+import ItineraryContainer from '../../../../containers/itinerary/IndexsV2/Index';
 import { useRouter } from 'next/router';
 import Layout from '../../../../components/Layout';
 import Head  from 'next/head';

@@ -15,6 +15,7 @@ import MoreText from "../../../ui/MoreText";
 import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
+import { connect } from "react-redux";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -161,13 +162,13 @@ const Overview = (props) => {
       );
     }
   }
-    function OnImageError(i) {
-      if (!ImagesError[i]) {
-        setImagesError((prev) => {
-          return { ...prev, [i]: true };
-        })
-          }
+  function OnImageError(i) {
+    if (!ImagesError[i]) {
+      setImagesError((prev) => {
+        return { ...prev, [i]: true };
+      });
     }
+  }
 
   const isDesktop = useMediaQuery("(min-width:1148px)");
   let images = [];
@@ -188,15 +189,21 @@ const Overview = (props) => {
             {props.data.city ? props.data.city : ""}
           </Address>
         </div>
-        {props.BookingButton && (
-          <Button
-            padding="7px 25px"
-            borderRadius="7px"
-            onclick={() => props.BookingButtonFun()}
-          >
-            Change
-          </Button>
-        )}
+        {/* Temporary removed */}
+        {/* {props.payment && props.token ? (
+          props.payment?.is_registration_needed ? null : props.payment?.paid_user ||
+            !props.payment?.user_allowed_to_pay ? null : (
+            <Button
+              padding="7px 25px"
+              borderRadius="7px"
+              onclick={() => props.BookingButtonFun()}
+            >
+              Change
+            </Button>
+          )
+        ) : (
+          <></>
+        )} */}
       </FlexBox>
       {props?.currentBooking.user_rating && (
         <div className="flex flex-col gap-1">
@@ -223,7 +230,11 @@ const Overview = (props) => {
               <Child area="1 / 1 / 5 / 4" className="div1 ">
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                    url={
+                      ImagesError[0]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[0]
+                    }
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
@@ -245,7 +256,11 @@ const Overview = (props) => {
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                    url={
+                      ImagesError[1]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[1]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -267,7 +282,11 @@ const Overview = (props) => {
               <Child area="1 / 4 / 3 / 8" className="div3">
                 <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
+                    url={
+                      ImagesError[2]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[2]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -289,7 +308,11 @@ const Overview = (props) => {
               <Child area="3 / 4 / 5 / 8" className="div4">
                 <div style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
                   <ImageLoader
-                    url={ImagesError[3] ? 'media/icons/bookings/notfounds/noroom.png' :  images[3]}
+                    url={
+                      ImagesError[3]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[3]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -315,7 +338,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                    url={
+                      ImagesError[0]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[0]
+                    }
                     width="100%"
                     height="100%"
                     onload={() => OnImageLoad(0)}
@@ -337,7 +364,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                    url={
+                      ImagesError[1]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[1]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -359,7 +390,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
+                    url={
+                      ImagesError[2]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[2]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -384,7 +419,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                    url={
+                      ImagesError[0]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[0]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -407,7 +446,11 @@ const Overview = (props) => {
                 <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
-                    url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                    url={
+                      ImagesError[1]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[1]
+                    }
                     fit="cover"
                     width="100%"
                     height="100%"
@@ -431,7 +474,11 @@ const Overview = (props) => {
               <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                 <ImageLoader
                   noLazy
-                  url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                  url={
+                    ImagesError[0]
+                      ? "media/icons/bookings/notfounds/noroom.png"
+                      : images[0]
+                  }
                   fit="cover"
                   width="100%"
                   height="100%"
@@ -486,7 +533,11 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                      url={
+                        ImagesError[0]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[0]
+                      }
                       fit="cover"
                       width="100%"
                       height="100%"
@@ -511,7 +562,11 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                      url={
+                        ImagesError[1]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[1]
+                      }
                       fit="cover"
                       width="100%"
                       height="100%"
@@ -535,7 +590,11 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={ImagesError[2] ? 'media/icons/bookings/notfounds/noroom.png' :  images[2]}
+                      url={
+                        ImagesError[2]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[2]
+                      }
                       fit="cover"
                       width="100%"
                       height="100%"
@@ -562,7 +621,11 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                      url={
+                        ImagesError[0]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[0]
+                      }
                       fit="cover"
                       width="100%"
                       height="100%"
@@ -587,7 +650,11 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={ImagesError[1] ? 'media/icons/bookings/notfounds/noroom.png' :  images[1]}
+                      url={
+                        ImagesError[1]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[1]
+                      }
                       fit="cover"
                       width="100%"
                       height="100%"
@@ -614,7 +681,11 @@ const Overview = (props) => {
                   >
                     <ImageLoader
                       noLazy
-                      url={ImagesError[0] ? 'media/icons/bookings/notfounds/noroom.png' :  images[0]}
+                      url={
+                        ImagesError[0]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[0]
+                      }
                       fit="cover"
                       width="100%"
                       height="100%"
@@ -741,7 +812,11 @@ const Overview = (props) => {
             <div style={{ height: "30px", width: "30px" }}>
               <Image
                 noLazy
-                url={ImagesError[i] ? 'media/icons/bookings/notfounds/noroom.png' :  "media/icons/google-maps.png"}
+                url={
+                  ImagesError[i]
+                    ? "media/icons/bookings/notfounds/noroom.png"
+                    : "media/icons/google-maps.png"
+                }
                 height="30px"
                 width="30px"
               />
@@ -775,7 +850,11 @@ const Overview = (props) => {
             <div style={{ height: "30px", width: "30px" }}>
               <Image
                 noLazy
-                url={ImagesError[i] ? 'media/icons/bookings/notfounds/noroom.png' :  "media/icons/google-maps.png"}
+                url={
+                  ImagesError[i]
+                    ? "media/icons/bookings/notfounds/noroom.png"
+                    : "media/icons/google-maps.png"
+                }
                 height="30px"
                 width="30px"
               />
@@ -805,4 +884,15 @@ const Overview = (props) => {
   );
 };
 
-export default Overview;
+
+const mapStateToPros = (state) => {
+  return {
+    token: state.auth.token,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+export default connect(mapStateToPros, mapDispatchToProps)(Overview);
+

@@ -503,13 +503,14 @@ const HotelBookingContainer = ({
                         View Detail
                       </Button>
                     )}
-                    {payment?.is_registration_needed ? null : token ? (
+                    {payment?.is_registration_needed ? null : (
                       payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                         <div
                           onClick={(e) => {
-                            e.stopPropagation();
-                            handleClickAc(index, booking, city_id);
+                              e.stopPropagation();
+                              if (token) handleClickAc(index, booking, city_id);
+                              else setShowLoginModal(true);
                           }}
                         >
                           <Button
@@ -522,22 +523,6 @@ const HotelBookingContainer = ({
                           </Button>
                         </div>
                       )
-                    ) : (
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowLoginModal(true);
-                        }}
-                      >
-                        <Button
-                          padding="0.6rem 2.2rem"
-                          borderRadius="8px"
-                          fontWeight="400"
-                          onclick={() => console.log("")}
-                        >
-                          {!isSelect ? "Add Hotel" : "Change"}
-                        </Button>
-                      </div>
                     )}
 
                     {/* <div
