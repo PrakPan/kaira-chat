@@ -155,6 +155,7 @@ const POI = (props) => {
                 duration={props.poi ? props.poi.ideal_duration_hours : null}
                 BookingButton={props.BookingButton}
                 BookingButtonFun={props.BookingButtonFun}
+                payment={props.payment}
               ></Overview>
             </div>
           ) : (

@@ -468,6 +468,7 @@ const Booking = (props) => {
                   is_registration_needed={
                     props.payment ? props.payment.is_registration_needed : false
                   }
+                  payment={props.payment}
                   isDatePresent={props.isDatePresent}
                   token={props.token}
                   setShowLoginModal={setShowLoginModal}
