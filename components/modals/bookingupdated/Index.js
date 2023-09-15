@@ -1133,9 +1133,9 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateLoadingState(false);
-        setFetchingIsError({
+       if(!optionsJSX.length && !moreOptionsJSX) setFetchingIsError({
           error: true,
-          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+          errorMsg: `Sorry, e we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
   };
@@ -1290,11 +1290,11 @@ const Booking = (props) => {
                           {optionsJSX.length ? (
                             <>
                               {optionsJSX}
-                              {!viewMoreStatus && <Skeleton />}
+                              {updateLoadingState && <Skeleton />}
                             </>
                           ) : moreOptionsJSX.length ? (
                             <>
-                              {moreOptionsJSX} {!viewMoreStatus && <Skeleton />}
+                              {moreOptionsJSX} { updateLoadingState&& <Skeleton />}
                             </>
                           ) : null}
                           {/* {moreOptionsJSX} */}
