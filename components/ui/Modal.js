@@ -9,26 +9,30 @@ import { changeScrollBehaviour } from "../../store/actions/scroll";
 import { memo } from "react";
 const TopSlideIn = keyframes`
 from {
-  transform: translate(-50%,-100%);
+  transform: translate(-50%,-80%);
+  opacity : 0;
 }
 to {
   transform: translate(-50%,-50%);
+  opacity : 1;
 }
 `;
 
 const TopSlideOut = keyframes`
 from {
   transform: translate(-50%,-50%);
+  opacity : 1;
 }
 to {
-  transform: translate(-50%,-100%);
+  transform: translate(-50%,-80%);
+  opacity : 0;
 }
 
 `;
 
 const ModalContainer = styled.div`
   position: fixed;
-  top: ${(props) => (props.mobileTop ? props.mobileTop : "50%")};
+  top: ${(props) => (props.mobileTop ? props.mobileTop : "0%")};
   left: ${(props) => (props.mobileLeft ? props.mobileLeft : "50%")};
   background: ${(props) => (props.bgColor ? props.bgColor : "white")};
   border-radius: ${(props) =>
@@ -36,11 +40,10 @@ const ModalContainer = styled.div`
   ${(props) => props.mobileWidth && `width : ${props.mobileWidth}`};
   ${(props) => props.height && `height : ${props.height}`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)}
-    forwards;
+  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)} forwards;
   z-index: ${(props) => props.zIndex || "1600"};
-  opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
-  transition: opacity 0.8s linear;
+  // opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
+  // transition: opacity 0.8s linear;
 
   ${(props) => (props.overflow ? props.overflow : "overflow : auto")};
   overscroll-behavior: contain;
@@ -52,12 +55,6 @@ const ModalContainer = styled.div`
     top: ${(props) => (props.top ? props.top : "50%")};
     left: ${(props) => (props.left ? props.left : "50%")};
   }
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 `;
 const BlackContainer = styled.div`
   background: ${(props) =>

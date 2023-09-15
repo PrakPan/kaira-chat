@@ -157,10 +157,7 @@ const Enquiry = (props) => {
         }
         zIndex={1298}
       >
-        {/* <Modal.Body
-          style={{ padding: "1rem", minHeight: "60vh", zIndex: 50 }}
-          className="center-div"
-        > */}
+        
         <CloseIcon>
           <RxCross2
             style={{
@@ -309,7 +306,6 @@ const Enquiry = (props) => {
         ) : (
           <div>{/* <BsFillCheckCircleFill></BsFillCheckCircleFill> */}</div>
         )}
-        {/* </Modal.Body> */}
       </Modal>
     </div>
   );
