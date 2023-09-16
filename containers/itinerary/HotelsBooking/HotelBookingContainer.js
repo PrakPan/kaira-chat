@@ -45,7 +45,7 @@ const HotelBookingContainer = ({
   currentBooking,
   booking,
   index,
-
+banner_image,
   handleClick,
   handleClickAc,
   cityName,
@@ -172,7 +172,8 @@ const HotelBookingContainer = ({
   }
   const isMobile = useMediaQuery("(min-width:768px)");
   let img = "";
-  if (booking && booking.images && booking.images.length)
+  if (banner_image) img = banner_image;
+  if (booking && booking.images && booking.images.length && !banner_image)
     for (let i = 0; i < booking.images.length; i++) {
       if (booking.images[i].image) {
         img = booking.images[i].image;

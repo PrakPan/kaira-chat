@@ -55,6 +55,7 @@ const Accommodation = (props) => {
           _updateSearchedAccommodation={props._updateSearchedAccommodation}
           _SelectedBookingHandler={props._SelectedBookingHandler}
           openDetails={() => setShowDetails(true)}
+          banner_image={props.banner_image}
           // handleClickAc={handleClickAc}
         ></HotelBookingContainer>
       </div>
