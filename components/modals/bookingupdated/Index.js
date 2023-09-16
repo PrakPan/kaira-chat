@@ -86,7 +86,7 @@ const Booking = (props) => {
   const [traceId, setTraceID] = useState("");
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
-
+  const [totalCount , setTotalCount] = useState(0)
   const [moreLoadingState, setMoreLoadingState] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
   const [sourceChange, setSourceChange] = useState(false);
@@ -156,7 +156,9 @@ const Booking = (props) => {
         if (
           props.alternates[i].images &&
           props.alternates[i].images.length &&
-          props.alternates[i].images[0]
+          props.alternates[i].images[0] &&
+          props.alternates[i].images[0].image &&
+          props.alternates[i].price
         )
           options.push(
             <AccommodationSearched
@@ -558,6 +560,7 @@ const Booking = (props) => {
               type: accommodation_types,
             });
           }
+          if(res.data.count) setTotalCount(res.data.count)
           setNoResults(false);
           let options = [];
           for (var i = 0; i < res.data.results.length; i++) {
@@ -566,7 +569,9 @@ const Booking = (props) => {
               if (
                 res.data.results[i].images &&
                 res.data.results[i].images.length &&
-                res.data.results[i].images[0]
+                res.data.results[i].images[0] &&
+                res.data.results[i].images[0].image &&
+                res.data.results[i].price
               )
                 options.push(
                   <AccommodationSearched
@@ -1048,6 +1053,7 @@ const Booking = (props) => {
               });
             }
           }
+          if(res.data.count) setTotalCount(res.data.count)
           let options = moreOptionsJSX.slice();
           for (var i = 0; i < res.data.results.length; i++) {
             try {
@@ -1058,7 +1064,9 @@ const Booking = (props) => {
                 if (
                   res.data.results[i].images &&
                   res.data.results[i].images.length &&
-                  res.data.results[i].images[0]
+                  res.data.results[i].images[0] &&
+                  res.data.results[i].images[0].image &&
+                  res.data.results[i].price
                 )
                   options.push(
                     <AccommodationSearched
@@ -1085,7 +1093,9 @@ const Booking = (props) => {
               if (
                 res.data.results[i].images &&
                 res.data.results[i].images.length &&
-                res.data.results[i].images[0]
+                res.data.results[i].images[0] &&
+                res.data.results[i].images[0].image &&
+                res.data.results[i].price
               )
                 options.push(
                   <AccommodationSearched
@@ -1220,9 +1230,10 @@ const Booking = (props) => {
                   payment={props.payment}
                   plan={props.plan}
                   TotalCount={
-                    optionsJSX.length
-                      ? optionsJSX.length
-                      : moreOptionsJSX.length
+                    // optionsJSX.length
+                    //   ? optionsJSX.length
+                    //   : moreOptionsJSX.length
+                  totalCount
                   }
                 ></SectionTwo>
                 {/* )} */}
