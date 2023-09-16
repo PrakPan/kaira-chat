@@ -525,7 +525,16 @@ const Booking = (props) => {
           limit = 10;
         }
       }
+    } else {
+      if (gear === "second") {
+        agodaAccomodation = axiosagodaaccommodationionstance;
+        limit = 30;
+      } else {
+        agodaAccomodation = axiosaccommodationinstance;
+        limit = 10;
+      }
     }
+
     agodaAccomodation
       .post("/?limit=" + limit + "&offset=" + offset, {
         city: props.selectedBooking.city,
@@ -1014,6 +1023,14 @@ const Booking = (props) => {
           agodaAccomodation = axiosaccommodationinstance;
           limit = 10;
         }
+      }
+    } else {
+      if (sourceChange) {
+        agodaAccomodation = axiosagodaaccommodationionstance;
+        limit = 30;
+      } else {
+        agodaAccomodation = axiosaccommodationinstance;
+        limit = 10;
       }
     }
     agodaAccomodation
