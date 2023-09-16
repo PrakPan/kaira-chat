@@ -731,7 +731,8 @@ const Details = (props) => {
           onClick={() => setAcordianOpen(!acoordianceOpen)}
         >
           <div>
-            {acoordianceOpen ? <span>Hide</span> : <span>View</span>} breakup
+            {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
+            {!props.payment.are_prices_hidden ? "breakup" : "inclusion"}
           </div>
 
           <RiArrowDropDownLine
