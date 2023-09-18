@@ -122,12 +122,12 @@ const POI = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      style={{ zIndex: 1525 }}
+      // style={{ zIndex: 1525 }}
       className="font-lexend"
       onHide={props.onHide}
       mobileWidth={"100%"}
       width="50%"
-      zIndex="1501"
+      // zIndex="1501"
     >
       {!loading ? (
         <Container>

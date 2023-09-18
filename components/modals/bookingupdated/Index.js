@@ -1238,7 +1238,7 @@ const Booking = (props) => {
           show={props.showBookingModal}
           anchor={"right"}
           backdrop
-          style={{ zIndex: 1501 }}
+          // style={{ zIndex: 1501 }}
           className="font-lexend "
           onHide={props.setHideBookingModal}
           // zIndex='1501'

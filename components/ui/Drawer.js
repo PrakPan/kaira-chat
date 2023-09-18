@@ -118,10 +118,13 @@ const BlackContainer = styled.div`
 `;
 function Drawer(props) {
   const [_document, set_document] = useState(null);
+  const [zIndex , setZIndex] = useState(1249)
   const hasRendered = useRef(false);
   const [open , setOpen] = useState(false)
     useEffect(() => {
       set_document(document);
+      if (props.zIndex || (props.style && props.style.zIndex)) setZIndex(props.zIndex)
+      else setZIndex(prev=>prev+1)
     }, []);
   const [fade, setFade] = useState("out");
   function onCLose() {
@@ -155,7 +158,8 @@ function Drawer(props) {
                 fade={fade}
                 anchor={props.anchor}
                 className="drawerContainer"
-                style={{ ...props.style }}
+              style={{ ...props.style, zIndex: zIndex }}
+              zIndex={zIndex}
                 top={props.top}
                 mobileTop={props.mobileTop}
                 borderRadius={props.borderRadius}
