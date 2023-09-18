@@ -161,7 +161,7 @@ const Booking = (props) => {
           let img = false;
           for (let j = 0; j < props.alternates[i].images.length; j++) {
             if (props.alternates[i].images.image) {
-              img = true;
+              img = props.alternates[i].images.image;
               break;
             }
           }
@@ -592,7 +592,7 @@ const Booking = (props) => {
                 let img = false;
                 for (let j = 0; j < res.data.results[i].images.length; j++) {
                   if (res.data.results[i].images[j].image) {
-                    img = true;
+                    img = res.data.results[i].images[j].image;
                     break;
                   }
                 }
@@ -1104,7 +1104,7 @@ const Booking = (props) => {
                   let img = false;
                   for (let j = 0; j < res.data.results[i].images.length; j++) {
                     if (res.data.results[i].images[j].image) {
-                      img = true;
+                      img = res.data.results[i].images[j].image;
                       break;
                     }
                   }
@@ -1142,7 +1142,7 @@ const Booking = (props) => {
                 let img = false;
                 for (let j = 0; j < res.data.results[i].images.length; j++) {
                   if (res.data.results[i].images[j].image) {
-                    img = true;
+                    img = res.data.results[i].images[j].image;
                     break;
                   }
                 }
