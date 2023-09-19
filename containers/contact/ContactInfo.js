@@ -108,7 +108,7 @@ const Contact = () => {
             style={{ fontSize: "1rem", textAlign: "center" }}
             className="font-nunito"
           >
-            +91 95821 25476, +91 87872 00342
+            +91 95821 25476, +91 88400 45328
           </p>
         </AddressContainer>
         <NumberContainer>
@@ -116,14 +116,18 @@ const Contact = () => {
             Reach Out
           </HeadingSmall>
           {/* <ReachOutHelper>Email us on</ReachOutHelper> */}
-          <div style={{ display: 'flex' , justifyContent : 'center'}}>
-          <a
-            href="mailto:info@thetarzanway.com"
-            style={{ fontSize: "1rem", color: "#0066b2" , textDecoration : 'none' }}
-          >
-            info@thetarzanway.com
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <a
+              href="mailto:info@thetarzanway.com"
+              style={{
+                fontSize: "1rem",
+                color: "#0066b2",
+                textDecoration: "none",
+              }}
+            >
+              info@thetarzanway.com
             </a>
-            </div>
+          </div>
           {/* <ReachOutHelper>or</ReachOutHelper> */}
           {/* <p style={{fontSize: '1rem', textAlign: "center"}} className="font-nunito">+91 9582125476</p> */}
           {/* <ButtonContainer>
