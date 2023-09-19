@@ -149,7 +149,6 @@ const ItineraryPoiElementM = (props) => {
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [floatingButtonView, setFloatingButtonView] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("POI");
   const items = [
@@ -159,6 +158,13 @@ const ItineraryPoiElementM = (props) => {
 const drawerRef = useRef(null);
   useEffect(() => {
     if (props.city_id && showDrawer) {
+        let ticketsCount = 1;
+        if (props.payment && props.payment.meta_info) {
+          ticketsCount =
+            props.payment.meta_info.number_of_adults +
+            props.payment.meta_info.number_of_children +
+            props.payment.meta_info.number_of_infants;
+        }
       setFetchingPoi(true);
       if (props.city_id) setShowDrawer(true);
       axiosaxtivitiesinstance
@@ -179,7 +185,6 @@ const drawerRef = useRef(null);
                 // if(res.data.results[i].name !== props.selectedBooking.name)
                 options.push(
                   <PoiList
-                    setFloatingButtonView={setFloatingButtonView}
                     key={i}
                     _updatePoiHandler={_updatePoiHandler}
                     selectedData={props.data}
@@ -188,6 +193,7 @@ const drawerRef = useRef(null);
                     data={res.data[i]}
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
+                    ticketsCount={ticketsCount}
                   ></PoiList>
                 );
             }
@@ -255,6 +261,13 @@ const drawerRef = useRef(null);
   };
   function Poi_activities(activity) {
     setFetchingPoi(true);
+     let ticketsCount = 1;
+     if (props.payment && props.payment.meta_info) {
+       ticketsCount =
+         props.payment.meta_info.number_of_adults +
+         props.payment.meta_info.number_of_children +
+         props.payment.meta_info.number_of_infants;
+     }
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
       .post("/", {
@@ -271,7 +284,6 @@ const drawerRef = useRef(null);
               // if(res.data.results[i].name !== props.selectedBooking.name)
               options.push(
                 <PoiList
-                  setFloatingButtonView={setFloatingButtonView}
                   key={i}
                   _updatePoiHandler={_updatePoiHandler}
                   selectedData={props.data}
@@ -281,6 +293,7 @@ const drawerRef = useRef(null);
                   loginModal={showLoginModal}
                   setLoginModal={setShowLoginModal}
                   token={props.token}
+                  ticketsCount={ticketsCount}
                 ></PoiList>
               );
           }
@@ -519,7 +532,6 @@ const drawerRef = useRef(null);
       >
         <div></div>
         <div
-          onClick={() => setFloatingButtonView(true)}
           className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]"
         >
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
@@ -576,7 +588,6 @@ const drawerRef = useRef(null);
         onHide={() => setshowFilter(false)}
       >
         <div
-          onClick={() => setFloatingButtonView(true)}
           className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto "
         >
           <div className="w-[100%]">

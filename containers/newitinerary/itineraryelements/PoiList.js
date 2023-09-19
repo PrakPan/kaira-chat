@@ -8,14 +8,14 @@ import {
   getDate,
   convertDateYearFormat,
 } from '../../../helper/ConvertDateFormat';
-import ButtonYellow from '../../../components/ButtonYellow';
-
+import Button from '../../../components/ui/button/Index'
 import styled from 'styled-components';
 import { getIndianPrice } from '../../../services/getIndianPrice';
 // import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
 import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
 import { connect } from 'react-redux';
+import { BiMinus, BiPlus } from 'react-icons/bi';
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -24,9 +24,43 @@ const starHotel = styled.div`
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
+const SelectContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex-direction  :column;
+  gap : 0.5rem;
+`;
+const CounterContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-inline : auto;
+  width : 100%;
+  gap  :0.5rem;
+`;
+const CounterIcon = styled.div`
+  border-radius: 50%;
+  padding: 0.1rem;
+  color: white;
+  background: #01202b;
+  font-weight: 900;
+  font-size: 1rem;
+  border: 2px solid black;
+
+  &:hover {
+    background: white;
+    color: black;
+    ${(props) =>
+      props.disable && "background : #a9a9a9 ; border : 2px solid #a9a9a9 ; color : white"}
+  }
+  ${(props) =>
+    props.disable && "background : #a9a9a9 ; border : 2px solid #a9a9a9"}
+`;
 
 const PoiList = (props) => {
   const [isSelect, setisSelect] = useState(false);
+  const [numberOfTickets, setNumberOfTickets] = useState(props.ticketsCount);
   const [showDetails, setShowDetails] = useState({
     show: false,
     data: {},
@@ -50,7 +84,6 @@ const PoiList = (props) => {
   return (
     <>
       <div
-        onClick={() => props.setFloatingButtonView(true)}
         className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
       >
         {props.data.activity_data.activity.name ? (
@@ -100,7 +133,7 @@ const PoiList = (props) => {
                           per person*
                         </div>
                       </div>
-                      <div className="text-base font-light text[#7A7A7A]">
+                      <div className=" text-sm font-light text[#7A7A7A]">
                         Exclusive applicable taxes
                       </div>
                     </div>
@@ -118,6 +151,36 @@ const PoiList = (props) => {
                     {isSelect ? "Selected" : "Select"}
                   </label>
                 </div>
+                {/* <SelectContainer>
+                  <CounterContainer>
+                    <CounterIcon
+                      onClick={() => {
+                        if (numberOfTickets > 1)
+                          setNumberOfTickets((prev) => prev - 1);
+                      }}
+                      disable={numberOfTickets == 1}
+                    >
+                      <BiMinus />
+                    </CounterIcon>
+                    <div style={{ fontSize: "1.2rem" }}>{numberOfTickets}</div>
+                    <CounterIcon
+                      onClick={() => {
+                        setNumberOfTickets((prev) => prev + 1);
+                      }}
+                      disable={numberOfTickets >= props.ticketsCount}
+                    >
+                      <BiPlus />
+                    </CounterIcon>
+                  </CounterContainer>
+                  <Button
+                    padding="0.3rem 1.5rem"
+                    borderRadius="8px"
+                    fontWeight="400"
+                    onclick={() => console.log("")}
+                  >
+                    Select
+                  </Button>
+                </SelectContainer> */}
                 {props.data.activity_data?.activity?.experience_filters[0] && (
                   <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
                     {props.data.activity_data?.activity?.experience_filters[0]}
@@ -130,7 +193,7 @@ const PoiList = (props) => {
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
               onClick={() => {
-                setShowDetails({ show: true, data: props.data });
+                // setShowDetails({ show: true, data: props.data });
               }}
               id="POI"
               className={`relative flex lg:flex-row w-full flex-col gap-4 `}

@@ -162,6 +162,13 @@ const ItineraryPoiElement = (props) => {
   };
   useEffect(() => {
     if (props.city_id && showDrawer) {
+      let ticketsCount = 1
+      if (props.payment && props.payment.meta_info) {
+        ticketsCount =
+          props.payment.meta_info.number_of_adults +
+          props.payment.meta_info.number_of_children +
+          props.payment.meta_info.number_of_infants;
+      }
       setFetchingPoi(true);
       setShowDrawer(true);
       axiosaxtivitiesinstance
@@ -190,6 +197,7 @@ const ItineraryPoiElement = (props) => {
                     data={res.data[i]}
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
+                    ticketsCount={ticketsCount}
                   ></PoiList>
                 );
             }
