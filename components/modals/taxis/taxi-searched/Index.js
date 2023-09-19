@@ -17,9 +17,7 @@ import SectionFour from './SectionFour';
     @media screen and (min-width: 768px){
         border-radius: 10px;
         position: relative;
-
     }
-    
 `;
 
  
@@ -44,12 +42,18 @@ const Booking = (props) =>{
 
   
      //  if(isPageWide)
-    return(
-        <Container className='border' style={{ borderRadius: "10px"}}>
-         <SectionOne  _updateSearchedTaxi={props._updateSearchedTaxi} setShowTaxiModal={props.setShowTaxiModal} selectedBooking={props.selectedBooking} data={props.data}></SectionOne>
-          {/* <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree> */}
-         {/* <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> */}
-        </Container>
+    return (
+      <Container className="border" style={{ borderRadius: "10px" }}>
+        <SectionOne
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          _updateSearchedTaxi={props._updateSearchedTaxi}
+          setShowTaxiModal={props.setShowTaxiModal}
+          selectedBooking={props.selectedBooking}
+          data={props.data}
+        ></SectionOne>
+        {/* <SectionThree  are_prices_hidden={props.are_prices_hidden} setShowLoginModal={props.setShowLoginModal} token={props.token}  _deselectBookingHandler={props._deselectTransferBookingHandler} transferFlickityIndex={props.transferFlickityIndex} is_selecting={props.is_selecting} data={props.data}></SectionThree> */}
+        {/* <SectionFour setShowTaxiModal={props.setShowTaxiModal}></SectionFour> */}
+      </Container>
     );
  
 }

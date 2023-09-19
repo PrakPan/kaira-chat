@@ -5,18 +5,14 @@ import ImageLoader from '../../../../ImageLoader';
 import Route from './Route';
 import DropDown from './Dropdown';
 const Container = styled.div`
-
-display: grid;
-grid-template-columns: 9rem auto;
+  display: grid;
+  grid-template-columns: 7.5rem auto;
   border-style: none none solid none;
-border-color: rgba(238, 238, 238, 1);
-border-width: 1px;
-@media screen and (min-width: 768px){
-   
-    
-}
-
-
+  border-color: rgba(238, 238, 238, 1);
+  border-width: 1px;
+  @media screen and (min-width: 768px) {
+    grid-template-columns: 8.5rem auto;
+  }
 `;
  
  
