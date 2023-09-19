@@ -10,7 +10,15 @@ function TripsCounter() {
     let isPageWide = media("(min-width: 768px)");
     
 useEffect(() => {
-  axiosCountInstance.get("").then((res) => {setCount(res.data.user)});
+  axiosCountInstance.get("").then((res) => {
+    let count = res.data.user.toString().split("");
+    if (count.length > 3) {
+      for (let i = 1; i < 4; i++){
+      count[count.length - i] = "0";        
+      }
+    }
+    setCount(+count.join(''))
+  });
 }, []);
 useEffect(() => {
   if (countToShow != count) {

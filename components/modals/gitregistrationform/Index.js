@@ -183,7 +183,7 @@ const RegistrationModal = (props) => {
           show={props.show}
           closeIcon={false}
           size="xl"
-          borderRadius={'12px'}
+          borderRadius={"12px"}
           onHide={props.hide}
         >
           <div className="flex px-4 flex-row justify-between items-center">
@@ -191,15 +191,15 @@ const RegistrationModal = (props) => {
               onClick={props.hide}
               className="hover-pointer"
               style={{
-                margin: '0.5rem',
-                fontSize: '1.75rem',
-                textAlign: 'right',
+                margin: "0.5rem",
+                fontSize: "1.75rem",
+                textAlign: "right",
               }}
             ></TbArrowBack>
 
             <p
-              style={{ fontWeight: '800', margin: '0', fontSize: '19px' }}
-              className="font-opensans"
+              style={{ fontWeight: "800", margin: "0", fontSize: "19px" }}
+              className="font-lexend"
             >
               Confirm and Pay
             </p>
@@ -215,8 +215,12 @@ const RegistrationModal = (props) => {
             ></Cart>
 
             <p
-              className="font-opensans text-center"
-              style={{ fontWeight: '800', margin: '1rem 0', fontSize: '19px' }}
+              className="font-lexend text-center"
+              style={{
+                fontWeight: "500",
+                margin: "1rem 0 0 0",
+                fontSize: "19px",
+              }}
             >
               Member Details
             </p>

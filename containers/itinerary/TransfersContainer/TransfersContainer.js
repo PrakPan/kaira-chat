@@ -1219,36 +1219,36 @@ const TransfersContainer = (props) => {
         />
       )}
       {/* {props.showFlightModal ? ( */}
-        <FlightModal
-          getPaymentHandler={props.getPaymentHandler}
-          _updateFlightBookingHandler={props._updateFlightBookingHandler}
-          _updateBookingHandler={props._updateBookingHandler}
-          itinerary_id={
-            props?.transferBookings[0]
-              ? props?.transferBookings[0]["itinerary_id"]
-              : null
-          }
-          setHideFlightModal={props.setHideFlightModal}
-          alternates={selectedBooking.id}
-          tailored_id={selectedBooking["tailored_itinerary"]}
-          _updatePaymentHandler={props._updatePaymentHandler}
-          _updateFlightHandler={props._updateFlightHandler}
-          setHideBookingModal={props.setHideBookingModal}
-          selectedBooking={selectedBooking}
-          setShowFlightModal={props.setShowFlightMoTaxiModaldal}
-          showFlightModal={props.showFlightModal}
-        ></FlightModal>
+      <FlightModal
+        getPaymentHandler={props.getPaymentHandler}
+        _updateFlightBookingHandler={props._updateFlightBookingHandler}
+        _updateBookingHandler={props._updateBookingHandler}
+        itinerary_id={
+          props?.transferBookings[0]
+            ? props?.transferBookings[0]["itinerary_id"]
+            : null
+        }
+        setHideFlightModal={props.setHideFlightModal}
+        alternates={selectedBooking.id}
+        tailored_id={selectedBooking["tailored_itinerary"]}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        _updateFlightHandler={props._updateFlightHandler}
+        setHideBookingModal={props.setHideBookingModal}
+        selectedBooking={selectedBooking}
+        setShowFlightModal={props.setShowFlightModal}
+        showFlightModal={props.showFlightModal}
+      ></FlightModal>
       {/* ) : null} */}
       {/* {props.showTaxiModal ? ( */}
-        <TaxiModal
-          getPaymentHandler={props.getPaymentHandler}
-          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-          setHideBookingModal={props.setHideBookingModal}
-          setHideTaxiModal={() => props.setShowTaxiModal(false)}
-          showTaxiModal={props.showTaxiModal}
-          _updatePaymentHandler={props._updatePaymentHandler}
-          selectedBooking={selectedBooking}
-        ></TaxiModal>
+      <TaxiModal
+        getPaymentHandler={props.getPaymentHandler}
+        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+        setHideBookingModal={props.setHideBookingModal}
+        setHideTaxiModal={() => props.setShowTaxiModal(false)}
+        showTaxiModal={props.showTaxiModal}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        selectedBooking={selectedBooking}
+      ></TaxiModal>
       {/* ) : null} */}
       {props?.transferBookings && (
         <>
@@ -1385,28 +1385,28 @@ token={props.token}></TransferModeContainer> */}
           {props?.routes &&
             props?.routes.length > 1 &&
             !props.plan.is_released_for_customer && (
-              <PinSection
-                transfersPin
-                setCurrentPopup={false}
-                dayId={
-                  props.breif.city_slabs[0].day_slab_location
-                    .start_day_slab_index
-                }
-                cityData={props.breif.city_slabs[0]}
-                dayslab={props.dayslab}
-                lat={props.breif.city_slabs[0].lat}
-                long={props.breif.city_slabs[0].long}
-                Mapid={props.breif.city_slabs[0].gmaps_place_id}
-                city={props.breif.city_slabs[0].city_name}
-                cityId={props.breif.city_slabs[0].city_id}
-                duration={
-                  props.breif.city_slabs[0].duration
-                    ? props.breif.city_slabs[0].duration +
-                      NoOfNights(props.breif.city_slabs[0].duration)
-                    : null
-                }
-                pinColour={props.breif.city_slabs[0].color}
-              ></PinSection>
+                <PinSection
+                  transfersPin
+                  setCurrentPopup={false}
+                  dayId={
+                    props.breif.city_slabs[0].day_slab_location
+                      .start_day_slab_index
+                  }
+                  cityData={props.breif.city_slabs[0]}
+                  dayslab={props.dayslab}
+                  lat={props.breif.city_slabs[0].lat}
+                  long={props.breif.city_slabs[0].long}
+                  Mapid={props.breif.city_slabs[0].gmaps_place_id}
+                  city={props.breif.city_slabs[0].city_name}
+                  cityId={props.breif.city_slabs[0].city_id}
+                  duration={
+                    props.breif.city_slabs[0].duration
+                      ? props.breif.city_slabs[0].duration +
+                        NoOfNights(props.breif.city_slabs[0].duration)
+                      : null
+                  }
+                  pinColour={props.breif.city_slabs[0].color}
+                ></PinSection>
             )}
         </>
       )}

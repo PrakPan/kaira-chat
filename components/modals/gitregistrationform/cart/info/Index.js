@@ -4,6 +4,7 @@ import { getHumanDate } from '../../../../../services/getHumanDate';
 import ImageLoader from '../../../../ImageLoader';
 import { getIndianPrice } from '../../../../../services/getIndianPrice';
 import dayjs from 'dayjs';
+import { BsFillCalendarEventFill } from 'react-icons/bs';
 
  const Container = styled.div`
     padding: 0 0.5rem;
@@ -45,10 +46,10 @@ const GridContainer = styled.div`
 
  const FlexContainer = styled.div`
     display: flex;
-    gap: 0.25rem;
+    gap: 0.5rem;
  `
 const HeadingThree =  styled.p`
-font-weight: 600;
+font-weight: 500;
     margin-bottom: 2px;
     font-size: 13px;
     line-height: 1;
@@ -118,71 +119,92 @@ const Cart = (props) => {
     
     }
   
-  return(
-      <Container className=''>
-            {/* <Heading className='font-lexend'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading> */}
-            {/* <Duration className='font-lexend' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration > */}
-            <OuterGridContainer>
-            <GridContainer>
-                <FlexContainer>
-                <ImageLoader url="media/icons/bookings/stays/check-in.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-
-                <div>
-                    <HeadingThree>Start Date</HeadingThree>
-                    <Subheading>{props.date ? getDate( dayjs(props.date).format('YYYY-MM-DD') ): null}</Subheading>
- 
-                </div>
-                </FlexContainer>
-
-                <FlexContainer>
-                    <ImageLoader url="media/icons/bookings/tourist.png" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader>
-                    <div>
-                        <HeadingThree>Members</HeadingThree>
-                        <Subheading>{props.pax ? props.pax : null}</Subheading>
-                    </div>
-                </FlexContainer>
-
-                </GridContainer>
-
-                <GridContainer>
-
-                <div>
-                    {/* <HeadingThree>Total Cost</HeadingThree> */}
-                    {/* <Subheading>{'₹ 8320 /-'}</Subheading> */}
-                </div>
-                <div style={{textAlign: 'right'}}>
-                    <div style={{display: 'flex'}}>
-                    <StrikedCost>
-                        { props.cost ? 
-                            "₹ " + getIndianPrice(Math.round(Math.round(props.cost)/100)*2)+ " /-"
-                            : null
-                        }
-                    </StrikedCost>
-                    <HeadingThree>
-                        { props.cost ? 
-                            "₹ " + getIndianPrice(Math.round(Math.round(props.cost)/100))+ " /-"
-                            : null
-                        }
-                    </HeadingThree>
-                    </div>
-                    <Subheading style={{fontSize: '11px'}}>Per Member</Subheading>
-
-                </div>
-               
-            </GridContainer>
-            
-            </OuterGridContainer>
-            <div style={{display: 'grid', gridTemplateColumns: 'auto max-content', marginTop: '1rem'}}>
+  return (
+    <Container className="">
+      {/* <Heading className='font-lexend'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading> */}
+      {/* <Duration className='font-lexend' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration > */}
+      <OuterGridContainer>
+        <GridContainer>
+          <FlexContainer style={{alignItems : 'center' , gap : '0.75rem'}}>
+            {/* <ImageLoader url="media/icons/bookings/stays/check-in.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader> */}
+            <BsFillCalendarEventFill style={{ fontSize : '1.5rem' }} />
             <div>
-                     {/* <Subheading2 className="hover-pointer" onClick={() => props.setShowTermsModal(true)} style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2> */}
-                </div>
-                <div>
-                    {/* <Subheading2 style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading2> */}
-                    <Subheading2 className="hover-pointer" onClick={() => props.setShowTermsModal(true)} style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2>
-
-                </div>
+              <HeadingThree>Start Date</HeadingThree>
+              <Subheading>
+                {props.date
+                  ? getDate(dayjs(props.date).format("YYYY-MM-DD"))
+                  : null}
+              </Subheading>
             </div>
-        </Container>
+          </FlexContainer>
+
+          <FlexContainer>
+            <ImageLoader
+              url="media/icons/bookings/tourist.png"
+              height="1.5rem"
+              width="1.5rem"
+              widthmobile="1.5rem"
+              dimensions={{ width: 100, height: 100 }}
+              margin="0"
+              leftalign
+            ></ImageLoader>
+            <div>
+              <HeadingThree>Members</HeadingThree>
+              <Subheading>{props.pax ? props.pax : null}</Subheading>
+            </div>
+          </FlexContainer>
+        </GridContainer>
+
+        <GridContainer>
+          <div>
+            {/* <HeadingThree>Total Cost</HeadingThree> */}
+            {/* <Subheading>{'₹ 8320 /-'}</Subheading> */}
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ display: "flex" }}>
+              <StrikedCost>
+                {props.cost
+                  ? "₹ " +
+                    getIndianPrice(
+                      Math.round(Math.round(props.cost) / 100) * 2
+                    ) +
+                    " /-"
+                  : null}
+              </StrikedCost>
+              <HeadingThree>
+                {props.cost
+                  ? "₹ " +
+                    getIndianPrice(Math.round(Math.round(props.cost) / 100)) +
+                    " /-"
+                  : null}
+              </HeadingThree>
+            </div>
+            <Subheading style={{ fontSize: "11px" }}>Per Member</Subheading>
+          </div>
+        </GridContainer>
+      </OuterGridContainer>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "auto max-content",
+          marginTop: "1rem",
+        }}
+      >
+        <div>
+          {/* <Subheading2 className="hover-pointer" onClick={() => props.setShowTermsModal(true)} style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2> */}
+        </div>
+        <div>
+          {/* <Subheading2 style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading2> */}
+          <Subheading2
+            className="hover-pointer"
+            onClick={() => props.setShowTermsModal(true)}
+            style={{ color: "blue", fontSize: "10px" }}
+          >
+            {"Terms & Conditions"}
+          </Subheading2>
+        </div>
+      </div>
+    </Container>
   );
 
 }

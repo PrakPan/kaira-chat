@@ -180,7 +180,7 @@ const NewFooter = (props) => {
                 <FiPhoneCall
                   style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
                 ></FiPhoneCall>
-                +91 95821 25476, +91 87872 00342
+                +91 95821 25476, +91 88400 45328
               </div>
             </CompanyText>
             <CompanyText style={{ display: "flex", margin: "0.25rem 0 0 0" }}>

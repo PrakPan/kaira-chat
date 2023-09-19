@@ -731,7 +731,8 @@ const Details = (props) => {
           onClick={() => setAcordianOpen(!acoordianceOpen)}
         >
           <div>
-            {acoordianceOpen ? <span>Hide</span> : <span>View</span>} breakup
+            {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
+            {!props.payment.are_prices_hidden ? "breakup" : "inclusion"}
           </div>
 
           <RiArrowDropDownLine
@@ -1145,7 +1146,7 @@ const Details = (props) => {
             <Button
               color="#111"
               fontWeight="500"
-              fontSize="0.85rem"
+              fontSize="1rem"
               borderWidth="2px"
               width="100%"
               borderRadius="8px"
@@ -1160,7 +1161,7 @@ const Details = (props) => {
             <Button
               color="#111"
               fontWeight="500"
-              fontSize="0.85rem"
+              fontSize="1rem"
               borderWidth="2px"
               width="100%"
               borderRadius="8px"
@@ -1176,7 +1177,7 @@ const Details = (props) => {
             <Button
               color="#111"
               fontWeight="500"
-              fontSize="0.85rem"
+              fontSize="1rem"
               borderWidth="2px"
               width="100%"
               borderRadius="8px"
@@ -1190,7 +1191,7 @@ const Details = (props) => {
             <Button
               color="#111"
               fontWeight="500"
-              fontSize="0.85rem"
+              fontSize="1rem"
               borderWidth="2px"
               width="100%"
               borderRadius="8px"
@@ -1204,7 +1205,7 @@ const Details = (props) => {
             <Button
               color="#111"
               fontWeight="500"
-              fontSize="0.85rem"
+              fontSize="1rem"
               borderWidth="2px"
               width="100%"
               borderRadius="8px"
@@ -1221,7 +1222,7 @@ const Details = (props) => {
               <Button
                 color="#111"
                 fontWeight="500"
-                fontSize="0.85rem"
+                fontSize="1rem"
                 borderWidth="2px"
                 width="100%"
                 borderRadius="8px"
@@ -1263,7 +1264,7 @@ const Details = (props) => {
         <Button
           color="#111"
           fontWeight="500"
-          fontSize="0.85rem"
+          fontSize="1rem"
           borderWidth="2px"
           width="100%"
           borderRadius="8px"

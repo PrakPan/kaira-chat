@@ -84,72 +84,72 @@ const BookingContainer = (props) => {
                 bookingslist.push(
                   <p
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
+                      fontSize: "0.75rem",
+                      fontWeight: "400",
+                      letterSpacing: "1px",
+                      marginBottom: "0.25rem",
                     }}
                     className={
                       props.blur
-                        ? 'font-opensans text-enter blurry-text'
-                        : 'font-opensans text-enter'
+                        ? "font-lexend text-enter blurry-text"
+                        : "font-lexend text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail[
-                      'duration'
+                      "duration"
                     ] +
-                      'N at ' +
-                      props.payment.costings_breakdown[booking].detail['name']}
+                      "N at " +
+                      props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
                   <div
                     style={{
-                      display: 'grid',
-                      gridTemplateColumns: '3fr 1fr',
-                      margin: '0.5rem 0',
-                      gridGap: '1rem',
+                      display: "grid",
+                      gridTemplateColumns: "3fr 1fr",
+                      margin: "0.5rem 0",
+                      gridGap: "1rem",
                     }}
                   >
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail[
-                        'duration'
+                        "duration"
                       ] +
-                        'N at ' +
+                        "N at " +
                         props.payment.costings_breakdown[booking].detail[
-                          'name'
+                          "name"
                         ]}
                     </p>
                     <p
                       style={{
-                        fontSize: '0.75rem',
-                        fontWeight: '300',
-                        letterSpacing: '1px',
-                        marginBottom: '0.25rem',
+                        fontSize: "0.75rem",
+                        fontWeight: "300",
+                        letterSpacing: "1px",
+                        marginBottom: "0.25rem",
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? "font-lexend text-enter blurry-text"
+                          : "font-lexend text-enter"
                       }
                     >
-                      {'₹ ' +
+                      {"₹ " +
                         getIndianPrice(
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
-                              'booking_cost'
+                              "booking_cost"
                             ] / 100
                           )
                         )}
@@ -160,18 +160,18 @@ const BookingContainer = (props) => {
                 bookingslist.push(
                   <p
                     style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '400',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
+                      fontSize: "0.75rem",
+                      fontWeight: "400",
+                      letterSpacing: "1px",
+                      marginBottom: "0.25rem",
                     }}
                     className={
                       props.blur
-                        ? 'font-opensans text-enter blurry-text'
-                        : 'font-opensans text-enter'
+                        ? "font-lexend text-enter blurry-text"
+                        : "font-lexend text-enter"
                     }
                   >
-                    {props.payment.costings_breakdown[booking].detail['name']}
+                    {props.payment.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
@@ -192,8 +192,8 @@ const BookingContainer = (props) => {
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? 'font-lexend text-enter blurry-text'
+                          : 'font-lexend text-enter'
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail['name']}
@@ -207,8 +207,8 @@ const BookingContainer = (props) => {
                       }}
                       className={
                         props.blur
-                          ? 'font-opensans text-enter blurry-text'
-                          : 'font-opensans text-enter'
+                          ? 'font-lexend text-enter blurry-text'
+                          : 'font-lexend text-enter'
                       }
                     >
                       {'₹ ' +
@@ -386,7 +386,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-opensans text-enter blurry-text'
+                            ? 'font-lexend text-enter blurry-text'
                             : 'text-sm font-semibold'
                         }
                       >
@@ -395,7 +395,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-opensans text-enter blurry-text'
+                            ? 'font-lexend text-enter blurry-text'
                             : 'text-sm font-semibold'
                         }
                       >
@@ -418,7 +418,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-opensans text-enter blurry-text'
+                            ? 'font-lexend text-enter blurry-text'
                             : 'text-sm font-semibold'
                         }
                       >
@@ -427,7 +427,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? 'font-opensans text-enter blurry-text'
+                            ? 'font-lexend text-enter blurry-text'
                             : 'text-sm font-semibold'
                         }
                       >

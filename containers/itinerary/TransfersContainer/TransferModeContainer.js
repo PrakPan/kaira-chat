@@ -159,7 +159,7 @@ const Line = styled.hr`
   opacity: initial;
   z-index: -1;
   @media screen and (min-width: 768px) {
-    width: 12.4rem;
+    width: 12.3rem;
     height: 1px;
     top: 81px;
     right: -81px;
@@ -457,7 +457,7 @@ function truncateString(str, maxLength) {
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative"}}>
           <Line pinColour={props.pinColour} Transfers={true} />
         </div>
       ) : (
@@ -495,8 +495,10 @@ function truncateString(str, maxLength) {
           <div
             id={props.booking.id}
             className={`mb-4 mt-2 lg:block ${
-              !props.userSelected ? "flex flex-col-reverse" : "flex flex-col"
-            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 p-3  `}
+              !props.userSelected
+                ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
+                : "mb-4 mt-2 lg:block flex flex-col p-3 "
+            }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
           >
             <div className="flex flex-row gap-4    ">
               {props.userSelected && (

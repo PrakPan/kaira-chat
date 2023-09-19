@@ -190,7 +190,7 @@ const Overview = (props) => {
           </Address>
         </div>
         {/* Temporary removed */}
-        {/* {props.payment && props.token ? (
+        {props.payment && props.token ? (
           props.payment?.is_registration_needed ? null : props.payment?.paid_user ||
             !props.payment?.user_allowed_to_pay ? null : (
             <Button
@@ -203,7 +203,7 @@ const Overview = (props) => {
           )
         ) : (
           <></>
-        )} */}
+        )} 
       </FlexBox>
       {props?.currentBooking.user_rating && (
         <div className="flex flex-col gap-1">
