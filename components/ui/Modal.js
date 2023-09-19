@@ -163,7 +163,7 @@
 
 import styled, { keyframes } from "styled-components";
 import { RxCross2 } from "react-icons/rx";
-import { useRef , useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
 const TopSlideIn = keyframes`
@@ -237,9 +237,6 @@ export default function Modal(props) {
 
   useEffect(() => {
     set_document(document);
-    // return () => {
-    // document.body.style.overflow = "overlay";
-    // };
   }, []);
   const [fade, setFade] = useState("out");
   function onCLose() {
@@ -250,16 +247,16 @@ export default function Modal(props) {
     }, 800);
   }
 
-    useEffect(() => {
-      if (hasRendered.current) {
-        if (props.show === true) {
-          setFade("in");
-          setOpen(true)
-        } else onCLose();
-      } else {
-        hasRendered.current = true;
-      }
-    }, [props.show]);
+  useEffect(() => {
+    if (hasRendered.current) {
+      if (props.show === true) {
+        setFade("in");
+        setOpen(true);
+      } else onCLose();
+    } else {
+      hasRendered.current = true;
+    }
+  }, [props.show]);
 
   return _document
     ? ReactDOM.createPortal(
