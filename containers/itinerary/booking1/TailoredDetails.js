@@ -732,7 +732,7 @@ const Details = (props) => {
         >
           <div>
             {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
-            {!props.payment.are_prices_hidden ? "breakup" : "inclusion"}
+            {!props.payment.are_prices_hidden ? "breakup" : "inclusions"}
           </div>
 
           <RiArrowDropDownLine

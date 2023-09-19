@@ -20,32 +20,33 @@ useEffect(() => {
     setCount(+count.join(''))
   });
 }, []);
-useEffect(() => {
-  if (countToShow != count) {
-    setTimeout(() => {
-      if (countToShow < count) setCountShow((prev) => prev + 9);
-      else setCountShow(count);
-    }, [2]);
-  }
-}, [countToShow, inViewport]);
+// useEffect(() => {
+//   if (countToShow != count) {
+//     setTimeout(() => {
+//       if (countToShow < count) setCountShow((prev) => prev + 9);
+//       else setCountShow(count);
+//     }, [2]);
+//   }
+// }, [countToShow, inViewport]);
   return (
     <div
       ref={ref}
-      style={{ display: "flex", alignItems: "center", width: "138px" }}
+      style={{ display: "flex", alignItems: "center", width: "165px" }}
     >
       <h2
         style={
           isPageWide
-            ? { fontSize: "50px", fontWeight: 700 }
+            ? { fontSize: "45px", fontWeight: 700 }
             : { fontSize: "18px", fontWeight: 700 }
         }
       >
-        {countToShow}
+        {/* {countToShow} */}
+        {count*10}
       </h2>
       <h2
         style={
           isPageWide
-            ? { fontSize: "50px", fontWeight: 700, marginBottom: "0.7rem" }
+            ? { fontSize: "45px", fontWeight: 700, marginBottom: "0.7rem" }
             : { fontSize: "18px", fontWeight: 700, marginBottom: "0.7rem" }
         }
         // style={{ marginBottom: "0.7rem" }}
