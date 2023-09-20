@@ -90,7 +90,7 @@ const PoiList = (props) => {
           props.data?.activity_data?.activity?.cost && (
             <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
               <div
-                onClick={() => setShowDetails({ show: true, data: data })}
+                onClick={() => setShowDetails({ show: true, data: props.data })}
                 id="Activity"
                 className={`relative flex lg:flex-row w-full flex-col gap-4 `}
               >
@@ -193,7 +193,7 @@ const PoiList = (props) => {
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
               onClick={() => {
-                // setShowDetails({ show: true, data: props.data });
+                  setShowDetails({ show: true, data: props.data });
               }}
               id="POI"
               className={`relative flex lg:flex-row w-full flex-col gap-4 `}
