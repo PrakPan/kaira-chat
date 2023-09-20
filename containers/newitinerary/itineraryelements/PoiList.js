@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import ImageLoader from '../../../components/ImageLoader';
-import StarRating from '../../../components/StarRating';
-import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
-import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
-import { ImSpoonKnife } from 'react-icons/im';
+import React, { useEffect, useState } from "react";
+import ImageLoader from "../../../components/ImageLoader";
+import StarRating from "../../../components/StarRating";
+import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
+import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { ImSpoonKnife } from "react-icons/im";
 import {
   getDate,
   convertDateYearFormat,
-} from '../../../helper/ConvertDateFormat';
-import Button from '../../../components/ui/button/Index'
-import styled from 'styled-components';
-import { getIndianPrice } from '../../../services/getIndianPrice';
+} from "../../../helper/ConvertDateFormat";
+import Button from "../../../components/ui/button/Index";
+import styled from "styled-components";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 // import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
-import CheckboxFormComponent from '../../../components/FormComponents/CheckboxFormComponent';
-import POIDetailsDrawer from '../../../components/drawers/poiDetails/POIDetailsDrawer';
-import { connect } from 'react-redux';
-import { BiMinus, BiPlus } from 'react-icons/bi';
+import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import { connect } from "react-redux";
+import { BiMinus, BiPlus } from "react-icons/bi";
+import SkeletonCard from "../../../components/ui/SkeletonCard";
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -28,16 +29,16 @@ const SelectContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  flex-direction  :column;
-  gap : 0.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 const CounterContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-inline : auto;
-  width : 100%;
-  gap  :0.5rem;
+  margin-inline: auto;
+  width: 100%;
+  gap: 0.5rem;
 `;
 const CounterIcon = styled.div`
   border-radius: 50%;
@@ -52,7 +53,8 @@ const CounterIcon = styled.div`
     background: white;
     color: black;
     ${(props) =>
-      props.disable && "background : #a9a9a9 ; border : 2px solid #a9a9a9 ; color : white"}
+      props.disable &&
+      "background : #a9a9a9 ; border : 2px solid #a9a9a9 ; color : white"}
   }
   ${(props) =>
     props.disable && "background : #a9a9a9 ; border : 2px solid #a9a9a9"}
@@ -61,6 +63,8 @@ const CounterIcon = styled.div`
 const PoiList = (props) => {
   const [isSelect, setisSelect] = useState(false);
   const [numberOfTickets, setNumberOfTickets] = useState(props.ticketsCount);
+  const [imageFail, setImageFail] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [showDetails, setShowDetails] = useState({
     show: false,
     data: {},
@@ -98,19 +102,44 @@ const PoiList = (props) => {
                   className={`relative 'lg:h-[15rem]'
               lg:w-[30%] w-full  h-[12rem]`}
                 >
-                  <ImageLoader
-                    dimensions={{ width: 400, height: 400 }}
-                    dimensionsMobile={{ width: 400, height: 400 }}
-                    borderRadius="16px"
-                    hoverpointer
-                    onclick={() => console.log("")}
-                    width="100%"
-                    height="100%"
-                    leftalign
-                    widthmobile="100%"
-                    noLazy
-                    url={props.data.activity_data.activity.image}
-                  ></ImageLoader>
+                  <div style={{ display: imageLoaded ? "initial" : "none" }}>
+                    <ImageLoader
+                      dimensions={{ width: 400, height: 400 }}
+                      dimensionsMobile={{ width: 400, height: 400 }}
+                      borderRadius="16px"
+                      hoverpointer
+                      onclick={() => console.log("")}
+                      width="100%"
+                      height="100%"
+                      leftalign
+                      widthmobile="100%"
+                      noLazy
+                      onload={() => {
+                        setTimeout(() => {
+                          setImageLoaded(true);
+                        }, 1000);
+                      }}
+                      onfail={() => {
+                        setImageFail(true);
+                        setImageLoaded(true);
+                      }}
+                      url={
+                        props.data.activity_data.activity.image && !imageFail
+                          ? props.data.activity_data.activity.image
+                          : "media/icons/bookings/notfounds/noroom.png"
+                      }
+                    ></ImageLoader>
+                  </div>
+                  <div
+                    style={{
+                      height: "100%",
+                      overflow: "hidden",
+                      borderRadius: "16px",
+                      display: !imageLoaded ? "block" : "none",
+                    }}
+                  >
+                    <SkeletonCard />
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
                   <div>
@@ -193,7 +222,7 @@ const PoiList = (props) => {
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
               onClick={() => {
-                  setShowDetails({ show: true, data: props.data });
+                setShowDetails({ show: true, data: props.data });
               }}
               id="POI"
               className={`relative flex lg:flex-row w-full flex-col gap-4 `}
@@ -204,19 +233,44 @@ const PoiList = (props) => {
                   className={`relative 'lg:h-[15rem]'
                 h-[12rem]`}
                 >
-                  <ImageLoader
-                    dimensions={{ width: 400, height: 400 }}
-                    dimensionsMobile={{ width: 400, height: 400 }}
-                    borderRadius="16px"
-                    hoverpointer
-                    onclick={() => console.log("")}
-                    width="100%"
-                    height="100%"
-                    leftalign
-                    noLazy
-                    widthmobile="100%"
-                    url={props.data.activity_data.poi.image}
-                  ></ImageLoader>
+                  <div style={{ display: imageLoaded ? "initial" : "none" }}>
+                    <ImageLoader
+                      dimensions={{ width: 400, height: 400 }}
+                      dimensionsMobile={{ width: 400, height: 400 }}
+                      borderRadius="16px"
+                      hoverpointer
+                      onclick={() => console.log("")}
+                      width="100%"
+                      height="100%"
+                      leftalign
+                      noLazy
+                      widthmobile="100%"
+                      onload={() => {
+                        setTimeout(() => {
+                          setImageLoaded(true);
+                        }, 1000);
+                      }}
+                      onfail={() => {
+                        setImageFail(true);
+                        setImageLoaded(true);
+                      }}
+                      url={
+                        props.data.activity_data.poi.image && !imageFail
+                          ? props.data.activity_data.poi.image
+                          : "media/icons/bookings/notfounds/noroom.png"
+                      }
+                    ></ImageLoader>
+                  </div>
+                  <div
+                    style={{
+                      height: "100%",
+                      overflow: "hidden",
+                      borderRadius: "16px",
+                      display: !imageLoaded ? "block" : "none",
+                    }}
+                  >
+                    <SkeletonCard />
+                  </div>
                 </div>
               </div>
 
@@ -300,7 +354,6 @@ const mapStateToPros = (state) => {
   };
 };
 const mapDispatchToProps = (dispatch) => {
-  return {
-  };
+  return {};
 };
 export default connect(mapStateToPros, mapDispatchToProps)(PoiList);
