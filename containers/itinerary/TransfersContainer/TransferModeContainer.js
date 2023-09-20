@@ -949,12 +949,13 @@ function truncateString(str, maxLength) {
                   />
                 ) : (
                   props.icon && (
-                    <ImageLoader
+                        <ImageLoader
+                          is_url={props.icon.includes('gozo')}
                       className=" object-contain"
                       url={props.icon}
                       leftalign
-                      height={"3rem"}
-                      width="4rem"
+                      height={props.icon.includes('gozo') ? "3rem" : '4rem'}
+                      width={"4rem"}
                       widthmobile="4rem"
                     ></ImageLoader>
                   )
