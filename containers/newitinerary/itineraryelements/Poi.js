@@ -407,7 +407,7 @@ const ItineraryPoiElement = (props) => {
         mobileWidth={"100vw"}
         width="50vw"
       >
-        <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 justify-start items-start mx-auto w-[96%]">
+        <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
               onClick={() => setShowDrawer(false)}
