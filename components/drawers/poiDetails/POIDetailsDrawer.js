@@ -38,7 +38,7 @@ const POIDetailsDrawer = (props) => {
       anchor={"right"}
       backdrop
       width={props.width}
-      style={{ zIndex: 1501 }}
+      style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
       className="font-lexend"
       onHide={props.handleCloseDrawer}
       // zIndex='1501'

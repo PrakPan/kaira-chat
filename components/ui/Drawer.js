@@ -304,12 +304,19 @@ const BlackContainer = styled.div`
   top: 0;
   left: 0;
 
-  z-index: 1249;
+  z-index: ${props => props.zIndex};
   width: 100vw;
   height: 100vh;
   transition: background 0.5s linear;
 `;
 export default function Drawer(props) {
+  let zIndex = 1250;
+  if (props.style && props.style.zIndex) {
+    zIndex = props.style.zIndex
+  }
+  else if (props.zIndex) {
+    zIndex = props.zIndex
+  }
   const [_document, set_document] = useState(null);
   let isPageWide = media("(min-width: 768px)");
   const [open, setOpen] = useState(false);
@@ -352,7 +359,7 @@ export default function Drawer(props) {
         <div className="App">
           {open && (
             <div style={{ position: "relative" }}>
-              <BlackContainer fade={fade} onClick={onCLose}></BlackContainer>
+              <BlackContainer fade={fade} onClick={onCLose} zIndex={zIndex - 1}></BlackContainer>
               <DrawerContainer
                 fade={fade}
                 anchor={props.anchor}

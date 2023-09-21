@@ -270,12 +270,12 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
-      {props.data.tips && props.data.tips.length && (
+      {props.data.tips && props.data.tips.length ?  (
         <div>
           <Heading>Tips</Heading>
           <Text>{tips}</Text>
         </div>
-      )}
+      ) : <></>}
     </Container>
   );
 };
