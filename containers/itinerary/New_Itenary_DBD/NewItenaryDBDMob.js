@@ -64,11 +64,6 @@ const NewItenaryDBDMob = (props) => {
           i % props.city_slabs[i].duration
             ? props.itinerary.day_slabs[i - 1]
             : props.itinerary.day_slabs[i];
-        // console.log(itenaryId !== undefined);
-        // console.log('idssss' + props.city_slabs[i].city_name);
-        // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
-        // console.log('idssss'+ itenaryId.slab_id)
-        // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
         items.push({
           id: i,
           label: `${props.city_slabs[i].city_name} ${
@@ -118,17 +113,17 @@ const NewItenaryDBDMob = (props) => {
   };
   return (
     <Wrapper>
-      {' '}
+      {" "}
       <div className="font-lexend font-bold text-2xl mb-[2.4rem] mt-4">
-        {' '}
+        {" "}
         Day By Day Itinerary
       </div>
       <ScrollableMenuTabs
         icons={items.length < 3 ? false : true}
-        offset={'50px'}
+        offset={"50px"}
         items={items}
         BarName="CityName"
-        Mstyle={'round'}
+        Mstyle={"round"}
       />
       {/* <div className="sticky pl-2" style={{ zIndex: '100', top: 86 }}>
         <DropdownWrapper Dhead={activeItem}>
@@ -147,11 +142,11 @@ const NewItenaryDBDMob = (props) => {
       </div> */}
       <ScrollableMenuTabs
         icons={false}
-        offset={items.length ? '89px' : '50px'}
+        offset={items.length ? "89px" : "50px"}
         items={itemsDays}
         BarName="CityName"
-        year={'2023'}
-        Mstyle={'round'}
+        year={"2023"}
+        Mstyle={"round"}
         Iterable="date"
       />
       {/* <HorizontalBar
@@ -181,7 +176,9 @@ const NewItenaryDBDMob = (props) => {
               itinerary_id={props.itinerary.tailor_made_id}
               setItinerary={props.setItinerary}
               token={props.token}
-              LastElement={(props.itinerary.day_slabs.length-1) == index}
+              LastElement={props.itinerary.day_slabs.length - 1 == index}
+              transferBookings={props.transferBookings}
+              stayBookings={props.stayBookings}
             ></Day_I_ContainerM>
           </div>
         ))}

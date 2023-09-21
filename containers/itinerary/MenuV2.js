@@ -490,7 +490,11 @@ const SimpleTabsV2 = (props) => {
     <div className={classes.root} style={{ paddingTop: "20px" }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
-          <Navigation items={items} BarName="TabsName" ClickHandler={_handleMenuTabsChange} />
+          <Navigation
+            items={items}
+            BarName="TabsName"
+            ClickHandler={_handleMenuTabsChange}
+          />
         ) : (
           <ScrollableMenuTabs
             icons={false}
@@ -695,6 +699,8 @@ const SimpleTabsV2 = (props) => {
               itinerary={props.itinerary}
               setItinerary={props.setItinerary}
               getPaymentHandler={props.getPaymentHandler}
+              transferBookings={props.transferBookings}
+              stayBookings={props.stayBookings}
             ></NewItenaryDBDMob>
           </div>
 
@@ -883,6 +889,8 @@ const SimpleTabsV2 = (props) => {
                     setItinerary={props.setItinerary}
                     getPaymentHandler={props.getPaymentHandler}
                     token={props.token}
+                    transferBookings={props.transferBookings}
+                    stayBookings={props.stayBookings}
                   ></NewItenaryMain>
                 )}
               </div>
@@ -897,6 +905,8 @@ const SimpleTabsV2 = (props) => {
                   itinerary={props.itinerary}
                   setItinerary={props.setItinerary}
                   getPaymentHandler={props.getPaymentHandler}
+                  transferBookings={props.transferBookings}
+                  stayBookings={props.stayBookings}
                 ></NewItenaryDBDMob>
               </div>
             )}
@@ -1294,14 +1304,10 @@ function newFunction(
       }
   const locationtabwidth = 100 / totalcityslabs + 'vw';
 
-  // console.log('inside routes');
-  // console.log(props.routes);
   if (!citydatadone) {
     async function processRoutes2(props) {
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
-        // console.log('routes one', props.routes[i]);
         if (props.breif.city_slabs[i].long) {
-          // console.log(props.routes[i].long);
           CityDataTemp.push(props.breif.city_slabs[i]);
         } else {
           if (
@@ -1312,14 +1318,11 @@ function newFunction(
               const data = await getCityDetails(
                 props.breif.city_slabs[i].city_id
               );
-              // console.log('fetchdata data');
-              // console.log(props.routes[i], data);
               const updatedRoutes = replaceLatLong(
                 props.breif.city_slabs[i],
                 data
               );
               CityDataTemp.push(updatedRoutes);
-              // console.log('fetchdata data in', updatedRoutes);
             } catch (error) {
               console.error(error);
             }
@@ -1337,17 +1340,13 @@ function newFunction(
       for (var i = 0; i < props.routes.length; i++) {
         if (props.routes[i].element_type !== 'transfer') {
           if (props.routes[i].long) {
-            // console.log(props.routes[i].long);
             RoutesData.push(props.routes[i]);
           } else {
             if (props.routes[i].city_id) {
               try {
                 const data = await getCityDetails(props.routes[i].city_id);
-                // console.log('fetchdata data');
-                // console.log(props.routes[i], data);
                 const updatedRoutes = replaceLatLong(props.routes[i], data);
                 RoutesData.push(updatedRoutes);
-                // console.log('fetchdata data in', updatedRoutes);
               } catch (error) {
                 console.error(error);
               }

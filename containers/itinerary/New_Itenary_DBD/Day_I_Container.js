@@ -12,6 +12,7 @@ import { convertDateFormat } from '../../../helper/ConvertDateFormat';
 import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
 import NewCity from './NewCity';
 import { isJson } from '../../../services/isJSON';
+import { PopoverPaper } from '@mui/material';
 export const DayContainerStyle = styled.div`
   display: flex;
   flex-direction: column;
@@ -108,6 +109,7 @@ const Day_I_Container = (props) => {
           dayIcontainer.push(
             <TransferElements
               time="9:00AM"
+              booking={props.transferBookings}
               modes={getTransportationType(element.icon)}
               // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
               data={element}
@@ -134,6 +136,7 @@ const Day_I_Container = (props) => {
           dayIcontainer.push(
             <ItineraryElement
               data={element}
+              booking={props.stayBookings}
               day={slab}
               icon={element.icon}
               time="9:00AM"

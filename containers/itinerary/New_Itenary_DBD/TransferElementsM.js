@@ -29,6 +29,16 @@ const TransferElementsM = ({
   booking,
   LastTransfer,
 }) => {
+  function getUserSelectedByBookings(id) {
+    if (booking && booking.length && id)
+      for (let i = 0; i < booking.length; i++) {
+        if (booking[i].id === id) {
+          return booking[i].user_selected;
+        }
+      }
+    return null;
+  }
+
   return (
     <>
       <Container className="pt-1 relative">
@@ -62,9 +72,14 @@ const TransferElementsM = ({
                   offset={-90}
                 >
                   <TransparentButton>
-                    {data.bookings &&
-                    data.bookings[0] &&
-                    data.bookings[0].user_selected ? (
+                    {getUserSelectedByBookings(
+                      data.bookings &&
+                        data.bookings[0] &&
+                        data.bookings[0] &&
+                        data.bookings[0].id
+                        ? data.bookings[0].id
+                        : null
+                    ) ? (
                       <>
                         <MdDoneAll
                           style={{
