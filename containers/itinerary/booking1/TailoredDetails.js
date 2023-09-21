@@ -583,7 +583,7 @@ const Details = (props) => {
             {iscouponApplied &&
               props.payment.discounted_cost != props.payment.total_cost &&
               props.payment.show_per_person_cost !=
-                props.payment.per_person_discounted_cost && (
+                props.payment.per_person_discounted_cost ? (
                 <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                   <span>₹</span>
                   <div>
@@ -598,7 +598,7 @@ const Details = (props) => {
                     {"/-"}
                   </div>
                 </div>
-              )}
+              ) : <div></div>}
 
             {iscouponApplied && props?.payment?.coupon_usage && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
