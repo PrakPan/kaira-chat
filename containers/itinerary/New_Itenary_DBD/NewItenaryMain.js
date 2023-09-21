@@ -34,7 +34,6 @@ const NewItenaryMain = (props) => {
     border-radius: 8px;
     padding: 0.5rem;
   `;
-  // console.log('itenary...' + JSON.stringify(props.itinerary));
 
   const isDesktop = useMediaQuery('(min-width:1148px)');
 
@@ -75,11 +74,6 @@ const NewItenaryMain = (props) => {
           i % props.city_slabs[i].duration
             ? props.itinerary.day_slabs[i - 1]
             : props.itinerary.day_slabs[i];
-        // console.log(itenaryId !== undefined);
-        // console.log('idssss' + props.city_slabs[i].city_name);
-        // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
-        // console.log('idssss'+ itenaryId.slab_id)
-        // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
 
         items.push({
           id: i,
@@ -111,11 +105,6 @@ const NewItenaryMain = (props) => {
       //Don't do anything if ending city
 
       const itenaryId = props.itinerary.day_slabs[i];
-      // console.log(itenaryId !== undefined);
-      // console.log('idssss' + props.city_slabs[i].city_name);
-      // console.log('idssss' + props.itinerary.day_slabs[0].slab_id);
-      // console.log('idssss'+ itenaryId.slab_id)
-      // console.log('idssss'+ itenaryId !== undefined ? itenaryId[i].slab_id  : itenaryId[0].slab_id )
 
       itemsDays.push({
         id: i,
@@ -228,6 +217,8 @@ const NewItenaryMain = (props) => {
                 setItinerary={props.setItinerary}
                 token={props.token}
                 LastElement={props.itinerary.day_slabs.length == index + 1}
+                transferBookings={props.transferBookings}
+                stayBookings={props.stayBookings}
               ></Day_I_Container>
             </div>
           ))}

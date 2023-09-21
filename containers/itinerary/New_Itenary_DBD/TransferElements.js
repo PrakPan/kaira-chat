@@ -25,11 +25,27 @@ const TransferElements = ({
   modes,
   data,
   transfers,
+  booking,
   icon,
   text,
   newcity,
   LastTransfer,
 }) => {
+
+  function getUserSelectedByBookings(id) {
+  if (
+    booking &&
+    booking.length &&
+    id
+  )
+    for (let i = 0; i < booking.length; i++) {
+      if (booking[i].id === id) {
+        return booking[i].user_selected;
+      }
+    }
+  return null;
+}
+
   function isValueUndefined(value) {
     return value === undefined;
   }
@@ -73,9 +89,11 @@ const TransferElements = ({
                     offset={-90}
                   >
                     <TransparentButton>
-                      {data.bookings &&
+                      {
+                      getUserSelectedByBookings(data.bookings &&
                       data.bookings[0] &&
-                      data.bookings[0].user_selected ? (
+                        data.bookings[0] && data.bookings[0].id ? data.bookings[0].id : null)
+                        ? (
                         <>
                           <MdDoneAll
                             style={{

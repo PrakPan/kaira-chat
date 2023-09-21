@@ -85,7 +85,7 @@ const ImageContainer = styled.div`
 const POIDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageLoaded, setImageLoaded] = useState(false);
-
+  const [imageFail , setImageFail] = useState(false)
   var about = (
     <p>
       {props.data.short_description?.substr(0, 250)}{" "}
@@ -143,7 +143,7 @@ const POIDetails = (props) => {
         </BackContainer>
       )}
 
-      <ImageContainer>
+      <ImageContainer style={{ height: "188px" }}>
         <div>
           <div style={{ display: imageLoaded ? "initial" : "none" }}>
             <ImageLoader
@@ -151,14 +151,21 @@ const POIDetails = (props) => {
               marginTop="23px"
               widthMobile="100%"
               // style={imageLoading ? { display: "none" } : {}}
-              url={props.data.image}
+              url={
+                props.data.image && !imageFail
+                  ? props.data.image
+                  : "media/icons/bookings/notfounds/noroom.png"
+              }
               dimensionsMobile={{ width: 500, height: 280 }}
               dimensions={{ width: 468, height: 188 }}
-              yuu
               onload={() => {
                 setTimeout(() => {
                   setImageLoaded(true);
                 }, 1000);
+              }}
+              onfail={() => {
+                setImageFail(true);
+                setImageLoaded(true);
               }}
               noLazy
             ></ImageLoader>
@@ -196,7 +203,6 @@ const POIDetails = (props) => {
           style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
         />
       )} */}
-
       <div>
         <Title>{props.data.name}</Title>
         {props.data.address && (
@@ -244,14 +250,12 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
-
       {props.data.getting_around && (
         <div>
           <Heading>Getting Around</Heading>
           <Text>{props.data.getting_around}</Text>
         </div>
       )}
-
       {props.data.timings && (
         <div>
           <Heading>Timings</Heading>
@@ -266,7 +270,6 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
-
       {props.data.tips && props.data.tips.length && (
         <div>
           <Heading>Tips</Heading>

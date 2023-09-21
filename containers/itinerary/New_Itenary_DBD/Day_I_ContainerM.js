@@ -89,6 +89,7 @@ const Day_I_ContainerM = (props) => {
               heading={element.heading}
               text={element.text}
               LastTransfer={props.LastElement}
+              booking={props.transferBookings}
               // newcity={
               //   Arslab_elements[1].data[0].length != 0
               //     ? Arslab_elements[1].data[0][0]
@@ -107,7 +108,7 @@ const Day_I_ContainerM = (props) => {
               data={element}
               icon={element.icon}
               time="9:00AM"
-              booking={element?.bookings ? element?.bookings[0] : null}
+              booking={props.stayBookings}
               heading={element.heading}
               text={element.text}
             ></ItineraryElementM>

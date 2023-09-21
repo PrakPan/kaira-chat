@@ -201,9 +201,7 @@ const Itinerary = (props) => {
         let email = localStorage.getItem('email');
         if (props.token)
           for (var i = 0; i < res.data.registered_users.length; i++) {
-            // console.log(props.email)
 
-            // console.log(res.data.registered_users[i])
             if (res.data.registered_users[i].email === email) {
               if (res.data.registered_users[i].payment_status)
                 if (res.data.registered_users[i].payment_status === 'captured')
@@ -294,7 +292,6 @@ const Itinerary = (props) => {
       }, [IntervalTiming]);
     // if(router.query.payment_status) window.location.reload();
     //  props.checkAuthState();
-    //  console.log('itinerary token',props.token)
 
     function fetchData() {
       window.scrollTo(0, 0);
