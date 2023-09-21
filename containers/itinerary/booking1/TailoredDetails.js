@@ -580,22 +580,25 @@ const Details = (props) => {
       >
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
-            {iscouponApplied && (
-              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
-                <span>₹</span>
-                <div>
-                  {props.payment.show_per_person_cost ||
-                  props.payment.pay_only_for_one
-                    ? getIndianPrice(
-                        Math.round(props.payment.per_person_total_cost / 100)
-                      )
-                    : getIndianPrice(
-                        Math.round(props.payment.total_cost / 100)
-                      )}
-                  {"/-"}
+            {iscouponApplied &&
+              props.payment.discounted_cost != props.payment.total_cost &&
+              props.payment.show_per_person_cost !=
+                props.payment.per_person_discounted_cost ? (
+                <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                  <span>₹</span>
+                  <div>
+                    {props.payment.show_per_person_cost ||
+                    props.payment.pay_only_for_one
+                      ? getIndianPrice(
+                          Math.round(props.payment.per_person_total_cost / 100)
+                        )
+                      : getIndianPrice(
+                          Math.round(props.payment.total_cost / 100)
+                        )}
+                    {"/-"}
+                  </div>
                 </div>
-              </div>
-            )}
+              ) : <div></div>}
 
             {iscouponApplied && props?.payment?.coupon_usage && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
@@ -824,18 +827,22 @@ const Details = (props) => {
                             {props.payment.coupon.code}
                           </div>
                           <div className="font-normal ">
-                            (
                             {props?.payment?.coupon?.discount_type == "Flat"
-                              ? "Flat"
+                              ? "(Flat  OFF!)"
                               : props?.payment?.coupon?.discount_type ==
                                 "1 Night Free Stay"
-                              ? `INR ${getIndianPrice(
-                                  Math.round(
-                                    props?.payment?.coupon_usage?.discount / 100
-                                  )
-                                )}`
-                              : props.payment.coupon.discount_value + "%"}{" "}
-                            OFF!)
+                              ? props?.payment?.coupon_usage?.discount
+                                ? `(INR ${getIndianPrice(
+                                    Math.round(
+                                      props?.payment?.coupon_usage?.discount /
+                                        100
+                                    )
+                                  )}  OFF!)`
+                                : props.payment.coupon.discount_value
+                                ? props.payment.coupon.discount_value +
+                                  "%  OFF!"
+                                : null
+                              : null}
                           </div>
                         </div>
                       </div>
@@ -846,15 +853,19 @@ const Details = (props) => {
                             : "font-lexend text-enter font-bold"
                         }
                       >
-                        <div>
-                          (-){" "}
-                          {"₹" +
-                            getIndianPrice(
-                              Math.round(
-                                props?.payment?.coupon_usage?.discount / 100
-                              )
-                            )}
-                        </div>
+                        {props?.payment?.coupon_usage?.discount ? (
+                          <div>
+                            (-){" "}
+                            {"₹" +
+                              getIndianPrice(
+                                Math.round(
+                                  props?.payment?.coupon_usage?.discount / 100
+                                )
+                              )}
+                          </div>
+                        ) : (
+                          <div></div>
+                        )}
 
                         {/* <div className="flex flex-row">
                             <div className="flex flex-row">
