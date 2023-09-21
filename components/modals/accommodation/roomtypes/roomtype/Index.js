@@ -13,8 +13,12 @@ import Details from '../../../details/Index';
 
 const Container = styled.div`
   width: 100%;
-  display : flex;
-  gap : 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 75px auto;
+  @media screen and (min-width: 768px) {
+    grid-template-columns: 85px auto;
+  }
 `;
 const NoImageContainer = styled.div`
   width: 100%;
@@ -128,7 +132,7 @@ const RoomType = (props) => {
           <div
             style={
               isPageWide
-                ? { fontSize: "17px", fontWeight: "500" }
+                ? { fontSize: "16px", fontWeight: "500" }
                 : { fontSize: "14px", fontWeight: "400" }
             }
           >
