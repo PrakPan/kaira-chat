@@ -79,8 +79,15 @@ function compareDates(dateString1, dateString2) {
   return false;
 }
 const ItineraryElement = (props) => {
-  useEffect(() => {}, []);
-
+  function getUserSelectedByBookings(id) {
+    if (props.booking && props.booking.length && id)
+      for (let i = 0; i < props.booking.length; i++) {
+        if (props.booking[i].id === id) {
+          return props.booking[i].user_selected;
+        }
+      }
+    return null;
+  }
   return (
     <Container className="pt-3">
       {/* <div>{props.time}</div> */}
@@ -120,7 +127,14 @@ const ItineraryElement = (props) => {
               props.data.bookings &&
               props.data.bookings.length ? (
                 <>
-                  {props.data.bookings[0].user_selected ? (
+                  {getUserSelectedByBookings(
+                    props.data.bookings &&
+                      props.data.bookings[0] &&
+                      props.data.bookings[0] &&
+                      props.data.bookings[0].id
+                      ? props.data.bookings[0].id
+                      : null
+                  ) ? (
                     <TransparentButton>
                       <MdDoneAll
                         style={{

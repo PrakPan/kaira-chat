@@ -108,7 +108,7 @@ const Day_I_ContainerM = (props) => {
               data={element}
               icon={element.icon}
               time="9:00AM"
-              booking={element?.bookings ? element?.bookings[0] : null}
+              booking={props.stayBookings}
               heading={element.heading}
               text={element.text}
             ></ItineraryElementM>
