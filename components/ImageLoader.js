@@ -189,7 +189,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             style={{
@@ -204,10 +204,10 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -243,7 +243,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             style={{
@@ -258,10 +258,10 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -298,7 +298,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             style={{
@@ -313,10 +313,10 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             // src={!is_url  ?   `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
@@ -354,7 +354,7 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             style={{
@@ -369,10 +369,10 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -608,7 +608,7 @@ export default ImageLoader;
 //               !is_url
 //                 ? isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             style={{
@@ -627,16 +627,16 @@ export default ImageLoader;
 //             //   !is_url
 //             //     ? isPageLoaded
 //             //       ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //             //     : props.url
 //             // }
 //             src={
 //               !is_url
 //                 ? error
-//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                   : isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             onLoad={fullImageLoadedHandler}
@@ -686,7 +686,7 @@ export default ImageLoader;
 //               !is_url
 //                 ? isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             style={{
@@ -705,16 +705,16 @@ export default ImageLoader;
 //             //   !is_url
 //             //     ? isPageLoaded
 //             //       ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //             //     : props.url
 //             // }
 //             src={
 //               !is_url
 //                 ? error
-//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                   : isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             onLoad={fullImageLoadedHandler}
@@ -764,7 +764,7 @@ export default ImageLoader;
 //               !is_url
 //                 ? isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             style={{
@@ -783,16 +783,16 @@ export default ImageLoader;
 //             //   !is_url
 //             //     ? isPageLoaded
 //             //       ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //             //     : props.url
 //             // }
 //             src={
 //               !is_url
 //                 ? error
-//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                   : isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             // src={!is_url  ?   `${imgUrlEndPoint}/${btoa(imageRequestMobile)}` :props.url}
@@ -838,7 +838,7 @@ export default ImageLoader;
 //               !is_url
 //                 ? isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             style={{
@@ -857,16 +857,16 @@ export default ImageLoader;
 //             //   !is_url
 //             //     ? isPageLoaded
 //             //       ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
-//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//             //       : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //             //     : props.url
 //             // }
 //             src={
 //               !is_url
 //                 ? error
-//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                   : isPageLoaded
 //                   ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+//                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
 //                 : props.url
 //             }
 //             onLoad={fullImageLoadedHandler}
