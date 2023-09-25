@@ -138,9 +138,9 @@ const Section = (props) => {
         },
         additionalInfo: {
           specialInstructions: "",
-          noOfPerson:
-            props.selectedBooking.pax.number_of_children +
-            props.selectedBooking.pax.number_of_adults,
+          noOfAdults: props.selectedBooking.pax.number_of_adults,
+          noOfChildren: props.selectedBooking.pax.number_of_children, 
+          noOfInfants: props.selectedBooking.pax.number_of_infants,
           noOfLargeBags: props.data.cab.bigBagCapaCity,
           noOfSmallBags: props.data.cab.bagCapacity,
           carrierRequired: 0,
