@@ -457,7 +457,7 @@ function truncateString(str, maxLength) {
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
-        <div style={{ position: "relative"}}>
+        <div style={{ position: "relative" }}>
           <Line pinColour={props.pinColour} Transfers={true} />
         </div>
       ) : (
@@ -949,15 +949,28 @@ function truncateString(str, maxLength) {
                   />
                 ) : (
                   props.icon && (
+                    <>
+                      {!props.icon.includes("gozo") ? (
                         <ImageLoader
-                          is_url={props.icon.includes('gozo')}
-                      className=" object-contain"
-                      url={props.icon}
-                      leftalign
-                      height={props.icon.includes('gozo') ? "3rem" : '4rem'}
-                      width={"4rem"}
-                      widthmobile="4rem"
-                    ></ImageLoader>
+                          is_url={props.icon.includes("gozo")}
+                          className=" object-contain"
+                          url={props.icon}
+                          leftalign
+                          height={props.icon.includes("gozo") ? "3rem" : "4rem"}
+                          width={"4rem"}
+                          widthmobile="4rem"
+                        ></ImageLoader>
+                      ) : (
+                        <img
+                          src={props.icon}
+                          height={props.icon.includes("gozo") ? "3rem" : "4rem"}
+                          width={"4rem"}
+                                widthmobile="4rem"
+                                
+                                style={{height : '3rem' , width : '5rem' , margin : '0'}}
+                        ></img>
+                      )}
+                    </>
                   )
                 )}
               </div>
@@ -970,7 +983,12 @@ function truncateString(str, maxLength) {
                   ? props.booking.costings_breakdown &&
                     props.booking.costings_breakdown.gozo &&
                     props.booking.costings_breakdown.gozo.model
-                    ? isPageWide ? props.booking.costings_breakdown.gozo.model :  truncateString(props.booking.costings_breakdown.gozo.model,25)
+                    ? isPageWide
+                      ? props.booking.costings_breakdown.gozo.model
+                      : truncateString(
+                          props.booking.costings_breakdown.gozo.model,
+                          25
+                        )
                     : "Private transfer "
                   : props.booking_type}
                 {props?.booking?.costings_breakdown?.duration?.text && (
