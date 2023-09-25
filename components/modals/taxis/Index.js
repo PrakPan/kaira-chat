@@ -192,6 +192,9 @@ const Booking = (props) => {
       //     setLoading(false);
       //   })
       //   .catch((err) => { });
+       setLoading(true);
+      setUpdateLoadingState(false);
+            setMoreOptionsJSX([]);
       
       axiostaxigozoinstance
         .post("/", {
@@ -201,8 +204,7 @@ const Booking = (props) => {
           startDate: props.selectedBooking.check_in,
         })
         .then((res) => {
-          setLoading(true);
-          setUpdateLoadingState(false);
+         
           if (
             res.data.data &&
             res.data.data.cabRate &&
