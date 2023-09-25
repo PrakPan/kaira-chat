@@ -9,7 +9,7 @@ import { IoCheckmark, IoClose } from "react-icons/io5";
 import { LivelyButton } from "../../../components/LiveleyButton";
 import { MdEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
-import media from '../../../components/media'
+import media from "../../../components/media";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
@@ -318,49 +318,49 @@ const TransferModeContainer = (props) => {
     if (!props.token) {
       return props.setShowLoginModal(true);
     }
-      let name = props.booking["name"];
-      let costings_breakdown = props.booking["costings_breakdown"];
-      let cost = props.booking["booking_cost"];
-      let itinerary_id = props.booking["itinerary_id"];
-      let itinerary_name = props.booking["itinerary_name"];
-      let booking_type = props.booking["booking_type"];
+    let name = props.booking["name"];
+    let costings_breakdown = props.booking["costings_breakdown"];
+    let cost = props.booking["booking_cost"];
+    let itinerary_id = props.booking["itinerary_id"];
+    let itinerary_name = props.booking["itinerary_name"];
+    let booking_type = props.booking["booking_type"];
 
-      let tailored_id = props.booking["tailored_itinerary"];
-      let id = props.booking["id"];
-      let check_in = props.booking["check_in"];
-      let check_out = props.booking["check_out"];
-      let pax = {
-        number_of_adults: props.booking["number_of_adults"],
-        number_of_children: props.booking["number_of_children"],
-        number_of_infants: props.booking["number_of_infants"],
-      };
-      let city = props.booking["city"];
-      let room_type = props.booking["room_type"];
-      let taxi_type = props.booking["taxi_type"];
-      let transfer_type = props.booking["transfer_type"];
-      let city_id = props.booking["city_id"];
-      let destination_city = props.booking["destination_city"];
-      let duration = props.booking["duration"];
-      let origin_iata = props.booking["origin_city_iata_code"];
-      let destination_iata = props.booking["destination_city_iata_code"];
-      props._changeTaxiHandler(
-        name,
-        itinerary_id,
-        tailored_id,
-        id,
-        check_in,
-        check_out,
-        pax,
-        city,
-        itinerary_name,
-        cost,
-        costings_breakdown,
-        origin_iata,
-        destination_iata,
-        destination_city,
-        taxi_type,
-        transfer_type
-      );
+    let tailored_id = props.booking["tailored_itinerary"];
+    let id = props.booking["id"];
+    let check_in = props.booking["check_in"];
+    let check_out = props.booking["check_out"];
+    let pax = {
+      number_of_adults: props.booking["number_of_adults"],
+      number_of_children: props.booking["number_of_children"],
+      number_of_infants: props.booking["number_of_infants"],
+    };
+    let city = props.booking["city"];
+    let room_type = props.booking["room_type"];
+    let taxi_type = props.booking["taxi_type"];
+    let transfer_type = props.booking["transfer_type"];
+    let city_id = props.booking["city_id"];
+    let destination_city = props.booking["destination_city"];
+    let duration = props.booking["duration"];
+    let origin_iata = props.booking["origin_city_iata_code"];
+    let destination_iata = props.booking["destination_city_iata_code"];
+    props._changeTaxiHandler(
+      name,
+      itinerary_id,
+      tailored_id,
+      id,
+      check_in,
+      check_out,
+      pax,
+      city,
+      itinerary_name,
+      cost,
+      costings_breakdown,
+      origin_iata,
+      destination_iata,
+      destination_city,
+      taxi_type,
+      transfer_type
+    );
   }
   const Facilities = [
     props.booking_type == "Taxi" || props.booking_type == "Bus"
@@ -382,12 +382,12 @@ const TransferModeContainer = (props) => {
       ? `${props?.costings_breakdown?.distance?.text}`
       : null,
   ];
-function truncateString(str, maxLength) {
-  if (str.length > maxLength) {
-    return str.slice(0, maxLength - 3) + "...";
+  function truncateString(str, maxLength) {
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength - 3) + "...";
+    }
+    return str;
   }
-  return str;
-}
   const _updateSelectedTransfer = () => {
     setUpdateBookingState(true);
     setLoading(true);
@@ -949,28 +949,15 @@ function truncateString(str, maxLength) {
                   />
                 ) : (
                   props.icon && (
-                    <>
-                      {!props.icon.includes("gozo") ? (
-                        <ImageLoader
-                          is_url={props.icon.includes("gozo")}
-                          className=" object-contain"
-                          url={props.icon}
-                          leftalign
-                          height={props.icon.includes("gozo") ? "3rem" : "4rem"}
-                          width={"4rem"}
-                          widthmobile="4rem"
-                        ></ImageLoader>
-                      ) : (
-                        <img
-                          src={props.icon}
-                          height={props.icon.includes("gozo") ? "3rem" : "4rem"}
-                          width={"4rem"}
-                                widthmobile="4rem"
-                                
-                                style={{height : '3rem' , width : '5rem' , margin : '0'}}
-                        ></img>
-                      )}
-                    </>
+                    <ImageLoader
+                      is_url={props.icon.includes("gozo")}
+                      className=" object-contain"
+                      url={props.icon}
+                      leftalign
+                      height={props.icon.includes("gozo") ? "3rem" : "4rem"}
+                      width={"4rem"}
+                      widthmobile="4rem"
+                    ></ImageLoader>
                   )
                 )}
               </div>

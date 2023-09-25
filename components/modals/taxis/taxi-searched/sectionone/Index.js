@@ -33,15 +33,14 @@ const Section= (props) => {
           {/* <DropDown></DropDown> */}
           {/* <ImageLoader url={props.data.images ? props.data.images.image ? props.data.images.image : "media/icons/bookings/car (2).png" : "media/icons/bookings/car (2).png"}   width="5rem" widthmobile="5rem" height="auto" ></ImageLoader> */}
           {props.data.cab && props.data.cab.image ? (
-            <img
-              // is_url
-              // noLazy
-              src={props.data.cab.image}
-              style={{height : 'auto' , width : '100%'}}
-              // width="100%"
-              // widthmobile="100%"
-              // height="auto"
-            ></img>
+            <ImageLoader
+              is_url
+              noLazy
+              url={props.data.cab.image}
+              width="100%"
+              widthmobile="100%"
+              height="auto"
+            ></ImageLoader>
           ) : (
             <ImageLoader
               url={"media/icons/bookings/car (2).png"}
