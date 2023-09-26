@@ -45,6 +45,7 @@ const Mapbox = React.memo(
     setCurrentPopup,
     setShowDrawer,
     setShowDrawerData,
+    onload
   }) => {
     const isDesktop = useMediaQuery("(min-width:768px)");
     function sortWholeNumbersDescending(arr) {
@@ -132,6 +133,9 @@ const Mapbox = React.memo(
         scrollWheelZoom={false}
         dragging={!isDesktop}
         style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
+        whenReady={() => {
+          if(onload) onload()
+        }}
       >
         <TileLayer
           url={`
