@@ -14,10 +14,11 @@ useEffect(() => {
     let count = res.data.user.toString().split("");
     if (count.length > 3) {
       for (let i = 1; i < 4; i++){
-      count[count.length - i] = "0";        
+      count.pop();        
       }
+      setCount(count.join('') + 'k')
     }
-    setCount(+count.join(''))
+    else setCount(+count.join(''))
   });
 }, []);
 // useEffect(() => {
@@ -31,7 +32,7 @@ useEffect(() => {
   return (
     <div
       ref={ref}
-      style={{ display: "flex", alignItems: "center", width: "165px" }}
+      style={{ display: "flex", alignItems: "center" }}
     >
       <h2
         style={
@@ -41,7 +42,7 @@ useEffect(() => {
         }
       >
         {/* {countToShow} */}
-        {count*10}
+        {count}
       </h2>
       <h2
         style={

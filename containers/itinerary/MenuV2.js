@@ -289,23 +289,25 @@ const SimpleTabsV2 = (props) => {
 
   //Location tabs for mobile
 
-  let RoutesData = [];
-  let TransfersData = [];
-  let CityDataTemp = [];
-  let totalcityslabs = 0;
+  var RoutesData = [];
+  var TransfersData = [];
+  var CityDataTemp = [];
+  var totalcityslabs = 0;
 
-  totalcityslabs = newFunction(
-    props,
-    totalcityslabs,
-    citydatadone,
-    CityDataTemp,
-    setcitydatadone,
-    setCityData,
-    CityData,
-    RoutesData,
-    TransfersData
-  );
-
+  useEffect(() => {
+    totalcityslabs = newFunction(
+      props,
+      totalcityslabs,
+      citydatadone,
+      CityDataTemp,
+      setcitydatadone,
+      setCityData,
+      CityData,
+      RoutesData,
+      TransfersData
+    );
+  
+  },[])
   useLayoutEffect(() => {
     const handleScroll = () => {
       const currentPos = window.scrollY;
