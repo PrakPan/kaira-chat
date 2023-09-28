@@ -9,7 +9,7 @@ export const getServerSideProps = async ({ res }) => {
 
   // Fetch continents list :-
   const continents = await axios.get(
-    "https://apis.tarzanway.com/page/list?page_type=Continents"
+    "https://apis.tarzanway.com/page/list?page_type=Continents&fields=path"
   );
   const continentsData = continents.data;
   let continentsPaths = continentsData.map((object) => {
@@ -17,14 +17,18 @@ export const getServerSideProps = async ({ res }) => {
   });
 
   // Fetch Countries list :-
-  const countries = await axios.get("https://apis.tarzanway.com/poi/country/all");
+  const countries = await axios.get(
+    "https://apis.tarzanway.com/poi/country/all?fields=path"
+  );
   const countriesData = countries.data;
   let countriesPaths = countriesData.map((object) => {
     return {title : 'Country Planner' ,link : BASE_URL + "/" + object.path};
   });
 
   // Fetch States list :-
-  const states = await axios.get("https://apis.tarzanway.com/search/all/?type=State");
+  const states = await axios.get(
+    "https://apis.tarzanway.com/search/all/?type=State&fields=path"
+  );
   const statesData = states.data;
   let statesPaths = statesData.map((object) => {
     return {
@@ -35,7 +39,7 @@ export const getServerSideProps = async ({ res }) => {
 
   //Fetch city list
   const cities = await fetch(
-    `https://apis.tarzanway.com/search/all/?type=Location`
+    `https://apis.tarzanway.com/search/all/?type=Location&fields=path`
   );
   const citiesdata = await cities.json();
 

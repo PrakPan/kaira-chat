@@ -61,7 +61,7 @@ export async function getStaticPaths() {
 
   // const data = await res.json();
 
-  const res = await axiosallCityInstance.get("");
+  const res = await axiosallCityInstance.get("&fields=path,cta");
     // const res = await axios.get(
     //   "https://dev.apis.tarzanway.com/search/all/?type=Location"
     // );
