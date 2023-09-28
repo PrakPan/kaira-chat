@@ -92,6 +92,14 @@ const GetInTouchContainer = styled.div`
     filter: invert(100%);
   }
 `;
+const CouponsOption = styled.div`
+  color: #0a5edc;
+  font-size: 14px;
+  text-decoration: underline;
+  font-weight: 400;
+  /* border: 1px solid red; */
+  text-align: end;
+`;
 const Details = (props) => {
   const getCurrentDateIfOlder = (dateString) => {
     const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
@@ -581,24 +589,26 @@ const Details = (props) => {
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
             {iscouponApplied &&
-              props.payment.discounted_cost != props.payment.total_cost &&
-              props.payment.show_per_person_cost !=
-                props.payment.per_person_discounted_cost ? (
-                <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
-                  <span>₹</span>
-                  <div>
-                    {props.payment.show_per_person_cost ||
-                    props.payment.pay_only_for_one
-                      ? getIndianPrice(
-                          Math.round(props.payment.per_person_total_cost / 100)
-                        )
-                      : getIndianPrice(
-                          Math.round(props.payment.total_cost / 100)
-                        )}
-                    {"/-"}
-                  </div>
+            props.payment.discounted_cost != props.payment.total_cost &&
+            props.payment.show_per_person_cost !=
+              props.payment.per_person_discounted_cost ? (
+              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                <span>₹</span>
+                <div>
+                  {props.payment.show_per_person_cost ||
+                  props.payment.pay_only_for_one
+                    ? getIndianPrice(
+                        Math.round(props.payment.per_person_total_cost / 100)
+                      )
+                    : getIndianPrice(
+                        Math.round(props.payment.total_cost / 100)
+                      )}
+                  {"/-"}
                 </div>
-              ) : <div></div>}
+              </div>
+            ) : (
+              <div></div>
+            )}
 
             {iscouponApplied && props?.payment?.coupon_usage && (
               <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
@@ -1038,8 +1048,9 @@ const Details = (props) => {
             </div>
           </div>
         ) : null}
+        {/* <CouponsOption>View Applicable Offers</CouponsOption> */}
 
-        <div className="border-y-2 border-[#F0F0F0] my-3 ml-1">
+        <div className=" border-y border-[#F0F0F0] my-3 ml-1">
           <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
