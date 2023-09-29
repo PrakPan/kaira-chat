@@ -46,7 +46,6 @@ const LocationsBlog = (props) => {
         cardsArr.push(
           <Card
             key={props.locations[i].id}
-            ancestors={props.locations[i].ancestors}
             path={props.locations[i].path}
             location={props.locations[i].destination || props.locations[i].name}
             heading={props.locations[i].tagline}

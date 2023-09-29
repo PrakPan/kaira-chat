@@ -216,33 +216,32 @@ banner_image,
                 }  lg:w-[30%] w-full  h-[12rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
-                    <ImageLoader
-                      dimensions={{ width: 400, height: 400 }}
-                      dimensionsMobile={{ width: 400, height: 400 }}
-                      borderRadius="16px"
-                      hoverpointer
-                      onclick={() => console.log("")}
-                      width="100%"
-                      height="100%"
-                      leftalign
-                      widthmobile="100%"
-                      noLazy
-                      url={
-                        img && !imageFail
-                          ? img
-                          : "media/icons/bookings/notfounds/noroom.png"
-                      }
-                      onfail={() => {
-                        setImageFail(true);
+                  <ImageLoader
+                    dimensions={{ width: 400, height: 400 }}
+                    dimensionsMobile={{ width: 400, height: 400 }}
+                    borderRadius="16px"
+                    hoverpointer
+                    onclick={() => console.log("")}
+                    width="100%"
+                    height="100%"
+                    leftalign
+                    widthmobile="100%"
+                    noLazy
+                    url={
+                      img && !imageFail
+                        ? img
+                        : "media/icons/bookings/notfounds/noroom.png"
+                    }
+                    onfail={() => {
+                      setImageFail(true);
+                      setImageLoaded(true);
+                    }}
+                    onload={() => {
+                      setTimeout(() => {
                         setImageLoaded(true);
-                      }}
-                      onload={() => {
-                        setTimeout(() => {
-                          setImageLoaded(true);
-                        }, 1000);
-                      }}
-                    ></ImageLoader>
-                  
+                      }, 1000);
+                    }}
+                  ></ImageLoader>
                 </div>
                 <div
                   style={{
@@ -332,15 +331,20 @@ banner_image,
                         </div>
                       )}
 
-                      <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                        <BsPeopleFill className="text-sm text-[#7A7A7A]" />
-                        <div className="text-sm font-[400] min-w-fit">
-                          {booking.number_of_adults
-                            ? booking.number_of_adults
-                            : currentBooking.number_of_adults}{" "}
-                          Adults
+                      {booking.number_of_adults ||
+                      currentBooking.number_of_adults ? (
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                          <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] min-w-fit">
+                            {booking.number_of_adults
+                              ? booking.number_of_adults
+                              : currentBooking.number_of_adults}{" "}
+                            Adults
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   ) : (
                     currentBooking &&
@@ -504,26 +508,24 @@ banner_image,
                         View Detail
                       </Button>
                     )}
-                    {payment?.is_registration_needed ? null : (
-                      payment?.paid_user ||
+                    {payment?.is_registration_needed ? null : payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
-                        <div
-                          onClick={(e) => {
-                              e.stopPropagation();
-                              if (token) handleClickAc(index, booking, city_id);
-                              else setShowLoginModal(true);
-                          }}
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (token) handleClickAc(index, booking, city_id);
+                          else setShowLoginModal(true);
+                        }}
+                      >
+                        <Button
+                          padding="0.6rem 2.2rem"
+                          borderRadius="8px"
+                          fontWeight="400"
+                          onclick={() => console.log("")}
                         >
-                          <Button
-                            padding="0.6rem 2.2rem"
-                            borderRadius="8px"
-                            fontWeight="400"
-                            onclick={() => console.log("")}
-                          >
-                            {!isSelect ? "Add Hotel" : "Change"}
-                          </Button>
-                        </div>
-                      )
+                          {!isSelect ? "Add Hotel" : "Change"}
+                        </Button>
+                      </div>
                     )}
 
                     {/* <div

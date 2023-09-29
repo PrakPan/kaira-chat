@@ -64,24 +64,32 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export async function getStaticProps() {
-var data = []
+var ThemeData = [];
   var locations = []
   var asiaLocations = []
   var europeLocations = []
   try{
-    const res = await axios.get(`https://apis.tarzanway.com/page/list?country=India&page_type=Theme`)
-    data = res.data
+    const res = await axios.get(
+      `https://apis.tarzanway.com/page/list?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
+    );
+    ThemeData = res.data;
   }
   catch(e){
-    data = []
+    ThemeData = [];
   }
   try{
-    const loc = await axiospagelistinstance.get(`?country=india`)
+    const loc = await axiospagelistinstance.get(
+      `?country=india&fields=id,destination,tagline,image,link`
+    );
     locations = loc.data;
 
-  const response = await axioscountrydetailsinstance("/all?continent=asia");
+  const response = await axioscountrydetailsinstance(
+    "/all?continent=asia&fields=id,name,path,tagline,image"
+  );
     asiaLocations = response.data;  
-      const resp = await axioscountrydetailsinstance("/all?continent=europe");
+      const resp = await axioscountrydetailsinstance(
+        "/all?continent=europe&fields=id,name,path,tagline,image"
+      );
     europeLocations = resp.data;  
   }
 catch(e){
@@ -90,26 +98,19 @@ catch(e){
     europeLocations = []
   }
 // contient carousel :-
-  const res = await axiospagelistinstance("?page_type=Continents");
+  const res = await axiospagelistinstance(
+    "?page_type=Continents&fields=destination,tagline,image,path"
+  );
     const continetCarousel = [];
     for (let i = 0; i < res.data.length; i++) {
       const hot_destinations = await axioscountrydetailsinstance(
-        `/all?continent=${res.data[i].destination}&hot_destinations=true`
+        `/all?continent=${res.data[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
       );
       const hot_data = hot_destinations.data.filter((e, i) => {
         if (i < 6) return e;
       });
       continetCarousel.push({ ...res.data[i], hot_destinations: hot_data });
     }
-
-
-
-  const ThemeData = data.map((e)=>{return {id : e.id, link : e.link, image : e.image,banner_heading : e.banner_heading , path : e.path}})
-      if (!data) {
-            return {
-              notFound: true,
-            }
-          }
       return {
         props: {
           ThemeData,

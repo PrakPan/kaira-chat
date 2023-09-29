@@ -56,7 +56,7 @@ export async function getStaticPaths() {
   // const res = await axiosTravelPlannerInstance.get('/list')
   // const data = res.data
 
-  const res = await axiossearchallinstance.get('?type=State')
+  const res = await axiossearchallinstance.get("?type=State&fields=path");
   // const res = await axios.get(
   //   "https://apis.tarzanway.com/search/all/?type=State"
   // );
@@ -65,7 +65,6 @@ export async function getStaticPaths() {
   for (var i = 0; i < data.length; i++) {
     const pathArr = data[i].path.split("/");
     var [continentSlug, countrySlug, stateSlug] = pathArr;
-    if (data[i].id !== 1) {
       paths.push({
         params: {
           continent: continentSlug,
@@ -73,7 +72,6 @@ export async function getStaticPaths() {
           state: stateSlug,
         },
       });
-    }
   }
 
   return {
@@ -97,7 +95,7 @@ export async function getStaticProps(context) {
   //       }
   try {
     const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}`
+      `/?country=${context.params.country}&fields=id,ancestors,path,destination,name,tagline,image,link`
     );
     locations = loc.data;
   } catch (e) {
