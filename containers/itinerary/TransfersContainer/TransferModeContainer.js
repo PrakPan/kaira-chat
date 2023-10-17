@@ -398,8 +398,7 @@ const TransferModeContainer = (props) => {
         costings_breakdown: props.booking?.costings_breakdown,
       },
     ];
-    console.dir(updated_bookings_arr);
-    axiosbookingupdateinstance
+     axiosbookingupdateinstance
       .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
@@ -442,11 +441,14 @@ const TransferModeContainer = (props) => {
   };
 
   var adult;
-  if (props.booking.number_of_adults > 1) adult = " Adults";
+  try{if (props.booking.number_of_adults > 1) adult = " Adults";
   else adult = " Adult";
   var child;
   if (props.booking.number_of_children > 1) child = " Childs";
   else child = " Child";
+  }catch{
+
+  }
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (

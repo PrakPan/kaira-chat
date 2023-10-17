@@ -17,17 +17,14 @@ import { connect } from "react-redux";
 // import Button from '../../Button';
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
-import AccommodationSelected from "./new-accommodation-selected/Index";
-import SectionOne from "./SectionOne";
+ import SectionOne from "./SectionOne";
 import SectionTwo from "./SectionTwo";
 import LoadingLottie from "../../ui/LoadingLottie";
 import Drawer from "../../ui/Drawer";
-import HotelBookingContainer from "../../../containers/itinerary/HotelsBooking/HotelBookingContainer";
-import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
+ import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { openNotification } from "../../../store/actions/notification";
-import { BsXOctagon } from "react-icons/bs";
-import Skeleton from "./Skeleton";
+ import Skeleton from "./Skeleton";
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 

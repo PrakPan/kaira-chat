@@ -337,7 +337,7 @@ banner_image,
                         <div className="text-sm font-[400] min-w-fit">
                           {booking.number_of_adults
                             ? booking.number_of_adults
-                            : currentBooking.number_of_adults}{" "}
+                            : booking.number_of_adults}{" "}
                           Adults
                         </div>
                       </div>
