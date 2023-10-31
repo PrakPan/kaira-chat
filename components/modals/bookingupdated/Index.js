@@ -558,6 +558,8 @@ const Booking = (props) => {
         number_of_infants: props.selectedBooking.pax.number_of_infants,
         sort_by: filters.sort_by,
         sort_order: sort_order,
+        live: true,
+
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -1064,6 +1066,8 @@ const Booking = (props) => {
         price_upper_range: filters.price_upper_range,
         sort_by: filters.sort_by,
         sort_order: "asc",
+        live: true,
+
       })
       .then((res) => {
         // let oldoptions = optionsJSX;
