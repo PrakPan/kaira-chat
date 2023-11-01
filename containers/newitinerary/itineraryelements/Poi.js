@@ -351,7 +351,7 @@ const ItineraryPoiElement = (props) => {
                   props.activity_data.activity &&
                   props.activity_data.activity.id
                     ? "ACTIVITY"
-                    : "ATTRACTION"}
+                    : "Self Exploration"}
                 </div>
                 {props.poi.rating && (
                   <RatingContainer>
