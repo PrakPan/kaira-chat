@@ -389,6 +389,7 @@ const TransferModeContainer = (props) => {
     return str;
   }
   const _updateSelectedTransfer = () => {
+    console.log('test')
     setUpdateBookingState(true);
     setLoading(true);
 
@@ -443,7 +444,11 @@ const TransferModeContainer = (props) => {
         }
         setUpdateBookingState(false);
         setLoading(false);
-        window.alert("There seems to be a problem, please try again!");
+        props.openNotification({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
       });
   };
 
