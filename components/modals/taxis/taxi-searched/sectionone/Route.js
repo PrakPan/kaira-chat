@@ -148,6 +148,7 @@ const Section= (props) => {
         </div>
         <SectionFour
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          getPaymentHandler={props.getPaymentHandler}
           selectedBooking={props.selectedBooking}
           _updateSearchedTaxi={props._updateSearchedTaxi}
           data={props.data}

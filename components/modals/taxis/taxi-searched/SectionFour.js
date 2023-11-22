@@ -112,6 +112,7 @@ const Section = (props) => {
   //    if(props.data)
 
   const _updateBookingHandler = () => {
+ 
     setLoading(true)
     axiosgozotaxiupdateinstance
       .post("", {
@@ -157,6 +158,7 @@ const Section = (props) => {
           heading: "Sucess!",
         });
         props._updateTaxiBookingHandler([res.data])
+      props.getPaymentHandler();
       })
       .catch((e) => {
         setLoading(false)

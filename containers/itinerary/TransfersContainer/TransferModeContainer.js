@@ -405,8 +405,7 @@ const TransferModeContainer = (props) => {
         costings_breakdown: props.booking?.costings_breakdown,
       },
     ];
-    console.dir(updated_bookings_arr);
-    axiosbookingupdateinstance
+     axiosbookingupdateinstance
       .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
@@ -454,6 +453,7 @@ const TransferModeContainer = (props) => {
   var child;
   if (props.booking.number_of_children > 1) child = " Childs";
   else child = " Child";
+
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
@@ -947,7 +947,8 @@ const TransferModeContainer = (props) => {
                       color: "black",
                     }}
                   />
-                ) : (
+                ) : 
+                (
                   props.icon && (
                     <ImageLoader
                       is_url={props.icon.includes("gozo")}
@@ -959,7 +960,8 @@ const TransferModeContainer = (props) => {
                       widthmobile="4rem"
                     ></ImageLoader>
                   )
-                )}
+                )
+                }
               </div>
             )}
 

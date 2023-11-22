@@ -217,6 +217,7 @@ const Booking = (props) => {
                 <TaxiSearched
                   _updateSearchedTaxi={_updateSearchedTaxi}
                   selectedBooking={props.selectedBooking}
+                  getPaymentHandler={props.getPaymentHandler}
                   _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                   data={{
                     ...res.data.data.cabRate[i],
@@ -274,8 +275,7 @@ const Booking = (props) => {
         },
       },
     ];
-    console.dir(updated_bookings_arr);
-    axiosbookingupdateinstance
+     axiosbookingupdateinstance
       .post('?booking_type=Taxi,Bus,Ferry', updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
@@ -297,6 +297,7 @@ const Booking = (props) => {
          });
       });
   };
+
   if (props.token)
     return (
       <div>

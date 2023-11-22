@@ -143,8 +143,7 @@ p{
 }
 `
 const Overview = (props) => {
-              console.log("props.data.description: ", props.data.description);
-
+ 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,

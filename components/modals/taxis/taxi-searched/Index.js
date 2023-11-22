@@ -47,6 +47,7 @@ const Booking = (props) =>{
         <SectionOne
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           _updateSearchedTaxi={props._updateSearchedTaxi}
+          getPaymentHandler={props.getPaymentHandler}
           setShowTaxiModal={props.setShowTaxiModal}
           selectedBooking={props.selectedBooking}
           data={props.data}
