@@ -792,9 +792,9 @@ const Details = (props) => {
 
       <div className="px-0 pb-4">
         {props.couponJSX}
-        <CouponsOption onClick={() => props.openCouponSlide()}>
+        {/* <CouponsOption onClick={() => props.openCouponSlide()}>
           View Applicable Offers
-        </CouponsOption>
+        </CouponsOption> */}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-2 ml-1">
           <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
