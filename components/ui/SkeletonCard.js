@@ -14,6 +14,7 @@ export default function SkeletonCard({width,height,mt,mb,ml,mr,margin,borderRadi
       margin: ${(props) => props.margin};
       overflow: hidden;
       opacity : 0.8;
+      background : yellow;
     `;
     const defaultOptions = {
         loop : true,

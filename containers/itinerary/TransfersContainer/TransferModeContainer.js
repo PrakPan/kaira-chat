@@ -9,6 +9,7 @@ import { IoCheckmark, IoClose } from "react-icons/io5";
 import { LivelyButton } from "../../../components/LiveleyButton";
 import { MdEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
+import media from "../../../components/media";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
@@ -236,6 +237,7 @@ function processBookingTimes(checkIn, checkOut) {
 }
 
 const TransferModeContainer = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
@@ -316,49 +318,49 @@ const TransferModeContainer = (props) => {
     if (!props.token) {
       return props.setShowLoginModal(true);
     }
-      let name = props.booking["name"];
-      let costings_breakdown = props.booking["costings_breakdown"];
-      let cost = props.booking["booking_cost"];
-      let itinerary_id = props.booking["itinerary_id"];
-      let itinerary_name = props.booking["itinerary_name"];
-      let booking_type = props.booking["booking_type"];
+    let name = props.booking["name"];
+    let costings_breakdown = props.booking["costings_breakdown"];
+    let cost = props.booking["booking_cost"];
+    let itinerary_id = props.booking["itinerary_id"];
+    let itinerary_name = props.booking["itinerary_name"];
+    let booking_type = props.booking["booking_type"];
 
-      let tailored_id = props.booking["tailored_itinerary"];
-      let id = props.booking["id"];
-      let check_in = props.booking["check_in"];
-      let check_out = props.booking["check_out"];
-      let pax = {
-        number_of_adults: props.booking["number_of_adults"],
-        number_of_children: props.booking["number_of_children"],
-        number_of_infants: props.booking["number_of_infants"],
-      };
-      let city = props.booking["city"];
-      let room_type = props.booking["room_type"];
-      let taxi_type = props.booking["taxi_type"];
-      let transfer_type = props.booking["transfer_type"];
-      let city_id = props.booking["city_id"];
-      let destination_city = props.booking["destination_city"];
-      let duration = props.booking["duration"];
-      let origin_iata = props.booking["origin_city_iata_code"];
-      let destination_iata = props.booking["destination_city_iata_code"];
-      props._changeTaxiHandler(
-        name,
-        itinerary_id,
-        tailored_id,
-        id,
-        check_in,
-        check_out,
-        pax,
-        city,
-        itinerary_name,
-        cost,
-        costings_breakdown,
-        origin_iata,
-        destination_iata,
-        destination_city,
-        taxi_type,
-        transfer_type
-      );
+    let tailored_id = props.booking["tailored_itinerary"];
+    let id = props.booking["id"];
+    let check_in = props.booking["check_in"];
+    let check_out = props.booking["check_out"];
+    let pax = {
+      number_of_adults: props.booking["number_of_adults"],
+      number_of_children: props.booking["number_of_children"],
+      number_of_infants: props.booking["number_of_infants"],
+    };
+    let city = props.booking["city"];
+    let room_type = props.booking["room_type"];
+    let taxi_type = props.booking["taxi_type"];
+    let transfer_type = props.booking["transfer_type"];
+    let city_id = props.booking["city_id"];
+    let destination_city = props.booking["destination_city"];
+    let duration = props.booking["duration"];
+    let origin_iata = props.booking["origin_city_iata_code"];
+    let destination_iata = props.booking["destination_city_iata_code"];
+    props._changeTaxiHandler(
+      name,
+      itinerary_id,
+      tailored_id,
+      id,
+      check_in,
+      check_out,
+      pax,
+      city,
+      itinerary_name,
+      cost,
+      costings_breakdown,
+      origin_iata,
+      destination_iata,
+      destination_city,
+      taxi_type,
+      transfer_type
+    );
   }
   const Facilities = [
     props.booking_type == "Taxi" || props.booking_type == "Bus"
@@ -380,8 +382,14 @@ const TransferModeContainer = (props) => {
       ? `${props?.costings_breakdown?.distance?.text}`
       : null,
   ];
-
+  function truncateString(str, maxLength) {
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength - 3) + "...";
+    }
+    return str;
+  }
   const _updateSelectedTransfer = () => {
+    console.log('test')
     setUpdateBookingState(true);
     setLoading(true);
 
@@ -436,7 +444,11 @@ const TransferModeContainer = (props) => {
         }
         setUpdateBookingState(false);
         setLoading(false);
-        window.alert("There seems to be a problem, please try again!");
+        props.openNotification({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
       });
   };
 
@@ -452,7 +464,7 @@ const TransferModeContainer = (props) => {
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
-        <div style={{ position: "relative"}}>
+        <div style={{ position: "relative" }}>
           <Line pinColour={props.pinColour} Transfers={true} />
         </div>
       ) : (
@@ -942,26 +954,38 @@ const TransferModeContainer = (props) => {
                       color: "black",
                     }}
                   />
-                ) : (
+                ) : 
+                (
                   props.icon && (
                     <ImageLoader
+                      is_url={props.icon.includes("gozo")}
                       className=" object-contain"
                       url={props.icon}
                       leftalign
-                      // height="4rem"
-                      width="4rem"
-                      widthmobile="3rem"
+                      height={props.icon.includes("gozo") ? "3rem" : "4rem"}
+                      width={"4rem"}
+                      widthmobile="4rem"
                     ></ImageLoader>
                   )
-                )}
+                )
+                }
               </div>
             )}
 
             <div className=" flex flex-col w-[80%] lg:pl-1">
               <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
-              <div className="sm:text-sm text-[0.93rem]">
+              <div className="sm:text-sm text-[0.85rem]">
                 {props.booking_type == "Taxi"
-                  ? "Private transfer "
+                  ? props.booking.costings_breakdown &&
+                    props.booking.costings_breakdown.gozo &&
+                    props.booking.costings_breakdown.gozo.model
+                    ? isPageWide
+                      ? props.booking.costings_breakdown.gozo.model
+                      : truncateString(
+                          props.booking.costings_breakdown.gozo.model,
+                          25
+                        )
+                    : "Private transfer "
                   : props.booking_type}
                 {props?.booking?.costings_breakdown?.duration?.text && (
                   <div className="inline-block ml-1">

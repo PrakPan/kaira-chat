@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import Row from '../../../components/experiencecity/info/Row';
 
 import Overview from './overview/Index';
@@ -29,6 +29,10 @@ import CityDetails from './CityDetails';
 import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
 import Drawer from '../../../components/drawers/cityDetails/CityDetailsDrawer';
 import { TbArrowBack } from 'react-icons/tb';
+const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
+  ssr: false,
+});
+import SkeletonCard from '../../../components/ui/SkeletonCard';
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -69,6 +73,7 @@ const Details = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
+  const [mapLoaded , setMapLoaded] = useState(false)
 
   // async function getRoutes(itinaryId) {
   //   const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
@@ -94,7 +99,6 @@ const Details = (props) => {
   if (props.routesData.length >= 1) {
     for (var i = 0; i < props.routesData.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
-
       if (
         props.routesData[i].duration &&
         props.routesData[i].duration !== '0'
@@ -222,9 +226,6 @@ const Details = (props) => {
   //     setCurrentPopup={setCurrentPopup}
   //   />
   // );
-  const LeafMap = dynamic(() => import('../../../components/mapbox.js'), {
-    ssr: false,
-  });
   const MapWithNoSSR = ({
     locations,
     currentPopup,
@@ -238,6 +239,7 @@ const Details = (props) => {
       setCurrentPopup={setCurrentPopup}
       setShowDrawer={setShowDrawer}
       setShowDrawerData={setShowDrawerData}
+      onload={()=>setMapLoaded(true)}
     />
   );
   // const LeafMap = dynamic(
@@ -255,22 +257,35 @@ const Details = (props) => {
       {/* <HeaderExtraPadding></HeaderExtraPadding> */}
 
       <DetailsContainer>
-        {Locationlatlong.length >= 1 ? (
+        <div
+          className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-[23rem] lg:mt-20 mt-8  rounded-xl"
+          id="MapcontainerRoute"
+        >
           <div
-            className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-[23rem] lg:mt-20 mt-8  rounded-xl"
-            id="MapcontainerRoute"
+            className="absolute w-[100%] h-[100%] rounded-xl"
+            style={{overflow: "hidden" }}
           >
-            <div className="absolute w-[100%] h-[100%] rounded-xl">
-              <MapWithNoSSR
-                locations={Locationlatlong}
-                currentPopup={currentPopup}
-                setCurrentPopup={setCurrentPopup}
-                setShowDrawer={setShowDrawer}
-                setShowDrawerData={setShowDrawerData}
-              />
-            </div>
+            {Locationlatlong.length >= 1 ? (
+              <>
+                <div style={{ display: mapLoaded ? "initial" : "none" }}>
+                  <MapWithNoSSR
+                    locations={Locationlatlong}
+                    currentPopup={currentPopup}
+                    setCurrentPopup={setCurrentPopup}
+                    setShowDrawer={setShowDrawer}
+                    setShowDrawerData={setShowDrawerData}
+                  />
+                </div>
+                <div>
+                  <SkeletonCard />
+                </div>
+              </>
+            ) : (
+              <div>
+              </div>
+            )}
           </div>
-        ) : null}
+        </div>
 
         <RouteComponent>
           {

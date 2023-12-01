@@ -61,7 +61,7 @@ export default function Accordion(props) {
         }}
       >
         {props.children[0]}
-        <DropDownIcon rotate={open}>
+        <DropDownIcon rotate={open} style={props.iconStyle}>
           <BsCaretDownFill />
         </DropDownIcon>
       </Summary>
@@ -71,7 +71,9 @@ export default function Accordion(props) {
 }
 
 export const AccordionSummary = (props) => (
-  <div {...props}>{props.children}</div>
+  <div {...props} >
+    {props.children}
+  </div>
 );
 export const AccordionDetails = (props) => (
   <div {...props} className="append">
