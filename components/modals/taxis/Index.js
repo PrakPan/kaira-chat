@@ -8,6 +8,7 @@ import media from '../../media';
 // import AccommodationModal from '../accommodation/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
 import axiostaxiinstance from '../../../services/bookings/FetchTaxiRecommendations';
+import axiostaxigozoinstance from '../../../services/bookings/FetchTaxiRecommendationsGozo'
 import Spinner from '../../Spinner';
 
 //  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
@@ -25,6 +26,7 @@ import TaxiSearched from './taxi-searched/Index';
 import Drawer from '../../ui/Drawer';
 import { setUpdateLoading } from '../../../store/actions/auth';
 import { openNotification } from '../../../store/actions/notification';
+import Skeleton from './Skeleton';
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -40,13 +42,13 @@ const GridContainer = styled.div`
 const OptionsContainer = styled.div`
   min-height: 40vh;
   overflow-x: hidden;
-  width: 100%;
+  width: 97%;
   position: relative;
+  margin: auto;
 
   @media screen and (min-width: 768px) {
     min-height: 80vh;
-    width: 80%;
-    margin: auto;
+    width: 90%;
   }
 `;
 const ContentContainer = styled.div`
@@ -61,7 +63,7 @@ const Booking = (props) => {
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
-
+  const [error , setError] = useState(false)
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     budget: [],
@@ -118,6 +120,7 @@ const Booking = (props) => {
   }, [props.alternates, props.bookings]);
 
   useEffect(() => {
+          setError(false);
     if (!props.alternates && props.showTaxiModal) {
       let params = null;
       try {
@@ -149,57 +152,83 @@ const Booking = (props) => {
           locations: 'Munnar,Kochi',
         };
       }
-      axiostaxiinstance
-        .get('/', {
-          //  params:   {
-          //         "transfer_type": props.selectedBooking.transfer_type,
-          //         "duration": props.selectedBooking.costings_breakdown["duration"].value,
-          //         "distance": props.selectedBooking.costings_breakdown["distance"].value,
-          //     }
-
-          params: {
-            ...params,
-          },
+      // axiostaxiinstance
+      //   .get('/', {
+      //     params: {
+      //       ...params,
+      //     },
+      //   })
+      //   .then((res) => {
+      //     setLoading(false);
+      //     setUpdateLoadingState(false);
+      //     if (res.data[0].choices.length) {
+      //       setNoResults(false);
+      //       let is_min_price_present = false;
+      //       let options = [];
+      //       for (var i = 0; i < res.data[0].choices.length; i++) {
+      //         options.push(
+      //           <TaxiSearched
+      //             _updateSearchedTaxi={_updateSearchedTaxi}
+      //             selectedBooking={props.selectedBooking}
+      //             data={res.data[0].choices[i]}
+      //           ></TaxiSearched>
+      //         );
+      //       }
+      //       if (!options.length) setNoResults(true);
+      //       setMoreOptionsJSX(options);
+      //       if (res.data.next) {
+      //         setViewMoreStatus(true);
+      //         setOffset(offset + 20);
+      //       } else {
+      //         setViewMoreStatus(false);
+      //         setOffset(0);
+      //       }
+      //     } else {
+      //       setNoResults(true);
+      //       setOffset(0);
+      //       setViewMoreStatus(false);
+      //       setMoreOptionsJSX([]);
+      //     }
+      //     setLoading(false);
+      //   })
+      //   .catch((err) => { });
+       setLoading(true);
+      setUpdateLoadingState(false);
+            setMoreOptionsJSX([]);
+      
+      axiostaxigozoinstance
+        .post("/", {
+          booking_id: props.selectedBooking.id,
+          tripType: props.selectedBooking.transfer_type,
+          cabType: [],
+          startDate: props.selectedBooking.check_in,
         })
         .then((res) => {
-          setLoading(false);
-          setUpdateLoadingState(false);
-          if (res.data[0].choices.length) {
+         
+          if (
+            res.data.data &&
+            res.data.data.cabRate &&
+            res.data.data.cabRate.length
+          ) {
             setNoResults(false);
-            let is_min_price_present = false;
             let options = [];
-            for (var i = 0; i < res.data[0].choices.length; i++) {
-              // try{
-              //     for(var j = 0 ; j < res.data.results[i].rooms_available.length; j++){
-              //         if(res.data.results[i].rooms_available[j].prices.min_price) {
-              //             is_min_price_present = true;
-              //             break;
-              //         }
-              // }
-
-              //  if(res.data.results[i].name !== props.selectedBooking.name  && is_min_price_present)
+            for (var i = 0; i < res.data.data.cabRate.length; i++) {
               options.push(
                 <TaxiSearched
                   _updateSearchedTaxi={_updateSearchedTaxi}
                   selectedBooking={props.selectedBooking}
-                  data={res.data[0].choices[i]}
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  data={{
+                    ...res.data.data.cabRate[i],
+                    estimatedDuration: res.data.data.estimatedDuration,
+                    trace_id: res.data.trace_id,
+                  }}
                 ></TaxiSearched>
               );
-              // }
-              // catch{
-              //     options.push(<AccommodationSearched  _setImagesHandler={props._setImagesHandler} bookings={props.bookings}  _updateSearchedAccommodation={_updateSearchedAccommodation} itinerary_id={props.selectedBooking.itinerary_id} tailored_id={props.tailored_id}_updateBookingHandler={_newUpdateBookingHandler} accommodation={res.data.results[i]} selectedBooking={props.selectedBooking} key={i}  images={res.data.results.images} bookings={props.bookings}  ></AccommodationSearched>)
-
-              // }
             }
             if (!options.length) setNoResults(true);
             setMoreOptionsJSX(options);
-            if (res.data.next) {
-              setViewMoreStatus(true);
-              setOffset(offset + 20);
-            } else {
-              setViewMoreStatus(false);
-              setOffset(0);
-            }
           } else {
             setNoResults(true);
             setOffset(0);
@@ -207,8 +236,16 @@ const Booking = (props) => {
             setMoreOptionsJSX([]);
           }
           setLoading(false);
-        })
-        .catch((err) => {});
+        }).catch((err) => {
+          setLoading(false)
+          setError(true)
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again later!",
+            heading: "Error!",
+          });
+        });
+      
     }
   }, [props.alternates, props.budget , props.showTaxiModal]);
 
@@ -238,8 +275,7 @@ const Booking = (props) => {
         },
       },
     ];
-    console.dir(updated_bookings_arr);
-    axiosbookingupdateinstance
+     axiosbookingupdateinstance
       .post('?booking_type=Taxi,Bus,Ferry', updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
@@ -247,18 +283,13 @@ const Booking = (props) => {
       })
       .then((res) => {
         props._updateTaxiBookingHandler(res.data.bookings);
-
-        //  props.getPaymentHandler();
         setTimeout(function () {
           props.getPaymentHandler();
         }, 1000);
         setUpdateBookingState(false);
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
         setUpdateBookingState(false);
-
-        // window.alert('There seems to be a problem, please try again!');
          props.openNotification({
            type: "error",
            text: "There seems to be a problem, please try again!",
@@ -271,27 +302,28 @@ const Booking = (props) => {
     return (
       <div>
         <Drawer
-          anchor={'right'}
+          anchor={"right"}
           backdrop
           style={{ zIndex: 1501 }}
           className="font-lexend"
           show={props.showTaxiModal}
           onHide={props.setHideTaxiModal}
-          // zIndex='1501'
+          mobileWidth={"100%"}
+          width="50%"
         >
-          <SectionOne setHideTaxiModal={props.setHideTaxiModal}></SectionOne>
+          <SectionOne
+            selectedBooking={props.selectedBooking}
+            setHideTaxiModal={props.setHideTaxiModal}
+          ></SectionOne>
           <div>
-            <GridContainer style={{ clear: 'right' }}>
-              {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
-              {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
-              <ContentContainer style={{ position: 'relative' }}>
-                {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
+            <GridContainer style={{ clear: "right" }}>
+              <ContentContainer style={{ position: "relative" }}>
                 {updateBookingState ? (
                   <div
                     style={{
-                      width: 'max-content',
-                      margin: 'auto',
-                      height: isPageWide ? '80vh' : '40vh',
+                      width: "max-content",
+                      margin: "auto",
+                      height: isPageWide ? "80vh" : "40vh",
                     }}
                     className="center-div text-center font-lexend"
                   >
@@ -299,37 +331,30 @@ const Booking = (props) => {
                     Please wait while we update your bookings
                   </div>
                 ) : null}
-                {!noResults && !updateBookingState ? (
+                {/* <Skeleton /> */}
+                {!noResults && !error && !updateBookingState ? (
                   <OptionsContainer id="options">
-                    <div style={{ clear: 'right' }}>
-                      <TaxiSelected
-                        _setImagesHandler={props._setImagesHandler}
-                        selectedBooking={props.selectedBooking}
-                      ></TaxiSelected>
-
+                    <div style={{ clear: "right" }}>
                       {optionsJSX.length
                         ? optionsJSX
                         : moreOptionsJSX.length
                         ? moreOptionsJSX
                         : null}
-                      {/* {moreOptionsJSX} */}
                       {loading && !optionsJSX.length ? (
-                        <div
-                          className="center-div"
-                          style={{ height: isPageWide ? '80vh' : '40vh' }}
-                        >
-                          <LoadingLottie
-                            height="5rem"
-                            width="5rem"
-                            margin="none"
-                          />
-                          Fetching recommendations for you
-                        </div>
+                        // <div
+                        //   className="center-div"
+                        //   style={{ height: isPageWide ? "80vh" : "40vh" }}
+                        // >
+                        //   <LoadingLottie
+                        //     height="5rem"
+                        //     width="5rem"
+                        //     margin="none"
+                        //   />
+                        //   Fetching recommendations for you
+                        // </div>
+                        <Skeleton />
                       ) : null}
-                      {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
                     </div>
-
-                    {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
                     {updateLoadingState ? (
                       <div className="center-div" style={{}}>
                         <LoadingLottie
@@ -353,7 +378,6 @@ const Booking = (props) => {
                         View More
                       </Button>
                     ) : null}
-                    {/* {noResults ? 'NO RESULTS' : null} */}
                   </OptionsContainer>
                 ) : null}
                 {noResults ? (
@@ -363,20 +387,15 @@ const Booking = (props) => {
                     database everyday!
                   </OptionsContainer>
                 ) : null}
-                {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-                {/* {
-                   !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   } 
-             */}
-                {/* <ButtonToTop className='center-div'>
-                   <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
-                </ButtonToTop> */}
+                {error ? (
+                  <OptionsContainer className="font-lexend center-div text-center">
+                    Oops, There seems to be a problem, please try again later!
+                  </OptionsContainer>
+                ) : null}
               </ContentContainer>
             </GridContainer>
           </div>
         </Drawer>
-
-        {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
       </div>
     );
   else
@@ -401,9 +420,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
-// const mapDispatchToProps = (dispatch) => {
-//   return {};
-// };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),

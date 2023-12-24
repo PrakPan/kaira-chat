@@ -1,4 +1,4 @@
-import ThankYouContainer from '../containers/thankyoupage/Index'
+import ThankYouContainer from "../containers/thankyoupage/Index";
 import Head from "next/head";
 import Layout from "../components/Layout";
 import { connect } from "react-redux";
@@ -18,10 +18,7 @@ const Home = (props) => {
           name="description"
           content="The Tarzan Way is a travel based startup with the vision to simplify travel and build immersive travel programs across India. We personalize travel package and provide unique travel experience for travel in India"
         ></meta>
-        <meta
-          property="og:title"
-          content="Thank You | The Tarzan Way"
-        />
+        <meta property="og:title" content="Thank You | The Tarzan Way" />
         <meta
           property="og:description"
           content="The Tarzan Way is a travel based startup with the vision to simplify travel and build immersive travel programs across India. We personalize travel package and provide unique travel experience for travel in India"
@@ -56,35 +53,24 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export async function getStaticProps() {
-  var data = [];
+  var ThemeData = [];
   var locations = [];
   try {
     const res = await axios.get(
-      `https://apis.tarzanway.com/page/list?country=India&page_type=Theme`
+      `https://apis.tarzanway.com/page/list?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
     );
-    data = res.data;
+    ThemeData = res.data;
   } catch (e) {
-    data = [];
+    ThemeData = [];
   }
 
   try {
-    const loc = await axiospagelistinstance.get(``);
+    const loc = await axiospagelistinstance.get(
+      `?country=india&fields=id,destination,tagline,image,link`
+    );
     locations = loc.data;
   } catch (e) {
     locations = [];
-  }
-  const ThemeData = data.map((e) => {
-    return {
-      id: e.id,
-      link: e.link,
-      image: e.image,
-      banner_heading: e.banner_heading,
-    };
-  });
-  if (!data) {
-    return {
-      notFound: true,
-    };
   }
   return {
     props: {

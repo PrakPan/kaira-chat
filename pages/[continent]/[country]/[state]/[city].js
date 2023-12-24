@@ -1,7 +1,7 @@
 import ExperienceContainer from "../../../../containers/city/Index";
 import Layout from "../../../../components/Layout";
 import { useRouter } from "next/router";
-import axiosallCityInstance from "../../../../services/travel-guide/SearchAllLocation";
+import axiossearchInstance from "../../../../services/search/all";
 import axiosPoiCityInstance from "../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../services/poi/reccommededcities";
 import Head from "next/head";
@@ -40,7 +40,8 @@ const Experience = (props) => {
         <meta property="og:image" content="/logoblack.svg" />
         <title>
           {/* {props.cityData.name + " | Travel Guide |  The Tarzan Way"} */}
-          Plan Your Trip to {props.cityData.name} | Trip Planner & Itinerary | The Tarzan Way
+          Plan Your Trip to {props.cityData.name} | Trip Planner & Itinerary |
+          The Tarzan Way
         </title>
         <meta
           property="keywords"
@@ -61,17 +62,17 @@ export async function getStaticPaths() {
 
   // const data = await res.json();
 
-  const res = await axiosallCityInstance.get("");
-    // const res = await axios.get(
-    //   "https://dev.apis.tarzanway.com/search/all/?type=Location"
-    // );
+  const res = await axiossearchInstance.get("?type=Location&fields=path,cta");
+  // const res = await axios.get(
+  //   "https://dev.apis.tarzanway.com/search/all/?type=Location"
+  // );
 
   const data = res.data;
 
   let paths = [];
-    for (var i = 0; i < data.length; i++) {
-        const pathArr = data[i].path.split("/");
-          var [continentSlug , countrySlug, stateSlug, citySlug] = pathArr;
+  for (var i = 0; i < data.length; i++) {
+    const pathArr = data[i].path.split("/");
+    var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
     if (data[i].cta) {
       paths.push({
         params: {

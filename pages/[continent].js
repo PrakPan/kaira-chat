@@ -43,7 +43,7 @@ export async function getStaticPaths() {
   // const res = await axios.get(
   //   "https://apis.tarzanway.com/page/list?page_type=Continents"
   // );
-const res = await axiospagelistinstance("?page_type=Continents");
+const res = await axiospagelistinstance("?page_type=Continents&fields=path");
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -66,7 +66,9 @@ export async function getStaticProps(context) {
     "?link=" + context.params.continent
   );
   const data = res.data;
-  const themeData = await axiospagelistinstance("?page_type=Continents");
+  const themeData = await axiospagelistinstance(
+    "?page_type=Continents&fields=destination,tagline,image,path"
+  );
   const contientTheme = themeData.data;
 
   // contient carousel :-
@@ -74,7 +76,7 @@ export async function getStaticProps(context) {
   const continetCarousel = [];
   for (let i = 0; i < contientTheme.length; i++) {
     const hot_destinations = await axioscountrydetailsinstance(
-      `/all?continent=${contientTheme[i].destination}&hot_destinations=true`
+      `/all?continent=${contientTheme[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
     );
     const hot_data = hot_destinations.data.filter((e, i) => {
       if (i < 6) return e;
@@ -83,7 +85,7 @@ export async function getStaticProps(context) {
   }
 
   const response = await axioscountrydetailsinstance(
-    "/all?continent=" + data.destination
+    "/all?continent=" + data.destination + "&fields=id,name,path,tagline,image"
   );
   const locations = response.data;
   if (!data) {

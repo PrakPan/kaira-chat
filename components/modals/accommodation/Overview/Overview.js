@@ -137,7 +137,13 @@ const FlexBox = styled.div`
   align-items: center;
   gap: 0.5rem;
 `;
+const DescriptionText = styled.div`
+p{
+  margin-bottom : 12px;
+}
+`
 const Overview = (props) => {
+ 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,
@@ -759,9 +765,9 @@ const Overview = (props) => {
         <>
           <Heading>About</Heading>
           <MoreText>
-            <div
-              dangerouslySetInnerHTML={{ __html: props.data.description }}
-            ></div>
+            <DescriptionText
+              dangerouslySetInnerHTML={{ __html: props.data.description }} 
+            ></DescriptionText>
           </MoreText>
         </>
       )}
