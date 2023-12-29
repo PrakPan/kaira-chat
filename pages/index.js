@@ -79,9 +79,10 @@ var ThemeData = [];
   }
   try{
     const loc = await axiospagelistinstance.get(
-      `?country=india&fields=id,destination,tagline,image,link`
+      `?country=india&fields=id,destination,tagline,image,link,path`
     );
     locations = loc.data;
+    console.log(locations)
 
   const response = await axioscountrydetailsinstance(
     "/all?continent=asia&fields=id,name,path,tagline,image"
