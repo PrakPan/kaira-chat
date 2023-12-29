@@ -72,7 +72,6 @@ const HowItWorksContainer = styled.div`
 `;
 
 const Homepage = (props) => {
-  console.log(props.locations)
 
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
