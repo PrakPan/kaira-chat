@@ -190,7 +190,7 @@ export default class MyDocument extends Document {
           )}
           {/* End Google Tag Manager */}
 
-          <link rel="icon" href="/logoblack.svg" />
+          <link rel="icon" href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
             rel="preconnect"
