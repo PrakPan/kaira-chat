@@ -69,7 +69,7 @@ const ScrollableMenuTabs = ({
   offset,
   items,
   BarName,
-  year = '2023',
+  year = '2024',
   Mstyle = 'simple',
   Iterable = 'label',
   vertical = false,
