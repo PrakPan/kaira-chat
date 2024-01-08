@@ -1,24 +1,26 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import ItineraryFlightElement from '../../newitinerary/itineraryelements/Flight';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
 
-import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
-import { GrMapLocation } from 'react-icons/gr';
-import { BiChevronRight } from 'react-icons/bi';
-import TransferElements from './TransferElements';
-import ItineraryElement from '../../newitinerary/itineraryelements/ItineraryElement';
-import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
-import { convertDateFormat } from '../../../helper/ConvertDateFormat';
-import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
-import NewCity from './NewCity';
-import { isJson } from '../../../services/isJSON';
-import { PopoverPaper } from '@mui/material';
+import ItineraryFoodElement from "../../newitinerary/itineraryelements/ItineraryFoodElement";
+import { GrMapLocation } from "react-icons/gr";
+import { BiChevronRight } from "react-icons/bi";
+import TransferElements from "./TransferElements";
+import ItineraryElement from "../../newitinerary/itineraryelements/ItineraryElement";
+import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import RecomendationComponent from "../../newitinerary/itineraryelements/RecomendationComponent";
+import NewCity from "./NewCity";
+import { isJson } from "../../../services/isJSON";
+import { PopoverPaper } from "@mui/material";
+import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
+import Summary from "../../../components/itinerary/daySummary/summary";
 export const DayContainerStyle = styled.div`
   display: flex;
   flex-direction: column;
 
   > *:not(:last-child)::after {
-    content: '';
+    content: "";
     display: block;
     border-style: none none solid none;
     border-color: #e4e4e4;
@@ -76,13 +78,15 @@ const Date = styled.div`
 //         for
 // }
 const Day_I_Container = (props) => {
+  const [viewMore, setViewMore] = useState(true);
+
   const Arslab_elements = [
-    { name: 'transfer', data: [] },
-    { name: 'newcity', data: [] },
-    { name: 'accommodation', data: [] },
-    { name: 'meal', data: [] },
-    { name: 'recommendation', data: [] },
-    { name: 'activity', data: [] },
+    { name: "transfer", data: [] },
+    { name: "newcity", data: [] },
+    { name: "accommodation", data: [] },
+    { name: "meal", data: [] },
+    { name: "recommendation", data: [] },
+    { name: "activity", data: [] },
   ];
   function filter(JsonArray, Arslab_element_name, Arslab_element_data) {
     Arslab_element_data.push(
@@ -93,8 +97,8 @@ const Day_I_Container = (props) => {
   }
   function getTransportationType(url) {
     const fileName = url.substring(
-      url.lastIndexOf('/') + 1,
-      url.lastIndexOf('.')
+      url.lastIndexOf("/") + 1,
+      url.lastIndexOf(".")
     );
     const firstLetter = fileName.charAt(0).toUpperCase();
     const restOfWord = fileName.slice(1);
@@ -105,7 +109,7 @@ const Day_I_Container = (props) => {
   function divide(JsonArray, Arslab_elements, slab) {
     JsonArray.map((element, index) => {
       switch (element.element_type) {
-        case 'transfer':
+        case "transfer":
           dayIcontainer.push(
             <TransferElements
               time="9:00AM"
@@ -128,11 +132,11 @@ const Day_I_Container = (props) => {
             ></TransferElements>
           );
           break;
-        case 'newcity':
+        case "newcity":
           // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
 
           break;
-        case 'accommodation':
+        case "accommodation":
           dayIcontainer.push(
             <ItineraryElement
               data={element}
@@ -146,7 +150,7 @@ const Day_I_Container = (props) => {
             ></ItineraryElement>
           );
           break;
-        case 'meal':
+        case "meal":
           dayIcontainer.push(
             <ItineraryFoodElement
               icon={element.icon}
@@ -156,7 +160,7 @@ const Day_I_Container = (props) => {
             ></ItineraryFoodElement>
           );
           break;
-        case 'recommendation':
+        case "recommendation":
           {
             !isJson(element.text)
               ? dayIcontainer.push(
@@ -177,7 +181,7 @@ const Day_I_Container = (props) => {
           }
 
           break;
-        case 'activity':
+        case "activity":
           dayIcontainer.push(
             <ItineraryPoiElement
               payment={props.payment}
@@ -215,7 +219,7 @@ const Day_I_Container = (props) => {
   return (
     <Container className="font-lexend">
       <DivDayContainerRow>
-        <InnerDayLocationRow style={{ paddingRight: '2px' }}>
+        <InnerDayLocationRow style={{ paddingRight: "2px" }}>
           <div className="font-bold text-black text-2xl">
             {convertDateFormat(props.Days?.slab)}
           </div>
@@ -236,6 +240,7 @@ const Day_I_Container = (props) => {
             </div>
           ) : null} */}
         </InnerDayLocationRow>
+        <ViewMoreButton />
         {/* <InnerDayLocationRow>
           <GrMapLocation />
           <div>
@@ -353,6 +358,7 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
+        <Summary heading={props.Days.slab_elements[0].heading} icon={props.Days.slab_elements[0].icon} />
         {dayIcontainer}
       </DayContainerStyle>
     </Container>
