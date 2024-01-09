@@ -1,24 +1,32 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import ItineraryFlightElement from '../../newitinerary/itineraryelements/Flight';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
 
-import ItineraryFoodElement from '../../newitinerary/itineraryelements/ItineraryFoodElement';
-import { GrMapLocation } from 'react-icons/gr';
-import { BiChevronRight } from 'react-icons/bi';
-import TransferElements from './TransferElements';
-import ItineraryElement from '../../newitinerary/itineraryelements/ItineraryElement';
-import ItineraryPoiElement from '../../newitinerary/itineraryelements/Poi';
-import { convertDateFormat } from '../../../helper/ConvertDateFormat';
-import RecomendationComponent from '../../newitinerary/itineraryelements/RecomendationComponent';
-import NewCity from './NewCity';
-import { isJson } from '../../../services/isJSON';
-import { PopoverPaper } from '@mui/material';
+import ItineraryFoodElement from "../../newitinerary/itineraryelements/ItineraryFoodElement";
+import { GrMapLocation } from "react-icons/gr";
+import { BiChevronRight } from "react-icons/bi";
+import TransferElements from "./TransferElements";
+import ItineraryElement from "../../newitinerary/itineraryelements/ItineraryElement";
+import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import RecomendationComponent from "../../newitinerary/itineraryelements/RecomendationComponent";
+import NewCity from "./NewCity";
+import { isJson } from "../../../services/isJSON";
+import { PopoverPaper } from "@mui/material";
+import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
+import Summary from "../../../components/itinerary/daySummary/summary";
+import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
+import { FaHome } from "react-icons/fa";
+import { MdRestaurant } from "react-icons/md";
+import ImageLoader from "../../../components/ImageLoader";
+// import { ReccoIcon } from "../../../containers/newitinerary/itineraryelements/RecomendationComponent";
+
 export const DayContainerStyle = styled.div`
   display: flex;
   flex-direction: column;
 
   > *:not(:last-child)::after {
-    content: '';
+    content: "";
     display: block;
     border-style: none none solid none;
     border-color: #e4e4e4;
@@ -35,6 +43,20 @@ export const DayContainerStyle = styled.div`
     margin-left: auto;
   }
 `;
+
+const ReccoIcon = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 1rem;
+  @media screen and (min-width: 768px) {
+    width: 6.15rem;
+    justify-content: start;
+    padding-bottom: 0rem;
+  }
+`;
+
 const Container = styled.div`
   background: #ffffff;
   border: 1.5px solid #eceaea;
@@ -46,6 +68,7 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
 `;
+
 const DivDayContainerRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -54,6 +77,7 @@ const DivDayContainerRow = styled.div`
   align-items: center;
   padding: 0px 0px 10px 0px;
 `;
+
 const InnerDayLocationRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -63,6 +87,7 @@ const InnerDayLocationRow = styled.div`
     padding-left: 8px;
   }
 `;
+
 const Date = styled.div`
   width: max-content;
   border-radius: 2rem;
@@ -76,13 +101,15 @@ const Date = styled.div`
 //         for
 // }
 const Day_I_Container = (props) => {
+  const [viewMore, setViewMore] = useState(false);
+
   const Arslab_elements = [
-    { name: 'transfer', data: [] },
-    { name: 'newcity', data: [] },
-    { name: 'accommodation', data: [] },
-    { name: 'meal', data: [] },
-    { name: 'recommendation', data: [] },
-    { name: 'activity', data: [] },
+    { name: "transfer", data: [] },
+    { name: "newcity", data: [] },
+    { name: "accommodation", data: [] },
+    { name: "meal", data: [] },
+    { name: "recommendation", data: [] },
+    { name: "activity", data: [] },
   ];
   function filter(JsonArray, Arslab_element_name, Arslab_element_data) {
     Arslab_element_data.push(
@@ -93,19 +120,112 @@ const Day_I_Container = (props) => {
   }
   function getTransportationType(url) {
     const fileName = url.substring(
-      url.lastIndexOf('/') + 1,
-      url.lastIndexOf('.')
+      url.lastIndexOf("/") + 1,
+      url.lastIndexOf(".")
     );
     const firstLetter = fileName.charAt(0).toUpperCase();
     const restOfWord = fileName.slice(1);
     const transportationType = firstLetter + restOfWord;
     return transportationType;
   }
+
+  const handleViewMoreButton = () => {
+    setViewMore((prev) => !prev);
+  };
+
+  let summaryIContainer = [];
+  function setSymmaryElements(elements) {
+    elements.map((element, index) => {
+      switch (element.element_type) {
+        case "transfer":
+          let transferIcon;
+          const modes = getTransportationType(element.icon);
+          if (modes) {
+            transferIcon = (
+              <TransportIconFetcher
+                TransportMode={modes}
+                classname="text-black lg:text-[3.05rem] text-[1.25rem]"
+              />
+            );
+          } else {
+            transferIcon = <div className="w-[3.05rem]"></div>;
+          }
+          summaryIContainer.push(
+            <Summary
+              key={`summary_${index}`}
+              icon={transferIcon}
+              heading={element.heading}
+            />
+          );
+          break;
+        case "accommodation":
+          const accommodationIcon = (
+            <FaHome className="text-black lg:text-[3.05rem]   text-[1.25rem]" />
+          );
+          if (element.bookings !== null) {
+            summaryIContainer.push(
+              <Summary
+                key={`summary_${index}`}
+                icon={accommodationIcon}
+                heading={element.heading}
+              />
+            );
+          }
+          break;
+        case "activity":
+          let activityIcon;
+          if (element.icon !== "media/icons/default/activity.svg") {
+            activityIcon = (
+              <ImageLoader
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log("")}
+                width="3rem"
+                leftalign
+                widthmobile="3rem"
+                url={element.icon}
+                noLazy
+              ></ImageLoader>
+            );
+          } else {
+            activityIcon = (
+              <ImageLoader
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log("")}
+                width="3.25rem"
+                height="3.25rem"
+                leftalign
+                widthmobile="6rem"
+                url={"media/icons/general/dice.png"}
+                noLazy
+              ></ImageLoader>
+            );
+          }
+
+          summaryIContainer.push(
+            <Summary
+              key={`summary_${index}`}
+              icon={activityIcon}
+              heading={element.heading}
+            />
+          );
+          break;
+        default:
+      }
+    });
+  }
+  setSymmaryElements(props.Days.slab_elements);
+
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements, slab) {
     JsonArray.map((element, index) => {
       switch (element.element_type) {
-        case 'transfer':
+        case "transfer":
           dayIcontainer.push(
             <TransferElements
               time="9:00AM"
@@ -128,11 +248,11 @@ const Day_I_Container = (props) => {
             ></TransferElements>
           );
           break;
-        case 'newcity':
+        case "newcity":
           // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
 
           break;
-        case 'accommodation':
+        case "accommodation":
           dayIcontainer.push(
             <ItineraryElement
               data={element}
@@ -146,7 +266,7 @@ const Day_I_Container = (props) => {
             ></ItineraryElement>
           );
           break;
-        case 'meal':
+        case "meal":
           dayIcontainer.push(
             <ItineraryFoodElement
               icon={element.icon}
@@ -156,7 +276,7 @@ const Day_I_Container = (props) => {
             ></ItineraryFoodElement>
           );
           break;
-        case 'recommendation':
+        case "recommendation":
           {
             !isJson(element.text)
               ? dayIcontainer.push(
@@ -177,7 +297,7 @@ const Day_I_Container = (props) => {
           }
 
           break;
-        case 'activity':
+        case "activity":
           dayIcontainer.push(
             <ItineraryPoiElement
               payment={props.payment}
@@ -215,8 +335,8 @@ const Day_I_Container = (props) => {
   return (
     <Container className="font-lexend">
       <DivDayContainerRow>
-        <InnerDayLocationRow style={{ paddingRight: '2px' }}>
-          <div className="font-bold text-black text-2xl">
+        <InnerDayLocationRow style={{ paddingRight: "2px" }}>
+          <div className="text-black text-lg">
             {convertDateFormat(props.Days?.slab)}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
@@ -236,6 +356,10 @@ const Day_I_Container = (props) => {
             </div>
           ) : null} */}
         </InnerDayLocationRow>
+        <ViewMoreButton
+          text={viewMore ? "View Less" : "View More"}
+          handler={handleViewMoreButton}
+        />
         {/* <InnerDayLocationRow>
           <GrMapLocation />
           <div>
@@ -353,7 +477,7 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
-        {dayIcontainer}
+        {viewMore ? dayIcontainer : summaryIContainer}
       </DayContainerStyle>
     </Container>
   );
