@@ -2,7 +2,7 @@ export default function ViewMoreButton({ text, handler }) {
   return (
     <div className="">
       <button
-        className="flex items-center border-[#ECEAEA] border-2 rounded-lg p-1 hover:bg-black hover:text-white hover:border-black"
+        className="flex items-center border-[#ECEAEA] border-2 rounded-lg p-1 text-sm hover:bg-black hover:text-white hover:border-black"
         onClick={handler}
       >
         {text}

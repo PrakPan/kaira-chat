@@ -14,12 +14,9 @@ import NewCity from "./NewCity";
 import { isJson } from "../../../services/isJSON";
 import { PopoverPaper } from "@mui/material";
 import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
-import Summary from "../../../components/itinerary/daySummary/summary";
-import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
-import { FaHome } from "react-icons/fa";
-import { MdRestaurant } from "react-icons/md";
-import ImageLoader from "../../../components/ImageLoader";
-// import { ReccoIcon } from "../../../containers/newitinerary/itineraryelements/RecomendationComponent";
+import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
+import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
+import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -134,83 +131,41 @@ const Day_I_Container = (props) => {
   };
 
   let summaryIContainer = [];
+  let newCity;
   function setSymmaryElements(elements) {
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
-          let transferIcon;
-          const modes = getTransportationType(element.icon);
-          if (modes) {
-            transferIcon = (
-              <TransportIconFetcher
-                TransportMode={modes}
-                classname="text-black lg:text-[3.05rem] text-[1.25rem]"
-              />
-            );
-          } else {
-            transferIcon = <div className="w-[3.05rem]"></div>;
-          }
           summaryIContainer.push(
-            <Summary
-              key={`summary_${index}`}
-              icon={transferIcon}
+            <TransferElement
+              key={`summary_transfer_${index}`}
+              modes={getTransportationType(element.icon)}
               heading={element.heading}
+              booking={props.transferBookings}
+              meta={element.meta}
+              data={element}
+              transfers={element.transfers}
             />
           );
           break;
+        case "newcity":
+          newCity = element.city_name;
+          break;
         case "accommodation":
-          const accommodationIcon = (
-            <FaHome className="text-black lg:text-[3.05rem]   text-[1.25rem]" />
-          );
           if (element.bookings !== null) {
             summaryIContainer.push(
-              <Summary
-                key={`summary_${index}`}
-                icon={accommodationIcon}
+              <AccommodationElement
+                key={`summary_accommodation_${index}`}
                 heading={element.heading}
               />
             );
           }
           break;
         case "activity":
-          let activityIcon;
-          if (element.icon !== "media/icons/default/activity.svg") {
-            activityIcon = (
-              <ImageLoader
-                dimensions={{ width: 300, height: 300 }}
-                dimensionsMobile={{ width: 300, height: 300 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={() => console.log("")}
-                width="3rem"
-                leftalign
-                widthmobile="3rem"
-                url={element.icon}
-                noLazy
-              ></ImageLoader>
-            );
-          } else {
-            activityIcon = (
-              <ImageLoader
-                dimensions={{ width: 300, height: 300 }}
-                dimensionsMobile={{ width: 300, height: 300 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={() => console.log("")}
-                width="3.25rem"
-                height="3.25rem"
-                leftalign
-                widthmobile="6rem"
-                url={"media/icons/general/dice.png"}
-                noLazy
-              ></ImageLoader>
-            );
-          }
-
           summaryIContainer.push(
-            <Summary
+            <ActivityElement
               key={`summary_${index}`}
-              icon={activityIcon}
+              icon={element.icon}
               heading={element.heading}
             />
           );
@@ -336,8 +291,8 @@ const Day_I_Container = (props) => {
     <Container className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
-          <div className="text-black text-lg">
-            {convertDateFormat(props.Days?.slab)}
+          <div className="text-black text-sm">
+            {convertDateFormat(props.Days?.slab)} - {newCity ? `Arrival in ${newCity}` : `Exploration in ${newCity}`}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&
