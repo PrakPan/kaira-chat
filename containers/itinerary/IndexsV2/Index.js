@@ -1,28 +1,29 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
-import styled from 'styled-components';
-import FullImg from '../fullimg/FullImg';
-import FullImgContainer from '../fullimg/FullImgContent';
+import styled from "styled-components";
+import FullImg from "../fullimg/FullImg";
+import FullImgContainer from "../fullimg/FullImgContent";
 
-import Menu from '../MenuV2';
-import axios from 'axios';
-import Spinner from '../../../containers/loaderbar/Index';
-import OldSpinner from '../../../components/LoadingPage';
-import defaultbreif from '../defaultbrief';
-import axiosdaybydayinstance from '../../../services/itinerary/daybyday/preview';
-import axiosbreifinstance from '../../../services/itinerary/brief/preview';
-import { MIS_SERVER_HOST } from '../../../services/constants';
+import Menu from "../MenuV2";
+import axios from "axios";
+import Spinner from "../../../containers/loaderbar/Index";
+import OldSpinner from "../../../components/LoadingPage";
+import defaultbreif from "../defaultbrief";
+import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
+import axiosbreifinstance from "../../../services/itinerary/brief/preview";
+import { MIS_SERVER_HOST } from "../../../services/constants";
 
-import * as authaction from '../../../store/actions/auth';
-import { connect } from 'react-redux';
-import { ITINERARY_STATUSES } from '../../../services/constants';
-import { TRAVELER_ITINERARIES } from '../../../services/constants';
-import axiosPoiRoutes from '../../../services/itinerary/brief/route';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import Landing from '../landing/Index';
-import Overview from '../../newitinerary/overview/Index';
-import { openNotification } from '../../../store/actions/notification';
+import * as authaction from "../../../store/actions/auth";
+import { connect, useDispatch } from "react-redux";
+import { ITINERARY_STATUSES } from "../../../services/constants";
+import { TRAVELER_ITINERARIES } from "../../../services/constants";
+import axiosPoiRoutes from "../../../services/itinerary/brief/route";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import Landing from "../landing/Index";
+import Overview from "../../newitinerary/overview/Index";
+import { openNotification } from "../../../store/actions/notification";
+import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
 
 const Container = styled.div`
   width: 90%;
@@ -34,7 +35,7 @@ const Container = styled.div`
 `;
 
 const btoa = (text) => {
-  return Buffer.from(text, 'binary').toString('base64');
+  return Buffer.from(text, "binary").toString("base64");
 };
 const Itinerary = (props) => {
   const router = useRouter();
@@ -45,13 +46,13 @@ const Itinerary = (props) => {
   const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
   //states required for timer
   const [itineraryReleased, setItineraryReleased] = useState(false);
-  const [itineraryDate, setItineraryDate] = useState('2021-09-20 18:05:48');
+  const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
   const [timeRequired, setTimeRequired] = useState();
 
   //for itinerary and bookings
   const [itinerary, setItinerary] = useState({
-    name: 'Loading Itinerary',
-    images: ['null'],
+    name: "Loading Itinerary",
+    images: ["null"],
   });
   const [breif, setBreif] = useState();
   const [routes, setRoutes] = useState();
@@ -107,6 +108,7 @@ const Itinerary = (props) => {
   const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
   const [is_stock, setIsStock] = useState(false);
   const hasRendered = useRef(false);
+  const dispatch = useDispatch();
   // const closeGalleryHandler = () => {
   //   setImages(null);
   //   setShowbooking(true);
@@ -116,12 +118,12 @@ const Itinerary = (props) => {
   //     //do stuff with the script
   // };
   // script.src =`(function (d, w, c) { if(!d.getElementById("spd-busns-spt")) { var n = d.getElementsByTagName('script')[0], s = d.createElement('script'); var loaded = false; s.id = "spd-busns-spt"; s.async = "async"; s.setAttribute("data-self-init", "false"); s.setAttribute("data-init-type", "opt"); s.src = 'https://cdn.in-freshbots.ai/assets/share/js/freshbots.min.js'; s.setAttribute("data-client", "3225c221f3048e75e5a6ef1d6a5227c59290c8f1"); s.setAttribute("data-bot-hash", "74b6cd8cbe305eba5699361061f2c6fc1ec8607b"); s.setAttribute("data-env", "prod"); s.setAttribute("data-region", "in"); if (c) { s.onreadystatechange = s.onload = function () { if (!loaded) { c(); } loaded = true; }; } n.parentNode.insertBefore(s, n); } }) (document, window, function () { Freshbots.initiateWidget({ autoInitChat: false, getClientParams: function () { return {"cstmr::eml":"","cstmr::phn":"","cstmr::nm":""}; } }, function(successResponse) { }, function(errorResponse) { }); });`;
-  
+
   useEffect(() => {
-     if (hasRendered.current) {
-       if (props.token) getPaymentHandler()
-     } else hasRendered.current = true;
-  },[props.token])
+    if (hasRendered.current) {
+      if (props.token) getPaymentHandler();
+    } else hasRendered.current = true;
+  }, [props.token]);
 
   const getBreifHandler = () => {
     axiosbreifinstance
@@ -157,7 +159,7 @@ const Itinerary = (props) => {
       .catch((error) => {
         setBreifLoading(false);
 
-        window.location.href = '/thank-you';
+        window.location.href = "/thank-you";
       });
   };
 
@@ -167,9 +169,9 @@ const Itinerary = (props) => {
 
     axios
       .post(
-        MIS_SERVER_HOST + '/payment/info/',
+        MIS_SERVER_HOST + "/payment/info/",
         {
-          itinerary_type: 'Tailored',
+          itinerary_type: "Tailored",
           itinerary_id: props.id,
         },
         {
@@ -190,21 +192,19 @@ const Itinerary = (props) => {
               setPayment(res); //
               setPaymentLoading(false);
             })
-            .catch((err) => {
-            });
+            .catch((err) => {});
         } else {
           setPayment(res.data);
           setPaymentLoading(false);
         }
         //check if user has already paid
         // try{
-        let email = localStorage.getItem('email');
+        let email = localStorage.getItem("email");
         if (props.token)
           for (var i = 0; i < res.data.registered_users.length; i++) {
-
             if (res.data.registered_users[i].email === email) {
               if (res.data.registered_users[i].payment_status)
-                if (res.data.registered_users[i].payment_status === 'captured')
+                if (res.data.registered_users[i].payment_status === "captured")
                   setHasUserPaid(true);
               break;
             }
@@ -224,13 +224,13 @@ const Itinerary = (props) => {
     let transfer_bookings = [];
     let flight_bookings = [];
 
-    var username = 'administrator@thetarzanway.com';
-    var password = 'AKY6282&#bc(*!L)6w8';
-    fetch(MIS_SERVER_HOST + '/sales/bookings/?itinerary_id=' + props.id, {
+    var username = "administrator@thetarzanway.com";
+    var password = "AKY6282&#bc(*!L)6w8";
+    fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
       params: { itinerary_id: props.id },
       headers: {
-        Authorization: 'Basic ' + btoa(username + ':' + password),
-        'Content-Type': 'application/json',
+        Authorization: "Basic " + btoa(username + ":" + password),
+        "Content-Type": "application/json",
       },
     })
       .then((response) => {
@@ -241,13 +241,13 @@ const Itinerary = (props) => {
             // getPaymentHandler();
 
             for (var i = 0; i < json.bookings.length; i++) {
-              if (json.bookings[i].booking_type === 'Accommodation')
+              if (json.bookings[i].booking_type === "Accommodation")
                 stay_bookings.push(json.bookings[i]);
-              else if (json.bookings[i].booking_type === 'Activity')
+              else if (json.bookings[i].booking_type === "Activity")
                 activity_bookings.push(json.bookings[i]);
               else {
                 transfer_bookings.push(json.bookings[i]);
-                if (json.bookings[i].booking_type === 'Flight') {
+                if (json.bookings[i].booking_type === "Flight") {
                   flight_bookings.push(json.bookings[i]);
                 }
               }
@@ -323,19 +323,19 @@ const Itinerary = (props) => {
         .then((res) => {
           setRoutes(res);
         })
-        .catch((err) => {
-        });
+        .catch((err) => {});
       axios
-        .get(MIS_SERVER_HOST + '/sales/plan/?itinerary_id=' + props.id)
+        .get(MIS_SERVER_HOST + "/sales/plan/?itinerary_id=" + props.id)
         .then((res) => {
           setPlan(res.data);
+          dispatch(setItineraryStartDate({ date: res.data.start_date }));
           if (
             res.data.itinerary_status ===
             ITINERARY_STATUSES.itinerary_not_created
           ) {
             setItineraryNotCreated(false);
             alert(
-              'Looks like the response took too long, please refresh and try again.'
+              "Looks like the response took too long, please refresh and try again."
             );
           } else {
             setUserEmail(res.data.user_email);
@@ -432,7 +432,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking_id,
       booking_type: booking_type,
-      itinerary_type: 'Tailored',
+      itinerary_type: "Tailored",
       user_selected: true,
       itinerary_id: itinerary_id,
       tailored_itinerary: tailored_id,
@@ -450,7 +450,7 @@ const Itinerary = (props) => {
 
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
-      .post('/?booking_type=Taxi,Bus,Ferry', data, {
+      .post("/?booking_type=Taxi,Bus,Ferry", data, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -497,7 +497,7 @@ const Itinerary = (props) => {
     let data = [];
     data.push({
       id: booking.id,
-      booking_type: 'Accommodation',
+      booking_type: "Accommodation",
       city: booking.city,
       user_selected: user_selected,
       accommodation: booking.accommodation,
@@ -507,7 +507,7 @@ const Itinerary = (props) => {
       itinerary_name: booking.itinerary_name,
       itinerary_db_id: null,
       is_estimated_price: booking.is_estimated_price,
-      itinerary_type: 'Tailored',
+      itinerary_type: "Tailored",
     });
     // else data.push(bookings[i]);
     // }
@@ -515,7 +515,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        '/?booking_type=Accommodation&itinerary_id=' + booking.itinerary_id,
+        "/?booking_type=Accommodation&itinerary_id=" + booking.itinerary_id,
         data,
         {
           headers: {
@@ -557,7 +557,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking.id,
       booking_type: booking.booking_type,
-      itinerary_type: 'Tailored',
+      itinerary_type: "Tailored",
       user_selected: user_selected,
       itinerary_id: booking.itinerary_id,
     });
@@ -567,7 +567,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        '/?booking_type=Flight&itinerary_id=' + booking.itinerary_id,
+        "/?booking_type=Flight&itinerary_id=" + booking.itinerary_id,
         data,
         {
           headers: {
@@ -608,7 +608,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking.id,
       booking_type: booking.booking_type,
-      itinerary_type: 'Tailored',
+      itinerary_type: "Tailored",
       user_selected: user_selected,
       taxi_type: booking.taxi_type,
       transfer_type: booking.transfer_type,
@@ -622,7 +622,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        '/?booking_type=Taxi,Bus,Ferry&itinerary_id=' + booking.itinerary_id,
+        "/?booking_type=Taxi,Bus,Ferry&itinerary_id=" + booking.itinerary_id,
         data,
         {
           headers: {
@@ -644,11 +644,11 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         // window.alert('There seems to be a problem, please try again!');
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
+        props.openNotification({
+          type: "error",
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+        });
       });
   };
   const _deselectActivityBookingHandler = (booking, user_selected) => {
@@ -667,7 +667,7 @@ const Itinerary = (props) => {
     data.push({
       id: booking.id,
       booking_type: booking.booking_type,
-      itinerary_type: 'Tailored',
+      itinerary_type: "Tailored",
       user_selected: user_selected,
       itinerary_id: booking.itinerary_id,
       tailored_itinerary: booking.tailored_itinerary,
@@ -686,7 +686,7 @@ const Itinerary = (props) => {
     // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
-        '/?booking_type=Activity&itinerary_id=' + booking.itinerary_id,
+        "/?booking_type=Activity&itinerary_id=" + booking.itinerary_id,
         data,
         {
           headers: {
@@ -747,7 +747,7 @@ const Itinerary = (props) => {
           start_date={plan ? plan.start_date : null}
           end_date={plan ? plan.end_date : null}
           duration={
-            plan ? plan.duration_number + ' ' + plan.duration_unit : null
+            plan ? plan.duration_number + " " + plan.duration_unit : null
           }
         ></Overview>
         {/* <Landing
@@ -826,8 +826,8 @@ const Itinerary = (props) => {
   else if (isPastTravelerItinerary)
     return (
       <div>
-        {' '}
-        <OldSpinner></OldSpinner>{' '}
+        {" "}
+        <OldSpinner></OldSpinner>{" "}
       </div>
     );
   else if (router.query.payment_status) {
