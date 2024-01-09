@@ -15,6 +15,12 @@ import { isJson } from "../../../services/isJSON";
 import { PopoverPaper } from "@mui/material";
 import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
 import Summary from "../../../components/itinerary/daySummary/summary";
+import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
+import { FaHome } from "react-icons/fa";
+import { MdRestaurant } from "react-icons/md";
+import ImageLoader from "../../../components/ImageLoader";
+// import { ReccoIcon } from "../../../containers/newitinerary/itineraryelements/RecomendationComponent";
+
 export const DayContainerStyle = styled.div`
   display: flex;
   flex-direction: column;
@@ -37,6 +43,20 @@ export const DayContainerStyle = styled.div`
     margin-left: auto;
   }
 `;
+
+const ReccoIcon = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 1rem;
+  @media screen and (min-width: 768px) {
+    width: 6.15rem;
+    justify-content: start;
+    padding-bottom: 0rem;
+  }
+`;
+
 const Container = styled.div`
   background: #ffffff;
   border: 1.5px solid #eceaea;
@@ -48,6 +68,7 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
 `;
+
 const DivDayContainerRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -56,6 +77,7 @@ const DivDayContainerRow = styled.div`
   align-items: center;
   padding: 0px 0px 10px 0px;
 `;
+
 const InnerDayLocationRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -65,6 +87,7 @@ const InnerDayLocationRow = styled.div`
     padding-left: 8px;
   }
 `;
+
 const Date = styled.div`
   width: max-content;
   border-radius: 2rem;
@@ -78,7 +101,7 @@ const Date = styled.div`
 //         for
 // }
 const Day_I_Container = (props) => {
-  const [viewMore, setViewMore] = useState(true);
+  const [viewMore, setViewMore] = useState(false);
 
   const Arslab_elements = [
     { name: "transfer", data: [] },
@@ -105,6 +128,99 @@ const Day_I_Container = (props) => {
     const transportationType = firstLetter + restOfWord;
     return transportationType;
   }
+
+  const handleViewMoreButton = () => {
+    setViewMore((prev) => !prev);
+  };
+
+  let summaryIContainer = [];
+  function setSymmaryElements(elements) {
+    elements.map((element, index) => {
+      switch (element.element_type) {
+        case "transfer":
+          let transferIcon;
+          const modes = getTransportationType(element.icon);
+          if (modes) {
+            transferIcon = (
+              <TransportIconFetcher
+                TransportMode={modes}
+                classname="text-black lg:text-[3.05rem] text-[1.25rem]"
+              />
+            );
+          } else {
+            transferIcon = <div className="w-[3.05rem]"></div>;
+          }
+          summaryIContainer.push(
+            <Summary
+              key={`summary_${index}`}
+              icon={transferIcon}
+              heading={element.heading}
+            />
+          );
+          break;
+        case "accommodation":
+          const accommodationIcon = (
+            <FaHome className="text-black lg:text-[3.05rem]   text-[1.25rem]" />
+          );
+          if (element.bookings !== null) {
+            summaryIContainer.push(
+              <Summary
+                key={`summary_${index}`}
+                icon={accommodationIcon}
+                heading={element.heading}
+              />
+            );
+          }
+          break;
+        case "activity":
+          let activityIcon;
+          if (element.icon !== "media/icons/default/activity.svg") {
+            activityIcon = (
+              <ImageLoader
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log("")}
+                width="3rem"
+                leftalign
+                widthmobile="3rem"
+                url={element.icon}
+                noLazy
+              ></ImageLoader>
+            );
+          } else {
+            activityIcon = (
+              <ImageLoader
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                onclick={() => console.log("")}
+                width="3.25rem"
+                height="3.25rem"
+                leftalign
+                widthmobile="6rem"
+                url={"media/icons/general/dice.png"}
+                noLazy
+              ></ImageLoader>
+            );
+          }
+
+          summaryIContainer.push(
+            <Summary
+              key={`summary_${index}`}
+              icon={activityIcon}
+              heading={element.heading}
+            />
+          );
+          break;
+        default:
+      }
+    });
+  }
+  setSymmaryElements(props.Days.slab_elements);
+
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements, slab) {
     JsonArray.map((element, index) => {
@@ -220,7 +336,7 @@ const Day_I_Container = (props) => {
     <Container className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
-          <div className="font-bold text-black text-2xl">
+          <div className="text-black text-lg">
             {convertDateFormat(props.Days?.slab)}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
@@ -240,7 +356,10 @@ const Day_I_Container = (props) => {
             </div>
           ) : null} */}
         </InnerDayLocationRow>
-        <ViewMoreButton />
+        <ViewMoreButton
+          text={viewMore ? "View Less" : "View More"}
+          handler={handleViewMoreButton}
+        />
         {/* <InnerDayLocationRow>
           <GrMapLocation />
           <div>
@@ -358,8 +477,7 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
-        <Summary heading={props.Days.slab_elements[0].heading} icon={props.Days.slab_elements[0].icon} />
-        {dayIcontainer}
+        {viewMore ? dayIcontainer : summaryIContainer}
       </DayContainerStyle>
     </Container>
   );
