@@ -4,9 +4,9 @@ import ImageLoader from "../../../components/ImageLoader";
 export default function ActivityElement(props) {
   const { icon, heading } = props;
   return (
-    <Container className="pt-3">
-      <div className=" flex flex-row items-center justify-start space-x-10">
-        <div className="w-20 h-20">
+    <Container className="pt-0">
+      <div className=" flex flex-row items-center justify-start w-full">
+        <div className="w-[20%] pr-3 flex items-center justify-end">
           {icon !== "media/icons/default/activity.svg" ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
@@ -14,9 +14,9 @@ export default function ActivityElement(props) {
               borderRadius="8px"
               hoverpointer
               onclick={() => console.log("")}
-              width="3rem"
+              width="2rem"
               leftalign
-              widthmobile="3rem"
+              widthmobile="2rem"
               url={icon}
               noLazy
             ></ImageLoader>
@@ -27,16 +27,16 @@ export default function ActivityElement(props) {
               borderRadius="8px"
               hoverpointer
               onclick={() => console.log("")}
-              width="3.25rem"
-              height="3.25rem"
+              width="2.25rem"
+              height="2.25rem"
               leftalign
-              widthmobile="6rem"
+              widthmobile="4rem"
               url={"media/icons/general/dice.png"}
               noLazy
             ></ImageLoader>
           )}
         </div>
-        <div className="">{heading}</div>
+        <div className="w-[80%] text-sm">{heading}</div>
       </div>
     </Container>
   );

@@ -19,41 +19,41 @@ export default function TransferElement(props) {
   return (
     <Container className="pt-0">
       <div className=" flex flex-col items-center justify-center w-full">
-        <div className="w-[80%] self-end">
+        <div className="w-[80%] self-end text-sm">
           {heading}
-          {meta == null || meta.estimated_cost == undefined ? null : (
-            <Link
-              to={
-                data.bookings && data.bookings[0] && data.bookings[0].id
-                  ? `${data.bookings[0].id}`
-                  : "Transfer_Container"
-              }
-              offset={-90}
-            >
-              <TransparentButton>
-                {getUserSelectedByBookings(
-                  data.bookings &&
-                    data.bookings[0] &&
-                    data.bookings[0] &&
-                    data.bookings[0].id
-                    ? data.bookings[0].id
-                    : null
-                ) ? (
-                  <>
-                    <MdDoneAll
-                      style={{
-                        display: "inline",
-                        marginRight: "0.35rem",
-                      }}
-                    />{" "}
-                    {modes ? `${modes} added` : null}
-                  </>
-                ) : (
-                  <>{modes ? `Add ${modes} ` : null}</>
-                )}
-              </TransparentButton>
-            </Link>
-          )}
+            {meta == null || meta.estimated_cost == undefined ? null : (
+              <Link
+                to={
+                  data.bookings && data.bookings[0] && data.bookings[0].id
+                    ? `${data.bookings[0].id}`
+                    : "Transfer_Container"
+                }
+                offset={-90}
+              >
+                <TransparentButton>
+                  {getUserSelectedByBookings(
+                    data.bookings &&
+                      data.bookings[0] &&
+                      data.bookings[0] &&
+                      data.bookings[0].id
+                      ? data.bookings[0].id
+                      : null
+                  ) ? (
+                    <>
+                      <MdDoneAll
+                        style={{
+                          display: "inline",
+                          marginRight: "0.35rem",
+                        }}
+                      />{" "}
+                      {modes ? `${modes} added` : null}
+                    </>
+                  ) : (
+                    <>{modes ? `Add ${modes}` : null}</>
+                  )}
+                </TransparentButton>
+              </Link>
+            )}
         </div>
 
         <div className="w-full flex flex-row items-center">
@@ -67,7 +67,7 @@ export default function TransferElement(props) {
               <div className=""></div>
             )}
           </div>
-          <div className="w-[80%]">
+          <div className="w-[80%] text-xs leading-7">
             {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
             {transfers.routes[0]?.legs[0].destination.shortName}
           </div>
