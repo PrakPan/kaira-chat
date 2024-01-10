@@ -164,7 +164,7 @@ const Day_I_Container = (props) => {
         case "activity":
           summaryIContainer.push(
             <ActivityElement
-              key={`summary_${index}`}
+              key={`summary_activity_${index}`}
               icon={element.icon}
               heading={element.heading}
             />
@@ -291,8 +291,8 @@ const Day_I_Container = (props) => {
     <Container className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
-          <div className="text-black text-sm">
-            {convertDateFormat(props.Days?.slab)} - {newCity ? `Arrival in ${newCity}` : `Exploration in ${newCity}`}
+          <div className="text-black text-sm font-bold">
+            {convertDateFormat(props.Days?.slab)} - {newCity ? `Arrival in ${newCity}` : `${props.current_cityName} Exploration`}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&
