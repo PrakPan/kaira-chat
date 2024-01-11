@@ -331,7 +331,7 @@ const ItineraryPoiElement = (props) => {
                   {props.heading}
                 </div>
                 {!props.payment?.is_registration_needed &&
-                  props.city_id &&
+                  props?.city_id &&
                   props.payment?.user_allowed_to_pay &&
                   !props.payment.paid_user && (
                     <div
@@ -347,16 +347,16 @@ const ItineraryPoiElement = (props) => {
                   className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
                   // onClick={() => setViewMore(!viewMore)}
                 >
-                  {props.activity_data &&
-                  props.activity_data.activity &&
-                  props.activity_data.activity.id
+                  {props?.activity_data &&
+                  props?.activity_data?.activity &&
+                  props?.activity_data?.activity?.id
                     ? "ACTIVITY"
                     : "Self Exploration"}
                 </div>
-                {props.poi.rating && (
+                {props?.poi?.rating && (
                   <RatingContainer>
                     {/* <StarRating initialRating={4}></StarRating> */}
-                    <div>{_getStars(props.poi.rating)}</div>
+                    <div>{_getStars(props?.poi?.rating)}</div>
                     <span>
                       {props.poi.rating}{" "}
                       {props.poi.user_ratings_total
