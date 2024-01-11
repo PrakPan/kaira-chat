@@ -108,7 +108,7 @@ const Contact = () => {
             style={{ fontSize: "1rem", textAlign: "center" }}
             className="font-nunito"
           >
-            +91 95821 25476, +91 88400 45328
+            +91 95821 25476
           </p>
         </AddressContainer>
         <NumberContainer>

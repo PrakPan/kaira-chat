@@ -72,6 +72,7 @@ const HowItWorksContainer = styled.div`
 `;
 
 const Homepage = (props) => {
+
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
@@ -343,6 +344,7 @@ const Homepage = (props) => {
                 locations={props.asiaLocations}
                 country
               ></SwiperLocations>
+
 
               <Button
               link='/asia'

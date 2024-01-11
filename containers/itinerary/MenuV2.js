@@ -2,58 +2,37 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { Link as ScrollLink, scroller } from 'react-scroll';
 
-import { AppBar } from '@mui/material';
-import { Tabs, Tab } from '@mui/material';
 import { RxCross2 } from 'react-icons/rx';
 import { Typography } from '@mui/material';
 import { Box } from '@mui/material';
 import GITSummaryContainer from './booking1/gittailored/Index';
 import SummaryContainer from './booking1/TailoredDetails';
-import axiosPoiCityInstance from '../../services/poi/city';
-import axiosLeadChat from "../../services/leads/chat.js";
-import Booking from './booking1/CheckLoginWrapper';
-import Register from './register/Index';
+ import axiosLeadChat from "../../services/leads/chat.js";
+ import Register from './register/Index';
 import Breif from './breif/NewIndex';
-import ItineraryContainer from '../../components/itinerary/Index/IndexDesktop';
-import ItineraryContainerMobile from '../../components/itinerary/newmobile/Index';
-import media from '../../components/media';
+ import media from '../../components/media';
 import PoiEditModal from '../../components/modals/editpoi/Index';
 import { getIndianPrice } from '../../services/getIndianPrice';
 import Button from '../../components/ui/button/Index';
-import PriceBannerMobile from './PriceBannerMobile';
-// import Accommodation from '../../components/modals/accommodation/Index';
-import axiosbookingupdateinstance from '../../services/bookings/UpdateBookings';
-import * as ga from '../../services/ga/Index';
-import Spinner from '../../components/Spinner';
-import { useRouter } from 'next/router';
-import CustomMenu from './CustomMenu';
-import { useSticky } from '../../hooks/useSticky';
-import StackedComponents from './StackedComponents';
-import NewItenary from './New_Itenary_DBD/NewItenaryDBDMob';
-import NewItenaryDBD from './New_Itenary_DBD/NewItenaryDBDMob';
-import useMediaQuery from '../../hooks/useMedia';
+  import * as ga from '../../services/ga/Index';
+ import { useRouter } from 'next/router';
+ import { useSticky } from '../../hooks/useSticky';
+ import useMediaQuery from '../../hooks/useMedia';
 import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
 import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
 import ScrollableMenuTabs from '../../components/ScrollableMenuTabs';
-import NewBooking from './HotelsBooking/HotelsBooking';
-import ActivityBookings from './ActivityBookings/ActivitiesBookings';
+ import ActivityBookings from './ActivityBookings/ActivitiesBookings';
 
 import HotelsBooking from './HotelsBooking/HotelsBooking';
 import { SplitScreen } from '../../components/SplitScreen';
-import BookingContainer from '../../components/BookingContainer/BookingContainer';
-import ButtonYellow from '../../components/ButtonYellow';
 import { Navigation } from '../../components/NewNavigation';
 import TransfersContainer from './TransfersContainer/TransfersContainer';
 import LogInModal from '../../components/modals/Login';
 import Modal from '../../components/ui/Modal';
-import { ClaimItinary } from '../../store/actions/auth';
-import { CONTENT_SERVER_HOST, ITINERARY_STATUSES } from '../../services/constants';
-import MakeYourPersonalised from '../../components/MakeYourPersonalised';
-import useFieldOfView from '../../hooks/useFieldOfView';
-import useInView from '../../hooks/useInView';
+ import { CONTENT_SERVER_HOST, ITINERARY_STATUSES } from '../../services/constants';
+ import useInView from '../../hooks/useInView';
 import { getCityDetails } from './getCityDetails';
-import NotificationPopup from '../../components/ui/NotificationPopup';
-import ImageLoader from '../../components/ImageLoader';
+ import ImageLoader from '../../components/ImageLoader';
 import { connect } from 'react-redux';
 import { openNotification } from '../../store/actions/notification';
 const Container = styled.div`
@@ -586,7 +565,7 @@ const SimpleTabsV2 = (props) => {
                         onclick={() => scrollToElement("Stays-Head")}
                         onclickparams={null}
                       >
-                        Proceed to Book
+                        View Inclusions
                       </Button>
                     </div>
                   ) : (
@@ -618,7 +597,7 @@ const SimpleTabsV2 = (props) => {
                         bgColor="#f8e000"
                         onclick={() => scrollToElement("Stays-Head")}
                       >
-                        Proceed to Book
+                        View Inclusions
                       </Button>
                     </div>
                   ) : (
@@ -1146,7 +1125,7 @@ const SimpleTabsV2 = (props) => {
                       setShowFooterBannerMobile(!showFooterBannerMobile)
                     }
                   >
-                    Proceed to Book
+                    View Inclusions
                   </Button>
                 </div>
               ) : (
@@ -1180,7 +1159,7 @@ const SimpleTabsV2 = (props) => {
                       setShowFooterBannerMobile(!showFooterBannerMobile)
                     }
                   >
-                    Proceed to Book
+                    View Inclusions
                   </Button>
                 </div>
               ) : (

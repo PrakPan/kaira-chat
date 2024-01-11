@@ -37,6 +37,21 @@ const NewItenaryMain = (props) => {
 
   const isDesktop = useMediaQuery('(min-width:1148px)');
 
+  let currentCity = props.itinerary.starting_city.state_name;
+
+  const getCurrentCity = () => {
+    props.itinerary.day_slabs.map((day_slab, index) => {
+      day_slab.slab_elements.map((element, index) => {
+        if(element.element_type === 'newcity') {
+          currentCity = element.city_name;
+        }
+      })
+      day_slab.current_cityName = currentCity;
+    })
+  }
+
+  getCurrentCity();
+
   const items = [];
   const itemsDays = [];
   // function makeCounter(initialCount = 0, initialDate = 1) {
@@ -63,12 +78,13 @@ const NewItenaryMain = (props) => {
     if (arr.length <= location) return arr[arr.length - 1].slab_id;
     return arr[location].slab_id;
   }
+
   if (props.itinerary.day_slabs) {
-    for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
+    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
-      if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
-        break;
+      if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true) break;
+      else if (props.city_slabs[i].duration <= 0) break;
       else {
         const itenaryId =
           i % props.city_slabs[i].duration
@@ -219,6 +235,7 @@ const NewItenaryMain = (props) => {
                 LastElement={props.itinerary.day_slabs.length == index + 1}
                 transferBookings={props.transferBookings}
                 stayBookings={props.stayBookings}
+                current_cityName={element.current_cityName}
               ></Day_I_Container>
             </div>
           ))}

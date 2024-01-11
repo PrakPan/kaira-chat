@@ -79,7 +79,7 @@ var ThemeData = [];
   }
   try{
     const loc = await axiospagelistinstance.get(
-      `?country=india&fields=id,destination,tagline,image,link`
+      `?country=india&fields=id,destination,tagline,image,link,path`
     );
     locations = loc.data;
 

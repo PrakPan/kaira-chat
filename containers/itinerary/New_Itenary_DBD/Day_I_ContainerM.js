@@ -157,7 +157,7 @@ const Day_I_ContainerM = (props) => {
               slab_elements_index={index}
               itinerary_id={props?.itinerary_id}
               data={element}
-              key={element?.activity_data.id}
+              key={element?.activity_data?.id}
               time="11:00AM"
               image={element?.icon !== undefined ? element?.icon : null}
               booking

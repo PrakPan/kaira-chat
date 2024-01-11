@@ -12,6 +12,7 @@ import {
 } from '../hooks/useNavigationMarker';
 import useHorizontalScroll from '../hooks/useHorizontalScroll';
 import useFieldOfView from '../hooks/useFieldOfView';
+import { useSelector } from 'react-redux';
 
 ///////// Style
 
@@ -69,7 +70,6 @@ const ScrollableMenuTabs = ({
   offset,
   items,
   BarName,
-  year = '2023',
   Mstyle = 'simple',
   Iterable = 'label',
   vertical = false,
@@ -78,6 +78,7 @@ const ScrollableMenuTabs = ({
   const [activeItem, setActiveItem] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [activeTabPosition, setActiveTabPosition] = useState(0);
+  const startDate = useSelector(state => state.itineraryStartDate.startDate);
   /// hooks
 
   const { ref, isSticky } = useSticky(90);
@@ -196,7 +197,7 @@ const ScrollableMenuTabs = ({
       ) : null} */}
 
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
-        {vertical ? <div className="font-bold">{year}</div> : null}
+        {vertical ? <div className="font-bold">{new Date(startDate).getFullYear()}</div> : null}
         {items.map((item, index) => (
           <>
             <CustomMenu

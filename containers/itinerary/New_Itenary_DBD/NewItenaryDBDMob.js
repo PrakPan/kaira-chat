@@ -145,7 +145,7 @@ const NewItenaryDBDMob = (props) => {
         offset={items.length ? "89px" : "50px"}
         items={itemsDays}
         BarName="CityName"
-        year={"2023"}
+        year={"2024"}
         Mstyle={"round"}
         Iterable="date"
       />
