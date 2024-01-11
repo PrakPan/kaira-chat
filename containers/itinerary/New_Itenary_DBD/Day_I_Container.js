@@ -13,10 +13,6 @@ import RecomendationComponent from "../../newitinerary/itineraryelements/Recomen
 import NewCity from "./NewCity";
 import { isJson } from "../../../services/isJSON";
 import { PopoverPaper } from "@mui/material";
-import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
-import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
-import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
-import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -98,8 +94,6 @@ const Date = styled.div`
 //         for
 // }
 const Day_I_Container = (props) => {
-  const [viewMore, setViewMore] = useState(false);
-
   const Arslab_elements = [
     { name: "transfer", data: [] },
     { name: "newcity", data: [] },
@@ -129,52 +123,6 @@ const Day_I_Container = (props) => {
   const handleViewMoreButton = () => {
     setViewMore((prev) => !prev);
   };
-
-  let summaryIContainer = [];
-  let newCity;
-  function setSymmaryElements(elements) {
-    elements.map((element, index) => {
-      switch (element.element_type) {
-        case "transfer":
-          summaryIContainer.push(
-            <TransferElement
-              key={`summary_transfer_${index}`}
-              modes={getTransportationType(element.icon)}
-              heading={element.heading}
-              booking={props.transferBookings}
-              meta={element.meta}
-              data={element}
-              transfers={element.transfers}
-            />
-          );
-          break;
-        case "newcity":
-          newCity = element.city_name;
-          break;
-        case "accommodation":
-          if (element.bookings !== null) {
-            summaryIContainer.push(
-              <AccommodationElement
-                key={`summary_accommodation_${index}`}
-                heading={element.heading}
-              />
-            );
-          }
-          break;
-        case "activity":
-          summaryIContainer.push(
-            <ActivityElement
-              key={`summary_activity_${index}`}
-              icon={element.icon}
-              heading={element.heading}
-            />
-          );
-          break;
-        default:
-      }
-    });
-  }
-  setSymmaryElements(props.Days.slab_elements);
 
   let dayIcontainer = [];
   function divide(JsonArray, Arslab_elements, slab) {
@@ -291,8 +239,8 @@ const Day_I_Container = (props) => {
     <Container className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
-          <div className="text-black text-sm font-bold">
-            {convertDateFormat(props.Days?.slab)} - {newCity ? `Arrival in ${newCity}` : `${props.current_cityName} Exploration`}
+          <div className="font-bold text-black text-2xl">
+            {convertDateFormat(props.Days?.slab)}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&
@@ -311,10 +259,6 @@ const Day_I_Container = (props) => {
             </div>
           ) : null} */}
         </InnerDayLocationRow>
-        <ViewMoreButton
-          text={viewMore ? "View Less" : "View More"}
-          handler={handleViewMoreButton}
-        />
         {/* <InnerDayLocationRow>
           <GrMapLocation />
           <div>
@@ -432,7 +376,7 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
-        {viewMore ? dayIcontainer : summaryIContainer}
+        {dayIcontainer}
       </DayContainerStyle>
     </Container>
   );
