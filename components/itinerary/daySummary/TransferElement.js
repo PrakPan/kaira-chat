@@ -8,19 +8,33 @@ export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;
 
   function getUserSelectedByBookings(id) {
-    if (booking && booking.length && id)
-      for (let i = 0; i < booking.length; i++) {
-        if (booking[i].id === id) {
-          return booking[i].user_selected;
+    if (booking && booking.length && id) {
+      for (let book of booking) {
+        if (book.id === id) {
+          return book.user_selected;
         }
       }
+    }
     return null;
   }
+
+  const getFlightDuration = (id) => {
+    if (booking && booking.length && id) {
+      for (let book of booking) {
+        if (book.id === id && book.user_selected && book.duration)
+          return book.duration;
+      }
+    }
+    return "";
+  };
+
   return (
     <Container className="pt-0">
-      <div className=" flex flex-col items-center justify-center w-full">
-        <div className="w-[80%] self-end text-sm">
-          {heading}
+      <div className="flex flex-col items-center justify-center w-full pl-2">
+        <div className="w-full flex flex-row items-center">
+          <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">Morning</div>
+          <div className="font-medium text-sm">{heading}</div>
+          <div className="ml-3">
             {meta == null || meta.estimated_cost == undefined ? null : (
               <Link
                 to={
@@ -32,10 +46,7 @@ export default function TransferElement(props) {
               >
                 <TransparentButton>
                   {getUserSelectedByBookings(
-                    data.bookings &&
-                      data.bookings[0] &&
-                      data.bookings[0] &&
-                      data.bookings[0].id
+                    data.bookings && data.bookings[0]
                       ? data.bookings[0].id
                       : null
                   ) ? (
@@ -54,10 +65,12 @@ export default function TransferElement(props) {
                 </TransparentButton>
               </Link>
             )}
+          </div>
         </div>
 
         <div className="w-full flex flex-row items-center">
-          <div className="w-[20%] pr-3 flex items-center justify-end">
+          <div className="lg:w-[10%] md:w-[20%]"></div>
+          <div className="w-[6%] flex items-center">
             {modes ? (
               <TransportIconFetcher
                 TransportMode={modes}
@@ -67,9 +80,18 @@ export default function TransferElement(props) {
               <div className=""></div>
             )}
           </div>
-          <div className="w-[80%] text-xs leading-7">
+          <div className="text-xs leading-7">
             {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
             {transfers.routes[0]?.legs[0].destination.shortName}
+          </div>
+        </div>
+
+        <div className="w-full flex items-center">
+          <div className="lg:w-[16%] md:w-[26%]"></div>
+          <div className="font-normal text-xs leading-4">
+            {data.bookings &&
+              data.bookings[0] &&
+              getFlightDuration(data.bookings[0].id) ? `Duration:  ${getFlightDuration(data.bookings[0].id)}` : ""}
           </div>
         </div>
       </div>

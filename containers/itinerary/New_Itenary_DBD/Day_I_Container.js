@@ -41,6 +41,29 @@ export const DayContainerStyle = styled.div`
   }
 `;
 
+export const DaySummaryContainerStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  > *:not(:last-child)::after {
+    content: "";
+    display: block;
+    border-style: none none none none;
+    border-color: #e4e4e4;
+    border-width: 1px;
+    width: 100%;
+    @media screen and (min-width: 768px) {
+      width: 83%;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+
+    margin-bottom: 25px;
+    margin-top: 25px; /* adjust this as needed */
+    margin-left: auto;
+  }
+`;
+
 const ReccoIcon = styled.div`
   width: 100%;
   display: flex;
@@ -133,6 +156,7 @@ const Day_I_Container = (props) => {
   let summaryIContainer = [];
   let newCity;
   function setSymmaryElements(elements) {
+    let activities = [];
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
@@ -152,27 +176,30 @@ const Day_I_Container = (props) => {
           newCity = element.city_name;
           break;
         case "accommodation":
-          if (element.bookings !== null) {
+          if (element.bookings && element.bookings.length) {
             summaryIContainer.push(
               <AccommodationElement
                 key={`summary_accommodation_${index}`}
                 heading={element.heading}
+                data={element}
+                city_id={element?.current_city_id}
+                booking={props.stayBookings}
               />
             );
           }
           break;
         case "activity":
-          summaryIContainer.push(
-            <ActivityElement
-              key={`summary_activity_${index}`}
-              icon={element.icon}
-              heading={element.heading}
-            />
-          );
+          activities.push(element.heading);
           break;
         default:
       }
     });
+
+    if (activities.length) {
+      summaryIContainer.push(
+        <ActivityElement key={`summary_activity`} activities={activities} />
+      );
+    }
   }
   setSymmaryElements(props.Days.slab_elements);
 
@@ -291,8 +318,11 @@ const Day_I_Container = (props) => {
     <Container className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
-          <div className="text-black text-sm font-bold">
-            {convertDateFormat(props.Days?.slab)} - {newCity ? `Arrival in ${newCity}` : `${props.current_cityName} Exploration`}
+          <div className="text-black text-base font-bold">
+            {convertDateFormat(props.Days?.slab)} -{" "}
+            {newCity
+              ? `Arrival in ${newCity}`
+              : `${props.current_cityName} Exploration`}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&
@@ -323,13 +353,14 @@ const Day_I_Container = (props) => {
           <BiChevronRight />
         </InnerDayLocationRow> */}
       </DivDayContainerRow>
-      <DayContainerStyle>
-        {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
+      {viewMore ? (
+        <DayContainerStyle>
+          {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
           time="9:00AM"
           heading={Arslab_elements[0].data[0].heading}
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
-        {/* {Arslab_elements[0].data[0].length != 0 ? (
+          {/* {Arslab_elements[0].data[0].length != 0 ? (
           <TransferElements
             time="9:00AM"
             modes={Arslab_elements[0].data[0][0].modes}
@@ -432,8 +463,11 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
-        {viewMore ? dayIcontainer : summaryIContainer}
-      </DayContainerStyle>
+          {dayIcontainer}
+        </DayContainerStyle>
+      ) : (
+        <DaySummaryContainerStyle>{summaryIContainer}</DaySummaryContainerStyle>
+      )}
     </Container>
   );
 };
