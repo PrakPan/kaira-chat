@@ -331,14 +331,14 @@ banner_image,
                         </div>
                       )}
 
-                      {booking.number_of_adults ||
-                      currentBooking.number_of_adults ? (
+                      {booking?.number_of_adults ||
+                      currentBooking?.number_of_adults ? (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
-                            {booking.number_of_adults
-                              ? booking.number_of_adults
-                              : currentBooking.number_of_adults}{" "}
+                            {booking?.number_of_adults
+                              ? booking?.number_of_adults
+                              : currentBooking?.number_of_adults}{" "}
                             Adults
                           </div>
                         </div>
@@ -351,13 +351,13 @@ banner_image,
                     ITINERARY_STATUSES.itinerary_prepared !==
                       plan.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                        {currentBooking.check_in && (
+                        {currentBooking?.check_in && (
                           <div className="flex flex-row gap-2 items-center">
                             <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                             <div>
                               <div className="text-sm font-[400] ">
-                                {getDate(currentBooking.check_in)}-
-                                {getDate(currentBooking.check_out)}
+                                {getDate(currentBooking?.check_in)}-
+                                {getDate(currentBooking?.check_out)}
                               </div>
                             </div>
                           </div>
@@ -368,7 +368,7 @@ banner_image,
                           <div className=" text-sm font-[400] min-w-fit">
                             {booking.number_of_adults
                               ? booking.number_of_adults
-                              : currentBooking.number_of_adults}{" "}
+                              : currentBooking?.number_of_adults}{" "}
                             Adults
                           </div>
                         </div>
