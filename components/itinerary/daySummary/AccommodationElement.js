@@ -5,7 +5,7 @@ import { MdDoneAll } from "react-icons/md";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 
 export default function AccommodationElement(props) {
-  const { heading, data, city_id, booking } = props;
+  const { heading, data, meta, city_id, booking } = props;
 
   const getHotelName = (id) => {
     if (booking && booking.length && id) {
@@ -40,7 +40,7 @@ export default function AccommodationElement(props) {
     <Container className="pt-0">
       <div className="flex flex-col items-center justify-center w-full pl-2">
         <div className="w-full flex flex-row items-center">
-          <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">Afternoon</div>
+          <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">{meta?.day_timing ? meta.day_timing : "Afternoon"}</div>
           <div className="font-medium text-sm">{heading}</div>
           <div className="ml-3">
             <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>

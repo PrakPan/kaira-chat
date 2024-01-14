@@ -18,24 +18,35 @@ export default function TransferElement(props) {
     return null;
   }
 
-  const getFlightDuration = (id) => {
+  const isValidBooking = (id) => {
     if (booking && booking.length && id) {
       for (let book of booking) {
-        if (book.id === id && book.user_selected && book.duration)
-          return book.duration;
+        if (book.id === id) return true;
       }
     }
-    return "";
+    return false;
+  };
+
+  const getFlightDuration = () => {
+    if (meta) {
+      if (meta?.Time) return meta.Time;
+    }
+    return null;
   };
 
   return (
     <Container className="pt-0">
       <div className="flex flex-col items-center justify-center w-full pl-2">
         <div className="w-full flex flex-row items-center">
-          <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">Morning</div>
+          <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">
+            {meta?.day_timing ? meta.day_timing : "Morning"}
+          </div>
           <div className="font-medium text-sm">{heading}</div>
           <div className="ml-3">
-            {meta == null || meta.estimated_cost == undefined ? null : (
+            {data?.bookings &&
+            data?.bookings[0] &&
+            data?.bookings[0]?.id &&
+            isValidBooking(data?.bookings[0]?.id) ? (
               <Link
                 to={
                   data.bookings && data.bookings[0] && data.bookings[0].id
@@ -64,7 +75,7 @@ export default function TransferElement(props) {
                   )}
                 </TransparentButton>
               </Link>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -89,9 +100,7 @@ export default function TransferElement(props) {
         <div className="w-full flex items-center">
           <div className="lg:w-[16%] md:w-[26%]"></div>
           <div className="font-normal text-xs leading-4">
-            {data.bookings &&
-              data.bookings[0] &&
-              getFlightDuration(data.bookings[0].id) ? `Duration:  ${getFlightDuration(data.bookings[0].id)}` : ""}
+            {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>}
           </div>
         </div>
       </div>

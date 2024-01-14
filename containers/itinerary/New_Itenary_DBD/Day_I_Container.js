@@ -17,6 +17,7 @@ import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreBut
 import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
 import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
 import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
+import { getDate } from "../../../helper/DateUtils";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -181,6 +182,7 @@ const Day_I_Container = (props) => {
               <AccommodationElement
                 key={`summary_accommodation_${index}`}
                 heading={element.heading}
+                meta={element.meta}
                 data={element}
                 city_id={element?.current_city_id}
                 booking={props.stayBookings}
@@ -318,8 +320,15 @@ const Day_I_Container = (props) => {
     <Container className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
-          <div className="text-black text-base font-bold">
-            {convertDateFormat(props.Days?.slab)} -{" "}
+          <div
+            className={`${
+              viewMore
+                ? "font-bold text-black text-2xl"
+                : "text-black text-base font-bold"
+            }`}
+          >
+            {convertDateFormat(props.Days?.slab)}, {getDate(props?.Days?.slab)}{" "}
+            -{" "}
             {newCity
               ? `Arrival in ${newCity}`
               : `${props.current_cityName} Exploration`}

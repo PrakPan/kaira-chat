@@ -7,7 +7,7 @@ export default function ActivityElement(props) {
     <Container className="pt-0">
       <div className=" flex flex-row items-center w-full pl-2">
         <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">
-          Afternoon
+          
         </div>
         <div className="text-sm font-normal flex flex-wrap gap-2">
           <span>Explore</span>
