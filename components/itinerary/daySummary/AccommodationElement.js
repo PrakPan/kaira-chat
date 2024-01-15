@@ -38,11 +38,11 @@ export default function AccommodationElement(props) {
 
   return (
     <Container className="pt-0">
-      <div className="flex flex-col items-center justify-center w-full pl-2">
-        <div className="w-full flex flex-row items-center">
+      <div className="flex flex-col items-center justify-center w-full md:pl-2 lg:pl-2">
+        <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-start lg:items-center">
           <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">{meta?.day_timing ? meta.day_timing : "Afternoon"}</div>
           <div className="font-medium text-sm">{heading}</div>
-          <div className="ml-3">
+          <div className="md:ml-3 lg:ml-3">
             <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
               {data && data.bookings && data.bookings.length ? (
                 <>

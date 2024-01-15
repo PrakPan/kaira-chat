@@ -1,18 +1,20 @@
-export default function ViewMoreButton({ text, handler }) {
+export default function ViewMoreButton({ text, handler, isMob }) {
   return (
     <div className="">
       <button
-        className="flex items-center border-[#ECEAEA] border-2 rounded-lg p-1 text-sm hover:bg-black hover:text-white hover:border-black"
+        className={`flex items-center ${
+          isMob ? "bg-gray-300" : "border-[#ECEAEA] border-2"
+        } rounded md:rounded-lg lg:rounded-lg p-1 text-sm hover:bg-black hover:text-white hover:border-black`}
         onClick={handler}
       >
-        {text}
+        {isMob ? "" : text}
         {text === "View More" ? (
           <svg
             stroke="currentColor"
             fill="currentColor"
             stroke-width="0"
             viewBox="0 0 1024 1024"
-            class="ml-2 transition-all "
+            class={`${isMob ? "" : "ml-2"} transition-all`}
             height="1em"
             width="1em"
             xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +27,7 @@ export default function ViewMoreButton({ text, handler }) {
             fill="currentColor"
             stroke-width="0"
             viewBox="0 0 1024 1024"
-            class="ml-2 transition-all rotate-180"
+            class={`${isMob ? "" : "ml-2"} transition-all rotate-180`}
             height="1em"
             width="1em"
             xmlns="http://www.w3.org/2000/svg"

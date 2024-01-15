@@ -5,7 +5,7 @@ export default function ActivityElement(props) {
   const { activities } = props;
   return (
     <Container className="pt-0">
-      <div className=" flex flex-row items-center w-full pl-2">
+      <div className=" flex flex-row items-center w-full md:pl-2 lg:pl-2">
         <div className="lg:w-[10%] md:w-[20%] font-normal text-sm">
           
         </div>

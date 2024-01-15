@@ -59,7 +59,7 @@ export const DaySummaryContainerStyle = styled.div`
       margin-top: 10px;
     }
 
-    margin-bottom: 25px;
+    margin-bottom: 0px;
     margin-top: 25px; /* adjust this as needed */
     margin-left: auto;
   }

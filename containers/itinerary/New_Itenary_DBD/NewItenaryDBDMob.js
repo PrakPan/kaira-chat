@@ -49,6 +49,22 @@ const NewItenaryDBDMob = (props) => {
 
     return null;
   }
+
+  let currentCity = props.itinerary.starting_city.state_name;
+
+  const getCurrentCity = () => {
+    props.itinerary.day_slabs.map((day_slab, index) => {
+      day_slab.slab_elements.map((element, index) => {
+        if(element.element_type === 'newcity') {
+          currentCity = element.city_name;
+        }
+      })
+      day_slab.current_cityName = currentCity;
+    })
+  }
+
+  getCurrentCity();
+  
   const items = [];
   const itemsDays = [];
   function extractId(location, arr) {
@@ -179,6 +195,7 @@ const NewItenaryDBDMob = (props) => {
               LastElement={props.itinerary.day_slabs.length - 1 == index}
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
+              current_cityName={element.current_cityName}
             ></Day_I_ContainerM>
           </div>
         ))}
