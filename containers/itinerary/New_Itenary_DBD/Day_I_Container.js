@@ -191,7 +191,16 @@ const Day_I_Container = (props) => {
           }
           break;
         case "activity":
-          activities.push(element.heading);
+          activities.push({
+            heading: element.heading,
+            text: element.text,
+            image: element.icon !== undefined ? element.icon : null,
+            poi: element?.activity_data?.poi
+              ? element?.activity_data?.poi
+              : element?.activity_data,
+            activity: element?.activity_data?.activity,
+            activity_data: element?.activity_data,
+          });
           break;
         default:
       }
