@@ -224,13 +224,11 @@ const Itinerary = (props) => {
     let transfer_bookings = [];
     let flight_bookings = [];
 
-    // TODO: remove hard coded
-    var username = "administrator@thetarzanway.com";
-    var password = "AKY6282&#bc(*!L)6w8";
+    const access_token = localStorage.getItem('access_token');
     fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
       params: { itinerary_id: props.id },
       headers: {
-        Authorization: "Basic " + btoa(username + ":" + password),
+        Authorization: `Bearer ${access_token}`,
         "Content-Type": "application/json",
       },
     })
