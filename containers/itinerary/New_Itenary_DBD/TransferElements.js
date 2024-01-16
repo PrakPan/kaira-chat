@@ -1,5 +1,5 @@
-import React from 'react';
-import ImageLoader from '../../../components/ImageLoader';
+import React from "react";
+import ImageLoader from "../../../components/ImageLoader";
 import {
   ArriveContainer,
   Container,
@@ -11,13 +11,13 @@ import {
   TransparentButton,
   TransportContainer,
   HLine,
-} from './New_itenaryStyled';
-import { convertNumToTime } from '../../../helper/convertNumToTime';
-import { formatNumber } from '../../../helper/formatNumber';
-import { Text } from '../../newitinerary/itineraryelements/ItineraryFoodElement';
-import { TransportIconFetcher } from '../../../helper/TransportIconFetcher';
-import { Link } from 'react-scroll';
-import { MdDoneAll } from 'react-icons/md';
+} from "./New_itenaryStyled";
+import { convertNumToTime } from "../../../helper/convertNumToTime";
+import { formatNumber } from "../../../helper/formatNumber";
+import { Text } from "../../newitinerary/itineraryelements/ItineraryFoodElement";
+import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
+import { Link } from "react-scroll";
+import { MdDoneAll } from "react-icons/md";
 const TransferElements = ({
   time,
   heading,
@@ -31,20 +31,15 @@ const TransferElements = ({
   newcity,
   LastTransfer,
 }) => {
-
   function getUserSelectedByBookings(id) {
-  if (
-    booking &&
-    booking.length &&
-    id
-  )
-    for (let i = 0; i < booking.length; i++) {
-      if (booking[i].id === id) {
-        return booking[i].user_selected;
+    if (booking && booking.length && id)
+      for (let i = 0; i < booking.length; i++) {
+        if (booking[i].id === id) {
+          return booking[i].user_selected;
+        }
       }
-    }
-  return null;
-}
+    return null;
+  }
 
   function isValueUndefined(value) {
     return value === undefined;
@@ -89,11 +84,14 @@ const TransferElements = ({
                     offset={-90}
                   >
                     <TransparentButton>
-                      {
-                      getUserSelectedByBookings(data.bookings &&
-                      data.bookings[0] &&
-                        data.bookings[0] && data.bookings[0].id ? data.bookings[0].id : null)
-                        ? (
+                      {getUserSelectedByBookings(
+                        data.bookings &&
+                          data.bookings[0] &&
+                          data.bookings[0] &&
+                          data.bookings[0].id
+                          ? data.bookings[0].id
+                          : null
+                      ) ? (
                         <>
                           <MdDoneAll
                             style={{
@@ -131,7 +129,7 @@ const TransferElements = ({
                     widthmobile="1.25rem"
                   ></ImageLoader> */}
                   </div>
-                  {transfers.routes[0]?.legs[0].origin.shortName ? (
+                  {/* {transfers.routes[0]?.legs[0].origin.shortName ? (
                     <div
                       style={{ display: "flex", flexDirection: "column" }}
                       className="text-md font-medium"
@@ -141,7 +139,7 @@ const TransferElements = ({
                         {transfers.routes[0]?.legs[0].destination.shortName}
                       </div>
                     </div>
-                  ) : null}
+                  ) : null} */}
                 </TransportContainer>
               ) : null}
 

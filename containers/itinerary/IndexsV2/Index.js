@@ -224,18 +224,18 @@ const Itinerary = (props) => {
     let transfer_bookings = [];
     let flight_bookings = [];
 
-    var username = "administrator@thetarzanway.com";
-    var password = "AKY6282&#bc(*!L)6w8";
+    const access_token = localStorage.getItem('access_token');
     fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
       params: { itinerary_id: props.id },
       headers: {
-        Authorization: "Basic " + btoa(username + ":" + password),
+        Authorization: `Bearer ${access_token}`,
         "Content-Type": "application/json",
       },
     })
       .then((response) => {
         setStayLoading(false);
         getPaymentHandler();
+        window.res = response;
         if (response.status === 200) {
           response.json().then((json) => {
             // getPaymentHandler();
@@ -259,8 +259,9 @@ const Itinerary = (props) => {
 
             if (flight_bookings.length) setFlightBookings(flight_bookings);
 
-            if (transfer_bookings.length)
+            if (transfer_bookings.length) {
               setTransferBookings(transfer_bookings);
+            }
           });
         } else if (response.status === 404) {
           setLoading(false);
@@ -276,11 +277,13 @@ const Itinerary = (props) => {
     // if(!props.token && !props.otpSent)
     //  props.checkAuthState();
   });
+
   async function getRoutes(itinaryId) {
     const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
     const data = res.data;
     return data;
   }
+
   useEffect(() => {
     var IntervalTiming;
     if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
@@ -290,8 +293,6 @@ const Itinerary = (props) => {
       setTimeout(() => {
         fetchData();
       }, [IntervalTiming]);
-    // if(router.query.payment_status) window.location.reload();
-    //  props.checkAuthState();
 
     function fetchData() {
       window.scrollTo(0, 0);
@@ -349,13 +350,14 @@ const Itinerary = (props) => {
           }
         })
         .catch((error) => {});
-
       getAccommodationAndActivitiesHandler();
     }
-
-    // if(itineraryLoading && !itineraryNotCreated){
-    // if(stayLoading && !stayBookings){
   }, []);
+
+  useEffect(() => {
+    window.boo = transferBookings;
+    window.s = 'seted'
+  }, [transferBookings]);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array

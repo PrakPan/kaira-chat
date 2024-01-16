@@ -4,9 +4,13 @@ import { TbSunset2 } from "react-icons/tb";
 import { Link } from "react-scroll";
 import { MdDoneAll } from "react-icons/md";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { useState } from "react";
+import media from "../../media";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
+  const [visible, setVisible] = useState(false);
+  const isPageWide = media("(min-width: 768px)");
 
   const getHotelName = (id) => {
     if (booking && booking.length && id) {
@@ -37,19 +41,39 @@ export default function AccommodationElement(props) {
     return null;
   };
 
+  const hoverFunction = () => {
+    setVisible(true);
+    console.log("Hovered!");
+  };
+
+  const outFunction = () => {
+    setVisible(false);
+    console.log("Mouse left!");
+  };
+
   return (
     <Container className="pt-0">
       <div className="flex flex-col items-center justify-center w-full md:pl-2 lg:pl-2">
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
-          <div className="lg:w-[11%] md:w-[21%] flex flex-row">
+          <div className="lg:w-[11%] md:w-[21%] flex flex-row justify-center">
             {meta?.day_timing ? (
-              <span className="font-normal text-sm text-blue-500">
+              <span className="font-normal text-sm text-gray-500">
                 meta.day_timing
               </span>
             ) : (
-              <div className="flex items-center">
-                <TbSunset2 className="text-2xl"></TbSunset2>
-                <span className="font-normal text-sm text-blue-500 ml-2">Afternoon</span>
+              <div
+                className="flex items-center"
+              >
+                <TbSunset2 className="text-2xl text-gray-500"></TbSunset2>
+                {isPageWide ? null : (
+                  <span
+                    className={`${
+                      visible ? "" : ""
+                    } font-normal text-xs text-gray-500 ml-2`}
+                  >
+                    Afternoon
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -57,25 +81,40 @@ export default function AccommodationElement(props) {
           <div className="md:ml-3 lg:ml-3">
             <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
               {data && data.bookings && data.bookings.length ? (
-                <button className="text-blue-500 hover:underline">
-                  {getUserSelectedByBookings(
-                    data.bookings && data.bookings[0]
-                      ? data.bookings[0].id
-                      : null
-                  ) ? (
-                    <>
+                // <button className="text-blue-500 hover:underline">
+                //   {getUserSelectedByBookings(
+                //     data.bookings && data.bookings[0]
+                //       ? data.bookings[0].id
+                //       : null
+                //   ) ? (
+                //     <>
+                //       <MdDoneAll
+                //         style={{
+                //           display: "inline",
+                //           marginRight: "0.35rem",
+                //         }}
+                //       />
+                //       Stay added
+                //     </>
+                //   ) : (
+                //     <>+Add Stay</>
+                //   )}
+                // </button>
+                <>
+                  {getUserSelectedByBookings(props.data.bookings[0].id) ? (
+                    <TransparentButton>
                       <MdDoneAll
                         style={{
                           display: "inline",
                           marginRight: "0.35rem",
                         }}
-                      />
+                      />{" "}
                       Stay added
-                    </>
+                    </TransparentButton>
                   ) : (
-                    <>+Add Stay</>
+                    <TransparentButton>Add Stay</TransparentButton>
                   )}
-                </button>
+                </>
               ) : (
                 <></>
               )}

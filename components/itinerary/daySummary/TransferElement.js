@@ -4,9 +4,11 @@ import { Link } from "react-scroll";
 import { MdDoneAll } from "react-icons/md";
 import { WiSunrise } from "react-icons/wi";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
+import media from "../../media";
 
 export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;
+  const isPageWide = media("(min-width: 768px)");
 
   function getUserSelectedByBookings(id) {
     if (booking && booking.length && id) {
@@ -39,17 +41,21 @@ export default function TransferElement(props) {
     <Container className="pt-0">
       <div className="flex flex-col items-center justify-center w-full md:pl-2 lg:pl-">
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
-          <div className="flex flex-row lg:w-[11%] md:w-[21%]">
+          <div className="flex flex-row lg:w-[11%] md:w-[21%] justify-center">
             {meta?.day_timing ? (
-              <span className="font-normal text-sm text-blue-500">
+              <span className="font-normal text-sm text-gray-500">
                 {meta.day_timing}
               </span>
             ) : (
               <div className="flex items-center">
-                <WiSunrise className="text-2xl"></WiSunrise>
-                <span className="font-normal text-sm text-blue-500 ml-2">
-                  Morning
-                </span>
+                <WiSunrise className="text-2xl text-gray-500"></WiSunrise>
+                {isPageWide ? (
+                  <></>
+                ) : (
+                  <span className="font-normal text-xs text-gray-500 ml-2">
+                    Morning
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -57,7 +63,6 @@ export default function TransferElement(props) {
           <div className="md:ml-3 lg:ml-3">
             {data?.bookings &&
             data?.bookings[0] &&
-            data?.bookings[0]?.id &&
             isValidBooking(data?.bookings[0]?.id) ? (
               <Link
                 to={
@@ -67,7 +72,7 @@ export default function TransferElement(props) {
                 }
                 offset={-90}
               >
-                <button className="text-blue-500 hover:underline">
+                {/* <button className="text-blue-500 hover:underline">
                   {getUserSelectedByBookings(
                     data.bookings && data.bookings[0]
                       ? data.bookings[0].id
@@ -85,8 +90,8 @@ export default function TransferElement(props) {
                   ) : (
                     <>{modes ? `+Add ${modes}` : null}</>
                   )}
-                </button>
-                {/* <TransparentButton>
+                </button> */}
+                <TransparentButton>
                   {getUserSelectedByBookings(
                     data.bookings && data.bookings[0]
                       ? data.bookings[0].id
@@ -104,7 +109,7 @@ export default function TransferElement(props) {
                   ) : (
                     <>{modes ? `Add ${modes}` : null}</>
                   )}
-                </TransparentButton> */}
+                </TransparentButton>
               </Link>
             ) : null}
           </div>
@@ -123,15 +128,17 @@ export default function TransferElement(props) {
             )}
           </div>
           <div className="text-xs leading-7 ml-2 lg:ml-0">
-            {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
-            {transfers.routes[0]?.legs[0].destination.shortName}
+            {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>}
+
+            {/* {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
+            {transfers.routes[0]?.legs[0].destination.shortName} */}
           </div>
         </div>
 
         <div className="w-full flex items-center">
           <div className="w-[1.25rem] lg:w-[17%] md:w-[27%]"></div>
           <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
-            {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>}
+            {/* {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>} */}
           </div>
         </div>
       </div>

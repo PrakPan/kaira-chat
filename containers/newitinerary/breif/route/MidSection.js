@@ -67,85 +67,90 @@ const Text = styled.div`
   align-items: center;
   margin: 0rem 0 0rem 1rem;
 `;
+
 const MidSection = (props) => {
 
-  let hidemidsection = props.hidemidsection
-  if (props.route && props.route.modes && props.route.modes.length) hidemidsection = false
-  else if (props.bookings && props.bookings.length) hidemidsection = false
-  else hidemidsection = true
-  
-    return (
-      <Container className="font-lexend" hidemidsection={hidemidsection}>
-        <div style={{ position: "relative" }}>
-          <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
-        </div>
-        {!hidemidsection && (
-          <>
-            {props.version == "v2" ? (
-              <Text>
-                {props.route?.modes && props.route?.modes.length ? (
-                  <TransportIconFetcher
-                    TransportMode={props.route?.modes[0]}
-                    Instyle={{
-                      fontSize:
-                        props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) : props.bookings &&
-                  props.bookings.length &&
-                  props.bookings[0].booking_type ? (
-                  <TransportIconFetcher
-                    TransportMode={props.bookings[0].booking_type}
-                    Instyle={{
-                      fontSize:
-                        props.bookings[0].booking_type === "Bus"
-                          ? "1.2rem"
-                          : "1.4rem",
+  let hidemidsection = props.hidemidsection;
+  if (props.route && props.route.modes && props.route.modes.length)
+    hidemidsection = false;
+  else if (props.bookings && props.bookings.length) hidemidsection = false;
+  else hidemidsection = true;
 
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) : (
-                  <></>
-                )}
-                {props.bookings && props.bookings.length ? (
-                  props?.bookings?.map((element, index) => (
-                    <div className="flex flex-row" key={index}>
-                      <div className="flex flex-row pr-0">
-                        {element.booking_type}
-                        {index !== props?.bookings.length - 1 && (
-                          <span className="pr-2">,</span>
-                        )}
-                      </div>
+  return (
+    <Container className="font-lexend" hidemidsection={hidemidsection}>
+      <div style={{ position: "relative" }}>
+        <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
+      </div>
+      {!hidemidsection && (
+        <>
+          {props.version == "v2" ? (
+            <Text>
+              {props.route?.modes && props.route?.modes.length ? (
+                <TransportIconFetcher
+                  TransportMode={props.route?.modes[0]}
+                  Instyle={{
+                    fontSize:
+                      props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
+                    marginRight: "0.8rem",
+                    color: "#4d4d4d",
+                  }}
+                />
+              ) : props.bookings &&
+                props.bookings.length &&
+                props.bookings[0].booking_type ? (
+                <TransportIconFetcher
+                  TransportMode={props.bookings[0].booking_type}
+                  Instyle={{
+                    fontSize:
+                      props.bookings[0].booking_type === "Bus"
+                        ? "1.2rem"
+                        : "1.4rem",
+
+                    marginRight: "0.8rem",
+                    color: "#4d4d4d",
+                  }}
+                />
+              ) : (
+                <></>
+              )}
+
+              {props.bookings && props.bookings.length ? (
+                props?.bookings?.map((element, index) => (
+                  <div className="flex flex-row" key={index}>
+                    <div className="flex flex-row pr-0">
+                      {element.booking_type}
+                      {index !== props?.bookings.length - 1 && (
+                        <span className="pr-2">,</span>
+                      )}
                     </div>
-                  ))
-                ) : props.route && props.route.modes && props.route.modes.length ? (
-                  props.route.modes.map((element, index) => (
-                    <div className="flex flex-row" key={index}>
-                      <div className="flex flex-row pr-0">
-                        {element}
-                        {index !== props.route.modes.length - 1 && (
-                          <span className="pr-2">,</span>
-                        )}
-                      </div>
+                  </div>
+                ))
+              ) : props.route &&
+                props.route.modes &&
+                props.route.modes.length ? (
+                props.route.modes.map((element, index) => (
+                  <div className="flex flex-row" key={index}>
+                    <div className="flex flex-row pr-0">
+                      {element}
+                      {index !== props.route.modes.length - 1 && (
+                        <span className="pr-2">,</span>
+                      )}
                     </div>
-                  ))
-                ) : (
-                  <></>
-                )}
+                  </div>
+                ))
+              ) : (
+                <></>
+              )}
 
-                {props.route?.modes &&
-                props.route?.modes.length &&
-                props.duration ? (
-                  <div>: {props.duration}</div>
-                ) : (
-                  <></>
-                )}
+              {props.route?.modes &&
+              props.route?.modes.length &&
+              props.duration ? (
+                <div>: {props.duration}</div>
+              ) : (
+                <></>
+              )}
 
-                {/* {props.icon && (
+              {/* {props.icon && (
             <ImageLoader
               url={props.icon}
               leftalign
@@ -155,43 +160,31 @@ const MidSection = (props) => {
             ></ImageLoader>
           )} */}
 
-                {/* <MdOutlineFlightTakeoff
+              {/* <MdOutlineFlightTakeoff
             style={{  }}
           /> */}
-              </Text>
-            ) : (
-              <Text>
-                {/* {props.icon && (
-          <ImageLoader
-            url={props.icon}
-            leftalign
-            dimensions={{ width: 200, height: 200 }}
-            width="1.25rem"
-            widthmobile="1.25rem"
-          ></ImageLoader>
-        )} */}
-                {props.modes && (
-                  <TransportIconFetcher
-                    TransportMode={props.modes}
-                    Instyle={{
-                      fontSize: props.modes === 'Bus' ? '1.2rem' : "1.4rem",
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                )}
-                {/* <MdOutlineFlightTakeoff
-          style={{  }}
-        /> */}
-                {props.modes ? `${props.modes} :` : null} {props.duration}
-              </Text>
-            )}
-          </>
-        )}
+            </Text>
+          ) : (
+            <Text>
+              {props.modes && (
+                <TransportIconFetcher
+                  TransportMode={props.modes}
+                  Instyle={{
+                    fontSize: props.modes === "Bus" ? "1.2rem" : "1.4rem",
+                    marginRight: "0.8rem",
+                    color: "#4d4d4d",
+                  }}
+                />
+              )}
+    
+              {props.modes ? `${props.modes} :` : null} {props.duration}
+            </Text>
+          )}
+        </>
+      )}
 
-        {/* <Heading>{props.duration ? props.location +  " ("+ props.duration+")": props.location }</Heading> */}
-      </Container>
-    );
+    </Container>
+  );
 };
 
 export default MidSection;

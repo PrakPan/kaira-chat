@@ -467,6 +467,8 @@ const SimpleTabsV2 = (props) => {
     font-family: sans-serif;
   `;
 
+  // window.tt = props.transferBookings;
+
   return (
     <div className={classes.root} style={{ paddingTop: "20px" }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">

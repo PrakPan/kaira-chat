@@ -428,7 +428,7 @@ const drawerRef = useRef(null);
           </div>
 
           {props?.rating && <StarRating initialRating={4}></StarRating>}
-          {props.poi.rating && (
+          {props?.poi?.rating && (
             <RatingContainer>
               {/* <StarRating initialRating={4}></StarRating> */}
               <div style={{ display: "flex", gap: "0.3rem" }}>

@@ -118,12 +118,8 @@ const Date = styled.div`
   font-weight: 300;
 `;
 
-// function ElementsSpreader(slab_elements){
-//         for
-// }
 const Day_I_Container = (props) => {
-  const [viewMore, setViewMore] = useState(false);
-
+  const [viewMore, setViewMore] = useState(true);
   const Arslab_elements = [
     { name: "transfer", data: [] },
     { name: "newcity", data: [] },
@@ -301,13 +297,13 @@ const Day_I_Container = (props) => {
               slab_elements_index={index}
               itinerary_id={props.itinerary_id}
               data={element}
-              key={element.activity_data.id}
+              key={element?.activity_data?.id}
               time="11:00AM"
               image={element.icon !== undefined ? element.icon : null}
               booking
               heading={element.heading}
               text={element.text}
-              poi_id={element.activity_data.id}
+              poi_id={element?.activity_data?.id}
               poi={
                 element?.activity_data?.poi
                   ? element?.activity_data?.poi

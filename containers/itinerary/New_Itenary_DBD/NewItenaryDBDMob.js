@@ -50,7 +50,7 @@ const NewItenaryDBDMob = (props) => {
     return null;
   }
 
-  let currentCity = props.itinerary.starting_city.state_name;
+  let currentCity = props.itinerary.starting_city.city_name;
 
   const getCurrentCity = () => {
     props.itinerary.day_slabs.map((day_slab, index) => {

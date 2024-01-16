@@ -43,7 +43,7 @@ const Date = styled.div`
 `;
 
 const Day_I_ContainerM = (props) => {
-  const [viewMore, setViewMore] = useState(false);
+  const [viewMore, setViewMore] = useState(true);
   const Arslab_elements = [
     { name: "transfer", data: [] },
     { name: "newcity", data: [] },
@@ -116,7 +116,16 @@ const Day_I_ContainerM = (props) => {
           }
           break;
         case "activity":
-          activities.push(element.heading);
+          activities.push({
+            heading: element.heading,
+            text: element.text,
+            image: element.icon !== undefined ? element.icon : null,
+            poi: element?.activity_data?.poi
+              ? element?.activity_data?.poi
+              : element?.activity_data,
+            activity: element?.activity_data?.activity,
+            activity_data: element?.activity_data,
+          });
           break;
         default:
       }
@@ -217,7 +226,7 @@ const Day_I_ContainerM = (props) => {
               slab_elements_index={index}
               itinerary_id={props?.itinerary_id}
               data={element}
-              key={element?.activity_data.id}
+              key={element?.activity_data?.id}
               time="11:00AM"
               image={element?.icon !== undefined ? element?.icon : null}
               booking
