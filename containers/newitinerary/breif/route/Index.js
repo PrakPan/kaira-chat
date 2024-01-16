@@ -96,9 +96,11 @@ const Route = (props) => {
   let endingcity = null;
   if (props?.plan?.version == ITINERARY_VERSION.version_2) {
     if (props?.routes) {
-      for (var i = 2; i < props.routes.length - 1; i += 2) {
+      for (var i = 0; i < props.routes.length; i += 2) {
         locationsArr.push(
           <PinSection
+            startingCity={i === 0}
+            endingCity={i === props.routes.length - 1}
             setCurrentPopup={props.setCurrentPopup}
             handlemap={handlemap}
             // dayId={
@@ -121,18 +123,21 @@ const Route = (props) => {
             index={i}
           ></PinSection>
         );
-        locationsArr.push(
-          <MidSection
-            pinColour={props.routes[i].color}
-            modes={props.routes[i + 1]?.modes}
-            route={props.routes[i + 1]}
-            icon={null}
-            version={"v2"}
-            bookings={props.routes[i + 1]?.bookings}
-            routesData={props.routesData}
-            duration={props.routes[i + 1]?.meta?.Time}
-          ></MidSection>
-        );
+
+        if (i < props.routes.length - 1) {
+          locationsArr.push(
+            <MidSection
+              pinColour={props.routes[i].color}
+              modes={props.routes[i + 1]?.modes}
+              route={props.routes[i + 1]}
+              icon={null}
+              version={"v2"}
+              bookings={props.routes[i + 1]?.bookings}
+              routesData={props.routesData}
+              duration={props.routes[i + 1]?.meta?.Time}
+            ></MidSection>
+          );
+        }
       }
     } else {
       if (props.breif)
@@ -280,110 +285,12 @@ const Route = (props) => {
         Route
       </div>
 
-      <PinSection
-        startingCity
-        setCurrentPopup={props.setCurrentPopup}
-        setShowDrawer={props.setShowDrawer}
-        setShowDrawerData={props.setShowDrawerData}
-        dayId={
-          props.breif?.city_slabs[0].day_slab_location.start_day_slab_index
-        }
-        cityData={props.breif.city_slabs[0]}
-        dayslab={props.dayslab}
-        lat={props.breif.city_slabs[0].lat}
-        long={props.breif.city_slabs[0].long}
-        Mapid={props.breif.city_slabs[0].gmaps_place_id}
-        city={props.breif.city_slabs[0].city_name}
-        cityId={props.breif.city_slabs[0].city_id}
-        duration={
-          props.breif.city_slabs[0].duration
-            ? props.breif.city_slabs[0].duration
-            : null
-        }
-        pinColour={props.breif.city_slabs[0].color}
-      ></PinSection>
-      {props.routes && props.routes.length > 1 ? (
-        <MidSection
-          pinColour={props.breif.city_slabs[0].color}
-          modes={
-            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
-          }
-          bookings={props.routes[1]?.bookings}
-          route={props?.plan?.version === "v2" ? props.routes[1] : null}
-          version={props?.plan?.version}
-          icon={props?.transfers[0]?.icon}
-          hidemidsection={
-            props?.plan?.version == ITINERARY_VERSION.version_2 &&
-            props.routes &&
-            props.routes.length
-              ? false
-              : true
-          }
-          routesData={props.routesData}
-          transportMode={"Taxi"}
-          duration={props.routes[1]?.meta?.Time}
-        ></MidSection>
-      ) : (
-        <MidSection
-          pinColour={props.breif.city_slabs[0].color}
-          modes={
-            props?.transfers[0]?.modes ? props?.transfers[0]?.modes[0] : null
-          }
-          // bookings={props.routes[1]?.bookings}
-          // route={props.routes[1]}
-          version={props?.plan?.version}
-          icon={props?.transfers[0]?.icon}
-          hidemidsection={
-            props?.plan?.version == ITINERARY_VERSION.version_2 &&
-            props.routes &&
-            props.routes.length
-              ? false
-              : true
-          }
-          routesData={props.routesData}
-          transportMode={"Taxi"}
-          duration={props.breif.city_slabs[0].duration}
-        ></MidSection>
-      )}
-
       {locationsArr}
       {/* <MidSection></MidSection>
              <PinSection location="Jaisalmer" duration="4 Nights"></PinSection>
              <MidSection></MidSection>
              <PinSection location="Jodhour" duration="3 Nights"></PinSection>
              <MidSection></MidSection> */}
-      <PinSection
-        endingCity
-        setCurrentPopup={props.setCurrentPopup}
-        dayId={
-          props.breif.city_slabs[props.breif.city_slabs.length - 1]
-            .day_slab_location.start_day_slab_index
-        }
-        setShowDrawer={props.setShowDrawer}
-        setShowDrawerData={props.setShowDrawerData}
-        cityData={props.breif.city_slabs[props.breif.city_slabs.length - 1]}
-        dayslab={props.dayslab}
-        lat={props.breif.city_slabs[props.breif.city_slabs.length - 1].lat}
-        long={props.breif.city_slabs[props.breif.city_slabs.length - 1].long}
-        Mapid={
-          props.breif.city_slabs[props.breif.city_slabs.length - 1]
-            .gmaps_place_id
-        }
-        city={
-          props.breif.city_slabs[props.breif.city_slabs.length - 1].city_name
-        }
-        cityId={
-          props.breif.city_slabs[props.breif.city_slabs.length - 1].city_id
-        }
-        duration={
-          props.breif.city_slabs[props.breif.city_slabs.length - 1].duration
-            ? props.breif.city_slabs[props.breif.city_slabs.length - 1].duration
-            : null
-        }
-        pinColour={
-          props.breif.city_slabs[props.breif.city_slabs.length - 1].color
-        }
-      ></PinSection>
     </Container>
   );
 };
