@@ -709,7 +709,7 @@ const SimpleTabsV2 = (props) => {
             ></HotelsBooking>
           </div>
 
-          {props.transferBookings ? (
+          {props?.transferBookings ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -732,7 +732,7 @@ const SimpleTabsV2 = (props) => {
                 setShowBookingModal={() => props.setShowBookingModal(true)}
                 setHideBookingModal={props.setHideBookingModal}
                 payment={props.payment}
-                transferBookings={props.transferBookings}
+                transferBookings={props?.transferBookings}
               />
             </div>
           ) : (

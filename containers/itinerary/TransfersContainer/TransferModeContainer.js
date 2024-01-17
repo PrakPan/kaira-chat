@@ -453,7 +453,7 @@ const TransferModeContainer = (props) => {
   };
 
   var adult;
-  try{if (props.booking.number_of_adults > 1) adult = " Adults";
+  try{if (props?.booking?.number_of_adults > 1) adult = " Adults";
   else adult = " Adult";
   var child;
   if (props.booking.number_of_children > 1) child = " Childs";
@@ -471,7 +471,8 @@ const TransferModeContainer = (props) => {
         <div style={{ position: "relative" }}></div>
       )}
 
-      {props.booking_type == "Flight" ? (
+      {props?.booking && (<>
+        {props?.booking_type == "Flight" ? (
         <div className="mt-3 lg:ml-7">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{props.heading}</span>
@@ -940,7 +941,7 @@ const TransferModeContainer = (props) => {
           </div>
 
           <div
-            id={props.booking.id}
+            id={props?.booking?.id}
             className="mb-4 mt-3 group min-w-full w-max  flex flex-row gap-1   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center "
           >
             {props.icon && (
@@ -1079,6 +1080,9 @@ const TransferModeContainer = (props) => {
           </div>
         </div>
       )}
+      </>)}
+
+      
     </Container>
   );
 };
