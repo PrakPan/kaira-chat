@@ -170,7 +170,7 @@ const Day_I_Container = (props) => {
           );
           break;
         case "newcity":
-          newCity = element.city_name;
+          newCity = element.city_data.city_name;
           break;
         case "accommodation":
           if (element.bookings && element.bookings.length) {
@@ -336,7 +336,7 @@ const Day_I_Container = (props) => {
             -{" "}
             {newCity
               ? `Arrival in ${newCity}`
-              : `${props.current_cityName} Exploration`}
+              : `${props.current_cityName ?? ""} Exploration`}
           </div>
           {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&

@@ -56,7 +56,7 @@ const NewItenaryDBDMob = (props) => {
     props.itinerary.day_slabs.map((day_slab, index) => {
       day_slab.slab_elements.map((element, index) => {
         if(element.element_type === 'newcity') {
-          currentCity = element.city_name;
+          currentCity = element.city_data.city_name;
         }
       })
       day_slab.current_cityName = currentCity;

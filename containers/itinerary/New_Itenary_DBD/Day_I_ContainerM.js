@@ -99,7 +99,7 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case "newcity":
-          newCity = element.city_name;
+          newCity = element.city_data.city_name;
           break;
         case "accommodation":
           if (element.bookings && element.bookings.length) {
