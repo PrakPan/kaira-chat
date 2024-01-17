@@ -79,7 +79,10 @@ const PoiList = (props) => {
       setisSelect(!isSelect);
 
       props.setShowDrawer(false);
-      props.getPaymentHandler();
+      setTimeout(function () {
+        props.getPaymentHandler();
+        props.getAccommodationAndActivitiesHandler();
+      }, 1000);
       e.stopPropagation();
     } else {
       props.setLoginModal(!props.loginModal);

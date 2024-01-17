@@ -817,6 +817,7 @@ const Itinerary = (props) => {
             breif={breif}
             booking={booking}
             token={props.token}
+            getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler}
           ></Menu>
           {/* <ItineraryMobile></ItineraryMobile> */}
           {/* <Cities></Cities> */}

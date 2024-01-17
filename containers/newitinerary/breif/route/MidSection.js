@@ -69,7 +69,6 @@ const Text = styled.div`
 `;
 
 const MidSection = (props) => {
-
   let hidemidsection = props.hidemidsection;
   if (props.route && props.route.modes && props.route.modes.length)
     hidemidsection = false;
@@ -176,13 +175,11 @@ const MidSection = (props) => {
                   }}
                 />
               )}
-    
               {props.modes ? `${props.modes} :` : null} {props.duration}
             </Text>
           )}
         </>
       )}
-
     </Container>
   );
 };

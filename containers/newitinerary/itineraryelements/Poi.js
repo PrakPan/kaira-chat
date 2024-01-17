@@ -142,7 +142,7 @@ const ColorTags = styled.span`
 const FiltersContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap : 0.25rem;
+  gap: 0.25rem;
 `;
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
@@ -162,7 +162,7 @@ const ItineraryPoiElement = (props) => {
   };
   useEffect(() => {
     if (props.city_id && showDrawer) {
-      let ticketsCount = 1
+      let ticketsCount = 1;
       if (props.payment && props.payment.meta_info) {
         ticketsCount =
           props.payment.meta_info.number_of_adults +
@@ -198,6 +198,9 @@ const ItineraryPoiElement = (props) => {
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
                     ticketsCount={ticketsCount}
+                    getAccommodationAndActivitiesHandler={
+                      props.getAccommodationAndActivitiesHandler
+                    }
                   ></PoiList>
                 );
             }
@@ -210,6 +213,10 @@ const ItineraryPoiElement = (props) => {
         .catch((err) => {});
     }
   }, [showDrawer, elementType, SelectedExprience]);
+
+  // const _updateActivityBookingsHandler = (poi) {
+
+  // }
 
   const _updatePoiHandler = (poi) => {
     axiositineraryeditinstance
@@ -281,10 +288,7 @@ const ItineraryPoiElement = (props) => {
     <Container>
       {/* <div>{props.time}</div> */}
       <div className="group flex flex-row items-center pt-3">
-        <div
-          className="bg-white w-[6rem]"
-          onClick={() => setShow(true)}
-        >
+        <div className="bg-white w-[6rem]" onClick={() => setShow(true)}>
           {props.image && props.image !== "media/icons/default/activity.svg" ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
@@ -299,7 +303,13 @@ const ItineraryPoiElement = (props) => {
               noLazy
             ></ImageLoader>
           ) : (
-              <div style={{width: "6rem", display: 'flex' , justifyContent : 'center'}}>
+            <div
+              style={{
+                width: "6rem",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <ImageLoader
                 dimensions={{ width: 300, height: 300 }}
                 dimensionsMobile={{ width: 300, height: 300 }}
@@ -310,7 +320,7 @@ const ItineraryPoiElement = (props) => {
                 height="3.25rem"
                 leftalign
                 widthmobile="6rem"
-                  url={"media/icons/general/dice.png"}
+                url={"media/icons/general/dice.png"}
                 noLazy
               ></ImageLoader>
             </div>

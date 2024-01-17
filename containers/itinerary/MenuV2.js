@@ -874,6 +874,7 @@ const SimpleTabsV2 = (props) => {
                     token={props.token}
                     transferBookings={props.transferBookings}
                     stayBookings={props.stayBookings}
+                    getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
                   ></NewItenaryMain>
                 )}
               </div>

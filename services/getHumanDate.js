@@ -25,6 +25,6 @@ export const getHumanDate = (dateString) => {
         else
             day = day + 'th';
         let month =  months[date.getMonth()];
-        return day + ' ' + month;
+        return day + ' ' + month + ' ' + d[2];
     }
 }

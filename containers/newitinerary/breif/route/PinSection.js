@@ -36,7 +36,7 @@ const IconContainer = styled.div`
 
 const PinSection = (props) => {
   const handleClick = () => {
-    if (props.startingCity || props.endingCity || props.transfersPin) return;
+    if (!props.duration || props.duration === '0' || props.transfersPin) return;
     props.setShowDrawer(true);
     props.setShowDrawerData(props.cityData);
   };
@@ -57,12 +57,16 @@ const PinSection = (props) => {
                 : `${props.duration == 0 ? `` : ` - ${props.duration}`}  Night`
             } `
           : props.city}
-      {(props.startingCity || props.endingCity || props.transfersPin) ? <></> :   <IconContainer className="IconContainer">
-          <MdNavigateNext
-            style={{ fontSize: "1.5rem" }}
-            className="AnimateRight"
-          />
-        </IconContainer>}
+        {props.transfersPin || !props.duration || props.duration === "0" ? (
+          <></>
+        ) : (
+          <IconContainer className="IconContainer">
+            <MdNavigateNext
+              style={{ fontSize: "1.5rem" }}
+              className="AnimateRight"
+            />
+          </IconContainer>
+        )}
       </Heading>
     </Container>
   );

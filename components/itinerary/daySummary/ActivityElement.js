@@ -20,9 +20,9 @@ export default function ActivityElement(props) {
 
   return (
     <Container className="pt-0">
-      <div className=" flex flex-row items-center w-full md:pl-2 lg:pl-2 bg-red-200">
+      <div className=" flex flex-row items-center w-full md:pl-2 lg:pl-2">
         <div className="lg:w-[11%] md:w-[21%]"></div>
-        <div className="text-sm font-normal flex flex-wrap gap-1 bg-blue-200">
+        <div className="text-sm font-normal flex flex-wrap gap-1 w-full">
           <span>Explore</span>
           {activities.map((activity, index) => (
             <span

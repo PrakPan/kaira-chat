@@ -1278,7 +1278,6 @@ const TransfersContainer = (props) => {
             cityId={props.breif.city_slabs[0].city_id}
             duration={props.breif.city_slabs[0].duration}
             pinColour={props.breif.city_slabs[0].color}
-            dayslab={props.dayslab}
           ></PinSection>
           {props?.routes &&
           props?.routes.length > 1 &&

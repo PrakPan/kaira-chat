@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import ImageLoader from '../../../components/ImageLoader';
-import StarRating from '../../../components/StarRating';
-import { BsCalendar2, BsPeopleFill } from 'react-icons/bs';
-import { FaBed, FaStar, FaStarHalfAlt } from 'react-icons/fa';
-import { ImSpoonKnife } from 'react-icons/im';
-import FullScreenGallery from '../../../components/fullscreengallery/Index';
-import BookingModal from '../../../components/modals/bookingupdated/Index';
-import * as ga from '../../../services/ga/Index';
+import React, { useEffect, useState } from "react";
+import ImageLoader from "../../../components/ImageLoader";
+import StarRating from "../../../components/StarRating";
+import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
+import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { ImSpoonKnife } from "react-icons/im";
+import FullScreenGallery from "../../../components/fullscreengallery/Index";
+import BookingModal from "../../../components/modals/bookingupdated/Index";
+import * as ga from "../../../services/ga/Index";
 
-import ButtonYellow from '../../../components/ButtonYellow';
-import AccommodationModal from '../../../components/modals/accommodation/Index';
-import styled from 'styled-components';
+import ButtonYellow from "../../../components/ButtonYellow";
+import AccommodationModal from "../../../components/modals/accommodation/Index";
+import styled from "styled-components";
 
 import {
   getDate,
   convertDateYearFormat,
-} from '../../../helper/ConvertDateFormat';
-import { connect } from 'react-redux';
-import { BiTimeFive } from 'react-icons/bi';
-import { CONTENT_SERVER_HOST } from '../../../services/constants';
+} from "../../../helper/ConvertDateFormat";
+import { connect } from "react-redux";
+import { BiTimeFive } from "react-icons/bi";
+import { CONTENT_SERVER_HOST } from "../../../services/constants";
 
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
@@ -36,7 +36,8 @@ const ActivitiesBookings = (props) => {
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [alternates, setAlternates] = useState(null);
-  const [dates, setDates] = useState({ check_in : '' , check_out : ''})
+  const [dates, setDates] = useState({ check_in: "", check_out: "" });
+  const [viewMoreDiscription, setViewMoreDiscription] = useState(false);
   const _changeBookingHandler = (
     name,
     itinerary_id,
@@ -54,14 +55,14 @@ const ActivitiesBookings = (props) => {
     costings_breakdown,
     images
   ) => {
-   {
-     process.env.NODE_ENV === "production" &&
-       !CONTENT_SERVER_HOST.includes("dev") &&
-       ga.event({
-         action: "Itinerary-bookings-acc_change",
-         params: { name: name },
-       });
-   }
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-bookings-acc_change",
+          params: { name: name },
+        });
+    }
 
     setSelectedBooking({
       ...selectedBooking,
@@ -89,15 +90,15 @@ const ActivitiesBookings = (props) => {
 
   function Addons(Shorthand) {
     switch (Shorthand) {
-      case 'EP':
-        return 'Room Only';
-      case 'CP':
-        return 'Complementary Breakfast Included';
-      case 'MAP':
-        return 'Breakfast/Lunch Included';
-      case 'AP':
-        return 'All Meals Included';
-      case 'TBO':
+      case "EP":
+        return "Room Only";
+      case "CP":
+        return "Complementary Breakfast Included";
+      case "MAP":
+        return "Breakfast/Lunch Included";
+      case "AP":
+        return "All Meals Included";
+      case "TBO":
         return null;
       default:
         return null;
@@ -343,27 +344,27 @@ const ActivitiesBookings = (props) => {
   //   props.payment,
   // ]);
   function handleClickAc(i) {
-    let name = props.stayBookings[i]['name'];
-    let costings_breakdown = props.stayBookings[i]['costings_breakdown'];
-    let cost = props.stayBookings[i]['booking_cost'];
-    let itinerary_id = props.stayBookings[i]['itinerary_id'];
-    let itinerary_name = props.stayBookings[i]['itinerary_name'];
-    let booking_type = props.stayBookings[i]['booking_type'];
-    let accommodation = props.stayBookings[i]['accommodation'];
-    let tailored_id = props.stayBookings[i]['tailored_itinerary'];
-    let id = props.stayBookings[i]['id'];
-    let check_in = props.stayBookings[i]['check_in'];
-    let check_out = props.stayBookings[i]['check_out'];
+    let name = props.stayBookings[i]["name"];
+    let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
+    let cost = props.stayBookings[i]["booking_cost"];
+    let itinerary_id = props.stayBookings[i]["itinerary_id"];
+    let itinerary_name = props.stayBookings[i]["itinerary_name"];
+    let booking_type = props.stayBookings[i]["booking_type"];
+    let accommodation = props.stayBookings[i]["accommodation"];
+    let tailored_id = props.stayBookings[i]["tailored_itinerary"];
+    let id = props.stayBookings[i]["id"];
+    let check_in = props.stayBookings[i]["check_in"];
+    let check_out = props.stayBookings[i]["check_out"];
     let pax = {
       number_of_adults:
-        props.stayBookings[i].costings_breakdown[0]['number_of_adults'],
+        props.stayBookings[i].costings_breakdown[0]["number_of_adults"],
       number_of_children:
-        props.stayBookings[i].costings_breakdown[0]['number_of_children'],
+        props.stayBookings[i].costings_breakdown[0]["number_of_children"],
       number_of_infants:
-        props.stayBookings[i].costings_breakdown[0]['number_of_infants'],
+        props.stayBookings[i].costings_breakdown[0]["number_of_infants"],
     };
-    let city = props.stayBookings[i]['city'];
-    let room_type = props.stayBookings[i]['room_type'];
+    let city = props.stayBookings[i]["city"];
+    let room_type = props.stayBookings[i]["room_type"];
     _changeBookingHandler(
       name,
       itinerary_id,
@@ -382,13 +383,17 @@ const ActivitiesBookings = (props) => {
     props.setShowBookingModal;
   }
   function handleClick(i, id) {
-        let check_in = props.stayBookings[i]["check_in"];
+    let check_in = props.stayBookings[i]["check_in"];
     let check_out = props.stayBookings[i]["check_out"];
-    setDates({check_in , check_out})
+    setDates({ check_in, check_out });
     setBookingId(id);
 
     setShowDetails(true);
   }
+
+  const handleMoreDiscription = () => {
+    setViewMoreDiscription((prev) => !prev);
+  };
 
   return (
     <div className="lg:w-[60vw] w-full">
@@ -400,7 +405,7 @@ const ActivitiesBookings = (props) => {
         ? props.activityBookings.map((booking, index) => (
             <div className="flex gap-1 pt-4  flex-col justify-start">
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                {booking?.city}:{" "}
+                {booking?.city}{" "}
                 {booking.duration && <span>({booking?.duration}N)</span>}
               </div>
               <div className=" shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-500/50 border-[#ECEAEA]  hover:border-[#ffa500] shadow-[#ECEAEA] lg:p-4 p-3">
@@ -431,8 +436,33 @@ const ActivitiesBookings = (props) => {
                       {booking?.name}
                     </div>
                     <div className="flex flex-col gap-1 -mt-2">
-                      <div className="text-sm font-normal">{booking?.city}</div>
-                      {booking.points &&
+                      {/* //Replace city wiht address */}
+                      <div className="text-sm font-normal">
+                        {booking?.costings_breakdown?.activity_data?.address}
+                      </div>
+                      {booking?.costings_breakdown?.activity_data?.rating && (
+                        <div className="gap-1 flex flex-row  items-center">
+                          <div className="flex flex-row text-[#ffa500]">
+                            {starRating(
+                              booking?.costings_breakdown?.activity_data?.rating
+                            )}
+                          </div>
+                          <div>
+                            {booking?.costings_breakdown?.activity_data?.rating}
+                          </div>
+                          {booking?.costings_breakdown?.activity_data
+                            ?.user_ratings_total && (
+                            <div className="text-sm text-[#7A7A7A] font-medium underline">
+                              {
+                                booking?.costings_breakdown?.activity_data
+                                  ?.user_ratings_total
+                              }{" "}
+                              Reviews
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {booking?.points && booking?.points.length ? (
                         booking.points.map((data, i) => (
                           <div className="flex flex-col gap-0">
                             {data !== "" && (
@@ -442,17 +472,35 @@ const ActivitiesBookings = (props) => {
                               </div>
                             )}
                           </div>
-                        ))}
-                      {booking?.user_rating && (
-                        <div className="gap-1 flex flex-row  items-center">
-                          <div className="flex flex-row text-[#ffa500]">
-                            {starRating(booking?.user_rating)}
-                          </div>
-                          <div>{booking?.user_rating}</div>
-                          {booking.number_of_reviews && (
-                            <div className="text-sm text-[#7A7A7A] font-medium underline">
-                              {booking.number_of_reviews} Reviews
-                            </div>
+                        ))
+                      ) : (
+                        <div>
+                          {viewMoreDiscription ? (
+                            <>
+                              {
+                                booking?.costings_breakdown?.activity_data
+                                  ?.short_description
+                              }
+                              <button
+                                onClick={handleMoreDiscription}
+                                className="font-semibold"
+                              >
+                                Less
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              {booking?.costings_breakdown?.activity_data?.short_description.slice(
+                                0,
+                                200
+                              )}
+                              <button
+                                onClick={handleMoreDiscription}
+                                className="font-semibold"
+                              >
+                                ...More
+                              </button>
+                            </>
                           )}
                         </div>
                       )}
@@ -470,7 +518,7 @@ const ActivitiesBookings = (props) => {
                           </div>
                         </div>
                       )}
-                      {booking.ideal_duration_hours_text && (
+                      {booking?.ideal_duration_hours_text && (
                         <div className="flex flex-row gap-1 items-center">
                           <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
                           <div>
@@ -480,10 +528,25 @@ const ActivitiesBookings = (props) => {
                           </div>
                         </div>
                       )}
+
+                      {booking?.costings_breakdown?.no_of_tickets && (
+                        <div>
+                          <div className="flex flex-row gap-2 items-center">
+                            <BsPeopleFill className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
+                            <div className="text-sm font-[400] line-clamp-1">
+                              {booking?.costings_breakdown?.no_of_tickets}{" "}
+                              {booking?.costings_breakdown?.no_of_tickets <= "1"
+                                ? "Ticket"
+                                : "Tickets"}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {booking.costings_breakdown[0] && (
                       <div>
+                        sfasfwq
                         <div
                           className={`flex ${
                             noOfWords(

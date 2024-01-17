@@ -212,48 +212,46 @@ const Route = (props) => {
   } else {
     if (props.breif)
       if (props.breif.city_slabs) {
-        for (var i = 1; i < props.breif.city_slabs.length; i++) {
-          if (props.breif.city_slabs[i].is_departure_only)
-            startingcity = props.breif.city_slabs[0].city_name;
-          if (props.breif.city_slabs[i].is_trip_terminated)
-            endingcity = props.breif.city_slabs[i].city_name;
+        for (var i = 0; i < props.breif.city_slabs.length; i++) {
           //If duration present and not 0, not trip terminated or departure only city show in route
-          if (
-            !props.breif.city_slabs[i].is_trip_terminated &&
-            !props.breif.city_slabs[i].is_departure_only &&
-            !props.breif.city_slabs[i].is_departure_only &&
-            props.breif.city_slabs[i].duration &&
-            props.breif.city_slabs[i].duration !== "0"
-          ) {
-            locationsArr.push(
-              <PinSection
-                setCurrentPopup={props.setCurrentPopup}
-                handlemap={handlemap}
-                dayId={
-                  props.breif.city_slabs[i].day_slab_location
-                    .start_day_slab_index
-                }
-                setShowDrawer={props.setShowDrawer}
-                setShowDrawerData={props.setShowDrawerData}
-                cityData={props.breif.city_slabs[i]}
-                dayslab={props.dayslab}
-                lat={props.breif.city_slabs[i].lat}
-                long={props.breif.city_slabs[i].long}
-                Mapid={props.breif.city_slabs[i].gmaps_place_id}
-                city={props.breif.city_slabs[i].city_name}
-                cityId={props.breif.city_slabs[i].city_id}
-                duration={
-                  props.breif.city_slabs[i].duration
-                    ? props.breif.city_slabs[i].duration
-                    : null
-                }
-                pinColour={props.breif.city_slabs[i].color}
-                data={order[i]}
-                _moveDownHandler={_moveDownHandler}
-                _moveUpHandler={_moveUpHandler}
-                index={i}
-              ></PinSection>
-            );
+          // if (
+          //   !props.breif.city_slabs[i].is_trip_terminated &&
+          //   !props.breif.city_slabs[i].is_departure_only &&
+          //   !props.breif.city_slabs[i].is_departure_only &&
+          //   props.breif.city_slabs[i].duration &&
+          //   props.breif.city_slabs[i].duration !== "0"
+          // ) {
+          locationsArr.push(
+            <PinSection
+              startingCity={i === 0}
+              endingCity={i === props.breif.city_slabs.length - 1}
+              setCurrentPopup={props.setCurrentPopup}
+              handlemap={handlemap}
+              dayId={
+                props.breif.city_slabs[i].day_slab_location.start_day_slab_index
+              }
+              setShowDrawer={props.setShowDrawer}
+              setShowDrawerData={props.setShowDrawerData}
+              cityData={props.breif.city_slabs[i]}
+              dayslab={props.dayslab}
+              lat={props.breif.city_slabs[i].lat}
+              long={props.breif.city_slabs[i].long}
+              Mapid={props.breif.city_slabs[i].gmaps_place_id}
+              city={props.breif.city_slabs[i].city_name}
+              cityId={props.breif.city_slabs[i].city_id}
+              duration={
+                props.breif.city_slabs[i].duration
+                  ? props.breif.city_slabs[i].duration
+                  : null
+              }
+              pinColour={props.breif.city_slabs[i].color}
+              data={order[i]}
+              _moveDownHandler={_moveDownHandler}
+              _moveUpHandler={_moveUpHandler}
+              index={i}
+            ></PinSection>
+          );
+          if (i < props.breif.city_slabs.length - 1) {
             locationsArr.push(
               <MidSection
                 pinColour={props.breif.city_slabs[i].color}
@@ -271,11 +269,8 @@ const Route = (props) => {
               ></MidSection>
             );
           }
+          // }
         }
-        if (!startingcity) startingcity = props.breif.city_slabs[0].city_name;
-        if (!endingcity)
-          endingcity =
-            props.breif.city_slabs[props.breif.city_slabs.length - 1].city_name;
       }
   }
 
