@@ -3,6 +3,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import StarRating from "../../../components/StarRating";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
 import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { IoTicket } from "react-icons/io5";
 import { ImSpoonKnife } from "react-icons/im";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import BookingModal from "../../../components/modals/bookingupdated/Index";
@@ -19,6 +20,7 @@ import {
 import { connect } from "react-redux";
 import { BiTimeFive } from "react-icons/bi";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
@@ -37,9 +39,8 @@ const ActivitiesBookings = (props) => {
   const [images, setImages] = useState(null);
   const [alternates, setAlternates] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
-  const [viewMoreDiscription, setViewMoreDiscription] = useState(
-    new Array(props.activityBookings.length).fill(false)
-  );
+  const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
+  const [showMore, setShowMore] = useState(false);
 
   const _changeBookingHandler = (
     name,
@@ -394,12 +395,15 @@ const ActivitiesBookings = (props) => {
     setShowDetails(true);
   }
 
-  const handleMoreDiscription = (i) => {
-    setViewMoreDiscription((prev) => {
-      const newState = [...prev];
-      newState[i] = !newState[i];
-      return newState;
-    });
+  const handleMoreDiscription = (e) => {
+    setViewMoreDiscription(e.target.id);
+    setShowMore(true);
+  };
+
+  const handleCloseDrawer = (e) => {
+    setViewMoreDiscription();
+    if (e) e.stopPropagation(e);
+    setShowMore(false);
   };
 
   return (
@@ -441,11 +445,11 @@ const ActivitiesBookings = (props) => {
                       </div>
                     ) : null}
                   </div>
-                  <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%]">
+                  <div className="flex flex-col gap-4 text-[#01202B] lg:w-[70%]">
                     <div className="text-2xl font-semibold ">
                       {booking?.name}
                     </div>
-                    <div className="flex flex-col gap-1 -mt-2">
+                    <div className="flex flex-col gap-2 -mt-2">
                       {/* //Replace city wiht address */}
                       <div className="text-sm font-normal">
                         {booking?.costings_breakdown?.activity_data?.address}
@@ -484,46 +488,18 @@ const ActivitiesBookings = (props) => {
                           </div>
                         ))
                       ) : (
-                        <div>
-                          {viewMoreDiscription[index] ? (
-                            <>
-                              {
-                                booking?.costings_breakdown?.activity_data
-                                  ?.short_description
-                              }
-                              <button
-                                onClick={() => handleMoreDiscription(index)}
-                                className="font-semibold ml-1 flex flex-row items-center gap-1"
-                              >
-                                {"Less"}
-                                <svg
-                                  stroke="currentColor"
-                                  fill="currentColor"
-                                  stroke-width="0"
-                                  viewBox="0 0 1024 1024"
-                                  class={`transition-all rotate-180`}
-                                  height="1em"
-                                  width="1em"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
-                                </svg>
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              {booking?.costings_breakdown?.activity_data?.short_description.slice(
-                                0,
-                                200
-                              )}
-                              <button
-                                onClick={() => handleMoreDiscription(index)}
-                                className="font-semibold ml-1"
-                              >
-                                {"...More >"}
-                              </button>
-                            </>
+                        <div className="">
+                          {booking?.costings_breakdown?.activity_data?.short_description.slice(
+                            0,
+                            300
                           )}
+                          <button
+                            id={index}
+                            onClick={handleMoreDiscription}
+                            className="font-semibold ml-1"
+                          >
+                            {"...More"}
+                          </button>
                         </div>
                       )}
                     </div>
@@ -554,7 +530,7 @@ const ActivitiesBookings = (props) => {
                       {booking?.costings_breakdown?.no_of_tickets && (
                         <div>
                           <div className="flex flex-row gap-2 items-center">
-                            <BsPeopleFill className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
+                            <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
                             <div className="text-sm font-[400] line-clamp-1">
                               {booking?.costings_breakdown?.no_of_tickets}{" "}
                               {booking?.costings_breakdown?.no_of_tickets <= "1"
@@ -568,7 +544,6 @@ const ActivitiesBookings = (props) => {
 
                     {booking.costings_breakdown[0] && (
                       <div>
-                        sfasfwq
                         <div
                           className={`flex ${
                             noOfWords(
@@ -674,6 +649,26 @@ const ActivitiesBookings = (props) => {
           images={images}
         ></FullScreenGallery>
       ) : null}
+      <POIDetailsDrawer
+        itineraryDrawer
+        show={showMore}
+        iconId={
+          props?.activityBookings[viewMoreDiscription]?.costings_breakdown
+            ?.activity_data?.id
+        }
+        ActivityiconId={
+          props?.activityBookings[viewMoreDiscription]?.costings_breakdown
+            ?.activity_data?.id
+        }
+        handleCloseDrawer={handleCloseDrawer}
+        name={props?.activityBookings[viewMoreDiscription]?.name}
+        image={props?.activityBookings[viewMoreDiscription]?.images[0]?.image}
+        text={
+          props?.activityBookings[viewMoreDiscription]?.costings_breakdown
+            ?.activity_data?.short_description
+        }
+        Topheading={"Select Our Point Of Interest"}
+      />
     </div>
   );
 };

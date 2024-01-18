@@ -39,7 +39,7 @@ export default function TransferElement(props) {
 
   return (
     <Container className="pt-0">
-      <div className="flex flex-col items-center justify-center w-full md:pl-2 lg:pl-">
+      <div className="flex flex-col items-center justify-center w-full">
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="flex flex-row lg:w-[11%] md:w-[21%] justify-center">
             {meta?.day_timing ? (

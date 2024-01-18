@@ -579,7 +579,7 @@ const TransfersContainer = (props) => {
   let endingcity = null;
   if (
     props?.plan?.version == ITINERARY_VERSION.version_2 &&
-    !props.plan.is_released_for_customer
+    (!props.plan.is_released_for_customer || !props.plan.round_trip_taxi_added)
   ) {
     if (props?.routes) {
       for (var i = 2; i < props.routes.length - 1; i += 2) {
@@ -614,6 +614,7 @@ const TransfersContainer = (props) => {
                     props?.transferBookings,
                     props?.routes[i + 1].bookings[index]?.id
                   );
+                  window.my = CurrentBooking;
                   mode === "Flight" ||
                   (mode.booking_type && mode.booking_type === "Flight")
                     ? locationsArr.push(
@@ -1186,7 +1187,7 @@ const TransfersContainer = (props) => {
     props?.routes &&
     props?.routes.length > 1 &&
     props?.plan?.version == "v2" &&
-    !props.plan.is_released_for_customer
+    (!props.plan.is_released_for_customer || !props.plan.round_trip_taxi_added)
   ) {
     if (props.routes[1]?.modes && props.routes[1]?.modes.length) {
       modes = props.routes[1]?.modes;
@@ -1263,11 +1264,12 @@ const TransfersContainer = (props) => {
             long={props.breif.city_slabs[0].long}
             Mapid={props.breif.city_slabs[0].gmaps_place_id}
             city={
-              (!props.routes ||
-                !props.routes.length ||
-                props.plan.is_released_for_customer) &&
-              props.transferBookings[0] &&
-              props.transferBookings[0].city
+              !props.routes ||
+              !props.routes.length ||
+              ((props.plan.is_released_for_customer ||
+                props.plan.round_trip_taxi_added) &&
+                props.transferBookings[0] &&
+                props.transferBookings[0].city)
                 ? props.transferBookings[0].city
                 : props.transferBookings[0] &&
                   props.transferBookings[0].origin &&
@@ -1282,7 +1284,8 @@ const TransfersContainer = (props) => {
           {props?.routes &&
           props?.routes.length > 1 &&
           props?.plan?.version == "v2" &&
-          !props.plan.is_released_for_customer ? (
+          (!props.plan.is_released_for_customer ||
+            !props.plan.round_trip_taxi_added) ? (
             modes ? (
               modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
@@ -1381,7 +1384,8 @@ token={props.token}></TransferModeContainer>
 token={props.token}></TransferModeContainer> */}
           {props?.routes &&
             props?.routes.length > 1 &&
-            !props.plan.is_released_for_customer && (
+            (!props.plan.is_released_for_customer ||
+              !props.plan.round_trip_taxi_added) && (
               <PinSection
                 transfersPin
                 setCurrentPopup={false}
