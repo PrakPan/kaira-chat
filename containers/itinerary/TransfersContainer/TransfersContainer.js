@@ -579,7 +579,7 @@ const TransfersContainer = (props) => {
   let endingcity = null;
   if (
     props?.plan?.version == ITINERARY_VERSION.version_2 &&
-    (!props.plan.is_released_for_customer || !props.plan.round_trip_taxi_added)
+    !(props.plan.is_released_for_customer || props.plan.round_trip_taxi_added)
   ) {
     if (props?.routes) {
       for (var i = 2; i < props.routes.length - 1; i += 2) {
@@ -1187,7 +1187,7 @@ const TransfersContainer = (props) => {
     props?.routes &&
     props?.routes.length > 1 &&
     props?.plan?.version == "v2" &&
-    (!props.plan.is_released_for_customer || !props.plan.round_trip_taxi_added)
+    !(props.plan.is_released_for_customer || props.plan.round_trip_taxi_added)
   ) {
     if (props.routes[1]?.modes && props.routes[1]?.modes.length) {
       modes = props.routes[1]?.modes;
@@ -1284,8 +1284,10 @@ const TransfersContainer = (props) => {
           {props?.routes &&
           props?.routes.length > 1 &&
           props?.plan?.version == "v2" &&
-          (!props.plan.is_released_for_customer ||
-            !props.plan.round_trip_taxi_added) ? (
+          !(
+            props.plan.is_released_for_customer ||
+            props.plan.round_trip_taxi_added
+          ) ? (
             modes ? (
               modes.map((mode, index) => {
                 var CurrentBooking = return_booking_from_id(
@@ -1384,8 +1386,10 @@ token={props.token}></TransferModeContainer>
 token={props.token}></TransferModeContainer> */}
           {props?.routes &&
             props?.routes.length > 1 &&
-            (!props.plan.is_released_for_customer ||
-              !props.plan.round_trip_taxi_added) && (
+            !(
+              props.plan.is_released_for_customer ||
+              props.plan.round_trip_taxi_added
+            ) && (
               <PinSection
                 transfersPin
                 setCurrentPopup={false}
