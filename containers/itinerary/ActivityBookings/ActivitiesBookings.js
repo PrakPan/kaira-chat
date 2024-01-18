@@ -37,7 +37,10 @@ const ActivitiesBookings = (props) => {
   const [images, setImages] = useState(null);
   const [alternates, setAlternates] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
-  const [viewMoreDiscription, setViewMoreDiscription] = useState(false);
+  const [viewMoreDiscription, setViewMoreDiscription] = useState(
+    new Array(props.activityBookings.length).fill(false)
+  );
+
   const _changeBookingHandler = (
     name,
     itinerary_id,
@@ -391,8 +394,12 @@ const ActivitiesBookings = (props) => {
     setShowDetails(true);
   }
 
-  const handleMoreDiscription = () => {
-    setViewMoreDiscription((prev) => !prev);
+  const handleMoreDiscription = (i) => {
+    setViewMoreDiscription((prev) => {
+      const newState = [...prev];
+      newState[i] = !newState[i];
+      return newState;
+    });
   };
 
   return (
@@ -403,7 +410,10 @@ const ActivitiesBookings = (props) => {
       </div>
       {props.activityBookings
         ? props.activityBookings.map((booking, index) => (
-            <div className="flex gap-1 pt-4  flex-col justify-start">
+            <div
+              key={index}
+              className="flex gap-1 pt-4  flex-col justify-start"
+            >
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
                 {booking?.city}{" "}
                 {booking.duration && <span>({booking?.duration}N)</span>}
@@ -431,7 +441,7 @@ const ActivitiesBookings = (props) => {
                       </div>
                     ) : null}
                   </div>
-                  <div className="flex flex-col gap-2 text-[#01202B]">
+                  <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%]">
                     <div className="text-2xl font-semibold ">
                       {booking?.name}
                     </div>
@@ -475,17 +485,29 @@ const ActivitiesBookings = (props) => {
                         ))
                       ) : (
                         <div>
-                          {viewMoreDiscription ? (
+                          {viewMoreDiscription[index] ? (
                             <>
                               {
                                 booking?.costings_breakdown?.activity_data
                                   ?.short_description
                               }
                               <button
-                                onClick={handleMoreDiscription}
-                                className="font-semibold"
+                                onClick={() => handleMoreDiscription(index)}
+                                className="font-semibold ml-1 flex flex-row items-center gap-1"
                               >
-                                Less
+                                {"Less"}
+                                <svg
+                                  stroke="currentColor"
+                                  fill="currentColor"
+                                  stroke-width="0"
+                                  viewBox="0 0 1024 1024"
+                                  class={`transition-all rotate-180`}
+                                  height="1em"
+                                  width="1em"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+                                </svg>
                               </button>
                             </>
                           ) : (
@@ -495,10 +517,10 @@ const ActivitiesBookings = (props) => {
                                 200
                               )}
                               <button
-                                onClick={handleMoreDiscription}
-                                className="font-semibold"
+                                onClick={() => handleMoreDiscription(index)}
+                                className="font-semibold ml-1"
                               >
-                                ...More
+                                {"...More >"}
                               </button>
                             </>
                           )}
