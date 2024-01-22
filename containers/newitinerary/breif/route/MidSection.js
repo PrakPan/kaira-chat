@@ -178,20 +178,18 @@ const MidSection = (props) => {
               props.duration ? (
                 <div className="inline-flex items-center gap-2">
                   <div>: {props.duration}</div>
-                  {!props?.payment?.is_registration_needed &&
-                    props?.payment?.user_allowed_to_pay &&
-                    !props?.payment.paid_user &&
-                    !props?.plan?.round_trip_taxi_added && (
-                      <div
-                        onClick={handleTransferEdit}
-                        className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                      >
-                        <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                      </div>
-                    )}
                 </div>
               ) : (
                 <></>
+              )}
+
+              {!props?.plan?.round_trip_taxi_added && (
+                <div
+                  onClick={handleTransferEdit}
+                  className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                >
+                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                </div>
               )}
 
               {/* {props.icon && (
