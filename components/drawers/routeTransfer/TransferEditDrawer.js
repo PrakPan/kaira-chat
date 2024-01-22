@@ -34,7 +34,7 @@ const TransferEditDraser = (props) => {
   const [selectLoading, setSelectLoading] = useState(false);
 
   const getSelectedTransfer = () => {
-    const route = alternateRoutes.transfers.find(
+    const route = alternateRoutes?.transfers?.find(
       (route) => route.heading === selectedTransferHeading
     );
     return route;
@@ -42,7 +42,7 @@ const TransferEditDraser = (props) => {
 
   const filterAlternateRoutes = () => {
     const filteredTransfers = [
-      ...alternateRoutes.transfers.sort(
+      ...alternateRoutes?.transfers?.sort(
         (a, b) => a.inconvenience_score - b.inconvenience_score
       ),
     ];
@@ -57,7 +57,7 @@ const TransferEditDraser = (props) => {
   };
 
   useEffect(() => {
-    if (!loadingAlternates) {
+    if (!loadingAlternates && !alternatesError) {
       const filterdTransfers = filterAlternateRoutes();
       setTransfers(filterdTransfers);
     }
@@ -169,7 +169,8 @@ const TransferEditDraser = (props) => {
                     <TransportIconFetcher
                       TransportMode={transfer.modes[0]}
                       Instyle={{
-                        fontSize: transfer.modes[0] === "Bus" ? "3.5rem" : "4rem",
+                        fontSize:
+                          transfer.modes[0] === "Bus" ? "3.5rem" : "4rem",
                         color: "#4d4d4d",
                       }}
                     />
