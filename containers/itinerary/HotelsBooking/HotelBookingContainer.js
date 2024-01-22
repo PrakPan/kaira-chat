@@ -317,7 +317,7 @@ banner_image,
                   )}
                   {booking.check_in &&
                   ITINERARY_STATUSES.itinerary_prepared !==
-                    plan.itinerary_status ? (
+                    plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       {booking.check_in && (
                         <div className="flex flex-row gap-2 items-center">

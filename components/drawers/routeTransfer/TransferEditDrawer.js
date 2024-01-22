@@ -175,12 +175,12 @@ const TransferEditDraser = (props) => {
                     />
                   </div>
 
-                  <div className="w-full flex flex-col gap-3">
+                  <div className="w-full flex flex-col gap-4">
                     <div className="flex flex-row items-start justify-between">
                       <div className="text-lg">{transfer.heading}</div>
                       {transfer.recommended && (
-                        <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1">
-                          Recomended
+                        <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1">
+                          Recommended
                         </ClippathComp>
                       )}
                     </div>
