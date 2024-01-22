@@ -1,38 +1,38 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import Row from '../../../components/experiencecity/info/Row';
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import Row from "../../../components/experiencecity/info/Row";
 
-import Overview from './overview/Index';
-import axiosPoiCityInstance from '../../../services/poi/city';
-import axiosPoiRoutes from '../../../services/itinerary/brief/route';
+import Overview from "./overview/Index";
+import axiosPoiCityInstance from "../../../services/poi/city";
+import axiosPoiRoutes from "../../../services/itinerary/brief/route";
 // import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
 // import RouteData from './Locations';
 
 // import InclusionsData from './Inclusions';
 
-import styled from 'styled-components';
-import { Element } from 'react-scroll';
+import styled from "styled-components";
+import { Element } from "react-scroll";
 //  import Faqs from '../../components/experiencecity/info/faqs/Index';
 // import Banner from './Banner/Index';
 // import Howtoreach from '../../components/experiencecity/info/Howtoreach';
-import { useRef } from 'react';
-import media from '../../../components/media';
-import { useRouter } from 'next/router';
+import { useRef } from "react";
+import media from "../../../components/media";
+import { useRouter } from "next/router";
 // import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
-import DesktopBanner from '../../../components/containers/Banner';
-import Banner from '../../homepage/banner/Mobile';
-import Route from '../../newitinerary/breif/route/Index';
-import ButtonYellow from '../../../components/ButtonYellow';
-import InclusionExclusion from '../../../components/InclusionExclusion/InclusionExclusion';
+import DesktopBanner from "../../../components/containers/Banner";
+import Banner from "../../homepage/banner/Mobile";
+import Route from "../../newitinerary/breif/route/Index";
+import ButtonYellow from "../../../components/ButtonYellow";
+import InclusionExclusion from "../../../components/InclusionExclusion/InclusionExclusion";
 
-import dynamic from 'next/dynamic';
-import CityDetails from './CityDetails';
-import POIDetailsSkeleton from '../../../components/drawers/poiDetails/POIDetailsSkeleton';
-import Drawer from '../../../components/drawers/cityDetails/CityDetailsDrawer';
-import { TbArrowBack } from 'react-icons/tb';
+import dynamic from "next/dynamic";
+import CityDetails from "./CityDetails";
+import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
+import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
+import { TbArrowBack } from "react-icons/tb";
 const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
   ssr: false,
 });
-import SkeletonCard from '../../../components/ui/SkeletonCard';
+import SkeletonCard from "../../../components/ui/SkeletonCard";
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -73,7 +73,7 @@ const Details = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
-  const [mapLoaded , setMapLoaded] = useState(false)
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // async function getRoutes(itinaryId) {
   //   const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
@@ -82,9 +82,9 @@ const Details = (props) => {
   // }
 
   const router = useRouter();
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel');
+    router.push("/tailored-travel");
   };
   const getdayId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab_id;
@@ -93,15 +93,13 @@ const Details = (props) => {
     return props.itinerary?.day_slabs[id]?.slab;
   };
 
- 
-
   const Locationlatlong = [];
   if (props.routesData.length >= 1) {
     for (var i = 0; i < props.routesData.length; i++) {
       var postion = props.breif.city_slabs[i + 1];
       if (
         props.routesData[i].duration &&
-        props.routesData[i].duration !== '0'
+        props.routesData[i].duration !== "0"
       ) {
         Locationlatlong.push({
           dayId: getdayId(
@@ -129,7 +127,7 @@ const Details = (props) => {
           !postion.is_departure_only &&
           !postion.is_trip_terminated &&
           postion.duration &&
-          postion.duration !== '0'
+          postion.duration !== "0"
         ) {
           Locationlatlong.push({
             dayId: getdayId(postion.day_slab_location.start_day_slab_index),
@@ -148,14 +146,14 @@ const Details = (props) => {
     }
   }
 
-   function findDayIdByCityId(cityId) {
-     for (const item of Locationlatlong) {
-       if (item.city_id === cityId) {
-         return item.dayId;
-       }
-     }
-     return null; // Return null if city_id is not found in the array
-   }
+  function findDayIdByCityId(cityId) {
+    for (const item of Locationlatlong) {
+      if (item.city_id === cityId) {
+        return item.dayId;
+      }
+    }
+    return null; // Return null if city_id is not found in the array
+  }
   // const getdayId = (id) => {
   //   return props.itinerary?.day_slabs[id]?.slab_id;
   // };
@@ -239,7 +237,7 @@ const Details = (props) => {
       setCurrentPopup={setCurrentPopup}
       setShowDrawer={setShowDrawer}
       setShowDrawerData={setShowDrawerData}
-      onload={()=>setMapLoaded(true)}
+      onload={() => setMapLoaded(true)}
     />
   );
   // const LeafMap = dynamic(
@@ -263,7 +261,7 @@ const Details = (props) => {
         >
           <div
             className="absolute w-[100%] h-[100%] rounded-xl"
-            style={{overflow: "hidden" }}
+            style={{ overflow: "hidden" }}
           >
             {Locationlatlong.length >= 1 ? (
               <>
@@ -281,8 +279,7 @@ const Details = (props) => {
                 </div>
               </>
             ) : (
-              <div>
-              </div>
+              <div></div>
             )}
           </div>
         </div>
@@ -291,6 +288,8 @@ const Details = (props) => {
           {
             <div id="route">
               <Route
+                itinerary_id={props.itinerary.tailor_made_id}
+                payment={props.payment}
                 plan={props.plan}
                 dayslab={props.itinerary?.day_slabs}
                 breif={props.breif}
@@ -302,6 +301,8 @@ const Details = (props) => {
                 setCurrentPopup={setCurrentPopup}
                 setShowDrawer={setShowDrawer}
                 setShowDrawerData={setShowDrawerData}
+                fetchData={props.fetchData}
+                getPaymentHandler={props.getPaymentHandler}
               />
             </div>
           }

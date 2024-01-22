@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
 import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../../components/ImageLoader";
+import { MdEdit } from "react-icons/md";
+import TransferEditDraser from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
+import routeAlternates from "../../../../services/itinerary/brief/routeAlternates";
+
 const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
@@ -69,11 +73,39 @@ const Text = styled.div`
 `;
 
 const MidSection = (props) => {
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [alternateRoutes, setAlternateRoutes] = useState([]);
+  const [loadingAlternates, setLoadingAlternates] = useState(true);
+  const [alternatesError, setAlternatesError] = useState(null);
+
   let hidemidsection = props.hidemidsection;
   if (props.route && props.route.modes && props.route.modes.length)
     hidemidsection = false;
   else if (props.bookings && props.bookings.length) hidemidsection = false;
   else hidemidsection = true;
+
+  const handleTransferEdit = () => {
+    setShowDrawer(true);
+    const access_token = localStorage.getItem("access_token");
+    routeAlternates
+      .get(`/?route_id=` + props?.route?.transfers?.id, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          const data = response.data;
+          setAlternateRoutes(data);
+        }
+        setLoadingAlternates(false);
+      })
+      .catch((err) => {
+        setLoadingAlternates(false);
+        setAlternatesError("There seems to be a problem, please try again!");
+      });
+  };
 
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>
@@ -144,7 +176,20 @@ const MidSection = (props) => {
               {props.route?.modes &&
               props.route?.modes.length &&
               props.duration ? (
-                <div>: {props.duration}</div>
+                <div className="inline-flex items-center gap-2">
+                  <div>: {props.duration}</div>
+                  {!props?.payment?.is_registration_needed &&
+                    props?.payment?.user_allowed_to_pay &&
+                    !props?.payment.paid_user &&
+                    !props?.plan?.round_trip_taxi_added && (
+                      <div
+                        onClick={handleTransferEdit}
+                        className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                      >
+                        <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                      </div>
+                    )}
+                </div>
               ) : (
                 <></>
               )}
@@ -180,6 +225,21 @@ const MidSection = (props) => {
           )}
         </>
       )}
+      <TransferEditDraser
+        itinerary_id={props?.itinerary_id}
+        showDrawer={showDrawer}
+        setShowDrawer={setShowDrawer}
+        selectedTransferHeading={props?.route?.heading}
+        origin={props.originCity}
+        destination={props.destinationCity}
+        alternateRoutes={alternateRoutes}
+        loadingAlternates={loadingAlternates}
+        alternatesError={alternatesError}
+        day_slab_index={props?.route?.element_location?.day_slab_index}
+        element_index={props?.route?.element_index}
+        fetchData={props?.fetchData}
+        getPaymentHandler={props?.getPaymentHandler}
+      />
     </Container>
   );
 };

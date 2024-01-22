@@ -241,6 +241,7 @@ const Day_I_ContainerM = (props) => {
               activity={element?.activity_data?.activity}
               city_id={element?.activity_data?.city?.id}
               setShowLoginModal={props.setShowLoginModal}
+              getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
             ></ItineraryPoiElementM>
           );
           break;

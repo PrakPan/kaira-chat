@@ -193,14 +193,10 @@ const ItineraryPoiElement = (props) => {
                     _updatePoiHandler={_updatePoiHandler}
                     selectedData={props.data}
                     setShowDrawer={setShowDrawer}
-                    getPaymentHandler={props.getPaymentHandler}
                     data={res.data[i]}
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
                     ticketsCount={ticketsCount}
-                    getAccommodationAndActivitiesHandler={
-                      props.getAccommodationAndActivitiesHandler
-                    }
                   ></PoiList>
                 );
             }
@@ -242,6 +238,8 @@ const ItineraryPoiElement = (props) => {
       )
       .then((res) => {
         props.setItinerary(res.data);
+        props.getPaymentHandler();
+        props.getAccommodationAndActivitiesHandler();
         props.openNotification({
           text: "Your Itinerary updated successfully!",
           heading: "Success!",
@@ -267,6 +265,7 @@ const ItineraryPoiElement = (props) => {
       setElementType("POI");
     }
   };
+
   const _getStars = (rating) => {
     var stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {

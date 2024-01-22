@@ -635,7 +635,7 @@ const TransfersContainer = (props) => {
                             }
                             pinColour={props.routes[i].color}
                             costings_breakdown={
-                              CurrentBooking.costings_breakdown
+                              CurrentBooking?.costings_breakdown
                             }
                             booking={CurrentBooking}
                             heading={CurrentBooking?.booking_display_name}

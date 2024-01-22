@@ -1,40 +1,43 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { Link as ScrollLink, scroller } from 'react-scroll';
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import styled, { keyframes } from "styled-components";
+import { Link as ScrollLink, scroller } from "react-scroll";
 
-import { RxCross2 } from 'react-icons/rx';
-import { Typography } from '@mui/material';
-import { Box } from '@mui/material';
-import GITSummaryContainer from './booking1/gittailored/Index';
-import SummaryContainer from './booking1/TailoredDetails';
- import axiosLeadChat from "../../services/leads/chat.js";
- import Register from './register/Index';
-import Breif from './breif/NewIndex';
- import media from '../../components/media';
-import PoiEditModal from '../../components/modals/editpoi/Index';
-import { getIndianPrice } from '../../services/getIndianPrice';
-import Button from '../../components/ui/button/Index';
-  import * as ga from '../../services/ga/Index';
- import { useRouter } from 'next/router';
- import { useSticky } from '../../hooks/useSticky';
- import useMediaQuery from '../../hooks/useMedia';
-import NewItenaryDBDMob from './New_Itenary_DBD/NewItenaryDBDMob';
-import NewItenaryMain from './New_Itenary_DBD/NewItenaryMain';
-import ScrollableMenuTabs from '../../components/ScrollableMenuTabs';
- import ActivityBookings from './ActivityBookings/ActivitiesBookings';
+import { RxCross2 } from "react-icons/rx";
+import { Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import GITSummaryContainer from "./booking1/gittailored/Index";
+import SummaryContainer from "./booking1/TailoredDetails";
+import axiosLeadChat from "../../services/leads/chat.js";
+import Register from "./register/Index";
+import Breif from "./breif/NewIndex";
+import media from "../../components/media";
+import PoiEditModal from "../../components/modals/editpoi/Index";
+import { getIndianPrice } from "../../services/getIndianPrice";
+import Button from "../../components/ui/button/Index";
+import * as ga from "../../services/ga/Index";
+import { useRouter } from "next/router";
+import { useSticky } from "../../hooks/useSticky";
+import useMediaQuery from "../../hooks/useMedia";
+import NewItenaryDBDMob from "./New_Itenary_DBD/NewItenaryDBDMob";
+import NewItenaryMain from "./New_Itenary_DBD/NewItenaryMain";
+import ScrollableMenuTabs from "../../components/ScrollableMenuTabs";
+import ActivityBookings from "./ActivityBookings/ActivitiesBookings";
 
-import HotelsBooking from './HotelsBooking/HotelsBooking';
-import { SplitScreen } from '../../components/SplitScreen';
-import { Navigation } from '../../components/NewNavigation';
-import TransfersContainer from './TransfersContainer/TransfersContainer';
-import LogInModal from '../../components/modals/Login';
-import Modal from '../../components/ui/Modal';
- import { CONTENT_SERVER_HOST, ITINERARY_STATUSES } from '../../services/constants';
- import useInView from '../../hooks/useInView';
-import { getCityDetails } from './getCityDetails';
- import ImageLoader from '../../components/ImageLoader';
-import { connect } from 'react-redux';
-import { openNotification } from '../../store/actions/notification';
+import HotelsBooking from "./HotelsBooking/HotelsBooking";
+import { SplitScreen } from "../../components/SplitScreen";
+import { Navigation } from "../../components/NewNavigation";
+import TransfersContainer from "./TransfersContainer/TransfersContainer";
+import LogInModal from "../../components/modals/Login";
+import Modal from "../../components/ui/Modal";
+import {
+  CONTENT_SERVER_HOST,
+  ITINERARY_STATUSES,
+} from "../../services/constants";
+import useInView from "../../hooks/useInView";
+import { getCityDetails } from "./getCityDetails";
+import ImageLoader from "../../components/ImageLoader";
+import { connect } from "react-redux";
+import { openNotification } from "../../store/actions/notification";
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -109,7 +112,7 @@ const StrikedCost = styled.p`
   text-align: center;
   &:before {
     position: absolute;
-    content: '';
+    content: "";
     left: 0;
     top: 23%;
     right: 0;
@@ -124,7 +127,7 @@ const StrikedCost = styled.p`
     font-size: 1rem;
     &:before {
       position: absolute;
-      content: '';
+      content: "";
       left: 0;
       top: 20%;
       right: 0;
@@ -143,7 +146,7 @@ const Cost = styled.div`
   font-weight: 800;
   font-size: 1.25rem;
   &:after {
-    content: 'per person';
+    content: "per person";
     display: block;
     font-size: 0.9rem;
     font-weight: 300;
@@ -155,7 +158,7 @@ const GITCost = styled.div`
   font-weight: 800;
   font-size: 1.25rem;
   &:after {
-    content: 'per member';
+    content: "per member";
     display: block;
     font-size: 0.9rem;
     font-weight: 300;
@@ -199,7 +202,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const SimpleTabsV2 = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   const [isGroup, setIsGroup] = useState(false);
 
@@ -223,9 +226,9 @@ const SimpleTabsV2 = (props) => {
   const [value, setValue] = React.useState(0);
   const [show, setShow] = useState(true);
   const [location, setLocation] = useState(0);
-  const [hours, setHours] = useState('-');
-  const [minutes, setMinutes] = useState('-');
-  const [seconds, setSeconds] = useState('-');
+  const [hours, setHours] = useState("-");
+  const [minutes, setMinutes] = useState("-");
+  const [seconds, setSeconds] = useState("-");
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [blurItinerary, setBlurItinerary] = useState(true);
   const [showItineraryTimer, setShowItineraryTimer] = useState(true);
@@ -240,8 +243,8 @@ const SimpleTabsV2 = (props) => {
   const [CityData, setCityData] = useState();
   const [timerValid, setTimerValid] = useState(false);
   const [mapArray, setmapArray] = useState(false);
-  const [selectedPoi, setSelectedPoi] = useState({ name: 'Kasol' });
-  const [loading , setLoading] = useState(false)
+  const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
+  const [loading, setLoading] = useState(false);
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -285,8 +288,7 @@ const SimpleTabsV2 = (props) => {
       RoutesData,
       TransfersData
     );
-  
-  },[])
+  }, []);
   useLayoutEffect(() => {
     const handleScroll = () => {
       const currentPos = window.scrollY;
@@ -301,10 +303,10 @@ const SimpleTabsV2 = (props) => {
       });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [items]);
   // if (
@@ -314,70 +316,68 @@ const SimpleTabsV2 = (props) => {
   // ) {
   //   ClaimItinary(props.id, props.token);
   // }
-  
- const _GetInTouch = () => {
-   setLoading(true);
-   
-   if (props.token) {
-     
-   const email = localStorage.getItem("email");
-   const name = localStorage.getItem("name");
-   const phone = localStorage.getItem("phone");
-   axiosLeadChat
-     .post("/", {
-       email: email,
-       name: name,
-       phone: phone,
-       source: "Itinerary",
-       query_message: `I need help in completing booking.`,
-     })
-     .then((res) => {
-       //  props.getPaymentHandler();
-       props.openNotification({
-           type: "sucess",
-         text: res.data.message,
-         heading: "Request received.",})
-      //  setIsShow(true);
-       setLoading(false);
-     })
-     .catch((err) => {
-       // setUpdateLoadingState(false);
-       if (err.response) {
-         // The request was made and the server responded with a status code
-         // that falls out of the range of 2xx
-         // The response headers
-       }
-       props.openNotification({
-         type: "error",
-         text: "There seems to be a problem, please try again!",
-         heading: "Error!",
-       });
-      //  setIsShow(false);
-       setLoading(false);
-      //  window.alert("There seems to be a problem, please try again!", err);
-       
-     });
-   } else {
-     setLoading(false)
-     setShowLoginModal(true)
-   }
-   
- };
+
+  const _GetInTouch = () => {
+    setLoading(true);
+
+    if (props.token) {
+      const email = localStorage.getItem("email");
+      const name = localStorage.getItem("name");
+      const phone = localStorage.getItem("phone");
+      axiosLeadChat
+        .post("/", {
+          email: email,
+          name: name,
+          phone: phone,
+          source: "Itinerary",
+          query_message: `I need help in completing booking.`,
+        })
+        .then((res) => {
+          //  props.getPaymentHandler();
+          props.openNotification({
+            type: "sucess",
+            text: res.data.message,
+            heading: "Request received.",
+          });
+          //  setIsShow(true);
+          setLoading(false);
+        })
+        .catch((err) => {
+          // setUpdateLoadingState(false);
+          if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            // The response headers
+          }
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
+          //  setIsShow(false);
+          setLoading(false);
+          //  window.alert("There seems to be a problem, please try again!", err);
+        });
+    } else {
+      setLoading(false);
+      setShowLoginModal(true);
+    }
+  };
 
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
-  const isInView = useInView('Booking_container');
+  const isInView = useInView("Booking_container");
   const [activeItem, setActiveItem] = useState(1);
-  const items =  [
-        { id: 1, label: 'Brief', link: 'Brief' },
-        { id: 2, label: 'Itinerary', link: 'Itenary' },
+  const items = [
+    { id: 1, label: "Brief", link: "Brief" },
+    { id: 2, label: "Itinerary", link: "Itenary" },
 
-        { id: 3, label: 'Stays', link: 'Stays' },
-    ]
+    { id: 3, label: "Stays", link: "Stays" },
+  ];
   if (props.transferBookings) {
-  items.push({ id: 4, label: "Transfers", link: "Transfers" });
+    items.push({ id: 4, label: "Transfers", link: "Transfers" });
   }
   if (props.activityBookings) {
     items.push({
@@ -387,7 +387,7 @@ const SimpleTabsV2 = (props) => {
     });
   }
   const { ref, isSticky } = useSticky(90);
-  const isDesktop = useMediaQuery('(min-width:1148px)');
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   const handleSelect = (itemId) => {
     setActiveItem(itemId);
   };
@@ -401,17 +401,17 @@ const SimpleTabsV2 = (props) => {
   };
 
   const _handlePoiEditModalOpen = (poi) => {
-   {
-     process.env.NODE_ENV === "production" &&
-       !CONTENT_SERVER_HOST.includes("dev") &&
-       ga.event({
-         action: "Itinerary-poiedit-open",
-         params: {
-           poi: poi.name,
-           city: poi.city_id,
-         },
-       });
-   }
+    {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "Itinerary-poiedit-open",
+          params: {
+            poi: poi.name,
+            city: poi.city_id,
+          },
+        });
+    }
     setSelectedPoi({
       name: poi.name,
       city_id: poi.city_id,
@@ -428,16 +428,18 @@ const SimpleTabsV2 = (props) => {
     props.setShowFlightModal(false);
   };
   const _handleMenuTabsChange = (tabName) => {
-    if(process.env.NODE_ENV === "production" &&
-      !CONTENT_SERVER_HOST.includes("dev")) {
-       ga.event({
-         action: "Itinerary-tabs-" + tabName.toLowerCase(),
-       });
-       }
-  }
+    if (
+      process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev")
+    ) {
+      ga.event({
+        action: "Itinerary-tabs-" + tabName.toLowerCase(),
+      });
+    }
+  };
   const Navbar = styled.div`
-    position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')};
-    z-index: ${({ sticky }) => (sticky ? '1000' : '997')};
+    position: ${({ sticky }) => (sticky ? "sticky" : "inherit")};
+    z-index: ${({ sticky }) => (sticky ? "1000" : "997")};
     top: 15px;
     display: flex;
     ::-webkit-scrollbar {
@@ -667,6 +669,8 @@ const SimpleTabsV2 = (props) => {
             CityData={CityData}
             itinerary={props.itinerary}
             breif={props.breif}
+            fetchData={props.fetchData}
+            getPaymentHandler={props.getPaymentHandler}
           ></Breif>
         )}
       </div>
@@ -684,6 +688,9 @@ const SimpleTabsV2 = (props) => {
               getPaymentHandler={props.getPaymentHandler}
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
             ></NewItenaryDBDMob>
           </div>
 
@@ -811,7 +818,7 @@ const SimpleTabsV2 = (props) => {
                     setShowLoginModal={setShowLoginModal}
                     plan={props.plan}
                     _GetInTouch={() => _GetInTouch()}
-                    ></SummaryContainer>
+                  ></SummaryContainer>
                 ) : (
                   // width 27vw
                   <div>
@@ -874,7 +881,9 @@ const SimpleTabsV2 = (props) => {
                     token={props.token}
                     transferBookings={props.transferBookings}
                     stayBookings={props.stayBookings}
-                    getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+                    getAccommodationAndActivitiesHandler={
+                      props.getAccommodationAndActivitiesHandler
+                    }
                   ></NewItenaryMain>
                 )}
               </div>
@@ -1286,7 +1295,7 @@ function newFunction(
           totalcityslabs += 1;
         }
       }
-  const locationtabwidth = 100 / totalcityslabs + 'vw';
+  const locationtabwidth = 100 / totalcityslabs + "vw";
 
   if (!citydatadone) {
     async function processRoutes2(props) {
@@ -1296,7 +1305,7 @@ function newFunction(
         } else {
           if (
             props.breif.city_slabs[i].city_id &&
-            props.breif.city_slabs[i].duration > '0'
+            props.breif.city_slabs[i].duration > "0"
           ) {
             try {
               const data = await getCityDetails(
@@ -1322,7 +1331,7 @@ function newFunction(
   if (props.routes) {
     async function processRoutes(props) {
       for (var i = 0; i < props.routes.length; i++) {
-        if (props.routes[i].element_type !== 'transfer') {
+        if (props.routes[i].element_type !== "transfer") {
           if (props.routes[i].long) {
             RoutesData.push(props.routes[i]);
           } else {
@@ -1340,7 +1349,6 @@ function newFunction(
           TransfersData.push(props.routes[i]);
         }
       }
-
     }
 
     processRoutes(props);

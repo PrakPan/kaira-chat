@@ -1,7 +1,9 @@
-import { IoCar } from 'react-icons/io5';
-import { MdOutlineFlightTakeoff } from 'react-icons/md';
-import { IoMdTrain, IoMdBoat } from 'react-icons/io';
-import { FaBus } from 'react-icons/fa';
+import { IoCar } from "react-icons/io5";
+import { MdOutlineFlightTakeoff } from "react-icons/md";
+import { IoMdTrain, IoMdBoat } from "react-icons/io";
+import { FaBus } from "react-icons/fa";
+import { MdTransferWithinAStation } from "react-icons/md";
+
 export function TransportIconFetcher({ TransportMode, Instyle, classname }) {
   // const Icons = {
   //   "clear sky": clearsky,
@@ -15,18 +17,19 @@ export function TransportIconFetcher({ TransportMode, Instyle, classname }) {
   //   mist: mist,
   // };
   switch (TransportMode) {
-    case 'Flight':
+    case "Flight":
       return <MdOutlineFlightTakeoff style={Instyle} className={classname} />;
-
-    case 'Taxi':
+    case "Taxi":
       return <IoCar style={Instyle} className={classname} />;
-    case 'Train':
+    case "Car":
+      return <IoCar style={Instyle} className={classname} />;
+    case "Train":
       return <IoMdTrain style={Instyle} className={classname} />;
-    case 'Ferry':
+    case "Ferry":
       return <IoMdBoat style={Instyle} className={classname} />;
-    case 'Bus':
+    case "Bus":
       return <FaBus style={Instyle} className={classname} />;
     default:
-      return <IoCar style={Instyle} className={classname} />;
+      return <MdTransferWithinAStation style={Instyle} className={classname} />;
   }
 }

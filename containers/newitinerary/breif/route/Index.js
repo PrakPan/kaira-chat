@@ -127,6 +127,7 @@ const Route = (props) => {
         if (i < props.routes.length - 1) {
           locationsArr.push(
             <MidSection
+              itinerary_id={props.itinerary_id}
               pinColour={props.routes[i].color}
               modes={props.routes[i + 1]?.modes}
               route={props.routes[i + 1]}
@@ -135,6 +136,12 @@ const Route = (props) => {
               bookings={props.routes[i + 1]?.bookings}
               routesData={props.routesData}
               duration={props.routes[i + 1]?.meta?.Time}
+              payment={props.payment}
+              plan={props.plan}
+              originCity={props.routes[i].city_name}
+              destinationCity={props.routes[i + 2].city_name}
+              fetchData={props.fetchData}
+              getPaymentHandler={props.getPaymentHandler}
             ></MidSection>
           );
         }

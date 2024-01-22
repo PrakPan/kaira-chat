@@ -196,6 +196,7 @@ const NewItenaryDBDMob = (props) => {
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
               current_cityName={element.current_cityName}
+              getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
             ></Day_I_ContainerM>
           </div>
         ))}

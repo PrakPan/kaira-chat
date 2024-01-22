@@ -194,6 +194,7 @@ const drawerRef = useRef(null);
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
                     ticketsCount={ticketsCount}
+                    getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
                   ></PoiList>
                 );
             }
@@ -294,6 +295,7 @@ const drawerRef = useRef(null);
                   setLoginModal={setShowLoginModal}
                   token={props.token}
                   ticketsCount={ticketsCount}
+                  getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
                 ></PoiList>
               );
           }

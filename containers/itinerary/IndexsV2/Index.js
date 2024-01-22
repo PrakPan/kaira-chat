@@ -224,7 +224,7 @@ const Itinerary = (props) => {
     let transfer_bookings = [];
     let flight_bookings = [];
 
-    const access_token = localStorage.getItem('access_token');
+    const access_token = localStorage.getItem("access_token");
     fetch(MIS_SERVER_HOST + "/sales/bookings/?itinerary_id=" + props.id, {
       params: { itinerary_id: props.id },
       headers: {
@@ -284,6 +284,64 @@ const Itinerary = (props) => {
     return data;
   }
 
+  function fetchData(scroll=true) {
+    if (scroll) window.scrollTo(0, 0);
+    if (TRAVELER_ITINERARIES.includes(props.id))
+      setIsPastTravelerItinerary(true);
+    axiosdaybydayinstance
+      .get(`/?itinerary_id=` + props.id)
+      .then((res) => {
+        if (res.data.day_slabs.length) {
+          if (res.data.is_stock) setIsStock(true);
+          setItinerary({
+            ...res.data,
+            images: res.data.images.filter((value) => value),
+          });
+          setItineraryLoading(false);
+        } else {
+          // window.location.href =
+          //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+        }
+      })
+      .catch((error) => {
+        setItineraryLoading(false);
+        // window.location.href =
+        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
+      });
+    getBreifHandler();
+
+    getRoutes(props.id)
+      .then((res) => {
+        setRoutes(res);
+      })
+      .catch((err) => {});
+    axios
+      .get(MIS_SERVER_HOST + "/sales/plan/?itinerary_id=" + props.id)
+      .then((res) => {
+        setPlan(res.data);
+        dispatch(setItineraryStartDate({ date: res.data.start_date }));
+        if (
+          res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
+        ) {
+          setItineraryNotCreated(false);
+          alert(
+            "Looks like the response took too long, please refresh and try again."
+          );
+        } else {
+          setUserEmail(res.data.user_email);
+          settravellerType(res.data.experience_filters_selected);
+          if (res.data.start_date) setIsDatePresent(true);
+          setgroup_type(res.data.group_type);
+          setduration_time(res.data.duration_number);
+          setItineraryReleased(res.data.is_visible_to_customer);
+          setItineraryDate(res.data.created_at);
+          setTimeRequired(res.data.time_needed_for_itinerary_completion);
+        }
+      })
+      .catch((error) => {});
+    getAccommodationAndActivitiesHandler();
+  }
+
   useEffect(() => {
     var IntervalTiming;
     if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
@@ -293,70 +351,11 @@ const Itinerary = (props) => {
       setTimeout(() => {
         fetchData();
       }, [IntervalTiming]);
-
-    function fetchData() {
-      window.scrollTo(0, 0);
-      if (TRAVELER_ITINERARIES.includes(props.id))
-        setIsPastTravelerItinerary(true);
-      axiosdaybydayinstance
-        .get(`/?itinerary_id=` + props.id)
-        .then((res) => {
-          if (res.data.day_slabs.length) {
-            if (res.data.is_stock) setIsStock(true);
-            setItinerary({
-              ...res.data,
-              images: res.data.images.filter((value) => value),
-            });
-            setItineraryLoading(false);
-          } else {
-            // window.location.href =
-            //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-          }
-        })
-        .catch((error) => {
-          setItineraryLoading(false);
-          // window.location.href =
-          //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
-        });
-      getBreifHandler();
-
-      getRoutes(props.id)
-        .then((res) => {
-          setRoutes(res);
-        })
-        .catch((err) => {});
-      axios
-        .get(MIS_SERVER_HOST + "/sales/plan/?itinerary_id=" + props.id)
-        .then((res) => {
-          setPlan(res.data);
-          dispatch(setItineraryStartDate({ date: res.data.start_date }));
-          if (
-            res.data.itinerary_status ===
-            ITINERARY_STATUSES.itinerary_not_created
-          ) {
-            setItineraryNotCreated(false);
-            alert(
-              "Looks like the response took too long, please refresh and try again."
-            );
-          } else {
-            setUserEmail(res.data.user_email);
-            settravellerType(res.data.experience_filters_selected);
-            if (res.data.start_date) setIsDatePresent(true);
-            setgroup_type(res.data.group_type);
-            setduration_time(res.data.duration_number);
-            setItineraryReleased(res.data.is_visible_to_customer);
-            setItineraryDate(res.data.created_at);
-            setTimeRequired(res.data.time_needed_for_itinerary_completion);
-          }
-        })
-        .catch((error) => {});
-      getAccommodationAndActivitiesHandler();
-    }
   }, []);
 
   useEffect(() => {
     window.boo = transferBookings;
-    window.s = 'seted'
+    window.s = "seted";
   }, [transferBookings]);
 
   const _updateTransferBooking = (arr1, arr2) => {
@@ -817,7 +816,10 @@ const Itinerary = (props) => {
             breif={breif}
             booking={booking}
             token={props.token}
-            getAccommodationAndActivitiesHandler={getAccommodationAndActivitiesHandler}
+            fetchData={fetchData}
+            getAccommodationAndActivitiesHandler={
+              getAccommodationAndActivitiesHandler
+            }
           ></Menu>
           {/* <ItineraryMobile></ItineraryMobile> */}
           {/* <Cities></Cities> */}

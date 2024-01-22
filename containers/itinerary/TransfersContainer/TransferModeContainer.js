@@ -200,7 +200,7 @@ function formatDate(dateString) {
   const date = new parseISO(dateString);
 
   if (isNaN(date.getTime())) {
-    throw new Error("Invalid date string");
+    return ("");
   }
   return format(date, "EEE, dd MMM");
 }
