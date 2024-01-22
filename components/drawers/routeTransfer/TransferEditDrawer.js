@@ -6,6 +6,11 @@ import transferEdit from "../../../services/itinerary/brief/transferEdit";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
+import styled from "styled-components";
+
+const ClippathComp = styled.div`
+  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
+`;
 
 const TransferEditDraser = (props) => {
   const {
@@ -127,9 +132,9 @@ const TransferEditDraser = (props) => {
         </div>
         {loadingAlternates ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
-            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-3 shadow-sm animate-pulse"></div>
-            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-3 shadow-sm animate-pulse"></div>
-            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-3 shadow-sm animate-pulse"></div>
+            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse"></div>
+            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse"></div>
+            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse"></div>
           </div>
         ) : alternatesError ? (
           <div className="w-full flex items-center justify-center">
@@ -139,7 +144,7 @@ const TransferEditDraser = (props) => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
-            <div className="w-[90%] flex justify-start">
+            <div className="w-full flex justify-start">
               {alternateRoutes.transfers.length} ways to travel from {origin} to{" "}
               {destination}
             </div>
@@ -153,42 +158,35 @@ const TransferEditDraser = (props) => {
                 </div>
               )}
 
-              {transfers.map((route, index) => (
+              {transfers.map((transfer, index) => (
                 <div
                   key={index}
-                  className={`w-[90%] flex flex-row gap-3 rounded-lg py-3 pl-3 shadow-sm ${
+                  className={`w-full flex flex-row gap-3 rounded-lg py-2 pl-2 shadow-sm ${
                     index === 0 ? "border-yellow-300" : ""
                   } border-2`}
                 >
-                  <div className="w-[15%] flex items-start">
-                    <div className="w-[15%] lg:w-[10%]">
-                      <TransportIconFetcher
-                        TransportMode={route.modes[0]}
-                        Instyle={{
-                          fontSize:
-                            props.route?.modes[0] === "Bus" ? "1rem" : "3.4rem",
-                          color: "#4d4d4d",
-                        }}
-                      />
-                    </div>
+                  <div className="w-[10%] flex items-center justify-center">
+                    <TransportIconFetcher
+                      TransportMode={transfer.modes[0]}
+                      Instyle={{
+                        fontSize: transfer.modes[0] === "Bus" ? "3.5rem" : "4rem",
+                        color: "#4d4d4d",
+                      }}
+                    />
                   </div>
 
                   <div className="w-full flex flex-col gap-3">
                     <div className="flex flex-row items-start justify-between">
-                      <div className="text-lg">{route.heading}</div>
-                      {route.recommended ? (
-                        <div className="flex flex-row items-center justify-end">
-                          <div className="bg-[#F7E700] pl-5 pr-1 py-1 rounded-l-lg text-sm">
-                            Recomended
-                          </div>
-                        </div>
-                      ) : (
-                        <></>
+                      <div className="text-lg">{transfer.heading}</div>
+                      {transfer.recommended && (
+                        <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1">
+                          Recomended
+                        </ClippathComp>
                       )}
                     </div>
 
-                    <div className="flex flex-row items-center justify-between pr-3">
-                      <div>{route.meta.Time}</div>
+                    <div className="flex flex-row items-center justify-between pr-2">
+                      <div>{transfer.meta.Time}</div>
                       {/* <button
                         disabled={index === 0}
                         onClick={() => handleSelect(index)}

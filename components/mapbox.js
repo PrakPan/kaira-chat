@@ -71,7 +71,7 @@ const Mapbox = React.memo(
             .getBounds();
 
           if (bounds.isValid()) {
-            map.fitBounds(bounds);
+            map?.fitBounds(bounds);
           }
         }
       }, [map]);
