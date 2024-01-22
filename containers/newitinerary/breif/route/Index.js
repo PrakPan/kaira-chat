@@ -142,6 +142,7 @@ const Route = (props) => {
               destinationCity={props.routes[i + 2].city_name}
               fetchData={props.fetchData}
               getPaymentHandler={props.getPaymentHandler}
+              setShowLoginModal={props.setShowLoginModal}
             ></MidSection>
           );
         }

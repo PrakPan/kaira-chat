@@ -671,6 +671,7 @@ const SimpleTabsV2 = (props) => {
             breif={props.breif}
             fetchData={props.fetchData}
             getPaymentHandler={props.getPaymentHandler}
+            setShowLoginModal={setShowLoginModal}
           ></Breif>
         )}
       </div>

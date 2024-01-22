@@ -303,6 +303,7 @@ const Details = (props) => {
                 setShowDrawerData={setShowDrawerData}
                 fetchData={props.fetchData}
                 getPaymentHandler={props.getPaymentHandler}
+                setShowLoginModal={props.setShowLoginModal}
               />
             </div>
           }

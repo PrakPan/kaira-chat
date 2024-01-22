@@ -28,6 +28,8 @@ const TransferEditDraser = (props) => {
     openNotification,
     fetchData,
     getPaymentHandler,
+    payment,
+    setShowLoginModal,
   } = props;
 
   const [transfers, setTransfers] = useState([]);
@@ -64,8 +66,13 @@ const TransferEditDraser = (props) => {
   }, [loadingAlternates, alternateRoutes]);
 
   const handleSelect = (routeIndex) => {
-    setSelectLoading(true);
     const access_token = localStorage.getItem("access_token");
+    if (!access_token) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    setSelectLoading(true);
     const data = {
       itinerary_id: itinerary_id,
       route_id: alternateRoutes.route_id,
@@ -94,11 +101,10 @@ const TransferEditDraser = (props) => {
         setShowDrawer(false);
       })
       .catch((err) => {
-        console.log("Error: ", err.message);
         setSelectLoading(false);
         setShowDrawer(false);
         openNotification({
-          text: "There seems to be a problem, please try again!",
+          text: "You are not allowed to make changes to this itinerary.",
           heading: "Error!",
           type: "error",
         });

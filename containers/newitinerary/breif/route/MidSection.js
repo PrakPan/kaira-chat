@@ -103,7 +103,11 @@ const MidSection = (props) => {
       })
       .catch((err) => {
         setLoadingAlternates(false);
-        setAlternatesError("There seems to be a problem, please try again!");
+        if (err.response.status === 404) {
+          setAlternatesError("No Route Found, please try again!");
+        } else {
+          setAlternatesError("There seems to be problem, please try again!");
+        }
       });
   };
 
@@ -237,6 +241,8 @@ const MidSection = (props) => {
         element_index={props?.route?.element_index}
         fetchData={props?.fetchData}
         getPaymentHandler={props?.getPaymentHandler}
+        payment={props?.payment}
+        setShowLoginModal={props?.setShowLoginModal}
       />
     </Container>
   );

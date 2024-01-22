@@ -1,7 +1,7 @@
-import { useNavigationMarker, NavigationMarker } from './NavigationMarker';
-import styled from 'styled-components';
-import { NavigationLink } from './NavigationLink';
-import { useState } from 'react';
+import { useNavigationMarker, NavigationMarker } from "./NavigationMarker";
+import styled from "styled-components";
+import { NavigationLink } from "./NavigationLink";
+import { useState } from "react";
 
 const Container = styled.div`
   min-width: 100%;
@@ -27,7 +27,6 @@ const LastNavigationLink = styled(NavigationLink)`
   margin-left: auto;
 `;
 
-
 export const Navigation = ({ items, BarName, ClickHandler }) => {
   const [selectedTab, setSelectedTab] = useState(`${items[0].id}`);
   const { markerPos, ...markerHandlers } = useNavigationMarker();
@@ -50,7 +49,7 @@ export const Navigation = ({ items, BarName, ClickHandler }) => {
             BarName={BarName}
             setSelectedTab={setSelectedTab}
             key={index}
-      className={index === items.length - 1 ? 'last-navigation-link' : ''}
+            className={index === items.length - 1 ? "last-navigation-link" : ""}
           >
             {item.label}
           </NavigationLink>

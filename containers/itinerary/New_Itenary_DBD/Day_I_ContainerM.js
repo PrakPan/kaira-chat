@@ -271,12 +271,12 @@ const Day_I_ContainerM = (props) => {
             : `${props.current_cityName} Exploration`}
         </div>
 
-        {/* <ViewMoreButton
+        <ViewMoreButton
           text={viewMore ? "View Less" : "View More"}
           handler={handleViewMoreButton}
           isMob={true}
-        /> */}
-
+        />
+        
         {/* {Arslab_elements[0].data[0][0] !== undefined &&
         Arslab_elements[0].data[0][0].transfers !== undefined &&
         Arslab_elements[0].data[0][0].transfers.routes !== undefined ? (
@@ -293,7 +293,6 @@ const Day_I_ContainerM = (props) => {
             }
           </div>
         ) : null} */}
-
       </div>
 
       <div>
@@ -415,6 +414,7 @@ const Day_I_ContainerM = (props) => {
               ></ItineraryPoiElementM>
             ))
           : NULL}
+
         {Arslab_elements[3].data[0][1] ? (
           <ItineraryFoodElementM
             icon={Arslab_elements[3].data[0][1].icon}

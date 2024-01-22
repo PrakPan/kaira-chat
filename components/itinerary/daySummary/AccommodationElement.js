@@ -6,6 +6,7 @@ import { MdDoneAll } from "react-icons/md";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { useState } from "react";
 import media from "../../media";
+import ImageLoader from "../../ImageLoader";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
@@ -19,6 +20,15 @@ export default function AccommodationElement(props) {
       }
     }
     return "Check-in to your stay";
+  };
+
+  const getHotelImage = (id) => {
+    if (booking && booking.length && id) {
+      for (let book of booking) {
+        if (book.id === id) return book.images[0].image;
+      }
+    }
+    return "";
   };
 
   const getHotelCity = (id) => {
@@ -61,9 +71,7 @@ export default function AccommodationElement(props) {
                 meta.day_timing
               </span>
             ) : (
-              <div
-                className="flex items-center"
-              >
+              <div className="flex items-center">
                 <TbSunset2 className="text-2xl text-gray-500"></TbSunset2>
                 {isPageWide ? null : (
                   <span
@@ -78,70 +86,138 @@ export default function AccommodationElement(props) {
             )}
           </div>
           <div className="font-medium text-sm">{heading}</div>
-          <div className="md:ml-3 lg:ml-3">
-            <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
-              {data && data.bookings && data.bookings.length ? (
-                // <button className="text-blue-500 hover:underline">
-                //   {getUserSelectedByBookings(
-                //     data.bookings && data.bookings[0]
-                //       ? data.bookings[0].id
-                //       : null
-                //   ) ? (
-                //     <>
-                //       <MdDoneAll
-                //         style={{
-                //           display: "inline",
-                //           marginRight: "0.35rem",
-                //         }}
-                //       />
-                //       Stay added
-                //     </>
-                //   ) : (
-                //     <>+Add Stay</>
-                //   )}
-                // </button>
-                <>
-                  {getUserSelectedByBookings(props.data.bookings[0].id) ? (
-                    <TransparentButton>
-                      <MdDoneAll
-                        style={{
-                          display: "inline",
-                          marginRight: "0.35rem",
-                        }}
-                      />{" "}
-                      Stay added
-                    </TransparentButton>
-                  ) : (
-                    <TransparentButton>Add Stay</TransparentButton>
-                  )}
-                </>
-              ) : (
-                <></>
-              )}
-            </Link>
-          </div>
+          {!isPageWide && (
+            <div className="md:ml-3 lg:ml-3">
+              <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
+                {data && data.bookings && data.bookings.length ? (
+                  // <button className="text-blue-500 hover:underline">
+                  //   {getUserSelectedByBookings(
+                  //     data.bookings && data.bookings[0]
+                  //       ? data.bookings[0].id
+                  //       : null
+                  //   ) ? (
+                  //     <>
+                  //       <MdDoneAll
+                  //         style={{
+                  //           display: "inline",
+                  //           marginRight: "0.35rem",
+                  //         }}
+                  //       />
+                  //       Stay added
+                  //     </>
+                  //   ) : (
+                  //     <>+Add Stay</>
+                  //   )}
+                  // </button>
+                  <>
+                    {getUserSelectedByBookings(props.data.bookings[0].id) ? (
+                      <TransparentButton>
+                        <MdDoneAll
+                          style={{
+                            display: "inline",
+                            marginRight: "0.35rem",
+                          }}
+                        />{" "}
+                        Stay added
+                      </TransparentButton>
+                    ) : (
+                      <TransparentButton>Add Stay</TransparentButton>
+                    )}
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className="w-[1.25rem] md:w-[6%] lg:w-[6%] flex items-center">
-            <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" />
+          <div className=" flex items-center">
+            <ImageLoader
+              dimensions={{ width: 300, height: 300 }}
+              dimensionsMobile={{ width: 300, height: 300 }}
+              borderRadius="8px"
+              hoverpointer
+              onclick={() => console.log("")}
+              width="4rem"
+              height="4rem"
+              leftalign
+              widthmobile="4rem"
+              url={getHotelImage(props?.data?.bookings[0]?.id)}
+              noLazy
+            ></ImageLoader>
+            {/* <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" /> */}
           </div>
-          <div className="text-base font-semibold leading-6 ml-2 lg:ml-0">
-            {data.bookings &&
-              data.bookings[0] &&
-              getHotelName(data.bookings[0].id)}
+          <div className="flex flex-col ml-3">
+            <div className="text-base font-semibold leading-6 ml-2">
+              {data.bookings &&
+                data.bookings[0] &&
+                getHotelName(data.bookings[0].id)}
+            </div>
+            <div className="font-normal text-xs leading-4 ml-2">
+              {data.bookings &&
+                data.bookings[0] &&
+                getHotelCity(data.bookings[0].id)}
+            </div>
           </div>
+
+          {isPageWide && (
+            <div className="md:ml-4 lg:ml-4">
+              <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
+                {data && data.bookings && data.bookings.length ? (
+                  <>
+                    {/* <button className="text-blue-500 hover:underline">
+                   {getUserSelectedByBookings(
+                      data.bookings && data.bookings[0]
+                        ? data.bookings[0].id
+                        : null
+                    ) ? (
+                      <>
+                        <MdDoneAll
+                          style={{
+                            display: "inline",
+                            marginRight: "0.35rem",
+                          }}
+                        />
+                        Stay added
+                      </>
+                    ) : (
+                      <>+Add Stay</>
+                    )}
+                  </button> */}
+
+                    {getUserSelectedByBookings(props.data.bookings[0].id) ? (
+                      <TransparentButton>
+                        <MdDoneAll
+                          style={{
+                            display: "inline",
+                            marginRight: "0.35rem",
+                          }}
+                        />{" "}
+                        Stay added
+                      </TransparentButton>
+                    ) : (
+                      <TransparentButton>Add Stay</TransparentButton>
+                    )}
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Link>
+            </div>
+          )}
         </div>
 
-        <div className="w-full flex items-center">
+        {/* <div className="w-full flex items-center">
           <div className="w-[1.25rem] lg:w-[17%] md:w-[27%]"></div>
           <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
             {data.bookings &&
               data.bookings[0] &&
               getHotelCity(data.bookings[0].id)}
           </div>
-        </div>
+        </div> */}
       </div>
     </Container>
   );

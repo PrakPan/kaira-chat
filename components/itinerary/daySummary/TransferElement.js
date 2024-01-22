@@ -10,7 +10,7 @@ export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;
   const isPageWide = media("(min-width: 768px)");
 
-  function getUserSelectedByBookings(id) {
+  const getUserSelectedByBookings = (id) => {
     if (booking && booking.length && id) {
       for (let book of booking) {
         if (book.id === id) {
@@ -19,7 +19,16 @@ export default function TransferElement(props) {
       }
     }
     return null;
-  }
+  };
+
+  const getBooking = (id) => {
+    if (booking && booking.length && id) {
+      for (let book of booking) {
+        if (book.id === id) return book;
+      }
+    }
+    return null;
+  };
 
   const isValidBooking = (id) => {
     if (booking && booking.length && id) {
@@ -60,19 +69,20 @@ export default function TransferElement(props) {
             )}
           </div>
           <div className="font-medium text-sm">{heading}</div>
-          <div className="md:ml-3 lg:ml-3">
-            {data?.bookings &&
-            data?.bookings[0] &&
-            isValidBooking(data?.bookings[0]?.id) ? (
-              <Link
-                to={
-                  data.bookings && data.bookings[0] && data.bookings[0].id
-                    ? `${data.bookings[0].id}`
-                    : "Transfer_Container"
-                }
-                offset={-90}
-              >
-                {/* <button className="text-blue-500 hover:underline">
+          {!isPageWide && (
+            <div className="md:ml-3 lg:ml-3">
+              {data?.bookings &&
+              data?.bookings[0] &&
+              isValidBooking(data?.bookings[0]?.id) ? (
+                <Link
+                  to={
+                    data.bookings && data.bookings[0] && data.bookings[0].id
+                      ? `${data.bookings[0].id}`
+                      : "Transfer_Container"
+                  }
+                  offset={-90}
+                >
+                  {/* <button className="text-blue-500 hover:underline">
                   {getUserSelectedByBookings(
                     data.bookings && data.bookings[0]
                       ? data.bookings[0].id
@@ -91,7 +101,79 @@ export default function TransferElement(props) {
                     <>{modes ? `+Add ${modes}` : null}</>
                   )}
                 </button> */}
-                <TransparentButton>
+
+                  <TransparentButton>
+                    {getUserSelectedByBookings(
+                      data.bookings && data.bookings[0]
+                        ? data.bookings[0].id
+                        : null
+                    ) ? (
+                      <>
+                        <MdDoneAll
+                          style={{
+                            display: "inline",
+                            marginRight: "0.35rem",
+                          }}
+                        />{" "}
+                        {modes ? `${modes} added` : null}
+                      </>
+                    ) : (
+                      <>{modes ? `Add ${modes}` : null}</>
+                    )}
+                  </TransparentButton>
+                </Link>
+              ) : null}
+            </div>
+          )}
+        </div>
+
+        <div className="w-full flex flex-row items-center">
+          <div className="lg:w-[11%] md:w-[21%]"></div>
+          <div className="w-[1.25rem] md:w-[6%] lg:w-[6%] flex items-center">
+            {modes ? (
+              <TransportIconFetcher
+                TransportMode={modes}
+                classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[1.25rem]"
+              />
+            ) : (
+              <div className=""></div>
+            )}
+          </div>
+
+          <div className="flex flex-col">
+            <div className="text-xs leading-7 ml-2 lg:ml-0">
+              {/* {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>} */}
+              {isValidBooking(data?.bookings[0]?.id)
+                ? getBooking(data?.bookings[0]?.id).city +
+                  " - " +
+                  getBooking(data?.bookings[0]?.id).destination.shortName
+                : ""}
+              {/* {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
+            {transfers.routes[0]?.legs[0].destination.shortName} */}
+            </div>
+
+            <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
+              {getFlightDuration() ? (
+                `Duration:  ${getFlightDuration()}`
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+          {isPageWide && (
+            <div className="md:ml-4 lg:ml-4">
+              {data?.bookings &&
+              data?.bookings[0] &&
+              isValidBooking(data?.bookings[0]?.id) ? (
+                <Link
+                  to={
+                    data.bookings && data.bookings[0] && data.bookings[0].id
+                      ? `${data.bookings[0].id}`
+                      : "Transfer_Container"
+                  }
+                  offset={-90}
+                >
+                  {/* <button className="text-blue-500 hover:underline">
                   {getUserSelectedByBookings(
                     data.bookings && data.bookings[0]
                       ? data.bookings[0].id
@@ -107,40 +189,41 @@ export default function TransferElement(props) {
                       {modes ? `${modes} added` : null}
                     </>
                   ) : (
-                    <>{modes ? `Add ${modes}` : null}</>
+                    <>{modes ? `+Add ${modes}` : null}</>
                   )}
-                </TransparentButton>
-              </Link>
-            ) : null}
-          </div>
+                </button> */}
+
+                  <TransparentButton>
+                    {getUserSelectedByBookings(
+                      data.bookings && data.bookings[0]
+                        ? data.bookings[0].id
+                        : null
+                    ) ? (
+                      <>
+                        <MdDoneAll
+                          style={{
+                            display: "inline",
+                            marginRight: "0.35rem",
+                          }}
+                        />{" "}
+                        {modes ? `${modes} added` : null}
+                      </>
+                    ) : (
+                      <>{modes ? `Add ${modes}` : null}</>
+                    )}
+                  </TransparentButton>
+                </Link>
+              ) : null}
+            </div>
+          )}
         </div>
 
-        <div className="w-full flex flex-row items-center">
-          <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className="w-[1.25rem] md:w-[6%] lg:w-[6%] flex items-center">
-            {modes ? (
-              <TransportIconFetcher
-                TransportMode={modes}
-                classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[1.25rem]"
-              />
-            ) : (
-              <div className=""></div>
-            )}
-          </div>
-          <div className="text-xs leading-7 ml-2 lg:ml-0">
-            {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>}
-
-            {/* {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
-            {transfers.routes[0]?.legs[0].destination.shortName} */}
-          </div>
-        </div>
-
-        <div className="w-full flex items-center">
+        {/* <div className="w-full flex items-center">
           <div className="w-[1.25rem] lg:w-[17%] md:w-[27%]"></div>
           <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
-            {/* {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>} */}
+            {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>}
           </div>
-        </div>
+        </div> */}
       </div>
     </Container>
   );
