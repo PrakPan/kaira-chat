@@ -339,6 +339,7 @@ const Day_I_Container = (props) => {
               ? `Arrival in ${newCity}`
               : `${props.current_cityName ?? ""} Exploration`}
           </div>
+
           {/* {props.Days.slab_elements[0] !== undefined &&
           props.Days.slab_elements[0].transfers !== undefined &&
           props.Days.slab_elements[0].transfers.routes !== undefined ? (
@@ -355,11 +356,14 @@ const Day_I_Container = (props) => {
               }
             </div>
           ) : null} */}
+
         </InnerDayLocationRow>
-        <ViewMoreButton
+
+        {/* <ViewMoreButton
           text={viewMore ? "View Less" : "View More"}
           handler={handleViewMoreButton}
-        />
+        /> */}
+
         {/* <InnerDayLocationRow>
           <GrMapLocation />
           <div>
@@ -367,6 +371,7 @@ const Day_I_Container = (props) => {
           </div>
           <BiChevronRight />
         </InnerDayLocationRow> */}
+
       </DivDayContainerRow>
       {viewMore ? (
         <DayContainerStyle>
