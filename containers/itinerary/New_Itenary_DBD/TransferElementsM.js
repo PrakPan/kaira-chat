@@ -49,7 +49,7 @@ const TransferElementsM = ({
             <div className="w-[28px] mr-2">
               {modes ? (
                 <TransportIconFetcher
-                  TransportMode={modes[0]}
+                  TransportMode={modes}
                   Instyle={{
                     fontSize: "1.75rem",
                     marginRight: "0.5rem",
@@ -190,7 +190,6 @@ const TransferElementsM = ({
           <div>Arrive in {newcity.city_data.city_name} </div>
         </ArriveContainer>
       ) : null}
-
       <Line></Line> */}
     </>
   );

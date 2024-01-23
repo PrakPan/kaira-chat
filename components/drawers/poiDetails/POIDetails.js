@@ -88,8 +88,8 @@ const POIDetails = (props) => {
   const [imageFail , setImageFail] = useState(false)
   var about = (
     <p>
-      {props.data.short_description?.substr(0, 250)}{" "}
-      <b className="hover-pointer">...more</b>
+      {props?.data?.short_description}{" "}
+      {/* <b className="hover-pointer">...more</b> */}
     </p>
   );
   const [aboutText, setAboutText] = useState(about);

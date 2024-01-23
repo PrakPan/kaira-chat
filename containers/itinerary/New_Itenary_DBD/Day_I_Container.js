@@ -359,10 +359,10 @@ const Day_I_Container = (props) => {
 
         </InnerDayLocationRow>
 
-        {/* <ViewMoreButton
+        <ViewMoreButton
           text={viewMore ? "View Less" : "View More"}
           handler={handleViewMoreButton}
-        /> */}
+        />
 
         {/* <InnerDayLocationRow>
           <GrMapLocation />
