@@ -271,11 +271,11 @@ const Day_I_ContainerM = (props) => {
             : `${props.current_cityName} Exploration`}
         </div>
 
-        <ViewMoreButton
+        {/* <ViewMoreButton
           text={viewMore ? "View Less" : "View More"}
           handler={handleViewMoreButton}
           isMob={true}
-        />
+        /> */}
         
         {/* {Arslab_elements[0].data[0][0] !== undefined &&
         Arslab_elements[0].data[0][0].transfers !== undefined &&
