@@ -302,13 +302,13 @@ const Day_I_ContainerM = (props) => {
           text={props.Days.slab_elements[0].text}
         ></ItineraryFlightElement>} */}
 
-        {viewMore ? (
+        {/* {viewMore ? (
           <DayContainerStyle>{dayIcontainer}</DayContainerStyle>
         ) : (
           <DaySummaryContainerStyle>
             {summaryIContainer}
           </DaySummaryContainerStyle>
-        )}
+        )} */}
 
         {/* {Arslab_elements[0].data[0].length != 0 ? (
           <TransferElementsM
