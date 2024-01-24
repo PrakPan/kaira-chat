@@ -107,6 +107,7 @@ const ItineraryElement = (props) => {
             width="4.05rem"
             widthmobile="1.25rem"
           ></ImageLoader> */}
+
         </div>
         <div
           style={{
@@ -118,20 +119,19 @@ const ItineraryElement = (props) => {
           <div className="flex flex-col">
             <div className="text-xl font-normal">{props.heading}</div>
 
-            {/* {props.data?.bookings && props.data?.bookings.length > 0 ? ( */}
             <Link
-              to={props.city_id ? `${props.city_id}` : "Stays-Head"}
+              to={props?.city_id ? `${props.city_id}` : "Stays-Head"}
               offset={-35}
             >
-              {props.data &&
-              props.data.bookings &&
-              props.data.bookings.length ? (
+              {props?.data &&
+              props?.data?.bookings &&
+              props?.data?.bookings.length ? (
                 <>
                   {getUserSelectedByBookings(
-                    props.data.bookings &&
-                      props.data.bookings[0] &&
-                      props.data.bookings[0] &&
-                      props.data.bookings[0].id
+                    props?.data?.bookings &&
+                      props?.data?.bookings[0] &&
+                      props?.data?.bookings[0] &&
+                      props?.data?.bookings[0].id
                       ? props.data.bookings[0].id
                       : null
                   ) ? (
@@ -152,7 +152,6 @@ const ItineraryElement = (props) => {
                 <></>
               )}
             </Link>
-            {/* ) : null} */}
 
             <div>
               <div className="pt-1 line-clamp-3 font-normal text-sm mb-3">

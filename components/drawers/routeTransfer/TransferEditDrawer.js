@@ -138,9 +138,53 @@ const TransferEditDraser = (props) => {
         </div>
         {loadingAlternates ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
-            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse"></div>
-            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse"></div>
-            <div className="w-[90%] h-32 flex flex-col gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse"></div>
+            <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
+              <div className="flex items-center justify-center">
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
+              </div>
+              <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
+                <div className="w-full flex flex-row space-x-3 items-start justify-between">
+                  <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
+                  <div className="bg-gray-300 w-1/5 h-7 rounded-lg"></div>
+                </div>
+                <div className="w-full flex flex-row space-x-3 items-center justify-between">
+                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
+                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-row gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
+              <div className="flex items-center justify-center">
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
+              </div>
+              <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
+                <div className="w-full flex flex-row space-x-3 items-start justify-between">
+                  <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
+                  <div className="bg-gray-300 w-1/5 h-7 rounded-lg"></div>
+                </div>
+                <div className="w-full flex flex-row space-x-3 items-center justify-between">
+                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
+                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-row gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
+              <div className="flex items-center justify-center">
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
+              </div>
+              <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
+                <div className="w-full flex flex-row space-x-3 items-start justify-between">
+                  <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
+                  <div className="bg-gray-300 w-1/5 h-7 rounded-lg"></div>
+                </div>
+                <div className="w-full flex flex-row space-x-3 items-center justify-between">
+                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
+                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
+                </div>
+              </div>
+            </div>
           </div>
         ) : alternatesError ? (
           <div className="w-full flex items-center justify-center">

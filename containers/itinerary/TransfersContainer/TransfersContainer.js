@@ -1259,23 +1259,23 @@ const TransfersContainer = (props) => {
             dayId={
               props.breif.city_slabs[0].day_slab_location.start_day_slab_index
             }
-            dayslab={props.dayslab}
-            lat={props.breif.city_slabs[0].lat}
-            long={props.breif.city_slabs[0].long}
-            Mapid={props.breif.city_slabs[0].gmaps_place_id}
+            dayslab={props?.dayslab}
+            lat={props?.breif?.city_slabs[0].lat}
+            long={props?.breif?.city_slabs[0].long}
+            Mapid={props?.breif?.city_slabs[0].gmaps_place_id}
             city={
-              !props.routes ||
-              !props.routes.length ||
-              ((props.plan.is_released_for_customer ||
+              !props?.routes ||
+              !props?.routes.length ||
+              ((props?.plan.is_released_for_customer ||
                 props.plan.round_trip_taxi_added) &&
                 props.transferBookings[0] &&
-                props.transferBookings[0].city)
-                ? props.transferBookings[0].city
-                : props.transferBookings[0] &&
-                  props.transferBookings[0].origin &&
-                  props.transferBookings[0].origin.city_name
-                ? props.transferBookings[0].city
-                : props.breif.city_slabs[0].city_name
+                props?.transferBookings[0].city)
+                ? props?.transferBookings[0].city
+                : props?.transferBookings[0] &&
+                  props?.transferBookings[0].origin &&
+                  props?.transferBookings[0]?.origin.city_name
+                ? props?.transferBookings[0]?.city
+                : props?.breif.city_slabs[0]?.city_name
             }
             cityId={props.breif.city_slabs[0].city_id}
             duration={props.breif.city_slabs[0].duration}

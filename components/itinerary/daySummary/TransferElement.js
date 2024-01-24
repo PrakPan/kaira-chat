@@ -81,6 +81,8 @@ export default function TransferElement(props) {
                       : "Transfer_Container"
                   }
                   offset={-90}
+                  smooth={true}
+                  duration={500}
                 >
                   {/* <button className="text-blue-500 hover:underline">
                   {getUserSelectedByBookings(
@@ -172,6 +174,8 @@ export default function TransferElement(props) {
                       : "Transfer_Container"
                   }
                   offset={-90}
+                  smooth={true}
+                  duration={500}
                 >
                   {/* <button className="text-blue-500 hover:underline">
                   {getUserSelectedByBookings(
