@@ -456,7 +456,8 @@ const ItineraryPoiElement = (props) => {
           </div>
 
           <div>
-            Showing 40 attractions
+            Showing {optionsJSX.length}{" "}
+            {elementType === "POI" ? "attractions" : "activities"}
             {props?.data?.activity_data?.city?.name
               ? ` in ${props?.data?.activity_data?.city?.name}`
               : null}
