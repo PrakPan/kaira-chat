@@ -741,6 +741,8 @@ const SimpleTabsV2 = (props) => {
                 setHideBookingModal={props.setHideBookingModal}
                 payment={props.payment}
                 transferBookings={props?.transferBookings}
+                itinerary_id={props.itinerary.tailor_made_id}
+                fetchData={props.fetchData}
               />
             </div>
           ) : (
@@ -963,6 +965,8 @@ const SimpleTabsV2 = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                   payment={props.payment}
                   transferBookings={props?.transferBookings}
+                  itinerary_id={props.itinerary.tailor_made_id}
+                  fetchData={props.fetchData}
                 />
               </div>
             ) : (

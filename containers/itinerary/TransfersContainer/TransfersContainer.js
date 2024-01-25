@@ -614,7 +614,6 @@ const TransfersContainer = (props) => {
                     props?.transferBookings,
                     props?.routes[i + 1].bookings[index]?.id
                   );
-                  window.my = CurrentBooking;
                   mode === "Flight" ||
                   (mode.booking_type && mode.booking_type === "Flight")
                     ? locationsArr.push(
@@ -654,6 +653,9 @@ const TransfersContainer = (props) => {
                               props?.routes[i + 1].bookings[index]?.booking_type
                             }
                             duration={props?.breif?.city_slabs[i]?.duration}
+                            route={props?.routes[i + 1]}
+                            itinerary_id={props?.itinerary_id}
+                            fetchData={props.fetchData}
                           ></TransferModeContainer>
                         </div>
                       )
@@ -692,6 +694,9 @@ const TransfersContainer = (props) => {
                               props?.routes[i + 1].bookings[index]?.booking_type
                             }
                             duration={props?.breif?.city_slabs[i]?.duration}
+                            route={props?.routes[i + 1]}
+                            itinerary_id={props?.itinerary_id}
+                            fetchData={props.fetchData}
                           ></TransferModeContainer>
                         )
                       );
@@ -1323,6 +1328,9 @@ const TransfersContainer = (props) => {
                       props?.routes[1].bookings[index]?.booking_type
                     }
                     duration={props?.breif?.city_slabs[0]?.duration}
+                    route={props?.routes[1]}
+                    itinerary_id={props?.itinerary_id}
+                    fetchData={props.fetchData}
                   ></TransferModeContainer>
                 );
               })

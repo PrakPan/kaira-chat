@@ -148,7 +148,7 @@ const TransferElements = ({
               </div>
             </div>
           </TInfoContainer>
-          {meta?.duration && !LastTransfer ? (
+          {meta?.Time && !LastTransfer ? (
             <div className="absolute -bottom-[20px] left-1/2 bg-white px-2 ">
               <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">
                 <TransportIconFetcher

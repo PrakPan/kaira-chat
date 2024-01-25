@@ -495,6 +495,7 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
+        
           {dayIcontainer}
         </DayContainerStyle>
       ) : (

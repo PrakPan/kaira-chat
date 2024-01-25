@@ -157,7 +157,7 @@ const TransferElementsM = ({
         <div className="pt-1 line-clamp-3 text-sm font-[350] mb-0 mt-2">
           {text}
         </div>
-        {meta?.duration ? (
+        {meta?.Time ? (
           <div className="absolute bottom-[14px] left-[35%] bg-white px-2 ">
             {!LastTransfer && (
               <div className="flex justify-center items-center gap-1 text-[#9F9F9F]">

@@ -5,7 +5,7 @@ import { MdOutlineFlightTakeoff } from "react-icons/md";
 import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../../components/ImageLoader";
 import { MdEdit } from "react-icons/md";
-import TransferEditDraser from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
+import TransferEditDrawer from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../../services/itinerary/brief/routeAlternates";
 
 const Container = styled.div`
@@ -118,84 +118,97 @@ const MidSection = (props) => {
       {!hidemidsection && (
         <>
           {props.version == "v2" ? (
-            <Text>
-              {props.route?.modes && props.route?.modes.length ? (
-                <TransportIconFetcher
-                  TransportMode={props.route?.modes[0]}
-                  Instyle={{
-                    fontSize:
-                      props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              ) : props.bookings &&
-                props.bookings.length &&
-                props.bookings[0].booking_type ? (
-                <TransportIconFetcher
-                  TransportMode={props.bookings[0].booking_type}
-                  Instyle={{
-                    fontSize:
-                      props.bookings[0].booking_type === "Bus"
-                        ? "1.2rem"
-                        : "1.4rem",
-
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              ) : (
-                <></>
-              )}
-
-              {props.bookings && props.bookings.length ? (
-                props?.bookings?.map((element, index) => (
-                  <div className="flex flex-row" key={index}>
-                    <div className="flex flex-row pr-0">
-                      {element.booking_type}
-                      {index !== props?.bookings.length - 1 && (
-                        <span className="pr-2">,</span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : props.route &&
-                props.route.modes &&
-                props.route.modes.length ? (
-                props.route.modes.map((element, index) => (
-                  <div className="flex flex-row" key={index}>
-                    <div className="flex flex-row pr-0">
-                      {element}
-                      {index !== props.route.modes.length - 1 && (
-                        <span className="pr-2">,</span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <></>
-              )}
-
-              {props.route?.modes &&
-              props.route?.modes.length &&
-              props.duration ? (
-                <div className="inline-flex items-center gap-2">
-                  <div>: {props.duration}</div>
-                </div>
-              ) : (
-                <></>
-              )}
-
-              {!props?.plan?.round_trip_taxi_added && (
-                <div
+            props.route.transfers.id &&
+            props.bookings &&
+            props.bookings.length === 0 ? (
+              <Text>
+                {" "}
+                <button
                   onClick={handleTransferEdit}
-                  className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  className="text-blue-500 hover:underline"
                 >
-                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                </div>
-              )}
+                  + Add Transfer
+                </button>{" "}
+              </Text>
+            ) : (
+              <Text>
+                {props.route?.modes && props.route?.modes.length ? (
+                  <TransportIconFetcher
+                    TransportMode={props.route?.modes[0]}
+                    Instyle={{
+                      fontSize:
+                        props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
+                      marginRight: "0.8rem",
+                      color: "#4d4d4d",
+                    }}
+                  />
+                ) : props.bookings &&
+                  props.bookings.length &&
+                  props.bookings[0].booking_type ? (
+                  <TransportIconFetcher
+                    TransportMode={props.bookings[0].booking_type}
+                    Instyle={{
+                      fontSize:
+                        props.bookings[0].booking_type === "Bus"
+                          ? "1.2rem"
+                          : "1.4rem",
 
-              {/* {props.icon && (
+                      marginRight: "0.8rem",
+                      color: "#4d4d4d",
+                    }}
+                  />
+                ) : (
+                  <></>
+                )}
+
+                {props.bookings && props.bookings.length ? (
+                  props?.bookings?.map((element, index) => (
+                    <div className="flex flex-row" key={index}>
+                      <div className="flex flex-row pr-0">
+                        {element.booking_type}
+                        {index !== props?.bookings.length - 1 && (
+                          <span className="pr-2">,</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : props.route &&
+                  props.route.modes &&
+                  props.route.modes.length ? (
+                  props.route.modes.map((element, index) => (
+                    <div className="flex flex-row" key={index}>
+                      <div className="flex flex-row pr-0">
+                        {element}
+                        {index !== props.route.modes.length - 1 && (
+                          <span className="pr-2">,</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <></>
+                )}
+
+                {props.route?.modes &&
+                props.route?.modes.length &&
+                props.duration ? (
+                  <div className="inline-flex items-center gap-2">
+                    <div>: {props.duration}</div>
+                  </div>
+                ) : (
+                  <></>
+                )}
+
+                {!props?.plan?.round_trip_taxi_added && (
+                  <div
+                    onClick={handleTransferEdit}
+                    className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  >
+                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                  </div>
+                )}
+
+                {/* {props.icon && (
             <ImageLoader
               url={props.icon}
               leftalign
@@ -205,10 +218,11 @@ const MidSection = (props) => {
             ></ImageLoader>
           )} */}
 
-              {/* <MdOutlineFlightTakeoff
+                {/* <MdOutlineFlightTakeoff
             style={{  }}
           /> */}
-            </Text>
+              </Text>
+            )
           ) : (
             <Text>
               {props.modes && (
@@ -226,7 +240,8 @@ const MidSection = (props) => {
           )}
         </>
       )}
-      <TransferEditDraser
+
+      <TransferEditDrawer
         itinerary_id={props?.itinerary_id}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}
@@ -242,6 +257,7 @@ const MidSection = (props) => {
         getPaymentHandler={props?.getPaymentHandler}
         payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
+        check_in={props?.route?.check_in}
       />
     </Container>
   );

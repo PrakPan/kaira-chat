@@ -12,7 +12,7 @@ const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
-const TransferEditDraser = (props) => {
+const TransferEditDrawer = (props) => {
   const {
     itinerary_id,
     showDrawer,
@@ -30,6 +30,7 @@ const TransferEditDraser = (props) => {
     getPaymentHandler,
     payment,
     setShowLoginModal,
+    check_in,
   } = props;
 
   const [transfers, setTransfers] = useState([]);
@@ -79,6 +80,7 @@ const TransferEditDraser = (props) => {
       day_slab_index: day_slab_index,
       element_index: element_index,
       route: transfers[routeIndex],
+      check_in: check_in,
     };
     transferEdit
       .post("", data, {
@@ -285,4 +287,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDraser);
+export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDrawer);
