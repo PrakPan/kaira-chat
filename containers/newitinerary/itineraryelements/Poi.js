@@ -238,8 +238,8 @@ const ItineraryPoiElement = (props) => {
       )
       .then((res) => {
         props.setItinerary(res.data);
-        props.getPaymentHandler();
         props.getAccommodationAndActivitiesHandler();
+        props.getPaymentHandler();
         props.openNotification({
           text: "Your Itinerary updated successfully!",
           heading: "Success!",
@@ -254,10 +254,12 @@ const ItineraryPoiElement = (props) => {
         });
       });
   };
+
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
+  
   const ClickHandler = (child) => {
     if (child == "Things To Do") {
       setElementType("Activity");

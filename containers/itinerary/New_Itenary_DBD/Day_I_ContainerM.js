@@ -133,7 +133,19 @@ const Day_I_ContainerM = (props) => {
 
     if (activities.length) {
       summaryIContainer.push(
-        <ActivityElement key={`summary_activity`} activities={activities} />
+        <ActivityElement
+          key={`summary_activity`}
+          activities={activities}
+          date={props.Days?.date}
+          day_slab_index={props?.indexDay}
+          itinerary_id={props.itinerary_id}
+          getPaymentHandler={props.getPaymentHandler}
+          getAccommodationAndActivitiesHandler={
+            props.getAccommodationAndActivitiesHandler
+          }
+          setShowLoginModal={props.setShowLoginModal}
+          setItinerary={props.setItinerary}
+        />
       );
     }
   }
@@ -241,7 +253,9 @@ const Day_I_ContainerM = (props) => {
               activity={element?.activity_data?.activity}
               city_id={element?.activity_data?.city?.id}
               setShowLoginModal={props.setShowLoginModal}
-              getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
             ></ItineraryPoiElementM>
           );
           break;
@@ -276,7 +290,7 @@ const Day_I_ContainerM = (props) => {
           handler={handleViewMoreButton}
           isMob={true}
         />
-        
+
         {/* {Arslab_elements[0].data[0][0] !== undefined &&
         Arslab_elements[0].data[0][0].transfers !== undefined &&
         Arslab_elements[0].data[0][0].transfers.routes !== undefined ? (

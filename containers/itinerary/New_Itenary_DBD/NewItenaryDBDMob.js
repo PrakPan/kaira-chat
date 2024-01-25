@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Day_I_ContainerM from './Day_I_ContainerM';
-import HorizontalBar from './Menubar';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Day_I_ContainerM from "./Day_I_ContainerM";
+import HorizontalBar from "./Menubar";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
-import { getHumanDate } from '../../../services/getHumanDate';
-import { isJson } from '../../../services/isJSON';
-import { Navbar, NavbarContainer } from './New_itenaryStyled';
-import CustomMenu from '../CustomMenu';
-import { useSticky } from '../../../hooks/useSticky';
-import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
-import ScrollableTabs from '../../../components/ScrollableTabs';
-import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
-import { convertDateFormat } from '../../../helper/ConvertDateFormat';
-import DropdownWrapper from '../../../components/DropDownWrapper';
+import { getHumanDate } from "../../../services/getHumanDate";
+import { isJson } from "../../../services/isJSON";
+import { Navbar, NavbarContainer } from "./New_itenaryStyled";
+import CustomMenu from "../CustomMenu";
+import { useSticky } from "../../../hooks/useSticky";
+import useMediaQuery, { useMedia } from "../../../hooks/useMedia";
+import ScrollableTabs from "../../../components/ScrollableTabs";
+import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import DropdownWrapper from "../../../components/DropDownWrapper";
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
@@ -39,9 +39,9 @@ const NewItenaryDBDMob = (props) => {
 
   const [activeItem, setActiveItem] = useState(0);
 
-  const isDesktop = useMediaQuery('(min-width:1148px)');
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   function extractCityName(arr) {
-    const cityObject = arr.find((obj) => obj.element_type === 'newcity');
+    const cityObject = arr.find((obj) => obj.element_type === "newcity");
 
     if (cityObject && cityObject.city_name) {
       return cityObject.city_name;
@@ -55,16 +55,16 @@ const NewItenaryDBDMob = (props) => {
   const getCurrentCity = () => {
     props.itinerary.day_slabs.map((day_slab, index) => {
       day_slab.slab_elements.map((element, index) => {
-        if(element.element_type === 'newcity') {
+        if (element.element_type === "newcity") {
           currentCity = element.city_data.city_name;
         }
-      })
+      });
       day_slab.current_cityName = currentCity;
-    })
-  }
+    });
+  };
 
   getCurrentCity();
-  
+
   const items = [];
   const itemsDays = [];
   function extractId(location, arr) {
@@ -196,7 +196,9 @@ const NewItenaryDBDMob = (props) => {
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
               current_cityName={element.current_cityName}
-              getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
             ></Day_I_ContainerM>
           </div>
         ))}

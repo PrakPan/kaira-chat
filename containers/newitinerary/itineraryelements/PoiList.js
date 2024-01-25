@@ -73,9 +73,13 @@ const PoiList = (props) => {
     if (e) e.stopPropagation(e);
     setShowDetails({ show: false, data: {} });
   };
-  function handleCheckboxChange(e) {
+  function handleCheckboxChange(e, activityId) {
     if (props.token) {
-      props._updatePoiHandler(props.data);
+      if (props.activityAddDrawer) {
+        props._updatePoiHandler(activityId);
+      } else {
+        props._updatePoiHandler(props.data);
+      }
       setisSelect(!isSelect);
 
       props.setShowDrawer(false);
@@ -170,7 +174,7 @@ const PoiList = (props) => {
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleCheckboxChange(e);
+                    handleCheckboxChange(e, props?.data?.activity_data?.id);
                   }}
                   className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
                 >

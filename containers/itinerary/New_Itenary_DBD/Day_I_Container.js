@@ -17,7 +17,7 @@ import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreBut
 import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
 import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
 import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
-import { getDate } from "../../../helper/DateUtils";
+import { getYear } from "../../../helper/DateUtils";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -204,7 +204,19 @@ const Day_I_Container = (props) => {
 
     if (activities.length) {
       summaryIContainer.push(
-        <ActivityElement key={`summary_activity`} activities={activities} />
+        <ActivityElement
+          key={`summary_activity`}
+          activities={activities}
+          date={props.Days?.date}
+          day_slab_index={props?.indexDay}
+          itinerary_id={props.itinerary_id}
+          getPaymentHandler={props.getPaymentHandler}
+          getAccommodationAndActivitiesHandler={
+            props.getAccommodationAndActivitiesHandler
+          }
+          setShowLoginModal={props.setShowLoginModal}
+          setItinerary={props.setItinerary}
+        />
       );
     }
   }
@@ -312,7 +324,9 @@ const Day_I_Container = (props) => {
               activity={element?.activity_data?.activity}
               city_id={element?.activity_data?.city?.id}
               token={props.token}
-              getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
             ></ItineraryPoiElement>
           );
           break;
@@ -333,7 +347,7 @@ const Day_I_Container = (props) => {
                 : "text-black text-base font-bold"
             }`}
           >
-            {convertDateFormat(props.Days?.slab)}, {getDate(props?.Days?.slab)}{" "}
+            {convertDateFormat(props.Days?.slab)}, {getYear(props?.Days?.slab)}{" "}
             -{" "}
             {newCity
               ? `Arrival in ${newCity}`
@@ -356,7 +370,6 @@ const Day_I_Container = (props) => {
               }
             </div>
           ) : null} */}
-
         </InnerDayLocationRow>
 
         <ViewMoreButton
@@ -371,7 +384,6 @@ const Day_I_Container = (props) => {
           </div>
           <BiChevronRight />
         </InnerDayLocationRow> */}
-
       </DivDayContainerRow>
       {viewMore ? (
         <DayContainerStyle>

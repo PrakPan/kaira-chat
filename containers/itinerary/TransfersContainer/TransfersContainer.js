@@ -1266,7 +1266,7 @@ const TransfersContainer = (props) => {
             city={
               !props?.routes ||
               !props?.routes.length ||
-              ((props?.plan.is_released_for_customer ||
+              ((props?.plan?.is_released_for_customer ||
                 props.plan.round_trip_taxi_added) &&
                 props.transferBookings[0] &&
                 props?.transferBookings[0].city)

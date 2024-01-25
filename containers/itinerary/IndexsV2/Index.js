@@ -254,13 +254,22 @@ const Itinerary = (props) => {
             }
 
             setStayBookings(stay_bookings);
-            if (activity_bookings.length)
+            if (activity_bookings.length) {
               setActivityBookings(activity_bookings);
+            } else {
+              setActivityBookings(null);
+            }
 
-            if (flight_bookings.length) setFlightBookings(flight_bookings);
+            if (flight_bookings.length) {
+              setFlightBookings(flight_bookings);
+            } else {
+              setFlightBookings(null);
+            }
 
             if (transfer_bookings.length) {
               setTransferBookings(transfer_bookings);
+            } else {
+              setTransferBookings(null);
             }
           });
         } else if (response.status === 404) {
@@ -284,7 +293,7 @@ const Itinerary = (props) => {
     return data;
   }
 
-  function fetchData(scroll=true) {
+  function fetchData(scroll = true) {
     if (scroll) window.scrollTo(0, 0);
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);

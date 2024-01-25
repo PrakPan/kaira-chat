@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import Drawer from '../../ui/Drawer';
-import POIDetailsSkeleton from './POIDetailsSkeleton';
-import POIDetails from './POIDetails';
-import { useEffect } from 'react';
-import axiosPOIdetailsInstance from '../../../services/poi/poidetails';
-import axiosPOIActivityInstance from '../../../services/poi/poiActivities';
+import React, { useState } from "react";
+import Drawer from "../../ui/Drawer";
+import POIDetailsSkeleton from "./POIDetailsSkeleton";
+import POIDetails from "./POIDetails";
+import { useEffect } from "react";
+import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
+import axiosPOIActivityInstance from "../../../services/poi/poiActivities";
 
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState([]);
@@ -32,6 +32,7 @@ const POIDetailsDrawer = (props) => {
       }
     }
   }
+
   return (
     <Drawer
       show={props.show}

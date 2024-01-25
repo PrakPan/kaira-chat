@@ -86,11 +86,10 @@ const MidSection = (props) => {
 
   const handleTransferEdit = () => {
     setShowDrawer(true);
-    const access_token = localStorage.getItem("access_token");
     routeAlternates
       .get(`/?route_id=` + props?.route?.transfers?.id, {
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           "Content-Type": "application/json",
         },
       })
