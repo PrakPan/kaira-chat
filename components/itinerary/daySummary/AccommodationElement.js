@@ -146,10 +146,10 @@ export default function AccommodationElement(props) {
               borderRadius="8px"
               hoverpointer
               onclick={() => console.log("")}
-              width="4rem"
-              height="4rem"
+              width="3rem"
+              height="3rem"
               leftalign
-              widthmobile="4rem"
+              widthmobile="3rem"
               url={getHotelImage(props?.data?.bookings[0]?.id)}
               noLazy
             ></ImageLoader>

@@ -54,7 +54,7 @@ export default function ActivityElement(props) {
           <div className="flex w-full">
             <button
               onClick={() => setShowAddDrawer(true)}
-              className="text-blue-500 hover:underline"
+              className="text-sm font-normal text-blue-500 hover:underline"
             >
               + Add Activity on {convertDateFormat(date)}
             </button>
