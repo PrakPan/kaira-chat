@@ -117,10 +117,8 @@ const MidSection = (props) => {
       </div>
       {!hidemidsection && (
         <>
-          {props.version == "v2" ? (
-            props.route.transfers.id &&
-            props.bookings &&
-            props.bookings.length === 0 ? (
+          {props.version === "v2" ? (
+            true ? (
               <Text>
                 {" "}
                 <button
@@ -207,20 +205,6 @@ const MidSection = (props) => {
                     <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                   </div>
                 )}
-
-                {/* {props.icon && (
-            <ImageLoader
-              url={props.icon}
-              leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="1.25rem"
-              widthmobile="1.25rem"
-            ></ImageLoader>
-          )} */}
-
-                {/* <MdOutlineFlightTakeoff
-            style={{  }}
-          /> */}
               </Text>
             )
           ) : (

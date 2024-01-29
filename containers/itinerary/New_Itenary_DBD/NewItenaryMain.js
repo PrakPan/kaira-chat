@@ -80,7 +80,7 @@ const NewItenaryMain = (props) => {
   }
 
   if (props.itinerary.day_slabs) {
-    for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
+    for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true) break;
@@ -183,20 +183,6 @@ const NewItenaryMain = (props) => {
   return (
     <Wrapper>
       <div className="text-3xl font-bold mb-8 mt-4"> Day By Day Itinerary</div>
-      {/* <ScrollableTabs
-        Mstyle={'round'}
-        items={items}
-        activeItem={activeItem}
-        onSelect={handleSelect}
-      ></ScrollableTabs> */}
-      {/* <Navbar ref={ref} sticky={isSticky & !isDesktop}>
-        <CustomMenu
-          Mstyle={'round'}
-          items={items}
-          activeItem={activeItem}
-          onSelect={handleSelect}
-        />
-      </Navbar> */}
 
       <ScrollableMenuTabs
         classStyle="pb-2"
