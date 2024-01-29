@@ -376,7 +376,7 @@ const SimpleTabsV2 = (props) => {
 
     { id: 3, label: "Stays", link: "Stays" },
   ];
-  if (props.transferBookings) {
+  if (props.transferBookings || props?.routes?.length) {
     items.push({ id: 4, label: "Transfers", link: "Transfers" });
   }
   if (props.activityBookings) {
@@ -717,7 +717,7 @@ const SimpleTabsV2 = (props) => {
             ></HotelsBooking>
           </div>
 
-          {props?.transferBookings ? (
+          {props?.transferBookings || props?.routes?.length ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -939,7 +939,7 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props.transferBookings ? (
+            {props.transferBookings || props?.routes?.length ? (
               <div id={"Transfers"}>
                 <TransfersContainer
                   setShowLoginModal={setShowLoginModal}

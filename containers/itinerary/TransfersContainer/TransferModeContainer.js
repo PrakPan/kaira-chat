@@ -481,7 +481,9 @@ const TransferModeContainer = (props) => {
         if (err.response.status === 404) {
           setAlternatesError("No Route Found, please try again!");
         } else {
-          setAlternatesError("There seems to be problem, please try again! adsfasdf");
+          setAlternatesError(
+            "There seems to be problem, please try again! adsfasdf"
+          );
         }
       });
   };
@@ -1129,6 +1131,7 @@ const TransferModeContainer = (props) => {
       )}
 
       <TransferEditDrawer
+        addOrEdit={"transferAdd"}
         itinerary_id={props?.itinerary_id}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}

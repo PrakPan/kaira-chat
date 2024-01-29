@@ -77,15 +77,20 @@ const MidSection = (props) => {
   const [alternateRoutes, setAlternateRoutes] = useState([]);
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [alternatesError, setAlternatesError] = useState(null);
+  const [addOrEdit, setAddOrEdit] = useState(null);
 
   let hidemidsection = props.hidemidsection;
-  if (props.route && props.route.modes && props.route.modes.length)
+  if (
+    (props?.route && props?.route?.modes && props?.route?.modes.length) ||
+    props?.route.transfers?.id
+  )
     hidemidsection = false;
-  else if (props.bookings && props.bookings.length) hidemidsection = false;
+  else if (props?.bookings && props?.bookings.length) hidemidsection = false;
   else hidemidsection = true;
 
-  const handleTransferEdit = () => {
+  const handleTransferEdit = (e) => {
     setShowDrawer(true);
+    setAddOrEdit(e.target.id);
     routeAlternates
       .get(`/?route_id=` + props?.route?.transfers?.id, {
         headers: {
@@ -117,11 +122,14 @@ const MidSection = (props) => {
       </div>
       {!hidemidsection && (
         <>
-          {props.version === "v2" ? (
-            true ? (
+          {props.version == "v2" ? (
+            props.route.transfers.id &&
+            props.bookings &&
+            props.bookings.length === 0 ? (
               <Text>
                 {" "}
                 <button
+                  id="transferAdd"
                   onClick={handleTransferEdit}
                   className="text-blue-500 hover:underline"
                 >
@@ -199,6 +207,7 @@ const MidSection = (props) => {
 
                 {!props?.plan?.round_trip_taxi_added && (
                   <div
+                    id="transferEdit"
                     onClick={handleTransferEdit}
                     className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                   >
@@ -226,6 +235,7 @@ const MidSection = (props) => {
       )}
 
       <TransferEditDrawer
+        addOrEdit={addOrEdit}
         itinerary_id={props?.itinerary_id}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}

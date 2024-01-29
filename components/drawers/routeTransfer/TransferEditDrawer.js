@@ -135,7 +135,8 @@ const TransferEditDrawer = (props) => {
             }}
           ></IoMdClose>
           <div className="text-2xl font-normal">
-            Changing transfer from {origin} to {destination}{" "}
+            {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
+            from {origin} to {destination}{" "}
           </div>
         </div>
         {loadingAlternates ? (

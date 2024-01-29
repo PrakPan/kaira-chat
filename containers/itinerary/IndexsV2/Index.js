@@ -235,10 +235,8 @@ const Itinerary = (props) => {
       .then((response) => {
         setStayLoading(false);
         getPaymentHandler();
-        window.res = response;
         if (response.status === 200) {
           response.json().then((json) => {
-            // getPaymentHandler();
 
             for (var i = 0; i < json.bookings.length; i++) {
               if (json.bookings[i].booking_type === "Accommodation")
@@ -361,11 +359,6 @@ const Itinerary = (props) => {
         fetchData();
       }, [IntervalTiming]);
   }, []);
-
-  useEffect(() => {
-    window.boo = transferBookings;
-    window.s = "seted";
-  }, [transferBookings]);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array

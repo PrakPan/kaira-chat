@@ -1,17 +1,17 @@
-import { motion, Variants } from 'framer-motion';
-import styled from 'styled-components';
+import { motion, Variants } from "framer-motion";
+import styled from "styled-components";
 import {
   useLinkWithMarker,
   NavigationMarkerHandlers,
-} from './NavigationMarker';
-import { Link } from 'react-scroll';
+} from "./NavigationMarker";
+import { Link } from "react-scroll";
 
 const variants: Variants = {
   initial: { opacity: 0, x: 8 },
   animate: {
     opacity: 1,
     x: 0,
-    transition: { ease: 'easeIn', duration: 0.2 },
+    transition: { ease: "easeIn", duration: 0.2 },
   },
 };
 
@@ -21,29 +21,29 @@ const Container = styled(motion.div)<{ isSelected?: boolean }>`
   width: max-content;
   padding: 10px 24px 10px 24px;
   margin-left: 4px;
-  background-color: ${({ isSelected }) => (isSelected ? '#262626' : 'none')};
-  color: ${({ isSelected }) => (isSelected ? '#F7E700' : '#7A7A7A')};
+  background-color: ${({ isSelected }) => (isSelected ? "#262626" : "none")};
+  color: ${({ isSelected }) => (isSelected ? "#F7E700" : "#7A7A7A")};
 
   border-radius: ${({ isSelected }) =>
-    isSelected ? '10% 10% 0 0' : '10% 10% 0 0'};
+    isSelected ? "10% 10% 0 0" : "10% 10% 0 0"};
   transition: border-color 0.3s ease;
   font-weight: 600;
   /* border-bottom: ${({ isSelected }) =>
-    isSelected ? '4px solid #F7E700' : '4px solid transparent'}; */
+    isSelected ? "4px solid #F7E700" : "4px solid transparent"}; */
   :hover {
-    background-color: ${({ isSelected }) => (isSelected ? '#262626' : 'none')};
-    color: '#F7E700';
-    border-bottom: '2px solid #F7E700';
+    background-color: ${({ isSelected }) => (isSelected ? "#262626" : "none")};
+    color: "#F7E700";
+    border-bottom: "2px solid #F7E700";
   }
 `;
 
 const Label = styled.div<{ isSelected?: boolean }>`
   transition: all ease 0.3s;
-  color: ${({ isSelected }) => (isSelected ? '#F7E700' : '#3d3c3b')};
+  color: ${({ isSelected }) => (isSelected ? "#F7E700" : "#3d3c3b")};
   white-space: nowrap;
 
   :hover {
-    color: ${({ isSelected }) => (isSelected ? '#F7E700' : '#010700')};
+    color: ${({ isSelected }) => (isSelected ? "#F7E700" : "#010700")};
   }
 `;
 
@@ -78,7 +78,7 @@ export const NavigationLink = ({
       key={item.id}
       to={item.link}
       id={`${BarName} ${item.id}`}
-      style={{ textDecoration: 'none' }}
+      style={{ textDecoration: "none" }}
       spy={true}
       // duration={500}
       offset={-50}
