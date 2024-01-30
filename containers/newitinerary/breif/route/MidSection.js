@@ -80,12 +80,10 @@ const MidSection = (props) => {
   const [addOrEdit, setAddOrEdit] = useState(null);
 
   let hidemidsection = props.hidemidsection;
-  if (
-    (props?.route && props?.route?.modes && props?.route?.modes.length) ||
-    props?.route.transfers?.id
-  )
+  if (props?.route && props?.route?.modes && props?.route?.modes.length)
     hidemidsection = false;
   else if (props?.bookings && props?.bookings.length) hidemidsection = false;
+  else if (props?.route && props?.route.transfers?.id) hidemidsection = false;
   else hidemidsection = true;
 
   const handleTransferEdit = (e) => {
