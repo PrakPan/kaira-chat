@@ -88,12 +88,7 @@ export default function AccommodationElement(props) {
           <div className="font-medium text-sm">{heading}</div>
           {!isPageWide && (
             <div className="md:ml-3 lg:ml-3">
-              <Link
-                to={city_id ? `${city_id}` : "Stays-Head"}
-                offset={-35}
-                smooth={true}
-                duration={500}
-              >
+              <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
                 {data && data.bookings && data.bookings.length ? (
                   // <button className="text-blue-500 hover:underline">
                   //   {getUserSelectedByBookings(
@@ -170,12 +165,7 @@ export default function AccommodationElement(props) {
 
           {isPageWide && (
             <div className="md:ml-4 lg:ml-4">
-              <Link
-                to={city_id ? `${city_id}` : "Stays-Head"}
-                offset={-35}
-                smooth={true}
-                duration={500}
-              >
+              <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
                 {data && data.bookings && data.bookings.length ? (
                   <>
                     {/* <button className="text-blue-500 hover:underline">

@@ -92,7 +92,6 @@ const TransferEditDrawer = (props) => {
       .then((response) => {
         if (response.status === 200) {
           fetchData((scroll = false));
-          getPaymentHandler();
           openNotification({
             text: "Your Transfer updated successfully!",
             heading: "Success!",

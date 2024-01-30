@@ -239,7 +239,6 @@ const ItineraryPoiElement = (props) => {
       .then((res) => {
         props.setItinerary(res.data);
         props.getAccommodationAndActivitiesHandler();
-        props.getPaymentHandler();
         props.openNotification({
           text: "Your Itinerary updated successfully!",
           heading: "Success!",
@@ -493,6 +492,7 @@ const ItineraryPoiElement = (props) => {
     </Container>
   );
 };
+
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,

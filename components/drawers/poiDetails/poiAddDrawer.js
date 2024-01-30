@@ -57,7 +57,6 @@ const POIAddDrawer = (props) => {
       )
       .then((response) => {
         props.setItinerary(response.data);
-        props.getPaymentHandler();
         props.getAccommodationAndActivitiesHandler();
         props.openNotification({
           text: "Your Activity added successfully!",

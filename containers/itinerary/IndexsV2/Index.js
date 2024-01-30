@@ -280,11 +280,6 @@ const Itinerary = (props) => {
       });
   };
 
-  useEffect(() => {
-    // if(!props.token && !props.otpSent)
-    //  props.checkAuthState();
-  });
-
   async function getRoutes(itinaryId) {
     const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
     const data = res.data;
