@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, createRef } from "react";
 import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
 
 import ItineraryFoodElement from "../../newitinerary/itineraryelements/ItineraryFoodElement";
@@ -128,6 +128,7 @@ const Day_I_Container = (props) => {
     { name: "recommendation", data: [] },
     { name: "activity", data: [] },
   ];
+
   function filter(JsonArray, Arslab_element_name, Arslab_element_data) {
     Arslab_element_data.push(
       JsonArray.filter(
@@ -495,7 +496,7 @@ const Day_I_Container = (props) => {
             }
           ></ItineraryFoodElement>
         ) : null} */}
-        
+
           {dayIcontainer}
         </DayContainerStyle>
       ) : (

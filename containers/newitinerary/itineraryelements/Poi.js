@@ -1,5 +1,11 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
+import {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  useRef,
+} from "react";
 import { AiFillCar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
@@ -156,6 +162,7 @@ const ItineraryPoiElement = (props) => {
     { id: 1, label: "Places To Visit", link: "POI" },
     { id: 2, label: "Things To Do", link: "Activities" },
   ];
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
@@ -214,6 +221,26 @@ const ItineraryPoiElement = (props) => {
 
   // }
 
+  const setFocus = (dayIndex, elementIndex, activityId) => {
+    const element = document.getElementById(
+      `${dayIndex}-${elementIndex}-${activityId}`
+    );
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.style.borderWidth = "1px";
+    element.style.borderRadius = "10px";
+    element.style.borderColor = "#f8e000";
+    element.style.boxShadow = "0 0 10px #f8e000";
+    const timeoutId = setTimeout(() => {
+      element.style.borderColor = "";
+      element.style.borderWidth = "";
+      element.style.borderRadius = "";
+      element.style.boxShadow = "";
+    }, 4000);
+
+    // Cleanup the timeout to avoid memory leaks
+    return () => clearTimeout(timeoutId);
+  };
+
   const _updatePoiHandler = (poi) => {
     axiositineraryeditinstance
       .post(
@@ -244,6 +271,13 @@ const ItineraryPoiElement = (props) => {
           heading: "Success!",
           type: "success",
         });
+        setTimeout(() => {
+          setFocus(
+            props.day_slab_index,
+            props.data.element_index,
+            poi.activity_data.id
+          );
+        }, 1000);
       })
       .catch((err) => {
         props.openNotification({
@@ -258,7 +292,7 @@ const ItineraryPoiElement = (props) => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
-  
+
   const ClickHandler = (child) => {
     if (child == "Things To Do") {
       setElementType("Activity");
@@ -287,7 +321,10 @@ const ItineraryPoiElement = (props) => {
   return (
     <Container>
       {/* <div>{props.time}</div> */}
-      <div className="group flex flex-row items-center pt-3">
+      <div
+        id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
+        className="group flex flex-row items-center p-2"
+      >
         <div className="bg-white w-[6rem]" onClick={() => setShow(true)}>
           {props.image && props.image !== "media/icons/default/activity.svg" ? (
             <ImageLoader

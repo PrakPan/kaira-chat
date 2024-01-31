@@ -39,6 +39,30 @@ const POIAddDrawer = (props) => {
   const [options, setOptions] = useState([]);
   const [fetchingPoi, setFetchingPoi] = useState(true);
 
+  const setFocus = (dayIndex, elementIndex, activityId) => {
+    const element = document.getElementById(
+      `${dayIndex}-${elementIndex}-${activityId}`
+    );
+    let timeoutId;
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.style.borderWidth = "1px";
+      element.style.borderRadius = "10px";
+      element.style.borderColor = "#f8e000";
+      element.style.boxShadow = "0 0 10px #f8e000";
+
+      timeoutId = setTimeout(() => {
+        element.style.borderColor = "";
+        element.style.borderWidth = "";
+        element.style.borderRadius = "";
+        element.style.boxShadow = "";
+      }, 4000);
+    }
+
+    // Cleanup the timeout to avoid memory leaks
+    if (timeoutId) return () => clearTimeout(timeoutId);
+  };
+
   const _addActivityHandler = (activityID) => {
     addActivity
       .post(
@@ -63,6 +87,12 @@ const POIAddDrawer = (props) => {
           heading: "Success!",
           type: "success",
         });
+        const lastElement = [
+          ...response.data.day_slabs[props.day_slab_index].slab_elements,
+        ].pop();
+        setTimeout(() => {
+          setFocus(props.day_slab_index, lastElement.element_index, activityID);
+        }, 1000);
       })
       .catch((err) => {
         props.openNotification({
