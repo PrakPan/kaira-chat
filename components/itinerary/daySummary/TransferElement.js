@@ -39,6 +39,16 @@ export default function TransferElement(props) {
     return false;
   };
 
+  const isOriginDestination = () => {
+    if (isValidBooking(data?.bookings[0]?.id)) {
+      const origin = getBooking(data?.bookings[0]?.id).city;
+      const destination = getBooking(data?.bookings[0]?.id).destination
+        .shortName;
+      if (origin !== "undefined" && destination !== "undefined") return true;
+    }
+    return false;
+  };
+
   const getFlightDuration = () => {
     if (meta) {
       if (meta?.Time) return meta.Time;
@@ -142,14 +152,11 @@ export default function TransferElement(props) {
 
           <div className="flex flex-col">
             <div className="text-xs leading-7 ml-2 lg:ml-0">
-              {/* {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>} */}
-              {isValidBooking(data?.bookings[0]?.id)
+              {isOriginDestination()
                 ? getBooking(data?.bookings[0]?.id).city +
                   " - " +
                   getBooking(data?.bookings[0]?.id).destination.shortName
                 : ""}
-              {/* {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
-            {transfers.routes[0]?.legs[0].destination.shortName} */}
             </div>
 
             <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">

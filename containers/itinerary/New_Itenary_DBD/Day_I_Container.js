@@ -217,6 +217,7 @@ const Day_I_Container = (props) => {
           }
           setShowLoginModal={props.setShowLoginModal}
           setItinerary={props.setItinerary}
+          payment={props.payment}
         />
       );
     }

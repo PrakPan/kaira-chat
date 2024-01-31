@@ -52,12 +52,16 @@ export default function ActivityElement(props) {
         <div className="flex flex-row items-center w-full">
           <div className="lg:w-[11%] md:w-[21%]"></div>
           <div className="flex w-full">
-            <button
-              onClick={() => setShowAddDrawer(true)}
-              className="text-sm font-normal text-blue-500 hover:underline"
-            >
-              + Add Activity on {convertDateFormat(date)}
-            </button>
+            {!props.payment?.is_registration_needed &&
+              props.payment?.user_allowed_to_pay &&
+              !props.payment.paid_user && (
+                <button
+                  onClick={() => setShowAddDrawer(true)}
+                  className="text-sm font-normal text-blue-500 hover:underline"
+                >
+                  + Add Activity on {convertDateFormat(date)}
+                </button>
+              )}
           </div>
         </div>
       </div>
