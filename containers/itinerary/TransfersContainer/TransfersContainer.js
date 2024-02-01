@@ -802,7 +802,7 @@ const TransfersContainer = (props) => {
     }
   } else {
     if (props?.transferBookings) {
-      for (var i = 1; i < props.transferBookings.length; i++) {
+      for (var i = 0; i < props.transferBookings.length; i++) {
         locationsArr.push(
           <PinSection
             transfersPin
@@ -878,7 +878,6 @@ const TransfersContainer = (props) => {
                     _changeTaxiHandler={_changeTaxiHandler}
                     _changeFlightHandler={_changeFlightHandler}
                     setShowTaxiModal={props.setShowTaxiModal}
-                    icon={props?.transfers[i]?.icon}
                     index={i}
                     booking={props?.transferBookings[i]}
                     userSelected={props?.transferBookings[i]?.user_selected}
