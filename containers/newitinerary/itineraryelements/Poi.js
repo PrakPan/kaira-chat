@@ -225,7 +225,7 @@ const ItineraryPoiElement = (props) => {
     const element = document.getElementById(
       `${dayIndex}-${elementIndex}-${activityId}`
     );
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.scrollIntoView({ block: "center" });
     element.style.borderWidth = "1px";
     element.style.borderRadius = "10px";
     element.style.borderColor = "#f8e000";

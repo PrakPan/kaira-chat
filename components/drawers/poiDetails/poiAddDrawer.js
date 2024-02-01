@@ -29,8 +29,8 @@ const EmptyMsg = styled.div`
 `;
 
 const items = [
-  //   { id: 1, label: "Places To Visit", link: "POI" },
   { id: 1, label: "Things To Do", link: "Activities" },
+  //   { id: 2, label: "Places To Visit", link: "POI" },
 ];
 
 const POIAddDrawer = (props) => {
@@ -45,7 +45,7 @@ const POIAddDrawer = (props) => {
     );
     let timeoutId;
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.scrollIntoView({ block: "center" });
       element.style.borderWidth = "1px";
       element.style.borderRadius = "10px";
       element.style.borderColor = "#f8e000";

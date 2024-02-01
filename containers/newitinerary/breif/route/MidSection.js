@@ -203,15 +203,17 @@ const MidSection = (props) => {
                   <></>
                 )}
 
-                {!props?.plan?.round_trip_taxi_added && (
-                  <div
-                    id="transferEdit"
-                    onClick={handleTransferEdit}
-                    className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                  >
-                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                  </div>
-                )}
+                {!props?.plan?.round_trip_taxi_added &&
+                  ((props.route?.modes && props.route?.modes?.length) ||
+                    (props?.bookings && props?.bookings?.length)) && (
+                    <div
+                      id="transferEdit"
+                      onClick={handleTransferEdit}
+                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                    >
+                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                    </div>
+                  )}
               </Text>
             )
           ) : (

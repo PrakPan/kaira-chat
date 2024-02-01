@@ -96,6 +96,7 @@ export default function ActivityElement(props) {
         }
         setShowLoginModal={setShowLoginModal}
         setItinerary={setItinerary}
+        setViewMore={props.setViewMore}
       ></POIAddDrawer>
     </Container>
   );

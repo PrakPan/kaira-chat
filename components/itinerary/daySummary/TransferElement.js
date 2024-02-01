@@ -41,10 +41,16 @@ export default function TransferElement(props) {
 
   const isOriginDestination = () => {
     if (isValidBooking(data?.bookings[0]?.id)) {
-      const origin = getBooking(data?.bookings[0]?.id).city;
-      const destination = getBooking(data?.bookings[0]?.id).destination
-        .shortName;
-      if (origin !== "undefined" && destination !== "undefined") return true;
+      const origin = getBooking(data?.bookings[0]?.id)?.city;
+      const destination = getBooking(data?.bookings[0]?.id)?.destination
+        ?.shortName;
+      if (
+        origin &&
+        destination &&
+        origin !== "undefined" &&
+        destination !== "undefined"
+      )
+        return true;
     }
     return false;
   };

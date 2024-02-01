@@ -160,7 +160,7 @@ const Day_I_Container = (props) => {
         case "transfer":
           summaryIContainer.push(
             <TransferElement
-              key={`summary_transfer_${index}`}
+              key={`summary_transfer_${props.indexDay}-${index}`}
               modes={getTransportationType(element.icon)}
               heading={element.heading}
               booking={props.transferBookings}
@@ -177,7 +177,7 @@ const Day_I_Container = (props) => {
           if (element.bookings && element.bookings.length) {
             summaryIContainer.push(
               <AccommodationElement
-                key={`summary_accommodation_${index}`}
+                key={`summary_accommodation_${props.indexDay}-${index}`}
                 heading={element.heading}
                 meta={element.meta}
                 data={element}
@@ -206,7 +206,7 @@ const Day_I_Container = (props) => {
     if (activities.length) {
       summaryIContainer.push(
         <ActivityElement
-          key={`summary_activity`}
+          key={`summary_activity-${props.indexDay}`}
           activities={activities}
           date={props.Days?.date}
           day_slab_index={props?.indexDay}
@@ -311,7 +311,7 @@ const Day_I_Container = (props) => {
               slab_elements_index={index}
               itinerary_id={props.itinerary_id}
               data={element}
-              key={element?.activity_data?.id}
+              key={`${props.indexDay}-${index}-${element?.activity_data?.id}`}
               time="11:00AM"
               image={element.icon !== undefined ? element.icon : null}
               booking
