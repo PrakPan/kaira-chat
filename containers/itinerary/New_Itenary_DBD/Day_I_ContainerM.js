@@ -44,7 +44,7 @@ const Date = styled.div`
 `;
 
 const Day_I_ContainerM = (props) => {
-  const [viewMore, setViewMore] = useState(true);
+  const [viewMore, setViewMore] = useState(false);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const Arslab_elements = [
     { name: "transfer", data: [] },
