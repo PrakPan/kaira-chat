@@ -85,62 +85,6 @@ export default function TransferElement(props) {
             )}
           </div>
           <div className="font-medium text-sm">{heading}</div>
-          {!isPageWide && (
-            <div className="md:ml-3 lg:ml-3">
-              {data?.bookings &&
-              data?.bookings[0] &&
-              isValidBooking(data?.bookings[0]?.id) ? (
-                <Link
-                  to={
-                    data.bookings && data.bookings[0] && data.bookings[0].id
-                      ? `${data.bookings[0].id}`
-                      : "Transfer_Container"
-                  }
-                  offset={-90}
-                >
-                  {/* <button className="text-blue-500 hover:underline">
-                  {getUserSelectedByBookings(
-                    data.bookings && data.bookings[0]
-                      ? data.bookings[0].id
-                      : null
-                  ) ? (
-                    <>
-                      <MdDoneAll
-                        style={{
-                          display: "inline",
-                          marginRight: "0.35rem",
-                        }}
-                      />{" "}
-                      {modes ? `${modes} added` : null}
-                    </>
-                  ) : (
-                    <>{modes ? `+Add ${modes}` : null}</>
-                  )}
-                </button> */}
-
-                  <TransparentButton>
-                    {getUserSelectedByBookings(
-                      data.bookings && data.bookings[0]
-                        ? data.bookings[0].id
-                        : null
-                    ) ? (
-                      <>
-                        <MdDoneAll
-                          style={{
-                            display: "inline",
-                            marginRight: "0.35rem",
-                          }}
-                        />{" "}
-                        {modes ? `${modes} added` : null}
-                      </>
-                    ) : (
-                      <>{modes ? `Add ${modes}` : null}</>
-                    )}
-                  </TransparentButton>
-                </Link>
-              ) : null}
-            </div>
-          )}
         </div>
 
         <div className="w-full flex flex-row items-center">
@@ -173,20 +117,19 @@ export default function TransferElement(props) {
               )}
             </div>
           </div>
-          {isPageWide && (
-            <div className="md:ml-4 lg:ml-4">
-              {data?.bookings &&
-              data?.bookings[0] &&
-              isValidBooking(data?.bookings[0]?.id) ? (
-                <Link
-                  to={
-                    data.bookings && data.bookings[0] && data.bookings[0].id
-                      ? `${data.bookings[0].id}`
-                      : "Transfer_Container"
-                  }
-                  offset={-90}
-                >
-                  {/* <button className="text-blue-500 hover:underline">
+          <div className="ml-4">
+            {data?.bookings &&
+            data?.bookings[0] &&
+            isValidBooking(data?.bookings[0]?.id) ? (
+              <Link
+                to={
+                  data.bookings && data.bookings[0] && data.bookings[0].id
+                    ? `${data.bookings[0].id}`
+                    : "Transfer_Container"
+                }
+                offset={-90}
+              >
+                {/* <button className="text-blue-500 hover:underline">
                   {getUserSelectedByBookings(
                     data.bookings && data.bookings[0]
                       ? data.bookings[0].id
@@ -206,29 +149,28 @@ export default function TransferElement(props) {
                   )}
                 </button> */}
 
-                  <TransparentButton>
-                    {getUserSelectedByBookings(
-                      data.bookings && data.bookings[0]
-                        ? data.bookings[0].id
-                        : null
-                    ) ? (
-                      <>
-                        <MdDoneAll
-                          style={{
-                            display: "inline",
-                            marginRight: "0.35rem",
-                          }}
-                        />{" "}
-                        {modes ? `${modes} added` : null}
-                      </>
-                    ) : (
-                      <>{modes ? `Add ${modes}` : null}</>
-                    )}
-                  </TransparentButton>
-                </Link>
-              ) : null}
-            </div>
-          )}
+                <TransparentButton>
+                  {getUserSelectedByBookings(
+                    data.bookings && data.bookings[0]
+                      ? data.bookings[0].id
+                      : null
+                  ) ? (
+                    <>
+                      <MdDoneAll
+                        style={{
+                          display: "inline",
+                          marginRight: "0.35rem",
+                        }}
+                      />{" "}
+                      {modes ? `${modes} added` : null}
+                    </>
+                  ) : (
+                    <>{modes ? `Add ${modes}` : null}</>
+                  )}
+                </TransparentButton>
+              </Link>
+            ) : null}
+          </div>
         </div>
 
         {/* <div className="w-full flex items-center">

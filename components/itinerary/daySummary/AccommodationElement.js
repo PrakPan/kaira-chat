@@ -1,64 +1,30 @@
 import { Container } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
-import { FaHome, FaBed } from "react-icons/fa";
 import { TbSunset2 } from "react-icons/tb";
 import { Link } from "react-scroll";
 import { MdDoneAll } from "react-icons/md";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
   const [visible, setVisible] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const isPageWide = media("(min-width: 768px)");
 
-  const getHotelName = (id) => {
-    if (booking && booking.length && id) {
+  useEffect(() => {
+    if (
+      booking &&
+      booking.length &&
+      data?.bookings?.length &&
+      data?.bookings[0]?.id
+    ) {
       for (let book of booking) {
-        if (book.id === id && book.user_selected) return book.name;
+        if (book.id === data.bookings[0].id) setSelectedBooking(book);
       }
     }
-    return "Check-in to your stay";
-  };
-
-  const getHotelImage = (id) => {
-    if (booking && booking.length && id) {
-      for (let book of booking) {
-        if (book.id === id) return book.images[0].image;
-      }
-    }
-    return "";
-  };
-
-  const getHotelCity = (id) => {
-    if (booking && booking.length && id) {
-      for (let book of booking) {
-        if (book.id === id && book.user_selected) return book.city;
-      }
-    }
-    return "";
-  };
-
-  const getUserSelectedByBookings = (id) => {
-    if (booking && booking.length && id) {
-      for (let book of booking) {
-        if (book.id === id) {
-          return book.user_selected;
-        }
-      }
-    }
-    return null;
-  };
-
-  const getUserSelectedBookingId = (id) => {
-    if (booking && booking.length && id) {
-      for (let book of booking) {
-        if (book.id === id) return book.id;
-      }
-    }
-    return null;
-  };
+  }, [booking]);
 
   const hoverFunction = () => {
     setVisible(true);
@@ -95,38 +61,6 @@ export default function AccommodationElement(props) {
             )}
           </div>
           <div className="font-medium text-sm">{heading}</div>
-          {!isPageWide && (
-            <div className="md:ml-3 lg:ml-3">
-              <Link
-                to={
-                  getUserSelectedBookingId(data.bookings[0].id)
-                    ? `${getUserSelectedBookingId(data.bookings[0].id)}`
-                    : "Stays-Head"
-                }
-                offset={-95}
-              >
-                {data && data.bookings && data.bookings.length ? (
-                  <>
-                    {getUserSelectedByBookings(data.bookings[0].id) ? (
-                      <TransparentButton>
-                        <MdDoneAll
-                          style={{
-                            display: "inline",
-                            marginRight: "0.35rem",
-                          }}
-                        />{" "}
-                        Stay added
-                      </TransparentButton>
-                    ) : (
-                      <TransparentButton>Add Stay</TransparentButton>
-                    )}
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Link>
-            </div>
-          )}
         </div>
 
         <div className="w-full flex flex-row items-center">
@@ -142,55 +76,45 @@ export default function AccommodationElement(props) {
               height="3rem"
               leftalign
               widthmobile="3rem"
-              url={getHotelImage(props?.data?.bookings[0]?.id)}
+              url={selectedBooking?.images[0]?.image}
               noLazy
             ></ImageLoader>
           </div>
           <div className="flex flex-col ml-3">
-            <div className="text-base font-semibold leading-6 ml-2">
-              {data.bookings &&
-                data.bookings[0] &&
-                getHotelName(data.bookings[0].id)}
+            <div className="text-sm font-normal leading-6 ml-2">
+              {selectedBooking && selectedBooking.name}
             </div>
             <div className="font-normal text-xs leading-4 ml-2">
-              {data.bookings &&
-                data.bookings[0] &&
-                getHotelCity(data.bookings[0].id)}
+              {selectedBooking && selectedBooking.city}
             </div>
           </div>
 
-          {isPageWide && (
-            <div className="md:ml-4 lg:ml-4">
-              <Link
-                to={
-                  getUserSelectedBookingId(data.bookings[0].id)
-                    ? `${getUserSelectedBookingId(data.bookings[0].id)}`
-                    : "Stays-Head"
-                }
-                offset={-35}
-              >
-                {data && data.bookings && data.bookings.length ? (
-                  <>
-                    {getUserSelectedByBookings(props.data.bookings[0].id) ? (
-                      <TransparentButton>
-                        <MdDoneAll
-                          style={{
-                            display: "inline",
-                            marginRight: "0.35rem",
-                          }}
-                        />{" "}
-                        Stay added
-                      </TransparentButton>
-                    ) : (
-                      <TransparentButton>Add Stay</TransparentButton>
-                    )}
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Link>
-            </div>
-          )}
+          <div className="ml-4">
+            <Link
+              to={selectedBooking ? `${selectedBooking.id}` : "Stays-Head"}
+              offset={-35}
+            >
+              {selectedBooking ? (
+                <>
+                  {selectedBooking.user_selected ? (
+                    <TransparentButton>
+                      <MdDoneAll
+                        style={{
+                          display: "inline",
+                          marginRight: "0.35rem",
+                        }}
+                      />{" "}
+                      Stay added
+                    </TransparentButton>
+                  ) : (
+                    <TransparentButton>Add Stay</TransparentButton>
+                  )}
+                </>
+              ) : (
+                <></>
+              )}
+            </Link>
+          </div>
         </div>
       </div>
     </Container>
