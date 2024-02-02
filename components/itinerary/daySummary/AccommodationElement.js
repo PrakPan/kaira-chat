@@ -51,6 +51,15 @@ export default function AccommodationElement(props) {
     return null;
   };
 
+  const getUserSelectedBookingId = (id) => {
+    if (booking && booking.length && id) {
+      for (let book of booking) {
+        if (book.id === id) return book.id;
+      }
+    }
+    return null;
+  };
+
   const hoverFunction = () => {
     setVisible(true);
     console.log("Hovered!");
@@ -88,29 +97,17 @@ export default function AccommodationElement(props) {
           <div className="font-medium text-sm">{heading}</div>
           {!isPageWide && (
             <div className="md:ml-3 lg:ml-3">
-              <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
+              <Link
+                to={
+                  getUserSelectedBookingId(data.bookings[0].id)
+                    ? `${getUserSelectedBookingId(data.bookings[0].id)}`
+                    : "Stays-Head"
+                }
+                offset={-95}
+              >
                 {data && data.bookings && data.bookings.length ? (
-                  // <button className="text-blue-500 hover:underline">
-                  //   {getUserSelectedByBookings(
-                  //     data.bookings && data.bookings[0]
-                  //       ? data.bookings[0].id
-                  //       : null
-                  //   ) ? (
-                  //     <>
-                  //       <MdDoneAll
-                  //         style={{
-                  //           display: "inline",
-                  //           marginRight: "0.35rem",
-                  //         }}
-                  //       />
-                  //       Stay added
-                  //     </>
-                  //   ) : (
-                  //     <>+Add Stay</>
-                  //   )}
-                  // </button>
                   <>
-                    {getUserSelectedByBookings(props.data.bookings[0].id) ? (
+                    {getUserSelectedByBookings(data.bookings[0].id) ? (
                       <TransparentButton>
                         <MdDoneAll
                           style={{
@@ -148,7 +145,6 @@ export default function AccommodationElement(props) {
               url={getHotelImage(props?.data?.bookings[0]?.id)}
               noLazy
             ></ImageLoader>
-            {/* <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" /> */}
           </div>
           <div className="flex flex-col ml-3">
             <div className="text-base font-semibold leading-6 ml-2">
@@ -165,29 +161,16 @@ export default function AccommodationElement(props) {
 
           {isPageWide && (
             <div className="md:ml-4 lg:ml-4">
-              <Link to={city_id ? `${city_id}` : "Stays-Head"} offset={-35}>
+              <Link
+                to={
+                  getUserSelectedBookingId(data.bookings[0].id)
+                    ? `${getUserSelectedBookingId(data.bookings[0].id)}`
+                    : "Stays-Head"
+                }
+                offset={-35}
+              >
                 {data && data.bookings && data.bookings.length ? (
                   <>
-                    {/* <button className="text-blue-500 hover:underline">
-                   {getUserSelectedByBookings(
-                      data.bookings && data.bookings[0]
-                        ? data.bookings[0].id
-                        : null
-                    ) ? (
-                      <>
-                        <MdDoneAll
-                          style={{
-                            display: "inline",
-                            marginRight: "0.35rem",
-                          }}
-                        />
-                        Stay added
-                      </>
-                    ) : (
-                      <>+Add Stay</>
-                    )}
-                  </button> */}
-
                     {getUserSelectedByBookings(props.data.bookings[0].id) ? (
                       <TransparentButton>
                         <MdDoneAll
@@ -209,15 +192,6 @@ export default function AccommodationElement(props) {
             </div>
           )}
         </div>
-
-        {/* <div className="w-full flex items-center">
-          <div className="w-[1.25rem] lg:w-[17%] md:w-[27%]"></div>
-          <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
-            {data.bookings &&
-              data.bookings[0] &&
-              getHotelCity(data.bookings[0].id)}
-          </div>
-        </div> */}
       </div>
     </Container>
   );

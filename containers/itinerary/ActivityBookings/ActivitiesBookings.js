@@ -8,15 +8,10 @@ import { ImSpoonKnife } from "react-icons/im";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import BookingModal from "../../../components/modals/bookingupdated/Index";
 import * as ga from "../../../services/ga/Index";
-
 import ButtonYellow from "../../../components/ButtonYellow";
 import AccommodationModal from "../../../components/modals/accommodation/Index";
 import styled from "styled-components";
-
-import {
-  getDate,
-  convertDateYearFormat,
-} from "../../../helper/ConvertDateFormat";
+import { getDate } from "../../../helper/ConvertDateFormat";
 import { connect } from "react-redux";
 import { BiTimeFive } from "react-icons/bi";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
@@ -347,6 +342,7 @@ const ActivitiesBookings = (props) => {
   //   props.token,
   //   props.payment,
   // ]);
+
   function handleClickAc(i) {
     let name = props.stayBookings[i]["name"];
     let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
@@ -415,6 +411,7 @@ const ActivitiesBookings = (props) => {
       {props.activityBookings
         ? props.activityBookings.map((booking, index) => (
             <div
+              id={booking.id}
               key={index}
               className="flex gap-1 pt-4  flex-col justify-start"
             >
@@ -614,6 +611,7 @@ const ActivitiesBookings = (props) => {
             </div>
           ))
         : null}
+
       {/* <AccommodationModal
         _setImagesHandler={_setImagesHandler}
         check_in={dates.check_in}
@@ -643,12 +641,14 @@ const ActivitiesBookings = (props) => {
           setHideBookingModal={props.setHideBookingModal}
         ></BookingModal>
       ) : null} */}
+
       {images ? (
         <FullScreenGallery
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGallery>
       ) : null}
+
       <POIDetailsDrawer
         itineraryDrawer
         show={showMore}

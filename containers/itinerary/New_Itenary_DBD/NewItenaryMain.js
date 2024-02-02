@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Day_I_Container from './Day_I_Container';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Day_I_Container from "./Day_I_Container";
 
-import { getHumanDate } from '../../../services/getHumanDate';
-import { Navbar } from './New_itenaryStyled';
-import CustomMenu from '../CustomMenu';
-import { useSticky } from '../../../hooks/useSticky';
-import useMediaQuery, { useMedia } from '../../../hooks/useMedia';
-import ScrollableTabs from '../../../components/ScrollableTabs';
-import ScrollableMenuTabs from '../../../components/ScrollableMenuTabs';
-import { convertDateFormat } from '../../../helper/ConvertDateFormat';
+import { getHumanDate } from "../../../services/getHumanDate";
+import { Navbar } from "./New_itenaryStyled";
+import CustomMenu from "../CustomMenu";
+import { useSticky } from "../../../hooks/useSticky";
+import useMediaQuery, { useMedia } from "../../../hooks/useMedia";
+import ScrollableTabs from "../../../components/ScrollableTabs";
+import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -35,20 +35,20 @@ const NewItenaryMain = (props) => {
     padding: 0.5rem;
   `;
 
-  const isDesktop = useMediaQuery('(min-width:1148px)');
+  const isDesktop = useMediaQuery("(min-width:1148px)");
 
   let currentCity = props.itinerary.starting_city.city_name;
 
   const getCurrentCity = () => {
     props.itinerary.day_slabs.map((day_slab, index) => {
       day_slab.slab_elements.map((element, index) => {
-        if(element.element_type === 'newcity') {
-          currentCity = element.city_data.city_name;
+        if (element.element_type === "newcity") {
+          currentCity = element.city_data;
         }
-      })
-      day_slab.current_cityName = currentCity;
-    })
-  }
+      });
+      day_slab.current_city = currentCity;
+    });
+  };
 
   getCurrentCity();
 
@@ -83,7 +83,8 @@ const NewItenaryMain = (props) => {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
       //Don't do anything if ending city
-      if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true) break;
+      if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
+        break;
       else if (props.city_slabs[i].duration <= 0) break;
       else {
         const itenaryId =
@@ -151,7 +152,7 @@ const NewItenaryMain = (props) => {
 
   const yearCalc = (days) => {
     if (days[0]) {
-      var year1 = days[0]?.date?.split('/')[2];
+      var year1 = days[0]?.date?.split("/")[2];
       return year1;
     }
   };
@@ -172,7 +173,7 @@ const NewItenaryMain = (props) => {
     };
   };
   function extractCityName(arr) {
-    const cityObject = arr.find((obj) => obj.element_type === 'newcity');
+    const cityObject = arr.find((obj) => obj.element_type === "newcity");
 
     if (cityObject && cityObject.city_name) {
       return cityObject.city_name;
@@ -221,8 +222,11 @@ const NewItenaryMain = (props) => {
                 LastElement={props.itinerary.day_slabs.length == index + 1}
                 transferBookings={props.transferBookings}
                 stayBookings={props.stayBookings}
-                current_cityName={element.current_cityName}
-                getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+                activityBookings={props.activityBookings}
+                current_city={element.current_city}
+                getAccommodationAndActivitiesHandler={
+                  props.getAccommodationAndActivitiesHandler
+                }
               ></Day_I_Container>
             </div>
           ))}

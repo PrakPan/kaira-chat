@@ -689,6 +689,7 @@ const SimpleTabsV2 = (props) => {
               getPaymentHandler={props.getPaymentHandler}
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
+              activityBookings={props.activityBookings}
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
@@ -884,6 +885,7 @@ const SimpleTabsV2 = (props) => {
                     token={props.token}
                     transferBookings={props.transferBookings}
                     stayBookings={props.stayBookings}
+                    activityBookings={props.activityBookings}
                     getAccommodationAndActivitiesHandler={
                       props.getAccommodationAndActivitiesHandler
                     }
@@ -903,6 +905,7 @@ const SimpleTabsV2 = (props) => {
                   getPaymentHandler={props.getPaymentHandler}
                   transferBookings={props.transferBookings}
                   stayBookings={props.stayBookings}
+                  activityBookings={props.activityBookings}
                 ></NewItenaryDBDMob>
               </div>
             )}

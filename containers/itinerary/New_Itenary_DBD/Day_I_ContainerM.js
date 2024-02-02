@@ -16,9 +16,10 @@ import { isJson } from "../../../services/isJSON";
 import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
 import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
 import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
-import { getDate } from "../../../helper/DateUtils";
+import { getYear } from "../../../helper/DateUtils";
 import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
 import { DaySummaryContainerStyle } from "./Day_I_Container";
+import ActivityAddDrawer from "../../../components/drawers/poiDetails/activityAddDrawer";
 
 const Container = styled.div`
   background: #ffffff;
@@ -44,6 +45,7 @@ const Date = styled.div`
 
 const Day_I_ContainerM = (props) => {
   const [viewMore, setViewMore] = useState(true);
+  const [showAddDrawer, setShowAddDrawer] = useState(false);
   const Arslab_elements = [
     { name: "transfer", data: [] },
     { name: "newcity", data: [] },
@@ -82,7 +84,6 @@ const Day_I_ContainerM = (props) => {
   let summaryIContainer = [];
   let newCity;
   function setSymmaryElements(elements) {
-    let activities = [];
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
@@ -99,7 +100,7 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case "newcity":
-          newCity = element.city_data.city_name;
+          newCity = element.city_data;
           break;
         case "accommodation":
           if (element.bookings && element.bookings.length) {
@@ -116,38 +117,19 @@ const Day_I_ContainerM = (props) => {
           }
           break;
         case "activity":
-          activities.push({
-            heading: element.heading,
-            text: element.text,
-            image: element.icon !== undefined ? element.icon : null,
-            poi: element?.activity_data?.poi
-              ? element?.activity_data?.poi
-              : element?.activity_data,
-            activity: element?.activity_data?.activity,
-            activity_data: element?.activity_data,
-          });
+          if (Object.keys(element.activity_data.activity).length !== 0) {
+            summaryIContainer.push(
+              <ActivityElement
+                key={`${props.indexDay}-${index}-${element?.activity_data?.id}`}
+                data={element}
+                booking={props.activityBookings}
+              />
+            );
+          }
           break;
         default:
       }
     });
-
-    if (activities.length) {
-      summaryIContainer.push(
-        <ActivityElement
-          key={`summary_activity`}
-          activities={activities}
-          date={props.Days?.date}
-          day_slab_index={props?.indexDay}
-          itinerary_id={props.itinerary_id}
-          getPaymentHandler={props.getPaymentHandler}
-          getAccommodationAndActivitiesHandler={
-            props.getAccommodationAndActivitiesHandler
-          }
-          setShowLoginModal={props.setShowLoginModal}
-          setItinerary={props.setItinerary}
-        />
-      );
-    }
   }
   setSymmaryElements(props.Days.slab_elements);
 
@@ -279,10 +261,10 @@ const Day_I_ContainerM = (props) => {
               : "text-black text-base font-bold"
           }`}
         >
-          {convertDateFormat(props.Days?.slab)}, {getDate(props?.Days?.slab)} -{" "}
+          {convertDateFormat(props.Days?.slab)}, {getYear(props?.Days?.slab)} -{" "}
           {newCity
-            ? `Arrival in ${newCity}`
-            : `${props.current_cityName} Exploration`}
+            ? `Arrival in ${newCity.city_name}`
+            : `${props.current_city.city_name} Exploration`}
         </div>
 
         <ViewMoreButton
@@ -317,10 +299,36 @@ const Day_I_ContainerM = (props) => {
         ></ItineraryFlightElement>} */}
 
         {viewMore ? (
-          <DayContainerStyle>{dayIcontainer}</DayContainerStyle>
+          <DayContainerStyle>
+            {dayIcontainer}
+            <div className="flex w-full">
+              {!props.payment?.is_registration_needed &&
+                props.payment?.user_allowed_to_pay &&
+                !props.payment.paid_user && (
+                  <button
+                    onClick={() => setShowAddDrawer(true)}
+                    className="text-lg font-normal text-blue-500 hover:underline"
+                  >
+                    + Add Activity on {convertDateFormat(props?.Days?.date)}
+                  </button>
+                )}
+            </div>
+          </DayContainerStyle>
         ) : (
           <DaySummaryContainerStyle>
             {summaryIContainer}
+            <div className="flex w-full">
+              {!props.payment?.is_registration_needed &&
+                props.payment?.user_allowed_to_pay &&
+                !props.payment.paid_user && (
+                  <button
+                    onClick={() => setShowAddDrawer(true)}
+                    className="text-sm font-normal text-blue-500 hover:underline"
+                  >
+                    + Add Activity on {convertDateFormat(props?.Days?.date)}
+                  </button>
+                )}
+            </div>
           </DaySummaryContainerStyle>
         )}
 
@@ -444,6 +452,21 @@ const Day_I_ContainerM = (props) => {
           ></ItineraryFoodElementM>
         ) : null} */}
       </div>
+      <ActivityAddDrawer
+        showDrawer={showAddDrawer}
+        setShowDrawer={setShowAddDrawer}
+        cityName={newCity ? newCity.city_name : props?.current_city.city_name}
+        cityID={newCity ? newCity.city_id : props?.current_city.city_id}
+        date={props?.Days?.date}
+        itinerary_id={props?.itinerary_id}
+        day_slab_index={props?.indexDay}
+        getPaymentHandler={props?.getPaymentHandler}
+        getAccommodationAndActivitiesHandler={
+          props?.getAccommodationAndActivitiesHandler
+        }
+        setShowLoginModal={props?.setShowLoginModal}
+        setItinerary={props?.setItinerary}
+      ></ActivityAddDrawer>
     </Container>
   );
 };

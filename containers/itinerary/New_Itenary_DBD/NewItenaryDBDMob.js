@@ -56,10 +56,10 @@ const NewItenaryDBDMob = (props) => {
     props.itinerary.day_slabs.map((day_slab, index) => {
       day_slab.slab_elements.map((element, index) => {
         if (element.element_type === "newcity") {
-          currentCity = element.city_data.city_name;
+          currentCity = element.city_data;
         }
       });
-      day_slab.current_cityName = currentCity;
+      day_slab.current_city = currentCity;
     });
   };
 
@@ -71,6 +71,7 @@ const NewItenaryDBDMob = (props) => {
     if (arr.length <= location) return arr[arr.length - 1].slab_id;
     return arr[location].slab_id;
   }
+
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
@@ -127,6 +128,7 @@ const NewItenaryDBDMob = (props) => {
   const handleActiveSelect = (itemId) => {
     setActiveItem(itemsDays[itemId].date);
   };
+
   return (
     <Wrapper>
       {" "}
@@ -195,7 +197,8 @@ const NewItenaryDBDMob = (props) => {
               LastElement={props.itinerary.day_slabs.length - 1 == index}
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
-              current_cityName={element.current_cityName}
+              activityBookings={props.activityBookings}
+              current_city={element.current_city}
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }

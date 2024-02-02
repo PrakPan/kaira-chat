@@ -17,7 +17,9 @@ import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreBut
 import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
 import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
 import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
+import PoiElement from "../../../components/itinerary/daySummary/PoiElement";
 import { getYear } from "../../../helper/DateUtils";
+import ActivityAddDrawer from "../../../components/drawers/poiDetails/activityAddDrawer";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -120,6 +122,7 @@ const Date = styled.div`
 
 const Day_I_Container = (props) => {
   const [viewMore, setViewMore] = useState(true);
+  const [showAddDrawer, setShowAddDrawer] = useState(false);
   const Arslab_elements = [
     { name: "transfer", data: [] },
     { name: "newcity", data: [] },
@@ -171,7 +174,7 @@ const Day_I_Container = (props) => {
           );
           break;
         case "newcity":
-          newCity = element.city_data.city_name;
+          newCity = element.city_data;
           break;
         case "accommodation":
           if (element.bookings && element.bookings.length) {
@@ -188,16 +191,29 @@ const Day_I_Container = (props) => {
           }
           break;
         case "activity":
-          activities.push({
-            heading: element.heading,
-            text: element.text,
-            image: element.icon !== undefined ? element.icon : null,
-            poi: element?.activity_data?.poi
-              ? element?.activity_data?.poi
-              : element?.activity_data,
-            activity: element?.activity_data?.activity,
-            activity_data: element?.activity_data,
-          });
+          if (
+            Object.keys(element?.activity_data?.activity).length !== 0 &&
+            element?.bookings &&
+            element?.bookings.length
+          ) {
+            summaryIContainer.push(
+              <ActivityElement
+                key={`${props.indexDay}-${index}-${element?.activity_data?.id}`}
+                data={element}
+                booking={props.activityBookings}
+                city_id={element?.current_city_id}
+              />
+            );
+          } else {
+            activities.push({
+              heading: element.heading,
+              text: element.text,
+              image: element.icon !== undefined ? element.icon : null,
+              poi: element?.activity_data?.poi,
+              activity: element?.activity_data?.activity,
+              activity_data: element?.activity_data,
+            });
+          }
           break;
         default:
       }
@@ -205,20 +221,7 @@ const Day_I_Container = (props) => {
 
     if (activities.length) {
       summaryIContainer.push(
-        <ActivityElement
-          key={`summary_activity-${props.indexDay}`}
-          activities={activities}
-          date={props.Days?.date}
-          day_slab_index={props?.indexDay}
-          itinerary_id={props.itinerary_id}
-          getPaymentHandler={props.getPaymentHandler}
-          getAccommodationAndActivitiesHandler={
-            props.getAccommodationAndActivitiesHandler
-          }
-          setShowLoginModal={props.setShowLoginModal}
-          setItinerary={props.setItinerary}
-          payment={props.payment}
-        />
+        <PoiElement key={`summary_poi`} activities={activities} />
       );
     }
   }
@@ -352,8 +355,8 @@ const Day_I_Container = (props) => {
             {convertDateFormat(props.Days?.slab)}, {getYear(props?.Days?.slab)}{" "}
             -{" "}
             {newCity
-              ? `Arrival in ${newCity}`
-              : `${props.current_cityName ?? ""} Exploration`}
+              ? `Arrival in ${newCity.city_name}`
+              : `${props.current_city.city_name ?? ""} Exploration`}
           </div>
 
           {/* {props.Days.slab_elements[0] !== undefined &&
@@ -499,10 +502,52 @@ const Day_I_Container = (props) => {
         ) : null} */}
 
           {dayIcontainer}
+          <div className="flex w-full ml-8">
+            {!props.payment?.is_registration_needed &&
+              props.payment?.user_allowed_to_pay &&
+              !props.payment.paid_user && (
+                <button
+                  onClick={() => setShowAddDrawer(true)}
+                  className="text-lg font-normal text-blue-500 hover:underline"
+                >
+                  + Add Activity on {convertDateFormat(props?.Days?.date)}
+                </button>
+              )}
+          </div>
         </DayContainerStyle>
       ) : (
-        <DaySummaryContainerStyle>{summaryIContainer}</DaySummaryContainerStyle>
+        <DaySummaryContainerStyle>
+          {summaryIContainer}
+          <div className="flex w-full ml-8">
+            {!props.payment?.is_registration_needed &&
+              props.payment?.user_allowed_to_pay &&
+              !props.payment.paid_user && (
+                <button
+                  onClick={() => setShowAddDrawer(true)}
+                  className="text-sm font-normal text-blue-500 hover:underline"
+                >
+                  + Add Activity on {convertDateFormat(props?.Days?.date)}
+                </button>
+              )}
+          </div>
+        </DaySummaryContainerStyle>
       )}
+
+      <ActivityAddDrawer
+        showDrawer={showAddDrawer}
+        setShowDrawer={setShowAddDrawer}
+        cityName={newCity ? newCity.city_name : props?.current_city.city_name}
+        cityID={newCity ? newCity.city_id : props?.current_city.city_id}
+        date={props?.Days?.date}
+        itinerary_id={props?.itinerary_id}
+        day_slab_index={props?.indexDay}
+        getPaymentHandler={props?.getPaymentHandler}
+        getAccommodationAndActivitiesHandler={
+          props?.getAccommodationAndActivitiesHandler
+        }
+        setShowLoginModal={props?.setShowLoginModal}
+        setItinerary={props?.setItinerary}
+      ></ActivityAddDrawer>
     </Container>
   );
 };

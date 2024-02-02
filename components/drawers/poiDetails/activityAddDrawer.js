@@ -33,7 +33,7 @@ const items = [
   //   { id: 2, label: "Places To Visit", link: "POI" },
 ];
 
-const POIAddDrawer = (props) => {
+const ActivityAddDrawer = (props) => {
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
@@ -252,4 +252,4 @@ const mapDispatchToProps = (dispatch) => {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
-export default connect(mapStateToPros, mapDispatchToProps)(POIAddDrawer);
+export default connect(mapStateToPros, mapDispatchToProps)(ActivityAddDrawer);

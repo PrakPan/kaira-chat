@@ -3,7 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import { AiFillCar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
-import { EXPERIENCE_FILTERS_BOX, ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import {
+  EXPERIENCE_FILTERS_BOX,
+  ITINERARY_ELEMENT_TYPES,
+} from "../../../services/constants";
 import { HiPencil } from "react-icons/hi";
 import Rating from "./Rating";
 import Tips from "./Tips";
@@ -30,8 +33,7 @@ import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { BiErrorCircle } from "react-icons/bi";
 
-const Container = styled.div`
-`;
+const Container = styled.div``;
 
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
@@ -116,10 +118,10 @@ const GridResponsive = styled.div`
   grid-row-gap: 0.5rem;
 `;
 const MoreIcon = styled.div`
-display : flex;
-justify-content : flex-end;
-align-items : center;
-`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
 const RatingContainer = styled.div`
   margin-top: 0.4rem;
   // display: flex;
@@ -155,16 +157,17 @@ const ItineraryPoiElementM = (props) => {
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
   ];
-const drawerRef = useRef(null);
+  const drawerRef = useRef(null);
+
   useEffect(() => {
     if (props.city_id && showDrawer) {
-        let ticketsCount = 1;
-        if (props.payment && props.payment.meta_info) {
-          ticketsCount =
-            props.payment.meta_info.number_of_adults +
-            props.payment.meta_info.number_of_children +
-            props.payment.meta_info.number_of_infants;
-        }
+      let ticketsCount = 1;
+      if (props.payment && props.payment.meta_info) {
+        ticketsCount =
+          props.payment.meta_info.number_of_adults +
+          props.payment.meta_info.number_of_children +
+          props.payment.meta_info.number_of_infants;
+      }
       setFetchingPoi(true);
       if (props.city_id) setShowDrawer(true);
       axiosaxtivitiesinstance
@@ -194,7 +197,6 @@ const drawerRef = useRef(null);
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
                     ticketsCount={ticketsCount}
-                    getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
                   ></PoiList>
                 );
             }
@@ -204,13 +206,33 @@ const drawerRef = useRef(null);
           }
           setFetchingPoi(false);
         })
-        .catch((err) => { });
+        .catch((err) => {});
     }
   }, [showDrawer, elementType, SelectedExprience]);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
+  };
+
+  const setFocus = (dayIndex, elementIndex, activityId) => {
+    const element = document.getElementById(
+      `${dayIndex}-${elementIndex}-${activityId}`
+    );
+    element.scrollIntoView({ block: "center" });
+    element.style.borderWidth = "1px";
+    element.style.borderRadius = "10px";
+    element.style.borderColor = "#f8e000";
+    element.style.boxShadow = "0 0 10px #f8e000";
+    const timeoutId = setTimeout(() => {
+      element.style.borderColor = "";
+      element.style.borderWidth = "";
+      element.style.borderRadius = "";
+      element.style.boxShadow = "";
+    }, 4000);
+
+    // Cleanup the timeout to avoid memory leaks
+    return () => clearTimeout(timeoutId);
   };
 
   const _updatePoiHandler = (poi) => {
@@ -239,11 +261,19 @@ const drawerRef = useRef(null);
       )
       .then((res) => {
         props.setItinerary(res.data);
-         props.openNotification({
-           text: "Your Itinerary updated successfully!",
-           heading: "Success!",
-           type: "success",
-         });
+        props.getAccommodationAndActivitiesHandler();
+        props.openNotification({
+          text: "Your Itinerary updated successfully!",
+          heading: "Success!",
+          type: "success",
+        });
+        setTimeout(() => {
+          setFocus(
+            props.day_slab_index,
+            props.data.element_index,
+            poi.activity_data.id
+          );
+        }, 1000);
       })
       .catch((err) => {
         // setUpdateLoadingState(false);
@@ -256,19 +286,21 @@ const drawerRef = useRef(null);
         });
       });
   };
+
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
+
   function Poi_activities(activity) {
     setFetchingPoi(true);
-     let ticketsCount = 1;
-     if (props.payment && props.payment.meta_info) {
-       ticketsCount =
-         props.payment.meta_info.number_of_adults +
-         props.payment.meta_info.number_of_children +
-         props.payment.meta_info.number_of_infants;
-     }
+    let ticketsCount = 1;
+    if (props.payment && props.payment.meta_info) {
+      ticketsCount =
+        props.payment.meta_info.number_of_adults +
+        props.payment.meta_info.number_of_children +
+        props.payment.meta_info.number_of_infants;
+    }
     if (props.city_id) setShowDrawer(true);
     axiosaxtivitiesinstance
       .post("/", {
@@ -295,7 +327,9 @@ const drawerRef = useRef(null);
                   setLoginModal={setShowLoginModal}
                   token={props.token}
                   ticketsCount={ticketsCount}
-                  getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+                  getAccommodationAndActivitiesHandler={
+                    props.getAccommodationAndActivitiesHandler
+                  }
                 ></PoiList>
               );
           }
@@ -316,7 +350,7 @@ const drawerRef = useRef(null);
   ];
   const ClickHandler = (child) => {
     if (child == "Activities") {
-       setElementType('Activity')
+      setElementType("Activity");
     } else {
       setElementType("POI");
     }
@@ -342,7 +376,11 @@ const drawerRef = useRef(null);
   };
 
   return (
-    <Container onClick={() => setShow(true)} className="font-lexend">
+    <Container
+      id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
+      onClick={() => setShow(true)}
+      className="font-lexend p-2"
+    >
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
         <SectionOneText>{props.time}</SectionOneText>
         <AiFillCar
@@ -389,9 +427,7 @@ const drawerRef = useRef(null);
             noLazy
           ></ImageLoader>
         ) : (
-          <div
-            style={{display: "flex", justifyContent: "left" }}
-          >
+          <div style={{ display: "flex", justifyContent: "left" }}>
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
               dimensionsMobile={{ width: 300, height: 300 }}
@@ -533,9 +569,7 @@ const drawerRef = useRef(null);
         // zIndex='1501'
       >
         <div></div>
-        <div
-          className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]"
-        >
+        <div className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
               onClick={(e) => {
@@ -589,9 +623,7 @@ const drawerRef = useRef(null);
         className="font-lexend"
         onHide={() => setshowFilter(false)}
       >
-        <div
-          className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto "
-        >
+        <div className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
           <div className="w-[100%]">
             <div className="flex flex-row gap-3 my-0 justify-start items-center">
               <IoMdClose
@@ -712,4 +744,3 @@ export default connect(
   mapStateToPros,
   mapDispatchToProps
 )(ItineraryPoiElementM);
-
