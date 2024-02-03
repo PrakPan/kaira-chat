@@ -83,7 +83,7 @@ const MidSection = (props) => {
   if (props?.route && props?.route?.modes && props?.route?.modes.length)
     hidemidsection = false;
   else if (props?.bookings && props?.bookings.length) hidemidsection = false;
-  else if (props?.route && props?.route.transfers?.id) hidemidsection = false;
+  else if (props?.route && props?.route?.transfers) hidemidsection = false;
   else hidemidsection = true;
 
   const handleTransferEdit = (e) => {
@@ -127,7 +127,8 @@ const MidSection = (props) => {
       {!hidemidsection && (
         <>
           {props.version == "v2" ? (
-            props.route.transfers.id &&
+            props.route?.transfers &&
+            props.route?.transfers?.id &&
             (!props.bookings || props.bookings.length === 0) ? (
               <Text>
                 {" "}
