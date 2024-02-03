@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
-    "build": "next build",
+    "build": "next build --outDir=./temp",
     "start": "next start -p 3002",
     "lint": "next lint"
   },
