@@ -321,7 +321,8 @@ const Day_I_ContainerM = (props) => {
             <div className="flex w-full">
               {!props.payment?.is_registration_needed &&
                 props.payment?.user_allowed_to_pay &&
-                !props.payment.paid_user && (
+                !props.payment.paid_user &&
+                !props.LastElement && (
                   <button
                     onClick={() => setShowAddDrawer(true)}
                     className="text-lg font-normal text-blue-500 hover:underline"
