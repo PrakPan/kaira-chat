@@ -118,7 +118,7 @@ const MidSection = (props) => {
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
-      {!hidemidsection && (
+      {!hidemidsection || true && (
         <>
           {props.version == "v2" ? (
             props.route.transfers.id &&

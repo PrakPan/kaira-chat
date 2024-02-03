@@ -89,17 +89,19 @@ const Day_I_ContainerM = (props) => {
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
-          summaryIContainer.push(
-            <TransferElement
-              key={`summary_transfer_${index}`}
-              modes={getTransportationType(element.icon)}
-              heading={element.heading}
-              booking={props.transferBookings}
-              meta={element.meta}
-              data={element}
-              transfers={element.transfers}
-            />
-          );
+          if (element.bookings && element.bookings.length) {
+            summaryIContainer.push(
+              <TransferElement
+                key={`summary_transfer_${index}`}
+                modes={getTransportationType(element.icon)}
+                heading={element.heading}
+                booking={props.transferBookings}
+                meta={element.meta}
+                data={element}
+                transfers={element.transfers}
+              />
+            );
+          }
           break;
         case "newcity":
           newCity = element.city_data;

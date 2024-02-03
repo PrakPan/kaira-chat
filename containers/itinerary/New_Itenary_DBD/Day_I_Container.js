@@ -161,17 +161,19 @@ const Day_I_Container = (props) => {
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
-          summaryIContainer.push(
-            <TransferElement
-              key={`summary_transfer_${props.indexDay}-${index}`}
-              modes={getTransportationType(element.icon)}
-              heading={element.heading}
-              booking={props.transferBookings}
-              meta={element.meta}
-              data={element}
-              transfers={element.transfers}
-            />
-          );
+          if (element.bookings && element.bookings.length) {
+            summaryIContainer.push(
+              <TransferElement
+                key={`summary_transfer_${props.indexDay}-${index}`}
+                modes={getTransportationType(element.icon)}
+                heading={element.heading}
+                booking={props.transferBookings}
+                meta={element.meta}
+                data={element}
+                transfers={element.transfers}
+              />
+            );
+          }
           break;
         case "newcity":
           newCity = element.city_data;
@@ -505,7 +507,8 @@ const Day_I_Container = (props) => {
           <div className="flex w-full ml-8">
             {!props.payment?.is_registration_needed &&
               props.payment?.user_allowed_to_pay &&
-              !props.payment.paid_user&& !props.LastElement  && (
+              !props.payment.paid_user &&
+              !props.LastElement && (
                 <button
                   onClick={() => setShowAddDrawer(true)}
                   className="text-lg font-normal text-blue-500 hover:underline"
@@ -521,7 +524,8 @@ const Day_I_Container = (props) => {
           <div className="flex w-full ml-8">
             {!props.payment?.is_registration_needed &&
               props.payment?.user_allowed_to_pay &&
-              !props.payment.paid_user && !props.LastElement && (
+              !props.payment.paid_user &&
+              !props.LastElement && (
                 <button
                   onClick={() => setShowAddDrawer(true)}
                   className="text-sm font-normal text-blue-500 hover:underline"

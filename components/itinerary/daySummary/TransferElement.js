@@ -40,7 +40,7 @@ export default function TransferElement(props) {
   };
 
   const isOriginDestination = () => {
-    if (isValidBooking(data?.bookings[0]?.id)) {
+    if (data.bookings && data.bookings.length && isValidBooking(data?.bookings[0]?.id)) {
       const origin = getBooking(data?.bookings[0]?.id)?.city;
       const destination = getBooking(data?.bookings[0]?.id)?.destination
         ?.shortName;
