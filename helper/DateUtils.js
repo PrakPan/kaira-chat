@@ -1,10 +1,13 @@
 export const getDate = (dateString) => {
   if (!dateString) return "";
-  const temp = dateString?.split("/");
-  return `${temp[2]}-${temp[1]}-${temp[0]}`;
+  const [day, month, year] = dateString.split("/");
+  if (!day || !month || !year) return dateString;
+  return `${year}-${month}-${day}`;
 };
 
 export const getYear = (dateString) => {
   if (!dateString) return "";
-  return dateString?.split("/")?.filter((element) => element.length === 4)[0];
+  const [day, month, year] = dateString.split("/");
+  if (!year) return "";
+  return year;
 };

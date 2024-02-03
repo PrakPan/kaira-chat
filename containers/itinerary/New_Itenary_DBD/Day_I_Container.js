@@ -511,7 +511,12 @@ const Day_I_Container = (props) => {
                 onClick={() => setShowAddDrawer(true)}
                 className="text-lg font-normal text-blue-500 hover:underline"
               >
-                + Add Activity on {props?.Days?.date ? convertDateFormat(props?.Days?.date) : convertDateFormat(props?.Days?.slab)}
+                + Add Activity{" "}
+                {props?.Days?.date
+                  ? `on ${convertDateFormat(props?.Days?.date)}`
+                  : props?.Days?.slab
+                  ? `on ${convertDateFormat(props?.Days?.slab)}`
+                  : ""}
               </button>
             )}
           </div>
@@ -525,7 +530,12 @@ const Day_I_Container = (props) => {
                 onClick={() => setShowAddDrawer(true)}
                 className="text-sm font-normal text-blue-500 hover:underline"
               >
-                + Add Activity on {props?.Days?.date ? convertDateFormat(props?.Days?.date) : convertDateFormat(props?.Days?.slab)}
+                + Add Activity{" "}
+                {props?.Days?.date
+                  ? `on ${convertDateFormat(props?.Days?.date)}`
+                  : props?.Days?.slab
+                  ? `on ${convertDateFormat(props?.Days?.slab)}`
+                  : ""}
               </button>
             )}
           </div>
