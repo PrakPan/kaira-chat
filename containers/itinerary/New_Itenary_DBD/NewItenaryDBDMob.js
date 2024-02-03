@@ -194,7 +194,7 @@ const NewItenaryDBDMob = (props) => {
               itinerary_id={props.itinerary.tailor_made_id}
               setItinerary={props.setItinerary}
               token={props.token}
-              LastElement={props.itinerary.day_slabs.length - 1 == index}
+              LastElement={props.itinerary.day_slabs.length - 1 === index}
               transferBookings={props.transferBookings}
               stayBookings={props.stayBookings}
               activityBookings={props.activityBookings}

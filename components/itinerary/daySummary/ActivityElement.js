@@ -126,7 +126,7 @@ export default function ActivityElement(props) {
                 <div className="flex flex-row gap-1 items-center">
                   <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
                   <div>
-                    <div className="text-sm font-[400] line-clamp-1">
+                    <div className="text-xs font-normal leading-4 line-clamp-1">
                       {selectedBooking.ideal_duration_hours_text}
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export default function ActivityElement(props) {
                 <div>
                   <div className="flex flex-row gap-1 items-center">
                     <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                    <div className="text-sm font-[400] line-clamp-1">
+                    <div className="text-xs font-normal leading-4 line-clamp-1">
                       {selectedBooking?.costings_breakdown?.no_of_tickets}{" "}
                       {selectedBooking?.costings_breakdown?.no_of_tickets <= "1"
                         ? "Ticket"

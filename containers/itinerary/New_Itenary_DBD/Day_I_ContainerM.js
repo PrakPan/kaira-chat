@@ -16,6 +16,7 @@ import { isJson } from "../../../services/isJSON";
 import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
 import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
 import ActivityElement from "../../../components/itinerary/daySummary/ActivityElement";
+import PoiElement from "../../../components/itinerary/daySummary/PoiElement";
 import { getYear } from "../../../helper/DateUtils";
 import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
 import { DaySummaryContainerStyle } from "./Day_I_Container";
@@ -84,6 +85,7 @@ const Day_I_ContainerM = (props) => {
   let summaryIContainer = [];
   let newCity;
   function setSymmaryElements(elements) {
+    let activities = [];
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
@@ -125,11 +127,26 @@ const Day_I_ContainerM = (props) => {
                 booking={props.activityBookings}
               />
             );
+          } else {
+            activities.push({
+              heading: element.heading,
+              text: element.text,
+              image: element.icon !== undefined ? element.icon : null,
+              poi: element?.activity_data?.poi,
+              activity: element?.activity_data?.activity,
+              activity_data: element?.activity_data,
+            });
           }
           break;
         default:
       }
     });
+
+    if (activities.length) {
+      summaryIContainer.push(
+        <PoiElement key={`summary_poi`} activities={activities} />
+      );
+    }
   }
   setSymmaryElements(props.Days.slab_elements);
 
@@ -320,7 +337,8 @@ const Day_I_ContainerM = (props) => {
             <div className="flex w-full">
               {!props.payment?.is_registration_needed &&
                 props.payment?.user_allowed_to_pay &&
-                !props.payment.paid_user && (
+                !props.payment.paid_user &&
+                !props.LastElement && (
                   <button
                     onClick={() => setShowAddDrawer(true)}
                     className="text-sm font-normal text-blue-500 hover:underline"

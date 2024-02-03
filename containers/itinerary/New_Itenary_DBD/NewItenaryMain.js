@@ -219,7 +219,7 @@ const NewItenaryMain = (props) => {
                 itinerary_id={props.itinerary.tailor_made_id}
                 setItinerary={props.setItinerary}
                 token={props.token}
-                LastElement={props.itinerary.day_slabs.length == index + 1}
+                LastElement={props.itinerary.day_slabs.length === index + 1}
                 transferBookings={props.transferBookings}
                 stayBookings={props.stayBookings}
                 activityBookings={props.activityBookings}

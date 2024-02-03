@@ -81,7 +81,7 @@ export default function AccommodationElement(props) {
             ></ImageLoader>
           </div>
           <div className="flex flex-col ml-3">
-            <div className="text-sm font-normal leading-6 ml-2">
+            <div className="text-xs font-normal leading-4 ml-2">
               {selectedBooking && selectedBooking.name}
             </div>
             <div className="font-normal text-xs leading-4 ml-2">
