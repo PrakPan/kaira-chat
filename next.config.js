@@ -1,4 +1,5 @@
 module.exports = {
+  distDir: "temp",
   async redirects() {
     return [
       {
