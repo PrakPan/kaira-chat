@@ -92,4 +92,7 @@ Dockerfile
 *.swp
  
 .sentryclirc
+
+nextjs-pm2-deploy.sh
+ecosystem.config.js
  
