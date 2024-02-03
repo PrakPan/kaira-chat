@@ -97,16 +97,22 @@ const MidSection = (props) => {
         },
       })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.transfers.length > 0) {
           const data = response.data;
           setAlternateRoutes(data);
+        } else {
+          setAlternatesError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
         }
         setLoadingAlternates(false);
       })
       .catch((err) => {
         setLoadingAlternates(false);
         if (err.response.status === 404) {
-          setAlternatesError("No Route Found, please try again!");
+          setAlternatesError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
         } else {
           setAlternatesError("There seems to be problem, please try again!");
         }
@@ -118,12 +124,11 @@ const MidSection = (props) => {
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
-      {!hidemidsection || true && (
+      {!hidemidsection && (
         <>
           {props.version == "v2" ? (
             props.route.transfers.id &&
-            props.bookings &&
-            props.bookings.length === 0 ? (
+            (!props.bookings || props.bookings.length === 0) ? (
               <Text>
                 {" "}
                 <button

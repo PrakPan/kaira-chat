@@ -194,6 +194,7 @@ const Day_I_Container = (props) => {
           break;
         case "activity":
           if (
+            element.activity_data.activity &&
             Object.keys(element?.activity_data?.activity).length !== 0 &&
             element?.bookings &&
             element?.bookings.length
@@ -505,34 +506,28 @@ const Day_I_Container = (props) => {
 
           {dayIcontainer}
           <div className="flex w-full ml-8">
-            {!props.payment?.is_registration_needed &&
-              props.payment?.user_allowed_to_pay &&
-              !props.payment.paid_user &&
-              !props.LastElement && (
-                <button
-                  onClick={() => setShowAddDrawer(true)}
-                  className="text-lg font-normal text-blue-500 hover:underline"
-                >
-                  + Add Activity on {convertDateFormat(props?.Days?.date)}
-                </button>
-              )}
+            {!props.LastElement && (
+              <button
+                onClick={() => setShowAddDrawer(true)}
+                className="text-lg font-normal text-blue-500 hover:underline"
+              >
+                + Add Activity on {convertDateFormat(props?.Days?.date)}
+              </button>
+            )}
           </div>
         </DayContainerStyle>
       ) : (
         <DaySummaryContainerStyle>
           {summaryIContainer}
           <div className="flex w-full ml-8">
-            {!props.payment?.is_registration_needed &&
-              props.payment?.user_allowed_to_pay &&
-              !props.payment.paid_user &&
-              !props.LastElement && (
-                <button
-                  onClick={() => setShowAddDrawer(true)}
-                  className="text-sm font-normal text-blue-500 hover:underline"
-                >
-                  + Add Activity on {convertDateFormat(props?.Days?.date)}
-                </button>
-              )}
+            {!props.LastElement && (
+              <button
+                onClick={() => setShowAddDrawer(true)}
+                className="text-sm font-normal text-blue-500 hover:underline"
+              >
+                + Add Activity on {convertDateFormat(props?.Days?.date)}
+              </button>
+            )}
           </div>
         </DaySummaryContainerStyle>
       )}

@@ -121,7 +121,10 @@ const Day_I_ContainerM = (props) => {
           }
           break;
         case "activity":
-          if (Object.keys(element.activity_data.activity).length !== 0) {
+          if (
+            element.activity_data.activity &&
+            Object.keys(element.activity_data.activity).length !== 0
+          ) {
             summaryIContainer.push(
               <ActivityElement
                 key={`${props.indexDay}-${index}-${element?.activity_data?.id}`}
@@ -321,34 +324,28 @@ const Day_I_ContainerM = (props) => {
           <DayContainerStyle>
             {dayIcontainer}
             <div className="flex w-full">
-              {!props.payment?.is_registration_needed &&
-                props.payment?.user_allowed_to_pay &&
-                !props.payment.paid_user &&
-                !props.LastElement && (
-                  <button
-                    onClick={() => setShowAddDrawer(true)}
-                    className="text-lg font-normal text-blue-500 hover:underline"
-                  >
-                    + Add Activity on {convertDateFormat(props?.Days?.date)}
-                  </button>
-                )}
+              {!props.LastElement && (
+                <button
+                  onClick={() => setShowAddDrawer(true)}
+                  className="text-lg font-normal text-blue-500 hover:underline"
+                >
+                  + Add Activity on {convertDateFormat(props?.Days?.date)}
+                </button>
+              )}
             </div>
           </DayContainerStyle>
         ) : (
           <DaySummaryContainerStyle>
             {summaryIContainer}
             <div className="flex w-full">
-              {!props.payment?.is_registration_needed &&
-                props.payment?.user_allowed_to_pay &&
-                !props.payment.paid_user &&
-                !props.LastElement && (
-                  <button
-                    onClick={() => setShowAddDrawer(true)}
-                    className="text-sm font-normal text-blue-500 hover:underline"
-                  >
-                    + Add Activity on {convertDateFormat(props?.Days?.date)}
-                  </button>
-                )}
+              {!props.LastElement && (
+                <button
+                  onClick={() => setShowAddDrawer(true)}
+                  className="text-sm font-normal text-blue-500 hover:underline"
+                >
+                  + Add Activity on {convertDateFormat(props?.Days?.date)}
+                </button>
+              )}
             </div>
           </DaySummaryContainerStyle>
         )}

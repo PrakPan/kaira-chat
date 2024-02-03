@@ -7,6 +7,7 @@ const convertDFormat = (dt) => {
 };
 
 export function convertDateFormat(dateString) {
+  if (!dateString) return "";
   const months = [
     'Jan',
     'Feb',
