@@ -372,7 +372,7 @@ const TransferModeContainer = (props) => {
   }
   const Facilities = [
     props.booking_type == "Taxi" || props.booking_type == "Bus"
-      ? props?.costings_breakdown.hasOwnProperty("luggage_bags")
+      ? props?.costings_breakdown.hasOwnProperty("luggage_bags") && props?.costings_breakdown?.luggage_bags > 0
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
         : "2 Luggage bags"
       : null,
@@ -1026,11 +1026,12 @@ const TransferModeContainer = (props) => {
                             )
                         : "Private transfer "
                       : props.booking_type}
-                    {props?.booking?.costings_breakdown?.duration?.text && (
-                      <div className="inline-block ml-1">
-                        ({props.booking?.costings_breakdown?.duration?.text})
-                      </div>
-                    )}
+                    {props.booking.transfer_type === "Intercity one-way" &&
+                      props?.booking?.costings_breakdown?.duration?.text && (
+                        <div className="inline-block ml-1">
+                          ({props.booking?.costings_breakdown?.duration?.text})
+                        </div>
+                      )}
                   </div>
                   <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
                     {props.taxi_type && <div>{props.taxi_type}</div>}
@@ -1057,7 +1058,7 @@ const TransferModeContainer = (props) => {
                             data !== null && (
                               <div className="gap-1 block  min-w-fit">
                                 <div className="flex flex-row sm:text-sm text-[0.74rem] font-normal">
-                                  {index != 0 && data != null ? (
+                                  {index !== 0 && data != null ? (
                                     <span className="px-1">|</span>
                                   ) : null}
 
