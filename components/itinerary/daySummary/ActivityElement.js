@@ -55,34 +55,6 @@ export default function ActivityElement(props) {
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="lg:w-[11%] md:w-[21%] flex flex-row justify-center"></div>
           <div className="font-medium text-sm">{data.heading}</div>
-          {/* {!isPageWide && (
-            <div className="md:ml-3 lg:ml-3">
-              <Link
-                to={selectedBooking ? `${selectedBooking.id}` : "Activities"}
-                offset={-95}
-              >
-                {data && data.bookings && data.bookings.length ? (
-                  <>
-                    {selectedBooking && selectedBooking.user_selected ? (
-                      <TransparentButton>
-                        <MdDoneAll
-                          style={{
-                            display: "inline",
-                            marginRight: "0.35rem",
-                          }}
-                        />{" "}
-                        Activity added
-                      </TransparentButton>
-                    ) : (
-                      <TransparentButton>Add Activity</TransparentButton>
-                    )}
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Link>
-            </div>
-          )} */}
         </div>
 
         <div className="w-full flex flex-row items-center">

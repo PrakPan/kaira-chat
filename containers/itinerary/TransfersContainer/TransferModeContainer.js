@@ -322,6 +322,7 @@ const TransferModeContainer = (props) => {
       user_selected
     );
   }
+  
   function HandleTransport(i) {
     if (!props.token) {
       return props.setShowLoginModal(true);
@@ -370,9 +371,11 @@ const TransferModeContainer = (props) => {
       transfer_type
     );
   }
+
   const Facilities = [
     props.booking_type == "Taxi" || props.booking_type == "Bus"
-      ? props?.costings_breakdown.hasOwnProperty("luggage_bags") && props?.costings_breakdown?.luggage_bags > 0
+      ? props?.costings_breakdown.hasOwnProperty("luggage_bags") &&
+        props?.costings_breakdown?.luggage_bags > 0
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
         : "2 Luggage bags"
       : null,
@@ -542,7 +545,7 @@ const TransferModeContainer = (props) => {
                   !props.userSelected
                     ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
                     : "mb-4 mt-2 lg:block flex flex-col p-3 "
-                }    cursor-pointer  relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+                }    cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
               >
                 <div className="flex flex-row gap-4    ">
                   {props.userSelected && (
@@ -769,7 +772,7 @@ const TransferModeContainer = (props) => {
                             {!props?.payment?.paid_user && (
                               <div
                                 onClick={() => HandleFlights(props.index)}
-                                className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
+                                className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4 inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                               >
                                 Change Flight
                               </div>
@@ -1011,7 +1014,7 @@ const TransferModeContainer = (props) => {
                   </div>
                 )}
 
-                <div className=" flex flex-col w-[80%] lg:pl-1">
+                <div className="flex flex-col w-[80%] lg:pl-1">
                   <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
                   <div className="sm:text-sm text-[0.85rem]">
                     {props.booking_type == "Taxi"
@@ -1035,7 +1038,7 @@ const TransferModeContainer = (props) => {
                   </div>
                   <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
                     {props.taxi_type && <div>{props.taxi_type}</div>}
-                    {props.booking_type == "Taxi" &&
+                    {/* {props.booking_type == "Taxi" &&
                       !props.payment?.is_registration_needed && (
                         <div
                           onClick={() => HandleTransport(props.index)}
@@ -1043,7 +1046,7 @@ const TransferModeContainer = (props) => {
                         >
                           <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                         </div>
-                      )}
+                      )} */}
                   </div>
 
                   {props?.costings_breakdown && (
@@ -1072,7 +1075,7 @@ const TransferModeContainer = (props) => {
                   )}
                 </div>
                 {!props?.payment?.paid_user && (
-                  <div>
+                  <div className="">
                     <div
                       className={`absolute  ${
                         true
@@ -1087,7 +1090,7 @@ const TransferModeContainer = (props) => {
                                 ? "lg:bottom-10 bottom-[1.2rem]"
                                 : "lg:bottom-10 bottom-[2.5rem]"
                             }`
-                      } right-8 -m-3`}
+                      } right-8 -m-5`}
                     >
                       {loading && (
                         <PulseLoader
@@ -1102,16 +1105,27 @@ const TransferModeContainer = (props) => {
                           color="#111"
                         />
                       )}
-                      <div
-                        onClick={(e) => {
-                          handleCheckboxChange(e);
-                        }}
-                        className="flex flex-row gap-1 items-center  cursor-pointer"
-                      >
-                        <CheckboxFormComponent checked={addbooking} />
+                      <div className="flex flex-row gap-1 items-center cursor-pointer">
+                        {addbooking ? (
+                          <button
+                            onClick={() => HandleTransport(props.index)}
+                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                          >
+                            Change Taxi
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => HandleTransport(props.index)}
+                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                          >
+                            Add Taxi
+                          </button>
+                        )}
+
+                        {/* <CheckboxFormComponent checked={addbooking} />
                         <label className="text-center sm:text-sm text-[0.7rem]">
                           {addbooking ? "Added Booking" : "Add Booking"}
-                        </label>
+                        </label> */}
                       </div>
                     </div>
                   </div>

@@ -143,7 +143,7 @@ const Booking = (props) =>{
   const [url, setUrl] = useState('media/website/grey.png')
   const [airLineName, setAirLineName] = useState('')
   const [ImageLoaded, setImageLoaded] = useState(false)
-  
+  year
   useEffect(() => {
       
     if (props.data) {
@@ -175,7 +175,7 @@ const Booking = (props) =>{
         let year = date.substring(0,4)
         let month = date.substring(5,7);
         let day = date.substring(8,10)
-        return(getHumanDate(day+"/"+month+"/"+year) + " " + year);
+        return(getHumanDate(day+"/"+month+"/"+year));
     }
       return (
         <GridContainer>
