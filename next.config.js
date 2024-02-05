@@ -1,4 +1,5 @@
 module.exports = {
+  distDir: process.env.BUILD_DIR || ".next",
   async redirects() {
     return [
       {
