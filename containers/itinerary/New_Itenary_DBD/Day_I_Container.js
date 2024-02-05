@@ -188,6 +188,8 @@ const Day_I_Container = (props) => {
                 data={element}
                 city_id={element?.current_city_id}
                 booking={props.stayBookings}
+                payment={props.payment}
+                plan={props.plan}
               />
             );
           }

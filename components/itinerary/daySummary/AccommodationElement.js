@@ -7,11 +7,15 @@ import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD
 import { useState, useEffect } from "react";
 import media from "../../media";
 import ImageLoader from "../../ImageLoader";
+import AccommodationModal from "../../../components/modals/accommodation/Index";
+import FullScreenGallery from "../../../components/fullscreengallery/Index";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
   const [visible, setVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [images, setImages] = useState(null);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -26,6 +30,10 @@ export default function AccommodationElement(props) {
       }
     }
   }, [booking]);
+
+  const _setImagesHandler = (images) => {
+    setImages(images);
+  };
 
   const hoverFunction = () => {
     setVisible(true);
@@ -73,7 +81,7 @@ export default function AccommodationElement(props) {
                 dimensionsMobile={{ width: 300, height: 300 }}
                 borderRadius="8px"
                 hoverpointer
-                onclick={() => console.log("")}
+                onclick={() => setShowDetails(true)}
                 width="3rem"
                 height="3rem"
                 leftalign
@@ -122,6 +130,42 @@ export default function AccommodationElement(props) {
           </div>
         </div>
       </div>
+
+      <AccommodationModal
+        _setImagesHandler={_setImagesHandler}
+        onHide={() => setShowDetails(false)}
+        id={
+          selectedBooking
+            ? selectedBooking.source === "Agoda"
+              ? selectedBooking.agoda_accommodation
+              : selectedBooking.accommodation
+            : ""
+        }
+        currentBooking={selectedBooking}
+        check_in={selectedBooking ? selectedBooking?.check_in : ""}
+        check_out={selectedBooking ? selectedBooking?.check_out : ""}
+        show={showDetails}
+        payment={props.payment}
+        plan={props.plan}
+        // BookingButton={
+        //   !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
+        // }
+        // bookingFunData={bookingFunData}
+        // BookingButtonFun={() =>
+        //   handleClickAc(
+        //     bookingFunData.index,
+        //     bookingFunData.booking,
+        //     bookingFunData.city_id
+        //   )
+        // }
+      ></AccommodationModal>
+
+      {images ? (
+        <FullScreenGallery
+          closeGalleryHandler={() => setImages(null)}
+          images={images}
+        ></FullScreenGallery>
+      ) : null}
     </Container>
   );
 }

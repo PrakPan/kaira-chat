@@ -190,6 +190,7 @@ const NewItenaryDBDMob = (props) => {
               Days={element}
               indexDay={index}
               payment={props.payment}
+              plan={props.plan}
               getPaymentHandler={props.getPaymentHandler}
               itinerary_id={props.itinerary.tailor_made_id}
               setItinerary={props.setItinerary}
