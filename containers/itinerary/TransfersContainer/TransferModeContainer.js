@@ -322,7 +322,7 @@ const TransferModeContainer = (props) => {
       user_selected
     );
   }
-  
+
   function HandleTransport(i) {
     if (!props.token) {
       return props.setShowLoginModal(true);
@@ -379,7 +379,7 @@ const TransferModeContainer = (props) => {
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
         : "2 Luggage bags"
       : null,
-    props?.booking?.transfer_type == "Intracity" ? "250 kms per day" : null,
+    props?.booking?.transfer_type === "Intracity" ? "250 kms per day" : null,
 
     props?.costings_breakdown?.taxi_occupancy ||
     props?.costings_breakdown?.no_of_seats
@@ -389,8 +389,11 @@ const TransferModeContainer = (props) => {
             : props?.costings_breakdown?.no_of_seats
         } Seats`
       : null,
-    props?.costings_breakdown?.distance?.text
-      ? `${props?.costings_breakdown?.distance?.text}`
+    props?.booking?.transfer_type !== "Intercity one-way" &&
+    props?.booking?.transfer_type !== "Intercity round-trip"
+      ? props?.costings_breakdown?.distance?.text
+        ? `${props?.costings_breakdown?.distance?.text}`
+        : null
       : null,
   ];
   function truncateString(str, maxLength) {
@@ -1038,15 +1041,6 @@ const TransferModeContainer = (props) => {
                   </div>
                   <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
                     {props.taxi_type && <div>{props.taxi_type}</div>}
-                    {/* {props.booking_type == "Taxi" &&
-                      !props.payment?.is_registration_needed && (
-                        <div
-                          onClick={() => HandleTransport(props.index)}
-                          className=" cursor-pointer inline-block pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                        >
-                          <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                        </div>
-                      )} */}
                   </div>
 
                   {props?.costings_breakdown && (

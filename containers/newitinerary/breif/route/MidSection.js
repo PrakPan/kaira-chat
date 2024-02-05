@@ -129,6 +129,7 @@ const MidSection = (props) => {
           {props.version == "v2" ? (
             props.route?.transfers &&
             props.route?.transfers?.id &&
+            props.route?.transfers?.id !== "" &&
             (!props.bookings || props.bookings.length === 0) ? (
               <Text>
                 {" "}
@@ -209,7 +210,8 @@ const MidSection = (props) => {
                   <></>
                 )}
 
-                {!props?.plan?.round_trip_taxi_added &&
+                {props.route.transfers.id !== "" &&
+                  !props?.plan?.round_trip_taxi_added &&
                   ((props.route?.modes && props.route?.modes?.length) ||
                     (props?.bookings && props?.bookings?.length)) && (
                     <div

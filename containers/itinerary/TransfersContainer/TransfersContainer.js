@@ -774,14 +774,16 @@ const TransfersContainer = (props) => {
                     />
                   </div>
                   <div className="w-full h-full flex items-center justify-start ml-4">
-                    <button
-                      id={i + 1}
-                      onClick={handleTransferEdit}
-                      className="text-blue-500 hover:underline"
-                    >
-                      + Add Transfer from {props?.routes[i]?.city_name} to{" "}
-                      {props?.routes[i + 2]?.city_name}
-                    </button>
+                    {props?.routes[i + 1]?.transfers?.id !== "" && (
+                      <button
+                        id={i + 1}
+                        onClick={handleTransferEdit}
+                        className="text-blue-500 hover:underline"
+                      >
+                        + Add Transfer from {props?.routes[i]?.city_name} to{" "}
+                        {props?.routes[i + 2]?.city_name}
+                      </button>
+                    )}
                   </div>
                 </TransContainer>
               )
@@ -1151,7 +1153,6 @@ const TransfersContainer = (props) => {
         payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
         _GetInTouch={props._GetInTouch}
-
       />
     </Container>
   );
