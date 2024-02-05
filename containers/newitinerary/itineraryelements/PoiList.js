@@ -144,29 +144,24 @@ const PoiList = (props) => {
                     <SkeletonCard />
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
+                <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full justify-between">
+                  <div className="text-xl font-semibold  w-[80%]">
+                    {props.data.activity_data.activity.name}
+                  </div>
+                  <div className="text-sm font-normal">
+                    {props.data.activity_data.city.name}
+                  </div>
+                  <div className="font-normal text-sm my-2 text-[#01202B] line-clamp-3">
+                    {props.data.text}
+                  </div>
                   <div>
-                    <div className="text-xl font-semibold  w-[80%]">
-                      {props.data.activity_data.activity.name}
-                    </div>
-                    <div className="text-sm font-normal">
-                      {props.data.activity_data.city.name}
-                    </div>
-                    <div className="font-normal text-sm my-2 text-[#01202B] line-clamp-2">
-                      {props.data.text}
-                    </div>
-                    <div>
-                      <div className="flex flex-row gap-1">
-                        <div className="text-2xl font-bold">
-                          <span>₹</span>
-                          {props.data.activity_data.activity.cost}
-                        </div>
-                        <div className="font-normal text-base self-end">
-                          per person*
-                        </div>
+                    <div className="flex flex-row gap-1">
+                      <div className="text-2xl font-bold">
+                        <span>₹</span>
+                        {getIndianPrice(props.data.activity_data.activity.cost)}
                       </div>
-                      <div className=" text-sm font-light text[#7A7A7A]">
-                        Exclusive applicable taxes
+                      <div className="font-normal text-base self-end">
+                        per person*
                       </div>
                     </div>
                   </div>
@@ -213,9 +208,9 @@ const PoiList = (props) => {
                     Select
                   </Button>
                 </SelectContainer> */}
-                {props.data.activity_data?.activity?.experience_filters[0] && (
+                {props.data.activity_data?.activity?.is_very_popular && (
                   <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
-                    {props.data.activity_data?.activity?.experience_filters[0]}
+                    Recommended
                   </ClippathComp>
                 )}
               </div>
@@ -317,9 +312,9 @@ const PoiList = (props) => {
                   {isSelect ? "Selected" : "Select"}
                 </label>
               </div>
-              {props.data.activity_data?.poi?.experience_filters[0] && (
+              {props.data.activity_data?.poi?.is_very_popular && (
                 <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
-                  {props.data.activity_data?.poi?.experience_filters[0]}
+                  Recommended
                 </ClippathComp>
               )}
             </div>

@@ -304,6 +304,7 @@ const Details = (props) => {
                 fetchData={props.fetchData}
                 getPaymentHandler={props.getPaymentHandler}
                 setShowLoginModal={props.setShowLoginModal}
+                _GetInTouch={props._GetInTouch}
               />
             </div>
           }

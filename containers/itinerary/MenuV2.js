@@ -672,6 +672,7 @@ const SimpleTabsV2 = (props) => {
             fetchData={props.fetchData}
             getPaymentHandler={props.getPaymentHandler}
             setShowLoginModal={setShowLoginModal}
+            _GetInTouch={_GetInTouch}
           ></Breif>
         )}
       </div>
@@ -744,6 +745,7 @@ const SimpleTabsV2 = (props) => {
                 transferBookings={props?.transferBookings}
                 itinerary_id={props.itinerary.tailor_made_id}
                 fetchData={props.fetchData}
+                _GetInTouch={_GetInTouch}
               />
             </div>
           ) : (
@@ -970,6 +972,7 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props?.transferBookings}
                   itinerary_id={props.itinerary.tailor_made_id}
                   fetchData={props.fetchData}
+                  _GetInTouch={_GetInTouch}
                 />
               </div>
             ) : (

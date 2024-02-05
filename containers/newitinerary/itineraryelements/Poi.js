@@ -201,9 +201,9 @@ const ItineraryPoiElement = (props) => {
                     selectedData={props.data}
                     setShowDrawer={setShowDrawer}
                     data={res.data[i]}
-                    loginModal={showLoginModal}
-                    setLoginModal={setShowLoginModal}
+                    // loginModal={showLoginModal}
                     ticketsCount={ticketsCount}
+                    setLoginModal={props.setShowLoginModal}
                   ></PoiList>
                 );
             }
@@ -280,11 +280,19 @@ const ItineraryPoiElement = (props) => {
         }, 1000);
       })
       .catch((err) => {
-        props.openNotification({
-          text: "There seems to be a problem, please try again!",
-          heading: "Error!",
-          type: "error",
-        });
+        if (err.response.status === 403) {
+          props.openNotification({
+            text: "You are not allowed to make changes to this itinerary",
+            heading: "Error!",
+            type: "error",
+          });
+        } else {
+          props.openNotification({
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+            type: "error",
+          });
+        }
       });
   };
 
@@ -377,17 +385,14 @@ const ItineraryPoiElement = (props) => {
                 >
                   {props.heading}
                 </div>
-                {!props.payment?.is_registration_needed &&
-                  props?.city_id &&
-                  props.payment?.user_allowed_to_pay &&
-                  !props.payment.paid_user && (
-                    <div
-                      onClick={() => setShowDrawer(true)}
-                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                    >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                  )}
+                {true && (
+                  <div
+                    onClick={() => setShowDrawer(true)}
+                    className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                  >
+                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                  </div>
+                )}
               </div>
               <div className="flex flex-row gap-2">
                 <div

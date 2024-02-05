@@ -7,9 +7,17 @@ import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import styled from "styled-components";
+import Button from "../../../components/ui/button/Index";
+import ImageLoader from "../../../components/ImageLoader";
 
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
+`;
+
+const GetInTouchContainer = styled.div`
+  &:hover img {
+    filter: invert(100%);
+  }
 `;
 
 const TransferEditDrawer = (props) => {
@@ -197,9 +205,45 @@ const TransferEditDrawer = (props) => {
             </div>
           </div>
         ) : alternatesError ? (
-          <div className="w-full flex items-center justify-center">
+          <div className="w-full flex flex-col space-y-5 items-center justify-center">
             <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
               {alternatesError}
+            </div>
+            <div className="flex">
+              <GetInTouchContainer>
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  // loading={loading}
+                  padding="12px"
+                  onclick={props._GetInTouch}
+                  // height='2rem'
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageLoader
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
+                      height={"20px"}
+                      width={"20px"}
+                      leftalign
+                      url={"media/icons/login/customer-service-black.png"}
+                    />{" "}
+                    <span>Get in touch!</span>
+                  </div>
+                </Button>
+              </GetInTouchContainer>
             </div>
           </div>
         ) : (

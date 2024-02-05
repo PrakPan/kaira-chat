@@ -206,6 +206,7 @@ const Route = (props) => {
                   version={"v1"}
                   transportMode={props.breif.city_slabs[i].intracity_transport}
                   duration={props.breif.city_slabs[i].duration}
+                  _GetInTouch={props._GetInTouch}
                 ></MidSection>
               );
             }

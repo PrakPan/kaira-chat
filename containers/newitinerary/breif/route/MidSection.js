@@ -258,6 +258,7 @@ const MidSection = (props) => {
         payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
+        _GetInTouch={props._GetInTouch}
       />
     </Container>
   );

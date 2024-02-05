@@ -1150,6 +1150,8 @@ const TransfersContainer = (props) => {
         getPaymentHandler={props?.getPaymentHandler}
         payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
+        _GetInTouch={props._GetInTouch}
+
       />
     </Container>
   );

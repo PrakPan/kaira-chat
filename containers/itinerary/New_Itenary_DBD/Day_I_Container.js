@@ -335,6 +335,7 @@ const Day_I_Container = (props) => {
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
+              setShowLoginModal={props?.setShowLoginModal}
             ></ItineraryPoiElement>
           );
           break;
