@@ -15,6 +15,7 @@ export default function ActivityElement(props) {
   const [showDrawer, setShowDrawer] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [imageFailed, setImageFailed] = useState(false);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -29,6 +30,10 @@ export default function ActivityElement(props) {
       }
     }
   }, [booking]);
+
+  const handleImageFailed = () => {
+    setImageFailed(true);
+  };
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -62,7 +67,8 @@ export default function ActivityElement(props) {
           <div className=" flex items-center">
             {selectedBooking?.images[0]?.image !==
               "media/icons/default/activity.svg" &&
-            selectedBooking?.images[0]?.image !== "" ? (
+            selectedBooking?.images[0]?.image !== "" &&
+            !imageFailed ? (
               <ImageLoader
                 dimensions={{ width: 300, height: 300 }}
                 dimensionsMobile={{ width: 300, height: 300 }}
@@ -75,6 +81,7 @@ export default function ActivityElement(props) {
                 widthmobile="3rem"
                 url={selectedBooking?.images[0]?.image}
                 noLazy
+                onfail={handleImageFailed}
               ></ImageLoader>
             ) : (
               <ImageLoader

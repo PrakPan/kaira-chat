@@ -16,6 +16,7 @@ export default function AccommodationElement(props) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [images, setImages] = useState(null);
+  const [imageFailed, setImageFailed] = useState(false);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -30,6 +31,10 @@ export default function AccommodationElement(props) {
       }
     }
   }, [booking]);
+
+  const handleImageFailed = () => {
+    setImageFailed(true);
+  };
 
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -75,7 +80,7 @@ export default function AccommodationElement(props) {
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
           <div className=" flex items-center">
-            {selectedBooking?.images[0]?.image !== "" ? (
+            {selectedBooking?.images[0]?.image !== "" && !imageFailed ? (
               <ImageLoader
                 dimensions={{ width: 300, height: 300 }}
                 dimensionsMobile={{ width: 300, height: 300 }}
@@ -88,6 +93,7 @@ export default function AccommodationElement(props) {
                 widthmobile="3rem"
                 url={selectedBooking?.images[0]?.image}
                 noLazy
+                onfail={handleImageFailed}
               ></ImageLoader>
             ) : (
               <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" />
