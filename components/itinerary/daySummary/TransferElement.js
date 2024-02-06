@@ -5,45 +5,31 @@ import { MdDoneAll } from "react-icons/md";
 import { WiSunrise } from "react-icons/wi";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import media from "../../media";
+import { useState, useEffect } from "react";
+import ImageLoader from "../../ImageLoader";
 
 export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const isPageWide = media("(min-width: 768px)");
 
-  const getUserSelectedByBookings = (id) => {
-    if (booking && booking.length && id) {
+  useEffect(() => {
+    if (
+      booking &&
+      booking.length &&
+      data?.bookings?.length &&
+      data?.bookings[0]?.id
+    ) {
       for (let book of booking) {
-        if (book.id === id) {
-          return book.user_selected;
-        }
+        if (book.id === data.bookings[0].id) setSelectedBooking(book);
       }
     }
-    return null;
-  };
-
-  const getBooking = (id) => {
-    if (booking && booking.length && id) {
-      for (let book of booking) {
-        if (book.id === id) return book;
-      }
-    }
-    return null;
-  };
-
-  const isValidBooking = (id) => {
-    if (booking && booking.length && id) {
-      for (let book of booking) {
-        if (book.id === id) return true;
-      }
-    }
-    return false;
-  };
+  }, [booking]);
 
   const isOriginDestination = () => {
-    if (data.bookings && data.bookings.length && isValidBooking(data?.bookings[0]?.id)) {
-      const origin = getBooking(data?.bookings[0]?.id)?.city;
-      const destination = getBooking(data?.bookings[0]?.id)?.destination
-        ?.shortName;
+    if (selectedBooking) {
+      const origin = selectedBooking?.city;
+      const destination = selectedBooking?.destination?.shortName;
       if (
         origin &&
         destination &&
@@ -89,8 +75,23 @@ export default function TransferElement(props) {
 
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className="w-[1.25rem] md:w-[6%] lg:w-[6%] flex items-center">
-            {modes ? (
+          <div className="flex items-center">
+            {selectedBooking && selectedBooking?.images?.image !== "" ? (
+              <ImageLoader
+                is_url={selectedBooking.images.image.includes("gozo")}
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                // onclick={() => setShowDetails(true)}
+                width="3rem"
+                height="3rem"
+                leftalign
+                widthmobile="3rem"
+                url={selectedBooking?.images?.image}
+                noLazy
+              ></ImageLoader>
+            ) : modes ? (
               <TransportIconFetcher
                 TransportMode={modes}
                 classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[1.25rem]"
@@ -100,16 +101,16 @@ export default function TransferElement(props) {
             )}
           </div>
 
-          <div className="flex flex-col">
-            <div className="text-xs leading-7 ml-2 lg:ml-0">
+          <div className="flex flex-col ml-3">
+            <div className="text-xs leading-7 ml-2">
               {isOriginDestination()
-                ? getBooking(data?.bookings[0]?.id).city +
+                ? selectedBooking.city +
                   " - " +
-                  getBooking(data?.bookings[0]?.id).destination.shortName
+                  selectedBooking.destination.shortName
                 : ""}
             </div>
 
-            <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
+            <div className="font-normal text-xs leading-4 ml-2">
               {getFlightDuration() ? (
                 `Duration:  ${getFlightDuration()}`
               ) : (
@@ -118,9 +119,7 @@ export default function TransferElement(props) {
             </div>
           </div>
           <div className="ml-4">
-            {data?.bookings &&
-            data?.bookings[0] &&
-            isValidBooking(data?.bookings[0]?.id) ? (
+            {selectedBooking ? (
               <Link
                 to={
                   data.bookings && data.bookings[0] && data.bookings[0].id
@@ -129,32 +128,8 @@ export default function TransferElement(props) {
                 }
                 offset={-90}
               >
-                {/* <button className="text-blue-500 hover:underline">
-                  {getUserSelectedByBookings(
-                    data.bookings && data.bookings[0]
-                      ? data.bookings[0].id
-                      : null
-                  ) ? (
-                    <>
-                      <MdDoneAll
-                        style={{
-                          display: "inline",
-                          marginRight: "0.35rem",
-                        }}
-                      />{" "}
-                      {modes ? `${modes} added` : null}
-                    </>
-                  ) : (
-                    <>{modes ? `+Add ${modes}` : null}</>
-                  )}
-                </button> */}
-
                 <TransparentButton>
-                  {getUserSelectedByBookings(
-                    data.bookings && data.bookings[0]
-                      ? data.bookings[0].id
-                      : null
-                  ) ? (
+                  {selectedBooking && selectedBooking.user_selected ? (
                     <>
                       <MdDoneAll
                         style={{
@@ -172,13 +147,6 @@ export default function TransferElement(props) {
             ) : null}
           </div>
         </div>
-
-        {/* <div className="w-full flex items-center">
-          <div className="w-[1.25rem] lg:w-[17%] md:w-[27%]"></div>
-          <div className="font-normal text-xs leading-4 ml-2 lg:ml-0">
-            {getFlightDuration() ? `Duration:  ${getFlightDuration()}` : <></>}
-          </div>
-        </div> */}
       </div>
     </Container>
   );
