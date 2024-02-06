@@ -252,6 +252,7 @@ const TransferModeContainer = (props) => {
   useEffect(() => {
     setaddboking(props.userSelected);
   }, [props.userSelected]);
+  
   function handleCheckboxChange(e) {
     if (!props.payment?.is_registration_needed) {
       if (props.token && props.payment?.user_allowed_to_pay) {
@@ -352,6 +353,7 @@ const TransferModeContainer = (props) => {
     let duration = props.booking["duration"];
     let origin_iata = props.booking["origin_city_iata_code"];
     let destination_iata = props.booking["destination_city_iata_code"];
+
     props._changeTaxiHandler(
       name,
       itinerary_id,
@@ -390,18 +392,21 @@ const TransferModeContainer = (props) => {
         } Seats`
       : null,
     props?.booking?.transfer_type !== "Intercity one-way" &&
-    props?.booking?.transfer_type !== "Intercity round-trip"
+    props?.booking?.transfer_type !== "Intercity round-trip" &&
+    props?.booking?.transfer_type !== "Multicity"
       ? props?.costings_breakdown?.distance?.text
         ? `${props?.costings_breakdown?.distance?.text}`
         : null
       : null,
   ];
+
   function truncateString(str, maxLength) {
     if (str.length > maxLength) {
       return str.slice(0, maxLength - 3) + "...";
     }
     return str;
   }
+
   const _updateSelectedTransfer = () => {
     console.log("test");
     setUpdateBookingState(true);
@@ -485,7 +490,7 @@ const TransferModeContainer = (props) => {
       .catch((err) => {
         setLoadingAlternates(false);
         if (err.response.status === 404) {
-          setAlternatesError("No Route Found, please try again!");
+          setAlternatesError("No route found, please get in touch with us to complete this booking!");
         } else {
           setAlternatesError(
             "There seems to be problem, please try again! adsfasdf"
@@ -502,6 +507,7 @@ const TransferModeContainer = (props) => {
     if (props.booking.number_of_children > 1) child = " Childs";
     else child = " Child";
   } catch {}
+
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
@@ -649,11 +655,13 @@ const TransferModeContainer = (props) => {
                                 </span>
                               )}
 
-                              {props.booking?.airline_code && (
-                                <span className="font-[300] ml-1 ">
-                                  ({props.booking.origin_code})
-                                </span>
-                              )}
+                              {props.booking?.airline_code &&
+                                props.booking?.origin_code &&
+                                props.booking?.origin_code !== "" && (
+                                  <span className="font-[300] ml-1 ">
+                                    ({props.booking.origin_code})
+                                  </span>
+                                )}
                             </div>
                             {ITINERARY_STATUSES.itinerary_prepared !==
                               props.plan.itinerary_status && (
@@ -699,7 +707,8 @@ const TransferModeContainer = (props) => {
                                   : "(Nonstop)"}
                                 {props.booking?.airline_code && (
                                   <span className="ml-1">
-                                    {props.booking.duration
+                                    {props.booking.duration &&
+                                    props.booking.duration !== ""
                                       ? ` (${props.booking.duration}h)`
                                       : processBookingTimes(
                                           props.booking.check_in,
@@ -724,11 +733,13 @@ const TransferModeContainer = (props) => {
                                     }
                                   </span>
                                 )}
-                                {props.booking?.airline_code && (
-                                  <span className="font-[300] ml-1">
-                                    ({props.booking.destination_code})
-                                  </span>
-                                )}
+                                {props.booking?.airline_code &&
+                                  props.booking?.destination_code &&
+                                  props.booking?.destination_code !== "" && (
+                                    <span className="font-[300] ml-1">
+                                      ({props.booking.destination_code})
+                                    </span>
+                                  )}
                               </div>
                               {ITINERARY_STATUSES.itinerary_prepared !==
                                 props.plan.itinerary_status && (
@@ -826,11 +837,13 @@ const TransferModeContainer = (props) => {
                               </span>
                             )}
 
-                            {props.booking?.airline_code && (
-                              <span className="font-[300] ml-1 ">
-                                ({props.booking.origin_code})
-                              </span>
-                            )}
+                            {props.booking?.airline_code &&
+                              props.booking?.origin_code &&
+                              props.booking?.origin_code !== "" && (
+                                <span className="font-[300] ml-1 ">
+                                  ({props.booking.origin_code})
+                                </span>
+                              )}
                           </div>
                           {ITINERARY_STATUSES.itinerary_prepared !==
                             props.plan.itinerary_status && (
@@ -875,11 +888,13 @@ const TransferModeContainer = (props) => {
                                   }
                                 </span>
                               )}
-                              {props.booking?.airline_code && (
-                                <span className="font-[300] ml-1">
-                                  ({props.booking.destination_code})
-                                </span>
-                              )}
+                              {props.booking?.airline_code &&
+                                props.booking?.destination_code &&
+                                props.booking?.destination_code !== "" && (
+                                  <span className="font-[300] ml-1">
+                                    ({props.booking.destination_code})
+                                  </span>
+                                )}
                             </div>
                             {ITINERARY_STATUSES.itinerary_prepared !==
                               props.plan.itinerary_status && (
@@ -912,17 +927,19 @@ const TransferModeContainer = (props) => {
                                     "/-"
                                   : null}
                               </Cost>
-                              <Text>
-                                {"( " +
-                                  props.booking.number_of_adults +
-                                  adult +
-                                  (props.booking.number_of_children
-                                    ? ", " +
-                                      props.booking.number_of_children +
-                                      child
-                                    : "") +
-                                  " )"}
-                              </Text>
+                              {props.booking.number_of_adults > 0 && (
+                                <Text>
+                                  {"(" +
+                                    props.booking.number_of_adults +
+                                    adult +
+                                    (props.booking.number_of_children
+                                      ? ", " +
+                                        props.booking.number_of_children +
+                                        child
+                                      : "") +
+                                    ")"}
+                                </Text>
+                              )}
                             </div>
                           ) : (
                             <></>
@@ -1084,7 +1101,7 @@ const TransferModeContainer = (props) => {
                                 ? "lg:bottom-10 bottom-[1.2rem]"
                                 : "lg:bottom-10 bottom-[2.5rem]"
                             }`
-                      } right-8 -m-5`}
+                      } right-8 -m-3`}
                     >
                       {loading && (
                         <PulseLoader
@@ -1105,7 +1122,7 @@ const TransferModeContainer = (props) => {
                             onClick={() => HandleTransport(props.index)}
                             className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                           >
-                            Change Taxi
+                            {isDesktop ? "Change Taxi" : "Change"}
                           </button>
                         ) : (
                           <button

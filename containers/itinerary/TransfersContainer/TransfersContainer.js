@@ -511,6 +511,7 @@ const TransfersContainer = (props) => {
       action: "Itinerary-bookings-taxi_change",
       params: { name: name },
     });
+
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -530,8 +531,10 @@ const TransfersContainer = (props) => {
       taxi_type: taxi_type,
       transfer_type: transfer_type,
     });
+    
     props.setShowTaxiModal(true);
   };
+
   function getTransportationType(url) {
     if (url) {
       const fileName = url.substring(
@@ -546,6 +549,7 @@ const TransfersContainer = (props) => {
       return url;
     }
   }
+
   function NoOfNights(days) {
     if (days > 1) {
       return " Nights";
@@ -553,6 +557,7 @@ const TransfersContainer = (props) => {
       return " Night";
     }
   }
+
   function scrollToTargetAdjusted() {
     // if (window.location.pathname === '/') {
     //   router.push({ pathname: '/locations', query: { scroll: target } });
@@ -569,6 +574,7 @@ const TransfersContainer = (props) => {
       behavior: "smooth",
     });
   }
+
   function handlemap(MapId) {
     props.setPlaceID(MapId);
     scrollToTargetAdjusted();

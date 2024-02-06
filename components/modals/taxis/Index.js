@@ -51,6 +51,7 @@ const OptionsContainer = styled.div`
     width: 90%;
   }
 `;
+
 const ContentContainer = styled.div`
   min-height: 65vh;
   @media screen and (min-width: 768px) {

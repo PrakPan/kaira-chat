@@ -1,16 +1,14 @@
-
-
-import React, {useState, useEffect} from 'react';
-import styled from 'styled-components'
-  import { getHumanTime } from '../../../../../services/getHumanTime';
-  import { getHumanDate } from '../../../../../services/getHumanDate';
-import ImageLoader from '../../../../ImageLoader';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import { getHumanTime } from "../../../../../services/getHumanTime";
+import { getHumanDate } from "../../../../../services/getHumanDate";
+import ImageLoader from "../../../../ImageLoader";
 import { differenceInMinutes, format } from "date-fns";
 
-import { FaPlane } from 'react-icons/fa';
-import media from '../../../../media'
-import SkeletonCard from '../../../../ui/SkeletonCard';
- 
+import { FaPlane } from "react-icons/fa";
+import media from "../../../../media";
+import SkeletonCard from "../../../../ui/SkeletonCard";
+
 function createCacheKey(checkIn, checkOut) {
   return `${checkIn}-${checkOut}`;
 }
@@ -44,13 +42,13 @@ function processBookingTimes(checkIn, checkOut) {
 }
 
 const DetailsGridContainer = styled.div`
-display: grid;
-grid-template-columns: max-content auto max-content;
-grid-column-gap: 0.5rem;
-grid-row-gap: 0.2rem;
-line-height: 1;
-margin-block : auto;
-height: max-content;
+  display: grid;
+  grid-template-columns: max-content auto max-content;
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.2rem;
+  line-height: 1;
+  margin-block: auto;
+  height: max-content;
 `;
 const DottedLine = styled.div`
   position: relative;
@@ -64,7 +62,7 @@ const DottedLine = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: linear-gradient(to right, #7A7A7A 5px, transparent 5px);
+    background-image: linear-gradient(to right, #7a7a7a 5px, transparent 5px);
     background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
   }
 `;
@@ -79,11 +77,11 @@ const GridContainer = styled.div`
   }
 `;
 const Plan = styled.div`
-
-position: absolute;
-    left: 50%;
-    top: 0%;
-    transform: translate(-50%,-45%)`;
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  transform: translate(-50%, -45%);
+`;
 const LogoContainer = styled.div`
   width: 50px;
   height: 50px;
@@ -92,7 +90,7 @@ const LogoContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   @media screen and (min-width: 768px) {
     width: 80px;
     height: 80px;
@@ -122,7 +120,7 @@ const Circle = styled.div`
   background: white;
   position: absolute;
   z-index: 1;
-  top : 50%;
+  top: 50%;
   transform: translateY(-38%);
 `;
 const FlexBox = styled.div`
@@ -132,343 +130,350 @@ const FlexBox = styled.div`
   @media screen and (max-width: 768px) {
     display: grid;
     grid-template-columns: 50px auto;
-    width : 100%;
+    width: 100%;
     align-items: center;
     margin-bottom: 1rem;
   }
 `;
-const Booking = (props) =>{
-    let isPageWide = media("(min-width: 768px)");
+const Booking = (props) => {
+  let isPageWide = media("(min-width: 768px)");
 
-  const [url, setUrl] = useState('media/website/grey.png')
-  const [airLineName, setAirLineName] = useState('')
-  const [ImageLoaded, setImageLoaded] = useState(false)
-  year
+  const [url, setUrl] = useState("media/website/grey.png");
+  const [airLineName, setAirLineName] = useState("");
+  const [ImageLoaded, setImageLoaded] = useState(false);
   useEffect(() => {
-      
     if (props.data) {
       if (
         props.data.Segments &&
         props.data.Segments[0] &&
-        props.data.Segments[0][0] && 
+        props.data.Segments[0][0] &&
         props.data.Segments[0][0].Airline
-      ){   setAirLineName(props.data.Segments[0][0].Airline.AirlineName);
-     setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" + props.data.Segments[0][0].Airline.AirlineCode +".png");}
-      else setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png");
-      if (props.isSelected && 
-            props.data.costings_breakdown &&
-              props.data.costings_breakdown.Segments &&
-              props.data.costings_breakdown.Segments[0] &&
-              props.data.costings_breakdown.Segments[0][0] &&
-              props.data.costings_breakdown.Segments[0][0].Airline
-          ) {
-            setAirLineName(props.data.costings_breakdown.Segments[0][0].Airline.AirlineName);
-            setUrl("https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" + props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode + ".png");
-          }
+      ) {
+        setAirLineName(props.data.Segments[0][0].Airline.AirlineName);
+        setUrl(
+          "https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" +
+            props.data.Segments[0][0].Airline.AirlineCode +
+            ".png"
+        );
+      } else
+        setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png");
+      if (
+        props.isSelected &&
+        props.data.costings_breakdown &&
+        props.data.costings_breakdown.Segments &&
+        props.data.costings_breakdown.Segments[0] &&
+        props.data.costings_breakdown.Segments[0][0] &&
+        props.data.costings_breakdown.Segments[0][0].Airline
+      ) {
+        setAirLineName(
+          props.data.costings_breakdown.Segments[0][0].Airline.AirlineName
+        );
+        setUrl(
+          "https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/" +
+            props.data.costings_breakdown.Segments[0][0].Airline.AirlineCode +
+            ".png"
+        );
       }
-      }, [props.data]);
+    }
+  }, [props.data]);
   const getTime = (datetime) => {
-        return(getHumanTime(datetime.substring(11,16)));
-    }
-    const getDate = (datetime) => {
-        let date = datetime.substring(0,10);
-        let year = date.substring(0,4)
-        let month = date.substring(5,7);
-        let day = date.substring(8,10)
-        return(getHumanDate(day+"/"+month+"/"+year));
-    }
-      return (
-        <GridContainer>
-          <FlexBox>
-            <LogoContainer>
-              <div style={{ display: !ImageLoaded ? "initial" : "none" }}>
-                <SkeletonCard
-                  width={isPageWide ? "80px" : "50px"}
-                  height={isPageWide ? "80px" : "50px"}
-                  // mb="0.5rem"
-                  borderRadius={"50%"}
-                />
-              </div>
-              <div style={{ display: ImageLoaded ? "initial" : "none" }}>
-
-                <Image src={url} onLoad={() => {
-                  setTimeout(() => {
-                  setImageLoaded(true);                    
-                  },500)
-                }}></Image>
-                </div>
-            </LogoContainer>
-            <div>
-              <Text>{airLineName}</Text>
-              {!isPageWide &&
-                (props.data.Segments ? (
-                  props.data.Segments[0].length ? (
-                    props.data.Segments[0].length > 1 ? (
-                      <Text
-                        style={{
-                          marginTop: "-4px",
-                          fontWeight: "400",
-                          fontSize: "13px",
-                        }}
-                      >
-                        {props.data.Segments[0].length > 1
-                          ? props.data.Segments[0].length - 1 > 1
-                            ? props.data.Segments[0].length - 1 + " stops"
-                            : props.data.Segments[0].length - 1 + " stop"
-                          : "Nonstop"}
-
-                        <>
-                          {" ("}
-                          {props.data.duration
-                            ? ` (${props.data.duration}h)`
-                            : processBookingTimes(
-                                props.data.Segments[0][0].Origin.DepTime,
-                                props.data.Segments[0][
-                                  props.data.Segments[0].length - 1
-                                ].Destination.ArrTime
-                              ).duration}
-                          {")"}
-                        </>
-                      </Text>
-                    ) : (
-                      <Text
-                        style={{
-                          marginTop: "-4px",
-                          fontWeight: "400",
-                          fontSize: "13px",
-                        }}
-                      >
-                        Nonstop
-                        <>
-                          {" ("}
-                          {props.data.duration
-                            ? ` (${props.data.duration}h)`
-                            : processBookingTimes(
-                                props.data.Segments[0][0].Origin.DepTime,
-                                props.data.Segments[0][
-                                  props.data.Segments[0].length - 1
-                                ].Destination.ArrTime
-                              ).duration}
-                          {")"}
-                        </>
-                      </Text>
-                    )
-                  ) : null
-                ) : null)}
-            </div>
-          </FlexBox>
-          <DetailsGridContainer>
-            <div style={{ display: "flex", gap: "0.25rem" }}>
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  <div
-                    style={{
-                      margin: "0",
-                      fontWeight: "600",
-                      fontSize: isPageWide ? "20px" : "16px",
-                    }}
-                    className="font-lexend"
-                  >
-                    {getTime(props.data.Segments[0][0].Origin.DepTime)}
-                  </div>
-                ) : (
-                  <div></div>
-                )
-              ) : (
-                <div></div>
-              )}
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  <div
-                    style={{
-                      margin: "0",
-                      fontWeight: "400",
-                      fontSize: isPageWide ? "20px" : "16px",
-                    }}
-                    className="font-lexend"
-                  >
-                    {"(" +
-                      props.data.Segments[0][0].Origin.Airport.CityCode +
-                      ")"}
-                  </div>
-                ) : null
-              ) : null}
-            </div>
-            <div
-              style={{
-                margin: "0",
-                position: "relative",
-                height: "0px",
-                top: "50%",
+    return getHumanTime(datetime.substring(11, 16));
+  };
+  const getDate = (datetime) => {
+    let date = datetime.substring(0, 10);
+    let year = date.substring(0, 4);
+    let month = date.substring(5, 7);
+    let day = date.substring(8, 10);
+    return getHumanDate(day + "/" + month + "/" + year);
+  };
+  return (
+    <GridContainer>
+      <FlexBox>
+        <LogoContainer>
+          <div style={{ display: !ImageLoaded ? "initial" : "none" }}>
+            <SkeletonCard
+              width={isPageWide ? "80px" : "50px"}
+              height={isPageWide ? "80px" : "50px"}
+              // mb="0.5rem"
+              borderRadius={"50%"}
+            />
+          </div>
+          <div style={{ display: ImageLoaded ? "initial" : "none" }}>
+            <Image
+              src={url}
+              onLoad={() => {
+                setTimeout(() => {
+                  setImageLoaded(true);
+                }, 500);
               }}
-            >
-              <Circle style={{ left: 0 }} />
-              <DottedLine></DottedLine>
-              <Circle style={{ right: 0 }} />
-              <Plan>
-                <FaPlane style={{ fontSize: "1.25rem" }} />
-              </Plan>
-            </div>
-            <div style={{ display: "flex", gap: "0.25rem" }}>
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  <div
+            ></Image>
+          </div>
+        </LogoContainer>
+        <div>
+          <Text>{airLineName}</Text>
+          {!isPageWide &&
+            (props.data.Segments ? (
+              props.data.Segments[0].length ? (
+                props.data.Segments[0].length > 1 ? (
+                  <Text
                     style={{
-                      margin: "0",
-                      fontWeight: "600",
-                      fontSize: isPageWide ? "20px" : "16px",
-                    }}
-                    className="font-lexend"
-                  >
-                    {getTime(
-                      props.data.Segments[0][props.data.Segments[0].length - 1]
-                        .Destination.ArrTime
-                    )}
-                  </div>
-                ) : (
-                  <div></div>
-                )
-              ) : (
-                <div></div>
-              )}
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  <div
-                    style={{
-                      margin: "0",
+                      marginTop: "-4px",
                       fontWeight: "400",
-                      fontSize: isPageWide ? "20px" : "16px",
-                    }}
-                    className="font-lexend"
-                  >
-                    {"(" +
-                      props.data.Segments[0][props.data.Segments[0].length - 1]
-                        .Destination.Airport.CityCode +
-                      ")"}
-                  </div>
-                ) : null
-              ) : null}
-            </div>
-            <div style={{ width: "max-content" }}>
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  <div
-                    className="font-lexend"
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: "400",
-                      marginTop: "0.25rem",
+                      fontSize: "13px",
                     }}
                   >
-                    <div>
-                      {getDate(props.data.Segments[0][0].Origin.DepTime)}
-                    </div>
-                    {props.selectedBooking.city && (
-                      <div style={{ marginTop: "0.4rem" }}>
-                        {props.selectedBooking.city}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div></div>
-                )
-              ) : (
-                <div></div>
-              )}
-            </div>
-            <div>
-              {isPageWide &&
-                (props.data.Segments ? (
-                  props.data.Segments[0].length ? (
-                    props.data.Segments[0].length > 1 ? (
-                      <div
-                        className="font-lexend text-center"
-                        style={{
-                          fontSize: "0.70rem",
-                          fontWeight: "400",
-                          marginTop: "0px",
-                        }}
-                      >
-                        {props.data.Segments[0].length > 1
-                          ? props.data.Segments[0].length - 1 > 1
-                            ? props.data.Segments[0].length - 1 + " stops"
-                            : props.data.Segments[0].length - 1 + " stop"
-                          : "Nonstop"}
-                        <>
-                          {" ("}
-                          {props.data.duration
-                            ? ` (${props.data.duration}h)`
-                            : processBookingTimes(
-                                props.data.Segments[0][0].Origin.DepTime,
-                                props.data.Segments[0][
-                                  props.data.Segments[0].length - 1
-                                ].Destination.ArrTime
-                              ).duration}
-                          {")"}
-                        </>
-                      </div>
-                    ) : (
-                      <div
-                        className="font-lexend text-center"
-                        style={{
-                          fontSize: "0.70rem",
-                          fontWeight: "400",
-                          marginTop: !isPageWide ? "-4px" : "0px",
-                        }}
-                      >
-                        Nonstop
-                        <>
-                          {" ("}
-                          {props.data.duration
-                            ? ` (${props.data.duration}h)`
-                            : processBookingTimes(
-                                props.data.Segments[0][0].Origin.DepTime,
-                                props.data.Segments[0][
-                                  props.data.Segments[0].length - 1
-                                ].Destination.ArrTime
-                              ).duration}
-                          {")"}
-                        </>
-                      </div>
-                    )
-                  ) : null
-                ) : null)}
-            </div>
-            <div style={{ width: "max-content" }}>
-              {props.data.Segments ? (
-                props.data.Segments[0].length ? (
-                  <div
-                    className="font-lexend"
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: "400",
-                      marginTop: "0.25rem",
-                    }}
-                  >
-                    <div>
-                      {getDate(
-                        props.data.Segments[0][
-                          props.data.Segments[0].length - 1
-                        ].Destination.ArrTime
-                      )}
-                    </div>
-                    {props.selectedBooking.destination_city && (
-                      <div style={{ marginTop: "0.4rem" }}>
-                        {props.selectedBooking.destination_city}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div></div>
-                )
-              ) : (
-                <div></div>
-              )}
-            </div>
-          </DetailsGridContainer>
-        </GridContainer>
-      );
- 
-}
+                    {props.data.Segments[0].length > 1
+                      ? props.data.Segments[0].length - 1 > 1
+                        ? props.data.Segments[0].length - 1 + " stops"
+                        : props.data.Segments[0].length - 1 + " stop"
+                      : "Nonstop"}
 
-export default  (Booking);
+                    <>
+                      {" ("}
+                      {props.data.duration
+                        ? ` (${props.data.duration}h)`
+                        : processBookingTimes(
+                            props.data.Segments[0][0].Origin.DepTime,
+                            props.data.Segments[0][
+                              props.data.Segments[0].length - 1
+                            ].Destination.ArrTime
+                          ).duration}
+                      {")"}
+                    </>
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      marginTop: "-4px",
+                      fontWeight: "400",
+                      fontSize: "13px",
+                    }}
+                  >
+                    Nonstop
+                    <>
+                      {" ("}
+                      {props.data.duration
+                        ? ` (${props.data.duration}h)`
+                        : processBookingTimes(
+                            props.data.Segments[0][0].Origin.DepTime,
+                            props.data.Segments[0][
+                              props.data.Segments[0].length - 1
+                            ].Destination.ArrTime
+                          ).duration}
+                      {")"}
+                    </>
+                  </Text>
+                )
+              ) : null
+            ) : null)}
+        </div>
+      </FlexBox>
+      <DetailsGridContainer>
+        <div style={{ display: "flex", gap: "0.25rem" }}>
+          {props.data.Segments ? (
+            props.data.Segments[0].length ? (
+              <div
+                style={{
+                  margin: "0",
+                  fontWeight: "600",
+                  fontSize: isPageWide ? "20px" : "16px",
+                }}
+                className="font-lexend"
+              >
+                {getTime(props.data.Segments[0][0].Origin.DepTime)}
+              </div>
+            ) : (
+              <div></div>
+            )
+          ) : (
+            <div></div>
+          )}
+          {props.data.Segments ? (
+            props.data.Segments[0].length ? (
+              <div
+                style={{
+                  margin: "0",
+                  fontWeight: "400",
+                  fontSize: isPageWide ? "20px" : "16px",
+                }}
+                className="font-lexend"
+              >
+                {"(" + props.data.Segments[0][0].Origin.Airport.CityCode + ")"}
+              </div>
+            ) : null
+          ) : null}
+        </div>
+        <div
+          style={{
+            margin: "0",
+            position: "relative",
+            height: "0px",
+            top: "50%",
+          }}
+        >
+          <Circle style={{ left: 0 }} />
+          <DottedLine></DottedLine>
+          <Circle style={{ right: 0 }} />
+          <Plan>
+            <FaPlane style={{ fontSize: "1.25rem" }} />
+          </Plan>
+        </div>
+        <div style={{ display: "flex", gap: "0.25rem" }}>
+          {props.data.Segments ? (
+            props.data.Segments[0].length ? (
+              <div
+                style={{
+                  margin: "0",
+                  fontWeight: "600",
+                  fontSize: isPageWide ? "20px" : "16px",
+                }}
+                className="font-lexend"
+              >
+                {getTime(
+                  props.data.Segments[0][props.data.Segments[0].length - 1]
+                    .Destination.ArrTime
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )
+          ) : (
+            <div></div>
+          )}
+          {props.data.Segments ? (
+            props.data.Segments[0].length ? (
+              <div
+                style={{
+                  margin: "0",
+                  fontWeight: "400",
+                  fontSize: isPageWide ? "20px" : "16px",
+                }}
+                className="font-lexend"
+              >
+                {"(" +
+                  props.data.Segments[0][props.data.Segments[0].length - 1]
+                    .Destination.Airport.CityCode +
+                  ")"}
+              </div>
+            ) : null
+          ) : null}
+        </div>
+        <div style={{ width: "max-content" }}>
+          {props.data.Segments ? (
+            props.data.Segments[0].length ? (
+              <div
+                className="font-lexend"
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "400",
+                  marginTop: "0.25rem",
+                }}
+              >
+                <div>{getDate(props.data.Segments[0][0].Origin.DepTime)}</div>
+                {props.selectedBooking.city && (
+                  <div style={{ marginTop: "0.4rem" }}>
+                    {props.selectedBooking.city}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )
+          ) : (
+            <div></div>
+          )}
+        </div>
+        <div>
+          {isPageWide &&
+            (props.data.Segments ? (
+              props.data.Segments[0].length ? (
+                props.data.Segments[0].length > 1 ? (
+                  <div
+                    className="font-lexend text-center"
+                    style={{
+                      fontSize: "0.70rem",
+                      fontWeight: "400",
+                      marginTop: "0px",
+                    }}
+                  >
+                    {props.data.Segments[0].length > 1
+                      ? props.data.Segments[0].length - 1 > 1
+                        ? props.data.Segments[0].length - 1 + " stops"
+                        : props.data.Segments[0].length - 1 + " stop"
+                      : "Nonstop"}
+                    <>
+                      {" ("}
+                      {props.data.duration
+                        ? ` (${props.data.duration}h)`
+                        : processBookingTimes(
+                            props.data.Segments[0][0].Origin.DepTime,
+                            props.data.Segments[0][
+                              props.data.Segments[0].length - 1
+                            ].Destination.ArrTime
+                          ).duration}
+                      {")"}
+                    </>
+                  </div>
+                ) : (
+                  <div
+                    className="font-lexend text-center"
+                    style={{
+                      fontSize: "0.70rem",
+                      fontWeight: "400",
+                      marginTop: !isPageWide ? "-4px" : "0px",
+                    }}
+                  >
+                    Nonstop
+                    <>
+                      {" ("}
+                      {props.data.duration
+                        ? ` (${props.data.duration}h)`
+                        : processBookingTimes(
+                            props.data.Segments[0][0].Origin.DepTime,
+                            props.data.Segments[0][
+                              props.data.Segments[0].length - 1
+                            ].Destination.ArrTime
+                          ).duration}
+                      {")"}
+                    </>
+                  </div>
+                )
+              ) : null
+            ) : null)}
+        </div>
+        <div style={{ width: "max-content" }}>
+          {props.data.Segments ? (
+            props.data.Segments[0].length ? (
+              <div
+                className="font-lexend"
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "400",
+                  marginTop: "0.25rem",
+                }}
+              >
+                <div>
+                  {getDate(
+                    props.data.Segments[0][props.data.Segments[0].length - 1]
+                      .Destination.ArrTime
+                  )}
+                </div>
+                {props.selectedBooking.destination_city && (
+                  <div style={{ marginTop: "0.4rem" }}>
+                    {props.selectedBooking.destination_city}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )
+          ) : (
+            <div></div>
+          )}
+        </div>
+      </DetailsGridContainer>
+    </GridContainer>
+  );
+};
+
+export default Booking;

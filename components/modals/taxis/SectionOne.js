@@ -57,7 +57,7 @@
 import React from "react";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
-import media from '../../media'
+import media from "../../media";
 const Container = styled.div`
   margin: 0;
   display: flex;
@@ -83,17 +83,25 @@ const Section = (props) => {
         onClick={props.setHideTaxiModal}
         style={{ fontSize: "1.5rem" }}
       ></IoMdClose>
-      <Text>
-        {/* Changing Stays in {props?.booking_city ? props?.booking_city : "City"} */}
-        {props.selectedBooking.city &&
-        props.selectedBooking.destination_city &&
-        isPageWide
-          ? "Changing taxi from " +
-            props.selectedBooking.city +
-            " to " +
-            props.selectedBooking.destination_city
-          : "Change transfer"}
-      </Text>
+      {props.selectedBooking.transfer_type === "Multicity" ? (
+        <Text>
+          {isPageWide
+            ? "Changing " +
+              props.selectedBooking.name
+            : "Change transfer"}
+        </Text>
+      ) : (
+        <Text>
+          {props.selectedBooking.city &&
+          props.selectedBooking.destination_city &&
+          isPageWide
+            ? "Changing taxi from " +
+              props.selectedBooking.city +
+              " to " +
+              props.selectedBooking.destination_city
+            : "Change transfer"}
+        </Text>
+      )}
     </Container>
   );
 };
