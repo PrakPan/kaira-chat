@@ -192,6 +192,7 @@ const ImageLoader = (props) => {
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
+            onError={props.onfail}
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",

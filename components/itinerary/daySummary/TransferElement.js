@@ -5,12 +5,13 @@ import { MdDoneAll } from "react-icons/md";
 import { WiSunrise } from "react-icons/wi";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import media from "../../media";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import ImageLoader from "../../ImageLoader";
 
 export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [imageFailed, setImageFailed] = useState(null);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -25,6 +26,10 @@ export default function TransferElement(props) {
       }
     }
   }, [booking]);
+
+  const handleImageError = () => {
+    setImageFailed(true);
+  };
 
   const isOriginDestination = () => {
     if (selectedBooking) {
@@ -76,9 +81,11 @@ export default function TransferElement(props) {
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
           <div className="flex items-center">
-            {selectedBooking && selectedBooking?.images?.image !== "" ? (
+            {selectedBooking &&
+            selectedBooking?.images?.image !== "" &&
+            !imageFailed ? (
               <ImageLoader
-                is_url={selectedBooking.images.image.includes("gozo")}
+                is_url={selectedBooking?.images?.image.includes("gozo")}
                 dimensions={{ width: 300, height: 300 }}
                 dimensionsMobile={{ width: 300, height: 300 }}
                 borderRadius="8px"
@@ -90,6 +97,7 @@ export default function TransferElement(props) {
                 widthmobile="3rem"
                 url={selectedBooking?.images?.image}
                 noLazy
+                onfail={handleImageError}
               ></ImageLoader>
             ) : modes ? (
               <TransportIconFetcher
