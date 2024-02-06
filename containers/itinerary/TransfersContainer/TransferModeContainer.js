@@ -252,7 +252,7 @@ const TransferModeContainer = (props) => {
   useEffect(() => {
     setaddboking(props.userSelected);
   }, [props.userSelected]);
-  
+
   function handleCheckboxChange(e) {
     if (!props.payment?.is_registration_needed) {
       if (props.token && props.payment?.user_allowed_to_pay) {
@@ -490,7 +490,9 @@ const TransferModeContainer = (props) => {
       .catch((err) => {
         setLoadingAlternates(false);
         if (err.response.status === 404) {
-          setAlternatesError("No route found, please get in touch with us to complete this booking!");
+          setAlternatesError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
         } else {
           setAlternatesError(
             "There seems to be problem, please try again! adsfasdf"
@@ -1035,7 +1037,7 @@ const TransferModeContainer = (props) => {
                 )}
 
                 <div className="flex flex-col w-[80%] lg:pl-1">
-                  <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
+                  <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center lg:justify-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
                   <div className="sm:text-sm text-[0.85rem]">
                     {props.booking_type == "Taxi"
                       ? props.booking.costings_breakdown &&
@@ -1085,7 +1087,7 @@ const TransferModeContainer = (props) => {
                     </FacilityContainer>
                   )}
                 </div>
-                {!props?.payment?.paid_user && (
+                {!props?.payment?.paid_user && props.booking_type === "Taxi" ? (
                   <div className="">
                     <div
                       className={`absolute  ${
@@ -1132,11 +1134,50 @@ const TransferModeContainer = (props) => {
                             Add Taxi
                           </button>
                         )}
-
-                        {/* <CheckboxFormComponent checked={addbooking} />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div
+                      className={`absolute  ${
+                        true
+                          ? `${
+                              props.booking_type == "Taxi"
+                                ? "lg:bottom-[3.6rem]"
+                                : "lg:bottom-[3.6rem]"
+                            }  bottom-[1.5rem] `
+                          : `${
+                              props.payment?.paid_user ||
+                              !props.payment?.user_allowed_to_pay
+                                ? "lg:bottom-10 bottom-[1.2rem]"
+                                : "lg:bottom-10 bottom-[2.5rem]"
+                            }`
+                      } right-8 -m-3`}
+                    >
+                      {loading && (
+                        <PulseLoader
+                          style={{
+                            position: "absolute",
+                            top: "-25%",
+                            left: "50%",
+                            transform: "translate(-50% , -50%)",
+                          }}
+                          size={6}
+                          speedMultiplier={0.6}
+                          color="#111"
+                        />
+                      )}
+                      <div
+                        onClick={(e) => {
+                          handleCheckboxChange(e);
+                        }}
+                        className="flex flex-row gap-1 items-center  cursor-pointer"
+                      >
+                        <CheckboxFormComponent checked={addbooking} />
                         <label className="text-center sm:text-sm text-[0.7rem]">
                           {addbooking ? "Added Booking" : "Add Booking"}
-                        </label> */}
+                        </label>
                       </div>
                     </div>
                   </div>
