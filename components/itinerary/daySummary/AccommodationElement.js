@@ -9,6 +9,7 @@ import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 import AccommodationModal from "../../../components/modals/accommodation/Index";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
+import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
@@ -159,17 +160,15 @@ export default function AccommodationElement(props) {
         show={showDetails}
         payment={props.payment}
         plan={props.plan}
-        // BookingButton={
-        //   !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
-        // }
-        // bookingFunData={bookingFunData}
-        // BookingButtonFun={() =>
-        //   handleClickAc(
-        //     bookingFunData.index,
-        //     bookingFunData.booking,
-        //     bookingFunData.city_id
-        //   )
-        // }
+        BookingButton={
+          !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
+        }
+        bookingFunData={{
+          index: 0,
+          booking: selectedBooking,
+          city_id: city_id,
+        }}
+        BookingButtonFun={() => null}
       ></AccommodationModal>
 
       {images ? (

@@ -694,6 +694,7 @@ const SimpleTabsV2 = (props) => {
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
+              setShowBookingModal={() => props.setShowBookingModal(true)}
             ></NewItenaryDBDMob>
           </div>
 
@@ -891,6 +892,7 @@ const SimpleTabsV2 = (props) => {
                     getAccommodationAndActivitiesHandler={
                       props.getAccommodationAndActivitiesHandler
                     }
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
                   ></NewItenaryMain>
                 )}
               </div>
@@ -908,6 +910,7 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props.transferBookings}
                   stayBookings={props.stayBookings}
                   activityBookings={props.activityBookings}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
                 ></NewItenaryDBDMob>
               </div>
             )}

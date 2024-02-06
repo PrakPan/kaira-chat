@@ -190,6 +190,7 @@ const Day_I_Container = (props) => {
                 booking={props.stayBookings}
                 payment={props.payment}
                 plan={props.plan}
+                setShowBookingModal={props.setShowBookingModal}
               />
             );
           }

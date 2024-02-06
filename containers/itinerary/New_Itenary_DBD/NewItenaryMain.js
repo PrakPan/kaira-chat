@@ -228,6 +228,7 @@ const NewItenaryMain = (props) => {
                 getAccommodationAndActivitiesHandler={
                   props.getAccommodationAndActivitiesHandler
                 }
+                setShowBookingModal={props.setShowBookingModal}
               ></Day_I_Container>
             </div>
           ))}
