@@ -104,7 +104,13 @@ export default function AccommodationElement(props) {
               {selectedBooking && selectedBooking.name}
             </div>
             <div className="font-normal text-xs leading-4 ml-2">
-              {selectedBooking && selectedBooking.city}
+              {selectedBooking &&
+                selectedBooking.duration &&
+                (selectedBooking.duration > 1
+                  ? selectedBooking.duration + " Nights"
+                  : selectedBooking.duration > 0
+                  ? selectedBooking.duration + " Night"
+                  : null)}
             </div>
           </div>
 
