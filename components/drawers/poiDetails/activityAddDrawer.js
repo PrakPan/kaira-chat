@@ -241,11 +241,6 @@ const ActivityAddDrawer = (props) => {
       ) : (
         <PoiListSkeleton />
       )}
-
-      {/* <MakeYourPersonalised
-        date={props?.payment?.meta_info?.start_date}
-        onHide={() => setShowDrawer(false)}
-      /> */}
     </Drawer>
   );
 };

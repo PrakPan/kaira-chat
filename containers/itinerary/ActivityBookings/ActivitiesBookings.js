@@ -419,7 +419,7 @@ const ActivitiesBookings = (props) => {
                 {booking?.city}{" "}
                 {booking.duration && <span>({booking?.duration}N)</span>}
               </div>
-              <div className=" shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+              <div onClick={handleMoreDiscription} className="cursor-pointer shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
                 <div className="relative flex lg:flex-row w-full flex-col gap-4  grayscale-0 ">
                   <div className="relative lg:h-[15rem] lg:w-[30%] w-full h-[12rem]">
                     <ImageLoader

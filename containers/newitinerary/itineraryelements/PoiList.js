@@ -94,7 +94,7 @@ const PoiList = (props) => {
         className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
       >
         {props.data.activity_data.activity.name ? (
-          props.data?.activity_data?.activity?.cost && (
+          props.data?.activity_data?.activity?.cost ? (
             <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
               <div
                 onClick={() => setShowDetails({ show: true, data: props.data })}
@@ -144,17 +144,14 @@ const PoiList = (props) => {
                     <SkeletonCard />
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full justify-between">
-                  <div className="text-xl font-semibold  w-[80%]">
+                <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full justify-center">
+                  <div className="text-xl font-semibold">
                     {props.data.activity_data.activity.name}
-                  </div>
-                  <div className="text-sm font-normal">
-                    {props.data.activity_data.city.name}
                   </div>
                   <div className="font-normal text-sm my-2 text-[#01202B] line-clamp-3">
                     {props.data.text}
                   </div>
-                  <div>
+                  <div className="">
                     <div className="flex flex-row gap-1">
                       <div className="text-2xl font-bold">
                         <span>₹</span>
@@ -215,7 +212,7 @@ const PoiList = (props) => {
                 )}
               </div>
             </div>
-          )
+          ) : null
         ) : (
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
@@ -272,13 +269,10 @@ const PoiList = (props) => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full  justify-between">
+              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full  justify-center">
                 <div>
-                  <div className="text-xl font-bold block w-[80%]">
+                  <div className="text-xl font-bold block">
                     {props.data.activity_data.poi.name}
-                  </div>
-                  <div className="text-sm font-[300]">
-                    {props.data.activity_data.city.name}
                   </div>
                   <div className="text-sm font-normal my-2 text-[#01202B] line-clamp-3">
                     {props.data.text}
