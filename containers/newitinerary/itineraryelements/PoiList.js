@@ -293,8 +293,9 @@ const PoiList = (props) => {
                     )}
                   </div>
 
-                  <div className="text-sm font-light my-2 text-[#01202B] line-clamp-3 pr-2">
-                    {props.data.text}
+                  <div className="text-sm font-light my-2 text-[#01202B] pr-2">
+                    {props.data.text.slice(0, 200)}
+                    <span className="font-bold text-gray-500"> ...more</span>
                   </div>
 
                   {props.data.activity_data.poi?.tips

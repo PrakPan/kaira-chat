@@ -159,8 +159,8 @@ const ItineraryPoiElement = (props) => {
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("POI");
   const items = [
-    { id: 1, label: "Places To Visit", link: "POI" },
-    { id: 2, label: "Things To Do", link: "Activities" },
+    { id: 1, label: "Places To Visit", link: "" },
+    { id: 2, label: "Things To Do", link: "" },
   ];
 
   const handleCloseDrawer = (e) => {
@@ -302,7 +302,7 @@ const ItineraryPoiElement = (props) => {
   };
 
   const ClickHandler = (child) => {
-    if (child == "Things To Do") {
+    if (child === "Things To Do") {
       setElementType("Activity");
     } else {
       setElementType("POI");
