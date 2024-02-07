@@ -210,7 +210,9 @@ const MidSection = (props) => {
                   <></>
                 )}
 
-                {props.route.transfers.id !== "" &&
+                {props?.route?.transfers &&
+                  props?.route?.transfers?.id &&
+                  props?.route?.transfers?.id !== "" &&
                   !props?.plan?.round_trip_taxi_added &&
                   ((props.route?.modes && props.route?.modes?.length) ||
                     (props?.bookings && props?.bookings?.length)) && (
