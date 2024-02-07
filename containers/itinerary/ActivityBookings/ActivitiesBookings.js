@@ -497,9 +497,9 @@ const ActivitiesBookings = (props) => {
                           <button
                             id={index}
                             onClick={handleMoreDiscription}
-                            className="font-semibold ml-1"
+                            className="font-semibold text-gray-500"
                           >
-                            {"...More"}
+                            {"...more"}
                           </button>
                         </div>
                       )}

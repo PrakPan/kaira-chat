@@ -401,9 +401,7 @@ const TransferModeContainer = (props) => {
             : props?.costings_breakdown?.no_of_seats
         } Seats`
       : null,
-    props?.booking?.transfer_type !== "Intercity one-way" &&
-    props?.booking?.transfer_type !== "Intercity round-trip" &&
-    props?.booking?.transfer_type !== "Multicity"
+    props?.booking?.transfer_type === "Intercity one-way"
       ? props?.costings_breakdown?.distance?.text
         ? `${props?.costings_breakdown?.distance?.text}`
         : null
@@ -1020,7 +1018,7 @@ const TransferModeContainer = (props) => {
                 id={props?.booking?.id}
                 className="mb-4 mt-3 group min-w-full w-max flex flex-row items-center justify-between py-[20px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
               >
-                <div className="flex flex-row">
+                <div className="flex flex-row items-center justify-center">
                   {props.icon && (
                     <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
                       {props.booking_type === "Flight" ? (
@@ -1115,7 +1113,7 @@ const TransferModeContainer = (props) => {
                 </div>
 
                 {!props?.payment?.paid_user && props.booking_type === "Taxi" ? (
-                  <div className="flex flex-row gap-1 items-center cursor-pointer">
+                  <div className="flex flex-row gap-1 items-center cursor-pointer pr-2">
                     {addbooking ? (
                       <button
                         onClick={() => HandleTransport(props.index)}

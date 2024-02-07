@@ -66,9 +66,7 @@ export default function ActivityElement(props) {
           <div className="lg:w-[11%] md:w-[21%]"></div>
           <div className=" flex items-center">
             {selectedBooking?.images[0]?.image !==
-              "media/icons/default/activity.svg" &&
-            selectedBooking?.images[0]?.image !== "" &&
-            !imageFailed ? (
+              "media/icons/default/activity.svg" && (
               <ImageLoader
                 dimensions={{ width: 300, height: 300 }}
                 dimensionsMobile={{ width: 300, height: 300 }}
@@ -79,23 +77,13 @@ export default function ActivityElement(props) {
                 height="3rem"
                 leftalign
                 widthmobile="3rem"
-                url={selectedBooking?.images[0]?.image}
+                url={
+                  !imageFailed
+                    ? selectedBooking?.images[0]?.image
+                    : "media/icons/general/dice.png"
+                }
                 noLazy
                 onfail={handleImageFailed}
-              ></ImageLoader>
-            ) : (
-              <ImageLoader
-                dimensions={{ width: 300, height: 300 }}
-                dimensionsMobile={{ width: 300, height: 300 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={handleActivity}
-                width="3rem"
-                height="3rem"
-                leftalign
-                widthmobile="3rem"
-                url={"media/icons/general/dice.png"}
-                noLazy
               ></ImageLoader>
             )}
           </div>
