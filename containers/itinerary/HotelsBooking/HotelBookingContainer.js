@@ -45,7 +45,7 @@ const HotelBookingContainer = ({
   currentBooking,
   booking,
   index,
-banner_image,
+  banner_image,
   handleClick,
   handleClickAc,
   cityName,
@@ -182,7 +182,10 @@ banner_image,
     }
 
   return (
-    <div id={city_id} className={`flex gap-1 pt-4  flex-col justify-start `}>
+    <div
+      id={booking?.id}
+      className={`flex gap-1 pt-4  flex-col justify-start `}
+    >
       {booking ? (
         <div>
           <div>
@@ -194,10 +197,7 @@ banner_image,
             )}
           </div>
 
-          <div
-            id={booking?.id}
-            className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 "
-          >
+          <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 ">
             <div
               onClick={() => {
                 currentBooking || SelectedBookingin

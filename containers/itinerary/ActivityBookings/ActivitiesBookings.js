@@ -489,15 +489,15 @@ const ActivitiesBookings = (props) => {
                           </div>
                         ))
                       ) : (
-                        <div className="">
+                        <div className="font-light">
                           {booking?.costings_breakdown?.activity_data?.short_description.slice(
                             0,
-                            300
+                            250
                           )}
                           <button
                             id={index}
                             onClick={handleMoreDiscription}
-                            className="font-semibold text-gray-500"
+                            className="font-semibold text-gray-500 ml-1"
                           >
                             {"...more"}
                           </button>

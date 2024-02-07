@@ -1,20 +1,20 @@
-import styled, { keyframes } from 'styled-components';
-import { useState, useEffect } from 'react';
-import { AiFillCar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
+import styled, { keyframes } from "styled-components";
+import { useState, useEffect } from "react";
+import { AiFillCar } from "react-icons/ai";
+import ImageLoader from "../../../components/ImageLoader";
 
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { FaHome } from 'react-icons/fa';
-import { LivelyButton } from '../../../components/LiveleyButton';
-import { TransparentButton } from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
-import { Link } from 'react-scroll';
-import { MdDoneAll } from 'react-icons/md';
+import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { FaHome } from "react-icons/fa";
+import { LivelyButton } from "../../../components/LiveleyButton";
+import { TransparentButton } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { Link } from "react-scroll";
+import { MdDoneAll } from "react-icons/md";
 
 const SectionOneText = styled.span``;
 const GridContainer = styled.div`
   display: grid;
   margin-top: 1rem;
-  grid-template-columns: ${(props) => (props.image ? '1fr 2fr' : '1fr')};
+  grid-template-columns: ${(props) => (props.image ? "1fr 2fr" : "1fr")};
   grid-column-gap: 0.5rem;
 `;
 const Text = styled.p`
@@ -37,15 +37,15 @@ const Line = styled.div`
   border-width: 1px;
 `;
 const ItineraryElementM = (props) => {
-   function getUserSelectedByBookings(id) {
-     if (props.booking && props.booking.length && id)
-       for (let i = 0; i < props.booking.length; i++) {
-         if (props.booking[i].id === id) {
-           return props.booking[i].user_selected;
-         }
-       }
-     return null;
-   }
+  function getUserSelectedByBookings(id) {
+    if (props.booking && props.booking.length && id)
+      for (let i = 0; i < props.booking.length; i++) {
+        if (props.booking[i].id === id) {
+          return props.booking[i].user_selected;
+        }
+      }
+    return null;
+  }
   return (
     <div className="font-lexend">
       <div>
@@ -75,11 +75,15 @@ const ItineraryElementM = (props) => {
             {props.data?.bookings && (
               <Link
                 to={
-                  props.data.bookings
-                    ? `${props.data.bookings[0]?.id}`
-                    : "Stays-Head"
+                  getUserSelectedByBookings(
+                    props.data.bookings && props.data.bookings.length
+                      ? props.data.bookings[0].id
+                      : null
+                  )
+                    ? `${props.data?.bookings[0]?.id}`
+                    : "Stays"
                 }
-                offset={-90}
+                offset={0}
               >
                 {props.data &&
                 props.data.bookings &&
@@ -87,7 +91,6 @@ const ItineraryElementM = (props) => {
                   <>
                     {getUserSelectedByBookings(
                       props.data.bookings &&
-                        props.data.bookings[0] &&
                         props.data.bookings[0] &&
                         props.data.bookings[0].id
                         ? props.data.bookings[0].id

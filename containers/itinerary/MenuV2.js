@@ -566,7 +566,7 @@ const SimpleTabsV2 = (props) => {
                         width="13rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement("Stays-Head")}
+                        onclick={() => scrollToElement("Stays")}
                         onclickparams={null}
                       >
                         View Inclusions
@@ -582,7 +582,7 @@ const SimpleTabsV2 = (props) => {
                         width="9rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement("Stays-Head")}
+                        onclick={() => scrollToElement("Stays")}
                       >
                         Add Hotels
                       </Button>
@@ -599,7 +599,7 @@ const SimpleTabsV2 = (props) => {
                         width="11rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
-                        onclick={() => scrollToElement("Stays-Head")}
+                        onclick={() => scrollToElement("Stays")}
                       >
                         View Inclusions
                       </Button>
@@ -647,7 +647,7 @@ const SimpleTabsV2 = (props) => {
                     width="9rem"
                     borderRadius="10px"
                     bgColor="#F7E700"
-                    onclick={() => scrollToElement("Stays-Head")}
+                    onclick={() => scrollToElement("Stays")}
                   >
                     View Bookings
                   </Button>
@@ -1164,7 +1164,7 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => scrollToElement("Stays-Head")}
+                    onclick={() => scrollToElement("Stays")}
                   >
                     Add Hotels
                   </Button>
@@ -1232,7 +1232,7 @@ const SimpleTabsV2 = (props) => {
                 width="10rem"
                 borderRadius="8px"
                 bgColor="#f8e000"
-                onclick={() => scrollToElement("Stays-Head")}
+                onclick={() => scrollToElement("Stays")}
               >
                 View Bookings
               </Button>

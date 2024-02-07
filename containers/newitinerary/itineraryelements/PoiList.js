@@ -158,8 +158,8 @@ const PoiList = (props) => {
                     )}
                   </div>
                   <div className="font-light text-sm my-2 text-[#01202B] pr-2">
-                    {props.data.text.substring(0, 250)}
-                    <span className="font-bold text-gray-500">...more</span>
+                    {props.data.text.slice(0, 250)}
+                    <span className="font-bold text-gray-500"> ...more</span>
                   </div>
                   <div className="">
                     <div className="flex flex-row gap-1">

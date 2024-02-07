@@ -117,7 +117,7 @@ export default function AccommodationElement(props) {
 
           <div className="ml-4">
             <Link
-              to={selectedBooking ? `${selectedBooking.id}` : "Stays-Head"}
+              to={selectedBooking ? `${selectedBooking.id}` : "Stays"}
               offset={-35}
             >
               {selectedBooking ? (

@@ -934,7 +934,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => scrollToElement("Stays-Head")}
+              onclick={() => scrollToElement("Stays")}
             >
               Add Hotels
             </Button>
@@ -964,7 +964,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => scrollToElement("Stays-Head")}
+              onclick={() => scrollToElement("Stays")}
             >
               View Bookings
             </Button>

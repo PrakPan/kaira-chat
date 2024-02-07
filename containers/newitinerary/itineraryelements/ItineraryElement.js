@@ -107,7 +107,6 @@ const ItineraryElement = (props) => {
             width="4.05rem"
             widthmobile="1.25rem"
           ></ImageLoader> */}
-
         </div>
         <div
           style={{
@@ -120,7 +119,15 @@ const ItineraryElement = (props) => {
             <div className="text-xl font-normal">{props.heading}</div>
 
             <Link
-              to={props?.city_id ? `${props.city_id}` : "Stays-Head"}
+              to={
+                getUserSelectedByBookings(
+                  props?.data?.bookings && props?.data?.bookings.length
+                    ? props.data.bookings[0].id
+                    : null
+                )
+                  ? `${props.data.bookings[0].id}`
+                  : "Stays"
+              }
               offset={-35}
             >
               {props?.data &&
