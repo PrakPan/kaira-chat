@@ -359,7 +359,7 @@ const Day_I_Container = (props) => {
                 : "text-black text-base font-bold"
             }`}
           >
-            {convertDateFormat(props.Days?.slab)}, {getYear(props?.Days?.slab)}{" "}
+            {convertDateFormat(props.Days?.slab)}{getYear(props?.Days?.slab) && `, ${getYear(props?.Days?.slab)}`}{" "}
             -{" "}
             {newCity
               ? `Arrival in ${newCity.city_name}`
