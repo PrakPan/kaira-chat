@@ -4,9 +4,8 @@ import LayoutV2 from '../../../components/Layout';
 import Head from 'next/head';
 import { connect } from 'react-redux';
 import * as authaction from '../../../store/actions/auth';
-
 import { useEffect } from 'react';
-// import Script from "next/script";
+
 const Itinerary = (props) => {
   const router = useRouter();
 
@@ -18,6 +17,7 @@ const Itinerary = (props) => {
 
     props.checkAuthState();
   }, []);
+
   return (
     <LayoutV2 staticnav itinerary>
       {/* <script src='//in.fw-cdn.com/30401267/225580.js' chat='true'></script> */}

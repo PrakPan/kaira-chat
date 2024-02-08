@@ -52,9 +52,9 @@ const ActivityAddDrawer = (props) => {
       element.style.boxShadow = "0 0 10px #f8e000";
 
       timeoutId = setTimeout(() => {
-        element.style.borderColor = "";
         element.style.borderWidth = "";
         element.style.borderRadius = "";
+        element.style.borderColor = "";
         element.style.boxShadow = "";
       }, 4000);
     }

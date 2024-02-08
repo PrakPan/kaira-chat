@@ -386,12 +386,12 @@ const HotelBookingContainer = ({
                           {booking.costings_breakdown[0].room_type}
                         </div>
                         <div>
-                          {"( "}
+                          {"("}
                           {booking.costings_breakdown[0].number_of_rooms}{" "}
                           {booking.costings_breakdown[0].number_of_rooms > 1
                             ? "Rooms"
                             : "Room"}
-                          {" )"}
+                          {")"}
                         </div>
                       </RoomTypeGrid>
 
@@ -488,7 +488,7 @@ const HotelBookingContainer = ({
                 )}
                 {handleClick && (
                   <div
-                    className={`flex flex-row gap-2 items-end justify-between w-full ${
+                    className={`flex flex-row gap-2 items-end justify-end w-full ${
                       payment?.paid_user || !payment?.user_allowed_to_pay
                         ? "lh:mb-0 mb-2"
                         : "lg:mb-0 mb-0"
@@ -497,7 +497,6 @@ const HotelBookingContainer = ({
                     {isDesktop && (
                       <Button
                         padding="0.6rem 2.2rem"
-                        bgColor={"#F7E700"}
                         borderRadius="8px"
                         hoverColor="white"
                         fontWeight="400"
@@ -520,6 +519,7 @@ const HotelBookingContainer = ({
                       >
                         <Button
                           padding="0.6rem 2.2rem"
+                          bgColor={"#F7E700"}
                           borderRadius="8px"
                           fontWeight="400"
                           onclick={() => console.log("")}

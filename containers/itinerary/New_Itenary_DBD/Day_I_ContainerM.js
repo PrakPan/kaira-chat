@@ -55,6 +55,7 @@ const Day_I_ContainerM = (props) => {
     { name: "recommendation", data: [] },
     { name: "activity", data: [] },
   ];
+
   function filter(JsonArray, Arslab_element_name, Arslab_element_data) {
     Arslab_element_data.push(
       JsonArray.filter(
@@ -62,11 +63,13 @@ const Day_I_ContainerM = (props) => {
       )
     );
   }
+
   function divides(JsonArray, Arslab_elements) {
     Arslab_elements.forEach((Arslab_element) =>
       filter(JsonArray, Arslab_element.name, Arslab_element.data)
     );
   }
+
   function getTransportationType(url) {
     const fileName = url.substring(
       url.lastIndexOf("/") + 1,
@@ -85,7 +88,7 @@ const Day_I_ContainerM = (props) => {
   let summaryIContainer = [];
   let newCity;
   function setSymmaryElements(elements) {
-    let activities = [];
+    let pois = [];
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
@@ -135,7 +138,7 @@ const Day_I_ContainerM = (props) => {
               />
             );
           } else {
-            activities.push({
+            pois.push({
               heading: element.heading,
               text: element.text,
               image: element.icon !== undefined ? element.icon : null,
@@ -149,9 +152,9 @@ const Day_I_ContainerM = (props) => {
       }
     });
 
-    if (activities.length) {
+    if (pois.length) {
       summaryIContainer.push(
-        <PoiElement key={`summary_poi`} activities={activities} />
+        <PoiElement key={`summary_poi`} pois={pois} setViewMore={setViewMore} />
       );
     }
   }
@@ -285,14 +288,16 @@ const Day_I_ContainerM = (props) => {
               : "text-black text-base font-bold"
           }`}
         >
-          {convertDateFormat(props.Days?.slab)}{getYear(props?.Days?.slab) && `, ${getYear(props?.Days?.slab)}`} -{" "}
+          {convertDateFormat(props.Days?.slab)}
+          {getYear(props?.Days?.slab) &&
+            `, ${getYear(props?.Days?.slab)}`} -{" "}
           {newCity
             ? `Arrival in ${newCity.city_name}`
             : `${props.current_city.city_name} Exploration`}
         </div>
 
         <ViewMoreButton
-          text={viewMore ? "View Less" : "View More"}
+          text={viewMore ? "View less" : "View more"}
           handler={handleViewMoreButton}
           isMob={true}
         />
@@ -329,9 +334,9 @@ const Day_I_ContainerM = (props) => {
               {!props.LastElement && (
                 <button
                   onClick={() => setShowAddDrawer(true)}
-                  className="text-lg font-normal text-blue-500 hover:underline"
+                  className="text-lg font-normal text-blue hover:underline"
                 >
-                  + Add Activity{" "}
+                  +Add Activity{" "}
                   {props?.Days?.date
                     ? `on ${convertDateFormat(props?.Days?.date)}`
                     : props?.Days?.slab
@@ -348,9 +353,9 @@ const Day_I_ContainerM = (props) => {
               {!props.LastElement && (
                 <button
                   onClick={() => setShowAddDrawer(true)}
-                  className="text-sm font-normal text-blue-500 hover:underline"
+                  className="text-sm font-normal text-blue hover:underline"
                 >
-                  + Add Activity{" "}
+                  +Add Activity{" "}
                   {props?.Days?.date
                     ? `on ${convertDateFormat(props?.Days?.date)}`
                     : props?.Days?.slab

@@ -139,6 +139,7 @@ const Day_I_Container = (props) => {
       )
     );
   }
+
   function getTransportationType(url) {
     const fileName = url.substring(
       url.lastIndexOf("/") + 1,
@@ -157,7 +158,7 @@ const Day_I_Container = (props) => {
   let summaryIContainer = [];
   let newCity;
   function setSymmaryElements(elements) {
-    let activities = [];
+    let pois = [];
     elements.map((element, index) => {
       switch (element.element_type) {
         case "transfer":
@@ -211,7 +212,7 @@ const Day_I_Container = (props) => {
               />
             );
           } else {
-            activities.push({
+            pois.push({
               heading: element.heading,
               text: element.text,
               image: element.icon !== undefined ? element.icon : null,
@@ -225,9 +226,9 @@ const Day_I_Container = (props) => {
       }
     });
 
-    if (activities.length) {
+    if (pois.length) {
       summaryIContainer.push(
-        <PoiElement key={`summary_poi`} activities={activities} />
+        <PoiElement key={`summary_poi`} pois={pois} setViewMore={setViewMore} />
       );
     }
   }
@@ -355,15 +356,18 @@ const Day_I_Container = (props) => {
           <div
             className={`${
               viewMore
-                ? "font-bold text-black text-2xl"
-                : "text-black text-base font-bold"
+                ? "text-black text-2xl font-[500] leading-[22px] "
+                : "text-black text-[16px] font-[500] leading-[22px]"
             }`}
           >
-            {convertDateFormat(props.Days?.slab)}{getYear(props?.Days?.slab) && `, ${getYear(props?.Days?.slab)}`}{" "}
-            -{" "}
-            {newCity
-              ? `Arrival in ${newCity.city_name}`
-              : `${props.current_city.city_name ?? ""} Exploration`}
+            {convertDateFormat(props.Days?.slab)}
+            {getYear(props?.Days?.slab) && `, ${getYear(props?.Days?.slab)}`}
+            {" - "}
+            <span className="font-semibold">
+              {newCity
+                ? `Arrival in ${newCity.city_name}`
+                : `${props.current_city.city_name ?? ""} Exploration`}
+            </span>{" "}
           </div>
 
           {/* {props.Days.slab_elements[0] !== undefined &&
@@ -385,7 +389,7 @@ const Day_I_Container = (props) => {
         </InnerDayLocationRow>
 
         <ViewMoreButton
-          text={viewMore ? "View Less" : "View More"}
+          text={viewMore ? "View less" : "View more"}
           handler={handleViewMoreButton}
         />
 
@@ -509,13 +513,13 @@ const Day_I_Container = (props) => {
         ) : null} */}
 
           {dayIcontainer}
-          <div className="flex w-full ml-8">
+          <div className="flex w-full ml-3">
             {!props.LastElement && (
               <button
                 onClick={() => setShowAddDrawer(true)}
-                className="text-lg font-normal text-blue-500 hover:underline"
+                className="text-lg font-normal text-blue hover:underline"
               >
-                + Add Activity{" "}
+                +Add Activity{" "}
                 {props?.Days?.date
                   ? `on ${convertDateFormat(props?.Days?.date)}`
                   : props?.Days?.slab
@@ -528,13 +532,13 @@ const Day_I_Container = (props) => {
       ) : (
         <DaySummaryContainerStyle>
           {summaryIContainer}
-          <div className="flex w-full ml-8">
+          <div className="flex ml-[10.50%]">
             {!props.LastElement && (
               <button
                 onClick={() => setShowAddDrawer(true)}
-                className="text-sm font-normal text-blue-500 hover:underline"
+                className="text-[14px] font-[600] leading-[22px] text-blue hover:underline"
               >
-                + Add Activity{" "}
+                +Add Activity{" "}
                 {props?.Days?.date
                   ? `on ${convertDateFormat(props?.Days?.date)}`
                   : props?.Days?.slab
@@ -549,8 +553,8 @@ const Day_I_Container = (props) => {
       <ActivityAddDrawer
         showDrawer={showAddDrawer}
         setShowDrawer={setShowAddDrawer}
-        cityName={newCity ? newCity.city_name : props?.current_city.city_name}
-        cityID={newCity ? newCity.city_id : props?.current_city.city_id}
+        cityName={newCity ? newCity?.city_name : props?.current_city?.city_name}
+        cityID={newCity ? newCity?.city_id : props?.current_city?.city_id}
         date={props?.Days?.date}
         itinerary_id={props?.itinerary_id}
         day_slab_index={props?.indexDay}

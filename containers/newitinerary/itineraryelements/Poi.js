@@ -225,17 +225,20 @@ const ItineraryPoiElement = (props) => {
     const element = document.getElementById(
       `${dayIndex}-${elementIndex}-${activityId}`
     );
-    element.scrollIntoView({ block: "center" });
-    element.style.borderWidth = "1px";
-    element.style.borderRadius = "10px";
-    element.style.borderColor = "#f8e000";
-    element.style.boxShadow = "0 0 10px #f8e000";
-    const timeoutId = setTimeout(() => {
-      element.style.borderColor = "";
-      element.style.borderWidth = "";
-      element.style.borderRadius = "";
-      element.style.boxShadow = "";
-    }, 4000);
+    let timeoutId;
+    if (element) {
+      element.scrollIntoView({ block: "center" });
+      element.style.borderWidth = "1px";
+      element.style.borderRadius = "10px";
+      element.style.borderColor = "#f8e000";
+      element.style.boxShadow = "0 0 10px #f8e000";
+      timeoutId = setTimeout(() => {
+        element.style.borderColor = "";
+        element.style.borderWidth = "";
+        element.style.borderRadius = "";
+        element.style.boxShadow = "";
+      }, 4000);
+    }
 
     // Cleanup the timeout to avoid memory leaks
     return () => clearTimeout(timeoutId);
