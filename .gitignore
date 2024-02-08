@@ -85,8 +85,6 @@ bitbucket-pipelines.yml
 docker-compose.yml
 Dockerfile
 
-/services/constants.js
-
 # Sentry
  
 *.swp
