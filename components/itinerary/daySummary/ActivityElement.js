@@ -15,6 +15,7 @@ export default function ActivityElement(props) {
   const [showDrawer, setShowDrawer] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const isPageWide = media("(min-width: 768px)");
 
@@ -33,6 +34,7 @@ export default function ActivityElement(props) {
 
   const handleImageFailed = () => {
     setImageFailed(true);
+    setImageLoaded(true);
   };
 
   const handleCloseDrawer = (e) => {
@@ -64,27 +66,36 @@ export default function ActivityElement(props) {
 
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className=" flex items-center">
+          <div
+            className={`flex items-center justify-center w-[3rem] h-[3rem] ${
+              !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+            }`}
+          >
             {selectedBooking?.images[0]?.image !==
               "media/icons/default/activity.svg" && (
-              <ImageLoader
-                dimensions={{ width: 300, height: 300 }}
-                dimensionsMobile={{ width: 300, height: 300 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={handleActivity}
-                width="3rem"
-                height="3rem"
-                leftalign
-                widthmobile="3rem"
-                url={
-                  !imageFailed
-                    ? selectedBooking?.images[0]?.image
-                    : "media/icons/general/dice.png"
-                }
-                noLazy
-                onfail={handleImageFailed}
-              ></ImageLoader>
+              <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+                <ImageLoader
+                  dimensions={{ width: 300, height: 300 }}
+                  dimensionsMobile={{ width: 300, height: 300 }}
+                  borderRadius="8px"
+                  hoverpointer
+                  onclick={handleActivity}
+                  width="3rem"
+                  height="3rem"
+                  leftalign
+                  widthmobile="3rem"
+                  url={
+                    !imageFailed
+                      ? selectedBooking?.images[0]?.image
+                      : "media/icons/general/dice.png"
+                  }
+                  noLazy
+                  onfail={handleImageFailed}
+                  onload={() => {
+                    setImageLoaded(true);
+                  }}
+                ></ImageLoader>
+              </div>
             )}
           </div>
           <div className="flex flex-col ml-3">
