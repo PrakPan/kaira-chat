@@ -17,6 +17,18 @@ This README would normally document whatever steps are necessary to get your app
 * How to run tests
 * Deployment instructions
 
+### AWS Amplify Configuration ###
+## Environment variables ##
+
+* CONTENT_SERVER_HOST
+* MIS_SERVER_HOST
+* GOOGLE_CLIENT_ID
+* GOOGLE_ANALTICS_ID
+* FACEBOOK_PIXEL_ID
+* HOTJAR_HJID
+* HOTJAR_HJSV
+
+
 ### Contribution guidelines ###
 
 * Writing tests
