@@ -1183,7 +1183,7 @@ const TransferModeContainer = (props) => {
         <div className="w-full h-full flex items-center justify-start ml-4">
           <button
             onClick={handleTransferEdit}
-            className="text-blue-500 hover:underline"
+            className="text-blue hover:underline"
           >
             + Add Transfer
           </button>

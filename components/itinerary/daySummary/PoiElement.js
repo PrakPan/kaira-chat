@@ -28,7 +28,7 @@ export default function PoiElement(props) {
             </span>
             {pois.map(
               (poi, index) =>
-                index < 4 && (
+                index < 3 && (
                   <span
                     onClick={handleActivity}
                     key={index}
@@ -39,14 +39,12 @@ export default function PoiElement(props) {
                   </span>
                 )
             )}
-            {pois.length > 4 && (
-              <span
-                onClick={() => setViewMore(true)}
-                className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
-              >
-                4+ more
-              </span>
-            )}
+            <span
+              onClick={() => setViewMore(true)}
+              className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
+            >
+              {pois.length > 3 ? "1+ more" : "see more"}
+            </span>
           </div>
         </div>
       </div>

@@ -143,6 +143,7 @@ const Route = (props) => {
               fetchData={props.fetchData}
               getPaymentHandler={props.getPaymentHandler}
               setShowLoginModal={props.setShowLoginModal}
+              _GetInTouch={props._GetInTouch}
             ></MidSection>
           );
         }
@@ -275,6 +276,7 @@ const Route = (props) => {
                 version={"v1"}
                 transportMode={props.breif.city_slabs[i].intracity_transport}
                 duration={props.breif.city_slabs[i].duration}
+                _GetInTouch={props._GetInTouch}
               ></MidSection>
             );
           }
