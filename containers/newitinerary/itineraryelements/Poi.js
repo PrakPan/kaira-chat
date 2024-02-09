@@ -189,18 +189,18 @@ const ItineraryPoiElement = (props) => {
             : [],
         })
         .then((res) => {
-          if (res.data.length) {
+          if (res.data.results.length) {
             let options = [];
 
-            for (var i = 0; i < res.data.length; i++) {
-              if (res.data[i].heading !== props.heading)
+            for (var i = 0; i < res.data.results.length; i++) {
+              if (res.data.results[i].heading !== props.heading)
                 options.push(
                   <PoiList
                     key={i}
                     _updatePoiHandler={_updatePoiHandler}
                     selectedData={props.data}
                     setShowDrawer={setShowDrawer}
-                    data={res.data[i]}
+                    data={res.data.results[i]}
                     // loginModal={showLoginModal}
                     ticketsCount={ticketsCount}
                     setLoginModal={props.setShowLoginModal}

@@ -122,10 +122,10 @@ const ActivityAddDrawer = (props) => {
           : [],
       })
       .then((res) => {
-        if (res.data.length) {
+        if (res.data.results.length) {
           let options = [];
 
-          for (var i = 0; i < res.data.length; i++) {
+          for (var i = 0; i < res.data.results.length; i++) {
             options.push(
               <PoiList
                 key={i}
@@ -133,7 +133,7 @@ const ActivityAddDrawer = (props) => {
                 _updatePoiHandler={_addActivityHandler}
                 // selectedData={props.data}
                 setShowDrawer={props?.setShowDrawer}
-                data={res.data[i]}
+                data={res.data.results[i]}
                 // loginModal={showLoginModal}
                 setLoginModal={props.setShowLoginModal}
                 // ticketsCount={ticketsCount}
