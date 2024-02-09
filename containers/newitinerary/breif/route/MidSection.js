@@ -136,7 +136,7 @@ const MidSection = (props) => {
                 <button
                   id="transferAdd"
                   onClick={handleTransferEdit}
-                  className="text-blue-500 hover:underline"
+                  className="text-blue hover:underline"
                 >
                   + Add Transfer
                 </button>{" "}

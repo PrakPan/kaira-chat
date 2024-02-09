@@ -784,7 +784,7 @@ const TransfersContainer = (props) => {
                       <button
                         id={i + 1}
                         onClick={handleTransferEdit}
-                        className="text-blue-500 hover:underline"
+                        className="text-blue hover:underline"
                       >
                         + Add Transfer from {props?.routes[i]?.city_name} to{" "}
                         {props?.routes[i + 2]?.city_name}
