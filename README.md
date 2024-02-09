@@ -20,26 +20,26 @@ This README would normally document whatever steps are necessary to get your app
 ### AWS Amplify Configuration ###
 ##### Add Environment variables in App Settings > Environment variables  #####
 
-* CONTENT_SERVER_HOST = "https://apis.tarzanway.com"
-* MIS_SERVER_HOST = "https://suppliers.tarzanway.com"
-* GOOGLE_CLIENT_ID = ""
-* GOOGLE_ANALTICS_ID = ""
-* FACEBOOK_PIXEL_ID = ""
-* HOTJAR_HJID = ""
-* HOTJAR_HJSV = ""
+* NEXT_PUBLIC_CONTENT_SERVER_HOST = "https://apis.tarzanway.com"
+* NEXT_PUBLIC_MIS_SERVER_HOST = "https://suppliers.tarzanway.com"
+* NEXT_PUBLIC_GOOGLE_CLIENT_ID = ""
+* NEXT_PUBLIC_GOOGLE_ANALTICS_ID = ""
+* NEXT_PUBLIC_FACEBOOK_PIXEL_ID = ""
+* NEXT_PUBLIC_HOTJAR_HJID = ""
+* NEXT_PUBLIC_HOTJAR_HJSV = ""
 
 ### Development Server Configuration ###
-##### Add Environment variables in /etc/environment  #####
+##### Add Environment variables in ~/.bashrc  #####
 
-* CONTENT_SERVER_HOST = "https://dev.apis.tarzanway.com"
-* MIS_SERVER_HOST = "https://dev.suppliers.tarzanway.com"
-* GOOGLE_CLIENT_ID = ""
-* GOOGLE_ANALTICS_ID = ""
-* FACEBOOK_PIXEL_ID = ""
-* HOTJAR_HJID = ""
-* HOTJAR_HJSV = ""
+* export NEXT_PUBLIC_CONTENT_SERVER_HOST = "https://dev.apis.tarzanway.com"
+* export NEXT_PUBLIC_MIS_SERVER_HOST = "https://dev.suppliers.tarzanway.com"
+* export NEXT_PUBLIC_GOOGLE_CLIENT_ID = ""
+* export NEXT_PUBLIC_GOOGLE_ANALTICS_ID = ""
+* export NEXT_PUBLIC_FACEBOOK_PIXEL_ID = ""
+* export NEXT_PUBLIC_HOTJAR_HJID = ""
+* export NEXT_PUBLIC_HOTJAR_HJSV = ""
 
-##### After adding these environment variables to /etc/environment run the below command to load these environment variables #####
+##### After adding these environment variables to ~/.bashrc run the below command to load these environment variables in current session #####
 
 * source ~/.bashrc
 
