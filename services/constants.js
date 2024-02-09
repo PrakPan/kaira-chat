@@ -1,10 +1,10 @@
-export const CONTENT_SERVER_HOST = process.env.CONTENT_SERVER_HOST;
+export const CONTENT_SERVER_HOST = process.env.NEXT_PUBLIC_CONTENT_SERVER_HOST;
 
-export const MIS_SERVER_HOST = process.env.MIS_SERVER_HOST;
+export const MIS_SERVER_HOST = process.env.NEXT_PUBLIC_MIS_SERVER_HOST;
 
-export const GOOGLE_CLIENT_ID = process.env.GOOGLE_ANALTICS_ID;
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALTICS_ID;
 
-export const FACEBOOK_PIXEL_ID = process.env.FACEBOOK_PIXEL_ID;
+export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 export const ITINERARY_STATUSES = {
   itinerarary_under_preparation: "ITINERARY_UNDER_PREPARATION",
@@ -24,7 +24,7 @@ export const ITINERARY_VERSION = {
   version_2: "v2",
 };
 
-export const GOOGLE_ANALTICS_ID = process.env.GOOGLE_ANALTICS_ID;
+export const GOOGLE_ANALTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALTICS_ID;
 
 export const SENTRY_ENABLE = false;
 
@@ -113,6 +113,6 @@ export const ITINERARY_ELEMENT_TYPES = {
   activity: "activity",
 };
 
-export const HOTJAR_HJID = process.env.HOTJAR_HJID;
+export const HOTJAR_HJID = process.env.NEXT_PUBLIC_HOTJAR_HJID;
 
-export const HOTJAR_HJSV = process.env.HOTJAR_HJSV;
+export const HOTJAR_HJSV = process.env.NEXT_PUBLIC_HOTJAR_HJSV;
