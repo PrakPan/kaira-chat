@@ -213,7 +213,9 @@ const ItineraryPoiElement = (props) => {
           }
           setFetchingPoi(false);
         })
-        .catch((err) => {});
+        .catch((err) => {
+          setFetchingPoi(false);
+        });
     }
   }, [showDrawer, elementType, SelectedExprience]);
 
