@@ -18,15 +18,29 @@ This README would normally document whatever steps are necessary to get your app
 * Deployment instructions
 
 ### AWS Amplify Configuration ###
-##### Environment variables #####
+##### Add Environment variables in App Settings > Environment variables  #####
 
-* CONTENT_SERVER_HOST
-* MIS_SERVER_HOST
-* GOOGLE_CLIENT_ID
-* GOOGLE_ANALTICS_ID
-* FACEBOOK_PIXEL_ID
-* HOTJAR_HJID
-* HOTJAR_HJSV
+* CONTENT_SERVER_HOST = "https://apis.tarzanway.com"
+* MIS_SERVER_HOST = "https://suppliers.tarzanway.com"
+* GOOGLE_CLIENT_ID = ""
+* GOOGLE_ANALTICS_ID = ""
+* FACEBOOK_PIXEL_ID = ""
+* HOTJAR_HJID = ""
+* HOTJAR_HJSV = ""
+
+### Development Server Configuration ###
+##### Add Environment variables in /etc/environment  #####
+
+* CONTENT_SERVER_HOST = "https://dev.apis.tarzanway.com"
+* MIS_SERVER_HOST = "https://dev.suppliers.tarzanway.com"
+* GOOGLE_CLIENT_ID = ""
+* GOOGLE_ANALTICS_ID = ""
+* FACEBOOK_PIXEL_ID = ""
+* HOTJAR_HJID = ""
+* HOTJAR_HJSV = ""
+
+###### After adding these environment variables to /etc/environment run the below command to load these environment variables
+* source ~/.bashrc
 
 
 ### Contribution guidelines ###
