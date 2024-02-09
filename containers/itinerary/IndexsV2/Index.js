@@ -237,7 +237,6 @@ const Itinerary = (props) => {
         getPaymentHandler();
         if (response.status === 200) {
           response.json().then((json) => {
-
             for (var i = 0; i < json.bookings.length; i++) {
               if (json.bookings[i].booking_type === "Accommodation")
                 stay_bookings.push(json.bookings[i]);

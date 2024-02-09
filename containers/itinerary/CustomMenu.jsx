@@ -86,6 +86,7 @@ const CustomMenu = ({
   item,
   activeItem,
   onSelect,
+  offSet,
   ...restProps
 }) => {
   // const [activeTabPosition, setActiveTabPosition] = useState(0);
@@ -126,7 +127,7 @@ const CustomMenu = ({
       style={{ textDecoration: 'none' }}
       spy={true}
       // duration={500}
-      offset={-150}
+      offset={offSet ? offSet : -90}
       onSetActive={() => onSelect(item.id)}
       {...restProps}
     >

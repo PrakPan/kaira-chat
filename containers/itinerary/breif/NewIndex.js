@@ -1,38 +1,28 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import Row from "../../../components/experiencecity/info/Row";
-
 import Overview from "./overview/Index";
 import axiosPoiCityInstance from "../../../services/poi/city";
 import axiosPoiRoutes from "../../../services/itinerary/brief/route";
-// import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
-// import RouteData from './Locations';
-
-// import InclusionsData from './Inclusions';
-
 import styled from "styled-components";
 import { Element } from "react-scroll";
-//  import Faqs from '../../components/experiencecity/info/faqs/Index';
-// import Banner from './Banner/Index';
-// import Howtoreach from '../../components/experiencecity/info/Howtoreach';
 import { useRef } from "react";
 import media from "../../../components/media";
 import { useRouter } from "next/router";
-// import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import DesktopBanner from "../../../components/containers/Banner";
 import Banner from "../../homepage/banner/Mobile";
 import Route from "../../newitinerary/breif/route/Index";
 import ButtonYellow from "../../../components/ButtonYellow";
 import InclusionExclusion from "../../../components/InclusionExclusion/InclusionExclusion";
-
 import dynamic from "next/dynamic";
 import CityDetails from "./CityDetails";
 import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import { TbArrowBack } from "react-icons/tb";
+import SkeletonCard from "../../../components/ui/SkeletonCard";
 const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
   ssr: false,
 });
-import SkeletonCard from "../../../components/ui/SkeletonCard";
+
 const DetailsContainer = styled.div`
   width: 100%;
   display: flex;
@@ -74,21 +64,18 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-
-  // async function getRoutes(itinaryId) {
-  //   const res = await axiosPoiRoutes.get(`/?itinerary_id=${itinaryId}`);
-  //   const data = res.data;
-  //   return data;
-  // }
-
   const router = useRouter();
+
   let isPageWide = media("(min-width: 768px)");
+
   const _handleTailoredRedirect = (e) => {
     router.push("/tailored-travel");
   };
+
   const getdayId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab_id;
   };
+
   const getdateId = (id) => {
     return props.itinerary?.day_slabs[id]?.slab;
   };
@@ -154,6 +141,7 @@ const Details = (props) => {
     }
     return null; // Return null if city_id is not found in the array
   }
+
   // const getdayId = (id) => {
   //   return props.itinerary?.day_slabs[id]?.slab_id;
   // };
@@ -217,6 +205,7 @@ const Details = (props) => {
       {location.duration && <p>Ideal duration : {location.duration} days</p>}
     </MapInfo>
   );
+
   // const MapCaller = ({ location, currentPopup, setCurrentPopup }) => (
   //   <LeafMap
   //     location={location}
@@ -240,6 +229,7 @@ const Details = (props) => {
       onload={() => setMapLoaded(true)}
     />
   );
+
   // const LeafMap = dynamic(
   //   () => import('../../../components/LeafMap'), // replace '@components/map' with your component's location
   //   {
@@ -248,12 +238,9 @@ const Details = (props) => {
   //     ssr: false, // This line is important. It's what prevents server-side render
   //   }
   // );
+
   return (
     <div>
-      {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
-      {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
-      {/* <HeaderExtraPadding></HeaderExtraPadding> */}
-
       <DetailsContainer>
         <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-[23rem] lg:mt-20 mt-8  rounded-xl"
@@ -285,31 +272,27 @@ const Details = (props) => {
         </div>
 
         <RouteComponent>
-          {
-            <div id="route">
-              <Route
-                itinerary_id={props.itinerary.tailor_made_id}
-                payment={props.payment}
-                plan={props.plan}
-                dayslab={props.itinerary?.day_slabs}
-                breif={props.breif}
-                routesData={props.routesData}
-                transfers={props.transfersData}
-                routes={props.routes}
-                setPlaceID={setActive}
-                active={active}
-                setCurrentPopup={setCurrentPopup}
-                setShowDrawer={setShowDrawer}
-                setShowDrawerData={setShowDrawerData}
-                fetchData={props.fetchData}
-                getPaymentHandler={props.getPaymentHandler}
-                setShowLoginModal={props.setShowLoginModal}
-                _GetInTouch={props._GetInTouch}
-              />
-            </div>
-          }
-
-          <div className="svg-container"></div>
+          <div id="route">
+            <Route
+              itinerary_id={props.itinerary.tailor_made_id}
+              payment={props.payment}
+              plan={props.plan}
+              dayslab={props.itinerary?.day_slabs}
+              breif={props.breif}
+              routesData={props.routesData}
+              transfers={props.transfersData}
+              routes={props.routes}
+              setPlaceID={setActive}
+              active={active}
+              setCurrentPopup={setCurrentPopup}
+              setShowDrawer={setShowDrawer}
+              setShowDrawerData={setShowDrawerData}
+              fetchData={props.fetchData}
+              getPaymentHandler={props.getPaymentHandler}
+              setShowLoginModal={props.setShowLoginModal}
+              _GetInTouch={props._GetInTouch}
+            />
+          </div>
 
           {/* <div id="MapcontainerRoute">
             <Map
@@ -320,6 +303,7 @@ const Details = (props) => {
               active={active}
             ></Map>
           </div> */}
+
           {/* {routes && (
             <div
               className="relative lg:w-[30rem] lg:h-[30rem]  w-[23rem] h-[23rem]  rounded-xl"
@@ -345,12 +329,14 @@ const Details = (props) => {
           </div>
         ) : null} */}
       </DetailsContainer>
+
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
         city_id={showDrawerData.city_id}
         dayId={findDayIdByCityId(showDrawerData.city_id)}
       ></Drawer>
+
       {/* <ContainerBt style={{ padding: '30px 0px' }}>
         <ButtonYellow>View Day By Day Itinerary</ButtonYellow>
       </ContainerBt>
