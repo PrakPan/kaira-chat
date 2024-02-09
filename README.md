@@ -18,7 +18,7 @@ This README would normally document whatever steps are necessary to get your app
 * Deployment instructions
 
 ### AWS Amplify Configuration ###
-## Environment variables ##
+##### Environment variables #####
 
 * CONTENT_SERVER_HOST
 * MIS_SERVER_HOST
