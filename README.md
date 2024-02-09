@@ -39,7 +39,8 @@ This README would normally document whatever steps are necessary to get your app
 * HOTJAR_HJID = ""
 * HOTJAR_HJSV = ""
 
-###### After adding these environment variables to /etc/environment run the below command to load these environment variables ######
+##### After adding these environment variables to /etc/environment run the below command to load these environment variables #####
+
 * source ~/.bashrc
 
 
