@@ -17,6 +17,33 @@ This README would normally document whatever steps are necessary to get your app
 * How to run tests
 * Deployment instructions
 
+### AWS Amplify Configuration ###
+##### Add Environment variables in App Settings > Environment variables  #####
+
+* NEXT_PUBLIC_CONTENT_SERVER_HOST = "https://apis.tarzanway.com"
+* NEXT_PUBLIC_MIS_SERVER_HOST = "https://suppliers.tarzanway.com"
+* NEXT_PUBLIC_GOOGLE_CLIENT_ID = ""
+* NEXT_PUBLIC_GOOGLE_ANALTICS_ID = ""
+* NEXT_PUBLIC_FACEBOOK_PIXEL_ID = ""
+* NEXT_PUBLIC_HOTJAR_HJID = ""
+* NEXT_PUBLIC_HOTJAR_HJSV = ""
+
+### Development Server Configuration ###
+##### Add Environment variables in ~/.bashrc  #####
+
+* export NEXT_PUBLIC_CONTENT_SERVER_HOST = "https://dev.apis.tarzanway.com"
+* export NEXT_PUBLIC_MIS_SERVER_HOST = "https://dev.suppliers.tarzanway.com"
+* export NEXT_PUBLIC_GOOGLE_CLIENT_ID = ""
+* export NEXT_PUBLIC_GOOGLE_ANALTICS_ID = ""
+* export NEXT_PUBLIC_FACEBOOK_PIXEL_ID = ""
+* export NEXT_PUBLIC_HOTJAR_HJID = ""
+* export NEXT_PUBLIC_HOTJAR_HJSV = ""
+
+##### After adding these environment variables to ~/.bashrc run the below command to load these environment variables in current session #####
+
+* source ~/.bashrc
+
+
 ### Contribution guidelines ###
 
 * Writing tests

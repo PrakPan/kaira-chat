@@ -85,7 +85,10 @@ bitbucket-pipelines.yml
 docker-compose.yml
 Dockerfile
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5d41a3fdf5cc30a0d558a59e0cdcf6756f5f4bbe
 # Sentry
  
 *.swp
