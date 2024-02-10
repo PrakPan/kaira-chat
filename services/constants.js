@@ -2,7 +2,7 @@ export const CONTENT_SERVER_HOST = process.env.NEXT_PUBLIC_CONTENT_SERVER_HOST;
 
 export const MIS_SERVER_HOST = process.env.NEXT_PUBLIC_MIS_SERVER_HOST;
 
-export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALTICS_ID;
+export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
