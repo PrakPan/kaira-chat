@@ -512,6 +512,9 @@ const ItineraryPoiElement = (props) => {
             items={items}
             BarName="TabsName"
             ClickHandler={ClickHandler}
+            selectedItem={
+              elementType === "POI" ? `${items[0].id}` : `${items[1].id}`
+            }
           />
         </div>
         {/* <PoiListSkeleton /> */}

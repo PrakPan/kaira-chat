@@ -13,7 +13,7 @@ export const ITINERARY_STATUSES = {
   itinerary_not_created: "ITINERARY_NOT_CREATED",
   itinerary_finalized: "ITINERARY_FINALIZED",
   itinerary_prepared: "ITINERARY_PREPARED",
-  itinerary_unclaimed: "UNCLAIMED_ITINERARY",
+  itinerary_unclaimed: "ITINERARY_UNCLAIMED",
 };
 
 export const ITINERARY_VERSION = {
@@ -21,14 +21,13 @@ export const ITINERARY_VERSION = {
   version_2: "v2",
 };
 
-
 export const SENTRY_ENABLE = false;
 
 export const TRAVELER_ITINERARIES = [
-  'GN5JvXoBlZvI8TSUNDJE',
-  'budve3wBWOGtAGF-0nXM',
-  '-QIHUn0Bvi6XoFjhDVrO',
-  'MucdpHwBWOGtAGF-_f2c',
+  "GN5JvXoBlZvI8TSUNDJE",
+  "budve3wBWOGtAGF-0nXM",
+  "-QIHUn0Bvi6XoFjhDVrO",
+  "MucdpHwBWOGtAGF-_f2c",
   "rOLMAnwBWOGtAGF-JU43",
   "--BR_HoBlZvI8TSUql8l",
   "3uB5m3sBWOGtAGF-uXDI",
