@@ -531,7 +531,7 @@ const TransfersContainer = (props) => {
       taxi_type: taxi_type,
       transfer_type: transfer_type,
     });
-    
+
     props.setShowTaxiModal(true);
   };
 
@@ -784,7 +784,7 @@ const TransfersContainer = (props) => {
                       <button
                         id={i + 1}
                         onClick={handleTransferEdit}
-                        className="text-blue-500 hover:underline"
+                        className="text-blue hover:underline"
                       >
                         + Add Transfer from {props?.routes[i]?.city_name} to{" "}
                         {props?.routes[i + 2]?.city_name}
@@ -981,131 +981,6 @@ const TransfersContainer = (props) => {
 
       {(props?.transferBookings || props?.routes.length > 1) && (
         <>
-          {/* <PinSection
-            transfersPin
-            setCurrentPopup={false}
-            cityData={props.breif.city_slabs[0]}
-            dayId={
-              props.breif.city_slabs[0].day_slab_location.start_day_slab_index
-            }
-            dayslab={props?.dayslab}
-            lat={props?.breif?.city_slabs[0].lat}
-            long={props?.breif?.city_slabs[0].long}
-            Mapid={props?.breif?.city_slabs[0].gmaps_place_id}
-            city={
-              !props?.routes ||
-              !props?.routes.length ||
-              ((props?.plan?.is_released_for_customer ||
-                props?.plan?.round_trip_taxi_added) &&
-                props?.transferBookings)
-                ? props?.transferBookings[0].city
-                : props?.transferBookings &&
-                  props?.transferBookings[0]?.origin &&
-                  props?.transferBookings[0]?.origin.city_name
-                ? props?.transferBookings[0]?.city
-                : props?.breif.city_slabs[0]?.city_name
-            }
-            cityId={props.breif.city_slabs[0].city_id}
-            duration={props.breif.city_slabs[0].duration}
-            pinColour={props.breif.city_slabs[0].color}
-          ></PinSection>
-          {props?.routes &&
-          props?.routes.length > 1 &&
-          props?.plan?.version == "v2" &&
-          !(
-            props?.plan?.is_released_for_customer ||
-            props?.plan?.round_trip_taxi_added
-          ) ? (
-            modes ? (
-              modes.map((mode, index) => {
-                var CurrentBooking = return_booking_from_id(
-                  props?.transferBookings,
-                  props?.routes[1].bookings[index]?.id
-                );
-
-                return (
-                  <TransferModeContainer
-                    setShowLoginModal={props?.setShowLoginModal}
-                    routes={props?.routes}
-                    plan={props.plan}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    token={props.token}
-                    payment={props?.payment}
-                    booking_type={CurrentBooking?.booking_type}
-                    pinColour={props?.breif?.city_slabs[0]?.color}
-                    costings_breakdown={CurrentBooking?.costings_breakdown}
-                    heading={CurrentBooking?.booking_display_name}
-                    transferbookings={props.transferBookings}
-                    _changeTaxiHandler={_changeTaxiHandler}
-                    _changeFlightHandler={_changeFlightHandler}
-                    setShowTaxiModal={props.setShowTaxiModal}
-                    index={i}
-                    booking={CurrentBooking}
-                    userSelected={CurrentBooking?.user_selected}
-                    modes={props?.routes[1].bookings[index]?.booking_type}
-                    icon={CurrentBooking?.images?.image}
-                    taxi_type={CurrentBooking?.taxi_type}
-                    transportMode={
-                      props?.routes[1].bookings[index]?.booking_type
-                    }
-                    duration={props?.breif?.city_slabs[0]?.duration}
-                    route={props?.routes[1]}
-                    itinerary_id={props?.itinerary_id}
-                    fetchData={props.fetchData}
-                  ></TransferModeContainer>
-                );
-              })
-            ) : (
-              <TransContainer>
-                <div style={{ position: "relative" }}>
-                  <Line
-                    pinColour={props?.breif?.city_slabs[0]?.color}
-                    Transfers={true}
-                  />
-                </div>
-                <TransferContainerForMissing
-                  cityname1={props?.routes[0]?.city_name}
-                  cityname2={props?.routes[2]?.city_name}
-                  email={props?.email}
-                  name={props?.name}
-                  phone={props?.phone}
-                />
-              </TransContainer>
-            )
-          ) : (
-            <TransferModeContainer
-              setShowLoginModal={props?.setShowLoginModal}
-              routes={false}
-              plan={props.plan}
-              getPaymentHandler={props.getPaymentHandler}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              token={props.token}
-              payment={props?.payment}
-              booking_type={props?.transferBookings[0]?.booking_type}
-              setShowBookingModal={props.setShowBookingModal}
-              pinColour={props.breif.city_slabs[0].color}
-              heading={props?.transferBookings[0]?.booking_display_name}
-              costings_breakdown={
-                props?.transferBookings[0]?.costings_breakdown
-              }
-              modes={"Taxi"}
-              transferbookings={props.transferBookings}
-              booking={props?.transferBookings[0]}
-              _changeTaxiHandler={_changeTaxiHandler}
-              _changeFlightHandler={_changeFlightHandler}
-              setShowTaxiModal={props.setShowTaxiModal}
-              index={0}
-              icon={props?.transferBookings[0]?.images?.image}
-              taxi_type={props?.transferBookings[0]?.taxi_type}
-              transportMode={"Taxi"}
-              duration={props.breif.city_slabs[0].duration}
-              userSelected={props?.transferBookings[0]?.user_selected}
-            />
-          )} */}
-
           {locationsArr}
 
           {props?.routes &&

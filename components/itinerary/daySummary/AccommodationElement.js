@@ -9,6 +9,7 @@ import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 import AccommodationModal from "../../../components/modals/accommodation/Index";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
+import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
@@ -16,6 +17,8 @@ export default function AccommodationElement(props) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [images, setImages] = useState(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -30,6 +33,11 @@ export default function AccommodationElement(props) {
       }
     }
   }, [booking]);
+
+  const handleImageFailed = () => {
+    setImageFailed(true);
+    setImageLoaded(true);
+  };
 
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -74,37 +82,53 @@ export default function AccommodationElement(props) {
 
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className=" flex items-center">
-            {selectedBooking?.images[0]?.image !== "" ? (
-              <ImageLoader
-                dimensions={{ width: 300, height: 300 }}
-                dimensionsMobile={{ width: 300, height: 300 }}
-                borderRadius="8px"
-                hoverpointer
-                onclick={() => setShowDetails(true)}
-                width="3rem"
-                height="3rem"
-                leftalign
-                widthmobile="3rem"
-                url={selectedBooking?.images[0]?.image}
-                noLazy
-              ></ImageLoader>
-            ) : (
-              <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" />
-            )}
+          <div
+            className={`flex items-center justify-center w-[3rem] h-[3rem] ${
+              !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+            }`}
+          >
+            <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+              {selectedBooking?.images[0]?.image !== "" && !imageFailed ? (
+                <ImageLoader
+                  dimensions={{ width: 300, height: 300 }}
+                  dimensionsMobile={{ width: 300, height: 300 }}
+                  borderRadius="8px"
+                  hoverpointer
+                  onclick={() => setShowDetails(true)}
+                  width="3rem"
+                  height="3rem"
+                  leftalign
+                  widthmobile="3rem"
+                  url={selectedBooking?.images[0]?.image}
+                  noLazy
+                  onfail={handleImageFailed}
+                  onload={() => {
+                    setImageLoaded(true);
+                  }}
+                ></ImageLoader>
+              ) : (
+                <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" />
+              )}
+            </div>
           </div>
           <div className="flex flex-col ml-3">
             <div className="text-xs font-normal leading-4 ml-2">
               {selectedBooking && selectedBooking.name}
             </div>
             <div className="font-normal text-xs leading-4 ml-2">
-              {selectedBooking && selectedBooking.city}
+              {selectedBooking &&
+                selectedBooking.duration &&
+                (selectedBooking.duration > 1
+                  ? selectedBooking.duration + " Nights"
+                  : selectedBooking.duration > 0
+                  ? selectedBooking.duration + " Night"
+                  : null)}
             </div>
           </div>
 
           <div className="ml-4">
             <Link
-              to={selectedBooking ? `${selectedBooking.id}` : "Stays-Head"}
+              to={selectedBooking ? `${selectedBooking.id}` : "Stays"}
               offset={-35}
             >
               {selectedBooking ? (
@@ -147,17 +171,15 @@ export default function AccommodationElement(props) {
         show={showDetails}
         payment={props.payment}
         plan={props.plan}
-        // BookingButton={
-        //   !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
-        // }
-        // bookingFunData={bookingFunData}
-        // BookingButtonFun={() =>
-        //   handleClickAc(
-        //     bookingFunData.index,
-        //     bookingFunData.booking,
-        //     bookingFunData.city_id
-        //   )
-        // }
+        BookingButton={
+          !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
+        }
+        bookingFunData={{
+          index: 0,
+          booking: selectedBooking,
+          city_id: city_id,
+        }}
+        BookingButtonFun={() => null}
       ></AccommodationModal>
 
       {images ? (

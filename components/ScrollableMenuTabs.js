@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import useMediaQuery from '../hooks/useMedia';
-import { useSticky } from '../hooks/useSticky';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import CustomMenu from '../containers/itinerary/CustomMenu';
-import { useDebounce } from '../hooks/debounce';
-import { useIsComponentInView } from '../hooks/useComponentInView';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import useMediaQuery from "../hooks/useMedia";
+import { useSticky } from "../hooks/useSticky";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import CustomMenu from "../containers/itinerary/CustomMenu";
+import { useDebounce } from "../hooks/debounce";
+import { useIsComponentInView } from "../hooks/useComponentInView";
 import {
   NavigationMarker,
   useNavigationMarker,
-} from '../hooks/useNavigationMarker';
-import useHorizontalScroll from '../hooks/useHorizontalScroll';
-import useFieldOfView from '../hooks/useFieldOfView';
-import { useSelector } from 'react-redux';
+} from "../hooks/useNavigationMarker";
+import useHorizontalScroll from "../hooks/useHorizontalScroll";
+import useFieldOfView from "../hooks/useFieldOfView";
+import { useSelector } from "react-redux";
 
 ///////// Style
 
 const Navbar = styled.div`
-  /* position: ${({ sticky }) => (sticky ? 'sticky' : 'inherit')}; */
+  /* position: ${({ sticky }) => (sticky ? "sticky" : "inherit")}; */
 
   font-family: lexend;
   display: flex;
@@ -28,13 +28,13 @@ const Navbar = styled.div`
   scrollbar-width: none;
   overflow-x: scroll;
   align-items: center;
-  overflow-y: ${({ Isvertical }) => (Isvertical ? 'scroll' : 'auto')};
-  height: ${({ Isvertical }) => (Isvertical ? '85vh' : 'auto')};
+  overflow-y: ${({ Isvertical }) => (Isvertical ? "scroll" : "auto")};
+  height: ${({ Isvertical }) => (Isvertical ? "85vh" : "auto")};
 
-  flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
+  flex-direction: ${({ Isvertical }) => (Isvertical ? "column" : "row")};
 
-  margin: ${({ Isvertical }) => (Isvertical ? '0px -20px 0px -101px' : '')};
-  position: ${({ Isvertical }) => (Isvertical ? 'absolute' : 'inherit')};
+  margin: ${({ Isvertical }) => (Isvertical ? "0px -20px 0px -101px" : "")};
+  position: ${({ Isvertical }) => (Isvertical ? "absolute" : "inherit")};
   background-color: white;
 `;
 const NavbarContainer = styled.div`
@@ -43,9 +43,9 @@ const NavbarContainer = styled.div`
 
   display: flex;
 
-  flex-direction: ${({ Isvertical }) => (Isvertical ? 'column' : 'row')};
+  flex-direction: ${({ Isvertical }) => (Isvertical ? "column" : "row")};
   margin: ${({ Isvertical }) =>
-    Isvertical ? '0px -20px 0px -20px' : '0px -20px 0px -20px'};
+    Isvertical ? "0px -20px 0px -20px" : "0px -20px 0px -20px"};
   background-color: white;
 
   position: inherit;
@@ -53,9 +53,9 @@ const NavbarContainer = styled.div`
   top: 120px;
 
   display: flex;
-  width: ${({ Isvertical }) => (Isvertical ? 'fit-content' : 'auto')};
+  width: ${({ Isvertical }) => (Isvertical ? "fit-content" : "auto")};
   height: ${({ isInView, Isvertical }) =>
-    isInView && Isvertical ? '85vh' : 'auto'};
+    isInView && Isvertical ? "85vh" : "auto"};
   -webkit-flex-direction: row;
   -ms-flex-direction: row;
   flex-direction: row;
@@ -70,20 +70,21 @@ const ScrollableMenuTabs = ({
   offset,
   items,
   BarName,
-  Mstyle = 'simple',
-  Iterable = 'label',
+  Mstyle = "simple",
+  Iterable = "label",
   vertical = false,
   classStyle,
+  scrollOffSet,
 }) => {
   const [activeItem, setActiveItem] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [activeTabPosition, setActiveTabPosition] = useState(0);
-  const startDate = useSelector(state => state.itineraryStartDate.startDate);
+  const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   /// hooks
 
   const { ref, isSticky } = useSticky(90);
-  const isDesktop = useMediaQuery('(min-width:1148px)');
-  const isInView = useFieldOfView('Stays-Head');
+  const isDesktop = useMediaQuery("(min-width:1148px)");
+  const isInView = useFieldOfView("Stays-Head");
   /////// functionality
   //////////////////////////
 
@@ -98,7 +99,7 @@ const ScrollableMenuTabs = ({
     const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
     tabsContainer.scrollBy({
       left: -scrollDistance,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -109,16 +110,16 @@ const ScrollableMenuTabs = ({
 
     tabsContainer.scrollBy({
       left: scrollDistance,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
     setCanScrollLeft(true);
   };
   function isActive(link) {
-    return link.classList.contains('active');
+    return link.classList.contains("active");
   }
   const handleScroll = () => {
     const tabContainer = ref.current;
-    const tabsContainer = ref.current?.querySelectorAll('a') && [];
+    const tabsContainer = ref.current?.querySelectorAll("a") && [];
     for (let i = 0; i < tabsContainer.length; i++) {
       if (isActive(tabsContainer[i])) {
       }
@@ -156,14 +157,14 @@ const ScrollableMenuTabs = ({
           if (containerElement) {
             containerElement.scrollTo({
               top: activeTabPosition,
-              behavior: 'smooth',
+              behavior: "smooth",
             });
           }
         } else {
           if (containerElement) {
             containerElement.scrollTo({
               left: activeTabPosition,
-              behavior: 'smooth',
+              behavior: "smooth",
             });
           }
         }
@@ -176,7 +177,7 @@ const ScrollableMenuTabs = ({
   const { markerPos, ...markerHandlers } = useNavigationMarker();
   return (
     <NavbarContainer
-      style={{ top: offset, marginLeft: icons ? '0px' : '0px' }}
+      style={{ top: offset, marginLeft: icons ? "0px" : "0px" }}
       Isvertical={vertical}
       className={classStyle}
       isInView={isInView}
@@ -197,7 +198,9 @@ const ScrollableMenuTabs = ({
       ) : null} */}
 
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
-        {vertical ? <div className="font-bold">{new Date(startDate).getFullYear()}</div> : null}
+        {vertical ? (
+          <div className="font-bold">{new Date(startDate).getFullYear()}</div>
+        ) : null}
         {items.map((item, index) => (
           <>
             <CustomMenu
@@ -210,6 +213,7 @@ const ScrollableMenuTabs = ({
               item={item}
               activeItem={activeItem}
               onSelect={handleSelect}
+              offSet={scrollOffSet}
             />
           </>
         ))}

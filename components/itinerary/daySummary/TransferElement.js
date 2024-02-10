@@ -5,12 +5,14 @@ import { MdDoneAll } from "react-icons/md";
 import { WiSunrise } from "react-icons/wi";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import media from "../../media";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import ImageLoader from "../../ImageLoader";
 
 export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -25,6 +27,11 @@ export default function TransferElement(props) {
       }
     }
   }, [booking]);
+
+  const handleImageError = () => {
+    setImageFailed(true);
+    setImageLoaded(true);
+  };
 
   const isOriginDestination = () => {
     if (selectedBooking) {
@@ -75,30 +82,42 @@ export default function TransferElement(props) {
 
         <div className="w-full flex flex-row items-center">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className="flex items-center">
-            {selectedBooking && selectedBooking?.images?.image !== "" ? (
-              <ImageLoader
-                is_url={selectedBooking.images.image.includes("gozo")}
-                dimensions={{ width: 300, height: 300 }}
-                dimensionsMobile={{ width: 300, height: 300 }}
-                borderRadius="8px"
-                hoverpointer
-                // onclick={() => setShowDetails(true)}
-                width="3rem"
-                height="3rem"
-                leftalign
-                widthmobile="3rem"
-                url={selectedBooking?.images?.image}
-                noLazy
-              ></ImageLoader>
-            ) : modes ? (
-              <TransportIconFetcher
-                TransportMode={modes}
-                classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[1.25rem]"
-              />
-            ) : (
-              <div className=""></div>
-            )}
+          <div
+            className={`flex items-center justify-center w-[3rem] h-[3rem] ${
+              !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+            }`}
+          >
+            <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+              {selectedBooking &&
+              selectedBooking?.images?.image !== "" &&
+              !imageFailed ? (
+                <ImageLoader
+                  is_url={selectedBooking?.images?.image.includes("gozo")}
+                  dimensions={{ width: 300, height: 300 }}
+                  dimensionsMobile={{ width: 300, height: 300 }}
+                  borderRadius="8px"
+                  hoverpointer
+                  // onclick={() => setShowDetails(true)}
+                  width="3rem"
+                  height="3rem"
+                  leftalign
+                  widthmobile="3rem"
+                  url={selectedBooking?.images?.image}
+                  noLazy
+                  onfail={handleImageError}
+                  onload={() => {
+                    setImageLoaded(true);
+                  }}
+                ></ImageLoader>
+              ) : modes ? (
+                <TransportIconFetcher
+                  TransportMode={modes}
+                  classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[1.25rem]"
+                />
+              ) : (
+                <div className=""></div>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col ml-3">

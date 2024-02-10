@@ -85,7 +85,7 @@ const Container = styled.div`
 `;
 
 const GridContainer = styled.div`
-  width: 14rem;
+  width: auto;
   overflow: auto;
   display: flex;
   flex-direction: row;
@@ -248,11 +248,21 @@ const TransferModeContainer = (props) => {
   const [alternateRoutes, setAlternateRoutes] = useState(null);
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [alternatesError, setAlternatesError] = useState(null);
+  const [flightImageFailed, setFlightImageFailed] = useState(null);
+  const [transferImageFailed, setTransferImageFailed] = useState(null);
 
   useEffect(() => {
     setaddboking(props.userSelected);
   }, [props.userSelected]);
-  
+
+  const handleFlightImageFailed = () => {
+    setFlightImageFailed(true);
+  };
+
+  const handleTransferImageFailed = () => {
+    setTransferImageFailed(true);
+  };
+
   function handleCheckboxChange(e) {
     if (!props.payment?.is_registration_needed) {
       if (props.token && props.payment?.user_allowed_to_pay) {
@@ -391,9 +401,7 @@ const TransferModeContainer = (props) => {
             : props?.costings_breakdown?.no_of_seats
         } Seats`
       : null,
-    props?.booking?.transfer_type !== "Intercity one-way" &&
-    props?.booking?.transfer_type !== "Intercity round-trip" &&
-    props?.booking?.transfer_type !== "Multicity"
+    props?.booking?.transfer_type === "Intercity one-way"
       ? props?.costings_breakdown?.distance?.text
         ? `${props?.costings_breakdown?.distance?.text}`
         : null
@@ -490,7 +498,9 @@ const TransferModeContainer = (props) => {
       .catch((err) => {
         setLoadingAlternates(false);
         if (err.response.status === 404) {
-          setAlternatesError("No route found, please get in touch with us to complete this booking!");
+          setAlternatesError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
         } else {
           setAlternatesError(
             "There seems to be problem, please try again! adsfasdf"
@@ -560,7 +570,7 @@ const TransferModeContainer = (props) => {
                   {props.userSelected && (
                     <LogoContainer>
                       <div className="">
-                        {props.booking?.airline_code ? (
+                        {props.booking?.airline_code && !flightImageFailed ? (
                           <ImageContainer>
                             <ImageLoader
                               className=""
@@ -571,6 +581,7 @@ const TransferModeContainer = (props) => {
                               height="4rem"
                               width="4rem"
                               widthmobile="4rem"
+                              onfail={handleFlightImageFailed}
                             ></ImageLoader>
                           </ImageContainer>
                         ) : (
@@ -1005,88 +1016,122 @@ const TransferModeContainer = (props) => {
 
               <div
                 id={props?.booking?.id}
-                className="mb-4 mt-3 group min-w-full w-max  flex flex-row gap-1   py-[20px]  cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 items-center "
+                className="mb-4 mt-3 group min-w-full w-max flex flex-row items-center justify-between py-[20px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
               >
-                {props.icon && (
-                  <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
-                    {props.booking_type == "Flight" ? (
-                      <TransportIconFetcher
-                        TransportMode={props.booking_type}
-                        Instyle={{
-                          fontSize: "2.75rem",
-                          marginRight: "0.8rem",
-                          color: "black",
-                        }}
-                      />
-                    ) : (
-                      props.icon && (
-                        <ImageLoader
-                          is_url={props.icon.includes("gozo")}
-                          className=" object-contain"
-                          url={props.icon}
-                          leftalign
-                          height={props.icon.includes("gozo") ? "3rem" : "4rem"}
-                          width={"4rem"}
-                          widthmobile="4rem"
-                        ></ImageLoader>
-                      )
+                <div className="flex flex-row items-center justify-center">
+                  {props.icon && (
+                    <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
+                      {props.booking_type === "Flight" ? (
+                        <TransportIconFetcher
+                          TransportMode={props.booking_type}
+                          Instyle={{
+                            fontSize: "2.75rem",
+                            marginRight: "0.8rem",
+                            color: "black",
+                          }}
+                        />
+                      ) : !transferImageFailed ? (
+                        props.icon && (
+                          <ImageLoader
+                            is_url={props.icon.includes("gozo")}
+                            className=" object-contain"
+                            url={props.icon}
+                            leftalign
+                            height={
+                              props.icon.includes("gozo") ? "3rem" : "4rem"
+                            }
+                            width={"4rem"}
+                            widthmobile="4rem"
+                            onfail={handleTransferImageFailed}
+                          ></ImageLoader>
+                        )
+                      ) : (
+                        <TransportIconFetcher
+                          TransportMode={props.booking_type}
+                          Instyle={{
+                            fontSize: "2.75rem",
+                            marginRight: "0.8rem",
+                            color: "black",
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex flex-col">
+                    <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center lg:justify-center items-baseline justify-between gap-1 font-medium"></div>
+                    <div className="sm:text-sm text-[0.85rem]">
+                      {props.booking_type == "Taxi"
+                        ? props.booking.costings_breakdown &&
+                          props.booking.costings_breakdown.gozo &&
+                          props.booking.costings_breakdown.gozo.model
+                          ? isPageWide
+                            ? props.booking.costings_breakdown.gozo.model
+                            : truncateString(
+                                props.booking.costings_breakdown.gozo.model,
+                                25
+                              )
+                          : "Private transfer "
+                        : props.booking_type}
+                      {props.booking.transfer_type === "Intercity one-way" &&
+                        props?.booking?.costings_breakdown?.duration?.text && (
+                          <div className="inline-block ml-1">
+                            ({props.booking?.costings_breakdown?.duration?.text}
+                            )
+                          </div>
+                        )}
+                    </div>
+                    <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
+                      {props.taxi_type && <div>{props.taxi_type}</div>}
+                    </div>
+
+                    {props?.costings_breakdown && (
+                      <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1">
+                        <span className="pr-1 block sm:text-sm text-[0.82rem]">
+                          Facilities:
+                        </span>
+
+                        <GridContainer className=" ">
+                          {Facilities.filter(Boolean).map(
+                            (data, index) =>
+                              data !== null && (
+                                <div className="gap-1 block  min-w-fit">
+                                  <div className="flex flex-row sm:text-sm text-[0.74rem] font-normal">
+                                    {index !== 0 && data != null ? (
+                                      <span className="px-1">|</span>
+                                    ) : null}
+
+                                    <div className="">{data}</div>
+                                  </div>
+                                </div>
+                              )
+                          )}
+                        </GridContainer>
+                      </FacilityContainer>
                     )}
                   </div>
-                )}
-
-                <div className="flex flex-col w-[80%] lg:pl-1">
-                  <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center items-baseline justify-between  w-full  gap-1 font-medium"></div>
-                  <div className="sm:text-sm text-[0.85rem]">
-                    {props.booking_type == "Taxi"
-                      ? props.booking.costings_breakdown &&
-                        props.booking.costings_breakdown.gozo &&
-                        props.booking.costings_breakdown.gozo.model
-                        ? isPageWide
-                          ? props.booking.costings_breakdown.gozo.model
-                          : truncateString(
-                              props.booking.costings_breakdown.gozo.model,
-                              25
-                            )
-                        : "Private transfer "
-                      : props.booking_type}
-                    {props.booking.transfer_type === "Intercity one-way" &&
-                      props?.booking?.costings_breakdown?.duration?.text && (
-                        <div className="inline-block ml-1">
-                          ({props.booking?.costings_breakdown?.duration?.text})
-                        </div>
-                      )}
-                  </div>
-                  <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
-                    {props.taxi_type && <div>{props.taxi_type}</div>}
-                  </div>
-
-                  {props?.costings_breakdown && (
-                    <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1 w-full">
-                      <span className="pr-1 block sm:text-sm text-[0.82rem]">
-                        Facilities:
-                      </span>
-
-                      <GridContainer className=" ">
-                        {Facilities.filter(Boolean).map(
-                          (data, index) =>
-                            data !== null && (
-                              <div className="gap-1 block  min-w-fit">
-                                <div className="flex flex-row sm:text-sm text-[0.74rem] font-normal">
-                                  {index !== 0 && data != null ? (
-                                    <span className="px-1">|</span>
-                                  ) : null}
-
-                                  <div className="">{data}</div>
-                                </div>
-                              </div>
-                            )
-                        )}
-                      </GridContainer>
-                    </FacilityContainer>
-                  )}
                 </div>
-                {!props?.payment?.paid_user && (
-                  <div className="">
+
+                {!props?.payment?.paid_user && props.booking_type === "Taxi" ? (
+                  <div className="flex flex-row gap-1 items-center cursor-pointer pr-2">
+                    {addbooking ? (
+                      <button
+                        onClick={() => HandleTransport(props.index)}
+                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      >
+                        {isDesktop ? "Change Taxi" : "Change"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => HandleTransport(props.index)}
+                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      >
+                        Add Taxi
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div>
                     <div
                       className={`absolute  ${
                         true
@@ -1116,27 +1161,16 @@ const TransferModeContainer = (props) => {
                           color="#111"
                         />
                       )}
-                      <div className="flex flex-row gap-1 items-center cursor-pointer">
-                        {addbooking ? (
-                          <button
-                            onClick={() => HandleTransport(props.index)}
-                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                          >
-                            {isDesktop ? "Change Taxi" : "Change"}
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => HandleTransport(props.index)}
-                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                          >
-                            Add Taxi
-                          </button>
-                        )}
-
-                        {/* <CheckboxFormComponent checked={addbooking} />
+                      <div
+                        onClick={(e) => {
+                          handleCheckboxChange(e);
+                        }}
+                        className="flex flex-row gap-1 items-center  cursor-pointer"
+                      >
+                        <CheckboxFormComponent checked={addbooking} />
                         <label className="text-center sm:text-sm text-[0.7rem]">
                           {addbooking ? "Added Booking" : "Add Booking"}
-                        </label> */}
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -1149,7 +1183,7 @@ const TransferModeContainer = (props) => {
         <div className="w-full h-full flex items-center justify-start ml-4">
           <button
             onClick={handleTransferEdit}
-            className="text-blue-500 hover:underline"
+            className="text-blue hover:underline"
           >
             + Add Transfer
           </button>

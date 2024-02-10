@@ -94,7 +94,7 @@ const PoiList = (props) => {
         className={`flex gap-1  lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start `}
       >
         {props.data.activity_data.activity.name ? (
-          props.data?.activity_data?.activity?.cost && (
+          props.data?.activity_data?.activity?.cost ? (
             <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
               <div
                 onClick={() => setShowDetails({ show: true, data: props.data })}
@@ -102,7 +102,7 @@ const PoiList = (props) => {
                 className={`relative flex lg:flex-row w-full flex-col gap-4 `}
               >
                 <div
-                  className={`relative 'lg:h-[15rem]'
+                  className={`'lg:h-[15rem]'
               lg:w-[30%] w-full  h-[12rem]`}
                 >
                   <div style={{ display: imageLoaded ? "initial" : "none" }}>
@@ -144,17 +144,24 @@ const PoiList = (props) => {
                     <SkeletonCard />
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full justify-between">
-                  <div className="text-xl font-semibold  w-[80%]">
-                    {props.data.activity_data.activity.name}
+                <div className="flex flex-col gap-2 text-[#01202B] lg:w-[67%] w-full justify-start">
+                  <div className="flex flex-row justify-between">
+                    <div className="text-2xl font-bold">
+                      {props.data.activity_data.activity.name}
+                    </div>
+                    {props.data.activity_data?.activity?.is_very_popular && (
+                      <div>
+                        <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1 -mr-2">
+                          Recommended
+                        </ClippathComp>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-sm font-normal">
-                    {props.data.activity_data.city.name}
+                  <div className="font-light text-sm my-2 text-[#01202B] pr-2">
+                    {props.data.text.slice(0, 250)}
+                    <span className="font-bold text-gray-500"> ...more</span>
                   </div>
-                  <div className="font-normal text-sm my-2 text-[#01202B] line-clamp-3">
-                    {props.data.text}
-                  </div>
-                  <div>
+                  <div className="">
                     <div className="flex flex-row gap-1">
                       <div className="text-2xl font-bold">
                         <span>₹</span>
@@ -165,19 +172,23 @@ const PoiList = (props) => {
                       </div>
                     </div>
                   </div>
-                </div>{" "}
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCheckboxChange(e, props?.data?.activity_data?.id);
-                  }}
-                  className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={isSelect} className="mb-1" />
-                  <label className="text-center">
-                    {isSelect ? "Selected" : "Select"}
-                  </label>
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCheckboxChange(e, props?.data?.activity_data?.id);
+                    }}
+                    className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                  >
+                    <CheckboxFormComponent
+                      checked={isSelect}
+                      className="mb-1"
+                    />
+                    <label className="text-center">
+                      {isSelect ? "Selected" : "Select"}
+                    </label>
+                  </div>
                 </div>
+
                 {/* <SelectContainer>
                   <CounterContainer>
                     <CounterIcon
@@ -208,14 +219,9 @@ const PoiList = (props) => {
                     Select
                   </Button>
                 </SelectContainer> */}
-                {props.data.activity_data?.activity?.is_very_popular && (
-                  <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
-                    Recommended
-                  </ClippathComp>
-                )}
               </div>
             </div>
-          )
+          ) : null
         ) : (
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ">
             <div
@@ -272,16 +278,24 @@ const PoiList = (props) => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full  justify-between">
+              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full justify-between">
                 <div>
-                  <div className="text-xl font-bold block w-[80%]">
-                    {props.data.activity_data.poi.name}
+                  <div className="flex flex-row justify-between">
+                    <div className="text-2xl font-bold">
+                      {props.data.activity_data.poi.name}
+                    </div>
+                    {props.data.activity_data?.poi?.is_very_popular && (
+                      <div>
+                        <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 -mr-2">
+                          Recommended
+                        </ClippathComp>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-sm font-[300]">
-                    {props.data.activity_data.city.name}
-                  </div>
-                  <div className="text-sm font-normal my-2 text-[#01202B] line-clamp-3">
-                    {props.data.text}
+
+                  <div className="text-sm font-light my-2 text-[#01202B] pr-2">
+                    {props.data.text.slice(0, 200)}
+                    <span className="font-bold text-gray-500"> ...more</span>
                   </div>
 
                   {props.data.activity_data.poi?.tips
@@ -299,24 +313,19 @@ const PoiList = (props) => {
                         ))
                     : null}
                 </div>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCheckboxChange(e);
+                  }}
+                  className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={isSelect} className="mb-1" />
+                  <label className="text-center">
+                    {isSelect ? "Selected" : "Select"}
+                  </label>
+                </div>
               </div>
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCheckboxChange(e);
-                }}
-                className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start  cursor-pointer"
-              >
-                <CheckboxFormComponent checked={isSelect} className="mb-1" />
-                <label className="text-center">
-                  {isSelect ? "Selected" : "Select"}
-                </label>
-              </div>
-              {props.data.activity_data?.poi?.is_very_popular && (
-                <ClippathComp className="absolute text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 top-3 right-1 -m-3">
-                  Recommended
-                </ClippathComp>
-              )}
             </div>
           </div>
         )}

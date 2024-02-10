@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import { AiFillCar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
@@ -32,6 +31,7 @@ import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { BiErrorCircle } from "react-icons/bi";
+import styled from "styled-components";
 
 const Container = styled.div``;
 
@@ -180,11 +180,11 @@ const ItineraryPoiElementM = (props) => {
             : [],
         })
         .then((res) => {
-          if (res.data.length) {
+          if (res.data.results.length) {
             let options = [];
 
-            for (var i = 0; i < res.data.length; i++) {
-              if (res.data[i].heading !== props.heading)
+            for (var i = 0; i < res.data.results.length; i++) {
+              if (res.data.results[i].heading !== props.heading)
                 // if(res.data.results[i].name !== props.selectedBooking.name)
                 options.push(
                   <PoiList
@@ -193,7 +193,7 @@ const ItineraryPoiElementM = (props) => {
                     selectedData={props.data}
                     setShowDrawer={setShowDrawer}
                     getPaymentHandler={props.getPaymentHandler}
-                    data={res.data[i]}
+                    data={res.data.results[i]}
                     loginModal={showLoginModal}
                     setLoginModal={setShowLoginModal}
                     ticketsCount={ticketsCount}
@@ -206,7 +206,9 @@ const ItineraryPoiElementM = (props) => {
           }
           setFetchingPoi(false);
         })
-        .catch((err) => {});
+        .catch((err) => {
+          setFetchingPoi(false);
+        });
     }
   }, [showDrawer, elementType, SelectedExprience]);
 
@@ -294,53 +296,10 @@ const ItineraryPoiElementM = (props) => {
 
   function Poi_activities(activity) {
     setFetchingPoi(true);
-    let ticketsCount = 1;
-    if (props.payment && props.payment.meta_info) {
-      ticketsCount =
-        props.payment.meta_info.number_of_adults +
-        props.payment.meta_info.number_of_children +
-        props.payment.meta_info.number_of_infants;
-    }
     if (props.city_id) setShowDrawer(true);
-    axiosaxtivitiesinstance
-      .post("/", {
-        location: props.city_id,
-        duration: 10,
-        element_type: `${activity.id ? "Activity" : "POI"}`,
-      })
-      .then((res) => {
-        if (res.data.length) {
-          let options = [];
-
-          for (var i = 0; i < res.data.length; i++) {
-            if (res.data[i].heading !== props.heading)
-              // if(res.data.results[i].name !== props.selectedBooking.name)
-              options.push(
-                <PoiList
-                  key={i}
-                  _updatePoiHandler={_updatePoiHandler}
-                  selectedData={props.data}
-                  setShowDrawer={setShowDrawer}
-                  getPaymentHandler={props.getPaymentHandler}
-                  data={res.data[i]}
-                  loginModal={showLoginModal}
-                  setLoginModal={setShowLoginModal}
-                  token={props.token}
-                  ticketsCount={ticketsCount}
-                  getAccommodationAndActivitiesHandler={
-                    props.getAccommodationAndActivitiesHandler
-                  }
-                ></PoiList>
-              );
-          }
-          setOptionsJSX(options);
-        } else {
-          setOptionsJSX([]);
-        }
-        setFetchingPoi(false);
-      })
-      .catch((err) => {});
+    setElementType(activity.id ? "Activity" : "POI");
   }
+
   const Experiences = [
     "Adventure",
     "Heritage",
@@ -348,6 +307,7 @@ const ItineraryPoiElementM = (props) => {
     "Hidden Gem",
     "Very popular",
   ];
+
   const ClickHandler = (child) => {
     if (child == "Activities") {
       setElementType("Activity");
@@ -355,6 +315,7 @@ const ItineraryPoiElementM = (props) => {
       setElementType("POI");
     }
   };
+
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   const _getStars = (rating) => {
@@ -446,20 +407,16 @@ const ItineraryPoiElementM = (props) => {
           <div className=" " style={{ lineHeight: "1" }}>
             <span className="inline text-[1.2rem]">
               <span className="inline ">{props.heading}</span>
-              {!props.payment?.is_registration_needed &&
-                props.city_id &&
-                props.payment?.user_allowed_to_pay &&
-                !props.payment.paid_user && (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      Poi_activities(props.activity);
-                    }}
-                    className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                  >
-                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                  </div>
-                )}
+
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  Poi_activities(props.activity);
+                }}
+                className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+              >
+                <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+              </div>
 
               {/* <HiPencil className="text-lg min-w-max"></HiPencil> */}
             </span>
@@ -597,6 +554,7 @@ const ItineraryPoiElementM = (props) => {
             items={items}
             BarName="TabsName"
             ClickHandler={ClickHandler}
+            selectedItem={elementType === "POI" ? `${items[0].id}` : `${items[1].id}`}
           />
         </div>
         {/* <PoiListSkeleton /> */}

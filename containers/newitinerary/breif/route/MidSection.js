@@ -136,7 +136,7 @@ const MidSection = (props) => {
                 <button
                   id="transferAdd"
                   onClick={handleTransferEdit}
-                  className="text-blue-500 hover:underline"
+                  className="text-blue hover:underline"
                 >
                   + Add Transfer
                 </button>{" "}
@@ -210,9 +210,11 @@ const MidSection = (props) => {
                   <></>
                 )}
 
-                {props.route.transfers.id !== "" &&
+                {props?.route?.transfers &&
+                  props?.route?.transfers?.id &&
+                  props?.route?.transfers?.id !== "" &&
                   !props?.plan?.round_trip_taxi_added &&
-                  ((props.route?.modes && props.route?.modes?.length) ||
+                  ((props?.route?.modes && props?.route?.modes?.length) ||
                     (props?.bookings && props?.bookings?.length)) && (
                     <div
                       id="transferEdit"

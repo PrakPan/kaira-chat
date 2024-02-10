@@ -52,9 +52,9 @@ const ActivityAddDrawer = (props) => {
       element.style.boxShadow = "0 0 10px #f8e000";
 
       timeoutId = setTimeout(() => {
-        element.style.borderColor = "";
         element.style.borderWidth = "";
         element.style.borderRadius = "";
+        element.style.borderColor = "";
         element.style.boxShadow = "";
       }, 4000);
     }
@@ -122,10 +122,10 @@ const ActivityAddDrawer = (props) => {
           : [],
       })
       .then((res) => {
-        if (res.data.length) {
+        if (res.data.results.length) {
           let options = [];
 
-          for (var i = 0; i < res.data.length; i++) {
+          for (var i = 0; i < res.data.results.length; i++) {
             options.push(
               <PoiList
                 key={i}
@@ -133,7 +133,7 @@ const ActivityAddDrawer = (props) => {
                 _updatePoiHandler={_addActivityHandler}
                 // selectedData={props.data}
                 setShowDrawer={props?.setShowDrawer}
-                data={res.data[i]}
+                data={res.data.results[i]}
                 // loginModal={showLoginModal}
                 setLoginModal={props.setShowLoginModal}
                 // ticketsCount={ticketsCount}
@@ -241,11 +241,6 @@ const ActivityAddDrawer = (props) => {
       ) : (
         <PoiListSkeleton />
       )}
-
-      {/* <MakeYourPersonalised
-        date={props?.payment?.meta_info?.start_date}
-        onHide={() => setShowDrawer(false)}
-      /> */}
     </Drawer>
   );
 };

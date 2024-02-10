@@ -159,8 +159,8 @@ const ItineraryPoiElement = (props) => {
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("POI");
   const items = [
-    { id: 1, label: "Places To Visit", link: "POI" },
-    { id: 2, label: "Things To Do", link: "Activities" },
+    { id: 1, label: "Places To Visit", link: "" },
+    { id: 2, label: "Things To Do", link: "" },
   ];
 
   const handleCloseDrawer = (e) => {
@@ -189,18 +189,18 @@ const ItineraryPoiElement = (props) => {
             : [],
         })
         .then((res) => {
-          if (res.data.length) {
+          if (res.data.results.length) {
             let options = [];
 
-            for (var i = 0; i < res.data.length; i++) {
-              if (res.data[i].heading !== props.heading)
+            for (var i = 0; i < res.data.results.length; i++) {
+              if (res.data.results[i].heading !== props.heading)
                 options.push(
                   <PoiList
                     key={i}
                     _updatePoiHandler={_updatePoiHandler}
                     selectedData={props.data}
                     setShowDrawer={setShowDrawer}
-                    data={res.data[i]}
+                    data={res.data.results[i]}
                     // loginModal={showLoginModal}
                     ticketsCount={ticketsCount}
                     setLoginModal={props.setShowLoginModal}
@@ -213,7 +213,9 @@ const ItineraryPoiElement = (props) => {
           }
           setFetchingPoi(false);
         })
-        .catch((err) => {});
+        .catch((err) => {
+          setFetchingPoi(false);
+        });
     }
   }, [showDrawer, elementType, SelectedExprience]);
 
@@ -225,17 +227,20 @@ const ItineraryPoiElement = (props) => {
     const element = document.getElementById(
       `${dayIndex}-${elementIndex}-${activityId}`
     );
-    element.scrollIntoView({ block: "center" });
-    element.style.borderWidth = "1px";
-    element.style.borderRadius = "10px";
-    element.style.borderColor = "#f8e000";
-    element.style.boxShadow = "0 0 10px #f8e000";
-    const timeoutId = setTimeout(() => {
-      element.style.borderColor = "";
-      element.style.borderWidth = "";
-      element.style.borderRadius = "";
-      element.style.boxShadow = "";
-    }, 4000);
+    let timeoutId;
+    if (element) {
+      element.scrollIntoView({ block: "center" });
+      element.style.borderWidth = "1px";
+      element.style.borderRadius = "10px";
+      element.style.borderColor = "#f8e000";
+      element.style.boxShadow = "0 0 10px #f8e000";
+      timeoutId = setTimeout(() => {
+        element.style.borderColor = "";
+        element.style.borderWidth = "";
+        element.style.borderRadius = "";
+        element.style.boxShadow = "";
+      }, 4000);
+    }
 
     // Cleanup the timeout to avoid memory leaks
     return () => clearTimeout(timeoutId);
@@ -302,7 +307,7 @@ const ItineraryPoiElement = (props) => {
   };
 
   const ClickHandler = (child) => {
-    if (child == "Things To Do") {
+    if (child === "Things To Do") {
       setElementType("Activity");
     } else {
       setElementType("POI");
@@ -385,14 +390,12 @@ const ItineraryPoiElement = (props) => {
                 >
                   {props.heading}
                 </div>
-                {true && (
-                  <div
-                    onClick={() => setShowDrawer(true)}
-                    className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                  >
-                    <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                  </div>
-                )}
+                <div
+                  onClick={() => setShowDrawer(true)}
+                  className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                >
+                  <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
+                </div>
               </div>
               <div className="flex flex-row gap-2">
                 <div

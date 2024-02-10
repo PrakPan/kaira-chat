@@ -27,8 +27,8 @@ const LastNavigationLink = styled(NavigationLink)`
   margin-left: auto;
 `;
 
-export const Navigation = ({ items, BarName, ClickHandler }) => {
-  const [selectedTab, setSelectedTab] = useState(`${items[0].id}`);
+export const Navigation = ({ items, BarName, ClickHandler, selectedItem }) => {
+  const [selectedTab, setSelectedTab] = useState(selectedItem);
   const { markerPos, ...markerHandlers } = useNavigationMarker();
 
   return (

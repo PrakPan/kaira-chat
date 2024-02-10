@@ -33,7 +33,7 @@ import {
   CONTENT_SERVER_HOST,
   ITINERARY_STATUSES,
 } from "../../services/constants";
-import useInView from "../../hooks/useInView";
+// import useInView from "../../hooks/useInView";
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
 import { connect } from "react-redux";
@@ -245,6 +245,10 @@ const SimpleTabsV2 = (props) => {
   const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
   const [loading, setLoading] = useState(false);
+  const { ref, isSticky } = useSticky(90);
+  const isDesktop = useMediaQuery("(min-width:1148px)");
+  // const isInView = useInView("Booking_container");
+
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -289,26 +293,27 @@ const SimpleTabsV2 = (props) => {
       TransfersData
     );
   }, []);
-  useLayoutEffect(() => {
-    const handleScroll = () => {
-      const currentPos = window.scrollY;
-      items.forEach((item) => {
-        const element = document.getElementById(item.link);
-        if (
-          element.offsetTop - 100 <= currentPos &&
-          element.offsetTop + element.offsetHeight > currentPos
-        ) {
-          setActiveItem(item.id);
-        }
-      });
-    };
 
-    window.addEventListener("scroll", handleScroll);
+  // useLayoutEffect(() => {
+  //   const handleScroll = () => {
+  //     const currentPos = window.scrollY;
+  //     items.forEach((item) => {
+  //       const element = document.getElementById(item.link);
+  //       if (
+  //         element.offsetTop - 100 <= currentPos &&
+  //         element.offsetTop + element.offsetHeight > currentPos
+  //       ) {
+  //         setActiveItem(item.id);
+  //       }
+  //     });
+  //   };
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [items]);
+  //   window.addEventListener("scroll", handleScroll);
+
+  //   return () => {
+  //     window.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [items]);
   // if (
   //   props.token &&
   //   !props.payment.user_allowed_to_pay &&
@@ -368,8 +373,7 @@ const SimpleTabsV2 = (props) => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
-  const isInView = useInView("Booking_container");
-  const [activeItem, setActiveItem] = useState(1);
+  // const [activeItem, setActiveItem] = useState(1);
   const items = [
     { id: 1, label: "Brief", link: "Brief" },
     { id: 2, label: "Itinerary", link: "Itenary" },
@@ -386,8 +390,7 @@ const SimpleTabsV2 = (props) => {
       link: "Activities",
     });
   }
-  const { ref, isSticky } = useSticky(90);
-  const isDesktop = useMediaQuery("(min-width:1148px)");
+
   const handleSelect = (itemId) => {
     setActiveItem(itemId);
   };
@@ -396,6 +399,7 @@ const SimpleTabsV2 = (props) => {
   //   setBlurItinerary(false);
   //   setMinimiseTimer(true);
   // };
+
   const _minimiseBookingTimerHandler = () => {
     setMinimiseBookingTimer(true);
   };
@@ -469,8 +473,6 @@ const SimpleTabsV2 = (props) => {
     font-family: sans-serif;
   `;
 
-  // window.tt = props.transferBookings;
-
   return (
     <div className={classes.root} style={{ paddingTop: "20px" }}>
       <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
@@ -486,10 +488,12 @@ const SimpleTabsV2 = (props) => {
             offset={isDesktop ? "0px" : "0px"}
             items={items}
             BarName="TabsName"
+            scrollOffSet={-50}
           />
         )}
       </div>
-      {isPageWide && !isInView && (
+
+      {isPageWide && (
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
           <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
             <div className="flex flex-row justify-between ">
@@ -500,7 +504,7 @@ const SimpleTabsV2 = (props) => {
                     ? "Per Person"
                     : props.payment?.is_estimated_price
                     ? `${
-                        props.payment.total_cost == 0
+                        props.payment.total_cost === 0
                           ? "No Bookings"
                           : "Estimated Price"
                       }`
@@ -566,7 +570,7 @@ const SimpleTabsV2 = (props) => {
                         width="13rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement("Stays-Head")}
+                        onclick={() => scrollToElement("Stays")}
                         onclickparams={null}
                       >
                         View Inclusions
@@ -582,7 +586,7 @@ const SimpleTabsV2 = (props) => {
                         width="9rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement("Stays-Head")}
+                        onclick={() => scrollToElement("Stays")}
                       >
                         Add Hotels
                       </Button>
@@ -599,7 +603,7 @@ const SimpleTabsV2 = (props) => {
                         width="11rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
-                        onclick={() => scrollToElement("Stays-Head")}
+                        onclick={() => scrollToElement("Stays")}
                       >
                         View Inclusions
                       </Button>
@@ -647,7 +651,7 @@ const SimpleTabsV2 = (props) => {
                     width="9rem"
                     borderRadius="10px"
                     bgColor="#F7E700"
-                    onclick={() => scrollToElement("Stays-Head")}
+                    onclick={() => scrollToElement("Stays")}
                   >
                     View Bookings
                   </Button>
@@ -657,6 +661,7 @@ const SimpleTabsV2 = (props) => {
           </div>
         </div>
       )}
+
       <div id={"Brief"}>
         {citydatadone && (
           <Breif
@@ -676,6 +681,7 @@ const SimpleTabsV2 = (props) => {
           ></Breif>
         )}
       </div>
+
       {isPageWide ? null : (
         <>
           <div id={"Itenary"}>
@@ -694,6 +700,7 @@ const SimpleTabsV2 = (props) => {
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
+              setShowBookingModal={() => props.setShowBookingModal(true)}
             ></NewItenaryDBDMob>
           </div>
 
@@ -864,7 +871,7 @@ const SimpleTabsV2 = (props) => {
           </Modal>
         </>
       )}
-      {/* // for 0000000000000000000000  desktop */}
+
       {isPageWide ? (
         <SplitScreen
           classStyle="min-h-[600px]"
@@ -891,6 +898,7 @@ const SimpleTabsV2 = (props) => {
                     getAccommodationAndActivitiesHandler={
                       props.getAccommodationAndActivitiesHandler
                     }
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
                   ></NewItenaryMain>
                 )}
               </div>
@@ -908,6 +916,7 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props.transferBookings}
                   stayBookings={props.stayBookings}
                   activityBookings={props.activityBookings}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
                 ></NewItenaryDBDMob>
               </div>
             )}
@@ -1161,7 +1170,7 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => scrollToElement("Stays-Head")}
+                    onclick={() => scrollToElement("Stays")}
                   >
                     Add Hotels
                   </Button>
@@ -1229,7 +1238,7 @@ const SimpleTabsV2 = (props) => {
                 width="10rem"
                 borderRadius="8px"
                 bgColor="#f8e000"
-                onclick={() => scrollToElement("Stays-Head")}
+                onclick={() => scrollToElement("Stays")}
               >
                 View Bookings
               </Button>
@@ -1251,14 +1260,7 @@ const SimpleTabsV2 = (props) => {
           setHidePoiModal={props.setHidePoiModal}
         ></PoiEditModal>
       ) : null}
-      {/* {props.token && Newitinerary && (
-        <MakeYourPersonalised
-          date={props?.payment?.meta_info?.start_date}
-          onHide={() => setNewitinerary(false)}
-          show={Newitinerary}
-        />
-      )} */}
-      {/* <Accommodation show={true} ></Accommodation> */}
+
       <div className="width-[100%]">
         <LogInModal
           show={showLoginModal}

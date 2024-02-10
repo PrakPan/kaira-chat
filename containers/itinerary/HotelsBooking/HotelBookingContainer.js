@@ -45,7 +45,7 @@ const HotelBookingContainer = ({
   currentBooking,
   booking,
   index,
-banner_image,
+  banner_image,
   handleClick,
   handleClickAc,
   cityName,
@@ -182,7 +182,10 @@ banner_image,
     }
 
   return (
-    <div id={city_id} className={`flex gap-1 pt-4  flex-col justify-start `}>
+    <div
+      id={booking?.id}
+      className={`flex gap-1 pt-4  flex-col justify-start `}
+    >
       {booking ? (
         <div>
           <div>
@@ -194,10 +197,7 @@ banner_image,
             )}
           </div>
 
-          <div
-            id={booking?.id}
-            className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 "
-          >
+          <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
             <div
               onClick={() => {
                 currentBooking || SelectedBookingin
@@ -262,7 +262,7 @@ banner_image,
                   </starHotel>
                 ) : null}
               </div>
-              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[55%] w-full  justify-between">
+              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
                   <div
                     className={`${
@@ -386,12 +386,12 @@ banner_image,
                           {booking.costings_breakdown[0].room_type}
                         </div>
                         <div>
-                          {"( "}
+                          {"("}
                           {booking.costings_breakdown[0].number_of_rooms}{" "}
                           {booking.costings_breakdown[0].number_of_rooms > 1
                             ? "Rooms"
                             : "Room"}
-                          {" )"}
+                          {")"}
                         </div>
                       </RoomTypeGrid>
 
@@ -488,7 +488,7 @@ banner_image,
                 )}
                 {handleClick && (
                   <div
-                    className={`flex flex-row gap-2 items-end w-full ${
+                    className={`flex flex-row gap-2 items-end justify-end w-full ${
                       payment?.paid_user || !payment?.user_allowed_to_pay
                         ? "lh:mb-0 mb-2"
                         : "lg:mb-0 mb-0"
@@ -497,7 +497,6 @@ banner_image,
                     {isDesktop && (
                       <Button
                         padding="0.6rem 2.2rem"
-                        bgColor={"#F7E700"}
                         borderRadius="8px"
                         hoverColor="white"
                         fontWeight="400"
@@ -508,6 +507,7 @@ banner_image,
                         View Detail
                       </Button>
                     )}
+
                     {payment?.is_registration_needed ? null : payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                       <div
@@ -519,6 +519,7 @@ banner_image,
                       >
                         <Button
                           padding="0.6rem 2.2rem"
+                          bgColor={"#F7E700"}
                           borderRadius="8px"
                           fontWeight="400"
                           onclick={() => console.log("")}
@@ -527,41 +528,13 @@ banner_image,
                         </Button>
                       </div>
                     )}
-
-                    {/* <div
-                  onClick={(e) => {
-                    handleCheckboxChange(e);
-                  }}
-                  className="flex flex-row gap-3 items-center cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={addbooking} />
-                  <label>{addbooking ? 'Added Booking' : 'Add Booking'}</label>
-                </div> */}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* <ClippathComp className="absolute text-sm font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
-        TTW Recommendation
-      </ClippathComp> */}
-
-            {!currentBooking && (
+            {/* {!currentBooking && (
               <div>
-                {/* {isMobile && (
-                <div>
-                  {addbooking ? (
-                    <div className="absolute text-sm font-bold  text-[#277004] lg:top-6 top-[14rem] right-8 -m-3">
-                      Included
-                    </div>
-                  ) : (
-                    <div className="absolute text-sm font-bold text-[#E00000] lg:top-6 top-[14rem] right-8 -m-3">
-                      Excluded
-                    </div>
-                  )}
-                </div>
-              )} */}
-
                 {isSelect && payment?.user_allowed_to_pay && (
                   <div
                     className={`absolute  ${
@@ -601,7 +574,7 @@ banner_image,
                   </div>
                 )}
               </div>
-            )}
+            )} */}
             {currentBooking && (
               <div className="absolute  bottom-[28px] right-8 -m-3">
                 {alternates ? (
