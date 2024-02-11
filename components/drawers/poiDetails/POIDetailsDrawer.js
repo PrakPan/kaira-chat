@@ -17,12 +17,32 @@ const POIDetailsDrawer = (props) => {
     if (props.ActivityiconId) {
       axiosPOIActivityInstance
         .get(`/?id=${props.ActivityiconId}`)
-        .then((res) => setData(res.data));
+        .then((res) => {
+          if (res.data.name) setData(res.data);
+          else throw new Error(res.data?.message);
+        })
+        .catch((err) => {
+          setData({
+            name: props.name,
+            short_description: props.text,
+            image: props.image,
+          });
+        });
     } else {
       if (props.iconId) {
         axiosPOIdetailsInstance
           .get(`/?id=${props.iconId}`)
-          .then((res) => setData(res.data));
+          .then((res) => {
+            if (res.data.name) setData(res.data);
+            else throw new Error(res.data?.message);
+          })
+          .catch((err) => {
+            setData({
+              name: props.name,
+              short_description: props.text,
+              image: props.image,
+            });
+          });
       } else {
         setData({
           name: props.name,
