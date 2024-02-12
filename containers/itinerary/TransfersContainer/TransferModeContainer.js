@@ -986,7 +986,7 @@ const TransferModeContainer = (props) => {
               </div>
             </div>
           ) : (
-            <div className="mt-3 lg:ml-7 sm:ml-2 ml-0">
+            <div className="mt-3 lg:ml-7 sm:ml-2 ml-0 flex flex-col">
               <div className="flex flex-row w-full justify-between items-center">
                 <span className="font-medium  inline">{props.heading}</span>
                 <div className="flex flex-row gap-2 justify-center items-center">
@@ -1016,9 +1016,9 @@ const TransferModeContainer = (props) => {
 
               <div
                 id={props?.booking?.id}
-                className="mb-4 mt-3 group min-w-full w-max flex flex-row items-center justify-between py-[20px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
+                className="mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
               >
-                <div className="flex flex-row items-center justify-center">
+                <div className="flex flex-row items-center space-x-3">
                   {props.icon && (
                     <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
                       {props.booking_type === "Flight" ? (
@@ -1058,8 +1058,7 @@ const TransferModeContainer = (props) => {
                     </div>
                   )}
 
-                  <div className="flex flex-col">
-                    <div className=" text-[#01202B] flex lg:flex-row flex-col lg:items-center lg:justify-center items-baseline justify-between gap-1 font-medium"></div>
+                  <div className="flex flex-col lg:w-96">
                     <div className="sm:text-sm text-[0.85rem]">
                       {props.booking_type == "Taxi"
                         ? props.booking.costings_breakdown &&
@@ -1075,28 +1074,28 @@ const TransferModeContainer = (props) => {
                         : props.booking_type}
                       {props.booking.transfer_type === "Intercity one-way" &&
                         props?.booking?.costings_breakdown?.duration?.text && (
-                          <div className="inline-block ml-1">
+                          <span className="ml-1">
                             ({props.booking?.costings_breakdown?.duration?.text}
                             )
-                          </div>
+                          </span>
                         )}
                     </div>
-                    <div className="flex sm:text-sm text-[0.93rem] flex-row gap-2 text-[#7A7A7A] font-light items-center">
+                    <div className="flex sm:text-sm text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
                       {props.taxi_type && <div>{props.taxi_type}</div>}
                     </div>
 
                     {props?.costings_breakdown && (
-                      <FacilityContainer className="text-[#01202B] font-normal flex lg:flex-row lg:mb-0 mb-9 flex-col justify-start lg:items-center mt-1">
-                        <span className="pr-1 block sm:text-sm text-[0.82rem]">
+                      <FacilityContainer className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
+                        <span className="pr-1 sm:text-sm text-[0.82rem]">
                           Facilities:
                         </span>
 
-                        <GridContainer className=" ">
+                        <GridContainer className="">
                           {Facilities.filter(Boolean).map(
                             (data, index) =>
                               data !== null && (
-                                <div className="gap-1 block  min-w-fit">
-                                  <div className="flex flex-row sm:text-sm text-[0.74rem] font-normal">
+                                <div className="gap-1">
+                                  <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
                                     {index !== 0 && data != null ? (
                                       <span className="px-1">|</span>
                                     ) : null}
@@ -1113,7 +1112,7 @@ const TransferModeContainer = (props) => {
                 </div>
 
                 {!props?.payment?.paid_user && props.booking_type === "Taxi" ? (
-                  <div className="flex flex-row gap-1 items-center cursor-pointer pr-2">
+                  <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
                     {addbooking ? (
                       <button
                         onClick={() => HandleTransport(props.index)}
