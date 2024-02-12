@@ -55,7 +55,6 @@ export default function PoiElement(props) {
         iconId={
           pois[poi]?.poi?.id ? pois[poi]?.poi?.id : pois[poi]?.activity_data?.id
         }
-        ActivityiconId={pois[poi]?.activity_data?.id}
         handleCloseDrawer={handleCloseDrawer}
         name={pois[poi].heading}
         image={pois[poi].image}
