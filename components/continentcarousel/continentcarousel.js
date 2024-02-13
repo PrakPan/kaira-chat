@@ -54,7 +54,7 @@ const Continentcarousel = (props) => {
 
   // const cardsArr = [];
   // async function fetchData() {
-  //   const res = await aixiospagelistinsance('?page_type=Continents');
+  //   const res = await aixiospagelistinsance('?page_type=Continent');
   //   const data = [];
   //   for (let i = 0; i < res.data.length; i++) {
   //     const hot_destinations = await aixioscountryinsance(`/all?continent=${res.data[i].destination}&hot_destinations=true`);

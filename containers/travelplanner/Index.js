@@ -29,6 +29,7 @@ import AsSeenIn from "../testimonial/AsSeenIn";
 // import Experiences from '../../components/containers/Experiences';
 // import qs from qs;
 var qs = require("qs");
+import PathNavigation from "./PathNavigation.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -42,7 +43,6 @@ const MapInfo = styled.div`
     font-weight: 600;
   }
 `;
-
 
 const MapGridContainer = styled.div`
   display: grid;
@@ -102,13 +102,13 @@ const Heading = styled.h2`
 `;
 const Homepage = (props) => {
   let isPageWide = media("(min-width: 768px)");
-    const isPageLoaded = usePageLoaded();
+  const isPageLoaded = usePageLoaded();
 
   // const [loading, setLoading] = useState(true);
   const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
-  const [userItineraries, setUserItineraries] = useState([])
-  const [TTWItineraries, setTTWItineraries] = useState([])
-  const [showMore , setShowMore] = useState(false)
+  const [userItineraries, setUserItineraries] = useState([]);
+  const [TTWItineraries, setTTWItineraries] = useState([]);
+  const [showMore, setShowMore] = useState(false);
 
   const [filters, setFilters] = useState({
     Trek: true,
@@ -233,12 +233,12 @@ const Homepage = (props) => {
       setItinerariesToIndexCusstomer(iti_customer.slice());
 
       // setOffsetExclusive(iti.length);
-    } catch { }
-    
+    } catch {}
+
     return () => {
-      setItinerariesToIndexExclusive([])
-    setItinerariesToIndexCusstomer([])
-    }
+      setItinerariesToIndexExclusive([]);
+      setItinerariesToIndexCusstomer([]);
+    };
   }, []);
 
   const [offsetExclusive, setOffsetExclusive] = useState(0);
@@ -322,32 +322,30 @@ const Homepage = (props) => {
   };
 
   useEffect(() => {
-    const user = []
-    const ttw = []
+    const user = [];
+    const ttw = [];
     if (props.experienceData.itinerary_data) {
       props.experienceData.itinerary_data.map((e) => {
         // if (e.user_name !== 'TTW Exclusive' &&  e.user_name !== '' && e.user_name !== 'TTW') user.push(e)
-        if (e.owner !== 'TTW') user.push(e)
-        else ttw.push(e)
-      }
-      )
+        if (e.owner !== "TTW") user.push(e);
+        else ttw.push(e);
+      });
     }
-    setUserItineraries(user)
-    setTTWItineraries(ttw)
+    setUserItineraries(user);
+    setTTWItineraries(ttw);
   }, [props.experienceData.itinerary_data]);
-
 
   //JSX for How it works
 
   const router = useRouter();
-  
+
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
 
   useEffect(() => {
     // The counter changed!
     setOverviewHeading(props.experienceData.overview_heading);
-    return () => setOverviewHeading(null)
+    return () => setOverviewHeading(null);
   }, [router.query.link, props.experienceData]);
 
   var country;
@@ -360,16 +358,18 @@ const Homepage = (props) => {
       country = props.experienceData.ancestors[0].name;
     }
   }
+
   const InfoWindowContainer = (location) => (
     <MapInfo>
       <b>{location.name}</b>
       <div>
         {location.most_popular_for?.map((e, i) =>
-          i != 0 ? <span key={i} >{", " + e}</span> : <span key={i} >{e}</span>
+          i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
         )}
       </div>
     </MapInfo>
   );
+
   return (
     <div
       className={"Homepage"}
@@ -385,6 +385,7 @@ const Homepage = (props) => {
         title={props.experienceData.banner_heading}
       />
       <SetWidthContainer>
+        <PathNavigation path={props.experienceData.path} />
         {props.experienceData.page_type == "Theme" && (
           <MapGridContainer>
             <Overview
@@ -407,22 +408,28 @@ const Homepage = (props) => {
           </MapGridContainer>
         )}
 
-        <Heading
-          align="center"
-          aligndesktop="left"
-          margin={
-            !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 4.5rem 0"
-          }
-          bold
-        >
-          {props.experienceData.destination
-            ? "Top locations across " + props.experienceData.destination
-            : "Top Locations"}
-        </Heading>
-        <Locations
-          locations={props.experienceData.locations}
-          viewall
-        ></Locations>
+        {props?.experienceData?.locations?.length ? (
+          <>
+            <Heading
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "2.5rem 0 4.5rem 0"
+              }
+              bold
+            >
+              {props.experienceData.destination
+                ? "Top locations across " + props.experienceData.destination
+                : "Top Locations"}
+            </Heading>
+            <Locations
+              locations={props.experienceData.locations}
+              viewall
+            ></Locations>
+          </>
+        ) : null}
 
         {props.experienceData.page_type !== "Theme" && (
           <MapGridContainer>

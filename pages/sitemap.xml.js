@@ -9,7 +9,7 @@ export const getServerSideProps = async ({ res }) => {
 
   // Fetch continents list :-
   const continents = await axios.get(
-    "https://apis.tarzanway.com/page/list?page_type=Continents&fields=path"
+    "https://apis.tarzanway.com/page/list?page_type=Continent&fields=path"
   );
   const continentsData = continents.data;
   let continentsPaths = continentsData.map((object) => {

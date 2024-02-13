@@ -99,7 +99,7 @@ catch(e){
   }
 // contient carousel :-
   const res = await axiospagelistinstance(
-    "?page_type=Continents&fields=destination,tagline,image,path"
+    "?page_type=Continent&fields=destination,tagline,image,path"
   );
     const continetCarousel = [];
     for (let i = 0; i < res.data.length; i++) {

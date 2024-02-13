@@ -23,7 +23,8 @@ const TravelPlanner = (props) => {
       <Head>
         <title>
           {/* {props.Data.page_title} */}
-          Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary | The Tarzan Way
+          Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary
+          | The Tarzan Way
         </title>
         <meta
           name="description"
@@ -65,13 +66,13 @@ export async function getStaticPaths() {
   for (var i = 0; i < data.length; i++) {
     const pathArr = data[i].path.split("/");
     var [continentSlug, countrySlug, stateSlug] = pathArr;
-      paths.push({
-        params: {
-          continent: continentSlug,
-          country: countrySlug,
-          state: stateSlug,
-        },
-      });
+    paths.push({
+      params: {
+        continent: continentSlug,
+        country: countrySlug,
+        state: stateSlug,
+      },
+    });
   }
 
   return {

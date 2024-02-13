@@ -3,8 +3,8 @@ import Layout from "../components/Layout";
 import { useState, useEffect } from "react";
 import ContinentPage from "../containers/continent/Index";
 import axioscountrydetailsinstance from "../services/pages/country";
-import axiospagelistinstance from '../services/pages/list'
-import axiospagedetailsinstance from '../services/pages/pagedetails'
+import axiospagelistinstance from "../services/pages/list";
+import axiospagedetailsinstance from "../services/pages/pagedetails";
 import axios from "axios";
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
@@ -39,11 +39,10 @@ const TravelPlanner = (props) => {
 };
 
 export async function getStaticPaths() {
-
   // const res = await axios.get(
-  //   "https://apis.tarzanway.com/page/list?page_type=Continents"
+  //   "https://apis.tarzanway.com/page/list?page_type=Continent"
   // );
-const res = await axiospagelistinstance("?page_type=Continents&fields=path");
+  const res = await axiospagelistinstance("?page_type=Continent&fields=path");
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -67,12 +66,12 @@ export async function getStaticProps(context) {
   );
   const data = res.data;
   const themeData = await axiospagelistinstance(
-    "?page_type=Continents&fields=destination,tagline,image,path"
+    "?page_type=Continent&fields=destination,tagline,image,path"
   );
   const contientTheme = themeData.data;
 
   // contient carousel :-
-  // const continentData = await axiospagelistinstance("?page_type=Continents");
+  // const continentData = await axiospagelistinstance("?page_type=Continent");
   const continetCarousel = [];
   for (let i = 0; i < contientTheme.length; i++) {
     const hot_destinations = await axioscountrydetailsinstance(

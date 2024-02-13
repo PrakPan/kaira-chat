@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components";
 import media from "../../components/media";
 import Button from "../../components/ui/button/Index";
 import ImageLoader from "../../components/ImageLoader";
-import axiosPageListInstance from '../../services/pages/list'
+import axiosPageListInstance from "../../services/pages/list";
 import SkeletonCard from "../../components/ui/SkeletonCard";
 import openTailoredModal from "../../services/openTailoredModal";
 import Link from "next/link";
@@ -124,17 +124,16 @@ const ImageContainer = styled.div`
   transition: 0.5s all ease-in-out;
   &:hover {
     // transform: scale(1.1);
-  @media screen and (min-width: 768px) {
-
-    .AnimateTop {
-      animation: 0.5s ${TopSlideIn} forwards;
-    }
-    .StartNow {
-      animation: 0.5s ${TopSlideIn} forwards;
-      display: initial;
+    @media screen and (min-width: 768px) {
+      .AnimateTop {
+        animation: 0.5s ${TopSlideIn} forwards;
+      }
+      .StartNow {
+        animation: 0.5s ${TopSlideIn} forwards;
+        display: initial;
+      }
     }
   }
-}
 `;
 
 const BlackContainer = styled.div`
@@ -162,10 +161,10 @@ const BlackContainer = styled.div`
 const PlanAsPerTheme = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
-  const order = ["a", "b", "c", "d", 'e', 'f', 'g'];
+  const order = ["a", "b", "c", "d", "e", "f", "g"];
 
   const _handleTripRedirect = (path) => {
-      if(path) window.location.href = '/' + path
+    if (path) window.location.href = "/" + path;
   };
 
   const ThemeContainer = props.data?.map((e, i) => (
@@ -173,13 +172,13 @@ const PlanAsPerTheme = (props) => {
       className={order[i]}
       key={i}
       // onClick={() => _handleTripRedirect(e.path)}
-      href={'/' + e.path}
+      href={"/" + e.path}
     >
       <ImageContainer>
         {
           <TextContainer className="AnimateTop">
-            <Heading>{isPageWide ? e.banner_heading : e.destination}</Heading>
-            {isPageWide && <div className="StartNow">Explore!</div>}
+            <Heading>{e.destination}</Heading>
+            {isPageWide && <div className="StartNow">Plan your trip now!</div>}
           </TextContainer>
         }
         <ImageLoader
@@ -199,18 +198,17 @@ const PlanAsPerTheme = (props) => {
     </GridItem>
   ));
 
-  const SkeletonContainer = order.map((e,i) => (
-    <GridItem
-      className={e}
-      key={i}
-    >
-     <SkeletonCard />
+  const SkeletonContainer = order.map((e, i) => (
+    <GridItem className={e} key={i}>
+      <SkeletonCard />
     </GridItem>
   ));
 
   return (
     <>
-      <Container>{props.data.length ? ThemeContainer : SkeletonContainer}</Container>
+      <Container>
+        {props.data.length ? ThemeContainer : SkeletonContainer}
+      </Container>
 
       {!props.nostart ? (
         <Button

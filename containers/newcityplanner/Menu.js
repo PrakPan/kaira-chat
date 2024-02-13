@@ -1,90 +1,91 @@
-import styled from "styled-components"
-import Brief from './MenuItems/Brief'
-import TopRecommendations from "./MenuItems/TopRecommendation"
-import Poi  from "./pois/Index"
-import FoodToEat from "./MenuItems/FoodToEat"
-import WhyPlanWithUs from '../../components/WhyPlanWithUs/PlanWithUsWithEnquiry';
- import Reviews from '../travelplanner/CaseStudies/Index';
-  import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
-import NearbyLocations from "./MenuItems/NearbyLocations"
-import AsSeenIn from "../testimonial/AsSeenIn"
+import styled from "styled-components";
+import Brief from "./MenuItems/Brief";
+import TopRecommendations from "./MenuItems/TopRecommendation";
+import Poi from "./pois/Index";
+import FoodToEat from "./MenuItems/FoodToEat";
+import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
+import Reviews from "../travelplanner/CaseStudies/Index";
+import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
+import NearbyLocations from "./MenuItems/NearbyLocations";
+import AsSeenIn from "../testimonial/AsSeenIn";
+import PathNavigation from "../travelplanner/PathNavigation";
 
 const MenuContainer = styled.div`
-width : 95%;    
-margin : auto;
-    @media screen and (min-width: 768px){
-        width : 85%;
-          }
+  width: 95%;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    width: 85%;
+  }
 
-#Brief{
-  grid-area : Brief
-}
-#Itinerary{
-  grid-area : Itinerary
-}
-#Places{
-  grid-area : Places
-}
-#Food{
-  grid-area : Food;
-}
-#Reach{
-  grid-area : Reach
-}
-#Survival{
-  grid-area : Survival
-}
-#Folklore{
-  grid-area : Folklore
-}
-#Why{
-  grid-area : Why
-}
-#Customers{
-  grid-area : Customers
-}
+  #Brief {
+    grid-area: Brief;
+  }
+  #Itinerary {
+    grid-area: Itinerary;
+  }
+  #Places {
+    grid-area: Places;
+  }
+  #Food {
+    grid-area: Food;
+  }
+  #Reach {
+    grid-area: Reach;
+  }
+  #Survival {
+    grid-area: Survival;
+  }
+  #Folklore {
+    grid-area: Folklore;
+  }
+  #Why {
+    grid-area: Why;
+  }
+  #Customers {
+    grid-area: Customers;
+  }
 
-#nearby-places{
-  grid-area : nearby-places 
-}
-${props=>props.thingsToDoPage? 'display : grid;grid-template-areas : "Places" "Food" "nearby-places" "Itinerary" "Reach" "Survival" "Folklore" "Why" "Customers"'
- : ''}
-`
-
+  #nearby-places {
+    grid-area: nearby-places;
+  }
+  ${(props) =>
+    props.thingsToDoPage
+      ? 'display : grid;grid-template-areas : "Places" "Food" "nearby-places" "Itinerary" "Reach" "Survival" "Folklore" "Why" "Customers"'
+      : ""}
+`;
 
 const MenuItem = styled.div`
-@media screen and (min-width: 1400px){
-margin-right : ${props=>props.single?'29%' : '0'}
-}
-`
+  @media screen and (min-width: 1400px) {
+    margin-right: ${(props) => (props.single ? "29%" : "0")};
+  }
+`;
 const Heading = styled.p`
-font-weight: 600;
-font-size: 32px;
-line-height: 48px;
-margin-block : 1.5rem;
-@media screen and (min-width: 768px) {
-margin-block : 3.5rem;
- }
-`
-const P = styled.p`
-      font-weight: 300;
-      text-align: left;
-      line-height: 32px;
-      @media screen and (min-width: 768px) {
-       font-size: 18px;
-      }
-    `;
-const Menu = (props)=>{
-
+  font-weight: 600;
+  font-size: 32px;
+  line-height: 48px;
+  margin-block: 1.5rem;
+  @media screen and (min-width: 768px) {
+    margin-block: 3.5rem;
+  }
+`;
+const P = styled.p`link
+  font-weight: 300;
+  text-align: left;
+  line-height: 32px;
+  @media screen and (min-width: 768px) {
+    font-size: 18px;
+  }
+`;
+const Menu = (props) => {
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
+      <PathNavigation path={props.data?.path} />
       {props.data.short_description && !props.thingsToDoPage && (
         <MenuItem id="Brief">
-           <Heading style={{ margin: "30px 0 30px 0" }}>
-                {"A little about " + props.data.name}
-              </Heading>
+          <Heading style={{ margin: "30px 0 30px 0" }}>
+            {"A little about " + props.data.name}
+          </Heading>
           <Brief
-           
             short_description={props.data.short_description}
             lat={props.data.lat}
             lon={props.data.long}
@@ -168,14 +169,12 @@ const Menu = (props)=>{
       </MenuItem>
 
       <MenuItem>
-        <Heading style={{ marginBottom: "1.5rem" }}>
-          What they say? 
-        </Heading>
+        <Heading style={{ marginBottom: "1.5rem" }}>What they say?</Heading>
         <AsSeenIn />
         <ChatWithUs />
       </MenuItem>
     </MenuContainer>
   );
-}
+};
 
-export default Menu
+export default Menu;
