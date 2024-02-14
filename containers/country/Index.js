@@ -182,18 +182,23 @@ const Index = (props) => {
             Create your travel plan now!
           </Button>
 
-          <Heading
-            align="left"
-            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
-          >
-            How it works?
-          </Heading>
-          <div>
-            <BannerTwo
-              page_id={props.data.id}
-              destination={props.data.name}
-            ></BannerTwo>
-          </div>
+          {userItineraries?.length ? (
+            <>
+              <Heading
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide
+                    ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                    : "2.5rem 0 2.5rem 0"
+                }
+                bold
+              >
+                Trips by our users
+              </Heading>
+              <Experience experiences={userItineraries} />
+            </>
+          ) : null}
 
           {props.data.states && props.data.states.length ? (
             <>
@@ -220,6 +225,17 @@ const Index = (props) => {
               </Button>
             </>
           ) : null}
+
+          <Heading
+            align="left"
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+          >
+            How it works?
+          </Heading>
+          <BannerTwo
+            page_id={props.data.id}
+            destination={props.data.name}
+          ></BannerTwo>
 
           {props.locations && props.locations.length ? (
             <>
@@ -248,7 +264,6 @@ const Index = (props) => {
               </Button>
             </>
           ) : null}
-
           {props.continetCarousel.length ? (
             <>
               <Heading>Plan your trip to anywhere in the world</Heading>
@@ -272,24 +287,6 @@ const Index = (props) => {
             <></>
           )}
 
-          {userItineraries?.length ? (
-            <Heading
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide
-                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "2.5rem 0 2.5rem 0"
-              }
-              bold
-            >
-              Trips by our users
-            </Heading>
-          ) : null}
-          {userItineraries?.length ? (
-            <Experience experiences={userItineraries} />
-          ) : null}
-
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?
           </Heading>
@@ -297,11 +294,9 @@ const Index = (props) => {
             page_id={props.data.id}
             destination={props.data.name}
           />
-
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             Happy Community of The Tarzan Way
           </Heading>
-
           <Reviews></Reviews>
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             What they say?

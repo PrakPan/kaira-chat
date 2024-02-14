@@ -1,14 +1,13 @@
-import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react'
-import  { Pagination, Navigation } from "swiper";
-import 'swiper/css'
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/css";
 import "swiper/swiper-bundle.css";
 import "swiper/css/navigation";
 import "swiper/swiper.min.css";
 import "swiper/swiper-bundle.min.css";
-import styled from 'styled-components'
-import LazyLoad from 'react-lazyload';
-
+import styled from "styled-components";
+import LazyLoad from "react-lazyload";
 
 const SwiperContainer = styled.div`
   position: relative;
@@ -79,68 +78,64 @@ const SwiperContainer = styled.div`
   }
 `;
 
-
-
 const SwiperCarousel = (props) => {
-     let cards=[];
-    props.cards.map( (card,index) => {
-      cards.push(
-        <div key={index}><div>{card}</div></div>
-      )
-    });
-   const handleNextClick = (swiper) => {
-     const currentIndex = swiper.activeIndex - 1;
-     const slidesPerView = swiper.params.slidesPerView;
-     const newIndex = currentIndex + slidesPerView;
-     swiper.slideTo(newIndex);
-   };
-   const handlePrevClick = (swiper) => {
-     const currentIndex = swiper.activeIndex + 1;
-     const slidesPerView = swiper.params.slidesPerView;
-     const newIndex = currentIndex - slidesPerView;
-     swiper.slideTo(newIndex);
-   };
-        return (
-          <SwiperContainer
-            pageDots={props.pageDots}
-            style={props.style}
-            navButtonsTop={props.navButtonsTop}
-            navButtonBackground={props.navButtonBackground}
-            navButtonColor={props.navButtonColor}
-            noPadding={props.noPadding}
-          >
-            <Swiper
-              onInit={(swiper) => {
-                if (props.navigationButtons) {
-                  swiper.params.navigation.nextEl.addEventListener(
-                    "click",
-                    () => handleNextClick(swiper)
-                  );
-                  swiper.params.navigation.prevEl.addEventListener(
-                    "click",
-                    () => handlePrevClick(swiper)
-                  );
-                }
-              }}
-              spaceBetween={12}
-              centeredSlides={props.centeredSlides}
-              initialSlide={props.initialSlide || 0}
-              navigation={props.navigationButtons}
-              pagination={props.pageDots ? { clickable: true } : false}
-              slidesPerView={props.slidesPerView || 6}
-              modules={[Navigation, Pagination]}
-              lazy={true}
-            >
-              {cards.map((e) => (
-                <SwiperSlide>
-                  <LazyLoad>{e}</LazyLoad>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </SwiperContainer>
-        );
-   
-  
-}
+  let cards = [];
+  props.cards.map((card, index) => {
+    cards.push(
+      <div key={index}>
+        <div>{card}</div>
+      </div>
+    );
+  });
+  const handleNextClick = (swiper) => {
+    const currentIndex = swiper.activeIndex - 1;
+    const slidesPerView = swiper.params.slidesPerView;
+    const newIndex = currentIndex + slidesPerView;
+    swiper.slideTo(newIndex);
+  };
+  const handlePrevClick = (swiper) => {
+    const currentIndex = swiper.activeIndex + 1;
+    const slidesPerView = swiper.params.slidesPerView;
+    const newIndex = currentIndex - slidesPerView;
+    swiper.slideTo(newIndex);
+  };
+  return (
+    <SwiperContainer
+      pageDots={props.pageDots}
+      style={props.style}
+      navButtonsTop={props.navButtonsTop}
+      navButtonBackground={props.navButtonBackground}
+      navButtonColor={props.navButtonColor}
+      noPadding={props.noPadding}
+    >
+      <Swiper
+        onInit={(swiper) => {
+          if (props.navigationButtons) {
+            swiper.params.navigation.nextEl.addEventListener("click", () =>
+              handleNextClick(swiper)
+            );
+            swiper.params.navigation.prevEl.addEventListener("click", () =>
+              handlePrevClick(swiper)
+            );
+          }
+        }}
+        spaceBetween={12}
+        centeredSlides={props.centeredSlides}
+        initialSlide={props.initialSlide || 0}
+        navigation={props.navigationButtons}
+        pagination={props.pageDots ? { clickable: true } : false}
+        slidesPerView={props.slidesPerView || 6}
+        modules={[Navigation, Pagination]}
+        lazy={"true"}
+      >
+        {cards.map((e, i) => (
+          <SwiperSlide key={i}>
+            <LazyLoad>{e}</LazyLoad>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </SwiperContainer>
+  );
+};
 
 export default SwiperCarousel;

@@ -135,7 +135,7 @@ const Index = (props) => {
           title={`${props.data.destination} Trip Planner`}
         />
         <SetWidthContainer>
-          {/* <PathNavigation path={props.data.path} /> */}
+          <PathNavigation path={props.data.path} />
 
           {props.locations && props.locations.length ? (
             <>
@@ -147,7 +147,6 @@ const Index = (props) => {
                 page_id={props.data.id}
                 destination={props.data.destination}
                 viewall
-                // country={country}
                 country
               ></SwiperLocations>
             </>
@@ -178,9 +177,7 @@ const Index = (props) => {
                   locations={props.data.locations}
                   height="300px"
                 />
-              ) : (
-                null
-              )}
+              ) : null}
             </MapContainer>
           </MapGridContainer>
 

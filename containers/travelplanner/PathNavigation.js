@@ -12,13 +12,17 @@ export default function PathNavigation(props) {
     setlink(props?.path?.split("/"));
   }, [props?.path]);
 
-  const pathHanlder = async (e) => {
-    let path = "";
-    for (let i = 0; i <= e.target.id; i++) {
-      path += "/" + link[i];
-    }
+  const pathHanlder = async (e, all_destinations = false) => {
+    if (all_destinations) {
+      await router.push("/destinations");
+    } else {
+      let path = "";
+      for (let i = 0; i <= e.target.id; i++) {
+        path += "/" + link[i];
+      }
 
-    await router.push(path);
+      await router.push(path);
+    }
   };
 
   const capitalizeFirstLetter = (string) => {
@@ -32,11 +36,22 @@ export default function PathNavigation(props) {
 
   return (
     <div className={`${!isPageWide && "ml-3"} mt-3 text-sm text-blue`}>
+      {link && link.length ? (
+        <span>
+          <span
+            id={"destination"}
+            onClick={(e) => pathHanlder(e, true)}
+            className="cursor-pointer hover:underline"
+          >
+            All Destinations
+          </span>
+          <IoMdArrowDropright className="inline" />
+        </span>
+      ) : null}
       {link &&
         link.map((value, index) => (
-          <>
+          <span key={index}>
             <span
-              key={index}
               id={index}
               onClick={pathHanlder}
               className="cursor-pointer hover:underline"
@@ -46,7 +61,7 @@ export default function PathNavigation(props) {
             {index < link.length - 1 && (
               <IoMdArrowDropright className="inline" />
             )}
-          </>
+          </span>
         ))}
     </div>
   );

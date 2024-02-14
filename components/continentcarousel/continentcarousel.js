@@ -32,7 +32,13 @@ const CardsContainer = styled.div`
       : "'a b c' 'd e f'"};
   gap: 1vh;
   grid-template-columns: ${(props) =>
-    props.length < 3 ? "1fr" : props.length < 5 ? "1fr 1fr" : props.length === 5 ? "" : '1fr 1fr 1fr'};
+    props.length < 3
+      ? "1fr"
+      : props.length < 5
+      ? "1fr 1fr"
+      : props.length === 5
+      ? ""
+      : "1fr 1fr 1fr"};
 `;
 const SkeletonCardContainer = styled.div`
   overflow: hidden;
@@ -47,7 +53,7 @@ const Skeleton = (
     <SkeletonCard lottieDimension={"35vh"} />
   </SkeletonCardContainer>
 );
-const cardsClasses = ['a','b','c','d','e','f']
+const cardsClasses = ["a", "b", "c", "d", "e", "f"];
 const Continentcarousel = (props) => {
   const [continents, setContinents] = useState([]);
   let isPageWide = media("(min-width: 768px)");
@@ -89,15 +95,13 @@ const Continentcarousel = (props) => {
   //   }
   //   setContinents(cardsArr);
   // }
-       
 
   useEffect(() => {
-      const cardsArr = [];
+    const cardsArr = [];
     for (let i = 0; i < props.data.length; i++) {
-           
-    let hd = props.data[i].hot_destinations.length
+      let hd = props.data[i].hot_destinations.length;
       cardsArr.push(
-        <GridContainer>
+        <GridContainer key={i}>
           <Card
             location={props.data[i].destination}
             heading={props.data[i].tagline}
@@ -143,10 +147,14 @@ const Continentcarousel = (props) => {
       ) : (
         <>
           <GridContainer style={{ marginInline: "0.5rem" }}>
-            <div style={{ height : isPageWide ? '71vh' : '25vh' ,borderRadius : '7px', overflow : 'hidden' }}>
-              <SkeletonCard
-                lottieDimension={'75vw'}
-              />
+            <div
+              style={{
+                height: isPageWide ? "71vh" : "25vh",
+                borderRadius: "7px",
+                overflow: "hidden",
+              }}
+            >
+              <SkeletonCard lottieDimension={"75vw"} />
             </div>
             <CardsContainer>
               {[Skeleton, Skeleton, Skeleton, Skeleton, Skeleton, Skeleton]}
