@@ -31,7 +31,7 @@ export default function PathNavigation(props) {
   };
 
   return (
-    <div className={`${!isPageWide && "ml-3"} mt-3 text-lg text-blue`}>
+    <div className={`${!isPageWide && "ml-3"} mt-3 text-sm text-blue`}>
       {link &&
         link.map((value, index) => (
           <>
