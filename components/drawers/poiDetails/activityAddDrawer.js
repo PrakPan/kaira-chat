@@ -12,6 +12,8 @@ import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/
 import { getDate } from "../../../helper/DateUtils";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
+import { IoMdSearch } from "react-icons/io";
+import useMediaQuery from "../../../hooks/useMedia";
 
 const FiltersContainer = styled.div`
   display: flex;
@@ -37,7 +39,11 @@ const ActivityAddDrawer = (props) => {
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
+  const [activityChangeData, setActivityChangeData] = useState([]);
+  const [selectSearch, setSelectedSearch] = useState("");
   const [fetchingPoi, setFetchingPoi] = useState(true);
+
+  const isDesktop = useMediaQuery("(min-width:767px)");
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
     const element = document.getElementById(
@@ -120,9 +126,11 @@ const ActivityAddDrawer = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[selectedExprience]
           ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
           : [],
+        search_query: selectSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
+          setActivityChangeData(res.data);
           let options = [];
 
           for (var i = 0; i < res.data.results.length; i++) {
@@ -157,6 +165,16 @@ const ActivityAddDrawer = (props) => {
       fetchData();
     }
   }, [elementType, selectedExprience, props.showDrawer]);
+
+  const searchHandler = (e) => {
+    if (
+      (e.target.id === "icon" || e.key === "Enter") &&
+      selectSearch.trim().length > 0
+    ) {
+      fetchData();
+      setSelectedSearch("");
+    }
+  };
 
   const navigationHandler = (child) => {
     if (child == "Things To Do") {
@@ -216,11 +234,58 @@ const ActivityAddDrawer = (props) => {
           </div>
         </div>
 
-        <div>
-          Showing {options.length}{" "}
-          {elementType === "POI" ? "attractions" : "activities"}
-          {props?.cityName ? ` in ${props?.cityName}` : null}
+        {!isDesktop && (
+          <div className="w-full flex flex-row items-center relative">
+            <IoMdSearch
+              id={"icon"}
+              onClick={searchHandler}
+              className="absolute cursor-pointer left-4 text-2xl"
+            />
+
+            <input
+              type="text"
+              value={selectSearch}
+              onChange={(e) => setSelectedSearch(e.target.value.trim())}
+              onKeyDown={searchHandler}
+              placeholder={`Search by ${
+                elementType === "POI" ? "POI" : "Activities"
+              }`}
+              className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+            ></input>
+          </div>
+        )}
+
+        <div className="flex flex-row items-center justify-between w-full">
+          <div>
+            Showing {options.length}
+            {elementType === "POI"
+              ? " attractions out of "
+              : " activities out of "}
+            {activityChangeData.count}
+            {props?.cityName ? ` in ${props?.cityName}` : null}
+          </div>
+          {isDesktop && (
+            <div className="lg:w-[30%] md:w-[50%] flex flex-row items-center relative">
+              <IoMdSearch
+                id={"icon"}
+                onClick={searchHandler}
+                className="absolute cursor-pointer left-4 text-2xl"
+              />
+
+              <input
+                type="text"
+                value={selectSearch}
+                onChange={(e) => setSelectedSearch(e.target.value.trim())}
+                onKeyDown={searchHandler}
+                placeholder={`Search by ${
+                  elementType === "POI" ? "POI" : "Activities"
+                }`}
+                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+              ></input>
+            </div>
+          )}
         </div>
+
         <Navigation
           items={items}
           BarName="TabsName"

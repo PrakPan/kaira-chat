@@ -31,6 +31,7 @@ import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { BiErrorCircle } from "react-icons/bi";
+import { IoMdSearch } from "react-icons/io";
 import styled from "styled-components";
 
 const Container = styled.div``;
@@ -150,8 +151,10 @@ const ItineraryPoiElementM = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
+  const [activityChangeData, setActivityChangeData] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
+  const [selectSearch, setSelectedSearch] = useState("");
   const [elementType, setElementType] = useState("POI");
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
@@ -159,58 +162,73 @@ const ItineraryPoiElementM = (props) => {
   ];
   const drawerRef = useRef(null);
 
+  const fetchData = () => {
+    let ticketsCount = 1;
+    if (props.payment && props.payment.meta_info) {
+      ticketsCount =
+        props.payment.meta_info.number_of_adults +
+        props.payment.meta_info.number_of_children +
+        props.payment.meta_info.number_of_infants;
+    }
+
+    axiosaxtivitiesinstance
+      .post("/", {
+        location: props?.city_id,
+        duration: 10,
+        element_type: elementType,
+        experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
+          ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
+          : [],
+        search_query: selectSearch,
+      })
+      .then((res) => {
+        if (res.data.results.length) {
+          setActivityChangeData(res.data);
+          let options = [];
+
+          for (var i = 0; i < res.data.results.length; i++) {
+            if (res.data.results[i].heading !== props.heading)
+              options.push(
+                <PoiList
+                  key={i}
+                  _updatePoiHandler={_updatePoiHandler}
+                  selectedData={props.data}
+                  setShowDrawer={setShowDrawer}
+                  data={res.data.results[i]}
+                  // loginModal={showLoginModal}
+                  ticketsCount={ticketsCount}
+                  setLoginModal={props.setShowLoginModal}
+                ></PoiList>
+              );
+          }
+          setOptionsJSX(options);
+        } else {
+          setOptionsJSX([]);
+        }
+        setFetchingPoi(false);
+      })
+      .catch((err) => {
+        setFetchingPoi(false);
+      });
+  };
+
   useEffect(() => {
     if (props.city_id && showDrawer) {
-      let ticketsCount = 1;
-      if (props.payment && props.payment.meta_info) {
-        ticketsCount =
-          props.payment.meta_info.number_of_adults +
-          props.payment.meta_info.number_of_children +
-          props.payment.meta_info.number_of_infants;
-      }
       setFetchingPoi(true);
       if (props.city_id) setShowDrawer(true);
-      axiosaxtivitiesinstance
-        .post("/", {
-          location: props.city_id,
-          duration: 10,
-          element_type: elementType,
-          experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
-            ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
-            : [],
-        })
-        .then((res) => {
-          if (res.data.results.length) {
-            let options = [];
-
-            for (var i = 0; i < res.data.results.length; i++) {
-              if (res.data.results[i].heading !== props.heading)
-                // if(res.data.results[i].name !== props.selectedBooking.name)
-                options.push(
-                  <PoiList
-                    key={i}
-                    _updatePoiHandler={_updatePoiHandler}
-                    selectedData={props.data}
-                    setShowDrawer={setShowDrawer}
-                    getPaymentHandler={props.getPaymentHandler}
-                    data={res.data.results[i]}
-                    loginModal={showLoginModal}
-                    setLoginModal={setShowLoginModal}
-                    ticketsCount={ticketsCount}
-                  ></PoiList>
-                );
-            }
-            setOptionsJSX(options);
-          } else {
-            setOptionsJSX([]);
-          }
-          setFetchingPoi(false);
-        })
-        .catch((err) => {
-          setFetchingPoi(false);
-        });
+      fetchData();
     }
   }, [showDrawer, elementType, SelectedExprience]);
+
+  const searchHandler = (e) => {
+    if (
+      (e.target.id === "icon" || e.key === "Enter") &&
+      selectSearch.trim().length > 0
+    ) {
+      fetchData();
+      setSelectedSearch("");
+    }
+  };
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -339,7 +357,6 @@ const ItineraryPoiElementM = (props) => {
   return (
     <Container
       id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
-      onClick={() => setShow(true)}
       className="font-lexend p-2"
     >
       {/* <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -369,44 +386,52 @@ const ItineraryPoiElementM = (props) => {
           </div>
         ) : null}
       </div> */}
+
       <GridContainer
         image={
           props.image && props.image !== "media/icons/default/activity.svg"
         }
       >
-        {props.image && props.image !== "media/icons/default/activity.svg" ? (
-          <ImageLoader
-            dimensions={{ width: 300, height: 300 }}
-            dimensionsMobile={{ width: 300, height: 300 }}
-            borderRadius="8px"
-            hoverpointer
-            onclick={() => console.log("")}
-            width="8rem"
-            leftalign
-            widthmobile="100%"
-            url={props.image}
-            noLazy
-          ></ImageLoader>
-        ) : (
-          <div style={{ display: "flex", justifyContent: "left" }}>
+        <div onClick={() => setShow(true)}>
+          {props.image && props.image !== "media/icons/default/activity.svg" ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
               dimensionsMobile={{ width: 300, height: 300 }}
               borderRadius="8px"
               hoverpointer
-              onclick={() => console.log("")}
-              width="3.25rem"
-              widthmobile="30px"
+              onClick={() => setShow(true)}
+              width="8rem"
               leftalign
-              url={"media/icons/general/dice.png"}
+              widthmobile="100%"
+              url={props.image}
               noLazy
             ></ImageLoader>
-          </div>
-        )}
+          ) : (
+            <div style={{ display: "flex", justifyContent: "left" }}>
+              <ImageLoader
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                onClick={() => setShow(true)}
+                width="3.25rem"
+                widthmobile="30px"
+                leftalign
+                url={"media/icons/general/dice.png"}
+                noLazy
+              ></ImageLoader>
+            </div>
+          )}
+        </div>
         <div>
           <div className=" " style={{ lineHeight: "1" }}>
             <span className="inline text-[1.2rem]">
-              <span className="inline ">{props.heading}</span>
+              <span
+                onClick={() => setShow(true)}
+                className="inline cursor-pointer"
+              >
+                {props.heading}
+              </span>
 
               <div
                 onClick={(e) => {
@@ -525,7 +550,6 @@ const ItineraryPoiElementM = (props) => {
         onHide={() => setShowDrawer(false)}
         // zIndex='1501'
       >
-        <div></div>
         <div className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose
@@ -543,9 +567,31 @@ const ItineraryPoiElementM = (props) => {
               Replacing {props.heading}
             </div>
           </div>
+          <div className="w-full flex flex-row items-center relative">
+            <IoMdSearch
+              id={"icon"}
+              onClick={searchHandler}
+              className="absolute cursor-pointer left-4 text-2xl"
+            />
+
+            <input
+              type="text"
+              value={selectSearch}
+              onChange={(e) => setSelectedSearch(e.target.value.trim())}
+              onKeyDown={searchHandler}
+              placeholder={`Search by ${
+                elementType === "POI" ? "POI" : "Activities"
+              }`}
+              className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+            ></input>
+          </div>
 
           <div>
-            Showing 40 attractions
+            Showing {optionsJSX.length}{" "}
+            {elementType === "POI"
+              ? "attractions out of "
+              : "activities out of "}
+            {activityChangeData.count}
             {props?.data?.activity_data?.city?.name
               ? ` in ${props?.data?.activity_data?.city?.name}`
               : null}
@@ -554,7 +600,9 @@ const ItineraryPoiElementM = (props) => {
             items={items}
             BarName="TabsName"
             ClickHandler={ClickHandler}
-            selectedItem={elementType === "POI" ? `${items[0].id}` : `${items[1].id}`}
+            selectedItem={
+              elementType === "POI" ? `${items[0].id}` : `${items[1].id}`
+            }
           />
         </div>
         {/* <PoiListSkeleton /> */}
@@ -573,6 +621,7 @@ const ItineraryPoiElementM = (props) => {
           <PoiListSkeleton name={"Activity"} />
         )}
       </Drawer>
+
       <Drawer
         show={showFilter}
         anchor={"right"}
