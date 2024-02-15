@@ -213,6 +213,7 @@ const ItineraryPoiElement = (props) => {
           setOptionsJSX(options);
         } else {
           setOptionsJSX([]);
+          setActivityChangeData(null);
         }
         setFetchingPoi(false);
       })
@@ -530,16 +531,16 @@ const ItineraryPoiElement = (props) => {
           </div>
           <div className="flex flex-row items-center justify-between w-full">
             <div>
-              Showing {optionsJSX.length}{" "}
-              {elementType === "POI"
-                ? "attractions out of "
-                : "activities out of "}
-              {activityChangeData.count}
+              Showing {optionsJSX.length}
+              {elementType === "POI" ? " attractions" : " activities"}
+              {activityChangeData?.count
+                ? ` out of ${activityChangeData.count}`
+                : null}
               {props?.data?.activity_data?.city?.name
                 ? ` in ${props?.data?.activity_data?.city?.name}`
                 : null}
             </div>
-            <div className="lg:w-[30%] md:w-[40%] flex flex-row items-center relative">
+            <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
               <IoMdSearch
                 id={"icon"}
                 onClick={searchHandler}
@@ -551,8 +552,8 @@ const ItineraryPoiElement = (props) => {
                 value={selectSearch}
                 onChange={(e) => setSelectedSearch(e.target.value.trim())}
                 onKeyDown={searchHandler}
-                placeholder={`Search by ${
-                  elementType === "POI" ? "POI" : "Activities"
+                placeholder={`Search ${
+                  elementType === "POI" ? "attractions" : "activities"
                 }`}
                 className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
               ></input>

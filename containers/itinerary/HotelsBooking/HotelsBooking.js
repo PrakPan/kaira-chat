@@ -570,11 +570,13 @@ const HotelsBooking = (props) => {
           )
         }
       ></AccommodationModal>
+
       {showLoginModal && (
         <div>
           <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
         </div>
       )}
+
       <BookingModal
         showFilter={showFilter}
         setshowFilter={setshowFilter}
@@ -598,6 +600,7 @@ const HotelsBooking = (props) => {
         setHideBookingModal={props.setHideBookingModal}
         AddHotel={AddHotel}
       ></BookingModal>
+
       {!isDesktop && props.showBookingModal && (
         <div className="absolute bottom-0 right-10 z-[1502]">
           <Floating>
@@ -612,6 +615,7 @@ const HotelsBooking = (props) => {
           </Floating>
         </div>
       )}
+
       {!isDesktop && props.showBookingModal && (
         <div className="absolute bottom-0 right-10 z-[1510]">
           <FloatingView>
@@ -623,6 +627,7 @@ const HotelsBooking = (props) => {
           </FloatingView>
         </div>
       )}
+      
       {props.token && props.showBookingModal && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}

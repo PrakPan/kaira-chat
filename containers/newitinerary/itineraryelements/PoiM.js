@@ -151,7 +151,7 @@ const ItineraryPoiElementM = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
-  const [activityChangeData, setActivityChangeData] = useState([]);
+  const [activityChangeData, setActivityChangeData] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
   const [selectSearch, setSelectedSearch] = useState("");
@@ -204,6 +204,7 @@ const ItineraryPoiElementM = (props) => {
           setOptionsJSX(options);
         } else {
           setOptionsJSX([]);
+          setActivityChangeData(null);
         }
         setFetchingPoi(false);
       })
@@ -587,11 +588,11 @@ const ItineraryPoiElementM = (props) => {
           </div>
 
           <div>
-            Showing {optionsJSX.length}{" "}
-            {elementType === "POI"
-              ? "attractions out of "
-              : "activities out of "}
-            {activityChangeData.count}
+            Showing {optionsJSX.length}
+            {elementType === "POI" ? " attractions" : " activities"}
+            {activityChangeData?.count
+              ? ` out of ${activityChangeData.count}`
+              : null}
             {props?.data?.activity_data?.city?.name
               ? ` in ${props?.data?.activity_data?.city?.name}`
               : null}

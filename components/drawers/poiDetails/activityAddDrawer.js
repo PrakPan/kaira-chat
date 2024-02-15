@@ -39,7 +39,7 @@ const ActivityAddDrawer = (props) => {
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
-  const [activityChangeData, setActivityChangeData] = useState([]);
+  const [activityChangeData, setActivityChangeData] = useState(null);
   const [selectSearch, setSelectedSearch] = useState("");
   const [fetchingPoi, setFetchingPoi] = useState(true);
 
@@ -259,13 +259,13 @@ const ActivityAddDrawer = (props) => {
           <div>
             Showing {options.length}
             {elementType === "POI"
-              ? " attractions out of "
-              : " activities out of "}
-            {activityChangeData.count}
+              ? " attractions"
+              : " activities"}
+            {activityChangeData?.count ? `out of ${activityChangeData?.count}` : null}
             {props?.cityName ? ` in ${props?.cityName}` : null}
           </div>
           {isDesktop && (
-            <div className="lg:w-[30%] md:w-[50%] flex flex-row items-center relative">
+            <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
               <IoMdSearch
                 id={"icon"}
                 onClick={searchHandler}
@@ -277,8 +277,8 @@ const ActivityAddDrawer = (props) => {
                 value={selectSearch}
                 onChange={(e) => setSelectedSearch(e.target.value.trim())}
                 onKeyDown={searchHandler}
-                placeholder={`Search by ${
-                  elementType === "POI" ? "POI" : "Activities"
+                placeholder={`Search ${
+                  elementType === "POI" ? "attractions" : "activities"
                 }`}
                 className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
               ></input>

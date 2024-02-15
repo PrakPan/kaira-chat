@@ -116,44 +116,13 @@ export default function TemporaryDrawer(props) {
     props._updateStarFilterHandler(currentfilter);
   };
   const handleSelectOption = (option) => {
-    if (option == 'All') return _onChangeHandler(true, '', "type");
-    
+    if (option == "All") return _onChangeHandler(true, "", "type");
+
     _onChangeHandler(true, option, "type");
   };
   return (
     <div>
       <React.Fragment key={"bottom"}>
-        {/* <FiltersContainer>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Budget</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Type</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>User Rating</Filter>
-                <Filter onClick={toggleDrawer(true)} className='border-thin font-lexend center-div text-center'>Star Category</Filter>
-
-            </FiltersContainer> */}
-        {/* <Tabs
-          value={filterSelected}
-          onChange={_selectFilter}
-          variant={'scrollable'}
-          scrollButtons={true}
-          allowScrollButtonsMobile
-          indicatorColor="#f7e700"
-          className="filters-mobile-tabs"
-          id="filter-tab"
-        >
-          <Tab
-            id="filter-budget"
-            key="filter-budget"
-            label={'Budget'}
-            className={'booking-filter-tab font-lexend'}
-          ></Tab>
-          <Tab
-            id="filter-type"
-            key="filter-type"
-            label={'Type'}
-            className={'booking-filter-tab font-lexend'}
-          ></Tab>
-          <Tab  id="filter-starcategory" key="filter-starcategory" label={"Star Rating"} className={"booking-filter-tab font-lexend"}></Tab>
-        </Tabs> */}
         {isPageWide && (
           <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between w-[95%] mx-auto mt-4 flex-wrap">
             <div className="flex flex-col justify-start items-baseline">
@@ -205,60 +174,17 @@ export default function TemporaryDrawer(props) {
               <div className="mb-2 text-sm font-normal">Type</div>
               <div className="w-[12rem]">
                 <UiDropdown
-                  options={['All' , ...props.filters["type"]]}
+                  options={["All", ...props.filters["type"]]}
                   onSelect={handleSelectOption}
                 ></UiDropdown>
               </div>
-              {/* <div className="w-[12rem]">
-                <DropDown
-                  onChange={(e) => {
-                    handleSelectOption(e.target.value)
-                  }}
-                  height="35px"
-                  label="Select"
-                  labelStyle={{ paddingLeft: "20px"}}
-                  noFloatingabel
-                  width="12rem"
-                >
-                  <option
-                    style={{
-                      borderBottom: "1px solid #e6e6e6",
-                      whiteSpace: "normal",
-                      height: "fit-content",
-                      textAlign: "center",
-                      paddingBlock: "0.5rem",
-                      cursor: "pointer",
-                    }}
-                    key={-1}
-                    value={''}
-                  >
-                    <div>All</div>
-                  </option>
-                  {props.filters["type"].map((e, i) => (
-                    <option
-                      style={{
-                        borderBottom: "1px solid #e6e6e6",
-                        whiteSpace: "normal",
-                        height: "fit-content",
-                        textAlign: "center",
-                        paddingBlock: "0.5rem",
-                        cursor: "pointer",
-                      }}
-                      key={i}
-                      value={e}
-                    >
-                      <div>{e}</div>
-                    </option>
-                  ))}
-                </DropDown>
-              </div> */}
             </div>
           </div>
         )}
         {!props.loading && props?.totalCount ? (
-          <div className="text-sm font-normal w-[95%] mx-auto mt-3">
-            Showing {props?.totalCount} stays in {props.booking_city}{" "}
-            {isPageWide ? "|" : <br />} Sort by:{" "}
+          <div className="text-sm font-normal w-[95%] ml-5 mt-3">
+            Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
+            stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "}
             <div
               style={{
                 display: "inline",
@@ -310,82 +236,6 @@ export default function TemporaryDrawer(props) {
             </div>
           </div>
         ) : null}
-
-        {/* <TabPanel value={filterSelected} index={0}>
-          <Rooms data={props.data}></Rooms>
-          <Pannel
-            filtersState={props.filtersState}
-            _updateStarFilterHandler={props._updateStarFilterHandler}
-            onclose={_closePannel}
-            heading={filterHeading}
-            filterSelected={filterSelected}
-            filters={props.filters}
-            _removeFilterHandler={props._removeFilterHandler}
-            _addFilterHandler={props._addFilterHandler}
-          ></Pannel>
-        </TabPanel>
-        <TabPanel value={filterSelected} index={1}>
-          <Rooms data={props.data}></Rooms>
-          <Pannel
-            filtersState={props.filtersState}
-            _updateStarFilterHandler={props._updateStarFilterHandler}
-            onclose={_closePannel}
-            heading={filterHeading}
-            filterSelected={filterSelected}
-            filters={props.filters}
-            _removeFilterHandler={props._removeFilterHandler}
-            _addFilterHandler={props._addFilterHandler}
-          ></Pannel>
-        </TabPanel> */}
-        {/* {isPageWide && state ? (
-          <TabPanel value={filterSelected} index={1}>
-            <Rooms data={props.data}></Rooms>
-            <Pannel
-              filtersState={props.filtersState}
-              _updateStarFilterHandler={props._updateStarFilterHandler}
-              onclose={_closePannel}
-              heading={filterHeading}
-              filterSelected={filterSelected}
-              filters={props.filters}
-              _removeFilterHandler={props._removeFilterHandler}
-              _addFilterHandler={props._addFilterHandler}
-            ></Pannel>
-          </TabPanel>
-        ) : null}
-        {isPageWide && state ? (
-          <TabPanel value={filterSelected} index={2}>
-            <Rooms data={props.data}></Rooms>
-            <Pannel
-              filtersState={props.filtersState}
-              _updateStarFilterHandler={props._updateStarFilterHandler}
-              onclose={_closePannel}
-              heading={filterHeading}
-              filterSelected={filterSelected}
-              filters={props.filters}
-              _removeFilterHandler={props._removeFilterHandler}
-              _addFilterHandler={props._addFilterHandler}
-            ></Pannel>
-          </TabPanel>
-        ) : null}
-        {!isPageWide ? (
-          <Drawer
-            variant="persistant"
-            anchor={'bottom'}
-            open={state}
-            onClose={toggleDrawer(false)}
-          >
-            <Pannel
-              filtersState={props.filtersState}
-              _updateStarFilterHandler={props._updateStarFilterHandler}
-              onclose={_closePannel}
-              heading={filterHeading}
-              filterSelected={filterSelected}
-              filters={props.filters}
-              _removeFilterHandler={props._removeFilterHandler}
-              _addFilterHandler={props._addFilterHandler}
-            ></Pannel>
-          </Drawer>
-        ) : null} */}
       </React.Fragment>
     </div>
   );

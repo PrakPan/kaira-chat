@@ -2,29 +2,25 @@ import React, { useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import styled from "styled-components";
 import media from "../../media";
-// import LeftSideBar from './leftsidebar/Index';
 import Accommodation from "./accommodation/Index";
 import AccommodationSearched from "./new-accommodation-searched/Index";
 import AccommodationModal from "../accommodation/Index";
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
 import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccommodationsAgoda";
 import Spinner from "../../Spinner";
-
-//  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-// import updateaccommodations from '../../../services/bookings/UpdateBookings';
 import { connect } from "react-redux";
-// import Button from '../../Button';
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
- import SectionOne from "./SectionOne";
+import SectionOne from "./SectionOne";
 import SectionTwo from "./SectionTwo";
 import LoadingLottie from "../../ui/LoadingLottie";
 import Drawer from "../../ui/Drawer";
- import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
+import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { openNotification } from "../../../store/actions/notification";
- import Skeleton from "./Skeleton";
+import Skeleton from "./Skeleton";
+
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -48,6 +44,7 @@ const OptionsContainer = styled.div`
     margin: auto;
   }
 `;
+
 const ContentContainer = styled.div`
   min-height: 65vh;
   @media screen and (min-width: 768px) {
@@ -56,9 +53,8 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  const [showDetails, setShowDetails] = useState(false);
   let isPageWide = media("(min-width: 768px)");
-
+  const [showDetails, setShowDetails] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [isError, setIsError] = useState({
@@ -76,8 +72,6 @@ const Booking = (props) => {
     star_category: "",
     sort: "recommended",
   });
-
-  // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [traceId, setTraceID] = useState("");
@@ -99,8 +93,10 @@ const Booking = (props) => {
       "Price: low to high",
     ],
   });
+  const [selectSearch, setSelectedSearch] = useState("");
+
   useEffect(() => {
-    if (props.showBookingModal) {
+    if (props?.showBookingModal) {
       _updateOptionsHandlerWithFilter();
     } else {
       setFiltersState({
@@ -115,37 +111,9 @@ const Booking = (props) => {
     filtersState.type,
     filtersState.star_category,
     filtersState.sort,
-    props.showBookingModal,
+    props?.showBookingModal,
   ]);
-  // const filters = {
-  //   budget: [
-  //     "Below ₹3,000",
-  //     "₹3,000 - ₹6,000",
-  //     "₹6,000 - ₹10,000",
-  //     "Above ₹10,000",
-  //   ],
-  //   type: [
-  //     "Hotel",
-  //     "Homestay",
-  //     "Camp",
-  //     "Guest House",
-  //     "Cottage",
-  //     "Villa",
-  //     "Resort",
-  //     "Lodge",
-  //     "Service Appartment",
-  //     "Bed and Breakfast",
-  //     "Farmstay",
-  //     // "Speciality Lodging",
-  //     // "Boat / Cruise",
-  //     // "Holiday Park / Caravan Park",
-  //     // "Country House",
-  //     "Entire House",
-  //     // "Capsule Hotel",
-  //     "Unique",
-  //   ],
-  //   star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
-  // };
+
   useEffect(() => {
     let options = [];
     if (props.alternates)
@@ -186,187 +154,13 @@ const Booking = (props) => {
         }
       }
     setOptionsJSX(options);
-  }, [props.alternates, props.bookings]);
+  }, [props?.alternates, props?.bookings]);
 
-  // useEffect(() => {
-  //   if (!props.alternates && props.showBookingModal) {
-  //     setLoading(true);
-  //     let FILTERS_KEY;
-  //     let BUDGET_TEXT;
-  //     try {
-  //       switch (props.budget) {
-  //         case "Luxury":
-  //           BUDGET_TEXT = FILTERS.budget[2];
-  //         case "Luxury +":
-  //           BUDGET_TEXT = FILTERS.budget[3];
-  //         case "Affordable":
-  //           BUDGET_TEXT = FILTERS.budget[0];
-  //         case "Average":
-  //           BUDGET_TEXT = FILTERS.budget[1];
-  //         default:
-  //           BUDGET_TEXT = FILTERS.budget[1];
-  //       }
-  //     } catch {
-  //       BUDGET_TEXT = FILTERS.budget[1];
-  //     }
-  //     if (props.budget)
-  //       FILTERS_KEY = {
-  //         budget: [BUDGET_TEXT],
-  //         type: [],
-  //         star_category: [],
-  //       };
-  //     else
-  //       FILTERS_KEY = {
-  //         budget: [],
-  //         type: [],
-  //         star_category: [],
-  //       };
-  //     let filters = _generateFilterKeys(FILTERS_KEY);
-  //     let limit = 10;
-  //     var agodaAccomodation = axiosaccommodationinstance;
-  //     if (props.currentBooking && props.currentBooking.source) {
-  //       if (props.currentBooking.source === "Agoda") {
-  //         agodaAccomodation = axiosagodaaccommodationionstance;
-  //         limit = 30;
-  //       }
-  //     }
-  //     agodaAccomodation
-  //       .post("/?limit=" + limit + "&offset=" + offset, {
-  //         city: props.selectedBooking.city,
-  //         check_in: props.selectedBooking.check_in,
-  //         check_out: props.selectedBooking.check_out,
-  //         city_id: props.selectedBooking.cityId,
-  //         number_of_adults: props.selectedBooking.pax.number_of_adults,
-  //         number_of_children: props.selectedBooking.pax.number_of_children,
-  //         number_of_infants: props.selectedBooking.pax.number_of_infants,
-  //         accommodation_types: filters.type,
-  //         trace: storeAndRetrieveValue(props.selectedBooking.city),
-  //         price_lower_range: filters.price_lower_range,
-  //         price_upper_range: filters.price_upper_range,
-  //         sort_by: filters.sort_by,
-  //         sort_order: "asc",
-  //       })
-  //       .then((res) => {
-  //         if (
-  //           res.data.search &&
-  //           res.data.search.accommodation_types &&
-  //           res.data.search.accommodation_types.length
-  //         ) {
-  //           let accommodation_types = Array.from(
-  //             new Set(res.data.search.accommodation_types)
-  //           );
-  //           setFiltersObj({
-  //             ...filtersObj,
-  //             type: accommodation_types,
-  //           });
-  //         }
-  //         setUpdateLoadingState(false);
-  //         if (res.data.results.length) {
-  //           setNoResults(false);
-  //           let is_min_price_present = false;
-  //           if (res.data.results[0].min_price) {
-  //             is_min_price_present = true;
-  //           }
-  //           storeAndRetrieveValue(
-  //             props.selectedBooking.city,
-  //             res.data.search.trace
-  //           );
-  //           setTraceID(res.data.search.trace);
-  //           let options = [];
-  //           setTotalCount(res?.data?.count);
-  //           for (var i = 0; i < res.data.results.length; i++) {
-  //             try {
-  //               if (
-  //                 res.data.results[i].images &&
-  //                 res.data.results[i].images.length &&
-  //                 res.data.results[i].images[0]
-  //               )
-  //                 options.push(
-  //                   <AccommodationSearched
-  //                     payment={props.payment}
-  //                     plan={props.plan}
-  //                     _setImagesHandler={props._setImagesHandler}
-  //                     _updateSearchedAccommodation={
-  //                       _updateSearchedAccommodation
-  //                     }
-  //                     _SelectedBookingHandler={_SelectedBookingHandler}
-  //                     currentBooking={props.currentBooking}
-  //                     itinerary_id={props.payment.tailored_itinerary}
-  //                     tailored_id={props.tailored_id}
-  //                     _updateBookingHandler={_newUpdateBookingHandler}
-  //                     accommodation={res.data.results[i]}
-  //                     selectedBooking={props.selectedBooking}
-  //                     key={i}
-  //                     bookings={props.bookings}
-  //                   ></AccommodationSearched>
-  //                 );
-  //             } catch {
-  //               if (
-  //                 res.data[i].images &&
-  //                 res.data[i].images.length &&
-  //                 res.data[i].images[0]
-  //               )
-  //                 options.push(
-  //                   <AccommodationSearched
-  //                     payment={props.payment}
-  //                     plan={props.plan}
-  //                     currentBooking={props.currentBooking}
-  //                     _setImagesHandler={props._setImagesHandler}
-  //                     _updateSearchedAccommodation={
-  //                       _updateSearchedAccommodation
-  //                     }
-  //                     _SelectedBookingHandler={_SelectedBookingHandler}
-  //                     itinerary_id={props.payment.tailored_itinerary}
-  //                     tailored_id={props.tailored_id}
-  //                     _updateBookingHandler={_newUpdateBookingHandler}
-  //                     accommodation={res.data[i]}
-  //                     selectedBooking={props.selectedBooking}
-  //                     key={i}
-  //                     bookings={props.bookings}
-  //                   ></AccommodationSearched>
-  //                 );
-  //             }
-  //           }
-  //           if (!options.length) setNoResults(true);
-  //           setMoreOptionsJSX(options);
-  //           if (res.data.next) {
-  //             setViewMoreStatus(true);
-  //             setOffset(offset + limit);
-  //           } else {
-  //             setViewMoreStatus(false);
-  //             setOffset(0);
-  //           }
-  //         } else {
-  //           setNoResults(true);
-  //           setOffset(0);
-  //           setViewMoreStatus(false);
-  //           setMoreOptionsJSX([]);
-  //         }
-  //         setLoading(false);
-  //       })
-  //       .catch((err) => {
-  //         setLoading(false);
-  //         if (err.response) {
-  //           // The request was made and the server responded with a status code
-  //           // that falls out of the range of 2xx
+  const clearSearch = () => {
+    setSelectedSearch("");
+    _updateOptionsHandlerWithFilter("", true);
+  };
 
-  //           console.log(err.response.data); // The response body
-  //           console.log(err.response.status); // The status code
-  //           console.log(err.response.headers); // The response headers
-  //           /* if (err.response.status == 400) {
-  //             setIsError({
-  //               error: true,
-  //               errorMsg: err.response.data.message,
-  //             });
-  //           } */
-  //           setFetchingIsError({
-  //             error: true,
-  //             errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-  //           });
-  //         }
-  //       });
-  //   }
-  // }, [props.alternates, props.budget, props.showBookingModal]);
   const _addFilterHandler = (filter, heading) => {
     setFiltersState((prevState) => ({
       ...prevState,
@@ -491,7 +285,7 @@ const Booking = (props) => {
     };
   };
 
-  const _updateOptionsHandlerWithFilter = (gear) => {
+  const _updateOptionsHandlerWithFilter = (gear, clearSearch = false) => {
     setLoading(true);
     setOffset(0);
     setUpdateLoadingState(true);
@@ -505,16 +299,14 @@ const Booking = (props) => {
     let filters = _generateFilterKeys(filtersState);
     let sort_order = "asc";
     if (filtersState.sort === "price: high to low") sort_order = "desc";
-    //BUDGET FILTERS
 
     setViewMoreStatus(false);
     setUpdateLoadingState(true);
     setMoreOptionsJSX([]);
-    // axiosaccommodationinstance
     let limit = 10;
     var agodaAccomodation = axiosaccommodationinstance;
-    if (props.currentBooking && props.currentBooking.source) {
-      if (props.currentBooking.source === "Agoda") {
+    if (props?.currentBooking && props?.currentBooking.source) {
+      if (props?.currentBooking.source === "Agoda") {
         if (gear === "second") {
           agodaAccomodation = axiosaccommodationinstance;
           limit = 10;
@@ -542,24 +334,24 @@ const Booking = (props) => {
     }
 
     agodaAccomodation
-      .post("/?limit=" + limit + "&offset=" + offset, {
-        city: props.selectedBooking.city,
-        check_in: props.selectedBooking.check_in,
-        check_out: props.selectedBooking.check_out,
+      .post("/?limit=" + limit + "&offset=0", {
+        city: props?.selectedBooking?.city,
+        check_in: props?.selectedBooking?.check_in,
+        check_out: props?.selectedBooking?.check_out,
 
         trace: traceId,
         star_category: filtersState.star_category,
         accommodation_type: filtersState.type != "" ? [filtersState.type] : [],
-        city_id: props.selectedBooking.cityId,
+        city_id: props?.selectedBooking?.cityId,
         price_lower_range: filters.price_lower_range,
         price_upper_range: filters.price_upper_range,
-        number_of_adults: props.selectedBooking.pax.number_of_adults,
-        number_of_children: props.selectedBooking.pax.number_of_children,
-        number_of_infants: props.selectedBooking.pax.number_of_infants,
+        number_of_adults: props?.selectedBooking?.pax?.number_of_adults,
+        number_of_children: props?.selectedBooking?.pax?.number_of_children,
+        number_of_infants: props?.selectedBooking?.pax?.number_of_infants,
         sort_by: filters.sort_by,
         sort_order: sort_order,
         live: true,
-
+        q: clearSearch ? "" : selectSearch,
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -581,8 +373,7 @@ const Booking = (props) => {
           setNoResults(false);
           let options = [];
           for (var i = 0; i < res.data.results.length; i++) {
-            //  if(res.data.results[i].images.length > 1)
-            if (res.data.results[i].name !== props.selectedBooking.name)
+            if (res.data.results[i].name !== props?.selectedBooking.name)
               if (
                 res.data.results[i].images &&
                 res.data.results[i].images.length &&
@@ -624,7 +415,7 @@ const Booking = (props) => {
             setOffset(limit);
           } else {
             setSourceChange(true);
-            setViewMoreStatus(true);
+            // setViewMoreStatus(true);
             setOffset(0);
           }
           setMoreOptionsJSX(options);
@@ -635,7 +426,6 @@ const Booking = (props) => {
           setMoreOptionsJSX([]);
         }
         setLoading(false);
-        // setUpdateLoadingState(false);
       })
       .catch((err) => {
         if (err.response.status === 400 && gear !== "second") {
@@ -650,6 +440,7 @@ const Booking = (props) => {
         });
       });
   };
+
   const _updateSearchedAccommodation = ({
     SelectedBookingId,
     Selected_id,
@@ -661,23 +452,6 @@ const Booking = (props) => {
     source,
   }) => {
     setUpdateBookingState(true);
-    // const token = localStorage.getItem('access_token');
-    /* let room = [];
-    try {
-      for (var i = 0; i < new_booking.rooms_available.length; i++) {
-        if (new_booking.rooms_available[i].prices.min_price) {
-          room.push(new_booking.rooms_available[i]);
-          break;
-        }
-      }
-    } catch {} */
-
-    // let _in = check_in;
-    // let _out = check_out;
-    // if (check_in.includes("/")) {
-    //   _in = check_in.split("/").reverse().join("-");
-    //   _out = check_out.split("/").reverse().join("-");
-    // }
 
     let updated_bookings_arr = [
       {
@@ -780,16 +554,6 @@ const Booking = (props) => {
     source,
   }) => {
     setUpdateBookingState(true);
-    // const token = localStorage.getItem('access_token');
-    /* let room = [];
-    try {
-      for (var i = 0; i < new_booking.rooms_available.length; i++) {
-        if (new_booking.rooms_available[i].prices.min_price) {
-          room.push(new_booking.rooms_available[i]);
-          break;
-        }
-      }
-    } catch {} */
     let updated_bookings_arr = [
       {
         id: SelectedBookingId,
@@ -808,40 +572,6 @@ const Booking = (props) => {
           : storeAndRetrieveValue(props?.selectedBooking?.city),
       },
     ];
-    /* for (var i = 0; i < alternates.length; i++) {
-      if (new_booking.id === alternates[i].id)
-        updated_bookings_arr.push({
-          id: alternates[i].id,
-          alternate_to: alternates[i].alternate_to,
-          accommodation: alternates[i].accommodation,
-          booking_type: 'Accommodation',
-          itinerary_type: 'Tailored',
-          user_selected: true,
-          itinerary_id: itinerary_id,
-          tailored_itinerary: tailored_id,
-          itinerary_name: itinerary_name,
-          itinerary_db_id: null,
-          costings_breakdown: alternates[i].costings_breakdown,
-        });
-      else {
-        updated_bookings_arr.push({
-          id: alternates[i].id,
-          alternate_to: alternates[i].alternate_to,
-
-          accommodation: alternates[i].accommodation,
-          booking_type: 'Accommodation',
-          itinerary_type: 'Tailored',
-          user_selected: false,
-          itinerary_id: itinerary_id,
-          tailored_itinerary: tailored_id,
-          itinerary_name: itinerary_name,
-          itinerary_db_id: null,
-          costings_breakdown: alternates[i].costings_breakdown,
-        });
-      }
-    } */
-
-    // const token = localStorage.getItem('access_token');
     {
       props.AddHotel
         ? axiosbookingupdateinstance
@@ -910,6 +640,7 @@ const Booking = (props) => {
             });
     }
   };
+
   const _SelectedBookingHandler = ({
     SelectedBookingId,
     Selected_id,
@@ -920,16 +651,6 @@ const Booking = (props) => {
     check_out,
   }) => {
     setUpdateBookingState(true);
-    // const token = localStorage.getItem('access_token');
-    /* let room = [];
-    try {
-      for (var i = 0; i < new_booking.rooms_available.length; i++) {
-        if (new_booking.rooms_available[i].prices.min_price) {
-          room.push(new_booking.rooms_available[i]);
-          break;
-        }
-      }
-    } catch {} */
     let updated_bookings_arr = [
       {
         id: SelectedBookingId,
@@ -1012,6 +733,7 @@ const Booking = (props) => {
     }
     // const token = localStorage.getItem('access_token');
   };
+
   const _loadAccommodationsHandler = () => {
     setUpdateLoadingState(true);
     setViewMoreStatus(false);
@@ -1019,37 +741,39 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
-    // setMoreLoadingState(true);
+
     let filters = _generateFilterKeys(filtersState);
     let limit = 10;
-    var agodaAccomodation = axiosaccommodationinstance;
-    if (props.currentBooking && props.currentBooking.source) {
-      if (props.currentBooking.source === "Agoda") {
-        if (sourceChange) {
-          agodaAccomodation = axiosaccommodationinstance;
-          limit = 10;
-        } else {
-          agodaAccomodation = axiosagodaaccommodationionstance;
-          limit = 30;
-        }
-      } else {
-        if (sourceChange) {
-          agodaAccomodation = axiosagodaaccommodationionstance;
-          limit = 30;
-        } else {
-          agodaAccomodation = axiosaccommodationinstance;
-          limit = 10;
-        }
-      }
-    } else {
-      if (sourceChange) {
-        agodaAccomodation = axiosagodaaccommodationionstance;
-        limit = 30;
-      } else {
-        agodaAccomodation = axiosaccommodationinstance;
-        limit = 10;
-      }
-    }
+    var agodaAccomodation = axiosagodaaccommodationionstance;
+
+    // if (props.currentBooking && props.currentBooking.source) {
+    //   if (props.currentBooking.source === "Agoda") {
+    //     if (sourceChange) {
+    //       agodaAccomodation = axiosaccommodationinstance;
+    //       limit = 10;
+    //     } else {
+    //       agodaAccomodation = axiosagodaaccommodationionstance;
+    //       limit = 30;
+    //     }
+    //   } else {
+    //     if (sourceChange) {
+    //       agodaAccomodation = axiosagodaaccommodationionstance;
+    //       limit = 30;
+    //     } else {
+    //       agodaAccomodation = axiosaccommodationinstance;
+    //       limit = 10;
+    //     }
+    //   }
+    // } else {
+    //   if (sourceChange) {
+    //     agodaAccomodation = axiosagodaaccommodationionstance;
+    //     limit = 30;
+    //   } else {
+    //     agodaAccomodation = axiosaccommodationinstance;
+    //     limit = 10;
+    //   }
+    // }
+
     agodaAccomodation
       .post("/?limit=" + limit + "&offset=" + offset, {
         city: props.selectedBooking.city,
@@ -1067,7 +791,7 @@ const Booking = (props) => {
         sort_by: filters.sort_by,
         sort_order: "asc",
         live: true,
-
+        q: selectSearch,
       })
       .then((res) => {
         // let oldoptions = optionsJSX;
@@ -1206,6 +930,7 @@ const Booking = (props) => {
           });
       });
   };
+
   const FILTERS = {
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [
@@ -1224,6 +949,7 @@ const Booking = (props) => {
     ],
     star_category: ["3", "4", "5"],
   };
+
   let room = [];
   try {
     for (var i = 0; i < props.accommodation.rooms_available.length; i++) {
@@ -1232,19 +958,20 @@ const Booking = (props) => {
       }
     }
   } catch {}
-  if (props.token)
+
+  if (props?.token)
     return (
       <div>
         <Drawer
-          show={props.showBookingModal}
+          show={props?.showBookingModal}
           anchor={"right"}
           backdrop
           // style={{ zIndex: 1501 }}
           className="font-lexend "
-          onHide={props.setHideBookingModal}
+          onHide={props?.setHideBookingModal}
           // zIndex='1501'
         >
-          {props.showBookingModal ? (
+          {props?.showBookingModal ? (
             <>
               <div className="absolute right-[10px] top-[20px] z-[9999]">
                 {isError.error && (
@@ -1270,13 +997,17 @@ const Booking = (props) => {
               <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
                 <SectionOne
                   booking_city={props?.selectedBooking?.city}
-                  setHideBookingModal={props.setHideBookingModal}
+                  setHideBookingModal={props?.setHideBookingModal}
+                  selectSearch={selectSearch}
+                  setSelectedSearch={setSelectedSearch}
+                  _updateOptionsHandlerWithFilter={
+                    _updateOptionsHandlerWithFilter
+                  }
                 ></SectionOne>
-                {/* {!loading && ( */}
                 <SectionTwo
                   loading={loading}
-                  showFilter={props.showFilter}
-                  setshowFilter={props.setshowFilter}
+                  showFilter={props?.showFilter}
+                  setshowFilter={props?.setshowFilter}
                   filtersState={filtersState}
                   FILTERS={filtersObj}
                   _updateStarFilterHandler={_updateStarFilterHandler}
@@ -1284,16 +1015,10 @@ const Booking = (props) => {
                   _addFilterHandler={_addFilterHandler}
                   booking_city={props?.selectedBooking?.city}
                   No_of_stays={optionsJSX.length + moreOptionsJSX.length}
-                  payment={props.payment}
-                  plan={props.plan}
-                  TotalCount={
-                    // optionsJSX.length
-                    //   ? optionsJSX.length
-                    //   : moreOptionsJSX.length
-                    totalCount
-                  }
+                  payment={props?.payment}
+                  plan={props?.plan}
+                  TotalCount={totalCount}
                 ></SectionTwo>
-                {/* )} */}
               </div>
               <div className="lg:w-[100%] w-[95%] mx-auto">
                 {unauthorized ? (
@@ -1313,10 +1038,7 @@ const Booking = (props) => {
                 ) : null}
 
                 <GridContainer style={{ clear: "right" }}>
-                  {/* <LeftSideBar selectedBooking={props.selectedBooking} filtersState={filtersState} _updateStarFilterHandler={_updateStarFilterHandler} _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} replacing={props.selectedBooking.name} setHideBookingModal={props.setHideBookingModal}></LeftSideBar> */}
-                  {/* {!isPageWide ? <MobileFilters _updateStarFilterHandler={_updateStarFilterHandler}  _removeFilterHandler={_removeFilterHandler}_addFilterHandler={_addFilterHandler} filters={filters} ></MobileFilters> : null} */}
                   <ContentContainer style={{ position: "relative" }}>
-                    {/* {updateLoadingState ? <div className='center-div' style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner>Fetching accommodations for you</div> : null } */}
                     {updateBookingState ? (
                       <div
                         style={{
@@ -1334,27 +1056,14 @@ const Booking = (props) => {
                         Please wait while we update your bookings
                       </div>
                     ) : null}
+
                     {isFetchingError.error ? (
                       <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
                         {isFetchingError.errorMsg}
                       </div>
                     ) : !noResults && !updateBookingState ? (
                       <OptionsContainer id="options">
-                        <div style={{ clear: "right" }}>
-                          {/* {!props.AddHotel && (
-                          <div style={{border : '2px solid red'}}>
-                        <HotelBookingContainer
-                          SelectedBookingin={true}
-                          _setImagesHandler={props._setImagesHandler}
-                          selectedBooking={props.selectedBooking}
-                          booking={props.currentBooking}
-                          payment={props.payment}
-                          plan={props.plan}
-                          handleClick={false}
-                          openDetails={() => setShowDetails(true)}
-                            ></HotelBookingContainer>
-                            </div>
-                      )} */}
+                        <div className="mb-3" style={{ clear: "right" }}>
                           {optionsJSX.length ? (
                             <>
                               {optionsJSX}
@@ -1362,45 +1071,39 @@ const Booking = (props) => {
                             </>
                           ) : moreOptionsJSX.length ? (
                             <>
-                              {moreOptionsJSX}{" "}
+                              {moreOptionsJSX}
                               {updateLoadingState && <Skeleton />}
                             </>
                           ) : null}
-                          {/* {moreOptionsJSX} */}
-                          {loading && !optionsJSX.length ? (
-                            // <div
-                            //   className="center-div"
-                            //   style={{ height: isPageWide ? "80vh" : "40vh" }}
-                            // >
-                            //   <LoadingLottie
-                            //     height={"5rem"}
-                            //     width={"5rem"}
-                            //     margin="none"
-                            //   />
-                            //   Fetching stay recommendations for you
-                            // </div>
-
-                            <Skeleton />
-                          ) : null}
-                          {/* {loading && !optionsJSX.length? <div className='center-div' style={{height: isPageWide ? '80vh' : '40vh'}}><Spinner/>Fetching stay recommendations for you</div> : null} */}
+                          {loading && !optionsJSX.length ? <Skeleton /> : null}
+                          <div className="mt-3">
+                            {viewMoreStatus && !optionsJSX.length ? (
+                              <Button
+                                boxShadow
+                                onclickparam={null}
+                                onclick={_loadAccommodationsHandler}
+                                margin="0.25rem auto"
+                                borderWidth="1px"
+                                borderRadius="2rem"
+                                padding="0.25rem 1rem"
+                              >
+                                View More
+                              </Button>
+                            ) : selectSearch !== "" ? (
+                              <Button
+                                boxShadow
+                                onclickparam={null}
+                                onclick={clearSearch}
+                                margin="0.25rem auto"
+                                borderWidth="1px"
+                                borderRadius="2rem"
+                                padding="0.25rem 1rem"
+                              >
+                                Show All
+                              </Button>
+                            ) : null}
+                          </div>
                         </div>
-
-                        {/* {updateLoadingState ?  <div style={{width: 'max-content', margin: 'auto'}}><Spinner></Spinner></div> : null}  */}
-
-                        {viewMoreStatus && !optionsJSX.length ? (
-                          <Button
-                            boxShadow
-                            onclickparam={null}
-                            onclick={_loadAccommodationsHandler}
-                            margin="0.25rem auto"
-                            borderWidth="1px"
-                            borderRadius="2rem"
-                            padding="0.25rem 1rem"
-                          >
-                            View More
-                          </Button>
-                        ) : null}
-                        {/* {noResults ? 'NO RESULTS' : null} */}
                       </OptionsContainer>
                     ) : null}
 
@@ -1411,24 +1114,16 @@ const Booking = (props) => {
                         our database everyday!
                       </OptionsContainer>
                     ) : null}
-                    {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-                    {/* {
-                   !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   } 
-             */}
-                    {/* <ButtonToTop className='center-div'>
-                   <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
-                </ButtonToTop> */}
                   </ContentContainer>
                 </GridContainer>
               </div>
               <AccommodationModal
-                check_in={props.selectedBooking.check_in}
-                check_out={props.selectedBooking.check_out}
-                _setImagesHandler={props._setImagesHandler}
+                check_in={props?.selectedBooking.check_in}
+                check_out={props?.selectedBooking.check_out}
+                _setImagesHandler={props?._setImagesHandler}
                 onHide={() => setShowDetails(false)}
-                id={props.currentBooking.agoda_accommodation}
-                currentBooking={props.currentBooking}
+                id={props?.currentBooking?.agoda_accommodation}
+                currentBooking={props?.currentBooking}
                 show={showDetails}
               ></AccommodationModal>{" "}
             </>
@@ -1436,8 +1131,6 @@ const Booking = (props) => {
             <></>
           )}
         </Drawer>
-
-        {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
       </div>
     );
   else
