@@ -156,7 +156,7 @@ const Booking = (props) => {
     setOptionsJSX(options);
   }, [props?.alternates, props?.bookings]);
 
-  const clearSearch = () => {
+  const handleClearSearch = () => {
     setSelectedSearch("");
     _updateOptionsHandlerWithFilter("", true);
   };
@@ -1093,7 +1093,7 @@ const Booking = (props) => {
                               <Button
                                 boxShadow
                                 onclickparam={null}
-                                onclick={clearSearch}
+                                onclick={handleClearSearch}
                                 margin="0.25rem auto"
                                 borderWidth="1px"
                                 borderRadius="2rem"

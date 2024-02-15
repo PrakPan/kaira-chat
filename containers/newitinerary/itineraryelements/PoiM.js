@@ -162,7 +162,7 @@ const ItineraryPoiElementM = (props) => {
   ];
   const drawerRef = useRef(null);
 
-  const fetchData = () => {
+  const fetchData = (clearSearch = false) => {
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -179,7 +179,7 @@ const ItineraryPoiElementM = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
-        search_query: selectSearch,
+        search_query: clearSearch ? "" : selectSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -219,6 +219,10 @@ const ItineraryPoiElementM = (props) => {
       if (props.city_id) setShowDrawer(true);
       fetchData();
     }
+
+    return () => {
+      setSelectedSearch("");
+    };
   }, [showDrawer, elementType, SelectedExprience]);
 
   const searchHandler = (e) => {
@@ -227,7 +231,7 @@ const ItineraryPoiElementM = (props) => {
       selectSearch.trim().length > 0
     ) {
       fetchData();
-      setSelectedSearch("");
+      // setSelectedSearch("");
     }
   };
 
@@ -333,6 +337,11 @@ const ItineraryPoiElementM = (props) => {
     } else {
       setElementType("POI");
     }
+  };
+
+  const handleClearSearch = () => {
+    setSelectedSearch("");
+    fetchData(true);
   };
 
   const isDesktop = useMediaQuery("(min-width:1148px)");
@@ -578,10 +587,10 @@ const ItineraryPoiElementM = (props) => {
             <input
               type="text"
               value={selectSearch}
-              onChange={(e) => setSelectedSearch(e.target.value.trim())}
+              onChange={(e) => setSelectedSearch(e.target.value)}
               onKeyDown={searchHandler}
-              placeholder={`Search by ${
-                elementType === "POI" ? "POI" : "Activities"
+              placeholder={`Search ${
+                elementType === "POI" ? "attractions" : "activities"
               }`}
               className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
             ></input>
@@ -610,7 +619,17 @@ const ItineraryPoiElementM = (props) => {
         {!fetchingPoi ? (
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX.length ? (
-            optionsJSX
+            <div className="flex flex-col items-center mb-3">
+              {optionsJSX}{" "}
+              {selectSearch !== "" ? (
+                <button
+                  onClick={handleClearSearch}
+                  className="mt-3 border-1 border-black rounded-lg px-3 py-1 text-sm hover:text-white hover:bg-black transition duration-500 ease-in-out"
+                >
+                  Show All
+                </button>
+              ) : null}
+            </div>
           ) : (
             <EmptyMsg>
               <BiErrorCircle /> Oops, it looks like there are no{" "}

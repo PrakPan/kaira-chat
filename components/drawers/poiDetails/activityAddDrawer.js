@@ -117,7 +117,7 @@ const ActivityAddDrawer = (props) => {
       });
   };
 
-  function fetchData() {
+  function fetchData(clearSearch = false) {
     axiosaxtivitiesinstance
       .post("/", {
         location: props?.cityID,
@@ -126,7 +126,7 @@ const ActivityAddDrawer = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[selectedExprience]
           ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
           : [],
-        search_query: selectSearch,
+        search_query: clearSearch ? "" : selectSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -164,6 +164,10 @@ const ActivityAddDrawer = (props) => {
       setFetchingPoi(true);
       fetchData();
     }
+
+    return () => {
+      setSelectedSearch("");
+    };
   }, [elementType, selectedExprience, props.showDrawer]);
 
   const searchHandler = (e) => {
@@ -172,8 +176,13 @@ const ActivityAddDrawer = (props) => {
       selectSearch.trim().length > 0
     ) {
       fetchData();
-      setSelectedSearch("");
+      // setSelectedSearch("");
     }
+  };
+
+  const handleClearSearch = () => {
+    setSelectedSearch("");
+    fetchData(true);
   };
 
   const navigationHandler = (child) => {
@@ -245,10 +254,10 @@ const ActivityAddDrawer = (props) => {
             <input
               type="text"
               value={selectSearch}
-              onChange={(e) => setSelectedSearch(e.target.value.trim())}
+              onChange={(e) => setSelectedSearch(e.target.value)}
               onKeyDown={searchHandler}
-              placeholder={`Search by ${
-                elementType === "POI" ? "POI" : "Activities"
+              placeholder={`Search ${
+                elementType === "POI" ? "attractions" : "activities"
               }`}
               className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
             ></input>
@@ -258,10 +267,10 @@ const ActivityAddDrawer = (props) => {
         <div className="flex flex-row items-center justify-between w-full">
           <div>
             Showing {options.length}
-            {elementType === "POI"
-              ? " attractions"
-              : " activities"}
-            {activityChangeData?.count ? `out of ${activityChangeData?.count}` : null}
+            {elementType === "POI" ? " attractions" : " activities"}
+            {activityChangeData?.count
+              ? ` out of ${activityChangeData?.count}`
+              : null}
             {props?.cityName ? ` in ${props?.cityName}` : null}
           </div>
           {isDesktop && (
@@ -275,7 +284,7 @@ const ActivityAddDrawer = (props) => {
               <input
                 type="text"
                 value={selectSearch}
-                onChange={(e) => setSelectedSearch(e.target.value.trim())}
+                onChange={(e) => setSelectedSearch(e.target.value)}
                 onKeyDown={searchHandler}
                 placeholder={`Search ${
                   elementType === "POI" ? "attractions" : "activities"
@@ -295,7 +304,17 @@ const ActivityAddDrawer = (props) => {
 
       {!fetchingPoi ? (
         options.length ? (
-          options
+          <div className="flex flex-col items-center mb-3">
+            {options}
+            {selectSearch !== "" ? (
+              <button
+                onClick={handleClearSearch}
+                className="mt-3 border-1 border-black rounded-lg px-3 py-1 text-sm hover:text-white hover:bg-black transition duration-500 ease-in-out"
+              >
+                Show All
+              </button>
+            ) : null}
+          </div>
         ) : (
           <EmptyMsg>
             <BiErrorCircle /> Oops, it looks like there are no{" "}

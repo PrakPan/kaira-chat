@@ -171,7 +171,7 @@ const ItineraryPoiElement = (props) => {
     setShow(false);
   };
 
-  const fetchData = () => {
+  const fetchData = (clearSearch = false) => {
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -188,7 +188,7 @@ const ItineraryPoiElement = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
-        search_query: selectSearch,
+        search_query: clearSearch ? "" : selectSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -228,6 +228,10 @@ const ItineraryPoiElement = (props) => {
       setShowDrawer(true);
       fetchData();
     }
+
+    return () => {
+      setSelectedSearch("");
+    };
   }, [showDrawer, elementType, SelectedExprience]);
 
   // const _updateActivityBookingsHandler = (poi) {
@@ -240,8 +244,13 @@ const ItineraryPoiElement = (props) => {
       selectSearch.trim().length > 0
     ) {
       fetchData();
-      setSelectedSearch("");
+      // setSelectedSearch("");
     }
+  };
+
+  const handleClearSearch = () => {
+    setSelectedSearch("");
+    fetchData(true);
   };
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
@@ -351,10 +360,6 @@ const ItineraryPoiElement = (props) => {
         {stars}
       </div>
     );
-  };
-
-  const handleScroll = () => {
-    console.log("?????????????????????????????????Hello!");
   };
 
   return (
@@ -550,7 +555,7 @@ const ItineraryPoiElement = (props) => {
               <input
                 type="text"
                 value={selectSearch}
-                onChange={(e) => setSelectedSearch(e.target.value.trim())}
+                onChange={(e) => setSelectedSearch(e.target.value)}
                 onKeyDown={searchHandler}
                 placeholder={`Search ${
                   elementType === "POI" ? "attractions" : "activities"
@@ -571,8 +576,16 @@ const ItineraryPoiElement = (props) => {
 
         {!fetchingPoi ? (
           optionsJSX.length ? (
-            <div onScroll={handleScroll} className="overflow-auto h-[100vh]">
+            <div className="flex flex-col items-center mb-3">
               {optionsJSX.map((option, index) => option)}
+              {selectSearch !== "" ? (
+                <button
+                  onClick={handleClearSearch}
+                  className="mt-3 border-1 border-black rounded-lg px-3 py-1 text-sm hover:text-white hover:bg-black transition duration-500 ease-in-out"
+                >
+                  Show All
+                </button>
+              ) : null}
             </div>
           ) : (
             <EmptyMsg>
