@@ -35,7 +35,7 @@ export default function PathNavigation(props) {
   };
 
   return (
-    <div className={`${!isPageWide && "ml-3"} mt-3 text-sm text-blue`}>
+    <div className={`${!isPageWide && "ml-3"} mt-[3.5rem] text-sm text-blue`}>
       {link && link.length ? (
         <span>
           <span

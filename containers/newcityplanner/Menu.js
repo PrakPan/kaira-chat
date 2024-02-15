@@ -80,6 +80,14 @@ const Menu = (props) => {
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
       <PathNavigation path={props.data?.path} />
+
+      {!!props.data.itinerary_data.length && (
+        <MenuItem id="Itinerary">
+          <Heading>Trips by our users to {props.data.name}</Heading>
+          <TopRecommendations itinerary_data={props.data.itinerary_data} />
+        </MenuItem>
+      )}
+      
       {props.data.short_description && !props.thingsToDoPage && (
         <MenuItem id="Brief">
           <Heading style={{ margin: "30px 0 30px 0" }}>
@@ -96,13 +104,6 @@ const Menu = (props) => {
               props.data.elevation[0]?.elevation
             }
           />
-        </MenuItem>
-      )}
-
-      {!!props.data.itinerary_data.length && (
-        <MenuItem id="Itinerary">
-          <Heading>Trips by our users to {props.data.name}</Heading>
-          <TopRecommendations itinerary_data={props.data.itinerary_data} />
         </MenuItem>
       )}
 

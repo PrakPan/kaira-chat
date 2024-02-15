@@ -431,6 +431,24 @@ const Homepage = (props) => {
           </>
         ) : null}
 
+        {userItineraries.length ? (
+          <>
+            <Heading
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "2.5rem 0 2.5rem 0"
+              }
+              bold
+            >
+              Trips by our users
+            </Heading>
+            <Experiences experiences={userItineraries}></Experiences>
+          </>
+        ) : null}
+
         {props.experienceData.page_type !== "Theme" && (
           <MapGridContainer>
             <Overview
@@ -539,22 +557,6 @@ const Homepage = (props) => {
           </Button>
         )}
 
-        {userItineraries.length ? (
-          <Heading
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"
-            }
-            bold
-          >
-            Trips by our users
-          </Heading>
-        ) : null}
-        {userItineraries.length ? (
-          <Experiences experiences={userItineraries}></Experiences>
-        ) : null}
-
         {userItineraries.length && !isPageWide ? (
           <Button
             onclick={() =>
@@ -575,6 +577,7 @@ const Homepage = (props) => {
         ) : (
           <></>
         )}
+
         {isPageWide ? (
           <Button
             onclick={() =>
