@@ -5,6 +5,15 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
+import Button from "../../components/ui/button/Index";
+
+const Container = styled.div`
+  width: 100%;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    width: 85%;
+  }
+`;
 
 const Heading = styled.h2`
   font-size: 32px;
@@ -21,8 +30,8 @@ const Heading = styled.h2`
 export default function AllDestinations({ allDestinations }) {
   const router = useRouter();
 
-  const handlePlanButton = async (continent) => {
-    await router.push(`/${continent}`);
+  const handlePlanButton = (continent) => {
+    router.push(`/${continent}`);
   };
 
   return (
@@ -30,7 +39,10 @@ export default function AllDestinations({ allDestinations }) {
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
         <meta name="description" content={""}></meta>
-        <meta property="og:title" content={"Travel Company | India | The Tarzan Way"} />
+        <meta
+          property="og:title"
+          content={"Travel Company | India | The Tarzan Way"}
+        />
         <meta property="og:description" content={""} />
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={""}></meta>
@@ -42,10 +54,10 @@ export default function AllDestinations({ allDestinations }) {
         title={`All Destinations Trip Planner`}
       />
 
-      <div className="flex flex-col lg:px-5 py-5">
+      <Container className="flex flex-col justify-center">
         {allDestinations && allDestinations.length
           ? allDestinations.map((dest, index) => (
-              <div key={index}>
+              <div key={index} className="">
                 <Heading>
                   Top countries to visit in {dest.continent.title}
                 </Heading>
@@ -56,18 +68,22 @@ export default function AllDestinations({ allDestinations }) {
                   viewall
                   country
                 ></SwiperLocations>
-                <div className="w-full flex items-center justify-center mt-3">
-                  <button
-                    onClick={() => handlePlanButton(dest.continent.slug)}
-                    className="text-center border-black border-1 rounded-lg px-3 py-1 hover:bg-black hover:text-white transition duration-500 ease-in-out"
+                <div className="w-full flex items-center justify-center mt-5">
+                  <Button
+                    onclick={() => handlePlanButton(dest.continent.slug)}
+                    borderWidth="1px"
+                    fontWeight="500"
+                    borderRadius="6px"
+                    margin="2rem auto"
+                    padding="0.5rem 2rem"
                   >
-                    Craft your travel plan to {dest.continent.title}
-                  </button>
+                    Create your travel plan to {dest.continent.title}
+                  </Button>
                 </div>
               </div>
             ))
           : null}
-      </div>
+      </Container>
     </Layout>
   );
 }

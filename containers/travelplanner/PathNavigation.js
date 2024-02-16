@@ -40,7 +40,7 @@ export default function PathNavigation(props) {
         <>
           <span>
             <span
-              id={"destination"}
+              id={"destinations"}
               onClick={pathHanlder}
               className="cursor-pointer hover:underline"
             >
