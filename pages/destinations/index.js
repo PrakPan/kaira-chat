@@ -30,8 +30,8 @@ const Heading = styled.h2`
 export default function AllDestinations({ allDestinations }) {
   const router = useRouter();
 
-  const handlePlanButton = (continent) => {
-    router.push(`/${continent}`);
+  const handlePlanButton = async (continent) => {
+    await router.push(`/${continent}`);
   };
 
   return (

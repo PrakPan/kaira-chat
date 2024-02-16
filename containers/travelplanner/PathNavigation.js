@@ -12,16 +12,16 @@ export default function PathNavigation(props) {
     setlink(props?.path?.split("/"));
   }, [props?.path]);
 
-  const pathHanlder = (e) => {
+  const pathHanlder = async (e) => {
     if (e.target.id === "destinations") {
-      router.push("/destinations");
+      await router.push("/destinations");
     } else {
       let path = "";
       for (let i = 0; i <= e.target.id; i++) {
         path += "/" + link[i];
       }
 
-      router.push(path);
+      await router.push(path);
     }
   };
 
