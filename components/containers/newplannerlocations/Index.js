@@ -83,7 +83,7 @@ const LocationsBlog = (props) => {
         } catch {}
       }
     }
-    if (count % 4 != 0) {
+    if (count === 0 || count % 4 !== 0) {
       const el = cardsarr.slice(count * 4, cardsarr.length);
       MobileCardsArr.push(
         <MobileCardsContainer>

@@ -490,6 +490,7 @@ const Homepage = (props) => {
             : "Create your travel plan now!"}
         </Button>
       </SetWidthContainer>
+
       <SetWidthContainer>
         <Heading
           align="left"
@@ -557,28 +558,7 @@ const Homepage = (props) => {
           </Button>
         )}
 
-        {userItineraries.length && !isPageWide ? (
-          <Button
-            onclick={() =>
-              openTailoredModal(
-                router,
-                props.experienceData.id,
-                props.experienceData.destination
-              )
-            }
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            Unlock your adventure
-          </Button>
-        ) : (
-          <></>
-        )}
-
-        {isPageWide ? (
+        {userItineraries.length ? (
           <Button
             onclick={() =>
               openTailoredModal(
